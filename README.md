@@ -1,5 +1,4 @@
-# Weasel
-DICOM Image Viewer
+# Weasel.  
 Prototype DICOM image viewer.  
 To use, open the File Menu and select the 'View DICOM Studies' option. Browse to a folder containing DICOM image files and an XML file 
 describing their study/series/image structure. Select this XML file to build a tree view visual representation of this structure. 
