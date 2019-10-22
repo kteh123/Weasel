@@ -13,6 +13,7 @@ import numpy as np
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
+        """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
         self.setGeometry(0, 0, 2500, 1400)
         self.setWindowTitle("DICOM Prototype")
@@ -26,7 +27,8 @@ class MainWindow(QMainWindow):
         self.treeView = QTreeWidget()
         self.DICOMfolderPath = ''
 
-    def setupMenus(self):    
+    def setupMenus(self):  
+        """Builds the menus in the menu bar of the MDI"""
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu('File')
         toolsMenu = mainMenu.addMenu('Tools')
@@ -53,6 +55,9 @@ class MainWindow(QMainWindow):
         toolsMenu.addAction(self.invertImageButton)
 
     def viewImageSubWindow(self):
+        """Creates a subwindow that displays a DICOM image. Either executed using the 
+        'View Image' Menu item in the Tools menu or by double clicking the Image name 
+        in the DICOM studies tree view."""
         try:
             getSelected = self.treeView.selectedItems()
             if getSelected:
@@ -80,6 +85,8 @@ class MainWindow(QMainWindow):
             print('Error in viewImageSubWindow: ' + str(e))
 
     def invertImageSubWindow(self):
+        """Creates a subwindow that displays an inverted DICOM image. Executed using the 
+        'Invert Image' Menu item in the Tools menu."""
         try:
             getSelected = self.treeView.selectedItems()
             if getSelected:
@@ -109,6 +116,8 @@ class MainWindow(QMainWindow):
 
 
     def makeDICOMStudiesTreeView(self):
+        """Uses an XML file that describes a DICOM file structure to build a
+        tree view showing a visual representation of that file structure."""
         try:
             defaultPath = "C:\\DICOM Files\\00000001\\"
             fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
@@ -182,6 +191,8 @@ class MainWindow(QMainWindow):
 
 
     def getDICOMFileData(self):
+        """When a DICOM images is selected in the tree view, this function
+        returns its description in the form - study number: series number: image name"""
         try:
             getSelected = self.treeView.selectedItems()
             if getSelected:
@@ -204,6 +215,7 @@ class MainWindow(QMainWindow):
             print('Error in getDICOMFileData: ' + str(e))
 
     def getDICOMFileName(self):
+        """Returns the name of a DICOM image file"""
         try:
             getSelected = self.treeView.selectedItems()
             if getSelected:
