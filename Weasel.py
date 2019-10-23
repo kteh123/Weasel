@@ -10,6 +10,7 @@ import pyqtgraph as pg
 import os
 import sys
 import numpy as np
+import styleSheet
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -26,6 +27,7 @@ class MainWindow(QMainWindow):
         self.setupMenus()
         self.treeView = QTreeWidget()
         self.DICOMfolderPath = ''
+        self.ApplyStyleSheet()
 
     def setupMenus(self):  
         """Builds the menus in the menu bar of the MDI"""
@@ -53,6 +55,14 @@ class MainWindow(QMainWindow):
         self.invertImageButton.triggered.connect(self.invertImageSubWindow)
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
+
+    def ApplyStyleSheet(self):
+        """Modifies the appearance of the GUI using CSS instructions"""
+        try:
+            self.setStyleSheet(styleSheet.TRISTAN_GREY)
+        except Exception as e:
+            print('Error in function ApplyStyleSheet: ' + str(e))
+            
 
     def viewImageSubWindow(self):
         """Creates a subwindow that displays a DICOM image. Either executed using the 
