@@ -9,6 +9,7 @@ import pydicom
 import pyqtgraph as pg
 import os
 import sys
+import re
 import numpy as np
 import styleSheet
 
@@ -72,8 +73,8 @@ class MainWindow(QMainWindow):
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
-            getSelected = self.treeView.selectedItems()
-            if getSelected:
+            selectedImage = self.treeView.selectedItems()
+            if selectedImage:
                 subWindow = QMdiSubWindow(self)
                 subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
                 imageViewer = pg.GraphicsLayoutWidget()
@@ -101,8 +102,8 @@ class MainWindow(QMainWindow):
         """Creates a subwindow that displays an inverted DICOM image. Executed using the 
         'Invert Image' Menu item in the Tools menu."""
         try:
-            getSelected = self.treeView.selectedItems()
-            if getSelected:
+            selectedImage = self.treeView.selectedItems()
+            if selectedImage:
                 subWindow = QMdiSubWindow(self)
                 subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint |
                                         Qt.WindowMinimizeButtonHint)
@@ -124,6 +125,8 @@ class MainWindow(QMainWindow):
                 subWindow.setGeometry(0,0,800,600)
                 self.mdiArea.addSubWindow(subWindow)
                 subWindow.show()
+                print('series number = {}'.format(self.getSeriesNumber(selectedImage)))
+                seriesNumber = self.getSeriesNumber(selectedImage)
         except Exception as e:
             print('Error in invertImageSubWindow: ' + str(e))
 
@@ -202,16 +205,34 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e))
 
+    def getSeriesNumber(self, selectedImage):
+        """This function assumes a series name takes the
+        form 'series' space number, where number is an integer
+        with one or more digits; 
+        e.g., 'series 44' and returns the number as a string"""
+         
+        if selectedImage:
+            #Extract series name from the selected image
+            imageNode = selectedImage[0]
+            seriesNode  = imageNode.parent()
+            seriesName = seriesNode.text(0) 
+            #Extract series number from the full series name
+            numberList = re.findall(r'\d+', seriesName)
+            number = numberList[0]
+            return number
+        else:
+            return None
+
 
     def getDICOMFileData(self):
         """When a DICOM images is selected in the tree view, this function
         returns its description in the form - study number: series number: image name"""
         try:
-            getSelected = self.treeView.selectedItems()
-            if getSelected:
+            selectedImage = self.treeView.selectedItems()
+            if selectedImage:
                 self.viewImageButton.setEnabled(True)
                 self.invertImageButton.setEnabled(True)
-                imageNode = getSelected[0]
+                imageNode = selectedImage[0]
                 seriesNode  = imageNode.parent()
                 imageName = imageNode.text(1)
                 series = seriesNode.text(0)
@@ -230,9 +251,9 @@ class MainWindow(QMainWindow):
     def getDICOMFileName(self):
         """Returns the name of a DICOM image file"""
         try:
-            getSelected = self.treeView.selectedItems()
-            if getSelected:
-                imageNode = getSelected[0]
+            selectedImage = self.treeView.selectedItems()
+            if selectedImage:
+                imageNode = selectedImage[0]
                 imageName = imageNode.text(1)
                 return imageName
         except Exception as e:
