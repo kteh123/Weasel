@@ -12,6 +12,9 @@ import sys
 import numpy as np
 import styleSheet
 
+__version__ = '1.0'
+__author__ = 'Steve Shillitoe'
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         """Creates the MDI container."""
@@ -235,8 +238,11 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getDICOMFileName: ' + str(e))
 
+def main():
+    app = QApplication([])
+    winMDI = MainWindow()
+    winMDI.show()
+    sys.exit(app.exec())
+
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    w = MainWindow()
-    w.show()
-    sys.exit(app.exec_())
+        main()
