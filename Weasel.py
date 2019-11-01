@@ -118,15 +118,38 @@ class MainWindow(QMainWindow):
                 if os.path.exists(imagePath):
                     dataset = pydicom.dcmread(imagePath)
                     if 'PixelData' in dataset:
-                        img.setImage(np.invert(dataset.pixel_array))
+                        invertedImage = np.invert(dataset.pixel_array)
+                        img.setImage(invertedImage)
+                        if invertedImage.dtype != np.uint16:
+                            invertedImage = invertedImage.astype(np.uint16)
+                        dataset.PixelData = invertedImage.tobytes()
+                        dataset.save_as(imagePath + '_inv.dcm')
+                        studyNumber, seriesNumber = self.getStudyAndSeriesNumbers(selectedImage)
+                        #Record inverted image in XML file
+                        #First determine if a series with parentID=seriesNumber exists
+                        xPath = './study[id=' + chr(34) + studyNumber + chr(34) + \
+                           ']/series[parentID=' + chr(34) + seriesNumber + chr(34) + ']'
+                        series = self.root.find(xPath)
+                        if series is None:
+                            #Need to create a new series to hold this inverted image
+                            #Get maximum series number in current study
+                            studyXPath ='./study[@id=' + chr(34) + studyNumber + chr(34) + ']/series[last()]'
+                            lastSeries = self.root.find(studyXPath)
+                            lastSeriesID = lastSeries.attrib['id']
+                            print('series id = {}'. format(lastSeriesID))
+                        else:
+                            #A series already exists to hold inverted images from
+                            #the current parent series
+                            print('add to existing series')
+
 
                 subWindow.setObjectName("Image_Window")
                 subWindow.setWindowTitle(self.getDICOMFileData() + ' Inverted')
                 subWindow.setGeometry(0,0,800,600)
                 self.mdiArea.addSubWindow(subWindow)
                 subWindow.show()
-                print('series number = {}'.format(self.getSeriesNumber(selectedImage)))
-                seriesNumber = self.getSeriesNumber(selectedImage)
+                
+                
         except Exception as e:
             print('Error in invertImageSubWindow: ' + str(e))
 
@@ -143,7 +166,7 @@ class MainWindow(QMainWindow):
 
             if os.path.exists(fullFilePath):
                 self.DICOMfolderPath, _ = os.path.split(fullFilePath)
-                print(self.DICOMfolderPath)
+                #print(self.DICOMfolderPath)
                 self.XMLtree = ET.parse(fullFilePath)
                 self.root = self.XMLtree.getroot()
 
@@ -205,11 +228,13 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e))
 
-    def getSeriesNumber(self, selectedImage):
+    def getStudyAndSeriesNumbers(self, selectedImage):
         """This function assumes a series name takes the
         form 'series' space number, where number is an integer
         with one or more digits; 
-        e.g., 'series 44' and returns the number as a string"""
+        e.g., 'series 44' and returns the number as a string.
+        
+        Same assumption is made for the study name."""
          
         if selectedImage:
             #Extract series name from the selected image
@@ -218,10 +243,16 @@ class MainWindow(QMainWindow):
             seriesName = seriesNode.text(0) 
             #Extract series number from the full series name
             numberList = re.findall(r'\d+', seriesName)
-            number = numberList[0]
-            return number
+            seriesNumber = numberList[0]
+
+            studyNode = seriesNode.parent()
+            studyName = studyNode.text(0)
+            #Extract study number from the full study name
+            numberList = re.findall(r'\d+', studyName)
+            studyNumber = numberList[0]
+            return studyNumber, seriesNumber
         else:
-            return None
+            return None, None
 
 
     def getDICOMFileData(self):
