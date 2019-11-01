@@ -338,3 +338,8 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+#The following are for Joao's Python Environments and VS Code
+venv-windows/
+venv-linux/
+.vscode/
