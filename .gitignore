@@ -343,3 +343,4 @@ healthchecksdb
 venv-windows/
 venv-linux/
 .vscode/
+*__pycache__/
