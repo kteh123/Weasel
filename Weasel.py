@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         self.treeView = QTreeWidget()
         self.DICOMfolderPath = ''
         self.ApplyStyleSheet()
+       
 
     def setupMenus(self):  
         """Builds the menus in the menu bar of the MDI"""
@@ -123,20 +124,46 @@ class MainWindow(QMainWindow):
                         if invertedImage.dtype != np.uint16:
                             invertedImage = invertedImage.astype(np.uint16)
                         dataset.PixelData = invertedImage.tobytes()
+                        #Save inverted image file
+                        invertedImageFileName = self.getDICOMFileName() + '_inv.dcm'
                         dataset.save_as(imagePath + '_inv.dcm')
+
                         studyNumber, seriesNumber = self.getStudyAndSeriesNumbers(selectedImage)
                         #Record inverted image in XML file
                         #First determine if a series with parentID=seriesNumber exists
                         xPath = './study[id=' + chr(34) + studyNumber + chr(34) + \
                            ']/series[parentID=' + chr(34) + seriesNumber + chr(34) + ']'
                         series = self.root.find(xPath)
+                        
                         if series is None:
                             #Need to create a new series to hold this inverted image
                             #Get maximum series number in current study
                             studyXPath ='./study[@id=' + chr(34) + studyNumber + chr(34) + ']/series[last()]'
                             lastSeries = self.root.find(studyXPath)
                             lastSeriesID = lastSeries.attrib['id']
-                            print('series id = {}'. format(lastSeriesID))
+                            #print('series id = {}'. format(lastSeriesID))
+                            nextSeriesID = str(int(lastSeriesID) + 1)
+                            #Get study branch
+                            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + ']'
+                            #print(xPath)
+                            self.XMLtree.write("NewFile.xml")
+                            currentStudy = self.root.find(xPath)
+                            newAttributes = {'id':nextSeriesID, 'parentID':seriesNumber}
+                           
+                            #Add new series to study to hold inverted images
+                            newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
+                            
+                            comment = ET.Comment('This series holds inverted images')
+                            newSeries.append(comment)
+                            #Now add image element
+                            newInvertedImage = ET.SubElement(newSeries,'image')
+                            #Add child nodes of the image element
+                            nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
+                            nameInvertedImage.text = invertedImageFileName
+                            timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
+                            dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
+                            self.XMLtree.write("NewFile.xml")
+                            #Now need to update tree view
                         else:
                             #A series already exists to hold inverted images from
                             #the current parent series
