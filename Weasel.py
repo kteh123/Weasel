@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         self.setupMenus()
         self.treeView = QTreeWidget()
         self.DICOMfolderPath = ''
+        self.DICOM_XML_FilePath = ''
         self.ApplyStyleSheet()
        
 
@@ -131,8 +132,8 @@ class MainWindow(QMainWindow):
                         studyNumber, seriesNumber = self.getStudyAndSeriesNumbers(selectedImage)
                         #Record inverted image in XML file
                         #First determine if a series with parentID=seriesNumber exists
-                        xPath = './study[id=' + chr(34) + studyNumber + chr(34) + \
-                           ']/series[parentID=' + chr(34) + seriesNumber + chr(34) + ']'
+                        xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                           ']/series[@parentID=' + chr(34) + seriesNumber + chr(34) + ']'
                         series = self.root.find(xPath)
                         
                         if series is None:
@@ -145,8 +146,6 @@ class MainWindow(QMainWindow):
                             nextSeriesID = str(int(lastSeriesID) + 1)
                             #Get study branch
                             xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + ']'
-                            #print(xPath)
-                            self.XMLtree.write("NewFile.xml")
                             currentStudy = self.root.find(xPath)
                             newAttributes = {'id':nextSeriesID, 'parentID':seriesNumber}
                            
@@ -155,20 +154,33 @@ class MainWindow(QMainWindow):
                             
                             comment = ET.Comment('This series holds inverted images')
                             newSeries.append(comment)
+                            #Get image date & time
+                            imageTime, imageDate = self.getImageDateTime()
+                            
+                            #print("image time {}, date {}".format(imageTime, imageDate))
                             #Now add image element
                             newInvertedImage = ET.SubElement(newSeries,'image')
                             #Add child nodes of the image element
                             nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
                             nameInvertedImage.text = invertedImageFileName
                             timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
+                            timeInvertedImage.text = imageTime
                             dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
-                            self.XMLtree.write("NewFile.xml")
-                            #Now need to update tree view
+                            dateInvertedImage.text = imageDate
+                            self.XMLtree.write(self.DICOM_XML_FilePath)
                         else:
                             #A series already exists to hold inverted images from
                             #the current parent series
-                            print('add to existing series')
-
+                            imageTime, imageDate = self.getImageDateTime()
+                            newInvertedImage = ET.SubElement(series,'image')
+                            #Add child nodes of the image element
+                            nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
+                            nameInvertedImage.text = invertedImageFileName
+                            timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
+                            timeInvertedImage.text = imageTime
+                            dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
+                            dateInvertedImage.text = imageDate
+                            self.XMLtree.write(self.DICOM_XML_FilePath)
 
                 subWindow.setObjectName("Image_Window")
                 subWindow.setWindowTitle(self.getDICOMFileData() + ' Inverted')
@@ -176,7 +188,7 @@ class MainWindow(QMainWindow):
                 self.mdiArea.addSubWindow(subWindow)
                 subWindow.show()
                 
-                
+                self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in invertImageSubWindow: ' + str(e))
 
@@ -192,6 +204,7 @@ class MainWindow(QMainWindow):
                     filter="*.xml")
 
             if os.path.exists(fullFilePath):
+                self.DICOM_XML_FilePath = fullFilePath
                 self.DICOMfolderPath, _ = os.path.split(fullFilePath)
                 #print(self.DICOMfolderPath)
                 self.XMLtree = ET.parse(fullFilePath)
@@ -199,7 +212,7 @@ class MainWindow(QMainWindow):
 
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
-
+                
                 # Uncomment to test XML file loaded OK
                 #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
                 studies = self.root.findall('./study')
@@ -281,6 +294,26 @@ class MainWindow(QMainWindow):
         else:
             return None, None
 
+    def getImageDateTime(self):
+        try:
+            imageName = self.getDICOMFileName()
+            studyNumber, seriesNumber = self.getStudyAndSeriesNumbers(
+                self.treeView.selectedItems())
+            #Get reference to image element time of the image
+            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']' + \
+                    '/image[name=' + chr(34) + imageName + chr(34) +']/time'
+            imageTime = self.root.find(xPath)
+            
+            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']' + \
+                    '/image[name=' + chr(34) + imageName + chr(34) +']/date'
+            imageDate = self.root.find(xPath)
+
+            return imageTime.text, imageDate.text
+            
+        except Exception as e:
+            print('Error in getImageDateTime: ' + str(e))
 
     def getDICOMFileData(self):
         """When a DICOM images is selected in the tree view, this function
@@ -316,6 +349,71 @@ class MainWindow(QMainWindow):
                 return imageName
         except Exception as e:
             print('Error in getDICOMFileName: ' + str(e))
+
+    def refreshDICOMStudiesTreeView(self):
+        """Uses an XML file that describes a DICOM file structure to build a
+        tree view showing a visual representation of that file structure."""
+        try:
+            self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
+            self.root = self.XMLtree.getroot()
+            self.treeView.clear()
+            self.treeView.setColumnCount(4)
+            self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
+                
+            # Uncomment to test XML file loaded OK
+            #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
+            studies = self.root.findall('./study')
+            for study in studies:
+                studyID = study.attrib['id']
+                studyBranch = QTreeWidgetItem(self.treeView)
+                studyBranch.setText(0, "Study {}".format(studyID))
+                studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                studyBranch.setExpanded(True)
+                for series in study:
+                    seriesID = series.attrib['id']
+                    seriesBranch = QTreeWidgetItem(studyBranch)
+                    seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
+                    seriesBranch.setText(0, "Series {}".format(seriesID))
+                    seriesBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                    seriesBranch.setExpanded(True)
+                    for image in series:
+                        imageName = image.find('name').text
+                        imageDate = image.find('date').text
+                        imageTime = image.find('time').text
+                        imageLeaf = QTreeWidgetItem(seriesBranch)
+                        imageLeaf.setText(0, 'Image ')
+                        imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                        imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+                        #Uncomment the next line to put a checkbox in front of each image
+                        #imageLeaf.setCheckState(0, Qt.Unchecked)
+                        imageLeaf.setText(1, imageName)
+                        imageLeaf.setText(2, imageDate)
+                        imageLeaf.setText(3, imageTime)
+                        imageLeaf.setExpanded(True)
+
+            self.treeView.resizeColumnToContents(0)
+            self.treeView.resizeColumnToContents(1)
+            self.treeView.resizeColumnToContents(2)
+            
+            self.treeView.itemSelectionChanged.connect(self.getDICOMFileData)
+            self.treeView.itemDoubleClicked.connect(self.viewImageSubWindow)
+            self.treeView.show()
+        
+            #widget = QWidget()
+            #widget.setLayout(QVBoxLayout()) 
+            #self.lbl = QLabel()
+            #widget.layout().addWidget(self.treeView)
+            #widget.layout().addWidget(self.lbl)
+        
+            #subWindow = QMdiSubWindow(self)
+            #subWindow.setWidget(widget)
+            #subWindow.setObjectName("New_Window")
+            #subWindow.setWindowTitle("DICOM Study Structure")
+            #subWindow.setGeometry(0,0,800,1300)
+            #self.mdiArea.addSubWindow(subWindow)
+            #subWindow.show()
+        except Exception as e:
+            print('Error in refreshDICOMStudiesTreeView: ' + str(e))
 
 def main():
     app = QApplication([])
