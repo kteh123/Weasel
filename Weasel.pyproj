@@ -22,7 +22,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="invertDICOM_Image.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="styleSheet.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="viewDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Weasel.py" />
