@@ -46,7 +46,7 @@ def get_scan_data(scan_directory):
 def get_studies_series(list_dicom):
     xml_dict = defaultdict(list)
     for file in list_dicom:
-        xml_dict[str(file.StudyDescription) + "_" + str(file.PatientID)].append(str(file.SeriesDescription) + "_Series" + str(file.SeriesNumber))
+        xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
         
     for study in xml_dict:
         xml_dict[study] = np.unique(xml_dict[study])
@@ -67,17 +67,18 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
         for series in xml_dict[study]:
             series_element = ET.SubElement(study_element, 'series')
             series_element.set('id', series)
-    
+            series_element.set('parent_id', '')
+
     for index, file in enumerate(list_dicom):
-        study_search_string = "./*[@id='"+ str(file.StudyDescription) + "_" + str(file.PatientID) + "']"
+        study_search_string = "./*[@id='Subject_" + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
         series_root = DICOM_XML_object.find(study_search_string)
-        series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_Series" + str(file.SeriesNumber) + "']"
+        series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_" + str(file.SeriesNumber) + "']"
         image_root = series_root.find(series_search_string)
         image_element = ET.SubElement(image_root, 'image')
         name = ET.SubElement(image_element, 'name')
         time = ET.SubElement(image_element, 'time')
         date = ET.SubElement(image_element, 'date')
-        name.text = list_paths[index]
+        name.text =  os.path.basename(os.path.normpath(list_paths[index]))
         # The next lines save the time and date to XML - They consider multiple/eventual formats
         try:
             try:
@@ -102,7 +103,7 @@ def create_XML_file(DICOM_XML_object, scan_directory):
     xmlstr = ET.tostring(DICOM_XML_object, encoding='utf-8')
     XML_data = minidom.parseString(xmlstr).toprettyxml(encoding="utf-8", indent="  ")
     filename = os.path.basename(os.path.normpath(scan_directory)) + ".xml"
-    with open(filename, "wb") as f:
+    with open(os.path.join(scan_directory, filename), "wb") as f:
         f.write(XML_data)  
 
     return
