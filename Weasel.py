@@ -5,12 +5,10 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
         QTreeWidget, QTreeWidgetItem, QGridLayout)
 
 import xml.etree.ElementTree as ET 
-import pydicom
 import pyqtgraph as pg
 import os
 import sys
 import re
-import numpy as np
 import styleSheet
 import viewDICOM_Image
 import invertDICOM_Image
