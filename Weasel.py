@@ -209,27 +209,30 @@ class MainWindow(QMainWindow):
                         seriesBranch = QTreeWidgetItem(studyBranch)
                         seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                         seriesBranch.setText(0, "Series {}".format(seriesID))
-                        seriesBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                        seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                        #Expand this series branch, so that the 3 resizeColumnToContents
+                        #commands can work
                         seriesBranch.setExpanded(True)
                         for image in series:
-                            imageName = image.find('name').text
+                            #Extract filename from file path
+                            imageName = os.path.basename(image.find('name').text)
                             imageDate = image.find('date').text
                             imageTime = image.find('time').text
                             imageLeaf = QTreeWidgetItem(seriesBranch)
                             imageLeaf.setText(0, 'Image ')
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                            imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            #Uncomment the next line to put a checkbox in front of each image
+                            #Uncomment the next 2 lines to put a checkbox in front of each image
+                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
                             #imageLeaf.setCheckState(0, Qt.Unchecked)
                             imageLeaf.setText(1, imageName)
                             imageLeaf.setText(2, imageDate)
                             imageLeaf.setText(3, imageTime)
-                            imageLeaf.setExpanded(True)
-
-                self.treeView.resizeColumnToContents(0)
-                self.treeView.resizeColumnToContents(1)
-                self.treeView.resizeColumnToContents(2)
-            
+                            self.treeView.resizeColumnToContents(0)
+                            self.treeView.resizeColumnToContents(1)
+                            self.treeView.resizeColumnToContents(2)
+                        #Now collapse the series branch so as to hide the images
+                        seriesBranch.setExpanded(False)
+                        
                 self.treeView.itemSelectionChanged.connect(self.getDICOMFileData)
                 self.treeView.itemDoubleClicked.connect(self.viewImage)
                 self.treeView.show()
@@ -356,7 +359,7 @@ class MainWindow(QMainWindow):
                     seriesBranch = QTreeWidgetItem(studyBranch)
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                     seriesBranch.setText(0, "Series {}".format(seriesID))
-                    seriesBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                    seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
                     for image in series:
                         imageName = image.find('name').text
