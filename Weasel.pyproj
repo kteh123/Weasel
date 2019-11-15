@@ -32,6 +32,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Weasel.py" />
+    <Compile Include="WriteXMLfromDICOM.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
