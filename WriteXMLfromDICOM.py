@@ -46,8 +46,10 @@ def get_scan_data(scan_directory):
 def get_studies_series(list_dicom):
     xml_dict = defaultdict(list)
     for file in list_dicom:
-        xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
-        
+        try:
+            xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
+        except:
+            xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
     for study in xml_dict:
         xml_dict[study] = np.unique(xml_dict[study])
 
@@ -72,7 +74,10 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
     for index, file in enumerate(list_dicom):
         study_search_string = "./*[@id='Subject_" + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
         series_root = DICOM_XML_object.find(study_search_string)
-        series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_" + str(file.SeriesNumber) + "']"
+        try:
+            series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_" + str(file.SeriesNumber) + "']"
+        except:
+            series_search_string = "./*[@id='"+ str(file.SequenceName) + "_" + str(file.SeriesNumber) + "']"
         image_root = series_root.find(series_search_string)
         image_element = ET.SubElement(image_root, 'image')
         name = ET.SubElement(image_element, 'name')
