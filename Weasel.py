@@ -92,6 +92,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in displayImageSubWindow: ' + str(e))
 
+
     def displayMultiImageSubWindow(self, imageList, seriesName):
         """
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
@@ -145,6 +146,7 @@ class MainWindow(QMainWindow):
       except Exception as e:
             print('Error in imageSliderChanged: ' + str(e))
 
+
     def viewImage(self):
         """Creates a subwindow that displays a DICOM image. Either executed using the 
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
@@ -166,10 +168,9 @@ class MainWindow(QMainWindow):
                 images = self.root.findall(xPath)
                 imageList = [image.find('name').text for image in images] 
                 self.displayMultiImageSubWindow(imageList, seriesName)
-                
-
         except Exception as e:
             print('Error in viewImage: ' + str(e))
+
 
     def insertInvertedImageInXMLFile(self, selectedImage, invertedImageFileName):
         try:
@@ -178,7 +179,8 @@ class MainWindow(QMainWindow):
             xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
                 ']/series[@parentID=' + chr(34) + seriesNumber + chr(34) + ']'
             series = self.root.find(xPath)
-                
+            imageName = self.getDICOMFileName()
+                    
             if series is None:
                 #Need to create a new series to hold this inverted image
                 #Get maximum series number in current study
@@ -198,7 +200,7 @@ class MainWindow(QMainWindow):
                 comment = ET.Comment('This series holds inverted images')
                 newSeries.append(comment)
                 #Get image date & time
-                imageTime, imageDate = self.getImageDateTime()
+                imageTime, imageDate = self.getImageDateTime(imageName, studyNumber, seriesNumber)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
@@ -214,7 +216,7 @@ class MainWindow(QMainWindow):
             else:
                 #A series already exists to hold inverted images from
                 #the current parent series
-                imageTime, imageDate = self.getImageDateTime()
+                imageTime, imageDate = self.getImageDateTime(imageName, studyNumber, seriesNumber)
                 newInvertedImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
                 nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
@@ -226,6 +228,50 @@ class MainWindow(QMainWindow):
                 self.XMLtree.write(self.DICOM_XML_FilePath)
         except Exception as e:
             print('Error in insertInvertedImageInXMLFile: ' + str(e))
+    
+
+    def insertInvertedSeriesInXMLFile(self, origImageList, invertedImageList):
+        """Creates a new series to hold the series of inverted images"""
+        try:
+            #Get current study & series IDs
+            studyNumber, seriesNumber = \
+                    self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
+            #Need to create a new series to hold this series of inverted images 
+            #Get maximum series number in current study
+            studyXPath ='./study[@id=' + chr(34) + studyNumber + chr(34) + ']/series[last()]'
+            lastSeries = self.root.find(studyXPath)
+            lastSeriesID = lastSeries.attrib['id']
+            #print('series id = {}'. format(lastSeriesID))
+            nextSeriesID = str(int(lastSeriesID) + 1)
+     
+            #Get study branch
+            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + ']'
+            currentStudy = self.root.find(xPath)
+            newAttributes = {'id':nextSeriesID, 'parentID':seriesNumber}
+                   
+            #Add new series to study to hold inverted images
+            newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
+                    
+            comment = ET.Comment('This series holds a whole series of inverted images')
+            newSeries.append(comment)
+            #Get image date & time from original image
+            for index, image in enumerate(origImageList):
+                imageTime, imageDate = self.getImageDateTime(image, studyNumber, seriesNumber)       
+                newInvertedImage = ET.SubElement(newSeries,'image')
+                #Add child nodes of the image element
+                nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
+                nameInvertedImage.text = invertedImageList[index]
+                timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
+                timeInvertedImage.text = imageTime
+                dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
+                dateInvertedImage.text = imageDate
+
+            self.XMLtree.write(self.DICOM_XML_FilePath)
+            return 'series ' + nextSeriesID
+
+        except Exception as e:
+            print('Error in insertInvertedSeriesInXMLFile: ' + str(e))
+
 
     def invertImage(self):
         """Creates a subwindow that displays an inverted DICOM image. Executed using the 
@@ -241,6 +287,28 @@ class MainWindow(QMainWindow):
                 selectedImage = self.treeView.selectedItems()
                 self.insertInvertedImageInXMLFile(selectedImage, invertedImageFileName)
                 #Update tree view with xml file modified above
+                self.refreshDICOMStudiesTreeView()
+            elif self.isSeriesSelected():
+                #Get Series ID & Study ID
+                studyNumber, seriesNumber = \
+                    self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
+                seriesName = self.treeView.currentItem().text(0)
+                #Get list of image names
+                xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                #print(xPath)
+                images = self.root.findall(xPath)
+                imageList = [image.find('name').text for image in images] 
+                #Iterate through list of images and invert each image
+                invertedImageList = []
+                for image in imageList:
+                    imagePath = self.DICOMfolderPath + "\\" + image
+                    _, invertedImageFileName = \
+                    invertDICOM_Image.returnPixelArray(imagePath)
+                    invertedImageList.append(invertedImageFileName)
+
+                newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, invertedImageList)
+                self.displayMultiImageSubWindow(invertedImageList, newSeriesName)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in invertImage: ' + str(e))
@@ -322,6 +390,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e))
 
+
     def getStudyAndSeriesNumbersForImage(self, selectedImage):
         """This function assumes a series name takes the
         form 'series' space number, where number is an integer
@@ -378,11 +447,9 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getStudyAndSeriesNumbersForImage: ' + str(e))
 
-    def getImageDateTime(self):
+
+    def getImageDateTime(self, imageName, studyNumber, seriesNumber):
         try:
-            imageName = self.getDICOMFileName()
-            studyNumber, seriesNumber = self.getStudyAndSeriesNumbersForImage(
-                self.treeView.selectedItems())
             #Get reference to image element time of the image
             xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']' + \
@@ -394,10 +461,10 @@ class MainWindow(QMainWindow):
                     '/image[name=' + chr(34) + imageName + chr(34) +']/date'
             imageDate = self.root.find(xPath)
 
-            return imageTime.text, imageDate.text
-            
+            return imageTime.text, imageDate.text           
         except Exception as e:
             print('Error in getImageDateTime: ' + str(e))
+
 
     def isImageSelected(self):
         try:
@@ -420,6 +487,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in isSeriesSelected: ' + str(e))
 
+
     def toggleToolButtons(self):
         try:
             if self.isImageSelected() or self.isSeriesSelected():
@@ -430,6 +498,7 @@ class MainWindow(QMainWindow):
                 self.invertImageButton.setEnabled(False)
         except Exception as e:
             print('Error in toggleToolButtons: ' + str(e))
+
 
     def getDICOMFileData(self):
         """When a DICOM image is selected in the tree view, this function
@@ -450,6 +519,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getDICOMFileData: ' + str(e))
 
+
     def getDICOMFileName(self):
         """Returns the name of a DICOM image file"""
         try:
@@ -460,6 +530,7 @@ class MainWindow(QMainWindow):
                 return imageName
         except Exception as e:
             print('Error in getDICOMFileName: ' + str(e))
+
 
     def refreshDICOMStudiesTreeView(self):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -509,6 +580,7 @@ class MainWindow(QMainWindow):
             self.treeView.show()
         except Exception as e:
             print('Error in refreshDICOMStudiesTreeView: ' + str(e))
+
 
 def main():
     app = QApplication([])
