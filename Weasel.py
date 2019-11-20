@@ -2,7 +2,7 @@
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QVBoxLayout, QMdiSubWindow, QPushButton, 
-        QTreeWidget, QTreeWidgetItem, QGridLayout)
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider)
 
 import xml.etree.ElementTree as ET 
 import pyqtgraph as pg
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
         self.treeView = QTreeWidget()
-        self.ApplyStyleSheet()
+        #self.ApplyStyleSheet()
       
 
     def setupMenus(self):  
@@ -92,6 +92,59 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in displayImageSubWindow: ' + str(e))
 
+    def displayMultiImageSubWindow(self, imageList, seriesName):
+        """
+        Creates a subwindow that displays the DICOM image contained in pixelArray. 
+        """
+        try:
+            self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            layout = QVBoxLayout()
+            imageViewer = pg.GraphicsLayoutWidget()
+            widget = QWidget()
+            widget.setLayout(layout)
+            self.subWindow.setWidget(widget)
+            layout.addWidget(imageViewer)
+            viewBox = imageViewer.addViewBox()
+            viewBox.setAspectLocked(True)
+            self.img = pg.ImageItem(border='w')
+            viewBox.addItem(self.img)
+
+            self.imageSlider = QSlider(Qt.Horizontal)
+            self.imageSlider.setMinimum(1)
+            self.imageSlider.setMaximum(len(imageList))
+            self.imageSlider.setValue(1)
+            self.imageSlider.setSingleStep(1)
+            self.imageSlider.setTickPosition(QSlider.TicksBothSides)
+            self.imageSlider.setTickInterval(1)
+            self.imageSlider.valueChanged.connect(
+                  lambda: self.imageSliderChanged(seriesName, imageList))
+            #print('Num of images = {}'.format(len(imageList)))
+            layout.addWidget(self.imageSlider)
+            #Display first image
+            imagePath = self.DICOMfolderPath + "\\" + imageList[0]
+            pixelArray = viewDICOM_Image.returnPixelArray(imagePath)
+            self.img.setImage(pixelArray)   
+            self.subWindow.setObjectName("MultiImage_Window")
+            
+            self.subWindow.setWindowTitle(seriesName + ' - ' + imageList[0])
+            self.subWindow.setGeometry(0,0,800,600)
+            self.mdiArea.addSubWindow(self.subWindow)
+            self.subWindow.show()
+        except Exception as e:
+            print('Error in displayMultiImageSubWindow: ' + str(e))
+
+
+    def imageSliderChanged(self, seriesName, imageList):
+      try:
+        imageNumber = self.imageSlider.value()
+        imagePath = self.DICOMfolderPath + "\\" + imageList[imageNumber - 1]
+        pixelArray = viewDICOM_Image.returnPixelArray(imagePath)
+        self.img.setImage(pixelArray)  
+        self.subWindow.setWindowTitle(seriesName + ' - ' + imageList[imageNumber - 1])
+      except Exception as e:
+            print('Error in imageSliderChanged: ' + str(e))
+
     def viewImage(self):
         """Creates a subwindow that displays a DICOM image. Either executed using the 
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
@@ -105,15 +158,15 @@ class MainWindow(QMainWindow):
                 #Get Series ID & Study ID
                 studyNumber, seriesNumber = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
+                seriesName = self.treeView.currentItem().text(0)
                 #Get list of image names
                 xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
-                print(xPath)
+                #print(xPath)
                 images = self.root.findall(xPath)
-                #print("Number of images = {}".format(images.count()))
-                for image in images:
-                    print(image.find('name').text)
-                    
+                imageList = [image.find('name').text for image in images] 
+                self.displayMultiImageSubWindow(imageList, seriesName)
+                
 
         except Exception as e:
             print('Error in viewImage: ' + str(e))
