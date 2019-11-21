@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider)
 
 import xml.etree.ElementTree as ET 
+from xml.dom import minidom
 import pyqtgraph as pg
 import os
 import sys
@@ -12,6 +13,7 @@ import re
 import styleSheet
 import viewDICOM_Image
 import invertDICOM_Image
+import WriteXMLfromDICOM 
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -318,11 +320,22 @@ class MainWindow(QMainWindow):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
-            defaultPath = "C:\\DICOM Files\\00000001\\"
-            fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
-                    caption="Select a DICOM file", 
-                    directory=defaultPath,
-                    filter="*.xml")
+            #defaultPath = "C:\\DICOM Files\\00000001\\"
+            #fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
+            #        caption="Select a DICOM file", 
+            #        directory=defaultPath,
+            #        filter="*.xml")
+
+            generic_path = WriteXMLfromDICOM.select_path()
+            scans, paths = WriteXMLfromDICOM.get_scan_data(generic_path)
+            dictionary = WriteXMLfromDICOM.get_studies_series(scans)
+            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
+            fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, generic_path)
+
+#            Error in WriteXMLfromDICOM.get_studies_series: 'FileDataset' object has no attribute 'SequenceName'
+#Error in WriteXMLfromDICOM.open_dicom_to_xml: 'NoneType' object is not iterable
+#Error in WriteXMLfromDICOM.create_XML_file: 'NoneType' object has no attribute 'iter'
+#Error in makeDICOMStudiesTreeView: stat: path should be string, bytes, os.PathLike or integer, not NoneType
 
             if os.path.exists(fullFilePath):
                 self.DICOM_XML_FilePath = fullFilePath
