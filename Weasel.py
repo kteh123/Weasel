@@ -1,8 +1,11 @@
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QVBoxLayout, QMdiSubWindow, QPushButton, 
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider)
+from PyQt5.QtGui import QCursor
+
 
 import xml.etree.ElementTree as ET 
 from xml.dom import minidom
@@ -31,7 +34,7 @@ class MainWindow(QMainWindow):
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
-        self.treeView = QTreeWidget()
+        
         #self.ApplyStyleSheet()
       
 
@@ -42,11 +45,23 @@ class MainWindow(QMainWindow):
         toolsMenu = mainMenu.addMenu('Tools')
         helpMenu = mainMenu.addMenu('Help')
 
-        viewDICOMStudiesButton = QAction('View DICOM Studies', self)
-        viewDICOMStudiesButton.setShortcut('Ctrl+D')
-        viewDICOMStudiesButton.setStatusTip('View DICOM Images')
-        viewDICOMStudiesButton.triggered.connect(self.makeDICOMStudiesTreeView)
-        fileMenu.addAction(viewDICOMStudiesButton)
+        loadDICOMFromFolderButton = QAction('Load DICOM from scan folder', self)
+        loadDICOMFromFolderButton.setShortcut('Ctrl+F')
+        loadDICOMFromFolderButton.setStatusTip('Load DICOM images from a scan folder')
+        loadDICOMFromFolderButton.triggered.connect(self.loadDICOM_Data_From_DICOM_Folder)
+        fileMenu.addAction(loadDICOMFromFolderButton)
+
+        loadDICOMFromXMLButton = QAction('Load DICOM from XML file', self)
+        loadDICOMFromXMLButton.setShortcut('Ctrl+X')
+        loadDICOMFromXMLButton.setStatusTip('Load DICOM images from an XML file')
+        loadDICOMFromXMLButton.triggered.connect(self.loadDICOM_Data_From_DICOM_XML_File)
+        fileMenu.addAction(loadDICOMFromXMLButton)
+
+        closeAllSubWindowsButton = QAction('Close All Sub Windows', self)
+        closeAllSubWindowsButton.setShortcut('Ctrl+C')
+        closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
+        closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
+        fileMenu.addAction(closeAllSubWindowsButton)
 
         self.viewImageButton = QAction('View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
@@ -77,36 +92,81 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in function ApplyStyleSheet: ' + str(e))
      
-    def makeDICOMStudiesTreeView(self):
+
+    def getScanDirectory(self):
+        try:
+            cwd = os.getcwd()
+            scan_directory = QFileDialog.getExistingDirectory(
+               self,
+               'Select the directory containing the scan', 
+               cwd, 
+               QFileDialog.ShowDirsOnly)
+            return scan_directory
+        except Exception as e:
+            print('Error in function getScanDirectory: ' + str(e))
+
+
+    def getDICOM_XMLFile(self):
+        try:
+            defaultPath = os.getcwd()
+            fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
+                caption="Select the XML file holding DICOM data.", 
+                directory=defaultPath,
+                filter="*.xml")
+            return fullFilePath
+        except Exception as e:
+            print('Error in function getDICOM_XMLFile: ' + str(e))
+
+
+    def makeDICOM_XML_File(self):
+        try:
+            scan_directory = self.getScanDirectory()
+            if scan_directory:
+                scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory)
+                dictionary = WriteXMLfromDICOM.get_studies_series(scans)
+                xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
+                fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, scan_directory)
+            return fullFilePath
+        except Exception as e:
+            print('Error in function makeDICOM_XML_File: ' + str(e))
+    
+
+    def loadDICOM_Data_From_DICOM_Folder(self):
+        try:
+            QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
+            XML_File_Path = self.makeDICOM_XML_File()
+            self.makeDICOMStudiesTreeView(XML_File_Path)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            print('Error in function loadDICOM_Data_From_DICOM_Folder: ' + str(e))
+
+
+    def loadDICOM_Data_From_DICOM_XML_File(self):
+        try:
+            QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
+            XML_File_Path = self.getDICOM_XMLFile()
+            self.makeDICOMStudiesTreeView(XML_File_Path)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            print('Error in function loadDICOM_Data_From_DICOM_File: ' + str(e))
+
+
+    def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
-            #defaultPath = "C:\\DICOM Files\\00000001\\"
-            #fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
-            #        caption="Select a DICOM file", 
-            #        directory=defaultPath,
-            #        filter="*.xml")
-
-            generic_path = WriteXMLfromDICOM.select_path()
-            scans, paths = WriteXMLfromDICOM.get_scan_data(generic_path)
-            dictionary = WriteXMLfromDICOM.get_studies_series(scans)
-            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
-            fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, generic_path)
-
-#            Error in WriteXMLfromDICOM.get_studies_series: 'FileDataset' object has no attribute 'SequenceName'
-#Error in WriteXMLfromDICOM.open_dicom_to_xml: 'NoneType' object is not iterable
-#Error in WriteXMLfromDICOM.create_XML_file: 'NoneType' object has no attribute 'iter'
-#Error in makeDICOMStudiesTreeView: stat: path should be string, bytes, os.PathLike or integer, not NoneType
-
-            if os.path.exists(fullFilePath):
-                self.DICOM_XML_FilePath = fullFilePath
-                self.DICOMfolderPath, _ = os.path.split(fullFilePath)
+            if os.path.exists(XML_File_Path):
+                self.DICOM_XML_FilePath = XML_File_Path
+                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 #print(self.DICOMfolderPath)
-                self.XMLtree = ET.parse(fullFilePath)
+                self.XMLtree = ET.parse(XML_File_Path)
                 self.root = self.XMLtree.getroot()
 
-                self.treeView.setColumnCount(4)
-                self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
+                self.treeView = QTreeWidget()
+                self.treeView.setColumnCount(3)
+                self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time"])
                 
                 # Uncomment to test XML file loaded OK
                 #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
@@ -132,14 +192,14 @@ class MainWindow(QMainWindow):
                             imageDate = image.find('date').text
                             imageTime = image.find('time').text
                             imageLeaf = QTreeWidgetItem(seriesBranch)
-                            imageLeaf.setText(0, 'Image ')
+                            #imageLeaf.setText(0, 'Image ')
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                             #Uncomment the next 2 lines to put a checkbox in front of each image
                             #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
                             #imageLeaf.setCheckState(0, Qt.Unchecked)
-                            imageLeaf.setText(1, imageName)
-                            imageLeaf.setText(2, imageDate)
-                            imageLeaf.setText(3, imageTime)
+                            imageLeaf.setText(0, 'Image - ' + imageName)
+                            imageLeaf.setText(1, imageDate)
+                            imageLeaf.setText(2, imageTime)
                             self.treeView.resizeColumnToContents(0)
                             self.treeView.resizeColumnToContents(1)
                             self.treeView.resizeColumnToContents(2)
@@ -164,6 +224,10 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e))
 
+
+    def closeAllSubWindows(self):
+        self.mdiArea.closeAllSubWindows()
+        self.treeView = None
 
     def displayImageSubWindow(self, pixelArray):
         """
@@ -463,9 +527,6 @@ class MainWindow(QMainWindow):
             print('Error in deleteImage: ' + str(e))
 
 
-   
-
-
     def getStudyAndSeriesNumbersForImage(self, selectedImage):
         """This function assumes a series name takes the
         form 'series' space number, where number is an integer
@@ -585,11 +646,11 @@ class MainWindow(QMainWindow):
             if selectedImage:
                 imageNode = selectedImage[0]
                 seriesNode  = imageNode.parent()
-                imageName = imageNode.text(1)
+                imageName = imageNode.text(0)
                 series = seriesNode.text(0)
                 studyNode = seriesNode.parent()
                 study = studyNode.text(0)
-                fullImageName = study + ': ' + series + ': Image - '  + imageName
+                fullImageName = study + ': ' + series + ': '  + imageName
                 return fullImageName
             else:
                 return ''
@@ -603,7 +664,9 @@ class MainWindow(QMainWindow):
             selectedImage = self.treeView.selectedItems()
             if selectedImage:
                 imageNode = selectedImage[0]
-                imageName = imageNode.text(1)
+                imageName = imageNode.text(0)
+                imageName = imageName.replace('Image - ', '')
+                imageName = imageName.strip()
                 return imageName
         except Exception as e:
             print('Error in getDICOMFileName: ' + str(e))
@@ -616,8 +679,8 @@ class MainWindow(QMainWindow):
             self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
             self.root = self.XMLtree.getroot()
             self.treeView.clear()
-            self.treeView.setColumnCount(4)
-            self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
+            self.treeView.setColumnCount(3)
+            self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time"])
                 
             # Uncomment to test XML file loaded OK
             #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
@@ -640,14 +703,13 @@ class MainWindow(QMainWindow):
                         imageDate = image.find('date').text
                         imageTime = image.find('time').text
                         imageLeaf = QTreeWidgetItem(seriesBranch)
-                        imageLeaf.setText(0, 'Image ')
                         imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                         imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
                         #Uncomment the next line to put a checkbox in front of each image
                         #imageLeaf.setCheckState(0, Qt.Unchecked)
-                        imageLeaf.setText(1, imageName)
-                        imageLeaf.setText(2, imageDate)
-                        imageLeaf.setText(3, imageTime)
+                        imageLeaf.setText(0, ' Image - ' +imageName)
+                        imageLeaf.setText(1, imageDate)
+                        imageLeaf.setText(2, imageTime)
                         imageLeaf.setExpanded(True)
 
             self.treeView.resizeColumnToContents(0)

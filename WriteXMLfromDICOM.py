@@ -54,12 +54,12 @@ def get_studies_series(list_dicom):
         xml_dict = defaultdict(list)
         for file in list_dicom:
             try:
-                xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
+                xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
             except:
                 try:
-                    xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
+                    xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
                 except:
-                    xml_dict["Subject_" + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
+                    xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
         for study in xml_dict:
             xml_dict[study] = np.unique(xml_dict[study])
 
@@ -83,7 +83,7 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
                 series_element.set('parent_id', '')
 
         for index, file in enumerate(list_dicom):
-            study_search_string = "./*[@id='Subject_" + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
+            study_search_string = "./*[@id=' - " + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
             series_root = DICOM_XML_object.find(study_search_string)
             try:
                 series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_" + str(file.SeriesNumber) + "']"
