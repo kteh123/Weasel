@@ -50,17 +50,24 @@ class MainWindow(QMainWindow):
 
         self.viewImageButton = QAction('View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
-        self.viewImageButton.setStatusTip('View DICOM Image')
+        self.viewImageButton.setStatusTip('View DICOM Image or series')
         self.viewImageButton.triggered.connect(self.viewImage)
         self.viewImageButton.setEnabled(False)
         toolsMenu.addAction(self.viewImageButton)
 
         self.invertImageButton = QAction('Invert Image', self)
         self.invertImageButton.setShortcut('Ctrl+I')
-        self.invertImageButton.setStatusTip('Invert DICOM Image')
+        self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
         self.invertImageButton.triggered.connect(self.invertImage)
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
+
+        self.deleteImageButton = QAction('Delete Image', self)
+        self.deleteImageButton.setShortcut('Ctrl+D')
+        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
+        self.deleteImageButton.triggered.connect(self.deleteImage)
+        self.deleteImageButton.setEnabled(False)
+        toolsMenu.addAction(self.deleteImageButton)
 
 
     def ApplyStyleSheet(self):
@@ -70,6 +77,93 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in function ApplyStyleSheet: ' + str(e))
      
+    def makeDICOMStudiesTreeView(self):
+        """Uses an XML file that describes a DICOM file structure to build a
+        tree view showing a visual representation of that file structure."""
+        try:
+            #defaultPath = "C:\\DICOM Files\\00000001\\"
+            #fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
+            #        caption="Select a DICOM file", 
+            #        directory=defaultPath,
+            #        filter="*.xml")
+
+            generic_path = WriteXMLfromDICOM.select_path()
+            scans, paths = WriteXMLfromDICOM.get_scan_data(generic_path)
+            dictionary = WriteXMLfromDICOM.get_studies_series(scans)
+            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
+            fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, generic_path)
+
+#            Error in WriteXMLfromDICOM.get_studies_series: 'FileDataset' object has no attribute 'SequenceName'
+#Error in WriteXMLfromDICOM.open_dicom_to_xml: 'NoneType' object is not iterable
+#Error in WriteXMLfromDICOM.create_XML_file: 'NoneType' object has no attribute 'iter'
+#Error in makeDICOMStudiesTreeView: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+
+            if os.path.exists(fullFilePath):
+                self.DICOM_XML_FilePath = fullFilePath
+                self.DICOMfolderPath, _ = os.path.split(fullFilePath)
+                #print(self.DICOMfolderPath)
+                self.XMLtree = ET.parse(fullFilePath)
+                self.root = self.XMLtree.getroot()
+
+                self.treeView.setColumnCount(4)
+                self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
+                
+                # Uncomment to test XML file loaded OK
+                #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
+                studies = self.root.findall('./study')
+                for study in studies:
+                    studyID = study.attrib['id']
+                    studyBranch = QTreeWidgetItem(self.treeView)
+                    studyBranch.setText(0, "Study {}".format(studyID))
+                    studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                    studyBranch.setExpanded(True)
+                    for series in study:
+                        seriesID = series.attrib['id']
+                        seriesBranch = QTreeWidgetItem(studyBranch)
+                        #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
+                        seriesBranch.setText(0, "Series {}".format(seriesID))
+                        seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                        #Expand this series branch, so that the 3 resizeColumnToContents
+                        #commands can work
+                        seriesBranch.setExpanded(True)
+                        for image in series:
+                            #Extract filename from file path
+                            imageName = os.path.basename(image.find('name').text)
+                            imageDate = image.find('date').text
+                            imageTime = image.find('time').text
+                            imageLeaf = QTreeWidgetItem(seriesBranch)
+                            imageLeaf.setText(0, 'Image ')
+                            imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                            #Uncomment the next 2 lines to put a checkbox in front of each image
+                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+                            #imageLeaf.setCheckState(0, Qt.Unchecked)
+                            imageLeaf.setText(1, imageName)
+                            imageLeaf.setText(2, imageDate)
+                            imageLeaf.setText(3, imageTime)
+                            self.treeView.resizeColumnToContents(0)
+                            self.treeView.resizeColumnToContents(1)
+                            self.treeView.resizeColumnToContents(2)
+                        #Now collapse the series branch so as to hide the images
+                        seriesBranch.setExpanded(False)
+                        
+                self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
+                self.treeView.itemDoubleClicked.connect(self.viewImage)
+                self.treeView.show()
+        
+                widget = QWidget()
+                widget.setLayout(QVBoxLayout()) 
+                widget.layout().addWidget(self.treeView)
+        
+                subWindow = QMdiSubWindow(self)
+                subWindow.setWidget(widget)
+                subWindow.setObjectName("New_Window")
+                subWindow.setWindowTitle("DICOM Study Structure")
+                subWindow.setGeometry(0,0,800,1300)
+                self.mdiArea.addSubWindow(subWindow)
+                subWindow.show()
+        except Exception as e:
+            print('Error in makeDICOMStudiesTreeView: ' + str(e))
+
 
     def displayImageSubWindow(self, pixelArray):
         """
@@ -97,7 +191,7 @@ class MainWindow(QMainWindow):
 
     def displayMultiImageSubWindow(self, imageList, seriesName):
         """
-        Creates a subwindow that displays the DICOM image contained in pixelArray. 
+        Creates a subwindow that displays all the DICOM images in a series. 
         """
         try:
             self.subWindow = QMdiSubWindow(self)
@@ -314,94 +408,62 @@ class MainWindow(QMainWindow):
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in invertImage: ' + str(e))
+    
 
-
-    def makeDICOMStudiesTreeView(self):
-        """Uses an XML file that describes a DICOM file structure to build a
-        tree view showing a visual representation of that file structure."""
+    def deleteImage(self):
+        """Creates a subwindow that displays an inverted DICOM image. Executed using the 
+        'Invert Image' Menu item in the Tools menu."""
         try:
-            #defaultPath = "C:\\DICOM Files\\00000001\\"
-            #fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
-            #        caption="Select a DICOM file", 
-            #        directory=defaultPath,
-            #        filter="*.xml")
-
-            generic_path = WriteXMLfromDICOM.select_path()
-            scans, paths = WriteXMLfromDICOM.get_scan_data(generic_path)
-            dictionary = WriteXMLfromDICOM.get_studies_series(scans)
-            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
-            fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, generic_path)
-
-#            Error in WriteXMLfromDICOM.get_studies_series: 'FileDataset' object has no attribute 'SequenceName'
-#Error in WriteXMLfromDICOM.open_dicom_to_xml: 'NoneType' object is not iterable
-#Error in WriteXMLfromDICOM.create_XML_file: 'NoneType' object has no attribute 'iter'
-#Error in makeDICOMStudiesTreeView: stat: path should be string, bytes, os.PathLike or integer, not NoneType
-
-            if os.path.exists(fullFilePath):
-                self.DICOM_XML_FilePath = fullFilePath
-                self.DICOMfolderPath, _ = os.path.split(fullFilePath)
-                #print(self.DICOMfolderPath)
-                self.XMLtree = ET.parse(fullFilePath)
-                self.root = self.XMLtree.getroot()
-
-                self.treeView.setColumnCount(4)
-                self.treeView.setHeaderLabels(["DICOM Files", "Name", "Date", "Time"])
+            if self.isImageSelected():
+                imageName = self.getDICOMFileName()
+                imagePath = self.DICOMfolderPath + "\\" + imageName
+                buttonReply = QMessageBox.question(self, 
+                  'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+                  QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+                if buttonReply == QMessageBox.Ok:
+                    #Delete physical file
+                    os.remove(imagePath)
+                    #Is this the last image in a series?
+                    #It is the last image in a series so delete 
+                    #whole series from XML file
+                    #No it is not the last image in a series
+                    #so just remove the image from the XML file
+                    #Update tree view with xml file modified above
+                    self.refreshDICOMStudiesTreeView()
+            elif self.isSeriesSelected():
+                seriesName = self.treeView.currentItem().text(0)
+                buttonReply = QMessageBox.question(self, 
+                  'Delete DICOM series', "You are about to delete series {}".format(seriesName), 
+                  QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+                if buttonReply == QMessageBox.Ok:
+                    #Delete each physical file in the series
+                    #Get list of image names
+                    #Get Series ID & Study ID
+                    studyNumber, seriesNumber = \
+                    self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
+                    xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                    #print(xPath)
+                    images = self.root.findall(xPath)
+                    imageList = [image.find('name').text for image in images] 
+                    #Iterate through list of images and delete each image
+                    for image in imageList:
+                        imagePath = self.DICOMfolderPath + "\\" + image
+                        os.remove(imagePath)
+                    #Remove the series from the XML file
                 
-                # Uncomment to test XML file loaded OK
-                #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
-                studies = self.root.findall('./study')
-                for study in studies:
-                    studyID = study.attrib['id']
-                    studyBranch = QTreeWidgetItem(self.treeView)
-                    studyBranch.setText(0, "Study {}".format(studyID))
-                    studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
-                    studyBranch.setExpanded(True)
-                    for series in study:
-                        seriesID = series.attrib['id']
-                        seriesBranch = QTreeWidgetItem(studyBranch)
-                        #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                        seriesBranch.setText(0, "Series {}".format(seriesID))
-                        seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                        #Expand this series branch, so that the 3 resizeColumnToContents
-                        #commands can work
-                        seriesBranch.setExpanded(True)
-                        for image in series:
-                            #Extract filename from file path
-                            imageName = os.path.basename(image.find('name').text)
-                            imageDate = image.find('date').text
-                            imageTime = image.find('time').text
-                            imageLeaf = QTreeWidgetItem(seriesBranch)
-                            imageLeaf.setText(0, 'Image ')
-                            imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                            #Uncomment the next 2 lines to put a checkbox in front of each image
-                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            #imageLeaf.setCheckState(0, Qt.Unchecked)
-                            imageLeaf.setText(1, imageName)
-                            imageLeaf.setText(2, imageDate)
-                            imageLeaf.setText(3, imageTime)
-                            self.treeView.resizeColumnToContents(0)
-                            self.treeView.resizeColumnToContents(1)
-                            self.treeView.resizeColumnToContents(2)
-                        #Now collapse the series branch so as to hide the images
-                        seriesBranch.setExpanded(False)
-                        
-                self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
-                self.treeView.itemDoubleClicked.connect(self.viewImage)
-                self.treeView.show()
-        
-                widget = QWidget()
-                widget.setLayout(QVBoxLayout()) 
-                widget.layout().addWidget(self.treeView)
-        
-                subWindow = QMdiSubWindow(self)
-                subWindow.setWidget(widget)
-                subWindow.setObjectName("New_Window")
-                subWindow.setWindowTitle("DICOM Study Structure")
-                subWindow.setGeometry(0,0,800,1300)
-                self.mdiArea.addSubWindow(subWindow)
-                subWindow.show()
+
+
+                
+                   
+
+                
+                self.refreshDICOMStudiesTreeView()
         except Exception as e:
-            print('Error in makeDICOMStudiesTreeView: ' + str(e))
+            print('Error in deleteImage: ' + str(e))
+
+
+   
 
 
     def getStudyAndSeriesNumbersForImage(self, selectedImage):
@@ -506,9 +568,11 @@ class MainWindow(QMainWindow):
             if self.isImageSelected() or self.isSeriesSelected():
                 self.viewImageButton.setEnabled(True)
                 self.invertImageButton.setEnabled(True)
+                self.deleteImageButton.setEnabled(True)
             else:
                 self.viewImageButton.setEnabled(False)
                 self.invertImageButton.setEnabled(False)
+                self.deleteImageButton.setEnabled(False)
         except Exception as e:
             print('Error in toggleToolButtons: ' + str(e))
 
