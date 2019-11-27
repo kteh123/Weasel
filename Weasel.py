@@ -318,12 +318,12 @@ class MainWindow(QMainWindow):
                 self.displayImageSubWindow(pixelArray)
             elif self.isASeriesSelected():
                 #Get Series ID & Study ID
-                studyNumber, seriesNumber = \
+                studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
                 seriesName = self.treeView.currentItem().text(0)
                 #Get list of image names
-                xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                 #print(xPath)
                 images = self.root.findall(xPath)
                 imageList = [image.find('name').text for image in images] 
@@ -334,25 +334,20 @@ class MainWindow(QMainWindow):
 
     def insertInvertedImageInXMLFile(self, selectedImage, invertedImageFileName):
         try:
-            studyNumber, seriesNumber = self.getStudyAndSeriesNumbersForImage(selectedImage)
-            #First determine if a series with parentID=seriesNumber exists
-            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                ']/series[@parentID=' + chr(34) + seriesNumber + chr(34) + ']'
+            studyID, seriesID = self.getStudyAndSeriesNumbersForImage(selectedImage)
+            #First determine if a series with parentID=seriesID exists
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']'
             series = self.root.find(xPath)
             imageName = self.getDICOMFileName()
                     
             if series is None:
                 #Need to create a new series to hold this inverted image
-                #Get maximum series number in current study
-                studyXPath ='./study[@id=' + chr(34) + studyNumber + chr(34) + ']/series[last()]'
-                lastSeries = self.root.find(studyXPath)
-                lastSeriesID = lastSeries.attrib['id']
-                #print('series id = {}'. format(lastSeriesID))
-                nextSeriesID = str(int(lastSeriesID) + 1)
+                newSeriesID = seriesID + '_inv'
                 #Get study branch
-                xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + ']'
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
                 currentStudy = self.root.find(xPath)
-                newAttributes = {'id':nextSeriesID, 'parentID':seriesNumber}
+                newAttributes = {'id':newSeriesID, 'parentID':seriesID}
                    
                 #Add new series to study to hold inverted images
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
@@ -360,7 +355,7 @@ class MainWindow(QMainWindow):
                 comment = ET.Comment('This series holds inverted images')
                 newSeries.append(comment)
                 #Get image date & time
-                imageTime, imageDate = self.getImageDateTime(imageName, studyNumber, seriesNumber)
+                imageTime, imageDate = self.getImageDateTime(imageName, studyID, seriesID)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
@@ -376,7 +371,7 @@ class MainWindow(QMainWindow):
             else:
                 #A series already exists to hold inverted images from
                 #the current parent series
-                imageTime, imageDate = self.getImageDateTime(imageName, studyNumber, seriesNumber)
+                imageTime, imageDate = self.getImageDateTime(imageName, studyID, seriesID)
                 newInvertedImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
                 nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
@@ -394,20 +389,15 @@ class MainWindow(QMainWindow):
         """Creates a new series to hold the series of inverted images"""
         try:
             #Get current study & series IDs
-            studyNumber, seriesNumber = \
+            studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
             #Need to create a new series to hold this series of inverted images 
-            #Get maximum series number in current study
-            studyXPath ='./study[@id=' + chr(34) + studyNumber + chr(34) + ']/series[last()]'
-            lastSeries = self.root.find(studyXPath)
-            lastSeriesID = lastSeries.attrib['id']
-            #print('series id = {}'. format(lastSeriesID))
-            nextSeriesID = str(int(lastSeriesID) + 1)
+            newSeriesID = seriesID + '_inv'
      
             #Get study branch
-            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + ']'
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
             currentStudy = self.root.find(xPath)
-            newAttributes = {'id':nextSeriesID, 'parentID':seriesNumber}
+            newAttributes = {'id':newSeriesID, 'parentID':seriesID}
                    
             #Add new series to study to hold inverted images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
@@ -416,7 +406,7 @@ class MainWindow(QMainWindow):
             newSeries.append(comment)
             #Get image date & time from original image
             for index, image in enumerate(origImageList):
-                imageTime, imageDate = self.getImageDateTime(image, studyNumber, seriesNumber)       
+                imageTime, imageDate = self.getImageDateTime(image, studyID, seriesID)       
                 newInvertedImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
                 nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
@@ -427,7 +417,7 @@ class MainWindow(QMainWindow):
                 dateInvertedImage.text = imageDate
 
             self.XMLtree.write(self.DICOM_XML_FilePath)
-            return 'series ' + nextSeriesID
+            return 'series ' + newSeriesID
 
         except Exception as e:
             print('Error in insertInvertedSeriesInXMLFile: ' + str(e))
@@ -450,12 +440,12 @@ class MainWindow(QMainWindow):
                 self.refreshDICOMStudiesTreeView()
             elif self.isASeriesSelected():
                 #Get Series ID & Study ID
-                studyNumber, seriesNumber = \
+                studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
                 seriesName = self.treeView.currentItem().text(0)
                 #Get list of image names
-                xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                 #print(xPath)
                 images = self.root.findall(xPath)
                 imageList = [image.find('name').text for image in images] 
@@ -474,13 +464,13 @@ class MainWindow(QMainWindow):
             print('Error in invertImage: ' + str(e))
     
 
-    def removeSeriesFromXMLFile(self, studyNumber, seriesNumber):
+    def removeSeriesFromXMLFile(self, studyID, seriesID):
         try:
-            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) +']' 
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) +']' 
             study = self.root.find(xPath)
-            #print('XML = {}'.format(ET.tostring(study))
+            print('XML = {}'.format(ET.tostring(study)))
             for series in study:
-                if series.attrib['id'] == seriesNumber:
+                if series.attrib['id'] == seriesID:
                     study.remove(series)
                     self.XMLtree.write(self.DICOM_XML_FilePath)
         except Exception as e:
@@ -508,24 +498,24 @@ class MainWindow(QMainWindow):
                     #No it is not the last image in a series
                     #so just remove the image from the XML file 
                     selectedImage = self.treeView.selectedItems()
-                    studyNumber, seriesNumber = \
+                    studyID, seriesID = \
                         self.getStudyAndSeriesNumbersForImage(selectedImage)
-                    xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                     #print(xPath)
                     images = self.root.findall(xPath)
                     if len(images) == 1:
                         #only one image, so remove the series from the xml file
                         #need to get study (parent) containing this series (child)
                         #then remove child from parent
-                        self.removeSeriesFromXMLFile(studyNumber, seriesNumber)
+                        self.removeSeriesFromXMLFile(studyID, seriesID)
                     elif len(images) > 1:
                         #more than 1 image in the series, 
                         #so just remove the image from the xml file
                         #need to get the series (parent) containing this image (child)
                         #then remove child from parent
-                        xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                        ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']'
+                        xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                        ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
                         series = self.root.find(xPath)
                         print('XML = {}'.format(ET.tostring(series)))
                         for image in series:
@@ -542,10 +532,10 @@ class MainWindow(QMainWindow):
                 if buttonReply == QMessageBox.Ok:
                     #Delete each physical file in the series
                     #Get a list of names of images in that series
-                    studyNumber, seriesNumber = \
+                    studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
-                    xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                     #print(xPath)
                     images = self.root.findall(xPath)
                     imageList = [image.find('name').text for image in images] 
@@ -554,7 +544,7 @@ class MainWindow(QMainWindow):
                         imagePath = self.DICOMfolderPath + "\\" + image
                         os.remove(imagePath)
                     #Remove the series from the XML file
-                    self.removeSeriesFromXMLFile(studyNumber, seriesNumber)
+                    self.removeSeriesFromXMLFile(studyID, seriesID)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
@@ -574,15 +564,15 @@ class MainWindow(QMainWindow):
                 seriesNode  = imageNode.parent()
                 seriesName = seriesNode.text(0) 
                 #Extract series number from the full series name
-                numberList = re.findall(r'\d+', seriesName)
-                seriesNumber = numberList[0]
+                seriesID = seriesName.replace('Series', '')
+                seriesID = seriesID.strip()                
 
                 studyNode = seriesNode.parent()
                 studyName = studyNode.text(0)
                 #Extract study number from the full study name
-                numberList = re.findall(r'\d+', studyName)
-                studyNumber = numberList[0]
-                return studyNumber, seriesNumber
+                studyID = studyName.replace('Study', '')
+                studyID = studyID.strip()
+                return studyID, seriesID
             else:
                 return None, None
         except Exception as e:
@@ -602,31 +592,31 @@ class MainWindow(QMainWindow):
                 seriesNode = selectedSeries[0]
                 seriesName = seriesNode.text(0) 
                 #Extract series number from the full series name
-                numberList = re.findall(r'\d+', seriesName)
-                seriesNumber = numberList[0]
+                seriesID = seriesName.replace('Series', '')
+                seriesID = seriesID.strip() 
 
                 studyNode = seriesNode.parent()
                 studyName = studyNode.text(0)
                 #Extract study number from the full study name
-                numberList = re.findall(r'\d+', studyName)
-                studyNumber = numberList[0]
-                return studyNumber, seriesNumber
+                studyID = studyName.replace('Study', '')
+                studyID = studyID.strip()
+                return studyID, seriesID
             else:
                 return None, None
         except Exception as e:
-            print('Error in getStudyAndSeriesNumbersForImage: ' + str(e))
+            print('Error in getStudyAndSeriesNumbersFromSeries: ' + str(e))
 
 
-    def getImageDateTime(self, imageName, studyNumber, seriesNumber):
+    def getImageDateTime(self, imageName, studyID, seriesID):
         try:
             #Get reference to image element time of the image
-            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']' + \
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                     '/image[name=' + chr(34) + imageName + chr(34) +']/time'
             imageTime = self.root.find(xPath)
             
-            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']' + \
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                     '/image[name=' + chr(34) + imageName + chr(34) +']/date'
             imageDate = self.root.find(xPath)
 
