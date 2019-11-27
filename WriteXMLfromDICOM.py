@@ -54,6 +54,7 @@ def get_studies_series(list_dicom):
         xml_dict = defaultdict(list)
         for file in list_dicom:
             try:
+                
                 xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
             except:
                 try:
@@ -97,7 +98,8 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             name = ET.SubElement(image_element, 'name')
             time = ET.SubElement(image_element, 'time')
             date = ET.SubElement(image_element, 'date')
-            name.text =  os.path.basename(os.path.normpath(list_paths[index]))
+            #name.text =  os.path.basename(os.path.normpath(list_paths[index]))
+            name.text =  os.path.normpath(list_paths[index])
             # The next lines save the time and date to XML - They consider multiple/eventual formats
             try:
                 try:

@@ -34,7 +34,6 @@ class MainWindow(QMainWindow):
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
-        
         #self.ApplyStyleSheet()
       
 
@@ -165,8 +164,8 @@ class MainWindow(QMainWindow):
                 self.root = self.XMLtree.getroot()
 
                 self.treeView = QTreeWidget()
-                self.treeView.setColumnCount(3)
-                self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time"])
+                self.treeView.setColumnCount(4)
+                self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
                 
                 # Uncomment to test XML file loaded OK
                 #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
@@ -191,8 +190,8 @@ class MainWindow(QMainWindow):
                             imageName = os.path.basename(image.find('name').text)
                             imageDate = image.find('date').text
                             imageTime = image.find('time').text
+                            imagePath = image.find('name').text
                             imageLeaf = QTreeWidgetItem(seriesBranch)
-                            #imageLeaf.setText(0, 'Image ')
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                             #Uncomment the next 2 lines to put a checkbox in front of each image
                             #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
@@ -200,9 +199,12 @@ class MainWindow(QMainWindow):
                             imageLeaf.setText(0, 'Image - ' + imageName)
                             imageLeaf.setText(1, imageDate)
                             imageLeaf.setText(2, imageTime)
+                            imageLeaf.setText(3, imagePath)
                             self.treeView.resizeColumnToContents(0)
                             self.treeView.resizeColumnToContents(1)
                             self.treeView.resizeColumnToContents(2)
+                            #self.treeView.resizeColumnToContents(3)
+                            self.treeView.hideColumn(3)
                         #Now collapse the series branch so as to hide the images
                         seriesBranch.setExpanded(False)
                         
@@ -228,6 +230,7 @@ class MainWindow(QMainWindow):
     def closeAllSubWindows(self):
         self.mdiArea.closeAllSubWindows()
         self.treeView = None
+
 
     def displayImageSubWindow(self, pixelArray):
         """
@@ -468,7 +471,7 @@ class MainWindow(QMainWindow):
         try:
             xPath = './study[@id=' + chr(34) + studyID + chr(34) +']' 
             study = self.root.find(xPath)
-            print('XML = {}'.format(ET.tostring(study)))
+            #print('XML = {}'.format(ET.tostring(study)))
             for series in study:
                 if series.attrib['id'] == seriesID:
                     study.remove(series)
@@ -485,10 +488,16 @@ class MainWindow(QMainWindow):
             if self.isAnImageSelected():
                 imageName = self.getDICOMFileName()
                 imagePath = self.DICOMfolderPath + "\\" + imageName
+                #imageName = self.treeView.currentItem().text(0)
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if buttonReply == QMessageBox.Ok:
+                    ##xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                     # ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image/name[' + \
+                    #    imageName + ']'
+                   # imageNameNode = self.XMLtree.find(xPath)
+                   # imagePath = imageNameNode.text()
                     #Delete physical file
                     os.remove(imagePath)
                     #Is this the last image in a series?
@@ -517,7 +526,7 @@ class MainWindow(QMainWindow):
                         xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                         ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
                         series = self.root.find(xPath)
-                        print('XML = {}'.format(ET.tostring(series)))
+                        #print('XML = {}'.format(ET.tostring(series)))
                         for image in series:
                             if image.find('name').text == imageName:
                                 series.remove(image)
@@ -541,8 +550,7 @@ class MainWindow(QMainWindow):
                     imageList = [image.find('name').text for image in images] 
                     #Iterate through list of images and delete each image
                     for image in imageList:
-                        imagePath = self.DICOMfolderPath + "\\" + image
-                        os.remove(imagePath)
+                        os.remove(self.DICOMfolderPath + '\\' + image)
                     #Remove the series from the XML file
                     self.removeSeriesFromXMLFile(studyID, seriesID)
                 self.refreshDICOMStudiesTreeView()
@@ -702,7 +710,7 @@ class MainWindow(QMainWindow):
             self.root = self.XMLtree.getroot()
             self.treeView.clear()
             self.treeView.setColumnCount(3)
-            self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time"])
+            self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
                 
             # Uncomment to test XML file loaded OK
             #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
@@ -721,9 +729,11 @@ class MainWindow(QMainWindow):
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
                     for image in series:
-                        imageName = image.find('name').text
+                        #Extract filename from file path
+                        imageName = os.path.basename(image.find('name').text)
                         imageDate = image.find('date').text
                         imageTime = image.find('time').text
+                        imagePath = image.find('name').text
                         imageLeaf = QTreeWidgetItem(seriesBranch)
                         imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                         imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
@@ -732,12 +742,13 @@ class MainWindow(QMainWindow):
                         imageLeaf.setText(0, ' Image - ' +imageName)
                         imageLeaf.setText(1, imageDate)
                         imageLeaf.setText(2, imageTime)
+                        imageLeaf.setText(3, imagePath)
                         imageLeaf.setExpanded(True)
 
             self.treeView.resizeColumnToContents(0)
             self.treeView.resizeColumnToContents(1)
             self.treeView.resizeColumnToContents(2)
-            
+            self.treeView.hideColumn(3)
             self.treeView.show()
         except Exception as e:
             print('Error in refreshDICOMStudiesTreeView: ' + str(e))
