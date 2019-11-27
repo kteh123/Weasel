@@ -312,11 +312,11 @@ class MainWindow(QMainWindow):
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
-            if self.isImageSelected():
+            if self.isAnImageSelected():
                 imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName()
                 pixelArray = viewDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray)
-            elif self.isSeriesSelected():
+            elif self.isASeriesSelected():
                 #Get Series ID & Study ID
                 studyNumber, seriesNumber = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
@@ -437,7 +437,7 @@ class MainWindow(QMainWindow):
         """Creates a subwindow that displays an inverted DICOM image. Executed using the 
         'Invert Image' Menu item in the Tools menu."""
         try:
-            if self.isImageSelected():
+            if self.isAnImageSelected():
                 imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName()
                 pixelArray, invertedImageFileName = \
                     invertDICOM_Image.returnPixelArray(imagePath)
@@ -448,7 +448,7 @@ class MainWindow(QMainWindow):
                 self.insertInvertedImageInXMLFile(selectedImage, invertedImageFileName)
                 #Update tree view with xml file modified above
                 self.refreshDICOMStudiesTreeView()
-            elif self.isSeriesSelected():
+            elif self.isASeriesSelected():
                 #Get Series ID & Study ID
                 studyNumber, seriesNumber = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
@@ -474,11 +474,25 @@ class MainWindow(QMainWindow):
             print('Error in invertImage: ' + str(e))
     
 
-    def deleteImage(self):
-        """Creates a subwindow that displays an inverted DICOM image. Executed using the 
-        'Invert Image' Menu item in the Tools menu."""
+    def removeSeriesFromXMLFile(self, studyNumber, seriesNumber):
         try:
-            if self.isImageSelected():
+            xPath = './study[@id=' + chr(34) + studyNumber + chr(34) +']' 
+            study = self.root.find(xPath)
+            #print('XML = {}'.format(ET.tostring(study))
+            for series in study:
+                if series.attrib['id'] == seriesNumber:
+                    study.remove(series)
+                    self.XMLtree.write(self.DICOM_XML_FilePath)
+        except Exception as e:
+            print('Error in removeSeriesFromXMLFile: ' + str(e))
+
+
+    def deleteImage(self):
+        """This method deletes an image or a series of images by 
+        deleting the physical file(s) and removing them their entries
+        in the XML file."""
+        try:
+            if self.isAnImageSelected():
                 imageName = self.getDICOMFileName()
                 imagePath = self.DICOMfolderPath + "\\" + imageName
                 buttonReply = QMessageBox.question(self, 
@@ -488,21 +502,46 @@ class MainWindow(QMainWindow):
                     #Delete physical file
                     os.remove(imagePath)
                     #Is this the last image in a series?
-                    #It is the last image in a series so delete 
+                    #Get the series containing this image and count the images it contains
+                    #If it is the last image in a series then remove the
                     #whole series from XML file
                     #No it is not the last image in a series
-                    #so just remove the image from the XML file
+                    #so just remove the image from the XML file 
+                    selectedImage = self.treeView.selectedItems()
+                    studyNumber, seriesNumber = \
+                        self.getStudyAndSeriesNumbersForImage(selectedImage)
+                    xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']/image'
+                    #print(xPath)
+                    images = self.root.findall(xPath)
+                    if len(images) == 1:
+                        #only one image, so remove the series from the xml file
+                        #need to get study (parent) containing this series (child)
+                        #then remove child from parent
+                        self.removeSeriesFromXMLFile(studyNumber, seriesNumber)
+                    elif len(images) > 1:
+                        #more than 1 image in the series, 
+                        #so just remove the image from the xml file
+                        #need to get the series (parent) containing this image (child)
+                        #then remove child from parent
+                        xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
+                        ']/series[@id=' + chr(34) + seriesNumber + chr(34) + ']'
+                        series = self.root.find(xPath)
+                        print('XML = {}'.format(ET.tostring(series)))
+                        for image in series:
+                            if image.find('name').text == imageName:
+                                series.remove(image)
+                                self.XMLtree.write(self.DICOM_XML_FilePath)
                     #Update tree view with xml file modified above
                     self.refreshDICOMStudiesTreeView()
-            elif self.isSeriesSelected():
+            elif self.isASeriesSelected():
                 seriesName = self.treeView.currentItem().text(0)
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM series', "You are about to delete series {}".format(seriesName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if buttonReply == QMessageBox.Ok:
                     #Delete each physical file in the series
-                    #Get list of image names
-                    #Get Series ID & Study ID
+                    #Get a list of names of images in that series
                     studyNumber, seriesNumber = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
                     xPath = './study[@id=' + chr(34) + studyNumber + chr(34) + \
@@ -515,13 +554,7 @@ class MainWindow(QMainWindow):
                         imagePath = self.DICOMfolderPath + "\\" + image
                         os.remove(imagePath)
                     #Remove the series from the XML file
-                
-
-
-                
-                   
-
-                
+                    self.removeSeriesFromXMLFile(studyNumber, seriesNumber)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
@@ -602,7 +635,7 @@ class MainWindow(QMainWindow):
             print('Error in getImageDateTime: ' + str(e))
 
 
-    def isImageSelected(self):
+    def isAnImageSelected(self):
         try:
             selectedItem = self.treeView.currentItem()
             if 'image' in selectedItem.text(0).lower():
@@ -610,10 +643,10 @@ class MainWindow(QMainWindow):
             else:
                 return False
         except Exception as e:
-            print('Error in isImageSelected: ' + str(e))
+            print('Error in isAnImageSelected: ' + str(e))
     
 
-    def isSeriesSelected(self):
+    def isASeriesSelected(self):
         try:
             selectedItem = self.treeView.currentItem()
             if 'series' in selectedItem.text(0).lower():
@@ -621,12 +654,12 @@ class MainWindow(QMainWindow):
             else:
                 return False
         except Exception as e:
-            print('Error in isSeriesSelected: ' + str(e))
+            print('Error in isASeriesSelected: ' + str(e))
 
 
     def toggleToolButtons(self):
         try:
-            if self.isImageSelected() or self.isSeriesSelected():
+            if self.isAnImageSelected() or self.isASeriesSelected():
                 self.viewImageButton.setEnabled(True)
                 self.invertImageButton.setEnabled(True)
                 self.deleteImageButton.setEnabled(True)
@@ -661,10 +694,9 @@ class MainWindow(QMainWindow):
     def getDICOMFileName(self):
         """Returns the name of a DICOM image file"""
         try:
-            selectedImage = self.treeView.selectedItems()
+            selectedImage = self.treeView.currentItem()
             if selectedImage:
-                imageNode = selectedImage[0]
-                imageName = imageNode.text(0)
+                imageName = selectedImage.text(0)
                 imageName = imageName.replace('Image - ', '')
                 imageName = imageName.strip()
                 return imageName
