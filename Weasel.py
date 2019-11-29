@@ -183,7 +183,22 @@ class MainWindow(QMainWindow):
                 start_time=time.time()
                 # This number of files is useful to know numbher of files when creating XML file for first time
                 number_files, _ = WriteXMLfromDICOM.get_files_info(self.DICOMfolderPath)
+                print('num files = {}'.format(number_files))
+                
+                QApplication.processEvents()
+                widget = QWidget()
+                widget.setLayout(QVBoxLayout()) 
+                subWindow = QMdiSubWindow(self)
+                subWindow.setWidget(widget)
+                subWindow.setObjectName("New_Window")
+                subWindow.setWindowTitle("DICOM Study Structure")
+                subWindow.setGeometry(0,0,800,1300)
+                self.mdiArea.addSubWindow(subWindow)
+                subWindow.show()
+                QApplication.processEvents()
+                
                 self.treeView = QTreeWidget()
+                self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
                 
@@ -236,17 +251,9 @@ class MainWindow(QMainWindow):
                 print('Tree View create Time = {}'.format(TreeViewTime))
 
 
-                widget = QWidget()
-                widget.setLayout(QVBoxLayout()) 
+                
                 widget.layout().addWidget(self.treeView)
-        
-                subWindow = QMdiSubWindow(self)
-                subWindow.setWidget(widget)
-                subWindow.setObjectName("New_Window")
-                subWindow.setWindowTitle("DICOM Study Structure")
-                subWindow.setGeometry(0,0,800,1300)
-                self.mdiArea.addSubWindow(subWindow)
-                subWindow.show()
+                
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e))
 
