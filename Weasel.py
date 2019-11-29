@@ -164,6 +164,17 @@ class MainWindow(QMainWindow):
             QApplication.restoreOverrideCursor()
             print('Error in function loadDICOM_Data_From_DICOM_File: ' + str(e))
             
+    def getNumberItemsInTreeView(self):
+        """Counts the number of elements in the DICOM XML file to
+        determine the number of items forming the tree view"""
+        try:
+            numStudies = len(self.root.find('./study'))
+            numSeries = len(self.root.find('./study/series'))
+            numImages = len(self.root.find('./study/series/image'))
+            numItems = numStudies + numSeries + numImages
+            return numItems
+        except Exception as e:
+            print('Error in function getNumberItemsInTreeView: ' + str(e))
 
     def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -181,11 +192,9 @@ class MainWindow(QMainWindow):
                 print('XML Parse Time = {}'.format(XMLParseTime))
 
                 start_time=time.time()
-                # This number of files is useful to know numbher of files when creating XML file for first time
-                number_files, _ = WriteXMLfromDICOM.get_files_info(self.DICOMfolderPath)
-                print('num files = {}'.format(number_files))
-                
-                QApplication.processEvents()
+                numTreeViewItems = self.getNumberItemsInTreeView()
+                print('num items from XML = {}'.format(self.getNumberItemsInTreeView()))
+                QApplication.processEvents
                 widget = QWidget()
                 widget.setLayout(QVBoxLayout()) 
                 subWindow = QMdiSubWindow(self)
