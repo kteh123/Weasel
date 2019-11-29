@@ -18,6 +18,7 @@ import viewDICOM_Image
 import invertDICOM_Image
 import WriteXMLfromDICOM 
 import doubleDICOM_Image
+import time
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -142,6 +143,7 @@ class MainWindow(QMainWindow):
 
     def loadDICOM_Data_From_DICOM_Folder(self):
         try:
+            self.closeAllSubWindows()
             QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
             XML_File_Path = self.makeDICOM_XML_File()
             self.makeDICOMStudiesTreeView(XML_File_Path)
@@ -153,6 +155,7 @@ class MainWindow(QMainWindow):
 
     def loadDICOM_Data_From_DICOM_XML_File(self):
         try:
+            self.closeAllSubWindows()
             QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
             XML_File_Path = self.getDICOM_XMLFile()
             self.makeDICOMStudiesTreeView(XML_File_Path)
@@ -326,7 +329,9 @@ class MainWindow(QMainWindow):
         in the DICOM studies tree view."""
         try:
             if self.isAnImageSelected():
-                imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName()
+                #print (self.getImageSelected())
+                #imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName
+                imagePath = self.getImageSelected()
                 pixelArray = viewDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray)
             elif self.isASeriesSelected():
@@ -334,7 +339,7 @@ class MainWindow(QMainWindow):
                 studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
                 seriesName = self.treeView.currentItem().text(0)
-                #Get list of image names
+                #Get list of image file paths
                 xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                 #print(xPath)
@@ -685,6 +690,15 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getImageDateTime: ' + str(e))
 
+    def getImageSelected(self):
+        try:
+            selectedImage = self.treeView.currentItem()
+            imagePath = selectedImage.text(3)
+            return imagePath
+        except Exception as e:
+            return None
+            print('Error in isAnImageSelected: ' + str(e))
+
 
     def isAnImageSelected(self):
         try:
@@ -696,7 +710,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in isAnImageSelected: ' + str(e))
     
-
+    
     def isASeriesSelected(self):
         try:
             selectedItem = self.treeView.currentItem()
