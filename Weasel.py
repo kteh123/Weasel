@@ -163,7 +163,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QApplication.restoreOverrideCursor()
             print('Error in function loadDICOM_Data_From_DICOM_File: ' + str(e))
-
+            
 
     def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
