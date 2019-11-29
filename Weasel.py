@@ -17,6 +17,7 @@ import styleSheet
 import viewDICOM_Image
 import invertDICOM_Image
 import WriteXMLfromDICOM 
+import doubleDICOM_Image
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -62,6 +63,8 @@ class MainWindow(QMainWindow):
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
 
+
+
         self.viewImageButton = QAction('View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
         self.viewImageButton.setStatusTip('View DICOM Image or series')
@@ -75,6 +78,13 @@ class MainWindow(QMainWindow):
         self.invertImageButton.triggered.connect(self.invertImage)
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
+
+        self.dblImageButton = QAction('Double Image', self)
+        self.dblImageButton.setShortcut('Ctrl+D')
+        self.dblImageButton.setStatusTip('Double a DICOM Image or series')
+        self.dblImageButton.triggered.connect(self.dblImage)
+        self.dblImageButton.setEnabled(False)
+        toolsMenu.addAction(self.dblImageButton)
 
         self.deleteImageButton = QAction('Delete Image', self)
         self.deleteImageButton.setShortcut('Ctrl+D')
@@ -173,14 +183,14 @@ class MainWindow(QMainWindow):
                 for study in studies:
                     studyID = study.attrib['id']
                     studyBranch = QTreeWidgetItem(self.treeView)
-                    studyBranch.setText(0, "Study {}".format(studyID))
+                    studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                     studyBranch.setExpanded(True)
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
                         #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                        seriesBranch.setText(0, "Series {}".format(seriesID))
+                        seriesBranch.setText(0, "Series - {}".format(seriesID))
                         seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                         #Expand this series branch, so that the 3 resizeColumnToContents
                         #commands can work
@@ -432,8 +442,10 @@ class MainWindow(QMainWindow):
         try:
             if self.isAnImageSelected():
                 imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName()
+
                 pixelArray, invertedImageFileName = \
                     invertDICOM_Image.returnPixelArray(imagePath)
+
                 self.displayImageSubWindow(pixelArray)
 
                 #Record inverted image in XML file
@@ -466,6 +478,47 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in invertImage: ' + str(e))
     
+    def dblImage(self):
+        """Creates a subwindow that displays an inverted DICOM image. Executed using the 
+        'Invert Image' Menu item in the Tools menu."""
+        try:
+            if self.isAnImageSelected():
+                imagePath = self.DICOMfolderPath + "\\" + self.getDICOMFileName()
+
+                pixelArray, invertedImageFileName = \
+                    doubleDICOM_Image.returnPixelArray(imagePath)
+
+                self.displayImageSubWindow(pixelArray)
+
+                #Record inverted image in XML file
+                selectedImage = self.treeView.selectedItems()
+                self.insertInvertedImageInXMLFile(selectedImage, invertedImageFileName)
+                #Update tree view with xml file modified above
+                self.refreshDICOMStudiesTreeView()
+            elif self.isASeriesSelected():
+                #Get Series ID & Study ID
+                studyID, seriesID = \
+                    self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
+                seriesName = self.treeView.currentItem().text(0)
+                #Get list of image names
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+                #print(xPath)
+                images = self.root.findall(xPath)
+                imageList = [image.find('name').text for image in images] 
+                #Iterate through list of images and invert each image
+                invertedImageList = []
+                for image in imageList:
+                    imagePath = self.DICOMfolderPath + "\\" + image
+                    _, invertedImageFileName = \
+                    invertDICOM_Image.returnPixelArray(imagePath)
+                    invertedImageList.append(invertedImageFileName)
+
+                newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, invertedImageList)
+                self.displayMultiImageSubWindow(invertedImageList, newSeriesName)
+                self.refreshDICOMStudiesTreeView()
+        except Exception as e:
+            print('Error in dblImage: ' + str(e))
 
     def removeSeriesFromXMLFile(self, studyID, seriesID):
         try:
@@ -660,11 +713,13 @@ class MainWindow(QMainWindow):
             if self.isAnImageSelected() or self.isASeriesSelected():
                 self.viewImageButton.setEnabled(True)
                 self.invertImageButton.setEnabled(True)
+                self.dblImageButton.setEnabled(True)
                 self.deleteImageButton.setEnabled(True)
             else:
                 self.viewImageButton.setEnabled(False)
                 self.invertImageButton.setEnabled(False)
                 self.deleteImageButton.setEnabled(False)
+                self.dblImageButton.setEnabled(False)
         except Exception as e:
             print('Error in toggleToolButtons: ' + str(e))
 
@@ -718,14 +773,14 @@ class MainWindow(QMainWindow):
             for study in studies:
                 studyID = study.attrib['id']
                 studyBranch = QTreeWidgetItem(self.treeView)
-                studyBranch.setText(0, "Study {}".format(studyID))
+                studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                    seriesBranch.setText(0, "Series {}".format(seriesID))
+                    seriesBranch.setText(0, "Series - {}".format(seriesID))
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
                     for image in series:

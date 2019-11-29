@@ -54,13 +54,12 @@ def get_studies_series(list_dicom):
         xml_dict = defaultdict(list)
         for file in list_dicom:
             try:
-                
-                xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
+                xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
             except:
                 try:
-                    xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
+                    xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
                 except:
-                    xml_dict[" - " + str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
+                    xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
         for study in xml_dict:
             xml_dict[study] = np.unique(xml_dict[study])
 
