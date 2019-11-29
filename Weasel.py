@@ -173,9 +173,14 @@ class MainWindow(QMainWindow):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 #print(self.DICOMfolderPath)
+                start_time=time.time()
                 self.XMLtree = ET.parse(XML_File_Path)
                 self.root = self.XMLtree.getroot()
+                end_time=time.time()
+                XMLParseTime = end_time - start_time
+                print('XML Parse Time = {}'.format(XMLParseTime))
 
+                start_time=time.time()
                 self.treeView = QTreeWidget()
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
@@ -224,7 +229,11 @@ class MainWindow(QMainWindow):
                 self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
                 self.treeView.itemDoubleClicked.connect(self.viewImage)
                 self.treeView.show()
-        
+                end_time=time.time()
+                TreeViewTime = end_time - start_time
+                print('Tree View create Time = {}'.format(TreeViewTime))
+
+
                 widget = QWidget()
                 widget.setLayout(QVBoxLayout()) 
                 widget.layout().addWidget(self.treeView)
