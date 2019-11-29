@@ -181,6 +181,8 @@ class MainWindow(QMainWindow):
                 print('XML Parse Time = {}'.format(XMLParseTime))
 
                 start_time=time.time()
+                # This number of files is useful to know numbher of files when creating XML file for first time
+                number_files, _ = WriteXMLfromDICOM.get_files_info(self.DICOMfolderPath)
                 self.treeView = QTreeWidget()
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
