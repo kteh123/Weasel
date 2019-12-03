@@ -15,10 +15,9 @@ def returnPixelArray(imagePath):
                     invertedImage = invertedImage.astype(np.uint16)
                 dataset.PixelData = invertedImage.tobytes()
                 #Save inverted image file
-                newFilePath = imagePath + FILE_SUFFIX
-                newFileName = os.path.basename(newFilePath)
+                newFilePath = imagePath + FILE_SUFFIX  
                 dataset.save_as(newFilePath)
-                return invertedImage, newFileName
+                return invertedImage, newFilePath
             else:
                 return None, None
         else:
