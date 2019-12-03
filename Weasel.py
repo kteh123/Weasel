@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QVBoxLayout, QMdiSubWindow, QPushButton, 
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider)
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QProgressBar )
 from PyQt5.QtGui import QCursor
 
 
@@ -168,11 +168,11 @@ class MainWindow(QMainWindow):
         """Counts the number of elements in the DICOM XML file to
         determine the number of items forming the tree view"""
         try:
-            numStudies = len(self.root.find('./study'))
-            numSeries = len(self.root.find('./study/series'))
-            numImages = len(self.root.find('./study/series/image'))
+            numStudies = len(self.root.findall('./study'))
+            numSeries = len(self.root.findall('./study/series'))
+            numImages = len(self.root.findall('./study/series/image'))
             numItems = numStudies + numSeries + numImages
-            return numItems
+            return numStudies, numSeries, numImages, numItems
         except Exception as e:
             print('Error in function getNumberItemsInTreeView: ' + str(e))
 
@@ -192,8 +192,9 @@ class MainWindow(QMainWindow):
                 print('XML Parse Time = {}'.format(XMLParseTime))
 
                 start_time=time.time()
-                numTreeViewItems = self.getNumberItemsInTreeView()
-                print('num items from XML = {}'.format(self.getNumberItemsInTreeView()))
+                numStudies, numSeries, numImages, numTreeViewItems \
+                    = self.getNumberItemsInTreeView()
+
                 QApplication.processEvents
                 widget = QWidget()
                 widget.setLayout(QVBoxLayout()) 
@@ -201,11 +202,23 @@ class MainWindow(QMainWindow):
                 subWindow.setWidget(widget)
                 subWindow.setObjectName("New_Window")
                 subWindow.setWindowTitle("DICOM Study Structure")
-                subWindow.setGeometry(0,0,800,1300)
+                subWindow.setGeometry(0,0,800,300)
                 self.mdiArea.addSubWindow(subWindow)
+
+                self.lblLoading = QLabel('You are loading {} study(s), with {} series containing {} images'
+                 .format(numStudies, numSeries, numImages))
+                self.lblLoading.setWordWrap(True)
+
+                widget.layout().addWidget(self.lblLoading)
+                self.progBar = QProgressBar(self)
+                widget.layout().addWidget(self.progBar)
+                widget.layout().setAlignment(Qt.AlignTop)
+                self.progBar.show()
+                self.progBar.setMaximum(numTreeViewItems)
+                self.progBar.setValue(0)
                 subWindow.show()
+
                 QApplication.processEvents()
-                
                 self.treeView = QTreeWidget()
                 self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
@@ -213,16 +226,21 @@ class MainWindow(QMainWindow):
                 
                 # Uncomment to test XML file loaded OK
                 #print(ET.tostring(self.root, encoding='utf8').decode('utf8'))
+                treeWidgetItemCounter = 0 
                 studies = self.root.findall('./study')
                 for study in studies:
                     studyID = study.attrib['id']
                     studyBranch = QTreeWidgetItem(self.treeView)
+                    treeWidgetItemCounter += 1
+                    self.progBar.setValue(treeWidgetItemCounter)
                     studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                     studyBranch.setExpanded(True)
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
+                        treeWidgetItemCounter += 1
+                        self.progBar.setValue(treeWidgetItemCounter)
                         #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                         seriesBranch.setText(0, "Series - {}".format(seriesID))
                         seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
@@ -236,6 +254,8 @@ class MainWindow(QMainWindow):
                             imageTime = image.find('time').text
                             imagePath = image.find('name').text
                             imageLeaf = QTreeWidgetItem(seriesBranch)
+                            treeWidgetItemCounter += 1
+                            self.progBar.setValue(treeWidgetItemCounter)
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                             #Uncomment the next 2 lines to put a checkbox in front of each image
                             #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
@@ -259,8 +279,10 @@ class MainWindow(QMainWindow):
                 TreeViewTime = end_time - start_time
                 print('Tree View create Time = {}'.format(TreeViewTime))
 
-
-                
+                self.lblLoading.clear()
+                self.progBar.hide()
+                self.progBar.reset()
+                subWindow.setGeometry(0,0,800,1300)
                 widget.layout().addWidget(self.treeView)
                 
         except Exception as e:
