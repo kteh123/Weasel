@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QProgressBar )
 from PyQt5.QtGui import QCursor
 
-
 import xml.etree.ElementTree as ET 
 from xml.dom import minidom
 import pyqtgraph as pg
@@ -19,6 +18,7 @@ import invertDICOM_Image
 import WriteXMLfromDICOM 
 import doubleDICOM_Image
 import time
+import numpy as np
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
                 subWindow.setGeometry(0,0,800,300)
                 self.mdiArea.addSubWindow(subWindow)
 
-                self.lblLoading = QLabel('You are loading {} study(s), with {} series containing {} images'
+                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
                  .format(numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
@@ -333,6 +333,9 @@ class MainWindow(QMainWindow):
             widget = QWidget()
             widget.setLayout(layout)
             self.subWindow.setWidget(widget)
+            self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
+            self.lblImageMissing.hide()
+            layout.addWidget(self.lblImageMissing)
             layout.addWidget(imageViewer)
             viewBox = imageViewer.addViewBox()
             viewBox.setAspectLocked(True)
@@ -352,7 +355,13 @@ class MainWindow(QMainWindow):
             layout.addWidget(self.imageSlider)
             #Display first image
             pixelArray = viewDICOM_Image.returnPixelArray(imageList[0])
-            self.img.setImage(pixelArray)   
+            if pixelArray is None:
+                self.lblImageMissing.show()
+                self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
+            else:
+                self.img.setImage(pixelArray) 
+                self.lblImageMissing.hide()
+                
             self.subWindow.setObjectName(seriesName)
             
             self.subWindow.setWindowTitle(seriesName + ' - ' + os.path.basename(imageList[0]))
@@ -367,7 +376,13 @@ class MainWindow(QMainWindow):
       try:
         imageNumber = self.imageSlider.value()
         pixelArray = viewDICOM_Image.returnPixelArray(imageList[imageNumber - 1])
-        self.img.setImage(pixelArray)  
+        if pixelArray is None:
+            self.lblImageMissing.show()
+            self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
+        else:
+            self.img.setImage(pixelArray) 
+            self.lblImageMissing.hide()
+
         self.subWindow.setWindowTitle(seriesName + ' - ' 
                                       + os.path.basename(imageList[imageNumber - 1]))
       except Exception as e:
@@ -388,7 +403,7 @@ class MainWindow(QMainWindow):
                     self.getStudyAndSeriesNumbersFromSeries(self.treeView.selectedItems())
                 xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-                print(xPath)
+               # print(xPath)
                 images = self.root.findall(xPath)
                 imageList = [image.find('name').text for image in images] 
                 self.displayMultiImageSubWindow(imageList, seriesID)
@@ -580,10 +595,11 @@ class MainWindow(QMainWindow):
             print('Error in removeSeriesFromXMLFile: ' + str(e))
 
 
-    def closeSubWindow(self, imagePath):
+    def closeSubWindow(self, objectName):
         for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == imagePath:
+            if subWin.objectName() == objectName:
                 subWin.close()
+
 
     def deleteImage(self):
         """This method deletes an image or a series of images by 
@@ -654,6 +670,7 @@ class MainWindow(QMainWindow):
                         os.remove(imagePath)
                     #Remove the series from the XML file
                     self.removeSeriesFromXMLFile(studyID, seriesID)
+                    self.closeSubWindow(seriesID)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
