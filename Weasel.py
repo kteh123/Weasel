@@ -302,21 +302,37 @@ class MainWindow(QMainWindow):
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
         try:
-            subWindow = QMdiSubWindow(self)
-            subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
-            subWindow.setWidget(imageViewer)
+            widget = QWidget()
+            widget.setLayout(layout)
+            self.subWindow.setWidget(widget)
+            self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
+            self.lblImageMissing.hide()
+            layout.addWidget(self.lblImageMissing)
+            layout.addWidget(imageViewer)
             viewBox = imageViewer.addViewBox()
             viewBox.setAspectLocked(True)
-            img = pg.ImageItem(border='w')
-            viewBox.addItem(img)
-            img.setImage(pixelArray)   
-            subWindow.setObjectName(imagePath)
+            self.img = pg.ImageItem(border='w')
+            viewBox.addItem(self.img)
+            #Test pixel array holds image & display it
+            if pixelArray is None:
+                self.lblImageMissing.show()
+                #Display a black box
+                self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
+            else:
+                self.img.setImage(pixelArray) 
+                self.lblImageMissing.hide()
+                
+            self.subWindow.setObjectName(imagePath)
             windowTitle = self.getDICOMFileData()
-            subWindow.setWindowTitle(windowTitle)
-            subWindow.setGeometry(0,0,800,600)
-            self.mdiArea.addSubWindow(subWindow)
-            subWindow.show()
+            self.subWindow.setWindowTitle(windowTitle)
+            self.subWindow.setGeometry(0,0,800,600)
+            self.mdiArea.addSubWindow(self.subWindow)
+            self.subWindow.show()
+
         except Exception as e:
             print('Error in displayImageSubWindow: ' + str(e))
 
