@@ -51,18 +51,11 @@ class MainWindow(QMainWindow):
         loadDICOM.triggered.connect(self.loadDICOM)
         fileMenu.addAction(loadDICOM)
 
-        #loadDICOMFromXMLButton = QAction('Load DICOM from XML file', self)
-        #loadDICOMFromXMLButton.setShortcut('Ctrl+X')
-        #loadDICOMFromXMLButton.setStatusTip('Load DICOM images from an XML file')
-        #loadDICOMFromXMLButton.triggered.connect(self.loadDICOM_Data_From_DICOM_XML_File)
-        #fileMenu.addAction(loadDICOMFromXMLButton)
-
         closeAllSubWindowsButton = QAction('Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+C')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
-
 
         self.viewImageButton = QAction('View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
@@ -135,7 +128,6 @@ class MainWindow(QMainWindow):
 
     def makeDICOM_XML_File(self, scan_directory):
         try:
-            #scan_directory = self.getScanDirectory()
             if scan_directory:
                 start_time=time.time()
                 numFiles, numFolders = WriteXMLfromDICOM.get_files_info(scan_directory)
@@ -834,6 +826,7 @@ class MainWindow(QMainWindow):
                 return ''
         except Exception as e:
             print('Error in getDICOMFileData: ' + str(e))
+
 
     def refreshDICOMStudiesTreeView(self):
         """Uses an XML file that describes a DICOM file structure to build a
