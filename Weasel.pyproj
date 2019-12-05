@@ -22,9 +22,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="doubleDICOM_Image.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="invertDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
