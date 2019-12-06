@@ -15,7 +15,8 @@ def save_and_returnFilename(pixelArray, dataset, imagePath, suffix):
             newFilePath = oldFileName[0] + suffix + '.dcm'
             newFileName = os.path.basename(newFilePath)
             dataset.save_as(newFilePath)
-            return newFileName
+            #return newFileName  change made by Steve to return full file path
+            return newFilePath
         else:
             return None
     except Exception as e:

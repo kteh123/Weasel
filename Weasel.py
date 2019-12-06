@@ -377,7 +377,7 @@ class MainWindow(QMainWindow):
             print('Error in displayImageSubWindow: ' + str(e))
 
 
-    def displayMultiImageSubWindow(self, imageList, seriesName):
+    def displayMultiImageSubWindow(self, imageList, studyName, seriesName):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
         """
@@ -389,6 +389,10 @@ class MainWindow(QMainWindow):
             widget = QWidget()
             widget.setLayout(layout)
             self.subWindow.setWidget(widget)
+            self.lblHiddenStudyID = QLabel(studyName)
+            self.lblHiddenStudyID.hide()
+            self.lblHiddenSeriesID = QLabel(seriesName)
+            self.lblHiddenSeriesID.hide()
             self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing.hide()
             self.btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
@@ -397,6 +401,8 @@ class MainWindow(QMainWindow):
             self.btnDeleteDICOMFile.hide()
             self.btnDeleteDICOMFile.clicked.connect(self.deleteImageInMultiImageViewer)
             layout.addWidget(self.lblImageMissing)
+            layout.addWidget(self.lblHiddenSeriesID)
+            layout.addWidget(self.lblHiddenStudyID)
             layout.addWidget(self.btnDeleteDICOMFile)
             layout.addWidget(imageViewer)
             viewBox = imageViewer.addViewBox()
@@ -438,53 +444,70 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
 
+
     def deleteImageInMultiImageViewer(self):
         try:
             imageName = os.path.basename(self.currentImagePath)
+            studyID = self.lblHiddenStudyID.text()
+            seriesID = self.lblHiddenSeriesID.text()
+
             buttonReply = QMessageBox.question(self, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+
             if buttonReply == QMessageBox.Ok:
                 #Delete physical file
-                #os.remove(self.currentImagePath)
-                #Advance slider to next image
-                self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
+                deletedFilePath = self.currentImagePath
+                os.remove(deletedFilePath)
                 #Remove deleted image from the list
-                self.imageList.remove(self.currentImagePath)
+                self.imageList.remove(deletedFilePath)
                 #Update slider maximum value
                 self.imageSlider.setMaximum(len(self.imageList))
+                #Move the slider off the image that was deleted
+                if len(self.imageList) == 1:
+                    #we are deleting the only image 
+                    #in the multi-image viewer, so close the window.
+                    self.closeSubWindow(seriesID)
+                    QApplication.processEvents()
+                elif self.imageSlider.value() == len(self.imageList):
+                    #we are deleting the last image in a series, 
+                    #so move slide back to the penultimate image
+                    self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepSub)
+                else:
+                    #We are deleting an image in a series, so move to next image
+                    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
+                
                 #Is this the last image in a series?
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
                 #whole series from XML file
-                #No it is not the last image in a series
-                #so just remove the image from the XML file 
-                #studyID, seriesID = \
-                #    self.getStudyAndSeriesNumbersForImage()
-                #xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                #']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-                ##print(xPath)
-                #images = self.root.findall(xPath)
-                #if len(images) == 1:
-                #    #only one image, so remove the series from the xml file
-                #    #need to get study (parent) containing this series (child)
-                #    #then remove child from parent
-                #    self.removeSeriesFromXMLFile(studyID, seriesID)
-                #elif len(images) > 1:
-                #    #more than 1 image in the series, 
-                #    #so just remove the image from the xml file
-                #    #need to get the series (parent) containing this image (child)
-                #    #then remove child from parent
-                #    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                #    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
-                #    series = self.root.find(xPath)
-                #    #print('XML = {}'.format(ET.tostring(series)))
-                #    for image in series:
-                #        if image.find('name').text == imagePath:
-                #            series.remove(image)
-                #            self.XMLtree.write(self.DICOM_XML_FilePath)
-                ##Update tree view with xml file modified above
-                #self.refreshDICOMStudiesTreeView()
+                #If it is not the last image in a series
+                # just remove the image from the XML file 
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+                #print(xPath)
+                images = self.root.findall(xPath)
+                if len(images) == 1:
+                    #only one image, so remove the series from the xml file
+                    #need to get study (parent) containing this series (child)
+                    #then remove child from parent
+                    self.removeSeriesFromXMLFile(studyID, seriesID)
+                elif len(images) > 1:
+                    #more than 1 image in the series, 
+                    #so just remove the image from the xml file
+                    #need to get the series (parent) containing this image (child)
+                    #then remove child from parent
+                    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
+                    series = self.root.find(xPath)
+                    #print('XML = {}'.format(ET.tostring(series)))
+                    for image in series:
+                        if image.find('name').text == deletedFilePath:
+                            series.remove(image)
+                            self.XMLtree.write(self.DICOM_XML_FilePath)
+                            break
+                #Update tree view with xml file modified above
+                self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImageInMultiImageViewer: ' + str(e))
 
@@ -527,7 +550,7 @@ class MainWindow(QMainWindow):
                # print(xPath)
                 images = self.root.findall(xPath)
                 self.imageList = [image.find('name').text for image in images] 
-                self.displayMultiImageSubWindow(self.imageList, seriesID)
+                self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
         except Exception as e:
             print('Error in viewImage: ' + str(e))
 
@@ -617,7 +640,7 @@ class MainWindow(QMainWindow):
                 dateInvertedImage.text = imageDate
 
             self.XMLtree.write(self.DICOM_XML_FilePath)
-            return 'series ' + newSeriesID
+            return  newSeriesID
 
         except Exception as e:
             print('Error in insertInvertedSeriesInXMLFile: ' + str(e))
@@ -648,14 +671,14 @@ class MainWindow(QMainWindow):
                 imageList = [image.find('name').text for image in images] 
                 #Iterate through list of images and invert each image
                 invertedImageList = []
-                for imagePath in self.imageList:
+                for imagePath in imageList:
                     _, invertedImageFileName = \
                     invertDICOM_Image.returnPixelArray(imagePath)
-                    self.invertedImageList.append(invertedImageFileName)
+                    invertedImageList.append(invertedImageFileName)
 
                 newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, \
                     invertedImageList)
-                self.displayMultiImageSubWindow(invertedImageList, newSeriesName)
+                self.displayMultiImageSubWindow(invertedImageList, studyID, newSeriesName)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in invertImage: ' + str(e))
@@ -670,6 +693,7 @@ class MainWindow(QMainWindow):
                 if series.attrib['id'] == seriesID:
                     study.remove(series)
                     self.XMLtree.write(self.DICOM_XML_FilePath)
+                    break
         except Exception as e:
             print('Error in removeSeriesFromXMLFile: ' + str(e))
 

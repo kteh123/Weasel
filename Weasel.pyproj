@@ -25,10 +25,9 @@
     <Compile Include="invertDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="readDICOM_Image.py" />
+    <Compile Include="saveDICOM_Image.py" />
     <Compile Include="styleSheet.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="viewDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Weasel.py" />
