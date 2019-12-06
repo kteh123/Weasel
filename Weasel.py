@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QVBoxLayout, QMdiSubWindow, QPushButton, 
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QProgressBar )
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  QProgressBar )
 from PyQt5.QtGui import QCursor
 
 import xml.etree.ElementTree as ET 
@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
+        self.currentImagePath = ''
         #self.ApplyStyleSheet()
       
 
@@ -390,7 +391,13 @@ class MainWindow(QMainWindow):
             self.subWindow.setWidget(widget)
             self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing.hide()
+            self.btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
+            self.btnDeleteDICOMFile.setToolTip(
+            'Deletes the DICOM image being viewed')
+            self.btnDeleteDICOMFile.hide()
+            self.btnDeleteDICOMFile.clicked.connect(self.deleteImageInMultiImageViewer)
             layout.addWidget(self.lblImageMissing)
+            layout.addWidget(self.btnDeleteDICOMFile)
             layout.addWidget(imageViewer)
             viewBox = imageViewer.addViewBox()
             viewBox.setAspectLocked(True)
@@ -406,16 +413,21 @@ class MainWindow(QMainWindow):
             self.imageSlider.setTickInterval(1)
             self.imageSlider.valueChanged.connect(
                   lambda: self.imageSliderChanged(seriesName, imageList))
-            print('Num of images = {}'.format(len(imageList)))
+            #print('Num of images = {}'.format(len(imageList)))
             layout.addWidget(self.imageSlider)
+            
             #Display first image
-            pixelArray = viewDICOM_Image.returnPixelArray(imageList[0])
+            self.currentImageNumber = 0
+            self.currentImagePath = imageList[self.currentImageNumber]
+            pixelArray = viewDICOM_Image.returnPixelArray(self.currentImagePath)
             if pixelArray is None:
                 self.lblImageMissing.show()
                 self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
+                self.btnDeleteDICOMFile.hide()
             else:
                 self.img.setImage(pixelArray) 
                 self.lblImageMissing.hide()
+                self.btnDeleteDICOMFile.show()
                 
             self.subWindow.setObjectName(seriesName)
             
@@ -426,17 +438,71 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
 
+    def deleteImageInMultiImageViewer(self):
+        try:
+            imageName = os.path.basename(self.currentImagePath)
+            buttonReply = QMessageBox.question(self, 
+                'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+                QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            if buttonReply == QMessageBox.Ok:
+                #Delete physical file
+                #os.remove(self.currentImagePath)
+                #Advance slider to next image
+                self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
+                #Remove deleted image from the list
+                self.imageList.remove(self.currentImagePath)
+                #Update slider maximum value
+                self.imageSlider.setMaximum(len(self.imageList))
+                #Is this the last image in a series?
+                #Get the series containing this image and count the images it contains
+                #If it is the last image in a series then remove the
+                #whole series from XML file
+                #No it is not the last image in a series
+                #so just remove the image from the XML file 
+                #studyID, seriesID = \
+                #    self.getStudyAndSeriesNumbersForImage()
+                #xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                #']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+                ##print(xPath)
+                #images = self.root.findall(xPath)
+                #if len(images) == 1:
+                #    #only one image, so remove the series from the xml file
+                #    #need to get study (parent) containing this series (child)
+                #    #then remove child from parent
+                #    self.removeSeriesFromXMLFile(studyID, seriesID)
+                #elif len(images) > 1:
+                #    #more than 1 image in the series, 
+                #    #so just remove the image from the xml file
+                #    #need to get the series (parent) containing this image (child)
+                #    #then remove child from parent
+                #    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                #    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
+                #    series = self.root.find(xPath)
+                #    #print('XML = {}'.format(ET.tostring(series)))
+                #    for image in series:
+                #        if image.find('name').text == imagePath:
+                #            series.remove(image)
+                #            self.XMLtree.write(self.DICOM_XML_FilePath)
+                ##Update tree view with xml file modified above
+                #self.refreshDICOMStudiesTreeView()
+        except Exception as e:
+            print('Error in deleteImageInMultiImageViewer: ' + str(e))
+
 
     def imageSliderChanged(self, seriesName, imageList):
       try:
         imageNumber = self.imageSlider.value()
-        pixelArray = viewDICOM_Image.returnPixelArray(imageList[imageNumber - 1])
+        self.currentImageNumber = imageNumber - 1
+        self.currentImagePath = imageList[self.currentImageNumber]
+        pixelArray = viewDICOM_Image.returnPixelArray(self.currentImagePath)
         if pixelArray is None:
             self.lblImageMissing.show()
+            self.btnDeleteDICOMFile.hide()
             self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
         else:
             self.img.setImage(pixelArray) 
             self.lblImageMissing.hide()
+            self.btnDeleteDICOMFile.show()
 
         self.subWindow.setWindowTitle(seriesName + ' - ' 
                                       + os.path.basename(imageList[imageNumber - 1]))
@@ -460,8 +526,8 @@ class MainWindow(QMainWindow):
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                # print(xPath)
                 images = self.root.findall(xPath)
-                imageList = [image.find('name').text for image in images] 
-                self.displayMultiImageSubWindow(imageList, seriesID)
+                self.imageList = [image.find('name').text for image in images] 
+                self.displayMultiImageSubWindow(self.imageList, seriesID)
         except Exception as e:
             print('Error in viewImage: ' + str(e))
 
@@ -582,12 +648,13 @@ class MainWindow(QMainWindow):
                 imageList = [image.find('name').text for image in images] 
                 #Iterate through list of images and invert each image
                 invertedImageList = []
-                for imagePath in imageList:
+                for imagePath in self.imageList:
                     _, invertedImageFileName = \
                     invertDICOM_Image.returnPixelArray(imagePath)
-                    invertedImageList.append(invertedImageFileName)
+                    self.invertedImageList.append(invertedImageFileName)
 
-                newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, invertedImageList)
+                newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, \
+                    invertedImageList)
                 self.displayMultiImageSubWindow(invertedImageList, newSeriesName)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
