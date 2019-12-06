@@ -13,7 +13,7 @@ import os
 import sys
 import re
 import styleSheet
-import viewDICOM_Image
+import readDICOM_Image
 import invertDICOM_Image
 import WriteXMLfromDICOM 
 import time
@@ -409,7 +409,7 @@ class MainWindow(QMainWindow):
             print('Num of images = {}'.format(len(imageList)))
             layout.addWidget(self.imageSlider)
             #Display first image
-            pixelArray = viewDICOM_Image.returnPixelArray(imageList[0])
+            pixelArray = readDICOM_Image.returnPixelArray(imageList[0])
             if pixelArray is None:
                 self.lblImageMissing.show()
                 self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
@@ -430,7 +430,7 @@ class MainWindow(QMainWindow):
     def imageSliderChanged(self, seriesName, imageList):
       try:
         imageNumber = self.imageSlider.value()
-        pixelArray = viewDICOM_Image.returnPixelArray(imageList[imageNumber - 1])
+        pixelArray = readDICOM_Image.returnPixelArray(imageList[imageNumber - 1])
         if pixelArray is None:
             self.lblImageMissing.show()
             self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
@@ -451,7 +451,7 @@ class MainWindow(QMainWindow):
         try:
             if self.isAnImageSelected():
                 imagePath = self.getImagePath()
-                pixelArray = viewDICOM_Image.returnPixelArray(imagePath)
+                pixelArray = readDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray, imagePath)
             elif self.isASeriesSelected():
                 studyID, seriesID = \
