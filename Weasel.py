@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
         self.setGeometry(0, 0, 2500, 1400)
-        self.setWindowTitle("DICOM Prototype")
+        self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
@@ -58,12 +58,12 @@ class MainWindow(QMainWindow):
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
 
-        self.viewImageButton = QAction('View Image', self)
-        self.viewImageButton.setShortcut('Ctrl+V')
-        self.viewImageButton.setStatusTip('View DICOM Image or series')
-        self.viewImageButton.triggered.connect(self.viewImage)
-        self.viewImageButton.setEnabled(False)
-        toolsMenu.addAction(self.viewImageButton)
+        self.deleteImageButton = QAction('Delete Image', self)
+        self.deleteImageButton.setShortcut('Ctrl+D')
+        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
+        self.deleteImageButton.triggered.connect(self.deleteImage)
+        self.deleteImageButton.setEnabled(False)
+        toolsMenu.addAction(self.deleteImageButton)
 
         self.invertImageButton = QAction('Invert Image', self)
         self.invertImageButton.setShortcut('Ctrl+I')
@@ -72,12 +72,12 @@ class MainWindow(QMainWindow):
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
 
-        self.deleteImageButton = QAction('Delete Image', self)
-        self.deleteImageButton.setShortcut('Ctrl+D')
-        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-        self.deleteImageButton.triggered.connect(self.deleteImage)
-        self.deleteImageButton.setEnabled(False)
-        toolsMenu.addAction(self.deleteImageButton)
+        self.viewImageButton = QAction('View Image', self)
+        self.viewImageButton.setShortcut('Ctrl+V')
+        self.viewImageButton.setStatusTip('View DICOM Image or series')
+        self.viewImageButton.triggered.connect(self.viewImage)
+        self.viewImageButton.setEnabled(False)
+        toolsMenu.addAction(self.viewImageButton)
 
 
     def ApplyStyleSheet(self):
@@ -238,7 +238,7 @@ class MainWindow(QMainWindow):
                 numStudies, numSeries, numImages, numTreeViewItems \
                     = self.getNumberItemsInTreeView()
 
-                QApplication.processEvents
+                QApplication.processEvents()
                 widget = QWidget()
                 widget.setLayout(QVBoxLayout()) 
                 subWindow = QMdiSubWindow(self)
@@ -383,6 +383,7 @@ class MainWindow(QMainWindow):
         """
         try:
             self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
             layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
@@ -417,7 +418,7 @@ class MainWindow(QMainWindow):
             self.imageSlider.setSingleStep(1)
             self.imageSlider.setTickPosition(QSlider.TicksBothSides)
             self.imageSlider.setTickInterval(1)
-            self.imageSlider.valueChanged.connect(
+            self.imageSlider.sliderReleased.connect(
                   lambda: self.imageSliderChanged(seriesName, imageList))
             #print('Num of images = {}'.format(len(imageList)))
             layout.addWidget(self.imageSlider)
@@ -462,20 +463,24 @@ class MainWindow(QMainWindow):
                 #Remove deleted image from the list
                 self.imageList.remove(deletedFilePath)
                 #Update slider maximum value
-                self.imageSlider.setMaximum(len(self.imageList))
-                #Move the slider off the image that was deleted
-                if len(self.imageList) == 1:
-                    #we are deleting the only image 
-                    #in the multi-image viewer, so close the window.
-                    self.closeSubWindow(seriesID)
-                    QApplication.processEvents()
-                elif self.imageSlider.value() == len(self.imageList):
-                    #we are deleting the last image in a series, 
-                    #so move slide back to the penultimate image
-                    self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepSub)
-                else:
-                    #We are deleting an image in a series, so move to next image
-                    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
+                #self.imageSlider.setMaximum(len(self.imageList))
+                #Refresh the multi-image viewer to remove deleted image
+                #First close it
+                self.closeSubWindow(seriesID)
+                QApplication.processEvents()
+                if len(self.imageList) > 0:
+                    #Only redisplay the multi-image viewer if there
+                    #are still images in the series to display   
+                    self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
+
+                #elif len(self.imageList) == self.imageSlider.value():
+                #    #we are deleting the last image in a series, 
+                #    #so move slide back to the penultimate image
+                #    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepSub)
+                #else:
+                #    pass
+                #    #We are deleting an image in a series, so move to next image
+                #    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
                 
                 #Is this the last image in a series?
                 #Get the series containing this image and count the images it contains
@@ -514,6 +519,7 @@ class MainWindow(QMainWindow):
 
     def imageSliderChanged(self, seriesName, imageList):
       try:
+        #print('In image slider len of image list ={}'.format(len(imageList)))
         imageNumber = self.imageSlider.value()
         self.currentImageNumber = imageNumber - 1
         self.currentImagePath = imageList[self.currentImageNumber]
@@ -701,7 +707,9 @@ class MainWindow(QMainWindow):
     def closeSubWindow(self, objectName):
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == objectName:
+                QApplication.processEvents()
                 subWin.close()
+                QApplication.processEvents()
                 break
 
 
