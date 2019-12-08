@@ -15,6 +15,7 @@ import re
 import styleSheet
 import readDICOM_Image
 import invertDICOM_Image
+import copyDICOM_Image
 import WriteXMLfromDICOM 
 import time
 import numpy as np
@@ -53,10 +54,26 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(loadDICOM)
 
         closeAllSubWindowsButton = QAction('Close All Sub Windows', self)
-        closeAllSubWindowsButton.setShortcut('Ctrl+C')
+        closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
+
+        self.binaryOperationsButton = QAction('Binary Operation', self)
+        self.binaryOperationsButton.setShortcut('Ctrl+B')
+        self.binaryOperationsButton.setStatusTip('Performs binary operations on two images')
+        self.binaryOperationsButton.triggered.connect(self.binaryOperations)
+        self.binaryOperationsButton.setEnabled(False)
+        toolsMenu.addAction(self.binaryOperationsButton)
+
+
+
+        self.copySeriesButton = QAction('Copy Series', self)
+        self.copySeriesButton.setShortcut('Ctrl+C')
+        self.copySeriesButton.setStatusTip('Copy a DICOM series')
+        self.copySeriesButton.triggered.connect(self.copySeries)
+        self.copySeriesButton.setEnabled(False)
+        toolsMenu.addAction(self.copySeriesButton)
 
         self.deleteImageButton = QAction('Delete Image', self)
         self.deleteImageButton.setShortcut('Ctrl+D')
@@ -614,42 +631,42 @@ class MainWindow(QMainWindow):
             print('Error in insertInvertedImageInXMLFile: ' + str(e))
     
 
-    def insertInvertedSeriesInXMLFile(self, origImageList, invertedImageList):
-        """Creates a new series to hold the series of inverted images"""
+    def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
+        """Creates a new series to hold the series of New images"""
         try:
             #Get current study & series IDs
             studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries()
-            #Need to create a new series to hold this series of inverted images 
-            newSeriesID = seriesID + '_inv'
+            #Need to create a new series to hold this series of New images 
+            newSeriesID = seriesID + suffix
      
             #Get study branch
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
             currentStudy = self.root.find(xPath)
             newAttributes = {'id':newSeriesID, 'parentID':seriesID}
                    
-            #Add new series to study to hold inverted images
+            #Add new series to study to hold New images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
                     
-            comment = ET.Comment('This series holds a whole series of inverted images')
+            comment = ET.Comment('This series holds a whole series of New images')
             newSeries.append(comment)
             #Get image date & time from original image
             for index, image in enumerate(origImageList):
                 imageTime, imageDate = self.getImageDateTime(image, studyID, seriesID)       
-                newInvertedImage = ET.SubElement(newSeries,'image')
+                newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
-                nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
-                nameInvertedImage.text = invertedImageList[index]
-                timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
-                timeInvertedImage.text = imageTime
-                dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
-                dateInvertedImage.text = imageDate
+                nameNewImage = ET.SubElement(newImage, 'name')
+                nameNewImage.text = newImageList[index]
+                timeNewImage = ET.SubElement(newImage, 'time')
+                timeNewImage.text = imageTime
+                dateNewImage = ET.SubElement(newImage, 'date')
+                dateNewImage.text = imageDate
 
             self.XMLtree.write(self.DICOM_XML_FilePath)
             return  newSeriesID
 
         except Exception as e:
-            print('Error in insertInvertedSeriesInXMLFile: ' + str(e))
+            print('Error in insertNewSeriesInXMLFile: ' + str(e))
 
 
     def invertImage(self):
@@ -682,9 +699,10 @@ class MainWindow(QMainWindow):
                     invertDICOM_Image.returnPixelArray(imagePath)
                     invertedImageList.append(invertedImageFileName)
 
-                newSeriesName= self.insertInvertedSeriesInXMLFile(imageList, \
-                    invertedImageList)
-                self.displayMultiImageSubWindow(invertedImageList, studyID, newSeriesName)
+                newSeriesName= self.insertNewSeriesInXMLFile(imageList, \
+                    invertedImageList, '_inv')
+                self.displayMultiImageSubWindow(
+                    invertedImageList, studyID, newSeriesName)
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in invertImage: ' + str(e))
@@ -711,6 +729,39 @@ class MainWindow(QMainWindow):
                 subWin.close()
                 QApplication.processEvents()
                 break
+
+
+    def binaryOperations(self):
+        try:
+            pass
+        except Exception as e:
+            print('Error in binaryOperations: ' + str(e))
+
+
+    def copySeries(self):
+        try:
+            #Get Series ID & Study ID
+            studyID, seriesID = \
+                self.getStudyAndSeriesNumbersFromSeries()
+            #Get list of image paths
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            #print(xPath)
+            images = self.root.findall(xPath)
+            imageList = [image.find('name').text for image in images] 
+            #Iterate through list of images and invert each image
+            copiedImageList = []
+            for imagePath in imageList:
+                copiedImageFilePath = \
+                    copyDICOM_Image.returnCopiedFile(imagePath)
+                copiedImageList.append(copiedImageFilePath)
+
+            newSeriesName= self.insertNewSeriesInXMLFile(imageList, \
+                copiedImageList, '_copy')
+            self.displayMultiImageSubWindow(copiedImageList, studyID, newSeriesName)
+            self.refreshDICOMStudiesTreeView()
+        except Exception as e:
+            print('Error in copySeries: ' + str(e))
 
 
     def deleteImage(self):
@@ -893,6 +944,13 @@ class MainWindow(QMainWindow):
 
     def toggleToolButtons(self):
         try:
+            if self.isASeriesSelected():
+                self.copySeriesButton.setEnabled(True)
+                self.binaryOperations.setEnabled(True)
+            else:
+                self.copySeriesButton.setEnabled(False)
+                self.binaryOperations.setEnabled(False)
+
             if self.isAnImageSelected() or self.isASeriesSelected():
                 self.viewImageButton.setEnabled(True)
                 self.invertImageButton.setEnabled(True)
