@@ -377,7 +377,8 @@ class MainWindow(QMainWindow):
             print('Error in displayImageSubWindow: ' + str(e))
 
 
-    def displayMultiImageSubWindow(self, imageList, studyName, seriesName):
+    def displayMultiImageSubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
         """
@@ -414,31 +415,22 @@ class MainWindow(QMainWindow):
             self.imageSlider = QSlider(Qt.Horizontal)
             self.imageSlider.setMinimum(1)
             self.imageSlider.setMaximum(len(imageList))
-            self.imageSlider.setValue(1)
+            if sliderPosition == -1:
+                self.imageSlider.setValue(1)
+            else:
+                self.imageSlider.setValue(sliderPosition)
             self.imageSlider.setSingleStep(1)
             self.imageSlider.setTickPosition(QSlider.TicksBothSides)
             self.imageSlider.setTickInterval(1)
-            self.imageSlider.sliderReleased.connect(
-                  lambda: self.imageSliderChanged(seriesName, imageList))
+            self.imageSlider.valueChanged.connect(
+                  lambda: self.imageSliderMoved(seriesName, imageList))
             #print('Num of images = {}'.format(len(imageList)))
             layout.addWidget(self.imageSlider)
             
-            #Display first image
-            self.currentImageNumber = 0
-            self.currentImagePath = imageList[self.currentImageNumber]
-            pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
-            if pixelArray is None:
-                self.lblImageMissing.show()
-                self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
-                self.btnDeleteDICOMFile.hide()
-            else:
-                self.img.setImage(pixelArray) 
-                self.lblImageMissing.hide()
-                self.btnDeleteDICOMFile.show()
-                
-            self.subWindow.setObjectName(seriesName)
+            #Display the first image in the viewer
+            self.imageSliderMoved(seriesName, imageList)
             
-            self.subWindow.setWindowTitle(seriesName + ' - ' + os.path.basename(imageList[0]))
+            self.subWindow.setObjectName(seriesName)
             self.subWindow.setGeometry(0,0,800,600)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
@@ -462,26 +454,34 @@ class MainWindow(QMainWindow):
                 os.remove(deletedFilePath)
                 #Remove deleted image from the list
                 self.imageList.remove(deletedFilePath)
-                #Update slider maximum value
-                #self.imageSlider.setMaximum(len(self.imageList))
+                lastSliderPosition = self.imageSlider.value()
+
                 #Refresh the multi-image viewer to remove deleted image
                 #First close it
                 self.closeSubWindow(seriesID)
-                QApplication.processEvents()
-                if len(self.imageList) > 0:
-                    #Only redisplay the multi-image viewer if there
-                    #are still images in the series to display   
-                    self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
-
-                #elif len(self.imageList) == self.imageSlider.value():
-                #    #we are deleting the last image in a series, 
-                #    #so move slide back to the penultimate image
-                #    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepSub)
-                #else:
-                #    pass
-                #    #We are deleting an image in a series, so move to next image
-                #    #self.imageSlider.triggerAction(QAbstractSlider.SliderSingleStepAdd)
                 
+                if len(self.imageList) == 0:
+                    #Only redisplay the multi-image viewer if there
+                    #are still images in the series to display
+                    #The image list is empty, so do not redisplay
+                    #multi image viewer 
+                    pass   
+                elif len(self.imageList) == 1:
+                    #There is only one image left in the display
+                    self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
+                elif len(self.imageList) + 1 == lastSliderPosition:    
+                     #we are deleting the last image in a series
+                     #so move the slider back to penultimate image in list 
+                    self.displayMultiImageSubWindow(self.imageList, 
+                                      studyID, seriesID, len(self.imageList))
+                else:
+                    #We are deleting an image at the start of the list
+                    #or in the body of the list. Move slider forwards to 
+                    #the next image in the list.
+                    self.displayMultiImageSubWindow(self.imageList, 
+                                      studyID, seriesID, lastSliderPosition)
+     
+                #Now update XML file
                 #Is this the last image in a series?
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
@@ -517,26 +517,26 @@ class MainWindow(QMainWindow):
             print('Error in deleteImageInMultiImageViewer: ' + str(e))
 
 
-    def imageSliderChanged(self, seriesName, imageList):
+    def imageSliderMoved(self, seriesName, imageList):
       try:
-        #print('In image slider len of image list ={}'.format(len(imageList)))
         imageNumber = self.imageSlider.value()
         self.currentImageNumber = imageNumber - 1
-        self.currentImagePath = imageList[self.currentImageNumber]
-        pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
-        if pixelArray is None:
-            self.lblImageMissing.show()
-            self.btnDeleteDICOMFile.hide()
-            self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
-        else:
-            self.img.setImage(pixelArray) 
-            self.lblImageMissing.hide()
-            self.btnDeleteDICOMFile.show()
+        if self.currentImageNumber >= 0:
+            self.currentImagePath = imageList[self.currentImageNumber]
+            pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
+            if pixelArray is None:
+                self.lblImageMissing.show()
+                self.btnDeleteDICOMFile.hide()
+                self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
+            else:
+                self.img.setImage(pixelArray) 
+                self.lblImageMissing.hide()
+                self.btnDeleteDICOMFile.show()
 
-        self.subWindow.setWindowTitle(seriesName + ' - ' 
-                                      + os.path.basename(imageList[imageNumber - 1]))
+            self.subWindow.setWindowTitle(seriesName + ' - ' 
+                     + os.path.basename(self.currentImagePath))
       except Exception as e:
-            print('Error in imageSliderChanged: ' + str(e))
+            print('Error in imageSliderMoved: ' + str(e))
 
 
     def viewImage(self):
