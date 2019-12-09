@@ -2,8 +2,10 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
-        QMdiArea, QMessageBox, QWidget, QVBoxLayout, QMdiSubWindow, QPushButton, 
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  QProgressBar )
+        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
+        QPushButton, 
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  
+        QProgressBar, QComboBox )
 from PyQt5.QtGui import QCursor
 
 import xml.etree.ElementTree as ET 
@@ -733,7 +735,67 @@ class MainWindow(QMainWindow):
 
     def binaryOperations(self):
         try:
-            pass
+            self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
+                  | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            layout = QGridLayout()
+            widget = QWidget()
+            widget.setLayout(layout)
+            self.subWindow.setWidget(widget)
+
+            imageViewer1 = pg.GraphicsLayoutWidget()
+            viewBox1 = imageViewer1.addViewBox()
+            viewBox1.setAspectLocked(True)
+            self.img1 = pg.ImageItem(border='w')
+            viewBox1.addItem(self.img1)
+
+            imageViewer2 = pg.GraphicsLayoutWidget()
+            viewBox2 = imageViewer2.addViewBox()
+            viewBox2.setAspectLocked(True)
+            self.img2 = pg.ImageItem(border='w')
+            viewBox2.addItem(self.img2)
+
+            imageViewer3 = pg.GraphicsLayoutWidget()
+            viewBox3 = imageViewer3.addViewBox()
+            viewBox3.setAspectLocked(True)
+            self.img3 = pg.ImageItem(border='w')
+            viewBox3.addItem(self.img3)
+
+            lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
+            lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
+            lblImageMissing1.hide()
+            lblImageMissing2.hide()
+
+            btnSave = QPushButton('Save')
+            imageList1 = QComboBox()
+            imageList2 = QComboBox()
+            binaryOpsList = QComboBox()
+
+            layout.addWidget(btnSave, 0, 2)
+            layout.addWidget(imageList1, 1, 0)
+            layout.addWidget(imageList2, 1, 1)
+            layout.addWidget(binaryOpsList, 1, 2)
+            layout.addWidget(lblImageMissing1, 2, 0)
+            layout.addWidget(lblImageMissing2, 2, 1)
+            layout.addWidget(imageViewer1, 3, 0)
+            layout.addWidget(imageViewer2, 3, 1)
+            layout.addWidget(imageViewer3, 3, 2)
+            
+            #Test pixel array holds image & display it
+            #if pixelArray is None:
+            #    self.lblImageMissing.show()
+            #    #Display a black box
+            #    self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
+            #else:
+            #    self.img.setImage(pixelArray) 
+            #    self.lblImageMissing.hide()
+                
+            self.subWindow.setObjectName('Binary_Operation')
+            windowTitle = 'Binary Operations'
+            self.subWindow.setWindowTitle(windowTitle)
+            self.subWindow.setGeometry(0,0,1600,800)
+            self.mdiArea.addSubWindow(self.subWindow)
+            self.subWindow.show()
         except Exception as e:
             print('Error in binaryOperations: ' + str(e))
 
@@ -946,10 +1008,10 @@ class MainWindow(QMainWindow):
         try:
             if self.isASeriesSelected():
                 self.copySeriesButton.setEnabled(True)
-                self.binaryOperations.setEnabled(True)
+                self.binaryOperationsButton.setEnabled(True)
             else:
                 self.copySeriesButton.setEnabled(False)
-                self.binaryOperations.setEnabled(False)
+                self.binaryOperationsButton.setEnabled(False)
 
             if self.isAnImageSelected() or self.isASeriesSelected():
                 self.viewImageButton.setEnabled(True)
