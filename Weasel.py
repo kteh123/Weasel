@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         self.binaryOperationsButton = QAction('Binary Operation', self)
         self.binaryOperationsButton.setShortcut('Ctrl+B')
         self.binaryOperationsButton.setStatusTip('Performs binary operations on two images')
-        self.binaryOperationsButton.triggered.connect(self.binaryOperations)
+        self.binaryOperationsButton.triggered.connect(self.displayBinaryOperationsWindow)
         self.binaryOperationsButton.setEnabled(False)
         toolsMenu.addAction(self.binaryOperationsButton)
 
@@ -133,6 +133,7 @@ class MainWindow(QMainWindow):
             widget = QWidget()
             widget.setLayout(QVBoxLayout()) 
             self.msgSubWindow = QMdiSubWindow(self)
+            self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setWidget(widget)
             self.msgSubWindow.setObjectName("Msg_Window")
             self.msgSubWindow.setWindowTitle("Loading DICOM files")
@@ -362,6 +363,7 @@ class MainWindow(QMainWindow):
         """
         try:
             self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
             layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
@@ -568,13 +570,7 @@ class MainWindow(QMainWindow):
                 pixelArray = readDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray, imagePath)
             elif self.isASeriesSelected():
-                studyID, seriesID = \
-                    self.getStudyAndSeriesNumbersFromSeries()
-                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-               # print(xPath)
-                images = self.root.findall(xPath)
-                self.imageList = [image.find('name').text for image in images] 
+                self.imageList, studyID, seriesID = self.getImagePathList() 
                 self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
         except Exception as e:
             print('Error in viewImage: ' + str(e))
@@ -685,15 +681,7 @@ class MainWindow(QMainWindow):
                 #Update tree view with xml file modified above
                 self.refreshDICOMStudiesTreeView()
             elif self.isASeriesSelected():
-                #Get Series ID & Study ID
-                studyID, seriesID = \
-                    self.getStudyAndSeriesNumbersFromSeries()
-                #Get list of image paths
-                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-                #print(xPath)
-                images = self.root.findall(xPath)
-                imageList = [image.find('name').text for image in images] 
+                imageList, studyID, _ = self.getImagePathList() 
                 #Iterate through list of images and invert each image
                 invertedImageList = []
                 for imagePath in imageList:
@@ -733,9 +721,10 @@ class MainWindow(QMainWindow):
                 break
 
 
-    def binaryOperations(self):
+    def displayBinaryOperationsWindow(self):
         try:
             self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
                   | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
             layout = QGridLayout()
@@ -761,34 +750,39 @@ class MainWindow(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
 
-            lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
-            lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
-            lblImageMissing1.hide()
-            lblImageMissing2.hide()
+            self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
+            self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
+            self.lblImageMissing1.hide()
+            self.lblImageMissing2.hide()
 
             btnSave = QPushButton('Save')
-            imageList1 = QComboBox()
-            imageList2 = QComboBox()
+
+            imagePathList, _, _ = self.getImagePathList()
+            imageNameList = [os.path.basename(image) for image in imagePathList]
+            self.image_Name_Path_Dict = dict(zip(
+                imageNameList, imagePathList))
+            listBinOps =['Select binary Operation', 'Add', 'Divide', 
+                         'Multiply', 'Subtract']
+            self.imageList1 = QComboBox()
+            self.imageList2 = QComboBox()
+            self.imageList1.currentIndexChanged.connect(
+                lambda:self.displayImageForBinOp(1, self.image_Name_Path_Dict))
+            self.imageList2.currentIndexChanged.connect(
+                lambda:self.displayImageForBinOp(2, self.image_Name_Path_Dict))
             binaryOpsList = QComboBox()
+            self.imageList1.addItems(imageNameList)
+            self.imageList2.addItems(imageNameList)
+            binaryOpsList.addItems(listBinOps)
 
             layout.addWidget(btnSave, 0, 2)
-            layout.addWidget(imageList1, 1, 0)
-            layout.addWidget(imageList2, 1, 1)
+            layout.addWidget(self.imageList1, 1, 0)
+            layout.addWidget(self.imageList2, 1, 1)
             layout.addWidget(binaryOpsList, 1, 2)
-            layout.addWidget(lblImageMissing1, 2, 0)
-            layout.addWidget(lblImageMissing2, 2, 1)
+            layout.addWidget(self.lblImageMissing1, 2, 0)
+            layout.addWidget(self.lblImageMissing2, 2, 1)
             layout.addWidget(imageViewer1, 3, 0)
             layout.addWidget(imageViewer2, 3, 1)
             layout.addWidget(imageViewer3, 3, 2)
-            
-            #Test pixel array holds image & display it
-            #if pixelArray is None:
-            #    self.lblImageMissing.show()
-            #    #Display a black box
-            #    self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
-            #else:
-            #    self.img.setImage(pixelArray) 
-            #    self.lblImageMissing.hide()
                 
             self.subWindow.setObjectName('Binary_Operation')
             windowTitle = 'Binary Operations'
@@ -797,20 +791,32 @@ class MainWindow(QMainWindow):
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
         except Exception as e:
-            print('Error in binaryOperations: ' + str(e))
+            print('Error in displayBinaryOperationsWindow: ' + str(e))
+
+
+    def displayImageForBinOp(self, imageNumber, imageDict):
+        try:
+            objImageMissingLabel = getattr(self, 'lblImageMissing' + str(imageNumber))
+            objImage = getattr(self, 'img' + str(imageNumber))
+            objComboBox = getattr(self, 'imageList' + str(imageNumber))
+
+            #get name of selected image
+            imageName = objComboBox.currentText()
+            imagePath = imageDict[imageName]
+            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            if pixelArray is None:
+                objImageMissingLabel.show()
+                objImage.setImage(np.array([[0,0,0],[0,0,0]]))  
+            else:
+                objImage.setImage(pixelArray) 
+                objImageMissingLabel.hide()
+        except Exception as e:
+            print('Error in displayImageForBinOp: ' + str(e))
 
 
     def copySeries(self):
         try:
-            #Get Series ID & Study ID
-            studyID, seriesID = \
-                self.getStudyAndSeriesNumbersFromSeries()
-            #Get list of image paths
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-            #print(xPath)
-            images = self.root.findall(xPath)
-            imageList = [image.find('name').text for image in images] 
+            imageList, studyID, _ = self.getImagePathList()  
             #Iterate through list of images and invert each image
             copiedImageList = []
             for imagePath in imageList:
@@ -824,6 +830,20 @@ class MainWindow(QMainWindow):
             self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in copySeries: ' + str(e))
+
+
+    def getImagePathList(self):
+        try:
+            studyID, seriesID = \
+            self.getStudyAndSeriesNumbersFromSeries()
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            #print(xPath)
+            images = self.root.findall(xPath)
+            imageList = [image.find('name').text for image in images]
+            return imageList, studyID, seriesID
+        except Exception as e:
+            print('Error in getImagePathList: ' + str(e))
 
 
     def deleteImage(self):
@@ -882,13 +902,7 @@ class MainWindow(QMainWindow):
                 if buttonReply == QMessageBox.Ok:
                     #Delete each physical file in the series
                     #Get a list of names of images in that series
-                    studyID, seriesID = \
-                    self.getStudyAndSeriesNumbersFromSeries()
-                    xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-                    #print(xPath)
-                    images = self.root.findall(xPath)
-                    imageList = [image.find('name').text for image in images] 
+                    imageList, studyID, seriesID = self.getImagePathList() 
                     #Iterate through list of images and delete each image
                     for imagePath in imageList:
                         os.remove(imagePath)
