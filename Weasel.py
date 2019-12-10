@@ -19,6 +19,7 @@ import readDICOM_Image
 import invertDICOM_Image
 import copyDICOM_Image
 import WriteXMLfromDICOM 
+import binaryOperationDICOM_Image
 import time
 import numpy as np
 
@@ -767,17 +768,29 @@ class MainWindow(QMainWindow):
             self.imageList2 = QComboBox()
             self.imageList1.currentIndexChanged.connect(
                 lambda:self.displayImageForBinOp(1, self.image_Name_Path_Dict))
+            self.imageList1.currentIndexChanged.connect(
+                self.enableBinaryOperationsCombo)
+            self.imageList1.currentIndexChanged.connect(
+                lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
+            
             self.imageList2.currentIndexChanged.connect(
                 lambda:self.displayImageForBinOp(2, self.image_Name_Path_Dict))
-            binaryOpsList = QComboBox()
+            self.imageList2.currentIndexChanged.connect(
+                self.enableBinaryOperationsCombo)
+            self.imageList2.currentIndexChanged.connect(
+                lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
+
+            self.binaryOpsList = QComboBox()
+            self.binaryOpsList.currentIndexChanged.connect(
+                lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
             self.imageList1.addItems(imageNameList)
             self.imageList2.addItems(imageNameList)
-            binaryOpsList.addItems(listBinOps)
+            self.binaryOpsList.addItems(listBinOps)
 
             layout.addWidget(btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
-            layout.addWidget(binaryOpsList, 1, 2)
+            layout.addWidget(self.binaryOpsList, 1, 2)
             layout.addWidget(self.lblImageMissing1, 2, 0)
             layout.addWidget(self.lblImageMissing2, 2, 1)
             layout.addWidget(imageViewer1, 3, 0)
@@ -792,6 +805,35 @@ class MainWindow(QMainWindow):
             self.subWindow.show()
         except Exception as e:
             print('Error in displayBinaryOperationsWindow: ' + str(e))
+
+    
+    def doBinaryOperation(self, imageDict):
+        try:
+            #Get file path of image1
+            imageName = self.imageList1.currentText()
+            imagePath1 = imageDict[imageName]
+
+            #Get file path of image2
+            imageName = self.imageList2.currentText()
+            imagePath2 = imageDict[imageName]
+
+            #Get binary operation to be performed
+            binOp = self.binaryOpsList.currentText()
+            if binOp != 'Select binary Operation':
+                pixelArray = binaryOperationDICOM_Image.returnPixelArray(
+                    imagePath1, imagePath2, binOp)
+                self.img3.setImage(pixelArray)
+
+        except Exception as e:
+            print('Error in doBinaryOperation: ' + str(e))
+
+
+    def enableBinaryOperationsCombo(self):
+        if self.lblImageMissing1.isHidden() and \
+            self.lblImageMissing2.isHidden():
+            self.binaryOpsList.setEnabled(True)
+        else:
+            self.binaryOpsList.setEnabled(False)
 
 
     def displayImageForBinOp(self, imageNumber, imageDict):
@@ -808,8 +850,9 @@ class MainWindow(QMainWindow):
                 objImageMissingLabel.show()
                 objImage.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                objImage.setImage(pixelArray) 
                 objImageMissingLabel.hide()
+                objImage.setImage(pixelArray) 
+                
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
 
