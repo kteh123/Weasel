@@ -21,3 +21,6 @@ def save_and_returnFilename(pixelArray, dataset, imagePath, suffix):
             return None
     except Exception as e:
         print('Error in function saveDICOM_Image.save_and_returnFilename: ' + str(e))
+
+
+

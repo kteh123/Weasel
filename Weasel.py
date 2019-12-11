@@ -18,6 +18,7 @@ import styleSheet
 import readDICOM_Image
 import invertDICOM_Image
 import copyDICOM_Image
+import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
 import time
@@ -577,57 +578,70 @@ class MainWindow(QMainWindow):
             print('Error in viewImage: ' + str(e))
 
 
-    def insertInvertedImageInXMLFile(self, invertedImageFileName):
+    def insertNewImageInXMLFile(self, newImageFileName, suffix, 
+                                imageName = None, seriesSelected = False):
         try:
-            studyID, seriesID = self.getStudyAndSeriesNumbersForImage()
+            if seriesSelected:
+                studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
+            else:
+                studyID, seriesID = self.getStudyAndSeriesNumbersForImage()
+
             #First determine if a series with parentID=seriesID exists
+            #and typeID=suffix
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']'
+                ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
+               '[@typeID=' + chr(34) + suffix + chr(34) +']'
             series = self.root.find(xPath)
-            imageName = self.getImagePath()
+
+            if imageName is None:
+                imageName = self.getImagePath()
                     
             if series is None:
-                #Need to create a new series to hold this inverted image
-                newSeriesID = seriesID + '_inv'
+                #Need to create a new series to hold this new image
+                newSeriesID = seriesID + suffix
                 #Get study branch
                 xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
                 currentStudy = self.root.find(xPath)
-                newAttributes = {'id':newSeriesID, 'parentID':seriesID}
+                newAttributes = {'id':newSeriesID, 
+                                 'parentID':seriesID, 
+                                 'typeID':suffix}
                    
-                #Add new series to study to hold inverted images
+                #Add new series to study to hold new images
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
                     
-                comment = ET.Comment('This series holds inverted images')
+                comment = ET.Comment('This series holds new images')
                 newSeries.append(comment)
                 #Get image date & time
-                imageTime, imageDate = self.getImageDateTime(imageName, studyID, seriesID)
+                imageTime, imageDate = self.getImageDateTime(imageName, 
+                                   studyID, seriesID)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
-                newInvertedImage = ET.SubElement(newSeries,'image')
+                newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
-                nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
-                nameInvertedImage.text = invertedImageFileName
-                timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
-                timeInvertedImage.text = imageTime
-                dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
-                dateInvertedImage.text = imageDate
+                nameNewImage = ET.SubElement(newImage, 'name')
+                nameNewImage.text = newImageFileName
+                timeNewImage = ET.SubElement(newImage, 'time')
+                timeNewImage.text = imageTime
+                dateNewImage = ET.SubElement(newImage, 'date')
+                dateNewImage.text = imageDate
                 self.XMLtree.write(self.DICOM_XML_FilePath)
             else:
-                #A series already exists to hold inverted images from
+                #A series already exists to hold new images from
                 #the current parent series
-                imageTime, imageDate = self.getImageDateTime(imageName, studyID, seriesID)
-                newInvertedImage = ET.SubElement(series,'image')
+                imageTime, imageDate = self.getImageDateTime(imageName, 
+                          studyID, seriesID)
+                newImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
-                nameInvertedImage = ET.SubElement(newInvertedImage, 'name')
-                nameInvertedImage.text = invertedImageFileName
-                timeInvertedImage = ET.SubElement(newInvertedImage, 'time')
-                timeInvertedImage.text = imageTime
-                dateInvertedImage = ET.SubElement(newInvertedImage, 'date')
-                dateInvertedImage.text = imageDate
+                nameNewImage = ET.SubElement(newImage, 'name')
+                nameNewImage.text = newImageFileName
+                timeNewImage = ET.SubElement(newImage, 'time')
+                timeNewImage.text = imageTime
+                dateNewImage = ET.SubElement(newImage, 'date')
+                dateNewImage.text = imageDate
                 self.XMLtree.write(self.DICOM_XML_FilePath)
         except Exception as e:
-            print('Error in insertInvertedImageInXMLFile: ' + str(e))
+            print('Error in insertNewImageInXMLFile: ' + str(e))
     
 
     def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
@@ -642,7 +656,9 @@ class MainWindow(QMainWindow):
             #Get study branch
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
             currentStudy = self.root.find(xPath)
-            newAttributes = {'id':newSeriesID, 'parentID':seriesID}
+            newAttributes = {'id':newSeriesID, 
+                             'parentID':seriesID,
+                             'typeID':suffix}
                    
             #Add new series to study to hold New images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
@@ -678,7 +694,7 @@ class MainWindow(QMainWindow):
                     invertDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray, invertedImageFileName)
                 #Record inverted image in XML file
-                self.insertInvertedImageInXMLFile(invertedImageFileName)
+                self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
                 #Update tree view with xml file modified above
                 self.refreshDICOMStudiesTreeView()
             elif self.isASeriesSelected():
@@ -756,7 +772,9 @@ class MainWindow(QMainWindow):
             self.lblImageMissing1.hide()
             self.lblImageMissing2.hide()
 
-            btnSave = QPushButton('Save')
+            self.btnSave = QPushButton('Save')
+            self.btnSave.setEnabled(False)
+            self.btnSave.clicked.connect(self.saveNewDICOMFile)
 
             imagePathList, _, _ = self.getImagePathList()
             imageNameList = [os.path.basename(image) for image in imagePathList]
@@ -787,7 +805,7 @@ class MainWindow(QMainWindow):
             self.imageList2.addItems(imageNameList)
             self.binaryOpsList.addItems(listBinOps)
 
-            layout.addWidget(btnSave, 0, 2)
+            layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
             layout.addWidget(self.binaryOpsList, 1, 2)
@@ -807,22 +825,56 @@ class MainWindow(QMainWindow):
             print('Error in displayBinaryOperationsWindow: ' + str(e))
 
     
+    def saveNewDICOMFile(self):
+        try:
+            suffix = '_binOp'
+            imageName1 = self.imageList1.currentText()
+            imagePath1 = self.image_Name_Path_Dict[imageName1]
+            imageName2 = self.imageList2.currentText()
+
+            binaryOperation = self.binaryOpsList.currentText()
+            if binaryOperation == 'Subtract':
+                binaryOperation = 'Sub'
+            elif binaryOperation == 'Divide':
+                binaryOperation = 'Div'
+            elif binaryOperation == 'Multiply':
+                binaryOperation = 'Multi'
+            elif binaryOperation == 'Add':
+                binaryOperation = 'Add'
+            
+            newImageFileName = binaryOperation + '_' + imageName1 \
+                + '_' + imageName2 
+            newImageFilePath = os.path.dirname(imagePath1) + '\\' + \
+                newImageFileName + '.dcm'
+            print(newImageFilePath)
+            #Save pixel array to a file
+            #saveDICOM_Image.
+            self.insertNewImageInXMLFile(newImageFileName, suffix, imagePath1, True)
+            self.refreshDICOMStudiesTreeView()
+        except Exception as e:
+            print('Error in saveNewDICOMFile: ' + str(e))
+
+
     def doBinaryOperation(self, imageDict):
         try:
             #Get file path of image1
             imageName = self.imageList1.currentText()
-            imagePath1 = imageDict[imageName]
+            if imageName != '':
+                imagePath1 = imageDict[imageName]
 
             #Get file path of image2
             imageName = self.imageList2.currentText()
-            imagePath2 = imageDict[imageName]
+            if imageName != '':
+                imagePath2 = imageDict[imageName]
 
             #Get binary operation to be performed
             binOp = self.binaryOpsList.currentText()
-            if binOp != 'Select binary Operation':
+            if binOp != 'Select binary Operation' \
+                and binOp != '':
                 pixelArray = binaryOperationDICOM_Image.returnPixelArray(
                     imagePath1, imagePath2, binOp)
                 self.img3.setImage(pixelArray)
+                self.btnSave.setEnabled(True)
 
         except Exception as e:
             print('Error in doBinaryOperation: ' + str(e))
