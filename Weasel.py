@@ -890,9 +890,9 @@ class MainWindow(QMainWindow):
             binOp = self.binaryOpsList.currentText()
             if binOp != 'Select binary Operation' \
                 and binOp != '':
-                pixelArray = binaryOperationDICOM_Image.returnPixelArray(
+                self.binOpArray = binaryOperationDICOM_Image.returnPixelArray(
                     imagePath1, imagePath2, binOp)
-                self.img3.setImage(pixelArray)
+                self.img3.setImage(self.binOpArray)
                 self.btnSave.setEnabled(True)
 
         except Exception as e:
