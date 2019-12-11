@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         toolsMenu = mainMenu.addMenu('Tools')
         helpMenu = mainMenu.addMenu('Help')
 
+        #File Menu
         loadDICOM = QAction('Load DICOM Images', self)
         loadDICOM.setShortcut('Ctrl+F')
         loadDICOM.setStatusTip('Load DICOM images from a scan folder')
@@ -63,14 +64,13 @@ class MainWindow(QMainWindow):
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
 
+        #Tools Menu
         self.binaryOperationsButton = QAction('Binary Operation', self)
         self.binaryOperationsButton.setShortcut('Ctrl+B')
         self.binaryOperationsButton.setStatusTip('Performs binary operations on two images')
         self.binaryOperationsButton.triggered.connect(self.displayBinaryOperationsWindow)
         self.binaryOperationsButton.setEnabled(False)
         toolsMenu.addAction(self.binaryOperationsButton)
-
-
 
         self.copySeriesButton = QAction('Copy Series', self)
         self.copySeriesButton.setShortcut('Ctrl+C')
@@ -110,6 +110,8 @@ class MainWindow(QMainWindow):
      
 
     def getScanDirectory(self):
+        """Displays an open folder dialog window to allow the
+        user to select the folder holding the DICOM files"""
         try:
             cwd = os.getcwd()
             scan_directory = QFileDialog.getExistingDirectory(
@@ -150,6 +152,9 @@ class MainWindow(QMainWindow):
 
 
     def makeDICOM_XML_File(self, scan_directory):
+        """Creates an XML file that describes the contents of the scan folder,
+        scan_directory.  Returns the full file path of the resulting XML file,
+        which takes it's name from the scan folder."""
         try:
             if scan_directory:
                 start_time=time.time()
@@ -179,6 +184,8 @@ class MainWindow(QMainWindow):
  
 
     def existsDICOMXMLFile(self, scanDirectory):
+        """This function returns True if an XML file of scan images already
+        exists in the scan directory."""
         try:
             flag = False
             with os.scandir(scanDirectory) as entries:
@@ -194,6 +201,12 @@ class MainWindow(QMainWindow):
 
 
     def loadDICOM(self):
+        """This function is executed when the Load DICOM menu item is selected.
+        It displays a folder dialog box.  After the user has selected the folder
+        containing the DICOM file, an existing XML is searched for.  If one is 
+        found then the user is given the option of using it, rather than build
+        a new one from scratch.
+        """
         try:
             self.closeAllSubWindows()
             #browse to DICOM folder and get DICOM folder name
@@ -380,8 +393,10 @@ class MainWindow(QMainWindow):
             viewBox.setAspectLocked(True)
             self.img = pg.ImageItem(border='w')
             viewBox.addItem(self.img)
-            #Test pixel array holds image & display it
+            #Check that pixel array holds an image & display it
             if pixelArray is None:
+                #Missing image, perhaps deleted,
+                #so display a missing image label 
                 self.lblImageMissing.show()
                 #Display a black box
                 self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
@@ -395,7 +410,6 @@ class MainWindow(QMainWindow):
             self.subWindow.setGeometry(0,0,800,600)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
-
         except Exception as e:
             print('Error in displayImageSubWindow: ' + str(e))
 
@@ -404,6 +418,8 @@ class MainWindow(QMainWindow):
                      seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
+        A slider allows the user to navigate  through the images.  A delete
+        button allows the user to delete the image they are viewing.
         """
         try:
             self.subWindow = QMdiSubWindow(self)
@@ -462,6 +478,9 @@ class MainWindow(QMainWindow):
 
 
     def deleteImageInMultiImageViewer(self):
+        """When the Delete button is clicked on the multi image viewer,
+        this function deletes the physical image and removes the 
+        reference to it in the XML file."""
         try:
             imageName = os.path.basename(self.currentImagePath)
             studyID = self.lblHiddenStudyID.text()
@@ -493,7 +512,7 @@ class MainWindow(QMainWindow):
                     #There is only one image left in the display
                     self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
                 elif len(self.imageList) + 1 == lastSliderPosition:    
-                     #we are deleting the last image in a series
+                     #we are deleting the nth image in a series of n images
                      #so move the slider back to penultimate image in list 
                     self.displayMultiImageSubWindow(self.imageList, 
                                       studyID, seriesID, len(self.imageList))
@@ -505,12 +524,11 @@ class MainWindow(QMainWindow):
                                       studyID, seriesID, lastSliderPosition)
      
                 #Now update XML file
-                #Is this the last image in a series?
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
                 #whole series from XML file
                 #If it is not the last image in a series
-                # just remove the image from the XML file 
+                #just remove the image from the XML file 
                 xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                 #print(xPath)
@@ -831,7 +849,8 @@ class MainWindow(QMainWindow):
             imageName1 = self.imageList1.currentText()
             imagePath1 = self.image_Name_Path_Dict[imageName1]
             imageName2 = self.imageList2.currentText()
-
+            imagePath2 = self.image_Name_Path_Dict[imageName2]
+            
             binaryOperation = self.binaryOpsList.currentText()
             if binaryOperation == 'Subtract':
                 binaryOperation = 'Sub'
@@ -846,7 +865,7 @@ class MainWindow(QMainWindow):
                 + '_' + imageName2 
             newImageFilePath = os.path.dirname(imagePath1) + '\\' + \
                 newImageFileName + '.dcm'
-            print(newImageFilePath)
+            #print(newImageFilePath)
             #Save pixel array to a file
             #saveDICOM_Image.
             self.insertNewImageInXMLFile(newImageFileName, suffix, imagePath1, True)

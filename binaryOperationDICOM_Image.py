@@ -7,12 +7,12 @@ def returnPixelArray(imagePath1, imagePath2, binaryOperation):
     """returns the Image/Pixel array"""
     try:
         if os.path.exists(imagePath1):
-            dataset = readDICOM_Image.getDicomDataset(imagePath1)
-            pixelArray1 = readDICOM_Image.getPixelArray(dataset)
+            dataset1 = readDICOM_Image.getDicomDataset(imagePath1)
+            pixelArray1 = readDICOM_Image.getPixelArray(dataset1)
         
         if os.path.exists(imagePath2):
-            dataset = readDICOM_Image.getDicomDataset(imagePath2)
-            pixelArray2 = readDICOM_Image.getPixelArray(dataset)
+            dataset2 = readDICOM_Image.getDicomDataset(imagePath2)
+            pixelArray2 = readDICOM_Image.getPixelArray(dataset2)
             
         if binaryOperation == 'Add':
             pixelArray3 = np.add(pixelArray1, pixelArray2)
