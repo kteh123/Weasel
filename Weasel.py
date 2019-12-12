@@ -765,8 +765,8 @@ class MainWindow(QMainWindow):
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == 'tree_view':
                 continue
-                subWin.close()
-                QApplication.processEvents()
+            subWin.close()
+            QApplication.processEvents()
                
 
     def displayBinaryOperationsWindow(self):
