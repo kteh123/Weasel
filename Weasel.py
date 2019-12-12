@@ -58,6 +58,12 @@ class MainWindow(QMainWindow):
         loadDICOM.triggered.connect(self.loadDICOM)
         fileMenu.addAction(loadDICOM)
 
+        closeAllImageWindowsButton = QAction('Close All Image Windows', self)
+        closeAllImageWindowsButton.setShortcut('Ctrl+Z')
+        closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
+        closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
+        fileMenu.addAction(closeAllImageWindowsButton)
+
         closeAllSubWindowsButton = QAction('Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
@@ -278,7 +284,7 @@ class MainWindow(QMainWindow):
                 widget.setLayout(QVBoxLayout()) 
                 subWindow = QMdiSubWindow(self)
                 subWindow.setWidget(widget)
-                subWindow.setObjectName("New_Window")
+                subWindow.setObjectName("tree_view")
                 subWindow.setWindowTitle("DICOM Study Structure")
                 subWindow.setGeometry(0,0,800,300)
                 self.mdiArea.addSubWindow(subWindow)
@@ -755,6 +761,13 @@ class MainWindow(QMainWindow):
                 QApplication.processEvents()
                 break
 
+    def closeAllImageWindows(self):
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == 'tree_view':
+                continue
+                subWin.close()
+                QApplication.processEvents()
+               
 
     def displayBinaryOperationsWindow(self):
         try:
@@ -785,6 +798,10 @@ class MainWindow(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
 
+            self.lblHiddenStudyID = QLabel()
+            self.lblHiddenSeriesID = QLabel()
+            self.lblHiddenStudyID.hide()
+            self.lblHiddenSeriesID.hide()
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
@@ -823,6 +840,8 @@ class MainWindow(QMainWindow):
             self.imageList2.addItems(imageNameList)
             self.binaryOpsList.addItems(listBinOps)
 
+            layout.addWidget(self.lblHiddenStudyID, 0, 0)
+            layout.addWidget(self.lblHiddenSeriesID, 0, 1)
             layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
@@ -868,7 +887,7 @@ class MainWindow(QMainWindow):
             #print(newImageFilePath)
             #Save pixel array to a file
             saveDICOM_Image.save_dicom_binOpResult(imagePath1, imagePath2, self.binOpArray, newImageFilePath, binaryOperation+suffix)
-            self.insertNewImageInXMLFile(newImageFileName, suffix, imagePath1, True)
+            self.insertNewImageInXMLFile(newImageFilePath, suffix, imagePath1, True)
             self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in saveNewDICOMFile: ' + str(e))
