@@ -12,9 +12,9 @@ def returnPixelArray(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.getPixelArray(dataset)
             invertedImage = invertAlgorithm(pixelArray, dataset)
-            newFileName = saveDICOM_Image.save_and_returnFilename(
-                invertedImage, dataset, imagePath, FILE_SUFFIX)
-            return invertedImage, newFileName
+            newFilePath = saveDICOM_Image.save_automatically_and_returnFilePath(
+                imagePath, invertedImage, FILE_SUFFIX)
+            return invertedImage, newFilePath
         else:
             return None, None
     except Exception as e:

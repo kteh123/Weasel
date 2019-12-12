@@ -867,7 +867,7 @@ class MainWindow(QMainWindow):
                 newImageFileName + '.dcm'
             #print(newImageFilePath)
             #Save pixel array to a file
-            #saveDICOM_Image.
+            saveDICOM_Image.save_dicom_binOpResult(imagePath1, imagePath2, self.binOpArray, newImageFilePath, binaryOperation+suffix)
             self.insertNewImageInXMLFile(newImageFileName, suffix, imagePath1, True)
             self.refreshDICOMStudiesTreeView()
         except Exception as e:
