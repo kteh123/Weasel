@@ -320,9 +320,11 @@ class MainWindow(QMainWindow):
                     studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                     studyBranch.setExpanded(True)
+                    seriesBranchList = []
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
+                        seriesBranchList.append(seriesBranch)
                         treeWidgetItemCounter += 1
                         self.progBar.setValue(treeWidgetItemCounter)
                         #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
@@ -348,14 +350,15 @@ class MainWindow(QMainWindow):
                             imageLeaf.setText(1, imageDate)
                             imageLeaf.setText(2, imageTime)
                             imageLeaf.setText(3, imagePath)
-                            self.treeView.resizeColumnToContents(0)
-                            self.treeView.resizeColumnToContents(1)
-                            self.treeView.resizeColumnToContents(2)
-                            #self.treeView.resizeColumnToContents(3)
-                            self.treeView.hideColumn(3)
-                        #Now collapse the series branch so as to hide the images
-                        seriesBranch.setExpanded(False)
-                        
+                self.treeView.resizeColumnToContents(0)
+                self.treeView.resizeColumnToContents(1)
+                self.treeView.resizeColumnToContents(2)
+                #self.treeView.resizeColumnToContents(3)
+                self.treeView.hideColumn(3)
+                
+                #Now collapse all series branches so as to hide the images
+                for branch in seriesBranchList:
+                    branch.setExpanded(False)
                 self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
                 self.treeView.itemDoubleClicked.connect(self.viewImage)
                 self.treeView.show()
@@ -605,7 +608,10 @@ class MainWindow(QMainWindow):
     def insertNewImageInXMLFile(self, newImageFileName, suffix, 
                                 imageName = None, seriesSelected = False):
         try:
-            if seriesSelected:
+            if suffix == '_binOp':
+                studyID = self.lblHiddenStudyID_BinOp.text()
+                seriesID = self.lblHiddenSeriesID_BinOp.text()
+            elif seriesSelected:
                 studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
             else:
                 studyID, seriesID = self.getStudyAndSeriesNumbersForImage()
@@ -798,10 +804,11 @@ class MainWindow(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
 
-            self.lblHiddenStudyID = QLabel()
-            self.lblHiddenSeriesID = QLabel()
-            self.lblHiddenStudyID.hide()
-            self.lblHiddenSeriesID.hide()
+            studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
+            self.lblHiddenStudyID_BinOp = QLabel(studyID)
+            self.lblHiddenSeriesID_BinOp = QLabel(seriesID)
+            self.lblHiddenStudyID_BinOp.hide()
+            self.lblHiddenSeriesID_BinOp.hide()
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
@@ -840,8 +847,8 @@ class MainWindow(QMainWindow):
             self.imageList2.addItems(imageNameList)
             self.binaryOpsList.addItems(listBinOps)
 
-            layout.addWidget(self.lblHiddenStudyID, 0, 0)
-            layout.addWidget(self.lblHiddenSeriesID, 0, 1)
+            layout.addWidget(self.lblHiddenStudyID_BinOp, 0, 0)
+            layout.addWidget(self.lblHiddenSeriesID_BinOp, 0, 1)
             layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
@@ -991,8 +998,9 @@ class MainWindow(QMainWindow):
                   'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if buttonReply == QMessageBox.Ok:
-                    #Delete physical file
-                    os.remove(imagePath)
+                    #Delete physical file if it exists
+                    if os.path.exists(imagePath):
+                        os.remove(imagePath)
                     #If this image is displayed, close its subwindow
                     self.closeSubWindow(imagePath)
                     #Is this the last image in a series?
@@ -1038,7 +1046,8 @@ class MainWindow(QMainWindow):
                     imageList, studyID, seriesID = self.getImagePathList() 
                     #Iterate through list of images and delete each image
                     for imagePath in imageList:
-                        os.remove(imagePath)
+                        if os.path.exists(imagePath):
+                            os.remove(imagePath)
                     #Remove the series from the XML file
                     self.removeSeriesFromXMLFile(studyID, seriesID)
                     self.closeSubWindow(seriesID)
@@ -1213,9 +1222,11 @@ class MainWindow(QMainWindow):
                 studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
+                seriesBranchList = []
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
+                    seriesBranchList.append(seriesBranch)
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                     seriesBranch.setText(0, "Series - {}".format(seriesID))
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
@@ -1235,11 +1246,12 @@ class MainWindow(QMainWindow):
                         imageLeaf.setText(1, imageDate)
                         imageLeaf.setText(2, imageTime)
                         imageLeaf.setText(3, imagePath)
-                        imageLeaf.setExpanded(True)
-
             self.treeView.resizeColumnToContents(0)
             self.treeView.resizeColumnToContents(1)
             self.treeView.resizeColumnToContents(2)
+            #Now collapse all series branches so as to hide the images
+            for branch in seriesBranchList:
+                branch.setExpanded(False)
             self.treeView.hideColumn(3)
             self.treeView.show()
         except Exception as e:

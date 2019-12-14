@@ -11,8 +11,8 @@ def returnCopiedFile(imagePath):
         if os.path.exists(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.getPixelArray(dataset)
-            newFileName = saveDICOM_Image.save_and_returnFilename(
-                pixelArray, dataset, imagePath, FILE_SUFFIX)
+            newFileName = saveDICOM_Image.save_automatically_and_returnFilePath(
+                 imagePath, pixelArray, FILE_SUFFIX)
             return  newFileName
         else:
             return None
