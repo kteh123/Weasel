@@ -320,11 +320,11 @@ class MainWindow(QMainWindow):
                     studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                     studyBranch.setExpanded(True)
-                    seriesBranchList = []
+                    self.seriesBranchList = []
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
-                        seriesBranchList.append(seriesBranch)
+                        self.seriesBranchList.append(seriesBranch)
                         treeWidgetItemCounter += 1
                         self.progBar.setValue(treeWidgetItemCounter)
                         #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
@@ -357,7 +357,7 @@ class MainWindow(QMainWindow):
                 self.treeView.hideColumn(3)
                 
                 #Now collapse all series branches so as to hide the images
-                for branch in seriesBranchList:
+                for branch in self.seriesBranchList:
                     branch.setExpanded(False)
                 self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
                 self.treeView.itemDoubleClicked.connect(self.viewImage)
@@ -656,6 +656,7 @@ class MainWindow(QMainWindow):
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
                 self.XMLtree.write(self.DICOM_XML_FilePath)
+                return newSeriesID
             else:
                 #A series already exists to hold new images from
                 #the current parent series
@@ -670,6 +671,7 @@ class MainWindow(QMainWindow):
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
                 self.XMLtree.write(self.DICOM_XML_FilePath)
+                return seriesID
         except Exception as e:
             print('Error in insertNewImageInXMLFile: ' + str(e))
     
@@ -682,7 +684,7 @@ class MainWindow(QMainWindow):
                     self.getStudyAndSeriesNumbersFromSeries()
             #Need to create a new series to hold this series of New images 
             newSeriesID = seriesID + suffix
-     
+     #CHECK IF THIS NEW SERIES EXISTS, IF SO, CHANGE NEW SERIES ID ACCORDINGLY
             #Get study branch
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
             currentStudy = self.root.find(xPath)
@@ -724,9 +726,9 @@ class MainWindow(QMainWindow):
                     invertDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray, invertedImageFileName)
                 #Record inverted image in XML file
-                self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
+                seriesID = self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
                 #Update tree view with xml file modified above
-                self.refreshDICOMStudiesTreeView()
+                self.refreshDICOMStudiesTreeView(seriesID)
             elif self.isASeriesSelected():
                 imageList, studyID, _ = self.getImagePathList() 
                 #Iterate through list of images and invert each image
@@ -736,11 +738,11 @@ class MainWindow(QMainWindow):
                     invertDICOM_Image.returnPixelArray(imagePath)
                     invertedImageList.append(invertedImageFileName)
 
-                newSeriesName= self.insertNewSeriesInXMLFile(imageList, \
+                newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
                     invertedImageList, '_inv')
                 self.displayMultiImageSubWindow(
-                    invertedImageList, studyID, newSeriesName)
-                self.refreshDICOMStudiesTreeView()
+                    invertedImageList, studyID, newSeriesID)
+                self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in invertImage: ' + str(e))
 
@@ -894,8 +896,8 @@ class MainWindow(QMainWindow):
             #print(newImageFilePath)
             #Save pixel array to a file
             saveDICOM_Image.save_dicom_binOpResult(imagePath1, imagePath2, self.binOpArray, newImageFilePath, binaryOperation+suffix)
-            self.insertNewImageInXMLFile(newImageFilePath, suffix, imagePath1, True)
-            self.refreshDICOMStudiesTreeView()
+            newSeriesID = self.insertNewImageInXMLFile(newImageFilePath, suffix, imagePath1, True)
+            self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in saveNewDICOMFile: ' + str(e))
 
@@ -964,10 +966,10 @@ class MainWindow(QMainWindow):
                     copyDICOM_Image.returnCopiedFile(imagePath)
                 copiedImageList.append(copiedImageFilePath)
 
-            newSeriesName= self.insertNewSeriesInXMLFile(imageList, \
+            newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
                 copiedImageList, '_copy')
-            self.displayMultiImageSubWindow(copiedImageList, studyID, newSeriesName)
-            self.refreshDICOMStudiesTreeView()
+            self.displayMultiImageSubWindow(copiedImageList, studyID, newSeriesID)
+            self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in copySeries: ' + str(e))
 
@@ -1202,8 +1204,22 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getDICOMFileData: ' + str(e))
 
+    def expandTreeViewBranch(self, branchText = ''):
+        try:
+            if branchText:
+                for branch in self.seriesBranchList:
+                    seriesID = branch.text(0).replace('Series -', '')
+                    seriesID = seriesID.strip()
+                    if seriesID == branchText:
+                        branch.setExpanded(True)
+                    else:
+                        branch.setExpanded(False)
 
-    def refreshDICOMStudiesTreeView(self):
+        except Exception as e:
+            print('Error in expandTreeViewBranch: ' + str(e))
+
+
+    def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
@@ -1222,11 +1238,11 @@ class MainWindow(QMainWindow):
                 studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
-                seriesBranchList = []
+                self.seriesBranchList.clear()
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
-                    seriesBranchList.append(seriesBranch)
+                    self.seriesBranchList.append(seriesBranch)
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                     seriesBranch.setText(0, "Series - {}".format(seriesID))
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
@@ -1250,8 +1266,8 @@ class MainWindow(QMainWindow):
             self.treeView.resizeColumnToContents(1)
             self.treeView.resizeColumnToContents(2)
             #Now collapse all series branches so as to hide the images
-            for branch in seriesBranchList:
-                branch.setExpanded(False)
+            #except the new series branch that has been created
+            self.expandTreeViewBranch(newSeriesName)
             self.treeView.hideColumn(3)
             self.treeView.show()
         except Exception as e:
