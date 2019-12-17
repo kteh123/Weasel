@@ -30,6 +30,8 @@ def returnPixelArray(imagePath1, imagePath2, binaryOperation):
         
         if pixelArray3.any():
              return pixelArray3
+        else:
+             return np.zeros(np.array(pixelArray1).shape)
        
     except Exception as e:
         print('Error in function binaryOperationDICOM_Image.returnPixelArray: ' + str(e))

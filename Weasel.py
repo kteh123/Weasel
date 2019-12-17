@@ -23,6 +23,8 @@ import WriteXMLfromDICOM
 import binaryOperationDICOM_Image
 import time
 import numpy as np
+from datetime import datetime
+from datetime import date
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -335,7 +337,11 @@ class MainWindow(QMainWindow):
                         seriesBranch.setExpanded(True)
                         for image in series:
                             #Extract filename from file path
-                            imageName = os.path.basename(image.find('name').text)
+                            if image.find('name').text:
+                                imageName = os.path.basename(image.find('name').text)
+                            else:
+                                imageName = 'Name missing'
+                            print (imageName)
                             imageDate = image.find('date').text
                             imageTime = image.find('time').text
                             imagePath = image.find('name').text
@@ -605,6 +611,65 @@ class MainWindow(QMainWindow):
             print('Error in viewImage: ' + str(e))
 
 
+    def insertNewBinOpImageInXMLFile(self, newImageFileName, suffix):
+        try:
+            studyID = self.lblHiddenStudyID_BinOp.text()
+            seriesID = self.lblHiddenSeriesID_BinOp.text()
+
+            #First determine if a series with parentID=seriesID exists
+            #and typeID=suffix for a binary operation
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
+               '[@typeID=' + chr(34) + suffix + chr(34) +']'
+            series = self.root.find(xPath)
+            #image date & time are set to current date and time
+            now = datetime.now()
+            imageTime = now.strftime("%H:%M:%S")
+            imageDate = now.strftime("%d/%m/%Y")        
+            if series is None:
+                #Need to create a new series to hold this new image
+                newSeriesID = seriesID + suffix
+                #Get study branch
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
+                currentStudy = self.root.find(xPath)
+                newAttributes = {'id':newSeriesID, 
+                                 'parentID':seriesID, 
+                                 'typeID':suffix}
+                   
+                #Add new series to study to hold new images
+                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
+                    
+                comment = ET.Comment('This series holds images derived from binary operations on 2 images')
+                newSeries.append(comment)   
+                
+                #Now add image element
+                newImage = ET.SubElement(newSeries,'image')
+                #Add child nodes of the image element
+                nameNewImage = ET.SubElement(newImage, 'name')
+                nameNewImage.text = newImageFileName
+                timeNewImage = ET.SubElement(newImage, 'time')
+                timeNewImage.text = imageTime
+                dateNewImage = ET.SubElement(newImage, 'date')
+                dateNewImage.text = imageDate
+                self.XMLtree.write(self.DICOM_XML_FilePath)
+                return newSeriesID
+            else:
+                #A series already exists to hold new images from
+                #the current parent series
+                newImage = ET.SubElement(series,'image')
+                #Add child nodes of the image element
+                nameNewImage = ET.SubElement(newImage, 'name')
+                nameNewImage.text = newImageFileName
+                timeNewImage = ET.SubElement(newImage, 'time')
+                timeNewImage.text = imageTime
+                dateNewImage = ET.SubElement(newImage, 'date')
+                dateNewImage.text = imageDate
+                self.XMLtree.write(self.DICOM_XML_FilePath)
+                return series.attrib['id']
+        except Exception as e:
+            print('Error in insertNewBinOpImageInXMLFile: ' + str(e))
+
+
     def insertNewImageInXMLFile(self, newImageFileName, suffix, 
                                 imageName = None, seriesSelected = False):
         try:
@@ -614,7 +679,7 @@ class MainWindow(QMainWindow):
             elif seriesSelected:
                 studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
             else:
-                studyID, seriesID = self.getStudyAndSeriesNumbersForImage()
+                studyID, seriesID = self.getStudyAndSeriesNumbersFromImage()
 
             #First determine if a series with parentID=seriesID exists
             #and typeID=suffix
@@ -671,10 +736,31 @@ class MainWindow(QMainWindow):
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
                 self.XMLtree.write(self.DICOM_XML_FilePath)
-                return seriesID
+                return series.attrib['id']
         except Exception as e:
             print('Error in insertNewImageInXMLFile: ' + str(e))
-    
+
+
+    def getNewSeriesName(self, studyID, seriesID, suffix):
+        """This function uses recursion to find the next available
+        series name.  A new series name is created by adding a suffix
+        at the end of an existing series name. """
+        try:
+            seriesID = seriesID + suffix
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            #print(xPath)
+            imageList = self.root.findall(xPath)
+            if imageList:
+                #A series of images already exists 
+                #for the series called seriesID
+                #so try another new series ID
+                return self.getNewSeriesName(studyID, seriesID, suffix)
+            else:
+                return seriesID
+        except Exception as e:
+            print('Error in getNewSeriesName: ' + str(e))
+
 
     def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
         """Creates a new series to hold the series of New images"""
@@ -682,9 +768,8 @@ class MainWindow(QMainWindow):
             #Get current study & series IDs
             studyID, seriesID = \
                     self.getStudyAndSeriesNumbersFromSeries()
-            #Need to create a new series to hold this series of New images 
-            newSeriesID = seriesID + suffix
-     #CHECK IF THIS NEW SERIES EXISTS, IF SO, CHANGE NEW SERIES ID ACCORDINGLY
+            #Get a new series ID
+            newSeriesID = self.getNewSeriesName(studyID, seriesID, suffix)
             #Get study branch
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
             currentStudy = self.root.find(xPath)
@@ -692,10 +777,10 @@ class MainWindow(QMainWindow):
                              'parentID':seriesID,
                              'typeID':suffix}
                    
-            #Add new series to study to hold New images
+            #Add new series to study to hold new images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
                     
-            comment = ET.Comment('This series holds a whole series of New images')
+            comment = ET.Comment('This series holds a whole series of new images')
             newSeries.append(comment)
             #Get image date & time from original image
             for index, image in enumerate(origImageList):
@@ -818,10 +903,12 @@ class MainWindow(QMainWindow):
 
             self.btnSave = QPushButton('Save')
             self.btnSave.setEnabled(False)
-            self.btnSave.clicked.connect(self.saveNewDICOMFile)
+            self.btnSave.clicked.connect(self.saveNewDICOMFileFromBinOp)
 
             imagePathList, _, _ = self.getImagePathList()
-            imageNameList = [os.path.basename(image) for image in imagePathList]
+            #form a list of image file names without extensions
+            imageNameList = [os.path.splitext(os.path.basename(image))[0] 
+                             for image in imagePathList]
             self.image_Name_Path_Dict = dict(zip(
                 imageNameList, imagePathList))
             listBinOps =['Select binary Operation', 'Add', 'Divide', 
@@ -871,7 +958,7 @@ class MainWindow(QMainWindow):
             print('Error in displayBinaryOperationsWindow: ' + str(e))
 
     
-    def saveNewDICOMFile(self):
+    def saveNewDICOMFileFromBinOp(self):
         try:
             suffix = '_binOp'
             imageName1 = self.imageList1.currentText()
@@ -896,10 +983,11 @@ class MainWindow(QMainWindow):
             #print(newImageFilePath)
             #Save pixel array to a file
             saveDICOM_Image.save_dicom_binOpResult(imagePath1, imagePath2, self.binOpArray, newImageFilePath, binaryOperation+suffix)
-            newSeriesID = self.insertNewImageInXMLFile(newImageFilePath, suffix, imagePath1, True)
+            newSeriesID = self.insertNewBinOpImageInXMLFile(newImageFilePath, suffix)
+            print(newSeriesID)
             self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
-            print('Error in saveNewDICOMFile: ' + str(e))
+            print('Error in saveNewDICOMFileFromBinOp: ' + str(e))
 
 
     def doBinaryOperation(self, imageDict):
@@ -921,8 +1009,6 @@ class MainWindow(QMainWindow):
                 self.binOpArray = binaryOperationDICOM_Image.returnPixelArray(
                     imagePath1, imagePath2, binOp)
                 self.img3.setImage(self.binOpArray)
-                self.btnSave.setEnabled(True)
-
         except Exception as e:
             print('Error in doBinaryOperation: ' + str(e))
 
@@ -931,8 +1017,10 @@ class MainWindow(QMainWindow):
         if self.lblImageMissing1.isHidden() and \
             self.lblImageMissing2.isHidden():
             self.binaryOpsList.setEnabled(True)
+            self.btnSave.setEnabled(True)
         else:
             self.binaryOpsList.setEnabled(False)
+            self.btnSave.setEnabled(False)
 
 
     def displayImageForBinOp(self, imageNumber, imageDict):
@@ -947,11 +1035,10 @@ class MainWindow(QMainWindow):
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
             if pixelArray is None:
                 objImageMissingLabel.show()
-                objImage.setImage(np.array([[0,0,0],[0,0,0]]))  
+                objImage.setImage(np.array([[0,0,0],[0,0,0]])) 
             else:
                 objImageMissingLabel.hide()
                 objImage.setImage(pixelArray) 
-                
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
 
@@ -1012,7 +1099,7 @@ class MainWindow(QMainWindow):
                     #No it is not the last image in a series
                     #so just remove the image from the XML file 
                     studyID, seriesID = \
-                        self.getStudyAndSeriesNumbersForImage()
+                        self.getStudyAndSeriesNumbersFromImage()
                     xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                     #print(xPath)
@@ -1058,7 +1145,7 @@ class MainWindow(QMainWindow):
             print('Error in deleteImage: ' + str(e))
 
 
-    def getStudyAndSeriesNumbersForImage(self):
+    def getStudyAndSeriesNumbersFromImage(self):
         """This function assumes a series name takes the
         form 'series' space number, where number is an integer
         with one or more digits; 
@@ -1085,7 +1172,7 @@ class MainWindow(QMainWindow):
             else:
                 return None, None
         except Exception as e:
-            print('Error in getStudyAndSeriesNumbersForImage: ' + str(e))
+            print('Error in getStudyAndSeriesNumbersFromImage: ' + str(e))
 
 
     def getStudyAndSeriesNumbersFromSeries(self):
@@ -1204,17 +1291,16 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getDICOMFileData: ' + str(e))
 
+
     def expandTreeViewBranch(self, branchText = ''):
         try:
-            if branchText:
-                for branch in self.seriesBranchList:
-                    seriesID = branch.text(0).replace('Series -', '')
-                    seriesID = seriesID.strip()
-                    if seriesID == branchText:
-                        branch.setExpanded(True)
-                    else:
-                        branch.setExpanded(False)
-
+            for branch in self.seriesBranchList:
+                seriesID = branch.text(0).replace('Series -', '')
+                seriesID = seriesID.strip()
+                if seriesID == branchText:
+                    branch.setExpanded(True)
+                else:
+                    branch.setExpanded(False)
         except Exception as e:
             print('Error in expandTreeViewBranch: ' + str(e))
 
