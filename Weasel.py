@@ -15,16 +15,21 @@ import os
 import sys
 import re
 import styleSheet
+import time
+import numpy as np
+from datetime import datetime
+from datetime import date
+
+#Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
+#path[0] is the current working directory
+sys.path.append(os.path.join(sys.path[0],'Tools'))
 import readDICOM_Image
 import invertDICOM_Image
 import copyDICOM_Image
 import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
-import time
-import numpy as np
-from datetime import datetime
-from datetime import date
+
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'

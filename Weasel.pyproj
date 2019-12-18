@@ -22,17 +22,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="binaryOperationDICOM_Image.py">
+    <Compile Include="Tools\binaryOperationDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="copyDICOM_Image.py">
+    <Compile Include="Tools\copyDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="invertDICOM_Image.py">
+    <Compile Include="Tools\invertDICOM_Image.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="readDICOM_Image.py" />
-    <Compile Include="saveDICOM_Image.py" />
+    <Compile Include="Tools\readDICOM_Image.py" />
+    <Compile Include="Tools\saveDICOM_Image.py" />
     <Compile Include="styleSheet.py">
       <SubType>Code</SubType>
     </Compile>
@@ -52,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tools\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
