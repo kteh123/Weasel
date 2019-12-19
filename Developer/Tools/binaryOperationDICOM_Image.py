@@ -3,6 +3,9 @@ import os
 import numpy as np
 import readDICOM_Image
 
+listBinaryOperations =['Select binary Operation', 'Add', 'Divide', 
+                         'Multiply', 'Subtract']
+
 def returnPixelArray(imagePath1, imagePath2, binaryOperation):
     """returns the Image/Pixel array"""
     try:

@@ -939,13 +939,8 @@ class Weasel(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
 
-            #studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
-            #self.lblHiddenStudyID_BinOp = QLabel(studyID)
-            #self.lblHiddenSeriesID_BinOp = QLabel(seriesID)
-            #self.lblHiddenStudyID_BinOp.hide()
-            #self.lblHiddenSeriesID_BinOp.hide()
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
@@ -955,14 +950,14 @@ class Weasel(QMainWindow):
             self.btnSave.setEnabled(False)
             self.btnSave.clicked.connect(self.saveNewDICOMFileFromBinOp)
 
-            imagePathList, _, _ = self.getImagePathList()
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
+            imagePathList = self.getImagePathList(studyID, seriesID)
             #form a list of image file names without extensions
             imageNameList = [os.path.splitext(os.path.basename(image))[0] 
                              for image in imagePathList]
             self.image_Name_Path_Dict = dict(zip(
                 imageNameList, imagePathList))
-            listBinOps =['Select binary Operation', 'Add', 'Divide', 
-                         'Multiply', 'Subtract']
             self.imageList1 = QComboBox()
             self.imageList2 = QComboBox()
             self.imageList1.currentIndexChanged.connect(
@@ -984,10 +979,9 @@ class Weasel(QMainWindow):
                 lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
             self.imageList1.addItems(imageNameList)
             self.imageList2.addItems(imageNameList)
-            self.binaryOpsList.addItems(listBinOps)
+            self.binaryOpsList.addItems(
+                binaryOperationDICOM_Image.listBinaryOperations)
 
-            #layout.addWidget(self.lblHiddenStudyID_BinOp, 0, 0)
-            #layout.addWidget(self.lblHiddenSeriesID_BinOp, 0, 1)
             layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
