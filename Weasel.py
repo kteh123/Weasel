@@ -1,9 +1,9 @@
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import  Qt
+from PyQt5.QtCore import  Qt, pyqtSignal
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
-        QPushButton, 
+        QPushButton, QStatusBar,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  
         QProgressBar, QComboBox )
 from PyQt5.QtGui import QCursor
@@ -13,7 +13,7 @@ from xml.dom import minidom
 import pyqtgraph as pg
 import os
 import sys
-import re
+#import re
 import styleSheet
 import time
 import numpy as np
@@ -22,7 +22,8 @@ from datetime import date
 
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
-sys.path.append(os.path.join(sys.path[0],'Tools'))
+sys.path.append(os.path.join(sys.path[0],'Developer//Tools//'))
+sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 import readDICOM_Image
 import invertDICOM_Image
 import copyDICOM_Image
@@ -30,11 +31,12 @@ import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
 
+from XMLReader import XMLReader 
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-class MainWindow(QMainWindow):
+class Weasel(QMainWindow):
     def __init__(self, parent=None):
         """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
@@ -48,6 +50,15 @@ class MainWindow(QMainWindow):
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
         self.currentImagePath = ''
+        self.statusBar = QStatusBar()
+        self.centralwidget.layout().addWidget(self.statusBar)
+        self.selectedStudy = ''
+        self.selectedSeries = ''
+        self.selectedImagePath = ''
+        self.selectedImageName = ''
+        ## XML reader object to process XML configuration file
+        #self.objXMLReader = XMLReader() 
+        #self.statusBar.showMessage('hello')
         #self.ApplyStyleSheet()
       
 
@@ -88,7 +99,8 @@ class MainWindow(QMainWindow):
         self.copySeriesButton = QAction('Copy Series', self)
         self.copySeriesButton.setShortcut('Ctrl+C')
         self.copySeriesButton.setStatusTip('Copy a DICOM series')
-        self.copySeriesButton.triggered.connect(self.copySeries)
+        self.copySeriesButton.triggered.connect(
+            lambda:copyDICOM_Image.copySeries(self))
         self.copySeriesButton.setEnabled(False)
         toolsMenu.addAction(self.copySeriesButton)
 
@@ -102,7 +114,8 @@ class MainWindow(QMainWindow):
         self.invertImageButton = QAction('Invert Image', self)
         self.invertImageButton.setShortcut('Ctrl+I')
         self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
-        self.invertImageButton.triggered.connect(self.invertImage)
+        self.invertImageButton.triggered.connect(
+            lambda: invertDICOM_Image.invertImage(self))
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
 
@@ -274,9 +287,9 @@ class MainWindow(QMainWindow):
             if os.path.exists(XML_File_Path):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
-                #print(self.DICOMfolderPath)
                 start_time=time.time()
-                self.XMLtree = ET.parse(XML_File_Path)
+                #self.root = self.objXMLReader.parseXMLFile(XML_File_Path)
+                self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
                 self.root = self.XMLtree.getroot()
                 end_time=time.time()
                 XMLParseTime = end_time - start_time
@@ -346,7 +359,7 @@ class MainWindow(QMainWindow):
                                 imageName = os.path.basename(image.find('name').text)
                             else:
                                 imageName = 'Name missing'
-                            print (imageName)
+                            #print (imageName)
                             imageDate = image.find('date').text
                             imageTime = image.find('time').text
                             imagePath = image.find('name').text
@@ -372,6 +385,7 @@ class MainWindow(QMainWindow):
                     branch.setExpanded(False)
                 self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
                 self.treeView.itemDoubleClicked.connect(self.viewImage)
+                self.treeView.itemClicked.connect(self.onTreeViewItemClicked)
                 self.treeView.show()
                 end_time=time.time()
                 TreeViewTime = end_time - start_time
@@ -381,10 +395,41 @@ class MainWindow(QMainWindow):
                 self.progBar.hide()
                 self.progBar.reset()
                 subWindow.setGeometry(0,0,800,1300)
-                widget.layout().addWidget(self.treeView)
-                
+                widget.layout().addWidget(self.treeView)   
         except Exception as e:
-            print('Error in makeDICOMStudiesTreeView: ' + str(e))
+            print('Error in makeDICOMStudiesTreeView: ' + str(e))      
+
+
+    @QtCore.pyqtSlot(QTreeWidgetItem, int)
+    def onTreeViewItemClicked(self, item, col):
+        selectedText = item.text(0)
+        if 'study' in selectedText.lower():
+            studyID = selectedText.replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = ''
+            self.selectedImagePath = ''
+            self.selectedImageName = ''
+            self.statusBar.showMessage('Study - ' + studyID + ' selected.')
+        elif 'series' in selectedText.lower():
+            seriesID = selectedText.replace('Series -', '').strip()
+            studyID = item.parent().text(0).replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = seriesID
+            self.selectedImagePath = ''
+            self.selectedImageName = ''
+            fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
+            self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
+        elif 'image' in selectedText.lower():
+            imageID = selectedText.replace('Image -', '')
+            imagePath =item.text(3)
+            seriesID = item.parent().text(0).replace('Series -', '').strip()
+            studyID = item.parent().parent().text(0).replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = seriesID
+            self.selectedImagePath = imagePath
+            self.selectedImageName = imageID
+            fullImageID = studyID + ': ' + seriesID + ': '  + imageID
+            self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
 
     def closeAllSubWindows(self):
@@ -606,11 +651,13 @@ class MainWindow(QMainWindow):
         in the DICOM studies tree view."""
         try:
             if self.isAnImageSelected():
-                imagePath = self.getImagePath()
+                imagePath = self.selectedImagePath
                 pixelArray = readDICOM_Image.returnPixelArray(imagePath)
                 self.displayImageSubWindow(pixelArray, imagePath)
             elif self.isASeriesSelected():
-                self.imageList, studyID, seriesID = self.getImagePathList() 
+                studyID = self.selectedStudy 
+                seriesID = self.selectedSeries
+                self.imageList = self.getImagePathList(studyID, seriesID)
                 self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
         except Exception as e:
             print('Error in viewImage: ' + str(e))
@@ -618,8 +665,8 @@ class MainWindow(QMainWindow):
 
     def insertNewBinOpImageInXMLFile(self, newImageFileName, suffix):
         try:
-            studyID = self.lblHiddenStudyID_BinOp.text()
-            seriesID = self.lblHiddenSeriesID_BinOp.text()
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
 
             #First determine if a series with parentID=seriesID exists
             #and typeID=suffix for a binary operation
@@ -678,13 +725,8 @@ class MainWindow(QMainWindow):
     def insertNewImageInXMLFile(self, newImageFileName, suffix, 
                                 imageName = None, seriesSelected = False):
         try:
-            if suffix == '_binOp':
-                studyID = self.lblHiddenStudyID_BinOp.text()
-                seriesID = self.lblHiddenSeriesID_BinOp.text()
-            elif seriesSelected:
-                studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
-            else:
-                studyID, seriesID = self.getStudyAndSeriesNumbersFromImage()
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
 
             #First determine if a series with parentID=seriesID exists
             #and typeID=suffix
@@ -771,8 +813,8 @@ class MainWindow(QMainWindow):
         """Creates a new series to hold the series of New images"""
         try:
             #Get current study & series IDs
-            studyID, seriesID = \
-                    self.getStudyAndSeriesNumbersFromSeries()
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries 
             #Get a new series ID
             newSeriesID = self.getNewSeriesName(studyID, seriesID, suffix)
             #Get study branch
@@ -800,41 +842,42 @@ class MainWindow(QMainWindow):
                 dateNewImage.text = imageDate
 
             self.XMLtree.write(self.DICOM_XML_FilePath)
+            self.statusBar.showMessage('New series created: - ' + newSeriesID)
             return  newSeriesID
 
         except Exception as e:
             print('Error in insertNewSeriesInXMLFile: ' + str(e))
 
 
-    def invertImage(self):
-        """Creates a subwindow that displays an inverted DICOM image. Executed using the 
-        'Invert Image' Menu item in the Tools menu."""
-        try:
-            if self.isAnImageSelected():
-                imagePath = self.getImagePath()
-                pixelArray, invertedImageFileName = \
-                    invertDICOM_Image.returnPixelArray(imagePath)
-                self.displayImageSubWindow(pixelArray, invertedImageFileName)
-                #Record inverted image in XML file
-                seriesID = self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
-                #Update tree view with xml file modified above
-                self.refreshDICOMStudiesTreeView(seriesID)
-            elif self.isASeriesSelected():
-                imageList, studyID, _ = self.getImagePathList() 
-                #Iterate through list of images and invert each image
-                invertedImageList = []
-                for imagePath in imageList:
-                    _, invertedImageFileName = \
-                    invertDICOM_Image.returnPixelArray(imagePath)
-                    invertedImageList.append(invertedImageFileName)
+    #def invertImage(self):
+    #    """Creates a subwindow that displays an inverted DICOM image. Executed using the 
+    #    'Invert Image' Menu item in the Tools menu."""
+    #    try:
+    #        if self.isAnImageSelected():
+    #            imagePath = self.getImagePath()
+    #            pixelArray, invertedImageFileName = \
+    #                invertDICOM_Image.returnPixelArray(imagePath)
+    #            self.displayImageSubWindow(pixelArray, invertedImageFileName)
+    #            #Record inverted image in XML file
+    #            seriesID = self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
+    #            #Update tree view with xml file modified above
+    #            self.refreshDICOMStudiesTreeView(seriesID)
+    #        elif self.isASeriesSelected():
+    #            imageList, studyID, _ = self.getImagePathList() 
+    #            #Iterate through list of images and invert each image
+    #            invertedImageList = []
+    #            for imagePath in imageList:
+    #                _, invertedImageFileName = \
+    #                invertDICOM_Image.returnPixelArray(imagePath)
+    #                invertedImageList.append(invertedImageFileName)
 
-                newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
-                    invertedImageList, '_inv')
-                self.displayMultiImageSubWindow(
-                    invertedImageList, studyID, newSeriesID)
-                self.refreshDICOMStudiesTreeView(newSeriesID)
-        except Exception as e:
-            print('Error in invertImage: ' + str(e))
+    #            newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
+    #                invertedImageList, '_inv')
+    #            self.displayMultiImageSubWindow(
+    #                invertedImageList, studyID, newSeriesID)
+    #            self.refreshDICOMStudiesTreeView(newSeriesID)
+    #    except Exception as e:
+    #        print('Error in invertImage: ' + str(e))
 
 
     def removeSeriesFromXMLFile(self, studyID, seriesID):
@@ -896,11 +939,13 @@ class MainWindow(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
 
-            studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
-            self.lblHiddenStudyID_BinOp = QLabel(studyID)
-            self.lblHiddenSeriesID_BinOp = QLabel(seriesID)
-            self.lblHiddenStudyID_BinOp.hide()
-            self.lblHiddenSeriesID_BinOp.hide()
+            #studyID, seriesID = self.getStudyAndSeriesNumbersFromSeries()
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
+            #self.lblHiddenStudyID_BinOp = QLabel(studyID)
+            #self.lblHiddenSeriesID_BinOp = QLabel(seriesID)
+            #self.lblHiddenStudyID_BinOp.hide()
+            #self.lblHiddenSeriesID_BinOp.hide()
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
@@ -941,8 +986,8 @@ class MainWindow(QMainWindow):
             self.imageList2.addItems(imageNameList)
             self.binaryOpsList.addItems(listBinOps)
 
-            layout.addWidget(self.lblHiddenStudyID_BinOp, 0, 0)
-            layout.addWidget(self.lblHiddenSeriesID_BinOp, 0, 1)
+            #layout.addWidget(self.lblHiddenStudyID_BinOp, 0, 0)
+            #layout.addWidget(self.lblHiddenSeriesID_BinOp, 0, 1)
             layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
             layout.addWidget(self.imageList2, 1, 1)
@@ -1048,34 +1093,14 @@ class MainWindow(QMainWindow):
             print('Error in displayImageForBinOp: ' + str(e))
 
 
-    def copySeries(self):
+    def getImagePathList(self, studyID, seriesID):
         try:
-            imageList, studyID, _ = self.getImagePathList()  
-            #Iterate through list of images and invert each image
-            copiedImageList = []
-            for imagePath in imageList:
-                copiedImageFilePath = \
-                    copyDICOM_Image.returnCopiedFile(imagePath)
-                copiedImageList.append(copiedImageFilePath)
-
-            newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
-                copiedImageList, '_copy')
-            self.displayMultiImageSubWindow(copiedImageList, studyID, newSeriesID)
-            self.refreshDICOMStudiesTreeView(newSeriesID)
-        except Exception as e:
-            print('Error in copySeries: ' + str(e))
-
-
-    def getImagePathList(self):
-        try:
-            studyID, seriesID = \
-            self.getStudyAndSeriesNumbersFromSeries()
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
             ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
             #print(xPath)
             images = self.root.findall(xPath)
             imageList = [image.find('name').text for image in images]
-            return imageList, studyID, seriesID
+            return imageList
         except Exception as e:
             print('Error in getImagePathList: ' + str(e))
 
@@ -1179,30 +1204,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getStudyAndSeriesNumbersFromImage: ' + str(e))
 
-
-    def getStudyAndSeriesNumbersFromSeries(self):
-        """This function returns the study and series IDs
-        from the selected series in a tree view."""
-        try: 
-            selectedSeries = self.treeView.selectedItems()
-            if selectedSeries:
-                #Extract series name from the selected image
-                seriesNode = selectedSeries[0]
-                seriesName = seriesNode.text(0) 
-                #Extract series number from the full series name
-                seriesID = seriesName.replace('Series - ', '')
-                seriesID = seriesID.strip() 
-
-                studyNode = seriesNode.parent()
-                studyName = studyNode.text(0)
-                #Extract study number from the full study name
-                studyID = studyName.replace('Study - ', '')
-                studyID = studyID.strip()
-                return studyID, seriesID
-            else:
-                return None, None
-        except Exception as e:
-            print('Error in getStudyAndSeriesNumbersFromSeries: ' + str(e))
+          
 
 
     def getImageDateTime(self, imageName, studyID, seriesID):
@@ -1222,6 +1224,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in getImageDateTime: ' + str(e))
 
+    #defunct?
     def getImagePath(self):
         try:
             selectedImage = self.treeView.currentItem()
@@ -1364,10 +1367,47 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print('Error in refreshDICOMStudiesTreeView: ' + str(e))
 
+      #self
+    def getStudyAndSeriesNumbersFromSeries():
+        """This function returns the study and series IDs
+        from the selected series in a tree view."""
+        try: 
+            selectedSeries = self.treeView.selectedItems()
+            if selectedSeries:
+                #Extract series name from the selected image
+                seriesNode = selectedSeries[0]
+                seriesName = seriesNode.text(0) 
+                #Extract series number from the full series name
+                seriesID = seriesName.replace('Series - ', '')
+                seriesID = seriesID.strip() 
+
+                studyNode = seriesNode.parent()
+                studyName = studyNode.text(0)
+                #Extract study number from the full study name
+                studyID = studyName.replace('Study - ', '')
+                studyID = studyID.strip()
+                return studyID, seriesID
+            else:
+                return None, None
+        except Exception as e:
+            print('Error in getStudyAndSeriesNumbersFromSeries: ' + str(e))
+
+    def getImagePathList_Copy():
+        try:
+            studyID, seriesID = \
+            getStudyAndSeriesNumbersFromSeries() #self.
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            #print(xPath)
+            images = self.root.findall(xPath)
+            imageList = [image.find('name').text for image in images]
+            return imageList, studyID, seriesID
+        except Exception as e:
+            print('Error in getImagePathList: ' + str(e))
 
 def main():
     app = QApplication([])
-    winMDI = MainWindow()
+    winMDI = Weasel()
     winMDI.show()
     sys.exit(app.exec())
 
