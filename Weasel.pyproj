@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CoreModules\readDICOM_Image.py" />
+    <Compile Include="CoreModules\saveDICOM_Image.py" />
+    <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="CoreModules\XMLReader.py" />
     <Compile Include="Developer\Tools\binaryOperationDICOM_Image.py" />
     <Compile Include="Developer\Tools\copyDICOM_Image.py" />

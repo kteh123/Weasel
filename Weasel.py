@@ -89,6 +89,22 @@ class Weasel(QMainWindow):
         fileMenu.addAction(closeAllSubWindowsButton)
 
         #Tools Menu
+        self.viewImageButton = QAction('View Image', self)
+        self.viewImageButton.setShortcut('Ctrl+V')
+        self.viewImageButton.setStatusTip('View DICOM Image or series')
+        self.viewImageButton.triggered.connect(self.viewImage)
+        self.viewImageButton.setEnabled(False)
+        toolsMenu.addAction(self.viewImageButton)
+
+        self.deleteImageButton = QAction('Delete Image', self)
+        self.deleteImageButton.setShortcut('Ctrl+D')
+        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
+        self.deleteImageButton.triggered.connect(self.deleteImage)
+        self.deleteImageButton.setEnabled(False)
+        toolsMenu.addAction(self.deleteImageButton)
+
+        toolsMenu.addSeparator()
+
         self.binaryOperationsButton = QAction('Binary Operation', self)
         self.binaryOperationsButton.setShortcut('Ctrl+B')
         self.binaryOperationsButton.setStatusTip('Performs binary operations on two images')
@@ -104,13 +120,6 @@ class Weasel(QMainWindow):
         self.copySeriesButton.setEnabled(False)
         toolsMenu.addAction(self.copySeriesButton)
 
-        self.deleteImageButton = QAction('Delete Image', self)
-        self.deleteImageButton.setShortcut('Ctrl+D')
-        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-        self.deleteImageButton.triggered.connect(self.deleteImage)
-        self.deleteImageButton.setEnabled(False)
-        toolsMenu.addAction(self.deleteImageButton)
-
         self.invertImageButton = QAction('Invert Image', self)
         self.invertImageButton.setShortcut('Ctrl+I')
         self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
@@ -119,12 +128,6 @@ class Weasel(QMainWindow):
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
 
-        self.viewImageButton = QAction('View Image', self)
-        self.viewImageButton.setShortcut('Ctrl+V')
-        self.viewImageButton.setStatusTip('View DICOM Image or series')
-        self.viewImageButton.triggered.connect(self.viewImage)
-        self.viewImageButton.setEnabled(False)
-        toolsMenu.addAction(self.viewImageButton)
 
 
     def ApplyStyleSheet(self):
