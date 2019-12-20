@@ -1,0 +1,23 @@
+<tools>
+  <tool>
+    <action>Binary Operation</action>
+    <shortcut>Ctrl+B</shortcut>
+    <tooltip>Performs binary operations on two images</tooltip>
+    <module></module>
+    <function>displayBinaryOperationsWindow</function>
+  </tool>
+  <tool>
+    <action>Copy</action>
+    <shortcut>Ctrl+C</shortcut>
+    <tooltip>Copy a DICOM series</tooltip>
+    <module>copyDICOM_Image</module>
+    <function>copySeries</function>
+  </tool>
+  <tool>
+    <action>Invert</action>
+    <shortcut>Ctrl+I</shortcut>
+    <tooltip>Invert a DICOM Image or series</tooltip>
+    <module>invertDICOM_Image</module>
+    <function>invertImage</function>
+  </tool>
+</tools>

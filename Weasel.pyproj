@@ -49,6 +49,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Developer\Tools\toolsMenu.xml" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
