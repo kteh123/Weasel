@@ -27,6 +27,9 @@
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="CoreModules\XMLReader.py" />
     <Compile Include="Developer\Tools\binaryOperationDICOM_Image.py" />
+    <Compile Include="Developer\Tools\buildToolsMenu.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\Tools\invertDICOM_Image.py" />
     <Compile Include="Developer\Tools\readDICOM_Image.py" />

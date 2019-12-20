@@ -3,7 +3,7 @@
     <action>Binary Operation</action>
     <shortcut>Ctrl+B</shortcut>
     <tooltip>Performs binary operations on two images</tooltip>
-    <module></module>
+    <module>self</module>
     <function>displayBinaryOperationsWindow</function>
   </tool>
   <tool>

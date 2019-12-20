@@ -56,9 +56,6 @@ class Weasel(QMainWindow):
         self.selectedSeries = ''
         self.selectedImagePath = ''
         self.selectedImageName = ''
-        ## XML reader object to process XML configuration file
-        #self.objXMLReader = XMLReader() 
-        #self.statusBar.showMessage('hello')
         #self.ApplyStyleSheet()
       
 
@@ -104,6 +101,13 @@ class Weasel(QMainWindow):
         toolsMenu.addAction(self.deleteImageButton)
 
         toolsMenu.addSeparator()
+        #self.buildToolsMenu(toolsMenu)
+        #menu = QtWidgets.QMenu()
+#items = {'item 1': lambda: self.printMe('item 1'), 
+        # 'item 2': lambda: self.printMe('item 2'), 
+        # 'item 3': lambda: self.printMe('item 3')}
+#for key, value in items.items():
+ #   menu.addAction(key, value)
 
         self.binaryOperationsButton = QAction('Binary Operation', self)
         self.binaryOperationsButton.setShortcut('Ctrl+B')
@@ -124,10 +128,10 @@ class Weasel(QMainWindow):
         self.invertImageButton.setShortcut('Ctrl+I')
         self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
         self.invertImageButton.triggered.connect(
-            lambda: invertDICOM_Image.invertImage(self))
+            lambda: invertDICOM_Image.invertImage(self)
+            )
         self.invertImageButton.setEnabled(False)
         toolsMenu.addAction(self.invertImageButton)
-
 
 
     def ApplyStyleSheet(self):
