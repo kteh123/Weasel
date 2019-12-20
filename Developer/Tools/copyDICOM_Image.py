@@ -21,23 +21,23 @@ def returnCopiedFile(imagePath):
             print('Error in function copyDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def copySeries(object):
+def copySeries(objWeasel):
         try:
             #imageList, studyID, _ = weasel.getImagePathList_Copy()  
-            studyID = object.selectedStudy 
-            seriesID = object.selectedSeries
+            studyID = objWeasel.selectedStudy 
+            seriesID = objWeasel.selectedSeries
             imageList = \
-                    object.getImagePathList(studyID, seriesID)
+                    objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and make a copy of each image
             copiedImageList = []
             for imagePath in imageList:
                 copiedImageFilePath = returnCopiedFile(imagePath)
                 copiedImageList.append(copiedImageFilePath)
          
-            newSeriesID= object.insertNewSeriesInXMLFile(imageList, \
+            newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
                 copiedImageList, FILE_SUFFIX)
-            object.displayMultiImageSubWindow(copiedImageList, 
+            objWeasel.displayMultiImageSubWindow(copiedImageList, 
                                               studyID, newSeriesID)
-            object.refreshDICOMStudiesTreeView(newSeriesID)
+            objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in copyDICOM_Image.copySeries: ' + str(e))

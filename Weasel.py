@@ -426,8 +426,8 @@ class Weasel(QMainWindow):
             studyID = item.parent().parent().text(0).replace('Study -', '').strip()
             self.selectedStudy = studyID
             self.selectedSeries = seriesID
-            self.selectedImagePath = imagePath
-            self.selectedImageName = imageID
+            self.selectedImagePath = imagePath.strip()
+            self.selectedImageName = imageID.strip()
             fullImageID = studyID + ': ' + seriesID + ': '  + imageID
             self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
@@ -722,11 +722,11 @@ class Weasel(QMainWindow):
             print('Error in insertNewBinOpImageInXMLFile: ' + str(e))
 
 
-    def insertNewImageInXMLFile(self, newImageFileName, suffix, 
-                                imageName = None, seriesSelected = False):
+    def insertNewImageInXMLFile(self, newImageFileName, suffix):
         try:
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
+            imagePath = self.selectedImagePath
 
             #First determine if a series with parentID=seriesID exists
             #and typeID=suffix
@@ -734,9 +734,6 @@ class Weasel(QMainWindow):
                 ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
                '[@typeID=' + chr(34) + suffix + chr(34) +']'
             series = self.root.find(xPath)
-
-            if imageName is None:
-                imageName = self.getImagePath()
                     
             if series is None:
                 #Need to create a new series to hold this new image
@@ -754,7 +751,7 @@ class Weasel(QMainWindow):
                 comment = ET.Comment('This series holds new images')
                 newSeries.append(comment)
                 #Get image date & time
-                imageTime, imageDate = self.getImageDateTime(imageName, 
+                imageTime, imageDate = self.getImageDateTime(imagePath, 
                                    studyID, seriesID)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
@@ -772,7 +769,7 @@ class Weasel(QMainWindow):
             else:
                 #A series already exists to hold new images from
                 #the current parent series
-                imageTime, imageDate = self.getImageDateTime(imageName, 
+                imageTime, imageDate = self.getImageDateTime(imagePath, 
                           studyID, seriesID)
                 newImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
@@ -801,7 +798,9 @@ class Weasel(QMainWindow):
             if imageList:
                 #A series of images already exists 
                 #for the series called seriesID
-                #so try another new series ID
+                #so make another new series ID 
+                #by adding the suffix to the previous
+                #new series ID
                 return self.getNewSeriesName(studyID, seriesID, suffix)
             else:
                 return seriesID
@@ -847,37 +846,6 @@ class Weasel(QMainWindow):
 
         except Exception as e:
             print('Error in insertNewSeriesInXMLFile: ' + str(e))
-
-
-    #def invertImage(self):
-    #    """Creates a subwindow that displays an inverted DICOM image. Executed using the 
-    #    'Invert Image' Menu item in the Tools menu."""
-    #    try:
-    #        if self.isAnImageSelected():
-    #            imagePath = self.getImagePath()
-    #            pixelArray, invertedImageFileName = \
-    #                invertDICOM_Image.returnPixelArray(imagePath)
-    #            self.displayImageSubWindow(pixelArray, invertedImageFileName)
-    #            #Record inverted image in XML file
-    #            seriesID = self.insertNewImageInXMLFile(invertedImageFileName, '_inv')
-    #            #Update tree view with xml file modified above
-    #            self.refreshDICOMStudiesTreeView(seriesID)
-    #        elif self.isASeriesSelected():
-    #            imageList, studyID, _ = self.getImagePathList() 
-    #            #Iterate through list of images and invert each image
-    #            invertedImageList = []
-    #            for imagePath in imageList:
-    #                _, invertedImageFileName = \
-    #                invertDICOM_Image.returnPixelArray(imagePath)
-    #                invertedImageList.append(invertedImageFileName)
-
-    #            newSeriesID= self.insertNewSeriesInXMLFile(imageList, \
-    #                invertedImageList, '_inv')
-    #            self.displayMultiImageSubWindow(
-    #                invertedImageList, studyID, newSeriesID)
-    #            self.refreshDICOMStudiesTreeView(newSeriesID)
-    #    except Exception as e:
-    #        print('Error in invertImage: ' + str(e))
 
 
     def removeSeriesFromXMLFile(self, studyID, seriesID):
@@ -1011,16 +979,10 @@ class Weasel(QMainWindow):
             imagePath2 = self.image_Name_Path_Dict[imageName2]
             
             binaryOperation = self.binaryOpsList.currentText()
-            if binaryOperation == 'Subtract':
-                binaryOperation = 'Sub'
-            elif binaryOperation == 'Divide':
-                binaryOperation = 'Div'
-            elif binaryOperation == 'Multiply':
-                binaryOperation = 'Multi'
-            elif binaryOperation == 'Add':
-                binaryOperation = 'Add'
+            prefix = binaryOperationDICOM_Image.getBinOperationFilePrefix(
+                                     binaryOperation)
             
-            newImageFileName = binaryOperation + '_' + imageName1 \
+            newImageFileName = prefix + '_' + imageName1 \
                 + '_' + imageName2 
             newImageFilePath = os.path.dirname(imagePath1) + '\\' + \
                 newImageFileName + '.dcm'
@@ -1104,9 +1066,11 @@ class Weasel(QMainWindow):
         deleting the physical file(s) and then removing their entries
         in the XML file."""
         try:
+            studyID = self.selectedStudy
+            seriesID = self.selectedSeries
             if self.isAnImageSelected():
-                imagePath = self.getImagePath()
-                imageName = self.treeView.currentItem().text(0)
+                imageName = self.selectedImageName
+                imagePath = self.selectedImagePath
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
@@ -1122,8 +1086,6 @@ class Weasel(QMainWindow):
                     #whole series from XML file
                     #No it is not the last image in a series
                     #so just remove the image from the XML file 
-                    studyID, seriesID = \
-                        self.getStudyAndSeriesNumbersFromImage()
                     xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
                     #print(xPath)
@@ -1149,14 +1111,13 @@ class Weasel(QMainWindow):
                     #Update tree view with xml file modified above
                     self.refreshDICOMStudiesTreeView()
             elif self.isASeriesSelected():
-                seriesName = self.treeView.currentItem().text(0)
                 buttonReply = QMessageBox.question(self, 
-                  'Delete DICOM series', "You are about to delete series {}".format(seriesName), 
+                  'Delete DICOM series', "You are about to delete series {}".format(seriesID), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if buttonReply == QMessageBox.Ok:
                     #Delete each physical file in the series
                     #Get a list of names of images in that series
-                    imageList, studyID, seriesID = self.getImagePathList() 
+                    imageList = self.getImagePathList(studyID, seriesID) 
                     #Iterate through list of images and delete each image
                     for imagePath in imageList:
                         if os.path.exists(imagePath):
@@ -1169,41 +1130,10 @@ class Weasel(QMainWindow):
             print('Error in deleteImage: ' + str(e))
 
 
-    def getStudyAndSeriesNumbersFromImage(self):
-        """This function assumes a series name takes the
-        form 'series' space number, where number is an integer
-        with one or more digits; 
-        e.g., 'series 44' and returns the number as a string.
-        
-        Same assumption is made for the study name."""
-        try: 
-            selectedImage = self.treeView.selectedItems()
-            if selectedImage:
-                #Extract series name from the selected image
-                imageNode = selectedImage[0]
-                seriesNode  = imageNode.parent()
-                seriesName = seriesNode.text(0) 
-                #Extract series number from the full series name
-                seriesID = seriesName.replace('Series -', '')
-                seriesID = seriesID.strip()                
-
-                studyNode = seriesNode.parent()
-                studyName = studyNode.text(0)
-                #Extract study number from the full study name
-                studyID = studyName.replace('Study -', '')
-                studyID = studyID.strip()
-                return studyID, seriesID
-            else:
-                return None, None
-        except Exception as e:
-            print('Error in getStudyAndSeriesNumbersFromImage: ' + str(e))
-
-          
-
-
     def getImageDateTime(self, imageName, studyID, seriesID):
         try:
             #Get reference to image element time of the image
+
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                     '/image[name=' + chr(34) + imageName + chr(34) +']/time'
@@ -1217,16 +1147,6 @@ class Weasel(QMainWindow):
             return imageTime.text, imageDate.text           
         except Exception as e:
             print('Error in getImageDateTime: ' + str(e))
-
-    #defunct?
-    def getImagePath(self):
-        try:
-            selectedImage = self.treeView.currentItem()
-            imagePath = selectedImage.text(3)
-            return imagePath
-        except Exception as e:
-            return None
-            print('Error in isAnImageSelected: ' + str(e))
 
 
     def isAnImageSelected(self):

@@ -28,34 +28,34 @@ def invertAlgorithm(pixelArray, dataset):
             print('Error in function invertDICOM_Image.invertAlgorithm: ' + str(e))
 
 
-def invertImage(object):
+def invertImage(objWeasel):
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:
-        if object.isAnImageSelected():
-            imagePath = object.selectedImagePath
+        if objWeasel.isAnImageSelected():
+            imagePath = objWeasel.selectedImagePath
             pixelArray, invertedImageFileName = returnPixelArray(imagePath)
-            object.displayImageSubWindow(pixelArray, invertedImageFileName)
+            objWeasel.displayImageSubWindow(pixelArray, invertedImageFileName)
             #Record inverted image in XML file
-            seriesID = object.insertNewImageInXMLFile(invertedImageFileName, 
+            seriesID = objWeasel.insertNewImageInXMLFile(invertedImageFileName, 
                                                       FILE_SUFFIX)
             #Update tree view with xml file modified above
-            object.refreshDICOMStudiesTreeView(seriesID)
-        elif object.isASeriesSelected():
-            studyID = object.selectedStudy 
-            seriesID = object.selectedSeries
+            objWeasel.refreshDICOMStudiesTreeView(seriesID)
+        elif objWeasel.isASeriesSelected():
+            studyID = objWeasel.selectedStudy 
+            seriesID = objWeasel.selectedSeries
             imageList = \
-                    object.getImagePathList(studyID, seriesID)
+                    objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and invert each image
             invertedImageList = []
             for imagePath in imageList:
                 _, invertedImageFileName = returnPixelArray(imagePath)
                 invertedImageList.append(invertedImageFileName)
 
-            newSeriesID= object.insertNewSeriesInXMLFile(imageList, \
+            newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
                 invertedImageList, FILE_SUFFIX)
-            object.displayMultiImageSubWindow(
+            objWeasel.displayMultiImageSubWindow(
                 invertedImageList, studyID, newSeriesID)
-            object.refreshDICOMStudiesTreeView(newSeriesID)
+            objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
         print('Error in invertDICOM_Image.invertImage: ' + str(e))
