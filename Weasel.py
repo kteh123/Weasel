@@ -25,8 +25,9 @@ from datetime import date
 sys.path.append(os.path.join(sys.path[0],'Developer//Tools//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 import readDICOM_Image
-import invertDICOM_Image
-import copyDICOM_Image
+import buildToolsMenu
+#import invertDICOM_Image
+#import copyDICOM_Image
 import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
@@ -99,40 +100,9 @@ class Weasel(QMainWindow):
         self.deleteImageButton.triggered.connect(self.deleteImage)
         self.deleteImageButton.setEnabled(False)
         toolsMenu.addAction(self.deleteImageButton)
-
         toolsMenu.addSeparator()
-        #self.buildToolsMenu(toolsMenu)
-        #menu = QtWidgets.QMenu()
-#items = {'item 1': lambda: self.printMe('item 1'), 
-        # 'item 2': lambda: self.printMe('item 2'), 
-        # 'item 3': lambda: self.printMe('item 3')}
-#for key, value in items.items():
- #   menu.addAction(key, value)
-
-        self.binaryOperationsButton = QAction('Binary Operation', self)
-        self.binaryOperationsButton.setShortcut('Ctrl+B')
-        self.binaryOperationsButton.setStatusTip('Performs binary operations on two images')
-        self.binaryOperationsButton.triggered.connect(self.displayBinaryOperationsWindow)
-        self.binaryOperationsButton.setEnabled(False)
-        toolsMenu.addAction(self.binaryOperationsButton)
-
-        self.copySeriesButton = QAction('Copy Series', self)
-        self.copySeriesButton.setShortcut('Ctrl+C')
-        self.copySeriesButton.setStatusTip('Copy a DICOM series')
-        self.copySeriesButton.triggered.connect(
-            lambda:copyDICOM_Image.copySeries(self))
-        self.copySeriesButton.setEnabled(False)
-        toolsMenu.addAction(self.copySeriesButton)
-
-        self.invertImageButton = QAction('Invert Image', self)
-        self.invertImageButton.setShortcut('Ctrl+I')
-        self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
-        self.invertImageButton.triggered.connect(
-            lambda: invertDICOM_Image.invertImage(self)
-            )
-        self.invertImageButton.setEnabled(False)
-        toolsMenu.addAction(self.invertImageButton)
-
+        buildToolsMenu.buildToolsMenu(self, toolsMenu)
+        
 
     def ApplyStyleSheet(self):
         """Modifies the appearance of the GUI using CSS instructions"""
@@ -1178,25 +1148,39 @@ class Weasel(QMainWindow):
             print('Error in isASeriesSelected: ' + str(e))
 
 
+    def setEnabledSeriesOnlyTools(self, flag):
+        try:
+            for tool in buildToolsMenu.seriesOnlyTools:
+                button = getattr(self, tool)
+                button.setEnabled(flag)
+        except Exception as e:
+            print('Error in setEnabledSeriesOnlyTools: ' + str(e))
+
+
+    def setEnabledImageAndSeriesTools(self, flag):
+        try:
+            for tool in buildToolsMenu.imageAndSeriesTools:
+                button = getattr(self, tool)
+                button.setEnabled(flag)
+        except Exception as e:
+            print('Error in setEnabledImageAndSeriesTools: ' + str(e))
+
+
     def toggleToolButtons(self):
         try:
             if self.isASeriesSelected():
-                self.copySeriesButton.setEnabled(True)
-                self.binaryOperationsButton.setEnabled(True)
+                self.setEnabledSeriesOnlyTools(True)
             else:
-                self.copySeriesButton.setEnabled(False)
-                self.binaryOperationsButton.setEnabled(False)
+                self.setEnabledSeriesOnlyTools(False)
 
             if self.isAnImageSelected() or self.isASeriesSelected():
                 self.viewImageButton.setEnabled(True)
-                self.invertImageButton.setEnabled(True)
                 self.deleteImageButton.setEnabled(True)
-                
+                self.setEnabledImageAndSeriesTools(True)
             else:
                 self.viewImageButton.setEnabled(False)
-                self.invertImageButton.setEnabled(False)
                 self.deleteImageButton.setEnabled(False)
-                
+                self.setEnabledImageAndSeriesTools(False)
         except Exception as e:
             print('Error in toggleToolButtons: ' + str(e))
 
