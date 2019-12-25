@@ -6,15 +6,13 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
         QPushButton, QStatusBar,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  
         QProgressBar, QComboBox )
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QIcon
 
 import xml.etree.ElementTree as ET 
 from xml.dom import minidom
 import pyqtgraph as pg
 import os
 import sys
-#import re
-import styleSheet
 import time
 import numpy as np
 from datetime import datetime
@@ -31,6 +29,7 @@ import buildToolsMenu
 import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
+import styleSheet
 
 from XMLReader import XMLReader 
 
@@ -61,6 +60,7 @@ class Weasel(QMainWindow):
       
 
     def setupMenus(self):  
+
         """Builds the menus in the menu bar of the MDI"""
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu('File')
@@ -103,6 +103,15 @@ class Weasel(QMainWindow):
         toolsMenu.addSeparator()
         buildToolsMenu.buildToolsMenu(self, toolsMenu)
         
+        toolsMenu.addSeparator()
+        FERRET_LOGO = 'images\\FERRET_LOGO.png'
+        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), 'FERRET', self)
+        self.launchFerretButton.setShortcut('Ctrl+E')
+        self.launchFerretButton.setStatusTip('Launches the FERRET application')
+        #self.launchFerretButton.triggered.connect(self.deleteImage)
+        self.launchFerretButton.setEnabled(True)
+        toolsMenu.addAction(self.launchFerretButton)
+
 
     def ApplyStyleSheet(self):
         """Modifies the appearance of the GUI using CSS instructions"""

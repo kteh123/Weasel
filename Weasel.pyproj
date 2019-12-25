@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="CoreModules\readDICOM_Image.py" />
     <Compile Include="CoreModules\saveDICOM_Image.py" />
+    <Compile Include="CoreModules\styleSheet.py" />
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="CoreModules\XMLReader.py" />
     <Compile Include="Developer\Tools\binaryOperationDICOM_Image.py" />
@@ -34,11 +35,7 @@
     <Compile Include="Developer\Tools\invertDICOM_Image.py" />
     <Compile Include="Developer\Tools\readDICOM_Image.py" />
     <Compile Include="Developer\Tools\saveDICOM_Image.py" />
-    <Compile Include="styleSheet.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Weasel.py" />
-    <Compile Include="WriteXMLfromDICOM.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -53,12 +50,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Developer\Tools\toolsMenu.xml" />
+    <Content Include="images\FERRET_ICON.ico" />
+    <Content Include="images\FERRET_LOGO.png" />
+    <Content Include="images\logo-tristan.png" />
+    <Content Include="images\TRISTAN LOGO.jpg" />
+    <Content Include="images\uni-leeds-logo.jpg" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Developer\" />
     <Folder Include="Developer\Tools\" />
     <Folder Include="CoreModules\" />
+    <Folder Include="images\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
