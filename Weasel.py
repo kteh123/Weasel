@@ -68,33 +68,33 @@ class Weasel(QMainWindow):
         helpMenu = mainMenu.addMenu('Help')
 
         #File Menu
-        loadDICOM = QAction('Load DICOM Images', self)
-        loadDICOM.setShortcut('Ctrl+F')
+        loadDICOM = QAction('&Load DICOM Images', self)
+        loadDICOM.setShortcut('Ctrl+L')
         loadDICOM.setStatusTip('Load DICOM images from a scan folder')
         loadDICOM.triggered.connect(self.loadDICOM)
         fileMenu.addAction(loadDICOM)
 
-        closeAllImageWindowsButton = QAction('Close All Image Windows', self)
-        closeAllImageWindowsButton.setShortcut('Ctrl+Z')
+        closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
+        closeAllImageWindowsButton.setShortcut('Ctrl+A')
         closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
         closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
         fileMenu.addAction(closeAllImageWindowsButton)
 
-        closeAllSubWindowsButton = QAction('Close All Sub Windows', self)
+        closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         fileMenu.addAction(closeAllSubWindowsButton)
 
         #Tools Menu
-        self.viewImageButton = QAction('View Image', self)
+        self.viewImageButton = QAction('&View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
         self.viewImageButton.setStatusTip('View DICOM Image or series')
         self.viewImageButton.triggered.connect(self.viewImage)
         self.viewImageButton.setEnabled(False)
         toolsMenu.addAction(self.viewImageButton)
 
-        self.deleteImageButton = QAction('Delete Image', self)
+        self.deleteImageButton = QAction('&Delete Image', self)
         self.deleteImageButton.setShortcut('Ctrl+D')
         self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
         self.deleteImageButton.triggered.connect(self.deleteImage)
@@ -105,8 +105,8 @@ class Weasel(QMainWindow):
         
         toolsMenu.addSeparator()
         FERRET_LOGO = 'images\\FERRET_LOGO.png'
-        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), 'FERRET', self)
-        self.launchFerretButton.setShortcut('Ctrl+E')
+        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
+        self.launchFerretButton.setShortcut('Ctrl+F')
         self.launchFerretButton.setStatusTip('Launches the FERRET application')
         #self.launchFerretButton.triggered.connect(self.deleteImage)
         self.launchFerretButton.setEnabled(True)

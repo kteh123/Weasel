@@ -7,7 +7,7 @@ imageAndSeriesTools = ['invertImageButton']
 
 def buildToolsMenu(self, toolsMenu):
         try:
-            self.binaryOperationsButton = QAction('Binary Operation', self)
+            self.binaryOperationsButton = QAction('&Binary Operation', self)
             self.binaryOperationsButton.setShortcut('Ctrl+B')
             self.binaryOperationsButton.setStatusTip(
                 'Performs binary operations on two images')
@@ -16,7 +16,7 @@ def buildToolsMenu(self, toolsMenu):
             self.binaryOperationsButton.setEnabled(False)
             toolsMenu.addAction(self.binaryOperationsButton)
 
-            self.copySeriesButton = QAction('Copy Series', self)
+            self.copySeriesButton = QAction('&Copy Series', self)
             self.copySeriesButton.setShortcut('Ctrl+C')
             self.copySeriesButton.setStatusTip('Copy a DICOM series')
             self.copySeriesButton.triggered.connect(
@@ -24,7 +24,7 @@ def buildToolsMenu(self, toolsMenu):
             self.copySeriesButton.setEnabled(False)
             toolsMenu.addAction(self.copySeriesButton)
 
-            self.invertImageButton = QAction('Invert Image', self)
+            self.invertImageButton = QAction('&Invert Image', self)
             self.invertImageButton.setShortcut('Ctrl+I')
             self.invertImageButton.setStatusTip('Invert a DICOM Image or series')
             self.invertImageButton.triggered.connect(
