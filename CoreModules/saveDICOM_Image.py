@@ -153,20 +153,30 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
         # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
         # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
         # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
-        
         imageArray = np.rot90(imageArray, -3)
-        # I'M FORCING EVERY IMAGE TO HAVE PIXELREPRESENTATION=1 AND INT VALUES.
-        # I NEED TO TEST WITH PIXELREPRESENTATION=0 AND UINT VALUES - EG. SAMPLE DATA
-        newDicom.PixelRepresentation = 1
-        target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
-        maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
-        minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
-        extra = target/(2*np.ones(np.shape(imageArray)))
-        imageScaled = target * (imageArray - minimum) / (maximum - minimum) - extra
-        slope =  target / (maximum - minimum)
-        intercept = (- target * minimum - extra * (maximum-minimum))/ (maximum - minimum)
-        rescaleSlope = np.ones(np.shape(imageArray)) / slope
-        rescaleIntercept = - intercept / slope
+        
+        if int(np.amin(imageArray)) < 0:
+            newDicom.PixelRepresentation = 1
+            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
+            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
+            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
+            extra = target/(2*np.ones(np.shape(imageArray)))
+            imageScaled = target * (imageArray - minimum) / (maximum - minimum) - extra
+            slope =  target / (maximum - minimum)
+            intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
+            rescaleSlope = np.ones(np.shape(imageArray)) / slope
+            rescaleIntercept = - intercept / slope
+            
+        else:
+            newDicom.PixelRepresentation = 0
+            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
+            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
+            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
+            imageScaled = target * (imageArray - minimum) / (maximum - minimum)
+            slope =  target / (maximum - minimum)
+            intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
+            rescaleSlope = np.ones(np.shape(imageArray)) / slope
+            rescaleIntercept = - intercept / slope
 
         if newDicom.BitsAllocated == 8:
             imageArrayInt = imageScaled.astype(np.int8)
@@ -179,12 +189,8 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
         else:
             imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
 
-        # NEED TO REVIEW THIS
-        #print(np.amin(imageArrayInt))                
-        #newDicom.SmallestImagePixelValue = int(np.amin(imageArrayInt))
-        #newDicom.LargestImagePixelValue = np.amax(imageArrayInt)
-        #newDicom.WindowCenter = np.median(imageArrayInt)
-        #newDicom.WindowWidth = np.absolute(np.amax(imageArrayInt))
+        newDicom.WindowCenter = int(np.median(imageArray))
+        newDicom.WindowWidth = int((np.amin(imageArray)-np.amax(imageArray))/2)
         newDicom.RescaleSlope = rescaleSlope.flatten()[0]
         newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()
