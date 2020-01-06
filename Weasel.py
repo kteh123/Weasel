@@ -24,22 +24,24 @@ sys.path.append(os.path.join(sys.path[0],'Developer//Tools//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 import readDICOM_Image
 import buildToolsMenu
-#import invertDICOM_Image
-#import copyDICOM_Image
 import saveDICOM_Image
 import WriteXMLfromDICOM 
 import binaryOperationDICOM_Image
 import styleSheet
+from FERRET import FERRET as ferret
 
 from XMLReader import XMLReader 
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
+FERRET_LOGO = 'images\\FERRET_LOGO.png'
+
 class Weasel(QMainWindow):
     def __init__(self, parent=None):
         """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
+        
         self.setGeometry(0, 0, 2500, 1400)
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -49,6 +51,7 @@ class Weasel(QMainWindow):
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.setupMenus()
+        self.setupToolBar()
         self.currentImagePath = ''
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
@@ -104,13 +107,19 @@ class Weasel(QMainWindow):
         buildToolsMenu.buildToolsMenu(self, toolsMenu)
         
         toolsMenu.addSeparator()
-        FERRET_LOGO = 'images\\FERRET_LOGO.png'
         self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
         self.launchFerretButton.setShortcut('Ctrl+F')
         self.launchFerretButton.setStatusTip('Launches the FERRET application')
-        #self.launchFerretButton.triggered.connect(self.deleteImage)
+        self.launchFerretButton.triggered.connect(self.displayFERRET)
         self.launchFerretButton.setEnabled(True)
         toolsMenu.addAction(self.launchFerretButton)
+
+    def setupToolBar(self):  
+        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
+        self.launchFerretButton.triggered.connect(self.displayFERRET)
+        
+        self.toolBar = self.addToolBar("FERRET")
+        self.toolBar.addAction(self.launchFerretButton)
 
 
     def ApplyStyleSheet(self):
@@ -376,7 +385,7 @@ class Weasel(QMainWindow):
                 end_time=time.time()
                 TreeViewTime = end_time - start_time
                 print('Tree View create Time = {}'.format(TreeViewTime))
-
+                
                 self.lblLoading.clear()
                 self.progBar.hide()
                 self.progBar.reset()
@@ -421,6 +430,31 @@ class Weasel(QMainWindow):
     def closeAllSubWindows(self):
         self.mdiArea.closeAllSubWindows()
         self.treeView = None
+
+    def displayFERRET(self):
+        """
+        Displays FERRET in a sub window 
+        """
+        try:
+            self.closeAllSubWindows()
+            self.subWindow = QMdiSubWindow(self)
+            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                          Qt.WindowCloseButtonHint |
+                                          Qt.WindowCloseButtonHint)
+            #layout = QVBoxLayout()
+            
+            widget = QWidget()
+            #widget.setLayout(layout)
+            self.subWindow.setWidget(widget)
+            
+            self.subWindow.setWindowTitle('FERRET')
+            self.subWindow.setWindowIcon(QIcon(FERRET_LOGO))
+            self.mdiArea.addSubWindow(self.subWindow)
+            self.subWindow.showMaximized()
+           
+        except Exception as e:
+            print('Error in displayFERRET: ' + str(e))
 
 
     def displayImageSubWindow(self, pixelArray, imagePath):
@@ -1322,7 +1356,7 @@ class Weasel(QMainWindow):
 def main():
     app = QApplication([])
     winMDI = Weasel()
-    winMDI.show()
+    winMDI.showMaximized()
     sys.exit(app.exec())
 
 if __name__ == '__main__':
