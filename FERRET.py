@@ -187,7 +187,8 @@ from scipy.stats.distributions import  t
 import ModelFunctionsHelper
 
 #Import CSS file
-#import StyleSheet
+sys.path.append(os.path.join(sys.path[0],'CoreModules'))
+#import styleSheet
 
 #Import PDF report writer class
 from PDFWriter import PDF
@@ -256,14 +257,14 @@ class NoModelInletTypeDefined(Error):
     from the XML configuration file."""
    pass
 
-class FERRET(QWidget):   
+class FERRET:   
     """This class defines the TRISTAN Model Fitting software 
        based on QWidget class that provides the GUI.
        This includes seting up the GUI and defining the methods 
        that are executed when events associated with widgets on
        the GUI are executed."""
      
-    def __init__(self, parent=None):
+    def __init__(self):
         """Creates the GUI. Controls on the GUI are placed onto 2 vertical
            layout panals placed on a horizontal layout panal.
            The appearance of the widgets is determined by CSS 
@@ -281,54 +282,64 @@ class FERRET(QWidget):
            
            This method coordinates the calling of methods that set up the 
            widgets on the 2 vertical layout panals."""
+        try:
+            #super(FERRET, self).__init__(parent)
+            #self.setWindowTitle(WINDOW_TITLE)
+            #self.setWindowIcon(QIcon(FERRET_LOGO))
+            #width, height = self.GetScreenResolution()
+            #self.setGeometry(0, 0, width, height*0.95)
+            #self.setWindowFlags(QtCore.Qt.WindowMinMaxButtonsHint |  
+            #                    QtCore.Qt.WindowCloseButtonHint)
+        
+            # Store path to time/concentration data files for use 
+            # in batch processing.
+            self.dataFileDirectory = ""
+        
+            # Name of current loaded data file
+            self.dataFileName = ''
+            self.yAxisLabel = ''
 
-        super(FERRET, self).__init__(parent)
-        #self.setWindowTitle(WINDOW_TITLE)
-        #self.setWindowIcon(QIcon(FERRET_LOGO))
-        #width, height = self.GetScreenResolution()
-        #self.setGeometry(0, 0, width, height*0.95)
-        self.setWindowFlags(QtCore.Qt.WindowMinMaxButtonsHint |  
-                            QtCore.Qt.WindowCloseButtonHint)
-        
-        # Store path to time/concentration data files for use 
-        # in batch processing.
-        self.dataFileDirectory = ""
-        
-        # Name of current loaded data file
-        self.dataFileName = ''
-        self.yAxisLabel = ''
+            # Boolean variable indicating that the last 
+            # change to the model parameters was caused
+            #  by curve fitting.
+            self.isCurveFittingDone = False
 
-        # Boolean variable indicating that the last 
-        # change to the model parameters was caused
-        #  by curve fitting.
-        self.isCurveFittingDone = False
-
-        # Dictionary to store signal data from the data input file
-        self.signalData={} 
+            # Dictionary to store signal data from the data input file
+            self.signalData={} 
         
-        # List to store concentrations calculated by the models
-        self.listModel = [] 
+            # List to store concentrations calculated by the models
+            self.listModel = [] 
         
-        # Stores optimum parameters from Curve fitting
-        self.optimisedParamaterList = [] 
+            # Stores optimum parameters from Curve fitting
+            self.optimisedParamaterList = [] 
         
-        # XML reader object to process XML configuration file
-        self.objXMLReader = XMLReader() 
+            # XML reader object to process XML configuration file
+            self.objXMLReader = XMLReader() 
         
-        self.ApplyStyleSheet()
+            #self.ApplyStyleSheet()
        
-        # Setup the layouts, the containers for widgets
-        verticalLayoutLeft, verticalLayoutRight = self.SetUpLayouts() 
+            # Setup the layouts, the containers for widgets
+            self.mainWidget = QWidget()
+            self.mainWidget, verticalLayoutLeft, verticalLayoutRight = self.SetUpLayouts() 
         
-        # Add widgets to the left-hand side vertical layout
-        self.SetUpLeftVerticalLayout(verticalLayoutLeft)
+            # Add widgets to the left-hand side vertical layout
+            self.SetUpLeftVerticalLayout(verticalLayoutLeft)
 
-        # Set up the graph to plot concentration data on
-        #  the right-hand side vertical layout
-        self.SetUpPlotArea(verticalLayoutRight)
-        #print(os.getcwd())
-        
-        logger.info("GUI created successfully.")
+            # Set up the graph to plot concentration data on
+            #  the right-hand side vertical layout
+            self.SetUpPlotArea(verticalLayoutRight)
+
+            logger.info("GUI created successfully.")
+
+           
+        except Exception as e:
+            print('Error creating FERRET object: ' + str(e)) 
+            logger.error('Error creating FERRET object: ' + str(e))
+
+
+    def returnFerretWidget(self):
+        return self.mainWidget
+
 
     def SetUpLayouts(self):
         """Places a horizontal layout on the window
@@ -342,15 +353,18 @@ class FERRET(QWidget):
                 Two vertical layouts that have been added to a 
                 horizontal layout.
            """
-
         horizontalLayout = QHBoxLayout()
+
+        widget = QWidget()
+        widget.setLayout(horizontalLayout)
+
         verticalLayoutLeft = QVBoxLayout()
         verticalLayoutRight = QVBoxLayout()
         
-        self.setLayout(horizontalLayout)
         horizontalLayout.addLayout(verticalLayoutLeft, 9)
         horizontalLayout.addLayout(verticalLayoutRight, 10)
-        return verticalLayoutLeft,  verticalLayoutRight  
+        return widget, verticalLayoutLeft,  verticalLayoutRight  
+
 
     def SetUpLeftVerticalLayout(self, layout):
         """
@@ -361,288 +375,297 @@ class FERRET(QWidget):
         layout - holds a reference to the left handside vertical layout widget
         """
         # Create Load Configuration XML file Button
-        self.btnLoadDICOMFile = QPushButton('Load DICOM Image')
-        self.btnLoadDICOMFile.setToolTip(
-            'Opens file dialog box to select DICOM image file')
-        self.btnLoadDICOMFile.clicked.connect(self.LoadDICOMFile)
+        try:
+            #self.btnLoadDICOMFile = QPushButton('Load DICOM Image')
+            #self.btnLoadDICOMFile.setToolTip(
+            #    'Opens file dialog box to select DICOM image file')
+            #self.btnLoadDICOMFile.clicked.connect(self.LoadDICOMFile)
 
-        self.btnLoadModelLibrary = QPushButton('Load Model Library')
-        self.btnLoadModelLibrary.setToolTip(
-            'Opens file dialog box to select the model library file')
-        self.btnLoadModelLibrary.setShortcut("Ctrl+C")
-        self.btnLoadModelLibrary.setAutoDefault(False)
-        self.btnLoadModelLibrary.clicked.connect(self.LoadModelLibrary)
+            self.btnLoadModelLibrary = QPushButton('Load Model Library')
+            self.btnLoadModelLibrary.setToolTip(
+                'Opens file dialog box to select the model library file')
+            self.btnLoadModelLibrary.setShortcut("Ctrl+C")
+            self.btnLoadModelLibrary.setAutoDefault(False)
+            self.btnLoadModelLibrary.clicked.connect(self.LoadModelLibrary)
 
-        # Create Load Data File Button
-        self.btnLoadDataFile = QPushButton('Load Data File')
-        self.btnLoadDataFile.hide()
-        self.btnLoadDataFile.setToolTip('Opens file dialog box to select the data file')
-        self.btnLoadDataFile.setShortcut("Ctrl+L")
-        self.btnLoadDataFile.setAutoDefault(False)
-        self.btnLoadDataFile.resize(self.btnLoadDataFile.minimumSizeHint())
-        self.btnLoadDataFile.clicked.connect(self.LoadDataFile)
+            # Create Load Data File Button
+            self.btnLoadDataFile = QPushButton('Load Data File')
+            self.btnLoadDataFile.hide()
+            self.btnLoadDataFile.setToolTip('Opens file dialog box to select the data file')
+            self.btnLoadDataFile.setShortcut("Ctrl+L")
+            self.btnLoadDataFile.setAutoDefault(False)
+            self.btnLoadDataFile.resize(self.btnLoadDataFile.minimumSizeHint())
+            self.btnLoadDataFile.clicked.connect(self.LoadDataFile)
         
-        verticalSpacer = QSpacerItem(10, 60, QSizePolicy.Minimum, 
-                          QSizePolicy.Minimum)
-        #layout.addItem(verticalSpacer)
-        layout.addWidget(self.btnLoadDICOMFile)
-        layout.addWidget(self.btnLoadModelLibrary)
-        layout.addWidget(self.btnLoadDataFile)
-        #layout.addItem(verticalSpacer)
+            verticalSpacer = QSpacerItem(10, 60, QSizePolicy.Minimum, 
+                              QSizePolicy.Minimum)
+            #layout.addItem(verticalSpacer)
+            #layout.addWidget(self.btnLoadDICOMFile)
+            layout.addWidget(self.btnLoadModelLibrary)
+            layout.addWidget(self.btnLoadDataFile)
+            #layout.addItem(verticalSpacer)
 
-        # Create dropdown list & label for selection of ROI
-        self.lblROI = QLabel("Region of Interest:")
-        self.lblROI.setAlignment(QtCore.Qt.AlignRight)
-        self.cmbROI = QComboBox()
-        self.cmbROI.setToolTip('Select Region of Interest')
-        self.lblROI.hide()
-        self.cmbROI.hide()
+            # Create dropdown list & label for selection of ROI
+            self.lblROI = QLabel("Region of Interest:")
+            self.lblROI.setAlignment(QtCore.Qt.AlignRight)
+            self.cmbROI = QComboBox()
+            self.cmbROI.setToolTip('Select Region of Interest')
+            self.lblROI.hide()
+            self.cmbROI.hide()
         
-        # Below Load Data button add ROI list.  It is placed in a 
-        # horizontal layout together with its label, so they are
-        # aligned in the same row.
-        ROI_HorizontalLayout = QHBoxLayout()
-        ROI_HorizontalLayout.insertStretch (0, 2)
-        ROI_HorizontalLayout.addWidget(self.lblROI)
-        ROI_HorizontalLayout.addWidget(self.cmbROI)
-        layout.addLayout(ROI_HorizontalLayout)
+            # Below Load Data button add ROI list.  It is placed in a 
+            # horizontal layout together with its label, so they are
+            # aligned in the same row.
+            ROI_HorizontalLayout = QHBoxLayout()
+            ROI_HorizontalLayout.insertStretch (0, 2)
+            ROI_HorizontalLayout.addWidget(self.lblROI)
+            ROI_HorizontalLayout.addWidget(self.cmbROI)
+            layout.addLayout(ROI_HorizontalLayout)
         
-        # Create a group box to group together widgets associated with
-        # the model selected. 
-        self.SetUpModelGroupBox(layout)
+            # Create a group box to group together widgets associated with
+            # the model selected. 
+            self.SetUpModelGroupBox(layout)
         
-        self.btnSaveReport = QPushButton('Save Report in PDF Format')
-        self.btnSaveReport.hide()
-        self.btnSaveReport.setToolTip(
-        'Insert an image of the graph opposite and associated data in a PDF file')
-        layout.addWidget(self.btnSaveReport, QtCore.Qt.AlignTop)
-        self.btnSaveReport.clicked.connect(self.CreatePDFReport)
+            self.btnSaveReport = QPushButton('Save Report in PDF Format')
+            self.btnSaveReport.hide()
+            self.btnSaveReport.setToolTip(
+            'Insert an image of the graph opposite and associated data in a PDF file')
+            layout.addWidget(self.btnSaveReport, QtCore.Qt.AlignTop)
+            self.btnSaveReport.clicked.connect(self.CreatePDFReport)
 
-        self.SetUpBatchProcessingGroupBox(layout)
+            self.SetUpBatchProcessingGroupBox(layout)
         
-        layout.addStretch(1)
-        self.btnExit = QPushButton('Exit')
-        layout.addWidget(self.btnExit)
-        self.statusbar = QStatusBar()
-        layout.addWidget(self.statusbar)
-        self.btnExit.clicked.connect(self.ExitApp)
-        
+            layout.addStretch(1)
+            self.btnExit = QPushButton('Exit')
+            layout.addWidget(self.btnExit)
+            #self.statusbar = QStatusBar()
+            #layout.addWidget(self.statusbar)
+            self.btnExit.clicked.connect(self.ExitApp)
+        except Exception as e:
+            print('Error in setUpLeftVerticalLayout: ' + str(e)) 
+            logger.error('Error in setUpLeftVerticalLayout: ' + str(e))
+
+
     def SetUpModelGroupBox(self, layout):
         """Creates a group box to hold widgets associated with the 
         selection of a model and for inputing/displaying that model's
         parameter data."""
-        self.groupBoxModel = QGroupBox('Model Fitting')
-        self.groupBoxModel.setAlignment(QtCore.Qt.AlignHCenter)
-        # The group box is hidden until a ROI is selected.
-        self.groupBoxModel.hide()
-        layout.addWidget(self.groupBoxModel)
+        try:
+            self.groupBoxModel = QGroupBox('Model Fitting')
+            self.groupBoxModel.setAlignment(QtCore.Qt.AlignHCenter)
+            # The group box is hidden until a ROI is selected.
+            self.groupBoxModel.hide()
+            layout.addWidget(self.groupBoxModel)
         
-        # Create horizontal layouts, one row of widgets to 
-        # each horizontal layout. Then add them to a vertical layout, 
-        # then add the vertical layout to the group box
-        modelHorizontalLayoutModelList = QHBoxLayout()
-        modelHorizontalLayoutAIF = QHBoxLayout()
-        modelHorizontalLayoutVIF = QHBoxLayout()
-        modelHorizontalLayoutReset = QHBoxLayout()
-        grid = QGridLayout()
-        modelHorizontalLayoutFitModelBtn = QHBoxLayout()
-        modelHorizontalLayoutSaveCSVBtn = QHBoxLayout()
-        modelVerticalLayout = QVBoxLayout()
-        modelVerticalLayout.setAlignment(QtCore.Qt.AlignTop) 
-        modelVerticalLayout.addLayout(modelHorizontalLayoutModelList)
-        modelVerticalLayout.addLayout(modelHorizontalLayoutAIF)
-        modelVerticalLayout.addLayout(modelHorizontalLayoutVIF)
-        modelVerticalLayout.addLayout(modelHorizontalLayoutReset)
-        modelVerticalLayout.addLayout(grid)
-        modelVerticalLayout.addLayout(modelHorizontalLayoutFitModelBtn)
-        modelVerticalLayout.addLayout(modelHorizontalLayoutSaveCSVBtn)
-        self.groupBoxModel.setLayout(modelVerticalLayout)
+            # Create horizontal layouts, one row of widgets to 
+            # each horizontal layout. Then add them to a vertical layout, 
+            # then add the vertical layout to the group box
+            modelHorizontalLayoutModelList = QHBoxLayout()
+            modelHorizontalLayoutAIF = QHBoxLayout()
+            modelHorizontalLayoutVIF = QHBoxLayout()
+            modelHorizontalLayoutReset = QHBoxLayout()
+            grid = QGridLayout()
+            modelHorizontalLayoutFitModelBtn = QHBoxLayout()
+            modelHorizontalLayoutSaveCSVBtn = QHBoxLayout()
+            modelVerticalLayout = QVBoxLayout()
+            modelVerticalLayout.setAlignment(QtCore.Qt.AlignTop) 
+            modelVerticalLayout.addLayout(modelHorizontalLayoutModelList)
+            modelVerticalLayout.addLayout(modelHorizontalLayoutAIF)
+            modelVerticalLayout.addLayout(modelHorizontalLayoutVIF)
+            modelVerticalLayout.addLayout(modelHorizontalLayoutReset)
+            modelVerticalLayout.addLayout(grid)
+            modelVerticalLayout.addLayout(modelHorizontalLayoutFitModelBtn)
+            modelVerticalLayout.addLayout(modelHorizontalLayoutSaveCSVBtn)
+            self.groupBoxModel.setLayout(modelVerticalLayout)
         
-        # Create dropdown list to hold names of models
-        self.modelLabel = QLabel("Model:")
-        self.modelLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.cmbModels = QComboBox()
-        self.cmbModels.setToolTip('Select a model to fit to the data')
-        #Display first item in list, the string "Select a Model"
-        self.cmbModels.setCurrentIndex(0) 
-        self.cmbModels.currentIndexChanged.connect(self.UncheckFixParameterCheckBoxes)
-        self.cmbModels.currentIndexChanged.connect(self.DisplayModelImage)
-        self.cmbModels.currentIndexChanged.connect(self.ConfigureGUIForEachModel)
-        self.cmbModels.currentIndexChanged.connect(lambda: self.clearOptimisedParamaterList('cmbModels')) 
-        self.cmbModels.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
-        self.cmbModels.activated.connect(lambda:  self.plotMRSignals('cmbModels'))
+            # Create dropdown list to hold names of models
+            self.modelLabel = QLabel("Model:")
+            self.modelLabel.setAlignment(QtCore.Qt.AlignRight)
+            self.cmbModels = QComboBox()
+            self.cmbModels.setToolTip('Select a model to fit to the data')
+            #Display first item in list, the string "Select a Model"
+            self.cmbModels.setCurrentIndex(0) 
+            self.cmbModels.currentIndexChanged.connect(self.UncheckFixParameterCheckBoxes)
+            self.cmbModels.currentIndexChanged.connect(self.DisplayModelImage)
+            self.cmbModels.currentIndexChanged.connect(self.ConfigureGUIForEachModel)
+            self.cmbModels.currentIndexChanged.connect(lambda: self.clearOptimisedParamaterList('cmbModels')) 
+            self.cmbModels.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
+            self.cmbModels.activated.connect(lambda:  self.plotMRSignals('cmbModels'))
 
-        # Create dropdown lists for selection of AIF & VIF
-        self.lblAIF = QLabel('Arterial Input Function:')
-        self.cmbAIF = QComboBox()
-        self.cmbAIF.setToolTip('Select Arterial Input Function')
-        self.lblVIF = QLabel("Venous Input Function:")
-        self.cmbVIF = QComboBox()
-        self.cmbVIF.setToolTip('Select Venous Input Function')
+            # Create dropdown lists for selection of AIF & VIF
+            self.lblAIF = QLabel('Arterial Input Function:')
+            self.cmbAIF = QComboBox()
+            self.cmbAIF.setToolTip('Select Arterial Input Function')
+            self.lblVIF = QLabel("Venous Input Function:")
+            self.cmbVIF = QComboBox()
+            self.cmbVIF.setToolTip('Select Venous Input Function')
 
-        # When a ROI is selected: 
-        # plot its concentration data on the graph.
-        self.cmbROI.activated.connect(lambda:  self.plotMRSignals('cmbROI'))
-        # then make the Model groupbox and the widgets it contains visible.
-        self.cmbROI.activated.connect(self.DisplayModelFittingGroupBox)
-        # When an AIF is selected plot its concentration data on the graph.
-        self.cmbAIF.activated.connect(lambda: self.plotMRSignals('cmbAIF'))
-        # When an AIF is selected display the Fit Model and Save plot CVS buttons.
-        self.cmbAIF.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
-        self.cmbVIF.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
-        # When a VIF is selected plot its concentration data on the graph.
-        self.cmbVIF.activated.connect(lambda: self.plotMRSignals('cmbVIF'))
-        self.lblAIF.hide()
-        self.cmbAIF.hide()
-        self.lblVIF.hide()
-        self.cmbVIF.hide()
-        self.cmbROI.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        self.cmbAIF.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        self.cmbVIF.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+            # When a ROI is selected: 
+            # plot its concentration data on the graph.
+            self.cmbROI.activated.connect(lambda:  self.plotMRSignals('cmbROI'))
+            # then make the Model groupbox and the widgets it contains visible.
+            self.cmbROI.activated.connect(self.DisplayModelFittingGroupBox)
+            # When an AIF is selected plot its concentration data on the graph.
+            self.cmbAIF.activated.connect(lambda: self.plotMRSignals('cmbAIF'))
+            # When an AIF is selected display the Fit Model and Save plot CVS buttons.
+            self.cmbAIF.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
+            self.cmbVIF.currentIndexChanged.connect(self.display_FitModel_SaveCSV_SaveReport_Buttons)
+            # When a VIF is selected plot its concentration data on the graph.
+            self.cmbVIF.activated.connect(lambda: self.plotMRSignals('cmbVIF'))
+            self.lblAIF.hide()
+            self.cmbAIF.hide()
+            self.lblVIF.hide()
+            self.cmbVIF.hide()
+            self.cmbROI.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+            self.cmbAIF.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+            self.cmbVIF.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         
-        # Add combo boxes and their labels to the horizontal layouts
-        modelHorizontalLayoutModelList.insertStretch (0, 2)
-        modelHorizontalLayoutModelList.addWidget(self.modelLabel)
-        modelHorizontalLayoutModelList.addWidget(self.cmbModels)
-        modelHorizontalLayoutAIF.insertStretch (0, 2)
-        modelHorizontalLayoutAIF.addWidget(self.lblAIF)
-        modelHorizontalLayoutAIF.addWidget(self.cmbAIF)
-        modelHorizontalLayoutVIF.insertStretch (0, 2)
-        modelHorizontalLayoutVIF.addWidget(self.lblVIF)
-        modelHorizontalLayoutVIF.addWidget(self.cmbVIF)
+            # Add combo boxes and their labels to the horizontal layouts
+            modelHorizontalLayoutModelList.insertStretch (0, 2)
+            modelHorizontalLayoutModelList.addWidget(self.modelLabel)
+            modelHorizontalLayoutModelList.addWidget(self.cmbModels)
+            modelHorizontalLayoutAIF.insertStretch (0, 2)
+            modelHorizontalLayoutAIF.addWidget(self.lblAIF)
+            modelHorizontalLayoutAIF.addWidget(self.cmbAIF)
+            modelHorizontalLayoutVIF.insertStretch (0, 2)
+            modelHorizontalLayoutVIF.addWidget(self.lblVIF)
+            modelHorizontalLayoutVIF.addWidget(self.cmbVIF)
         
-        self.cboxDelay = QCheckBox('Delay', self)
-        self.cboxConstaint = QCheckBox('Constraint', self)
-        self.cboxDelay.hide()
-        self.cboxConstaint.hide()
-        self.btnReset = QPushButton('Reset')
-        self.btnReset.setToolTip('Reset parameters to their default values.')
-        self.btnReset.hide()
-        self.btnReset.clicked.connect(self.InitialiseParameterSpinBoxes)
-        self.btnReset.clicked.connect(self.OptimumParameterChanged)
-        # If parameters reset to their default values, 
-        # replot the concentration and model data
-        self.btnReset.clicked.connect(lambda: self.plotMRSignals('Reset Button'))
-        modelHorizontalLayoutReset.addWidget(self.cboxDelay)
-        modelHorizontalLayoutReset.addWidget(self.cboxConstaint)
-        modelHorizontalLayoutReset.addWidget(self.btnReset)
+            self.cboxDelay = QCheckBox( 'Delay')
+            self.cboxConstaint = QCheckBox('Constraint')
+            self.cboxDelay.hide()
+            self.cboxConstaint.hide()
+            self.btnReset = QPushButton('Reset')
+            self.btnReset.setToolTip('Reset parameters to their default values.')
+            self.btnReset.hide()
+            self.btnReset.clicked.connect(self.InitialiseParameterSpinBoxes)
+            self.btnReset.clicked.connect(self.OptimumParameterChanged)
+            # If parameters reset to their default values, 
+            # replot the concentration and model data
+            self.btnReset.clicked.connect(lambda: self.plotMRSignals('Reset Button'))
+            modelHorizontalLayoutReset.addWidget(self.cboxDelay)
+            modelHorizontalLayoutReset.addWidget(self.cboxConstaint)
+            modelHorizontalLayoutReset.addWidget(self.btnReset)
         
-        self.lblPhysParams = QLabel("Model Parameters")
-        self.lblConfInt = QLabel("95% Confidence Interval")
-        self.lblFix = QLabel("Fix")
-        self.lblPhysParams.hide()
-        self.lblFix.hide()
-        self.lblConfInt.hide()
-        self.lblPhysParams.setAlignment(QtCore.Qt.AlignLeft)
-        self.lblConfInt.setAlignment(QtCore.Qt.AlignRight)
-        self.lblFix.setAlignment(QtCore.Qt.AlignLeft)
+            self.lblPhysParams = QLabel("Model Parameters")
+            self.lblConfInt = QLabel("95% Confidence Interval")
+            self.lblFix = QLabel("Fix")
+            self.lblPhysParams.hide()
+            self.lblFix.hide()
+            self.lblConfInt.hide()
+            self.lblPhysParams.setAlignment(QtCore.Qt.AlignLeft)
+            self.lblConfInt.setAlignment(QtCore.Qt.AlignRight)
+            self.lblFix.setAlignment(QtCore.Qt.AlignLeft)
 
-        # Create model parameter spinboxes and their labels
-        # Label text set when the model is selected
-        self.labelParameter1 = QLabel("") 
-        self.labelParameter1.hide()
-        self.ckbParameter1 = QCheckBox("")
-        self.ckbParameter1.hide()
-        self.lblParam1ConfInt = QLabel("")
-        self.lblParam1ConfInt.setAlignment(QtCore.Qt.AlignCenter)
+            # Create model parameter spinboxes and their labels
+            # Label text set when the model is selected
+            self.labelParameter1 = QLabel("") 
+            self.labelParameter1.hide()
+            self.ckbParameter1 = QCheckBox("")
+            self.ckbParameter1.hide()
+            self.lblParam1ConfInt = QLabel("")
+            self.lblParam1ConfInt.setAlignment(QtCore.Qt.AlignCenter)
         
-        self.labelParameter2 = QLabel("")
-        self.ckbParameter2 = QCheckBox("")
-        self.ckbParameter2.hide()
-        self.lblParam2ConfInt = QLabel("")
-        self.lblParam2ConfInt.setAlignment(QtCore.Qt.AlignCenter)
+            self.labelParameter2 = QLabel("")
+            self.ckbParameter2 = QCheckBox("")
+            self.ckbParameter2.hide()
+            self.lblParam2ConfInt = QLabel("")
+            self.lblParam2ConfInt.setAlignment(QtCore.Qt.AlignCenter)
         
-        self.labelParameter3 = QLabel("")
-        self.ckbParameter3 = QCheckBox("")
-        self.ckbParameter3.hide()
-        self.lblParam3ConfInt = QLabel("")
-        self.lblParam3ConfInt.setAlignment(QtCore.Qt.AlignCenter)
+            self.labelParameter3 = QLabel("")
+            self.ckbParameter3 = QCheckBox("")
+            self.ckbParameter3.hide()
+            self.lblParam3ConfInt = QLabel("")
+            self.lblParam3ConfInt.setAlignment(QtCore.Qt.AlignCenter)
         
-        self.labelParameter4 = QLabel("")
-        self.ckbParameter4 = QCheckBox("")
-        self.ckbParameter4.hide()
-        self.lblParam4ConfInt = QLabel("")
-        self.lblParam4ConfInt.setAlignment(QtCore.Qt.AlignCenter)
+            self.labelParameter4 = QLabel("")
+            self.ckbParameter4 = QCheckBox("")
+            self.ckbParameter4.hide()
+            self.lblParam4ConfInt = QLabel("")
+            self.lblParam4ConfInt.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.labelParameter5 = QLabel("")
-        self.ckbParameter5 = QCheckBox("")
-        self.ckbParameter5.hide()
-        self.lblParam5ConfInt = QLabel("")
-        self.lblParam5ConfInt.setAlignment(QtCore.Qt.AlignCenter)
+            self.labelParameter5 = QLabel("")
+            self.ckbParameter5 = QCheckBox("")
+            self.ckbParameter5.hide()
+            self.lblParam5ConfInt = QLabel("")
+            self.lblParam5ConfInt.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.labelParameter1.setWordWrap(True)
-        self.labelParameter2.setWordWrap(True)
-        self.labelParameter3.setWordWrap(True)
-        self.labelParameter4.setWordWrap(True)
-        self.labelParameter5.setWordWrap(True)
+            self.labelParameter1.setWordWrap(True)
+            self.labelParameter2.setWordWrap(True)
+            self.labelParameter3.setWordWrap(True)
+            self.labelParameter4.setWordWrap(True)
+            self.labelParameter5.setWordWrap(True)
         
-        self.spinBoxParameter1 = QDoubleSpinBox()
-        self.spinBoxParameter2 = QDoubleSpinBox()
-        self.spinBoxParameter3 = QDoubleSpinBox()
-        self.spinBoxParameter4 = QDoubleSpinBox()
-        self.spinBoxParameter5 = QDoubleSpinBox()
+            self.spinBoxParameter1 = QDoubleSpinBox()
+            self.spinBoxParameter2 = QDoubleSpinBox()
+            self.spinBoxParameter3 = QDoubleSpinBox()
+            self.spinBoxParameter4 = QDoubleSpinBox()
+            self.spinBoxParameter5 = QDoubleSpinBox()
         
-        self.spinBoxParameter1.hide()
-        self.spinBoxParameter2.hide()
-        self.spinBoxParameter3.hide()
-        self.spinBoxParameter4.hide()
-        self.spinBoxParameter5.hide()
+            self.spinBoxParameter1.hide()
+            self.spinBoxParameter2.hide()
+            self.spinBoxParameter3.hide()
+            self.spinBoxParameter4.hide()
+            self.spinBoxParameter5.hide()
 
-        # If a parameter value is changed, replot the concentration and model data
-        self.spinBoxParameter1.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter1')) 
-        self.spinBoxParameter2.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter2')) 
-        self.spinBoxParameter3.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter3')) 
-        self.spinBoxParameter4.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter4'))
-        self.spinBoxParameter5.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter5'))
-        # Set boolean variable, self.isCurveFittingDone to false to 
-        # indicate that the value of a model parameter
-        # has been changed manually rather than by curve fitting
-        self.spinBoxParameter1.valueChanged.connect(self.OptimumParameterChanged) 
-        self.spinBoxParameter2.valueChanged.connect(self.OptimumParameterChanged) 
-        self.spinBoxParameter3.valueChanged.connect(self.OptimumParameterChanged) 
-        self.spinBoxParameter4.valueChanged.connect(self.OptimumParameterChanged)
-        self.spinBoxParameter5.valueChanged.connect(self.OptimumParameterChanged)
+            # If a parameter value is changed, replot the concentration and model data
+            self.spinBoxParameter1.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter1')) 
+            self.spinBoxParameter2.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter2')) 
+            self.spinBoxParameter3.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter3')) 
+            self.spinBoxParameter4.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter4'))
+            self.spinBoxParameter5.valueChanged.connect(lambda: self.plotMRSignals('spinBoxParameter5'))
+            # Set boolean variable, self.isCurveFittingDone to false to 
+            # indicate that the value of a model parameter
+            # has been changed manually rather than by curve fitting
+            self.spinBoxParameter1.valueChanged.connect(self.OptimumParameterChanged) 
+            self.spinBoxParameter2.valueChanged.connect(self.OptimumParameterChanged) 
+            self.spinBoxParameter3.valueChanged.connect(self.OptimumParameterChanged) 
+            self.spinBoxParameter4.valueChanged.connect(self.OptimumParameterChanged)
+            self.spinBoxParameter5.valueChanged.connect(self.OptimumParameterChanged)
 
-        grid.addWidget(self.lblPhysParams, 0, 0, 1, 2, alignment=QtCore.Qt.AlignLeft)
-        grid.addWidget(self.lblFix, 0, 3)
-        grid.addWidget(self.lblConfInt, 0, 4)
+            grid.addWidget(self.lblPhysParams, 0, 0, 1, 2, alignment=QtCore.Qt.AlignLeft)
+            grid.addWidget(self.lblFix, 0, 3)
+            grid.addWidget(self.lblConfInt, 0, 4)
 
-        grid.addWidget(self.labelParameter1, 1, 0, 1, 2)
-        grid.addWidget(self.spinBoxParameter1, 1, 2)
-        grid.addWidget(self.ckbParameter1, 1, 3)
-        grid.addWidget(self.lblParam1ConfInt, 1, 4, alignment=QtCore.Qt.AlignCenter)
+            grid.addWidget(self.labelParameter1, 1, 0, 1, 2)
+            grid.addWidget(self.spinBoxParameter1, 1, 2)
+            grid.addWidget(self.ckbParameter1, 1, 3)
+            grid.addWidget(self.lblParam1ConfInt, 1, 4, alignment=QtCore.Qt.AlignCenter)
        
-        grid.addWidget(self.labelParameter2, 2, 0, 1, 2)
-        grid.addWidget(self.spinBoxParameter2, 2, 2)
-        grid.addWidget(self.ckbParameter2, 2, 3)
-        grid.addWidget(self.lblParam2ConfInt, 2, 4, alignment=QtCore.Qt.AlignCenter)
+            grid.addWidget(self.labelParameter2, 2, 0, 1, 2)
+            grid.addWidget(self.spinBoxParameter2, 2, 2)
+            grid.addWidget(self.ckbParameter2, 2, 3)
+            grid.addWidget(self.lblParam2ConfInt, 2, 4, alignment=QtCore.Qt.AlignCenter)
 
-        grid.addWidget(self.labelParameter3, 3, 0, 1, 2)
-        grid.addWidget(self.spinBoxParameter3, 3, 2)
-        grid.addWidget(self.ckbParameter3, 3, 3)
-        grid.addWidget(self.lblParam3ConfInt, 3, 4, alignment=QtCore.Qt.AlignCenter)
+            grid.addWidget(self.labelParameter3, 3, 0, 1, 2)
+            grid.addWidget(self.spinBoxParameter3, 3, 2)
+            grid.addWidget(self.ckbParameter3, 3, 3)
+            grid.addWidget(self.lblParam3ConfInt, 3, 4, alignment=QtCore.Qt.AlignCenter)
 
-        grid.addWidget(self.labelParameter4, 4, 0, 1, 2)
-        grid.addWidget(self.spinBoxParameter4, 4, 2)
-        grid.addWidget(self.ckbParameter4, 4, 3)
-        grid.addWidget(self.lblParam4ConfInt, 4, 4, alignment=QtCore.Qt.AlignCenter)
+            grid.addWidget(self.labelParameter4, 4, 0, 1, 2)
+            grid.addWidget(self.spinBoxParameter4, 4, 2)
+            grid.addWidget(self.ckbParameter4, 4, 3)
+            grid.addWidget(self.lblParam4ConfInt, 4, 4, alignment=QtCore.Qt.AlignCenter)
 
-        grid.addWidget(self.labelParameter5, 7, 0, 1, 2)
-        grid.addWidget(self.spinBoxParameter5, 7, 2)
-        grid.addWidget(self.ckbParameter5, 7, 3)
-        grid.addWidget(self.lblParam5ConfInt, 7, 4)
+            grid.addWidget(self.labelParameter5, 7, 0, 1, 2)
+            grid.addWidget(self.spinBoxParameter5, 7, 2)
+            grid.addWidget(self.ckbParameter5, 7, 3)
+            grid.addWidget(self.lblParam5ConfInt, 7, 4)
 
-        self.btnFitModel = QPushButton('Fit Model')
-        self.btnFitModel.setToolTip('Use non-linear least squares to fit the selected model to the data')
-        self.btnFitModel.hide()
-        modelHorizontalLayoutFitModelBtn.addWidget(self.btnFitModel)
-        self.btnFitModel.clicked.connect(self.CurveFit)
+            self.btnFitModel = QPushButton('Fit Model')
+            self.btnFitModel.setToolTip('Use non-linear least squares to fit the selected model to the data')
+            self.btnFitModel.hide()
+            modelHorizontalLayoutFitModelBtn.addWidget(self.btnFitModel)
+            self.btnFitModel.clicked.connect(self.CurveFit)
         
-        self.btnSaveCSV = QPushButton('Save plot data to CSV file')
-        self.btnSaveCSV.setToolTip('Save the data plotted on the graph to a CSV file')
-        self.btnSaveCSV.hide()
-        modelHorizontalLayoutSaveCSVBtn.addWidget(self.btnSaveCSV)
-        self.btnSaveCSV.clicked.connect(self.SaveCSVFile)
+            self.btnSaveCSV = QPushButton('Save plot data to CSV file')
+            self.btnSaveCSV.setToolTip('Save the data plotted on the graph to a CSV file')
+            self.btnSaveCSV.hide()
+            modelHorizontalLayoutSaveCSVBtn.addWidget(self.btnSaveCSV)
+            self.btnSaveCSV.clicked.connect(self.SaveCSVFile)
+        except Exception as e:
+            print('Error in SetUpModelGroupBox: ' + str(e)) 
+            logger.error('Error in SetUpModelGroupBox: ' + str(e))
 
 
     def SetUpBatchProcessingGroupBox(self, layout):
@@ -654,25 +677,30 @@ class FERRET(QWidget):
         layout - holds a reference to the left handside vertical layout widget
         
         """
-        self.groupBoxBatchProcessing = QGroupBox('Batch Processing')
-        self.groupBoxBatchProcessing.setAlignment(QtCore.Qt.AlignHCenter)
-        self.groupBoxBatchProcessing.hide()
-        layout.addWidget(self.groupBoxBatchProcessing)
+        try:
+            self.groupBoxBatchProcessing = QGroupBox('Batch Processing')
+            self.groupBoxBatchProcessing.setAlignment(QtCore.Qt.AlignHCenter)
+            self.groupBoxBatchProcessing.hide()
+            layout.addWidget(self.groupBoxBatchProcessing)
 
-        verticalLayout = QVBoxLayout()
-        self.groupBoxBatchProcessing.setLayout(verticalLayout)
+            verticalLayout = QVBoxLayout()
+            self.groupBoxBatchProcessing.setLayout(verticalLayout)
 
-        self.btnBatchProc = QPushButton('Start Batch Processing')
-        self.btnBatchProc.setToolTip('Processes all the CSV data files in the selected directory')
-        self.btnBatchProc.clicked.connect(self.BatchProcessAllCSVDataFiles) 
-        verticalLayout.addWidget(self.btnBatchProc)
+            self.btnBatchProc = QPushButton('Start Batch Processing')
+            self.btnBatchProc.setToolTip('Processes all the CSV data files in the selected directory')
+            self.btnBatchProc.clicked.connect(self.BatchProcessAllCSVDataFiles) 
+            verticalLayout.addWidget(self.btnBatchProc)
 
-        self.lblBatchProcessing = QLabel("")
-        self.lblBatchProcessing.setWordWrap(True)
-        verticalLayout.addWidget(self.lblBatchProcessing)
-        self.pbar = QProgressBar(self)
-        verticalLayout.addWidget(self.pbar)
-        self.pbar.hide()
+            self.lblBatchProcessing = QLabel("")
+            self.lblBatchProcessing.setWordWrap(True)
+            verticalLayout.addWidget(self.lblBatchProcessing)
+            self.pbar = QProgressBar()
+            verticalLayout.addWidget(self.pbar)
+            self.pbar.hide()
+        except Exception as e:
+            print('Error in SetUpBatchProcessingGroupBox: ' + str(e)) 
+            logger.error('Error in SetUpBatchProcessingGroupBox: ' + str(e))
+        
 
     def DisplayModelFittingGroupBox(self):
         """Shows the model fitting group box if a ROI is selected. 
@@ -706,68 +734,73 @@ class FERRET(QWidget):
 
         # lblModelImage is used to display a schematic
         # representation of the model.
-        self.lblModelImage = QLabel('') 
-        self.lblModelImage.setAlignment(QtCore.Qt.AlignCenter )
-        self.lblModelImage.setMargin(2)
+        try:
+            self.lblModelImage = QLabel('') 
+            self.lblModelImage.setAlignment(QtCore.Qt.AlignCenter )
+            self.lblModelImage.setMargin(2)
                                         
-        self.lblModelName = QLabel('')
-        self.lblModelName.setAlignment(QtCore.Qt.AlignCenter)
-        self.lblModelName.setMargin(2)
-        self.lblModelName.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.lblModelName.setWordWrap(True)
+            self.lblModelName = QLabel('')
+            self.lblModelName.setAlignment(QtCore.Qt.AlignCenter)
+            self.lblModelName.setMargin(2)
+            self.lblModelName.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+            self.lblModelName.setWordWrap(True)
 
-        self.figure = plt.figure(figsize=(5, 8), dpi=100) 
-        # this is the Canvas Widget that displays the `figure`
-        # it takes the `figure` instance as a parameter 
-        # to its __init__ function
-        self.canvas = FigureCanvas(self.figure)
+            self.figure = plt.figure(figsize=(5, 8), dpi=100) 
+            # this is the Canvas Widget that displays the `figure`
+            # it takes the `figure` instance as a parameter 
+            # to its __init__ function
+            self.canvas = FigureCanvas(self.figure)
         
-        # this is the Navigation widget
-        # it takes the Canvas widget as a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
+            # this is the Navigation widget
+            # it takes the Canvas widget as a parent
+            #self.toolbar = NavigationToolbar(self.canvas, self)
+            toolbar = NavigationToolbar(self.canvas)
+            # Display TRISTAN & University of Leeds Logos in labels
+            self.lblFERRET_Logo = QLabel(self)
+            self.lblTRISTAN_Logo = QLabel(self)
+            self.lblUoL_Logo = QLabel(self)
+            self.lblTRISTAN_Logo.setAlignment(QtCore.Qt.AlignHCenter)
+            self.lblUoL_Logo.setAlignment(QtCore.Qt.AlignHCenter)
 
-        # Display TRISTAN & University of Leeds Logos in labels
-        self.lblFERRET_Logo = QLabel(self)
-        self.lblTRISTAN_Logo = QLabel(self)
-        self.lblUoL_Logo = QLabel(self)
-        self.lblTRISTAN_Logo.setAlignment(QtCore.Qt.AlignHCenter)
-        self.lblUoL_Logo.setAlignment(QtCore.Qt.AlignHCenter)
+            pixmapFERRET = QPixmap(FERRET_LOGO)
+            pMapWidth = pixmapFERRET.width() 
+            pMapHeight = pixmapFERRET.height() 
+            pixmapFERRET = pixmapFERRET.scaled(pMapWidth, pMapHeight, 
+                          QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            self.lblFERRET_Logo.setPixmap(pixmapFERRET) 
 
-        pixmapFERRET = QPixmap(FERRET_LOGO)
-        pMapWidth = pixmapFERRET.width() 
-        pMapHeight = pixmapFERRET.height() 
-        pixmapFERRET = pixmapFERRET.scaled(pMapWidth, pMapHeight, 
-                      QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.lblFERRET_Logo.setPixmap(pixmapFERRET) 
+            pixmapTRISTAN = QPixmap(LARGE_TRISTAN_LOGO)
+            pMapWidth = pixmapTRISTAN.width() * 0.5
+            pMapHeight = pixmapTRISTAN.height() * 0.5
+            pixmapTRISTAN = pixmapTRISTAN.scaled(pMapWidth, pMapHeight, 
+                          QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            self.lblTRISTAN_Logo.setPixmap(pixmapTRISTAN)
 
-        pixmapTRISTAN = QPixmap(LARGE_TRISTAN_LOGO)
-        pMapWidth = pixmapTRISTAN.width() * 0.5
-        pMapHeight = pixmapTRISTAN.height() * 0.5
-        pixmapTRISTAN = pixmapTRISTAN.scaled(pMapWidth, pMapHeight, 
-                      QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.lblTRISTAN_Logo.setPixmap(pixmapTRISTAN)
-
-        pixmapUoL = QPixmap(UNI_OF_LEEDS_LOGO)
-        pMapWidth = pixmapUoL.width() * 0.75
-        pMapHeight = pixmapUoL.height() * 0.75
-        pixmapUoL = pixmapUoL.scaled(pMapWidth, pMapHeight, 
-                      QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.lblUoL_Logo.setPixmap(pixmapUoL)
+            pixmapUoL = QPixmap(UNI_OF_LEEDS_LOGO)
+            pMapWidth = pixmapUoL.width() * 0.75
+            pMapHeight = pixmapUoL.height() * 0.75
+            pixmapUoL = pixmapUoL.scaled(pMapWidth, pMapHeight, 
+                          QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            self.lblUoL_Logo.setPixmap(pixmapUoL)
        
-        layout.addWidget(self.lblModelImage)
-        layout.addWidget(self.lblModelName)
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
-        # Create horizontal layout box to hold TRISTAN & University of Leeds Logos
-        horizontalLogoLayout = QHBoxLayout()
-        horizontalLogoLayout.setAlignment(QtCore.Qt.AlignRight)
-        # Add horizontal layout to bottom of the vertical layout
-        layout.addLayout(horizontalLogoLayout)
-        # Add labels displaying logos to the horizontal layout, 
-        # Tristan on the LHS, UoL on the RHS
-        horizontalLogoLayout.addWidget(self.lblFERRET_Logo)
-        horizontalLogoLayout.addWidget(self.lblTRISTAN_Logo)
-        horizontalLogoLayout.addWidget(self.lblUoL_Logo)
+            layout.addWidget(self.lblModelImage)
+            layout.addWidget(self.lblModelName)
+            layout.addWidget(toolbar)
+            layout.addWidget(self.canvas)
+            # Create horizontal layout box to hold TRISTAN & University of Leeds Logos
+            horizontalLogoLayout = QHBoxLayout()
+            horizontalLogoLayout.setAlignment(QtCore.Qt.AlignRight)
+            # Add horizontal layout to bottom of the vertical layout
+            layout.addLayout(horizontalLogoLayout)
+            # Add labels displaying logos to the horizontal layout, 
+            # Tristan on the LHS, UoL on the RHS
+            horizontalLogoLayout.addWidget(self.lblFERRET_Logo)
+            horizontalLogoLayout.addWidget(self.lblTRISTAN_Logo)
+            horizontalLogoLayout.addWidget(self.lblUoL_Logo)
+        except Exception as e:
+            print('Error in setUpPlotArea: ' + str(e)) 
+            logger.error('Error in setUpPlotArea: ' + str(e))
+
 
     def ApplyStyleSheet(self):
         """Modifies the appearance of the GUI using CSS instructions"""
@@ -1608,59 +1641,6 @@ class FERRET(QWidget):
             print('Error in function PopulateModelListCombo: ' + str(e))
             logger.error('Error in function PopulateModelListCombo: ' + str(e))
 
-    def LoadDICOMFile(self):
-        """TO DO"""
-        
-        try:
-            # Clear the existing plot
-            self.figure.clear()
-            self.figure.set_visible(False)
-            self.canvas.draw()
-        
-            self.HideAllControlsOnGUI()
-
-            #  Get the configuration file in XML format.
-            # The filter parameter is set so that the 
-            # user can only open an XML file.
-            defaultPath = "C:\\DICOM Files\\00000001\\"
-            fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
-                caption="Select a DICOM file",  
-                directory=defaultPath)
-
-            if os.path.exists(fullFilePath):
-                dataset = pydicom.dcmread(fullFilePath)
-                #if 'PixelData' in dataset:
-
-                    #imageObject = QImage(dataset.pixel_array) 
-                    #pixmapDICOM = QPixmap.fromImage(imageObject)
-                    
-                   # #self.canvas.imshow(dataset.pixel_array, cmap=plt.cm.bone)
-                   # #plt.imshow(dataset.pixel_array, cmap=plt.cm.bone)
-                   # #self.canvas.draw
-                   ## plt.show()
-
-                    
-                   # #self.canvas.clear()
-                   # ax = self.figure.add_subplot(111)
-                    
-                   # ax.imshow(dataset.pixel_array, cmap=plt.cm.bone)
-                   # ax.xaxis.set_visible(False)
-                   # ax.yaxis.set_visible(False)
-                   # self.canvas.draw()
-                   
-            
-        except IOError as ioe:
-            print ('IOError in function LoadDICOMFile:' + str(ioe))
-            logger.error ('IOError in function LoadDICOMFile: cannot open file' 
-                   + str(ioe))
-        except RuntimeError as re:
-            print('Runtime error in function LoadDICOMFile: ' + str(re))
-            logger.error('Runtime error in function LoadDICOMFile: ' 
-                         + str(re))
-        except Exception as e:
-            print('Error in function LoadDICOMFile: ' + str(e))
-            logger.error('Error in function LoadDICOMFile: ' + str(e))   
-
 
     def LoadModelLibrary(self):
         """Loads the contents of an XML file containing model(s) 
@@ -1680,20 +1660,20 @@ class FERRET(QWidget):
             # The filter parameter is set so that the 
             # user can only open an XML file.
             defaultPath = "Developer\\ModelConfiguration\\"
-            fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
+            fullFilePath, _ = QFileDialog.getOpenFileName( 
                 caption="Select model configuration file", 
                 directory=defaultPath,
                 filter="*.xml")
 
             if os.path.exists(fullFilePath):
-                self.objXMLReader.parseConfigFile(fullFilePath)
+                self.objXMLReader.parseXMLFile(fullFilePath)
                 
                 if self.objXMLReader.hasXMLFileParsedOK:
                     logger.info('Config file {} loaded'.format(fullFilePath))
                     
                     folderName, configFileName = \
                         os.path.split(fullFilePath)
-                    self.statusbar.showMessage('Configuration file ' + configFileName + ' loaded')
+                    #self.statusbar.showMessage('Configuration file ' + configFileName + ' loaded')
                     self.btnLoadDataFile.show()
                     self.PopulateModelListCombo()
                     self.yAxisLabel = self.objXMLReader.getYAxisLabel()
@@ -1862,7 +1842,7 @@ class FERRET(QWidget):
         but there is no data loaded to process when they are clicked.
         """
         logger.info('Function HideAllControlsOnGUI called')
-        self.statusbar.clearMessage()
+        #self.statusbar.clearMessage()
         self.pbar.reset()
         self.lblROI.hide()
         self.cmbROI.hide()
@@ -2839,8 +2819,8 @@ class FERRET(QWidget):
             self.toggleEnabled(True)
             
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main = FERRET()
-    main.show()
-    sys.exit(app.exec_())
+#if __name__ == '__main__':
+#    app = QApplication(sys.argv)
+#    main = FERRET()
+#    main.show()
+#    sys.exit(app.exec_())

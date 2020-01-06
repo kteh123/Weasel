@@ -444,9 +444,10 @@ class Weasel(QMainWindow):
                                           Qt.WindowCloseButtonHint)
             #layout = QVBoxLayout()
             
-            widget = QWidget()
+            #widget = QWidget()
             #widget.setLayout(layout)
-            self.subWindow.setWidget(widget)
+            ferretWidget = ferret()
+            self.subWindow.setWidget(ferretWidget.returnFerretWidget())
             
             self.subWindow.setWindowTitle('FERRET')
             self.subWindow.setWindowIcon(QIcon(FERRET_LOGO))
