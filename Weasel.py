@@ -59,7 +59,7 @@ class Weasel(QMainWindow):
         self.selectedSeries = ''
         self.selectedImagePath = ''
         self.selectedImageName = ''
-        #self.ApplyStyleSheet()
+        self.ApplyStyleSheet()
       
 
     def setupMenus(self):  
@@ -446,7 +446,7 @@ class Weasel(QMainWindow):
             
             #widget = QWidget()
             #widget.setLayout(layout)
-            ferretWidget = ferret()
+            ferretWidget = ferret(self.subWindow, self.statusBar)
             self.subWindow.setWidget(ferretWidget.returnFerretWidget())
             
             self.subWindow.setWindowTitle('FERRET')

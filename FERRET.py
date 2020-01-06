@@ -264,7 +264,7 @@ class FERRET:
        that are executed when events associated with widgets on
        the GUI are executed."""
      
-    def __init__(self):
+    def __init__(self, thisWindow, statusBar):
         """Creates the GUI. Controls on the GUI are placed onto 2 vertical
            layout panals placed on a horizontal layout panal.
            The appearance of the widgets is determined by CSS 
@@ -306,7 +306,8 @@ class FERRET:
 
             # Dictionary to store signal data from the data input file
             self.signalData={} 
-        
+            self.thisWindow = thisWindow
+            self.statusBar = statusBar
             # List to store concentrations calculated by the models
             self.listModel = [] 
         
@@ -331,7 +332,6 @@ class FERRET:
 
             logger.info("GUI created successfully.")
 
-           
         except Exception as e:
             print('Error creating FERRET object: ' + str(e)) 
             logger.error('Error creating FERRET object: ' + str(e))
@@ -397,14 +397,9 @@ class FERRET:
             self.btnLoadDataFile.resize(self.btnLoadDataFile.minimumSizeHint())
             self.btnLoadDataFile.clicked.connect(self.LoadDataFile)
         
-            verticalSpacer = QSpacerItem(10, 60, QSizePolicy.Minimum, 
-                              QSizePolicy.Minimum)
-            #layout.addItem(verticalSpacer)
-            #layout.addWidget(self.btnLoadDICOMFile)
             layout.addWidget(self.btnLoadModelLibrary)
             layout.addWidget(self.btnLoadDataFile)
-            #layout.addItem(verticalSpacer)
-
+         
             # Create dropdown list & label for selection of ROI
             self.lblROI = QLabel("Region of Interest:")
             self.lblROI.setAlignment(QtCore.Qt.AlignRight)
@@ -436,11 +431,9 @@ class FERRET:
             self.SetUpBatchProcessingGroupBox(layout)
         
             layout.addStretch(1)
-            self.btnExit = QPushButton('Exit')
-            layout.addWidget(self.btnExit)
-            #self.statusbar = QStatusBar()
-            #layout.addWidget(self.statusbar)
-            self.btnExit.clicked.connect(self.ExitApp)
+            self.btnClose = QPushButton('Close')
+            layout.addWidget(self.btnClose)
+            self.btnClose.clicked.connect(self.closeWindow)
         except Exception as e:
             print('Error in setUpLeftVerticalLayout: ' + str(e)) 
             logger.error('Error in setUpLeftVerticalLayout: ' + str(e))
@@ -754,11 +747,11 @@ class FERRET:
             # this is the Navigation widget
             # it takes the Canvas widget as a parent
             #self.toolbar = NavigationToolbar(self.canvas, self)
-            toolbar = NavigationToolbar(self.canvas)
+            toolbar = NavigationToolbar(self.canvas, self.thisWindow)
             # Display TRISTAN & University of Leeds Logos in labels
-            self.lblFERRET_Logo = QLabel(self)
-            self.lblTRISTAN_Logo = QLabel(self)
-            self.lblUoL_Logo = QLabel(self)
+            self.lblFERRET_Logo = QLabel()
+            self.lblTRISTAN_Logo = QLabel()
+            self.lblUoL_Logo = QLabel()
             self.lblTRISTAN_Logo.setAlignment(QtCore.Qt.AlignHCenter)
             self.lblUoL_Logo.setAlignment(QtCore.Qt.AlignHCenter)
 
@@ -1673,7 +1666,7 @@ class FERRET:
                     
                     folderName, configFileName = \
                         os.path.split(fullFilePath)
-                    #self.statusbar.showMessage('Configuration file ' + configFileName + ' loaded')
+                    self.statusBar.showMessage('Configuration file ' + configFileName + ' loaded')
                     self.btnLoadDataFile.show()
                     self.PopulateModelListCombo()
                     self.yAxisLabel = self.objXMLReader.getYAxisLabel()
@@ -1720,7 +1713,7 @@ class FERRET:
             # Filter parameter set so that the user can only
             # open a csv file.
             dataFileFolder = self.objXMLReader.getDataFileFolder()
-            fullFilePath, _ = QFileDialog.getOpenFileName(parent=self, 
+            fullFilePath, _ = QFileDialog.getOpenFileName( 
                                                      caption="Select csv file", 
                                                      directory=dataFileFolder,
                                                      filter="*.csv")
@@ -1753,7 +1746,7 @@ class FERRET:
                     
                     folderName = os.path.basename(os.path.dirname(fullFilePath))
                     self.dataFileDirectory, self.dataFileName = os.path.split(fullFilePath)
-                    self.statusbar.showMessage('File ' + self.dataFileName + ' loaded')
+                    self.statusBar.showMessage('File ' + self.dataFileName + ' loaded')
                     self.lblBatchProcessing.setText("Batch process all CSV data files in folder: " + folderName)
                     
                     # Column headers form the keys in the dictionary 
@@ -1842,7 +1835,7 @@ class FERRET:
         but there is no data loaded to process when they are clicked.
         """
         logger.info('Function HideAllControlsOnGUI called')
-        #self.statusbar.clearMessage()
+        self.statusBar.clearMessage()
         self.pbar.reset()
         self.lblROI.hide()
         self.cmbROI.hide()
@@ -2376,10 +2369,10 @@ class FERRET:
                 logger.error('Error in function plotMRSignals when an event associated with ' + str(nameCallingFunction) + ' is fired : ROI=' + ROI + ' AIF = ' + AIF + ' : ' + str(e) )
     
 
-    def ExitApp(self):
+    def closeWindow(self):
         """Closes the Model Fitting application."""
         logger.info("Application closed using the Exit button.")
-        sys.exit(0)  
+        self.thisWindow.close() 
 
 
     def toggleEnabled(self, boolEnabled=False):
@@ -2499,7 +2492,7 @@ class FERRET:
                     #  this variable used to write datafile 
                     #  in the PDF report
                     self.dataFileName = str(file) 
-                    self.statusbar.showMessage('File ' + self.dataFileName + ' loaded.')
+                    self.statusBar.showMessage('File ' + self.dataFileName + ' loaded.')
                     count +=1
                     self.lblBatchProcessing.setText("Processing {}".format(self.dataFileName))
                     # Load current file
