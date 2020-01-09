@@ -440,12 +440,8 @@ class Weasel(QMainWindow):
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
-                                          Qt.WindowCloseButtonHint |
                                           Qt.WindowCloseButtonHint)
-            #layout = QVBoxLayout()
             
-            #widget = QWidget()
-            #widget.setLayout(layout)
             ferretWidget = ferret(self.subWindow, self.statusBar)
             self.subWindow.setWidget(ferretWidget.returnFerretWidget())
             
@@ -465,7 +461,9 @@ class Weasel(QMainWindow):
         try:
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                          Qt.WindowCloseButtonHint | 
+                                          Qt.WindowMinimizeButtonHint)
             layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
             widget = QWidget()

@@ -838,6 +838,7 @@ class FERRET:
             print('Error in function DisplayModelImage: ' + str(e)) 
             logger.error('Error in function DisplayModelImage: ' + str(e))  
 
+
     def OptimumParameterChanged(self):
         """Sets boolean self.isCurveFittingDone to false if the 
         plot of the model curve is changed by manually changing the values of 
@@ -848,6 +849,7 @@ class FERRET:
 
         self.isCurveFittingDone=False
         self.clearOptimisedParamaterList('Function-OptimumParameterChanged')
+
 
     def CurveFitSetConfIntLabel(self, paramNumber):
         """Called by the CurveFitProcessOptimumParameters function,
@@ -944,6 +946,7 @@ class FERRET:
             print('Error in function CurveFitProcessOptimumParameters: ' + str(e))
             logger.error('Error in function CurveFitProcessOptimumParameters: ' + str(e))
 
+
     def ClearOptimumParamaterConfLimitsOnGUI(self):
         """Clears the contents of the labels on the left 
         handside of the GUI that display parameter value
@@ -1010,7 +1013,6 @@ class FERRET:
                             writeCSV.writerow([time, self.signalData[ROI][i], self.signalData[AIF][i], self.listModel[i]])
                     csvfile.close()
 
-
         except csv.Error:
             print('CSV Writer error in function SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
             logger.error('CSV Writer error in function SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
@@ -1024,6 +1026,7 @@ class FERRET:
             print('Error in function SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
             logger.error('Error in function SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
 
+
     def clearOptimisedParamaterList(self, callingControl: str):
         """Clears results of curve fitting from the GUI 
         and from the global list self.optimisedParamaterList """
@@ -1034,6 +1037,7 @@ class FERRET:
         except Exception as e:
             print('Error in function clearOptimisedParamaterList: ' + str(e)) 
             logger.error('Error in function clearOptimisedParamaterList: ' + str(e))
+
 
     def display_FitModel_SaveCSV_SaveReport_Buttons(self):
         """Displays the Fit Model, Save CSV and Save PFD Report
@@ -1091,6 +1095,7 @@ class FERRET:
             print('Error in function GetSpinBoxValue: ' + str(e))
             logger.error('Error in function GetSpinBoxValue: ' + str(e))
     
+
     def BuildParameterArray(self) -> List[float]:
         """Forms a 1D array of model input parameters
         for input to the modle function.  
