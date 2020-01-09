@@ -367,7 +367,7 @@ class XMLReader:
                 if missingShortName and missingLongName:
                     raise CannotFormFullParameterName
                 else:
-                    fullName = longName.text + ', \n' + \
+                    fullName = longName.text + ', ' + \
                             shortName.text + \
                             '(' + units.text + ')'
 

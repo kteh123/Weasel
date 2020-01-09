@@ -1,18 +1,57 @@
-
+"""This module contains style instructions using CSS notation 
+for each control/widget.  Each set of CSS instructions is saved
+in a string constant. TRISTAN_GREY is the preferred style."""
+TRISTAN_Green ="""
+                QDialog{background-color: rgb(221, 255, 153)} 
+                QPushButton {background-color: rgb(48, 153, 0);
+                            text-align: centre;
+                            font: bold "Arial"} 
+                QPushButton:pressed {background-color: rgb(24, 77, 0);
+                                    border-color: navy;}
+                QComboBox {
+                    background: rgb(0, 204, 0);
+                    border: 1px solid gray;
+                    border-radius: 3px;
+                    padding: 1px 18px 1px 3px;
+                    min-width: 6em;}
+                QGroupBox{background-color: rgb(200, 255, 53)}
+                QLabel{ font: bold "Arial" }
+                """
+TRISTAN_BLUE ="""
+                QDialog{background-color: rgb(153, 221, 255);} 
+                QPushButton {
+                             background-color: rgb(0, 153, 230);
+                             text-align: centre;
+                             font: bold "Arial";} 
+                QPushButton:pressed {background-color: rgb(0, 119, 179);}
+                QComboBox {
+                    background: rgb(51, 187, 255);
+                    border: 1px solid gray;
+                    border-radius: 3px;
+                    padding: 1px 18px 1px 3px;
+                    min-width: 6em;
+                    font: bold "Arial";}
+                QGroupBox{background-color: rgb(102, 179, 255);
+                          font: bold "Arial";  }
+                QLabel{ font: bold "Arial"; }
+                QDoubleSpinBox{
+                        background: rgb(204, 230, 255);
+                        font: bold "Arial";}
+                QCheckBox{font: bold "Arial";}
+                """
 TRISTAN_GREY = """
                 /* warm grey QWidget{background-color: rgb(215, 210, 203);} */
                 QPushButton {
                              background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #CCCCBB, stop: 1 #FFFFFF);
                              border-width: 3px;
-                             margin: 1px;
                              border-style: solid;
                              border-color: rgb(10, 10, 10);
                              border-radius: 5px;
                              text-align: centre;
                              font-weight: bold;
                              font-size: 9pt;
-                             padding: 3px;} 
+                             padding: 6px;} 
 
                 QPushButton:hover {
                                    background-color: rgb(175, 175, 175);
@@ -21,7 +60,6 @@ TRISTAN_GREY = """
                 QPushButton:pressed {background-color: rgb(112, 112, 112);}
 
                 QComboBox {
-                    margin: 0.25em;
                     border: 1px solid gray;
                     border-radius: 3px;
                     padding: 1px 18px 1px 3px;
@@ -38,16 +76,11 @@ TRISTAN_GREY = """
                                       stop: 0 #D9D9D9, stop: 1 #FFFFFF);
                         border: 2px solid gray;
                         border-radius: 5px;
-                        padding: 0.25em;
-                        margin-top: 0.25em; 
-                        margin-bottom: 0.25em;
+                        padding: 1em;
+                        margin-top: 1em; 
                         font-weight: bold;
                         font-size: 9pt;
                           }
-
-                QGroupBox:title {subcontrol-position: top middle; 
-                    padding: -14px 0px 0px 3px; 
-                    color:black;}
 
                 QLabel{ padding: 4px;
                         min-height: 1em;
@@ -55,16 +88,11 @@ TRISTAN_GREY = """
                         font-weight: bold;
                         font-size: 9pt;
                         background: transparent;
-                        margin: 0.25em;
                         }
 
                 QDoubleSpinBox{
                     min-width: 4.5em;
-                    margin: 0.5em;
-                    min-height: 1em;
-                    border-width: 5px;
                     padding: 4px;
-                    spacing: 5px;
                     font-size: 8pt;
                     font-weight: bold;}
 
@@ -74,10 +102,9 @@ TRISTAN_GREY = """
 
                 QCheckBox{
                     width: 5px;
-                    margin: 0.5em;
-                    min-height: 1em;
+                    margin: 5px;
                     border-width: 5px;
-                    padding: 4px;
+                    padding: 5px;
                     spacing: 5px;
                     font-weight: bold;
                     font-size: 9pt;
@@ -88,3 +115,4 @@ TRISTAN_GREY = """
                         border-color: rgb(200, 51, 255);}
 
                 """
+

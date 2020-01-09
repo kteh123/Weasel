@@ -11,3 +11,4 @@ lmfit==1.0.0
 joblib==0.14.1
 fpdf==1.7.2
 openpyxl==3.0.2
+pyautogui==0.9.48

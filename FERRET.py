@@ -164,7 +164,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'Developer//ModelLibrary//'))
 
 import numpy as np
-#import pyautogui
+import pyautogui
 import logging
 from typing import List
 import datetime
@@ -283,14 +283,6 @@ class FERRET:
            This method coordinates the calling of methods that set up the 
            widgets on the 2 vertical layout panals."""
         try:
-            #super(FERRET, self).__init__(parent)
-            #self.setWindowTitle(WINDOW_TITLE)
-            #self.setWindowIcon(QIcon(FERRET_LOGO))
-            #width, height = self.GetScreenResolution()
-            #self.setGeometry(0, 0, width, height*0.95)
-            #self.setWindowFlags(QtCore.Qt.WindowMinMaxButtonsHint |  
-            #                    QtCore.Qt.WindowCloseButtonHint)
-        
             # Store path to time/concentration data files for use 
             # in batch processing.
             self.dataFileDirectory = ""
@@ -376,11 +368,6 @@ class FERRET:
         """
         # Create Load Configuration XML file Button
         try:
-            #self.btnLoadDICOMFile = QPushButton('Load DICOM Image')
-            #self.btnLoadDICOMFile.setToolTip(
-            #    'Opens file dialog box to select DICOM image file')
-            #self.btnLoadDICOMFile.clicked.connect(self.LoadDICOMFile)
-
             self.btnLoadModelLibrary = QPushButton('Load Model Library')
             self.btnLoadModelLibrary.setToolTip(
                 'Opens file dialog box to select the model library file')
@@ -458,6 +445,7 @@ class FERRET:
             modelHorizontalLayoutVIF = QHBoxLayout()
             modelHorizontalLayoutReset = QHBoxLayout()
             grid = QGridLayout()
+            grid.setColumnStretch(0, 1)
             modelHorizontalLayoutFitModelBtn = QHBoxLayout()
             modelHorizontalLayoutSaveCSVBtn = QHBoxLayout()
             modelVerticalLayout = QVBoxLayout()
@@ -540,9 +528,9 @@ class FERRET:
             modelHorizontalLayoutReset.addWidget(self.cboxConstaint)
             modelHorizontalLayoutReset.addWidget(self.btnReset)
         
-            self.lblPhysParams = QLabel("Model Parameters")
-            self.lblConfInt = QLabel("95% Confidence Interval")
-            self.lblFix = QLabel("Fix")
+            self.lblPhysParams = QLabel("<u>Model Parameters</u>")
+            self.lblConfInt = QLabel("<u>95% Conf' Interval</u>")
+            self.lblFix = QLabel("<u>Fix</u>")
             self.lblPhysParams.hide()
             self.lblFix.hide()
             self.lblConfInt.hide()
@@ -582,12 +570,6 @@ class FERRET:
             self.ckbParameter5.hide()
             self.lblParam5ConfInt = QLabel("")
             self.lblParam5ConfInt.setAlignment(QtCore.Qt.AlignCenter)
-
-            self.labelParameter1.setWordWrap(True)
-            self.labelParameter2.setWordWrap(True)
-            self.labelParameter3.setWordWrap(True)
-            self.labelParameter4.setWordWrap(True)
-            self.labelParameter5.setWordWrap(True)
         
             self.spinBoxParameter1 = QDoubleSpinBox()
             self.spinBoxParameter2 = QDoubleSpinBox()
@@ -830,14 +812,17 @@ class FERRET:
                     imagePath = MODEL_DIAGRAM_FOLDER + imageName
                     pixmapModelImage = QPixmap(imagePath)
                     # Increase the size of the model image
-                    pMapWidth = pixmapModelImage.width() * 1.15
-                    pMapHeight = pixmapModelImage.height() * 1.15
+                    pMapWidth = pixmapModelImage.width() * 1.0
+                    pMapHeight = pixmapModelImage.height() * 1.0
                     pixmapModelImage = pixmapModelImage.scaled(pMapWidth, pMapHeight, 
                           QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
                     self.lblModelImage.setPixmap(pixmapModelImage)
                     logger.info('Image {} displayed.'.format(imageName))
                     longModelName = self.objXMLReader.getLongModelName(shortModelName)
                     self.lblModelName.setText(longModelName)
+                    self.lblFERRET_Logo.hide()
+                    self.lblTRISTAN_Logo.hide()
+                    self.lblUoL_Logo.hide()
                 else:
                     logger.info('Function DisplayModelImage - No image available for this model')
                     self.lblModelImage.clear()
@@ -845,6 +830,9 @@ class FERRET:
             else:
                 self.lblModelImage.clear()
                 self.lblModelName.setText('')
+                self.lblFERRET_Logo.show()
+                self.lblTRISTAN_Logo.show()
+                self.lblUoL_Logo.show()
 
         except Exception as e:
             print('Error in function DisplayModelImage: ' + str(e)) 
@@ -982,7 +970,9 @@ class FERRET:
 
             if not fileName:
                 # Ask the user to specify the path & name of the CSV file. The name of the model is suggested as a default file name.
-                CSVFileName, _ = QFileDialog.getSaveFileName(self, caption="Enter CSV file name", directory=DEFAULT_PLOT_DATA_FILE_PATH_NAME, filter="*.csv")
+                CSVFileName, _ = QFileDialog.getSaveFileName(caption="Enter CSV file name", 
+                                                 directory=DEFAULT_PLOT_DATA_FILE_PATH_NAME, 
+                                                 filter="*.csv")
             else:
                CSVFileName = fileName
 
@@ -1019,6 +1009,7 @@ class FERRET:
                         for i, time in enumerate(self.signalData['time']):
                             writeCSV.writerow([time, self.signalData[ROI][i], self.signalData[AIF][i], self.listModel[i]])
                     csvfile.close()
+
 
         except csv.Error:
             print('CSV Writer error in function SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
@@ -1567,7 +1558,7 @@ class FERRET:
                 # Ask the user to specify the path & name of PDF report. 
                 # A default report name is suggested, 
                 # see the Constant declarations at the top of this file
-                reportFileName, _ = QFileDialog.getSaveFileName(self, caption="Enter PDF file name", 
+                reportFileName, _ = QFileDialog.getSaveFileName(caption="Enter PDF file name", 
                                                                 directory=DEFAULT_REPORT_FILE_PATH_NAME, 
                                                                 filter="*.pdf")
 
@@ -2165,8 +2156,7 @@ class FERRET:
             Returns the width & height of the device screen in pixels.
         """
         try:
-            #width, height = pyautogui.()
-            width, height = 100
+            width, height = pyautogui.size()
             logger.info('Function GetScreenResolution called. Screen width = {}, height = {}.'.format(width, height))
             return width, height
         except Exception as e:
@@ -2379,13 +2369,13 @@ class FERRET:
         """Used to disable all the controls on the form 
         during batch processing and to enable them again 
         when batch processing is complete."""
-        self.btnExit.setEnabled(boolEnabled)
+        self.btnClose.setEnabled(boolEnabled)
         self.btnLoadDataFile.setEnabled(boolEnabled)
         self.cmbROI.setEnabled(boolEnabled)
         self.cmbAIF.setEnabled(boolEnabled)
         self.cmbVIF.setEnabled(boolEnabled)
         self.btnSaveReport.setEnabled(boolEnabled)
-        self.btnExit.setEnabled(boolEnabled)
+        self.btnClose.setEnabled(boolEnabled)
         self.cmbModels.setEnabled(boolEnabled)
         self.btnReset.setEnabled(boolEnabled)
         self.btnFitModel.setEnabled(boolEnabled)
@@ -2455,7 +2445,8 @@ class FERRET:
             # ask if they still wish to use the parameter default valuesSet
             # or the values they have selected.
             if self.BatchProcessingHaveParamsChanged():
-                buttonReply = QMessageBox.question(self, 'Parameter values changed.', 
+                buttonReply = QMessageBox.question(self.thisWindow, 
+                       'Parameter values changed.', 
                        "As initial values, do you wish to use to use the new parameter values (Yes) or the default values (No)?", QMessageBox.Yes | QMessageBox.No, 
                        QMessageBox.No)
                 if buttonReply == QMessageBox.Yes:
@@ -2539,8 +2530,10 @@ class FERRET:
             logger.info('Function BatchProcessingCreateBatchSummaryExcelSpreadSheet called.')
 
             #Ask the user to specify the path & name of the Excel spreadsheet file. 
-            ExcelFileName, _ = QFileDialog.getSaveFileName(self, caption="Batch Summary Excel file name", 
-                           directory=pathToFolder + "//BatchSummary", filter="*.xlsx")
+            ExcelFileName, _ = QFileDialog.getSaveFileName(
+                           caption="Batch Summary Excel file name", 
+                           directory=pathToFolder + "//BatchSummary", 
+                           filter="*.xlsx")
 
            #Check that the user did not press Cancel on the create file dialog
             if not ExcelFileName:
