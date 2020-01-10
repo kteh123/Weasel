@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
 from PyQt5.QtGui import QCursor, QIcon
 
 import xml.etree.ElementTree as ET 
-from xml.dom import minidom
+#from xml.dom import minidom
 import pyqtgraph as pg
 import os
 import sys
@@ -17,6 +17,7 @@ import time
 import numpy as np
 from datetime import datetime
 from datetime import date
+import logging
 
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
@@ -30,7 +31,18 @@ import binaryOperationDICOM_Image
 import styleSheet
 from FERRET import FERRET as ferret
 
-from XMLReader import XMLReader 
+
+#Create and configure the logger
+#First delete the previous log file if there is one
+LOG_FILE_NAME = "WEASEL.log"
+if os.path.exists(LOG_FILE_NAME):
+   os.remove(LOG_FILE_NAME) 
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename=LOG_FILE_NAME, 
+                    level=logging.INFO, 
+                    format=LOG_FORMAT)
+logger = logging.getLogger(__name__)
+
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -60,7 +72,7 @@ class Weasel(QMainWindow):
         self.selectedImagePath = ''
         self.selectedImageName = ''
         self.ApplyStyleSheet()
-      
+        loggerWEASEL.info("WEASEL GUI created successfully.")
 
     def setupMenus(self):  
 
@@ -126,6 +138,7 @@ class Weasel(QMainWindow):
         """Modifies the appearance of the GUI using CSS instructions"""
         try:
             self.setStyleSheet(styleSheet.TRISTAN_GREY)
+            #logger.info('Style Sheet applied.')
         except Exception as e:
             print('Error in function ApplyStyleSheet: ' + str(e))
      

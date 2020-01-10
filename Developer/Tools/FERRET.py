@@ -1,13 +1,13 @@
-"""This module is the start up module in the TRISTAN-Model-Fitting application. 
+"""This module contains the code for the FERRETModel Fitting application. 
 It defines the GUI and the logic providing the application's functionality. 
 The GUI was built using PyQT5.
 
 How to Use.
 -----------
-   The TRISTAN-Model-Fitting application allows the user to analyse 
+   The FERRET-Model-Fitting application allows the user to analyse 
    organ time/concentration data by fitting a model to the 
    Region Of Interest (ROI) time/concentration curve. 
-   The TRISTAN-Model-Fitting application provides the following functionality:
+   The FERRET-Model-Fitting application provides the following functionality:
         1. Load an XML configuration file that describes the models to be fitted
             to the concentration/time data.
         2. Then load a CSV file of concentration/time or MR Signal/time data.  
@@ -58,11 +58,11 @@ How to Use.
             model input parameter values arrived at by curve fitting.
         12. While this application is running, events & function 
             calls with data where appropriate 
-            are logged to a file called TRISTAN.log, 
+            are logged to a file called FERRET.log, 
             stored at the same location as the 
             source code or executable. This file can be used as a debugging aid. 
             When a new instance of the application is started, 
-            TRISTAN.log from the last session will be deleted
+            FERRET.log from the last session will be deleted
             and a new log file started.
         13. Clicking the 'Start Batch Processing' button applies model fitting
             to the MR signal/time data in all the files in the folder containing
@@ -73,10 +73,8 @@ How to Use.
 
 Application Module Structure.
 ---------------------------
-The modelFittingGUI.py class module is the start up module 
-in the TRISTAN-Model-Fitting application. 
-It defines the GUI and the logic providing the application's functionality.
-The GUI was built using PyQT5.
+The code in FERRET.py defines the GUI and the logic providing 
+the application's functionality.  The GUI was built using PyQT5.
 
 The XMLReader.py class module uses the xml.etree.ElementTree package to parse
 the XML configuration file that describes all the models to be made available
@@ -205,7 +203,6 @@ REPORT_TITLE = 'FERRET - Model-fitting of dynamic contrast-enhanced MRI'
 IMAGE_NAME = 'model.png'
 DEFAULT_REPORT_FILE_PATH_NAME = 'report.pdf'
 DEFAULT_PLOT_DATA_FILE_PATH_NAME = 'plot.csv'
-LOG_FILE_NAME = "TRISTAN.log"
 MIN_NUM_COLUMNS_CSV_FILE = 3
 
 #Image Files
@@ -218,13 +215,14 @@ MODEL_DIAGRAM_FOLDER = 'Developer\\ModelDiagrams\\'
 
 #Create and configure the logger
 #First delete the previous log file if there is one
-if os.path.exists(LOG_FILE_NAME):
-   os.remove(LOG_FILE_NAME) 
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-logging.basicConfig(filename=LOG_FILE_NAME, 
-                    level=logging.INFO, 
-                    format=LOG_FORMAT)
-logger = logging.getLogger(__name__)
+#LOG_FILE_NAME = "FERRET.log"
+#if os.path.exists(LOG_FILE_NAME):
+#   os.remove(LOG_FILE_NAME) 
+#LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+#logging.basicConfig(filename=LOG_FILE_NAME, 
+#                    level=logging.INFO, 
+#                    format=LOG_FORMAT)
+#logger = logging.getLogger(__name__)
 
 class NavigationToolbar(NavigationToolbar):
     """
@@ -258,8 +256,8 @@ class NoModelInletTypeDefined(Error):
    pass
 
 class FERRET:   
-    """This class defines the TRISTAN Model Fitting software 
-       based on QWidget class that provides the GUI.
+    """This class defines the FERRET Model Fitting software 
+       based on the QWidget class that provides the GUI.
        This includes seting up the GUI and defining the methods 
        that are executed when events associated with widgets on
        the GUI are executed."""
@@ -267,6 +265,9 @@ class FERRET:
     def __init__(self, thisWindow, statusBar):
         """Creates the GUI. Controls on the GUI are placed onto 2 vertical
            layout panals placed on a horizontal layout panal.
+           The horizontal layout panal is contained by a QWidget object
+           that is returned to the MDI subwindow hosting FERRET, where
+           it is displayed.
            The appearance of the widgets is determined by CSS 
            commands in the module styleSheet.py. 
            
@@ -281,25 +282,36 @@ class FERRET:
            model.
            
            This method coordinates the calling of methods that set up the 
-           widgets on the 2 vertical layout panals."""
+           widgets on the 2 vertical layout panals.
+
+           Input parameters
+           ------------------------------------
+           thisWindow - object reference to the MDI subwindow used to
+           display FERRET
+
+           statusBar - object reference to the status bar on the MDI
+           """
         try:
+            self.thisWindow = thisWindow
+            self.statusBar = statusBar
+
             # Store path to time/concentration data files for use 
             # in batch processing.
             self.dataFileDirectory = ""
         
             # Name of current loaded data file
             self.dataFileName = ''
+
             self.yAxisLabel = ''
 
             # Boolean variable indicating that the last 
             # change to the model parameters was caused
-            #  by curve fitting.
+            # by curve fitting.
             self.isCurveFittingDone = False
 
             # Dictionary to store signal data from the data input file
             self.signalData={} 
-            self.thisWindow = thisWindow
-            self.statusBar = statusBar
+
             # List to store concentrations calculated by the models
             self.listModel = [] 
         
@@ -308,12 +320,12 @@ class FERRET:
         
             # XML reader object to process XML configuration file
             self.objXMLReader = XMLReader() 
-        
-            #self.ApplyStyleSheet()
        
             # Setup the layouts, the containers for widgets
             self.mainWidget = QWidget()
-            self.mainWidget, verticalLayoutLeft, verticalLayoutRight = self.SetUpLayouts() 
+            self.mainWidget, \
+            verticalLayoutLeft, \
+            verticalLayoutRight = self.SetUpLayouts() 
         
             # Add widgets to the left-hand side vertical layout
             self.SetUpLeftVerticalLayout(verticalLayoutLeft)
@@ -322,7 +334,7 @@ class FERRET:
             #  the right-hand side vertical layout
             self.SetUpPlotArea(verticalLayoutRight)
 
-            logger.info("GUI created successfully.")
+            logger.info("FERRET GUI created successfully.")
 
         except Exception as e:
             print('Error creating FERRET object: ' + str(e)) 
@@ -330,6 +342,9 @@ class FERRET:
 
 
     def returnFerretWidget(self):
+        """This method returns the QWidget object containing the FERRET 
+        GUI.  It is called when the MDI subwindow hosting FERRET is
+        created."""
         return self.mainWidget
 
 
@@ -697,6 +712,7 @@ class FERRET:
             print('Error in function DisplayModelFittingGroupBox: ' + str(e)) 
             logger.error('Error in function DisplayModelFittingGroupBox: ' + str(e))
 
+
     def SetUpPlotArea(self, layout):
         """Adds widgets for the display of the graph onto the 
         right-hand side vertical layout.
@@ -730,6 +746,7 @@ class FERRET:
             # it takes the Canvas widget as a parent
             #self.toolbar = NavigationToolbar(self.canvas, self)
             toolbar = NavigationToolbar(self.canvas, self.thisWindow)
+
             # Display TRISTAN & University of Leeds Logos in labels
             self.lblFERRET_Logo = QLabel()
             self.lblTRISTAN_Logo = QLabel()
@@ -776,15 +793,6 @@ class FERRET:
             print('Error in setUpPlotArea: ' + str(e)) 
             logger.error('Error in setUpPlotArea: ' + str(e))
 
-
-    def ApplyStyleSheet(self):
-        """Modifies the appearance of the GUI using CSS instructions"""
-        try:
-            self.setStyleSheet(StyleSheet.TRISTAN_GREY)
-            logger.info('Style Sheet applied.')
-        except Exception as e:
-            print('Error in function ApplyStyleSheet: ' + str(e))
-            logger.error('Error in function ApplyStyleSheet: ' + str(e))
 
     def DisplayModelImage(self):
         """This method takes the name of the model from the 
@@ -1346,6 +1354,7 @@ class FERRET:
             print('Error in function CurveFitCollateParameterData ' + str(e))
             logger.error('Error in function CurveFitCollateParameterData '  + str(e))
 
+
     def CurveFit(self):
         """Performs curve fitting to fit AIF (and VIF) data 
         to the ROI curve.  Then displays the optimum model 
@@ -1492,6 +1501,7 @@ class FERRET:
         except Exception as e:
             print('Error in function GetValuesForEachParameter with model: ' + str(e))
             logger.error('Error in function GetValuesForEachParameter with model: ' + str(e))
+
 
     def BuildParameterDictionary(self, confidenceLimitsArray = None):
         """Builds a dictionary of values and their confidence limits 
@@ -2719,6 +2729,7 @@ class FERRET:
             self.toggleEnabled(True)
             return boolFileFormatOK, failureReason 
 
+
     def BatchProcessingCheckAllInputDataPresent(self, headers):
         """This function checks that the current data file contains
         data for the ROI, AIF and, if appropriate, the VIF.
@@ -2770,6 +2781,7 @@ class FERRET:
             return boolDataOK, failureReason
             self.toggleEnabled(True)
 
+
     def BatchProcessingHaveParamsChanged(self) -> bool:
         """Returns True if the user has changed one or more  
         parameter spinbox values from the defaults"""
@@ -2809,9 +2821,3 @@ class FERRET:
             logger.error('Error in function BatchProcessingHaveParamsChanged: ' + str(e) )
             self.toggleEnabled(True)
             
-
-#if __name__ == '__main__':
-#    app = QApplication(sys.argv)
-#    main = FERRET()
-#    main.show()
-#    sys.exit(app.exec_())
