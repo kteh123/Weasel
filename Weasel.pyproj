@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="CoreModules\ExcelWriter.py" />
     <Compile Include="CoreModules\ExceptionHandling.py" />
+    <Compile Include="CoreModules\FERRET.py" />
     <Compile Include="CoreModules\MathsTools.py" />
     <Compile Include="CoreModules\ModelFunctionsHelper.py" />
     <Compile Include="CoreModules\PDFWriter.py" />
@@ -39,7 +40,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\Tools\copyDICOM_Image.py" />
-    <Compile Include="Developer\Tools\FERRET.py" />
     <Compile Include="Developer\Tools\invertDICOM_Image.py" />
     <Compile Include="Weasel.py" />
   </ItemGroup>
@@ -55,6 +55,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CoreModules\FERRET_README.md" />
     <Content Include="Developer\ModelConfiguration\Model_Library_Template.xml" />
     <Content Include="Developer\ModelConfiguration\MR_SignalRatLiverModels.xml" />
     <Content Include="Developer\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
@@ -63,7 +64,6 @@
     <Content Include="Developer\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
     <Content Include="Developer\ModelLibrary\README.txt" />
     <Content Include="Developer\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
-    <Content Include="Developer\Tools\FERRET_README.md" />
     <Content Include="Developer\Tools\toolsMenu.xml" />
     <Content Include="images\FERRET_ICON.ico" />
     <Content Include="images\FERRET_LOGO.png" />

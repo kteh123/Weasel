@@ -215,14 +215,14 @@ MODEL_DIAGRAM_FOLDER = 'Developer\\ModelDiagrams\\'
 
 #Create and configure the logger
 #First delete the previous log file if there is one
-#LOG_FILE_NAME = "FERRET.log"
-#if os.path.exists(LOG_FILE_NAME):
-#   os.remove(LOG_FILE_NAME) 
-#LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-#logging.basicConfig(filename=LOG_FILE_NAME, 
-#                    level=logging.INFO, 
-#                    format=LOG_FORMAT)
-#logger = logging.getLogger(__name__)
+LOG_FILE_NAME = "WEASEL.log"
+if os.path.exists(LOG_FILE_NAME):
+   os.remove(LOG_FILE_NAME) 
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename=LOG_FILE_NAME, 
+                    level=logging.INFO, 
+                    format=LOG_FORMAT)
+logger = logging.getLogger(__name__)
 
 class NavigationToolbar(NavigationToolbar):
     """
@@ -437,8 +437,8 @@ class FERRET:
             layout.addWidget(self.btnClose)
             self.btnClose.clicked.connect(self.closeWindow)
         except Exception as e:
-            print('Error in setUpLeftVerticalLayout: ' + str(e)) 
-            logger.error('Error in setUpLeftVerticalLayout: ' + str(e))
+            print('Error in FERRET.setUpLeftVerticalLayout: ' + str(e)) 
+            logger.error('Error in FERRET.setUpLeftVerticalLayout: ' + str(e))
 
 
     def SetUpModelGroupBox(self, layout):
@@ -654,8 +654,8 @@ class FERRET:
             modelHorizontalLayoutSaveCSVBtn.addWidget(self.btnSaveCSV)
             self.btnSaveCSV.clicked.connect(self.SaveCSVFile)
         except Exception as e:
-            print('Error in SetUpModelGroupBox: ' + str(e)) 
-            logger.error('Error in SetUpModelGroupBox: ' + str(e))
+            print('Error in FERRET.SetUpModelGroupBox: ' + str(e)) 
+            logger.error('Error in FERRET.SetUpModelGroupBox: ' + str(e))
 
 
     def SetUpBatchProcessingGroupBox(self, layout):
@@ -688,8 +688,8 @@ class FERRET:
             verticalLayout.addWidget(self.pbar)
             self.pbar.hide()
         except Exception as e:
-            print('Error in SetUpBatchProcessingGroupBox: ' + str(e)) 
-            logger.error('Error in SetUpBatchProcessingGroupBox: ' + str(e))
+            print('Error in FERRET.SetUpBatchProcessingGroupBox: ' + str(e)) 
+            logger.error('Error in FERRET.SetUpBatchProcessingGroupBox: ' + str(e))
         
 
     def DisplayModelFittingGroupBox(self):
@@ -701,16 +701,16 @@ class FERRET:
                 # A ROI has been selected
                 self.groupBoxModel.show()
                 self.btnSaveReport.show()
-                logger.info("Function DisplayModelFittingGroupBox called. Model group box and Save Report button shown when ROI = {}".format(ROI))
+                logger.info("Function FERRET.DisplayModelFittingGroupBox called. Model group box and Save Report button shown when ROI = {}".format(ROI))
             else:
                 self.groupBoxModel.hide()
                 self.cmbAIF.setCurrentIndex(0)
                 self.cmbModels.setCurrentIndex(0)
                 self.btnSaveReport.hide()
-                logger.info("Function DisplayModelFittingGroupBox called. Model group box and Save Report button hidden.")
+                logger.info("Function FERRET.DisplayModelFittingGroupBox called. Model group box and Save Report button hidden.")
         except Exception as e:
-            print('Error in function DisplayModelFittingGroupBox: ' + str(e)) 
-            logger.error('Error in function DisplayModelFittingGroupBox: ' + str(e))
+            print('Error in function FERRET.DisplayModelFittingGroupBox: ' + str(e)) 
+            logger.error('Error in function FERRET.DisplayModelFittingGroupBox: ' + str(e))
 
 
     def SetUpPlotArea(self, layout):
@@ -790,8 +790,8 @@ class FERRET:
             horizontalLogoLayout.addWidget(self.lblTRISTAN_Logo)
             horizontalLogoLayout.addWidget(self.lblUoL_Logo)
         except Exception as e:
-            print('Error in setUpPlotArea: ' + str(e)) 
-            logger.error('Error in setUpPlotArea: ' + str(e))
+            print('Error in FERRET.setUpPlotArea: ' + str(e)) 
+            logger.error('Error in FERRET.setUpPlotArea: ' + str(e))
 
 
     def DisplayModelImage(self):
@@ -810,7 +810,7 @@ class FERRET:
             displayed on the GUI.
             """
         try:
-            logger.info('Function DisplayModelImage called.')
+            logger.info('Function FERRET.DisplayModelImage called.')
             shortModelName = str(self.cmbModels.currentText())
         
             if shortModelName != 'Select a model':
@@ -832,7 +832,7 @@ class FERRET:
                     self.lblTRISTAN_Logo.hide()
                     self.lblUoL_Logo.hide()
                 else:
-                    logger.info('Function DisplayModelImage - No image available for this model')
+                    logger.info('Function FERRET.DisplayModelImage - No image available for this model')
                     self.lblModelImage.clear()
                     self.lblModelName.setText('No image available for this model')
             else:
@@ -843,8 +843,8 @@ class FERRET:
                 self.lblUoL_Logo.show()
 
         except Exception as e:
-            print('Error in function DisplayModelImage: ' + str(e)) 
-            logger.error('Error in function DisplayModelImage: ' + str(e))  
+            print('Error in function FERRET.DisplayModelImage: ' + str(e)) 
+            logger.error('Error in function FERRET.DisplayModelImage: ' + str(e))  
 
 
     def OptimumParameterChanged(self):
@@ -890,7 +890,7 @@ class FERRET:
         ------
         paramNumber - Ordinal number of the parameter, takes values 1-5
         """
-        logger.info('Function CurveFitSetConfIntLabel called ' +
+        logger.info('Function FERRET.CurveFitSetConfIntLabel called ' +
                    'with paramNumber={}'.format(paramNumber))
         try:
             objSpinBox = getattr(self, 'spinBoxParameter' + str(paramNumber))
@@ -924,8 +924,8 @@ class FERRET:
                 objLabel.setText(confidenceStr)
 
         except Exception as e:
-            print('Error in function CurveFitSetConfIntLabel with paramNumber={} index={}'.format(paramNumber, index) + str(e))
-            logger.error('Error in function CurveFitSetConfIntLabel with paramNumber={} index={}'.format(paramNumber, index) + str(e))
+            print('Error in function FERRET.CurveFitSetConfIntLabel with paramNumber={} index={}'.format(paramNumber, index) + str(e))
+            logger.error('Error in function FERRET.CurveFitSetConfIntLabel with paramNumber={} index={}'.format(paramNumber, index) + str(e))
 
 
     def CurveFitProcessOptimumParameters(self):
@@ -933,7 +933,7 @@ class FERRET:
            parameter values resulting from curve fitting 
            on the right-hand side of the GUI."""
         try:
-            logger.info('Function CurveFitProcessOptimumParameters called.')
+            logger.info('Function FERRET.CurveFitProcessOptimumParameters called.')
             self.lblConfInt.show()
             self.lblFix.show()
             self.lblPhysParams.show()
@@ -951,8 +951,8 @@ class FERRET:
                 self.CurveFitSetConfIntLabel(5)
             
         except Exception as e:
-            print('Error in function CurveFitProcessOptimumParameters: ' + str(e))
-            logger.error('Error in function CurveFitProcessOptimumParameters: ' + str(e))
+            print('Error in function FERRET.CurveFitProcessOptimumParameters: ' + str(e))
+            logger.error('Error in function FERRET.CurveFitProcessOptimumParameters: ' + str(e))
 
 
     def ClearOptimumParamaterConfLimitsOnGUI(self):
@@ -960,7 +960,7 @@ class FERRET:
         handside of the GUI that display parameter value
         confidence limits resulting from curve fitting. """
         try:
-            logger.info('Function ClearOptimumParamaterConfLimitsOnGUI called.')
+            logger.info('Function FERRET.ClearOptimumParamaterConfLimitsOnGUI called.')
             
             self.lblParam1ConfInt.clear()
             self.lblParam2ConfInt.clear()
@@ -968,14 +968,14 @@ class FERRET:
             self.lblParam4ConfInt.clear()
             self.lblParam5ConfInt.clear()
         except Exception as e:
-            print('Error in function ClearOptimumParamaterConfLimitsOnGUI: ' + str(e))
-            logger.error('Error in function ClearOptimumParamaterConfLimitsOnGUI: ' + str(e))
+            print('Error in function FERRET.ClearOptimumParamaterConfLimitsOnGUI: ' + str(e))
+            logger.error('Error in function FERRET.ClearOptimumParamaterConfLimitsOnGUI: ' + str(e))
     
 
     def SaveCSVFile(self, fileName=""):
         """Saves in CSV format the data in the plot on the GUI """ 
         try:
-            logger.info('Function SaveCSVFile called.')
+            logger.info('Function FERRET.SaveCSVFile called.')
             modelName = str(self.cmbModels.currentText())
             modelName.replace(" ", "-")
 
@@ -990,7 +990,7 @@ class FERRET:
            # Check that the user did not press Cancel on the
            # create file dialog
             if CSVFileName:
-                logger.info('Function SaveCSVFile - csv file name = ' + 
+                logger.info('Function FERRET.SaveCSVFile - csv file name = ' + 
                             CSVFileName)
             
                 ROI = str(self.cmbROI.currentText())
@@ -1022,29 +1022,29 @@ class FERRET:
                     csvfile.close()
 
         except csv.Error:
-            print('CSV Writer error in function SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
-            logger.error('CSV Writer error in function SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
+            print('CSV Writer error in function FERRET.SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
+            logger.error('CSV Writer error in function FERRET.SaveCSVFile: file %s, line %d: %s' % (CSVFileName, WriteCSV.line_num, csv.Error))
         except IOError as IOe:
-            print ('IOError in function SaveCSVFile: cannot open file ' + CSVFileName + ' or read its data: ' + str(IOe))
-            logger.error ('IOError in function SaveCSVFile: cannot open file ' + CSVFileName + ' or read its data; ' + str(IOe))
+            print ('IOError in function FERRET.SaveCSVFile: cannot open file ' + CSVFileName + ' or read its data: ' + str(IOe))
+            logger.error ('IOError in function FERRET.SaveCSVFile: cannot open file ' + CSVFileName + ' or read its data; ' + str(IOe))
         except RuntimeError as re:
-            print('Runtime error in function SaveCSVFile: ' + str(re))
-            logger.error('Runtime error in function SaveCSVFile: ' + str(re))
+            print('Runtime error in function FERRET.SaveCSVFile: ' + str(re))
+            logger.error('Runtime error in function FERRET.SaveCSVFile: ' + str(re))
         except Exception as e:
-            print('Error in function SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
-            logger.error('Error in function SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
+            print('Error in function FERRET.SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
+            logger.error('Error in function FERRET.SaveCSVFile: ' + str(e) + ' at line in CSV file ', WriteCSV.line_num)
 
 
     def clearOptimisedParamaterList(self, callingControl: str):
         """Clears results of curve fitting from the GUI 
         and from the global list self.optimisedParamaterList """
         try:
-            logger.info('clearOptimisedParamaterList called from ' + callingControl)
+            logger.info('FERRET.clearOptimisedParamaterList called from ' + callingControl)
             self.optimisedParamaterList.clear()
             self.ClearOptimumParamaterConfLimitsOnGUI()
         except Exception as e:
-            print('Error in function clearOptimisedParamaterList: ' + str(e)) 
-            logger.error('Error in function clearOptimisedParamaterList: ' + str(e))
+            print('Error in function FERRET.clearOptimisedParamaterList: ' + str(e)) 
+            logger.error('Error in function FERRET.clearOptimisedParamaterList: ' + str(e))
 
 
     def display_FitModel_SaveCSV_SaveReport_Buttons(self):
@@ -1062,25 +1062,25 @@ class FERRET:
             VIF = str(self.cmbVIF.currentText())
             modelName = str(self.cmbModels.currentText())
             modelInletType = self.objXMLReader.getModelInletType(modelName)
-            logger.info("Function display_FitModel_SaveCSV_SaveReport_Buttons called. Model is " + modelName)
+            logger.info("Function FERRET.display_FitModel_SaveCSV_SaveReport_Buttons called. Model is " + modelName)
             if modelInletType == 'single':
                 if ROI != 'Please Select' and AIF != 'Please Select':
                     self.btnFitModel.show()
                     self.btnSaveCSV.show()
                     self.btnSaveReport.show()
                     self.groupBoxBatchProcessing.show() 
-                    logger.info("Function display_FitModel_SaveCSV_SaveReport_Buttons called when ROI = {} and AIF = {}".format(ROI, AIF))
+                    logger.info("Function FERRET.display_FitModel_SaveCSV_SaveReport_Buttons called when ROI = {} and AIF = {}".format(ROI, AIF))
             elif modelInletType == 'dual':
                 if ROI != 'Please Select' and AIF != 'Please Select' and VIF != 'Please Select' :
                     self.btnFitModel.show()
                     self.btnSaveCSV.show()
                     self.btnSaveReport.show()
                     self.groupBoxBatchProcessing.show() 
-                    logger.info("Function display_FitModel_SaveCSV_SaveReport_Buttons called when ROI = {}, AIF = {} & VIF ={}".format(ROI, AIF, VIF)) 
+                    logger.info("Function FERRET.display_FitModel_SaveCSV_SaveReport_Buttons called when ROI = {}, AIF = {} & VIF ={}".format(ROI, AIF, VIF)) 
         
         except Exception as e:
-            print('Error in function display_FitModel_SaveCSV_SaveReport_Buttons: ' + str(e))
-            logger.error('Error in function display_FitModel_SaveCSV_SaveReport_Buttons: ' + str(e))
+            print('Error in function FERRET.display_FitModel_SaveCSV_SaveReport_Buttons: ' + str(e))
+            logger.error('Error in function FERRET.display_FitModel_SaveCSV_SaveReport_Buttons: ' + str(e))
 
 
     def GetSpinBoxValue(self, paramNumber, initialParametersArray):
@@ -1089,7 +1089,7 @@ class FERRET:
         Converts a % to a decimal fraction if necessary. 
         This value is then appended to the array, initialParametersArray.
         """
-        logger.info('Function GetSpinBoxValue called when paramNumber={} and initialParametersArray={}.'
+        logger.info('Function FERRET.GetSpinBoxValue called when paramNumber={} and initialParametersArray={}.'
                     .format(paramNumber,initialParametersArray))
         try:
             objSpinBox = getattr(self, 'spinBoxParameter' + str(paramNumber))
@@ -1100,8 +1100,8 @@ class FERRET:
             initialParametersArray.append(parameter)
 
         except Exception as e:
-            print('Error in function GetSpinBoxValue: ' + str(e))
-            logger.error('Error in function GetSpinBoxValue: ' + str(e))
+            print('Error in function FERRET.GetSpinBoxValue: ' + str(e))
+            logger.error('Error in function FERRET.GetSpinBoxValue: ' + str(e))
     
 
     def BuildParameterArray(self) -> List[float]:
@@ -1113,7 +1113,7 @@ class FERRET:
                 A list of model input parameter values.
             """
         try:
-            logger.info('Function BuildParameterArray called.')
+            logger.info('Function FERRET.BuildParameterArray called.')
             initialParametersArray = []
 
             modelName = str(self.cmbModels.currentText())
@@ -1132,8 +1132,8 @@ class FERRET:
 
             return initialParametersArray
         except Exception as e:
-            print('Error in function BuildParameterArray ' + str(e))
-            logger.error('Error in function BuildParameterArray '  + str(e))
+            print('Error in function FERRET.BuildParameterArray ' + str(e))
+            logger.error('Error in function FERRET.BuildParameterArray '  + str(e))
 
 
     def SetParameterSpinBoxValue(self, paramNumber, parameterList):
@@ -1141,7 +1141,7 @@ class FERRET:
         Sets the value of an individual parameter spinbox.  If necessary
         converts a decimal fraction to a %.
         """
-        logger.info('Function SetParameterSpinBoxValue called.')
+        logger.info('Function FERRET.SetParameterSpinBoxValue called.')
         try:
             objSpinBox = getattr(self, 'spinBoxParameter' + 
                                  str(paramNumber))
@@ -1154,8 +1154,8 @@ class FERRET:
             objSpinBox.blockSignals(False)
 
         except Exception as e:
-            print('Error in function SetParameterSpinBoxValue ' + str(e))
-            logger.error('Error in function SetParameterSpinBoxValue '  + str(e))
+            print('Error in function FERRET.SetParameterSpinBoxValue ' + str(e))
+            logger.error('Error in function FERRET.SetParameterSpinBoxValue '  + str(e))
 
 
     def SetParameterSpinBoxValues(self, parameterList):
@@ -1167,7 +1167,7 @@ class FERRET:
             parameterList - Array of optimum model input parameter values.
         """
         try:
-            logger.info('Function SetParameterSpinBoxValues called with parameterList = {}'.format(parameterList))
+            logger.info('Function FERRET.SetParameterSpinBoxValues called with parameterList = {}'.format(parameterList))
            
             modelName = str(self.cmbModels.currentText())
             numParams = self.objXMLReader.getNumberOfParameters(modelName)
@@ -1184,8 +1184,8 @@ class FERRET:
                 self.SetParameterSpinBoxValue(5, parameterList)
             
         except Exception as e:
-            print('Error in function SetParameterSpinBoxValues ' + str(e))
-            logger.error('Error in function SetParameterSpinBoxValues '  + str(e))
+            print('Error in function FERRET.SetParameterSpinBoxValues ' + str(e))
+            logger.error('Error in function FERRET.SetParameterSpinBoxValues '  + str(e))
 
 
     def CurveFitCalculate95ConfidenceLimits(self, numDataPoints: int, 
@@ -1210,7 +1210,7 @@ class FERRET:
                 curve fitting.
         """
         try:
-            logger.info('Function CurveFitCalculate95ConfidenceLimits called: numDataPoints ={}, numParams={}, optimumParams={}, paramCovarianceMatrix={}'
+            logger.info('Function FERRET.CurveFitCalculate95ConfidenceLimits called: numDataPoints ={}, numParams={}, optimumParams={}, paramCovarianceMatrix={}'
                         .format(numDataPoints, numParams, optimumParams, paramCovarianceMatrix))
             alpha = 0.05 # 95% confidence interval = 100*(1-alpha)
             originalOptimumParams = optimumParams.copy()
@@ -1249,7 +1249,7 @@ class FERRET:
                 self.optimisedParamaterList[counter].append(numParams)
                 self.optimisedParamaterList[counter].append(lower)
                 self.optimisedParamaterList[counter].append(upper)
-                logger.info('Just added value {}, lower {}, upper {} to self.optimisedParamaterList at position{}'
+                logger.info('FERRET Just added value {}, lower {}, upper {} to self.optimisedParamaterList at position{}'
                             .format(numParams, lower, upper, counter))
             
             # Now insert fixed parameters into _optimisedParameterList
@@ -1264,16 +1264,16 @@ class FERRET:
                     tempList = [fixedParamValue, lower, upper]
                     # Now add this list to the list of lists 
                     self.optimisedParamaterList.insert(index, tempList)
-                    logger.info('Just added temp list {} to self.optimisedParamaterList at position{}'
+                    logger.info('FERRET Just added temp list {} to self.optimisedParamaterList at position{}'
                             .format(tempList, index))
             
-            logger.info('Leaving CurveFitCalculate95ConfidenceLimits, self.optimisedParamaterList = {}'.format(self.optimisedParamaterList))
+            logger.info('Leaving FERRET.CurveFitCalculate95ConfidenceLimits, self.optimisedParamaterList = {}'.format(self.optimisedParamaterList))
         except RuntimeError as rte:
-            print('Runtime Error in function CurveFitCalculate95ConfidenceLimits ' + str(rte))
-            logger.error('Runtime Error in function CurveFitCalculate95ConfidenceLimits '  + str(rte))  
+            print('Runtime Error in function FERRET.CurveFitCalculate95ConfidenceLimits ' + str(rte))
+            logger.error('Runtime Error in function FERRET.CurveFitCalculate95ConfidenceLimits '  + str(rte))  
         except Exception as e:
-            print('Error in function CurveFitCalculate95ConfidenceLimits ' + str(e))
-            logger.error('Error in function CurveFitCalculate95ConfidenceLimits '  + str(e))  
+            print('Error in function FERRET.CurveFitCalculate95ConfidenceLimits ' + str(e))
+            logger.error('Error in function FERRET.CurveFitCalculate95ConfidenceLimits '  + str(e))  
     
 
     def CurveFitGetParameterData(self, modelName, paramNumber):
@@ -1291,7 +1291,7 @@ class FERRET:
         paramNumber - Number, 1-5, of the parameter.
         """
 
-        logger.info('Function CurveFitGetParameterData called with modelName={} and paramNumber={}.'
+        logger.info('Function FERRET.CurveFitGetParameterData called with modelName={} and paramNumber={}.'
                         .format(modelName, paramNumber))
         try:
             paramShortName =self.objXMLReader.getParameterShortName(modelName, paramNumber)
@@ -1313,8 +1313,8 @@ class FERRET:
             
             return tempTuple
         except Exception as e:
-            print('Error in function CurveFitGetParameterData: ' + str(e) )
-            logger.error('Error in function CurveFitGetParameterData: ' + str(e) )
+            print('Error in function FERRET CurveFitGetParameterData: ' + str(e) )
+            logger.error('Error in function FERRET CurveFitGetParameterData: ' + str(e) )
 
 
     def CurveFitCollateParameterData(self)-> List[float]:
@@ -1327,7 +1327,7 @@ class FERRET:
                 for curve fitting.
             """
         try:
-            logger.info('Function CurveFitCollateParameterData called.')
+            logger.info('function FERRET CurveFitCollateParameterData called.')
             parameterDataList = []
 
             modelName = str(self.cmbModels.currentText())
@@ -1351,8 +1351,8 @@ class FERRET:
 
             return parameterDataList
         except Exception as e:
-            print('Error in function CurveFitCollateParameterData ' + str(e))
-            logger.error('Error in function CurveFitCollateParameterData '  + str(e))
+            print('Error in function FERRET CurveFitCollateParameterData ' + str(e))
+            logger.error('Error in function FERRET CurveFitCollateParameterData '  + str(e))
 
 
     def CurveFit(self):
@@ -1457,8 +1457,8 @@ class FERRET:
             print ('Value Error: CurveFit with model ' + modelName + ': '+ str(ve))
             logger.error('Value Error: CurveFit with model ' + modelName + ': '+ str(ve))
         except Exception as e:
-            print('Error in function CurveFit with model ' + modelName + ': ' + str(e))
-            logger.error('Error in function CurveFit with model ' + modelName + ': ' + str(e))
+            print('Error in function FERRET.CurveFit with model ' + modelName + ': ' + str(e))
+            logger.error('Error in function FERRET.CurveFit with model ' + modelName + ': ' + str(e))
     
 
     def GetValuesForEachParameter(self, paramNumber, 
@@ -1479,7 +1479,7 @@ class FERRET:
                     after curve fitting.  
         """
         try:
-            logger.info('Function GetValuesForEachParameter called when paramNumber={}.'
+            logger.info('function FERRET GetValuesForEachParameter called when paramNumber={}.'
                         .format(paramNumber))
             parameterList = []
             index = paramNumber - 1
@@ -1499,8 +1499,8 @@ class FERRET:
             parameterDictionary[objLabel.text()] = parameterList
 
         except Exception as e:
-            print('Error in function GetValuesForEachParameter with model: ' + str(e))
-            logger.error('Error in function GetValuesForEachParameter with model: ' + str(e))
+            print('Error in function FERRET GetValuesForEachParameter with model: ' + str(e))
+            logger.error('Error in function FERRET GetValuesForEachParameter with model: ' + str(e))
 
 
     def BuildParameterDictionary(self, confidenceLimitsArray = None):
@@ -1545,8 +1545,8 @@ class FERRET:
             return parameterDictionary
     
         except Exception as e:
-            print('Error in function BuildParameterDictionary: ' + str(e))
-            logger.error('Error in function BuildParameterDictionary: ' + str(e))
+            print('Error in function FERRET BuildParameterDictionary: ' + str(e))
+            logger.error('Error in function FERRET BuildParameterDictionary: ' + str(e))
 
 
     def CreatePDFReport(self, reportFileName=""):
@@ -1614,8 +1614,8 @@ class FERRET:
                 logger.info('PDF Report created called ' + reportFileName)
                 return parameterDict
         except Exception as e:
-            print('Error in function CreatePDFReport: ' + str(e))
-            logger.error('Error in function CreatePDFReport: ' + str(e))
+            print('Error in function FERRET CreatePDFReport: ' + str(e))
+            logger.error('Error in function FERRET CreatePDFReport: ' + str(e))
 
 
     def PopulateModelListCombo(self):
@@ -1625,7 +1625,7 @@ class FERRET:
         cmbModels combo box for display on the GUI.
         """
         try:
-            logger.info('Function PopulateModelListCombo called.')
+            logger.info('function FERRET PopulateModelListCombo called.')
             # Clear the list of models, ready to accept 
             # a new list of models from the XML configuration
             # file just loaded
@@ -1637,8 +1637,8 @@ class FERRET:
             self.cmbModels.blockSignals(False)
 
         except Exception as e:
-            print('Error in function PopulateModelListCombo: ' + str(e))
-            logger.error('Error in function PopulateModelListCombo: ' + str(e))
+            print('Error in function FERRET PopulateModelListCombo: ' + str(e))
+            logger.error('Error in function FERRET PopulateModelListCombo: ' + str(e))
 
 
     def LoadModelLibrary(self):
@@ -1682,16 +1682,16 @@ class FERRET:
                     QMessageBox().warning(self, "XML configuration file", "Error reading XML file ", QMessageBox.Ok)
             
         except IOError as ioe:
-            print ('IOError in function LoadModelLibrary:' + str(ioe))
-            logger.error ('IOError in function LoadModelLibrary: cannot open file' 
+            print ('IOError in function FERRET LoadModelLibrary:' + str(ioe))
+            logger.error ('IOError in function FERRET LoadModelLibrary: cannot open file' 
                    + str(ioe))
         except RuntimeError as re:
-            print('Runtime error in function LoadModelLibrary: ' + str(re))
-            logger.error('Runtime error in function LoadModelLibrary: ' 
+            print('Runtime error in function FERRET LoadModelLibrary: ' + str(re))
+            logger.error('Runtime error in function FERRET LoadModelLibrary: ' 
                          + str(re))
         except Exception as e:
-            print('Error in function LoadModelLibrary: ' + str(e))
-            logger.error('Error in function LoadModelLibrary: ' + str(e))           
+            print('Error in function FERRET LoadModelLibrary: ' + str(e))
+            logger.error('Error in function FERRET LoadModelLibrary: ' + str(e))           
 
 
     def LoadDataFile(self):
@@ -1785,23 +1785,23 @@ class FERRET:
                 self.ConfigureGUIAfterLoadingData()
                 
         except csv.Error:
-            print('CSV Reader error in function LoadDataFile: file {}, line {}: error={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
-            logger.error('CSV Reader error in function LoadDataFile: file {}, line {}: error ={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
+            print('CSV Reader error in function FERRET LoadDataFile: file {}, line {}: error={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
+            logger.error('CSV Reader error in function FERRET LoadDataFile: file {}, line {}: error ={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
         except IOError:
-            print ('IOError in function LoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
-            logger.error ('IOError in function LoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
+            print ('IOError in function FERRET LoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
+            logger.error ('IOError in function FERRET LoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
         except RuntimeError as re:
-            print('Runtime error in function LoadDataFile: ' + str(re))
-            logger.error('Runtime error in function LoadDataFile: ' + str(re))
+            print('Runtime error in function FERRET LoadDataFile: ' + str(re))
+            logger.error('Runtime error in function FERRET LoadDataFile: ' + str(re))
         except Exception as e:
-            print('Error in function LoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
-            logger.error('Error in function LoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
+            print('Error in function FERRET LoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
+            logger.error('Error in function FERRET LoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
             QMessageBox().warning(self, "CSV data file", "Error reading CSV file at line {} - {}".format(readCSV.line_num, e), QMessageBox.Ok)
 
 
     def NormaliseSignalData(self):
         """
-        This function normalises the MR signal data by dividing
+        This function FERRET normalises the MR signal data by dividing
         each data point by the average of the initial baseline
         scans done before the perfusion agent is added to the 
         bloodstream.
@@ -1827,8 +1827,8 @@ class FERRET:
                 self.signalData[key] = signalList
 
         except Exception as e:
-            print('Error in function NormaliseSignalData: ' + str(e))
-            logger.error('Error in function NormaliseSignalData: ' + str(e))
+            print('Error in function FERRET NormaliseSignalData: ' + str(e))
+            logger.error('Error in function FERRET NormaliseSignalData: ' + str(e))
 
 
     def HideAllControlsOnGUI(self):
@@ -1840,7 +1840,7 @@ class FERRET:
         This prevents the scenario where buttons are displayed 
         but there is no data loaded to process when they are clicked.
         """
-        logger.info('Function HideAllControlsOnGUI called')
+        logger.info('function FERRET HideAllControlsOnGUI called')
         self.statusBar.clearMessage()
         self.pbar.reset()
         self.lblROI.hide()
@@ -1882,13 +1882,13 @@ class FERRET:
             self.figure.set_visible(False)
             self.canvas.draw()
 
-            logger.info('Function ConfigureGUIAfterLoadingData called and the following organ list loaded: {}'.format(organArray))
+            logger.info('function FERRET ConfigureGUIAfterLoadingData called and the following organ list loaded: {}'.format(organArray))
         except RuntimeError as re:
-            print('runtime error in function ConfigureGUIAfterLoadingData: ' + str(re) )
-            logger.error('runtime error in function ConfigureGUIAfterLoadingData: ' + str(re) )
+            print('runtime error in function FERRET ConfigureGUIAfterLoadingData: ' + str(re) )
+            logger.error('runtime error in function FERRET ConfigureGUIAfterLoadingData: ' + str(re) )
         except Exception as e:
-            print('Error in function ConfigureGUIAfterLoadingData: ' + str(e) )
-            logger.error('Error in function ConfigureGUIAfterLoadingData: ' + str(e))
+            print('Error in function FERRET ConfigureGUIAfterLoadingData: ' + str(e) )
+            logger.error('Error in function FERRET ConfigureGUIAfterLoadingData: ' + str(e))
      
             
     def GetListOrgans(self):
@@ -1902,7 +1902,7 @@ class FERRET:
             A list of organs for which there is concentration data.
         """
         try:
-            logger.info('Function GetListOrgans called')
+            logger.info('function FERRET GetListOrgans called')
             organList =[]
             organList.append('Please Select') #First item at the top of the drop-down list
             for key in self.signalData:
@@ -1912,16 +1912,16 @@ class FERRET:
             return organList
 
         except RuntimeError as re:
-            print('runtime error in function GetListOrgans' + str(re))
-            logger.error('runtime error in function GetListOrgans' + str(re))
+            print('runtime error in function FERRET GetListOrgans' + str(re))
+            logger.error('runtime error in function FERRET GetListOrgans' + str(re))
         except Exception as e:
-            print('Error in function GetListOrgans: ' + str(e))
-            logger.error('Error in function GetListOrgans: ' + str(e))
+            print('Error in function FERRET GetListOrgans: ' + str(e))
+            logger.error('Error in function FERRET GetListOrgans: ' + str(e))
     
 
     def UncheckFixParameterCheckBoxes(self):
         """Uncheckes all the fix parameter checkboxes."""
-        logger.info('Function UncheckFixParameterCheckBoxes called')
+        logger.info('function FERRET UncheckFixParameterCheckBoxes called')
         self.ckbParameter1.blockSignals(True)
         self.ckbParameter2.blockSignals(True)
         self.ckbParameter2.blockSignals(True)
@@ -1966,7 +1966,7 @@ class FERRET:
         """
         
         try:
-            logger.info('Function populateParameterLabelAndSpinBox called with modelName={}, paramNumber={}'
+            logger.info('function FERRET populateParameterLabelAndSpinBox called with modelName={}, paramNumber={}'
                         .format(modelName, paramNumber))
             isPercentage, paramName =self.objXMLReader.getParameterLabel(modelName, paramNumber)
             precision = self.objXMLReader.getParameterPrecision(modelName, paramNumber)
@@ -1997,8 +1997,8 @@ class FERRET:
             objCheckBox.show()
 
         except Exception as e:
-            print('Error in function populateParameterLabelAndSpinBox: ' + str(e) )
-            logger.error('Error in function populateParameterLabelAndSpinBox: ' + str(e) )
+            print('Error in function FERRET populateParameterLabelAndSpinBox: ' + str(e) )
+            logger.error('Error in function FERRET populateParameterLabelAndSpinBox: ' + str(e) )
 
 
     def SetParameterSpinBoxToDefault(self, modelName, paramNumber):
@@ -2022,8 +2022,8 @@ class FERRET:
             objSpinBox.blockSignals(False)
             
         except Exception as e:
-            print('Error in function populateParameterLabelAndSpinBox: ' + str(e) )
-            logger.error('Error in function populateParameterLabelAndSpinBox: ' + str(e) )
+            print('Error in function FERRET populateParameterLabelAndSpinBox: ' + str(e) )
+            logger.error('Error in function FERRET populateParameterLabelAndSpinBox: ' + str(e) )
 
 
     def InitialiseParameterSpinBoxes(self):
@@ -2035,7 +2035,7 @@ class FERRET:
         try:
             modelName = str(self.cmbModels.currentText())
             logger.info(
-                'Function InitialiseParameterSpinBoxes called when model = ' 
+                'function FERRET InitialiseParameterSpinBoxes called when model = ' 
                 + modelName)
 
             numParams = self.objXMLReader.getNumberOfParameters(modelName)
@@ -2051,15 +2051,15 @@ class FERRET:
                 self.SetParameterSpinBoxToDefault(modelName, 5)
 
         except Exception as e:
-            print('Error in function InitialiseParameterSpinBoxes: ' + str(e) )
-            logger.error('Error in function InitialiseParameterSpinBoxes: ' + str(e) )
+            print('Error in function FERRET InitialiseParameterSpinBoxes: ' + str(e) )
+            logger.error('Error in function FERRET InitialiseParameterSpinBoxes: ' + str(e) )
 
 
     def SetUpParameterLabelsAndSpinBoxes(self):
         """Coordinates the calling of function
        populateParameterLabelAndSpinBox to set up and show the 
        parameter spinboxes for each model"""
-        logger.info('Function SetUpParameterLabelsAndSpinBoxes called. ')
+        logger.info('function FERRET SetUpParameterLabelsAndSpinBoxes called. ')
         try:
             modelName = str(self.cmbModels.currentText())
             numParams = self.objXMLReader.getNumberOfParameters(modelName)
@@ -2075,8 +2075,8 @@ class FERRET:
                 self.populateParameterLabelAndSpinBox(modelName, 5)
 
         except Exception as e:
-            print('Error in function SetUpParameterLabelsAndSpinBoxes: ' + str(e) )
-            logger.error('Error in function SetUpParameterLabelsAndSpinBoxes: ' + str(e) )
+            print('Error in function FERRET SetUpParameterLabelsAndSpinBoxes: ' + str(e) )
+            logger.error('Error in function FERRET SetUpParameterLabelsAndSpinBoxes: ' + str(e) )
 
 
     def ClearAndHideParameterLabelsSpinBoxesAndCheckBoxes(self):
@@ -2114,7 +2114,7 @@ class FERRET:
         values are given an appropriate label."""
         try:
             modelName = str(self.cmbModels.currentText())
-            logger.info('Function ConfigureGUIForEachModel called when model = ' + modelName)   
+            logger.info('function FERRET ConfigureGUIForEachModel called when model = ' + modelName)   
             #self.cboxDelay.show()
             #self.cboxConstaint.show()
             #self.cboxConstaint.setChecked(False)
@@ -2158,8 +2158,8 @@ class FERRET:
                     self.cmbVIF.show()
 
         except Exception as e:
-            print('Error in function ConfigureGUIForEachModel: ' + str(e) )
-            logger.error('Error in function ConfigureGUIForEachModel: ' + str(e) )
+            print('Error in function FERRET ConfigureGUIForEachModel: ' + str(e) )
+            logger.error('Error in function FERRET ConfigureGUIForEachModel: ' + str(e) )
            
             
     def GetScreenResolution(self):
@@ -2172,11 +2172,11 @@ class FERRET:
         """
         try:
             width, height = pyautogui.size()
-            logger.info('Function GetScreenResolution called. Screen width = {}, height = {}.'.format(width, height))
+            logger.info('function FERRET GetScreenResolution called. Screen width = {}, height = {}.'.format(width, height))
             return width, height
         except Exception as e:
-            print('Error in function GetScreenResolution: ' + str(e) )
-            logger.error('Error in function GetScreenResolution: ' + str(e) )
+            print('Error in function FERRET GetScreenResolution: ' + str(e) )
+            logger.error('Error in function FERRET GetScreenResolution: ' + str(e) )
         
 
     def DetermineTextSize(self):
@@ -2188,7 +2188,7 @@ class FERRET:
               tick label size, xy axis label size & title size
            """
         try:
-            logger.info('Function DetermineTextSize called.')
+            logger.info('function FERRET DetermineTextSize called.')
             width, _ = self.GetScreenResolution()
             
             if width == 1920: #Desktop
@@ -2206,8 +2206,8 @@ class FERRET:
 
             return tickLabelSize, xyAxisLabelSize, titleSize
         except Exception as e:
-            print('Error in function DetermineTextSize: ' + str(e) )
-            logger.error('Error in function DetermineTextSize: ' + str(e) )
+            print('Error in function FERRET DetermineTextSize: ' + str(e) )
+            logger.error('Error in function FERRET DetermineTextSize: ' + str(e) )
     
 
     def plotModelCurve(self, modelName, 
@@ -2250,8 +2250,8 @@ class FERRET:
             objSubPlot.plot(arrayTimes, arrayModel, 'g--', label= modelName + ' model')
             
         except Exception as e:
-                print('Error in function plotModelCurve ' + str(e) )
-                logger.error('Error in function plotModelCurve ' + str(e) )
+                print('Error in function FERRET.plotModelCurve ' + str(e) )
+                logger.error('Error in function FERRET plotModelCurve ' + str(e) )
     
 
     def setUpPlot(self):
@@ -2260,7 +2260,7 @@ class FERRET:
         for the display of the MR signal/time curves.
         """
         try:
-            logger.info('Function setUpPlot called.')
+            logger.info('function FERRET setUpPlot called.')
             self.figure.clear()
             self.figure.set_visible(True)
         
@@ -2283,8 +2283,8 @@ class FERRET:
             return objSubPlot
 
         except Exception as e:
-                print('Error in function setUpPlot: ' + str(e))
-                logger.error('Error in function setUpPlot: ' + str(e))
+                print('Error in function FERRET setUpPlot: ' + str(e))
+                logger.error('Error in function FERRET setUpPlot: ' + str(e))
 
 
     def setUpLegendBox(self, objPlot):
@@ -2292,7 +2292,7 @@ class FERRET:
         This function draws the legend box holding the key
         to the MR signal/time curves on the plot.
         """
-        logger.info('Function setUpLegendBox called.')
+        logger.info('function FERRET setUpLegendBox called.')
         chartBox = objPlot.get_position()
         objPlot.set_position([chartBox.x0*1.1, chartBox.y0, 
                               chartBox.width*0.9, chartBox.height])
@@ -2327,7 +2327,7 @@ class FERRET:
             VIF = 'Not Selected'
             VIF = str(self.cmbVIF.currentText())
 
-            logger.info('Function plot called from ' +
+            logger.info('function FERRET plot called from ' +
                         nameCallingFunction + 
                         ' when ROI={}, AIF={} and VIF={}'.format(ROI, AIF, VIF))
 
@@ -2370,13 +2370,13 @@ class FERRET:
                 self.canvas.draw
 
         except Exception as e:
-                print('Error in function plotMRSignals when an event associated with ' + str(nameCallingFunction) + ' is fired : ROI=' + ROI + ' AIF = ' + AIF + ' : ' + str(e) )
-                logger.error('Error in function plotMRSignals when an event associated with ' + str(nameCallingFunction) + ' is fired : ROI=' + ROI + ' AIF = ' + AIF + ' : ' + str(e) )
+                print('Error in function FERRET plotMRSignals when an event associated with ' + str(nameCallingFunction) + ' is fired : ROI=' + ROI + ' AIF = ' + AIF + ' : ' + str(e) )
+                logger.error('Error in function FERRET plotMRSignals when an event associated with ' + str(nameCallingFunction) + ' is fired : ROI=' + ROI + ' AIF = ' + AIF + ' : ' + str(e) )
     
 
     def closeWindow(self):
         """Closes the Model Fitting application."""
-        logger.info("Application closed using the Exit button.")
+        logger.info("FERRET closed using the Exit button.")
         self.thisWindow.close() 
 
 
@@ -2426,7 +2426,7 @@ class FERRET:
        data files are held."""
         try:
             
-            logger.info('Function BatchProcessAllCSVDataFiles called.')
+            logger.info('function FERRET BatchProcessAllCSVDataFiles called.')
             
             # Create a list of csv files in the selected directory
             csvDataFiles = [file 
@@ -2523,8 +2523,8 @@ class FERRET:
                 objSpreadSheet.saveSpreadSheet()
 
         except Exception as e:
-            print('Error in function BatchProcessAllCSVDataFiles: ' + str(e) )
-            logger.error('Error in function BatchProcessAllCSVDataFiles: ' + str(e) )
+            print('Error in function FERRET BatchProcessAllCSVDataFiles: ' + str(e) )
+            logger.error('Error in function FERRET BatchProcessAllCSVDataFiles: ' + str(e) )
             QApplication.restoreOverrideCursor()
             self.toggleEnabled(True)     
 
@@ -2542,7 +2542,7 @@ class FERRET:
         """ 
         try:
             boolExcelFileCreatedOK = True
-            logger.info('Function BatchProcessingCreateBatchSummaryExcelSpreadSheet called.')
+            logger.info('function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet called.')
 
             #Ask the user to specify the path & name of the Excel spreadsheet file. 
             ExcelFileName, _ = QFileDialog.getSaveFileName(
@@ -2554,7 +2554,7 @@ class FERRET:
             if not ExcelFileName:
                 ExcelFileName = pathToFolder + "//BatchSummary.xlsx"
            
-            logger.info('Function BatchProcessingCreateBatchSummaryExcelSpreadSheet - Excel file name = ' + ExcelFileName)
+            logger.info('function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet - Excel file name = ' + ExcelFileName)
 
             #If ExcelFileName already exists, delete it
             if os.path.exists(ExcelFileName):
@@ -2575,14 +2575,14 @@ class FERRET:
             boolExcelFileCreatedOK = False
             return None, boolExcelFileCreatedOK
         except RuntimeError as re:
-            print('Runtime error in function BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(re))
-            logger.error('Runtime error in function BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(re))
+            print('Runtime error in function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(re))
+            logger.error('Runtime error in function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(re))
             self.toggleEnabled(True)
             boolExcelFileCreatedOK = False
             return None, boolExcelFileCreatedOK
         except Exception as e:
-            print('Error in function BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(e))
-            logger.error('Error in function BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(e))    
+            print('Error in function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(e))
+            logger.error('Error in function FERRET BatchProcessingCreateBatchSummaryExcelSpreadSheet: ' + str(e))    
             self.toggleEnabled(True)
             boolExcelFileCreatedOK = False
             return None, boolExcelFileCreatedOK
@@ -2617,8 +2617,8 @@ class FERRET:
                 objExcelFile.recordParameterValues(fileName, modelName, paramName, value, lower, upper)
                 
         except Exception as e:
-            print('Error in function BatchProcessWriteOptimumParamsToSummary: ' + str(e))
-            logger.error('Error in function BatchProcessWriteOptimumParamsToSummary: ' + str(e))
+            print('Error in function FERRET BatchProcessWriteOptimumParamsToSummary: ' + str(e))
+            logger.error('Error in function FERRET BatchProcessWriteOptimumParamsToSummary: ' + str(e))
             self.toggleEnabled(True)      
 
 
@@ -2710,20 +2710,20 @@ class FERRET:
         
         except csv.Error:
             boolFileFormatOK = False
-            print('CSV Reader error in function BatchProcessingLoadDataFile: file {}, line {}: error={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
-            logger.error('CSV Reader error in function BatchProcessingLoadDataFile: file {}, line {}: error ={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
+            print('CSV Reader error in function FERRET BatchProcessingLoadDataFile: file {}, line {}: error={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
+            logger.error('CSV Reader error in function FERRET BatchProcessingLoadDataFile: file {}, line {}: error ={}'.format(self.dataFileName, readCSV.line_num, csv.Error))
         except IOError:
             boolFileFormatOK = False
-            print ('IOError in function BatchProcessingLoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
-            logger.error ('IOError in function BatchProcessingLoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
+            print ('IOError in function FERRET BatchProcessingLoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
+            logger.error ('IOError in function FERRET BatchProcessingLoadDataFile: cannot open file' + self.dataFileName + ' or read its data')
         except RuntimeError as re:
             boolFileFormatOK = False
-            print('Runtime error in function BatchProcessingLoadDataFile: ' + str(re))
-            logger.error('Runtime error in function BatchProcessingLoadDataFile: ' + str(re))
+            print('Runtime error in function FERRET BatchProcessingLoadDataFile: ' + str(re))
+            logger.error('Runtime error in function FERRET BatchProcessingLoadDataFile: ' + str(re))
         except Exception as e:
             boolFileFormatOK = False
-            print('Error in function BatchProcessingLoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
-            logger.error('Error in function BatchProcessingLoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
+            print('Error in function FERRET BatchProcessingLoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
+            logger.error('Error in function FERRET BatchProcessingLoadDataFile: ' + str(e) + ' at line {} in the CSV file'.format( readCSV.line_num))
             failureReason = "Error reading CSV file at line {} - {}".format(readCSV.line_num, e)
         finally:
             self.toggleEnabled(True)
@@ -2775,8 +2775,8 @@ class FERRET:
 
         except Exception as e:
             boolDataOK = False
-            print('Error in function BatchProcessingCheckAllInputDataPresent: ' + str(e))
-            logger.error('Error in function BatchProcessingCheckAllInputDataPresent: ' + str(e))
+            print('Error in function FERRET BatchProcessingCheckAllInputDataPresent: ' + str(e))
+            logger.error('Error in function FERRET BatchProcessingCheckAllInputDataPresent: ' + str(e))
             failureReason = failureReason + " " + str(e)
             return boolDataOK, failureReason
             self.toggleEnabled(True)
@@ -2788,7 +2788,7 @@ class FERRET:
         try:
             boolParameterChanged = False
             modelName = str(self.cmbModels.currentText())
-            logger.info('Function BatchProcessingHaveParamsChanged called when model = ' + modelName)
+            logger.info('function FERRET BatchProcessingHaveParamsChanged called when model = ' + modelName)
 
             if self.spinBoxParameter1.isVisible():
                 if (self.spinBoxParameter1.value() != 
@@ -2817,7 +2817,7 @@ class FERRET:
             
             return boolParameterChanged    
         except Exception as e:
-            print('Error in function BatchProcessingHaveParamsChanged: ' + str(e) )
-            logger.error('Error in function BatchProcessingHaveParamsChanged: ' + str(e) )
+            print('Error in function FERRET BatchProcessingHaveParamsChanged: ' + str(e) )
+            logger.error('Error in function FERRET BatchProcessingHaveParamsChanged: ' + str(e) )
             self.toggleEnabled(True)
             

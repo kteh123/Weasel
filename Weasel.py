@@ -32,28 +32,25 @@ import styleSheet
 from FERRET import FERRET as ferret
 
 
-#Create and configure the logger
-#First delete the previous log file if there is one
-LOG_FILE_NAME = "WEASEL.log"
-if os.path.exists(LOG_FILE_NAME):
-   os.remove(LOG_FILE_NAME) 
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-logging.basicConfig(filename=LOG_FILE_NAME, 
-                    level=logging.INFO, 
-                    format=LOG_FORMAT)
-logger = logging.getLogger(__name__)
-
-
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
+#Create and configure the logger
+#First delete the previous log file if there is one
+LOG_FILE_NAME = "WEASEL1.log"
+if os.path.exists(LOG_FILE_NAME):
+    os.remove(LOG_FILE_NAME) 
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename=LOG_FILE_NAME, 
+                level=logging.INFO, 
+                format=LOG_FORMAT)
+logger = logging.getLogger(__name__)
 
 class Weasel(QMainWindow):
     def __init__(self, parent=None):
         """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
-        
         self.setGeometry(0, 0, 2500, 1400)
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -72,11 +69,12 @@ class Weasel(QMainWindow):
         self.selectedImagePath = ''
         self.selectedImageName = ''
         self.ApplyStyleSheet()
-        loggerWEASEL.info("WEASEL GUI created successfully.")
+        logger.info("WEASEL GUI created successfully.")
+
 
     def setupMenus(self):  
-
         """Builds the menus in the menu bar of the MDI"""
+        logger.info("WEASEL setting up menus.")
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu('File')
         toolsMenu = mainMenu.addMenu('Tools')
@@ -127,9 +125,9 @@ class Weasel(QMainWindow):
         toolsMenu.addAction(self.launchFerretButton)
 
     def setupToolBar(self):  
+        logger.info("WEASEL setting up toolbar.")
         self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
         self.launchFerretButton.triggered.connect(self.displayFERRET)
-        
         self.toolBar = self.addToolBar("FERRET")
         self.toolBar.addAction(self.launchFerretButton)
 
@@ -138,15 +136,16 @@ class Weasel(QMainWindow):
         """Modifies the appearance of the GUI using CSS instructions"""
         try:
             self.setStyleSheet(styleSheet.TRISTAN_GREY)
-            #logger.info('Style Sheet applied.')
+            logger.info('WEASEL Style Sheet applied.')
         except Exception as e:
-            print('Error in function ApplyStyleSheet: ' + str(e))
+            print('Error in function WEASEL.ApplyStyleSheet: ' + str(e))
      
 
     def getScanDirectory(self):
         """Displays an open folder dialog window to allow the
         user to select the folder holding the DICOM files"""
         try:
+            logger.info('WEASEL getScanDirectory called.')
             cwd = os.getcwd()
             scan_directory = QFileDialog.getExistingDirectory(
                self,
@@ -155,7 +154,7 @@ class Weasel(QMainWindow):
                QFileDialog.ShowDirsOnly)
             return scan_directory
         except Exception as e:
-            print('Error in function getScanDirectory: ' + str(e))
+            print('Error in function WEASEL.getScanDirectory: ' + str(e))
 
 
     def displayMessageSubWindow(self, message):
@@ -164,6 +163,7 @@ class Weasel(QMainWindow):
         progress of making an XML file from the contents of a DICOM folder. 
         """
         try:
+            logger.info('WEASEL displayMessageSubWindow called.')
             for subWin in self.mdiArea.subWindowList():
                 if subWin.objectName() == "Msg_Window":
                     subWin.close()
@@ -182,7 +182,8 @@ class Weasel(QMainWindow):
             self.msgSubWindow.show()
             QApplication.processEvents()
         except Exception as e:
-            print('Error in : displayMessageSubWindow' + str(e))
+            print('Error in : WEASEL.displayMessageSubWindow' + str(e))
+            logger.error('Error in : WEASEL.displayMessageSubWindow' + str(e))
 
 
     def makeDICOM_XML_File(self, scan_directory):
@@ -190,6 +191,7 @@ class Weasel(QMainWindow):
         scan_directory.  Returns the full file path of the resulting XML file,
         which takes it's name from the scan folder."""
         try:
+            logger.info("WEASEL makeDICOM_XML_File called.")
             if scan_directory:
                 start_time=time.time()
                 numFiles, numFolders = WriteXMLfromDICOM.get_files_info(scan_directory)
@@ -212,15 +214,19 @@ class Weasel(QMainWindow):
                 end_time=time.time()
                 xmlCreationTime = end_time - start_time 
                 print('XML file creation time = {}'.format(xmlCreationTime))
+                logger.info("WEASEL makeDICOM_XML_File returns {}."
+                            .format(fullFilePath))
             return fullFilePath
         except Exception as e:
             print('Error in function makeDICOM_XML_File: ' + str(e))
+            logger.error('Error in function makeDICOM_XML_File: ' + str(e))
  
 
     def existsDICOMXMLFile(self, scanDirectory):
         """This function returns True if an XML file of scan images already
         exists in the scan directory."""
         try:
+            logger.info("WEASEL existsDICOMXMLFile called")
             flag = False
             with os.scandir(scanDirectory) as entries:
                     for entry in entries:
@@ -232,6 +238,7 @@ class Weasel(QMainWindow):
             return flag                   
         except Exception as e:
             print('Error in function existsDICOMXMLFile: ' + str(e))
+            logger.error('Error in function existsDICOMXMLFile: ' + str(e))
 
 
     def loadDICOM(self):
@@ -242,7 +249,9 @@ class Weasel(QMainWindow):
         a new one from scratch.
         """
         try:
+            logger.info("WEASEL loadDICOM called")
             self.closeAllSubWindows()
+
             #browse to DICOM folder and get DICOM folder name
             scan_directory = self.getScanDirectory()
             if scan_directory:
@@ -273,12 +282,14 @@ class Weasel(QMainWindow):
 
         except Exception as e:
             print('Error in function loadDICOM: ' + str(e))
-
+            logger.error('Error in function loadDICOM: ' + str(e))
+         
             
     def getNumberItemsInTreeView(self):
         """Counts the number of elements in the DICOM XML file to
         determine the number of items forming the tree view"""
         try:
+            logger.info("WEASEL getNumberItemsInTreeView called")
             numStudies = len(self.root.findall('./study'))
             numSeries = len(self.root.findall('./study/series'))
             numImages = len(self.root.findall('./study/series/image'))
@@ -286,17 +297,18 @@ class Weasel(QMainWindow):
             return numStudies, numSeries, numImages, numItems
         except Exception as e:
             print('Error in function getNumberItemsInTreeView: ' + str(e))
+            logger.error('Error in function getNumberItemsInTreeView: ' + str(e))
 
 
     def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
+            logger.info("WEASEL makeDICOMStudiesTreeView called")
             if os.path.exists(XML_File_Path):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 start_time=time.time()
-                #self.root = self.objXMLReader.parseXMLFile(XML_File_Path)
                 self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
                 self.root = self.XMLtree.getroot()
                 end_time=time.time()
@@ -405,11 +417,16 @@ class Weasel(QMainWindow):
                 subWindow.setGeometry(0,0,800,1300)
                 widget.layout().addWidget(self.treeView)   
         except Exception as e:
-            print('Error in makeDICOMStudiesTreeView: ' + str(e))      
+            print('Error in makeDICOMStudiesTreeView: ' + str(e)) 
+            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
 
 
     @QtCore.pyqtSlot(QTreeWidgetItem, int)
     def onTreeViewItemClicked(self, item, col):
+        """When a DICOM study treeview item is clicked, this function
+        populates the relevant class variables that store the following
+        DICOM image data: study ID, Series ID, Image name, image file path"""
+        logger.info("WEASEL onTreeViewItemClicked called")
         selectedText = item.text(0)
         if 'study' in selectedText.lower():
             studyID = selectedText.replace('Study -', '').strip()
@@ -441,6 +458,8 @@ class Weasel(QMainWindow):
 
 
     def closeAllSubWindows(self):
+        """Closes all the sub windows open in the MDI"""
+        logger.info("WEASEL closeAllSubWindows called")
         self.mdiArea.closeAllSubWindows()
         self.treeView = None
 
@@ -449,6 +468,7 @@ class Weasel(QMainWindow):
         Displays FERRET in a sub window 
         """
         try:
+            logger.info("WEASEL displayFERRET called")
             self.closeAllSubWindows()
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
@@ -462,9 +482,9 @@ class Weasel(QMainWindow):
             self.subWindow.setWindowIcon(QIcon(FERRET_LOGO))
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.showMaximized()
-           
         except Exception as e:
             print('Error in displayFERRET: ' + str(e))
+            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
 
 
     def displayImageSubWindow(self, pixelArray, imagePath):
@@ -472,6 +492,7 @@ class Weasel(QMainWindow):
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
         try:
+            logger.info("WEASEL displayImageSubWindow called")
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
@@ -509,6 +530,7 @@ class Weasel(QMainWindow):
             self.subWindow.show()
         except Exception as e:
             print('Error in displayImageSubWindow: ' + str(e))
+            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
 
 
     def displayMultiImageSubWindow(self, imageList, studyName, 
@@ -519,14 +541,23 @@ class Weasel(QMainWindow):
         button allows the user to delete the image they are viewing.
         """
         try:
+            logger.info("WEASEL displayMultiImageSubWindow called")
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                          Qt.WindowCloseButtonHint | 
+                                          Qt.WindowMinimizeButtonHint)
             layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
             widget = QWidget()
             widget.setLayout(layout)
             self.subWindow.setWidget(widget)
+            #Study ID & Series ID are stored locally on the
+            #sub window in case the user wishes to delete an
+            #image in the series.  They may have several series
+            #open at once, so the selected series on the treeview
+            #may not the same as that from which the image is
+            #being deleted.
             self.lblHiddenStudyID = QLabel(studyName)
             self.lblHiddenStudyID.hide()
             self.lblHiddenSeriesID = QLabel(seriesName)
@@ -572,6 +603,7 @@ class Weasel(QMainWindow):
             self.subWindow.show()
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
+            logger.error('Error in displayMultiImageSubWindow: ' + str(e))
 
 
     def deleteImageInMultiImageViewer(self):
@@ -579,10 +611,11 @@ class Weasel(QMainWindow):
         this function deletes the physical image and removes the 
         reference to it in the XML file."""
         try:
+            logger.info("WEASEL deleteImageInMultiImageViewer called")
             imageName = os.path.basename(self.currentImagePath)
             studyID = self.lblHiddenStudyID.text()
             seriesID = self.lblHiddenSeriesID.text()
-
+            print ('study id {} series id {}'.format(studyID, seriesID))
             buttonReply = QMessageBox.question(self, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
@@ -653,28 +686,34 @@ class Weasel(QMainWindow):
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImageInMultiImageViewer: ' + str(e))
+            logger.error('Error in deleteImageInMultiImageViewer: ' + str(e))
 
 
     def imageSliderMoved(self, seriesName, imageList):
-      try:
-        imageNumber = self.imageSlider.value()
-        self.currentImageNumber = imageNumber - 1
-        if self.currentImageNumber >= 0:
-            self.currentImagePath = imageList[self.currentImageNumber]
-            pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
-            if pixelArray is None:
-                self.lblImageMissing.show()
-                self.btnDeleteDICOMFile.hide()
-                self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
-            else:
-                self.img.setImage(pixelArray) 
-                self.lblImageMissing.hide()
-                self.btnDeleteDICOMFile.show()
+        """On the Multiple Image Display sub window, this
+        function is called when the image slider is moved. 
+        It causes the next image in imageList to be displayed"""
+        try:
+            logger.info("WEASEL imageSliderMoved called")
+            imageNumber = self.imageSlider.value()
+            self.currentImageNumber = imageNumber - 1
+            if self.currentImageNumber >= 0:
+                self.currentImagePath = imageList[self.currentImageNumber]
+                pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
+                if pixelArray is None:
+                    self.lblImageMissing.show()
+                    self.btnDeleteDICOMFile.hide()
+                    self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
+                else:
+                    self.img.setImage(pixelArray) 
+                    self.lblImageMissing.hide()
+                    self.btnDeleteDICOMFile.show()
 
-            self.subWindow.setWindowTitle(seriesName + ' - ' 
-                     + os.path.basename(self.currentImagePath))
-      except Exception as e:
+                self.subWindow.setWindowTitle(seriesName + ' - ' 
+                         + os.path.basename(self.currentImagePath))
+        except Exception as e:
             print('Error in imageSliderMoved: ' + str(e))
+            logger.error('Error in imageSliderMoved: ' + str(e))
 
 
     def viewImage(self):
@@ -682,6 +721,7 @@ class Weasel(QMainWindow):
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
+            logger.info("WEASEL viewImage called")
             if self.isAnImageSelected():
                 imagePath = self.selectedImagePath
                 pixelArray = readDICOM_Image.returnPixelArray(imagePath)
@@ -693,10 +733,15 @@ class Weasel(QMainWindow):
                 self.displayMultiImageSubWindow(self.imageList, studyID, seriesID)
         except Exception as e:
             print('Error in viewImage: ' + str(e))
+            logger.error('Error in viewImage: ' + str(e))
 
 
     def insertNewBinOpImageInXMLFile(self, newImageFileName, suffix):
+        """This function inserts information regarding a new image 
+        created by a binary operation on 2 images in the DICOM XML file
+       """
         try:
+            logger.info("WEASEL insertNewBinOpImageInXMLFile called")
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
 
@@ -752,10 +797,15 @@ class Weasel(QMainWindow):
                 return series.attrib['id']
         except Exception as e:
             print('Error in insertNewBinOpImageInXMLFile: ' + str(e))
+            logger.error('Error in insertNewBinOpImageInXMLFile: ' + str(e))
 
 
     def insertNewImageInXMLFile(self, newImageFileName, suffix):
+        """This function inserts information regarding a new image 
+         in the DICOM XML file
+       """
         try:
+            logger.info("WEASEL insertNewImageInXMLFile called")
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
             imagePath = self.selectedImagePath
@@ -815,6 +865,7 @@ class Weasel(QMainWindow):
                 return series.attrib['id']
         except Exception as e:
             print('Error in insertNewImageInXMLFile: ' + str(e))
+            logger.error('Error in insertNewImageInXMLFile: ' + str(e))
 
 
     def getNewSeriesName(self, studyID, seriesID, suffix):
@@ -835,14 +886,17 @@ class Weasel(QMainWindow):
                 #new series ID
                 return self.getNewSeriesName(studyID, seriesID, suffix)
             else:
+                logger.info("WEASEL getNewSeriesName returns seriesID {}".format(seriesID))
                 return seriesID
         except Exception as e:
             print('Error in getNewSeriesName: ' + str(e))
+            print('Error in insertNewImageInXMLFile: ' + str(e))
 
 
     def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
         """Creates a new series to hold the series of New images"""
         try:
+            logger.info("WEASEL insertNewSeriesInXMLFile called")
             #Get current study & series IDs
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries 
@@ -878,10 +932,13 @@ class Weasel(QMainWindow):
 
         except Exception as e:
             print('Error in insertNewSeriesInXMLFile: ' + str(e))
+            logger.error('Error in insertNewImageInXMLFile: ' + str(e))
 
 
     def removeSeriesFromXMLFile(self, studyID, seriesID):
+        """Removes a whole series from the DICOM XML file"""
         try:
+            logger.info("WEASEL removeSeriesFromXMLFile called")
             xPath = './study[@id=' + chr(34) + studyID + chr(34) +']' 
             study = self.root.find(xPath)
             #print('XML = {}'.format(ET.tostring(study)))
@@ -892,9 +949,12 @@ class Weasel(QMainWindow):
                     break
         except Exception as e:
             print('Error in removeSeriesFromXMLFile: ' + str(e))
+            logger.error('Error in removeSeriesFromXMLFile: ' + str(e))
 
 
     def closeSubWindow(self, objectName):
+        """Closes a particular sub window in the MDI"""
+        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == objectName:
                 QApplication.processEvents()
@@ -902,7 +962,11 @@ class Weasel(QMainWindow):
                 QApplication.processEvents()
                 break
 
+
     def closeAllImageWindows(self):
+        """Closes all the sub windows in the MDI except for
+        the sub window displaying the DICOM file tree view"""
+        logger.info("WEASEL closeAllImageWindows called")
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == 'tree_view':
                 continue
@@ -911,7 +975,10 @@ class Weasel(QMainWindow):
                
 
     def displayBinaryOperationsWindow(self):
+        """Displays the sub window for performing binary operations
+        on 2 images"""
         try:
+            logger.info("WEASEL displayBinaryOperationsWindow called")
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
@@ -1000,10 +1067,13 @@ class Weasel(QMainWindow):
             self.subWindow.show()
         except Exception as e:
             print('Error in displayBinaryOperationsWindow: ' + str(e))
+            logger.error('Error in displayBinaryOperationsWindow: ' + str(e))
 
     
     def saveNewDICOMFileFromBinOp(self):
+        """TO DO"""
         try:
+            logger.info("WEASEL saveNewDICOMFileFromBinOp called")
             suffix = '_binOp'
             imageName1 = self.imageList1.currentText()
             imagePath1 = self.image_Name_Path_Dict[imageName1]
@@ -1026,9 +1096,11 @@ class Weasel(QMainWindow):
             self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in saveNewDICOMFileFromBinOp: ' + str(e))
+            logger.error('Error in saveNewDICOMFileFromBinOp: ' + str(e))
 
 
     def doBinaryOperation(self, imageDict):
+        """TO DO"""
         try:
             #Get file path of image1
             imageName = self.imageList1.currentText()
@@ -1049,9 +1121,11 @@ class Weasel(QMainWindow):
                 self.img3.setImage(self.binOpArray)
         except Exception as e:
             print('Error in doBinaryOperation: ' + str(e))
+            logger.error('Error in doBinaryOperation: ' + str(e))
 
 
     def enableBinaryOperationsCombo(self):
+        """TO DO"""
         if self.lblImageMissing1.isHidden() and \
             self.lblImageMissing2.isHidden():
             self.binaryOpsList.setEnabled(True)
@@ -1062,6 +1136,7 @@ class Weasel(QMainWindow):
 
 
     def displayImageForBinOp(self, imageNumber, imageDict):
+        """TO DO"""
         try:
             objImageMissingLabel = getattr(self, 'lblImageMissing' + str(imageNumber))
             objImage = getattr(self, 'img' + str(imageNumber))
@@ -1079,9 +1154,11 @@ class Weasel(QMainWindow):
                 objImage.setImage(pixelArray) 
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
+            logger.error('Error in displayImageForBinOp: ' + str(e))
 
 
     def getImagePathList(self, studyID, seriesID):
+        """TO DO"""
         try:
             xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
             ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
@@ -1091,9 +1168,10 @@ class Weasel(QMainWindow):
             return imageList
         except Exception as e:
             print('Error in getImagePathList: ' + str(e))
-
+            logger.error('Error in getImagePathList: ' + str(e))
 
     def deleteImage(self):
+        """TO DO"""
         """This method deletes an image or a series of images by 
         deleting the physical file(s) and then removing their entries
         in the XML file."""
@@ -1160,9 +1238,11 @@ class Weasel(QMainWindow):
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
+            logger.error('Error in getImagePathList: ' + str(e))
 
 
     def getImageDateTime(self, imageName, studyID, seriesID):
+        """TO DO"""
         try:
             #Get reference to image element time of the image
 
@@ -1179,50 +1259,78 @@ class Weasel(QMainWindow):
             return imageTime.text, imageDate.text           
         except Exception as e:
             print('Error in getImageDateTime: ' + str(e))
+            logger.error('Error in getImageDateTime: ' + str(e))
 
 
     def isAnImageSelected(self):
+        """Returns True is a single image is selected in the DICOM
+        tree view, else returns False"""
         try:
+            logger.info("WEASEL isAnImageSelected called.")
             selectedItem = self.treeView.currentItem()
-            if 'image' in selectedItem.text(0).lower():
-                return True
+            if selectedItem:
+                if 'image' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
             else:
-                return False
+               return False
         except Exception as e:
             print('Error in isAnImageSelected: ' + str(e))
-    
-    
+            logger.error('Error in isAnImageSelected: ' + str(e))
+            
+
     def isASeriesSelected(self):
+        """Returns True is a series is selected in the DICOM
+        tree view, else returns False"""
         try:
+            logger.info("WEASEL isASeriesSelected called.")
             selectedItem = self.treeView.currentItem()
-            if 'series' in selectedItem.text(0).lower():
-                return True
+            if selectedItem:
+                if 'series' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
             else:
-                return False
+               return False
         except Exception as e:
             print('Error in isASeriesSelected: ' + str(e))
+            logger.error('Error in isASeriesSelected: ' + str(e))
 
 
     def setEnabledSeriesOnlyTools(self, flag):
+        """In the tools menu, this function enables user 
+        defined tools that are only available when a DICOM series
+        is selected"""
         try:
+            logger.info("WEASEL setEnabledSeriesOnlyTools called.")
             for tool in buildToolsMenu.seriesOnlyTools:
                 button = getattr(self, tool)
                 button.setEnabled(flag)
         except Exception as e:
             print('Error in setEnabledSeriesOnlyTools: ' + str(e))
+            logger.error('Error in setEnabledSeriesOnlyTools: ' + str(e))
 
 
     def setEnabledImageAndSeriesTools(self, flag):
+        """In the tools menu, this function enables user 
+            defined tools that are available when either 
+            a single DICOM image or  a DICOM series
+            is selected""" 
         try:
+            logger.info("WEASEL setEnabledImageAndSeriesTools called.")
             for tool in buildToolsMenu.imageAndSeriesTools:
                 button = getattr(self, tool)
                 button.setEnabled(flag)
         except Exception as e:
             print('Error in setEnabledImageAndSeriesTools: ' + str(e))
+            logger.error('Error in setEnabledImageAndSeriesTools: ' + str(e))
 
 
     def toggleToolButtons(self):
+        """TO DO"""
         try:
+            logger.info("WEASEL toggleToolButtons called.")
             if self.isASeriesSelected():
                 self.setEnabledSeriesOnlyTools(True)
             else:
@@ -1238,12 +1346,14 @@ class Weasel(QMainWindow):
                 self.setEnabledImageAndSeriesTools(False)
         except Exception as e:
             print('Error in toggleToolButtons: ' + str(e))
+            logger.error('Error in toggleToolButtons: ' + str(e))
 
 
     def getDICOMFileData(self):
         """When a DICOM image is selected in the tree view, this function
         returns its description in the form - study number: series number: image name"""
         try:
+            logger.info("WEASEL getDICOMFileData called.")
             selectedImage = self.treeView.selectedItems()
             if selectedImage:
                 imageNode = selectedImage[0]
@@ -1258,10 +1368,13 @@ class Weasel(QMainWindow):
                 return ''
         except Exception as e:
             print('Error in getDICOMFileData: ' + str(e))
+            logger.error('Error in getDICOMFileData: ' + str(e))
 
 
     def expandTreeViewBranch(self, branchText = ''):
+        """TO DO"""
         try:
+            logger.info("WEASEL expandTreeViewBranch called.")
             for branch in self.seriesBranchList:
                 seriesID = branch.text(0).replace('Series -', '')
                 seriesID = seriesID.strip()
@@ -1271,12 +1384,14 @@ class Weasel(QMainWindow):
                     branch.setExpanded(False)
         except Exception as e:
             print('Error in expandTreeViewBranch: ' + str(e))
+            logger.error('Error in expandTreeViewBranch: ' + str(e))
 
 
     def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
+            logger.info("WEASEL refreshDICOMStudiesTreeView called.")
             self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
             self.root = self.XMLtree.getroot()
             self.treeView.clear()
@@ -1322,48 +1437,15 @@ class Weasel(QMainWindow):
             #Now collapse all series branches so as to hide the images
             #except the new series branch that has been created
             self.expandTreeViewBranch(newSeriesName)
+            #If no tree view items are now selected,
+            #disable items in the Tools menu.
+            self.toggleToolButtons()
             self.treeView.hideColumn(3)
             self.treeView.show()
         except Exception as e:
             print('Error in refreshDICOMStudiesTreeView: ' + str(e))
-
-      #self
-    def getStudyAndSeriesNumbersFromSeries():
-        """This function returns the study and series IDs
-        from the selected series in a tree view."""
-        try: 
-            selectedSeries = self.treeView.selectedItems()
-            if selectedSeries:
-                #Extract series name from the selected image
-                seriesNode = selectedSeries[0]
-                seriesName = seriesNode.text(0) 
-                #Extract series number from the full series name
-                seriesID = seriesName.replace('Series - ', '')
-                seriesID = seriesID.strip() 
-
-                studyNode = seriesNode.parent()
-                studyName = studyNode.text(0)
-                #Extract study number from the full study name
-                studyID = studyName.replace('Study - ', '')
-                studyID = studyID.strip()
-                return studyID, seriesID
-            else:
-                return None, None
-        except Exception as e:
-            print('Error in getStudyAndSeriesNumbersFromSeries: ' + str(e))
-
-    def getImagePathList_Copy():
-        try:
-            studyID, seriesID = \
-            getStudyAndSeriesNumbersFromSeries() #self.
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-            #print(xPath)
-            images = self.root.findall(xPath)
-            imageList = [image.find('name').text for image in images]
-            return imageList, studyID, seriesID
-        except Exception as e:
-            print('Error in getImagePathList: ' + str(e))
+            logger.error('Error in refreshDICOMStudiesTreeView: ' + str(e))
+      
 
 def main():
     app = QApplication([])
