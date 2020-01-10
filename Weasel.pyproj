@@ -39,8 +39,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\Tools\copyDICOM_Image.py" />
+    <Compile Include="Developer\Tools\FERRET.py" />
     <Compile Include="Developer\Tools\invertDICOM_Image.py" />
-    <Compile Include="FERRET.py" />
     <Compile Include="Weasel.py" />
   </ItemGroup>
   <ItemGroup>
@@ -63,8 +63,8 @@
     <Content Include="Developer\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
     <Content Include="Developer\ModelLibrary\README.txt" />
     <Content Include="Developer\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
+    <Content Include="Developer\Tools\FERRET_README.md" />
     <Content Include="Developer\Tools\toolsMenu.xml" />
-    <Content Include="FERRET_README.md" />
     <Content Include="images\FERRET_ICON.ico" />
     <Content Include="images\FERRET_LOGO.png" />
     <Content Include="images\logo-tristan.png" />
