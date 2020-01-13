@@ -41,3 +41,5 @@ def copySeries(objWeasel):
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in copyDICOM_Image.copySeries: ' + str(e))
+
+

@@ -25,14 +25,17 @@
     <Compile Include="CoreModules\ExcelWriter.py" />
     <Compile Include="CoreModules\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET.py" />
+    <Compile Include="CoreModules\ferretXMLReader.py" />
     <Compile Include="CoreModules\MathsTools.py" />
     <Compile Include="CoreModules\ModelFunctionsHelper.py" />
     <Compile Include="CoreModules\PDFWriter.py" />
     <Compile Include="CoreModules\readDICOM_Image.py" />
     <Compile Include="CoreModules\saveDICOM_Image.py" />
     <Compile Include="CoreModules\styleSheet.py" />
+    <Compile Include="CoreModules\weaselXMLReader.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
-    <Compile Include="CoreModules\XMLReader.py" />
     <Compile Include="Developer\ModelLibrary\ModelFunctions.py" />
     <Compile Include="Developer\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\Tools\binaryOperationDICOM_Image.py" />

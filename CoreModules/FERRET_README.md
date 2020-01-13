@@ -114,7 +114,7 @@ and provide services to this class:
 	from the batch processing of time-MR signal data files
 	2. The PDFWrite.py class module creates and saves a report 
 	of a model fitting session in a PDF file.
-	3. The XMLReader.py class module contains functionality for loading and 
+	3. The FerretXMLReader.py class module contains functionality for loading and 
 	parsing an XML configuration file that describes the model(s)
 	to be used for curve fitting time/concentration data.
   

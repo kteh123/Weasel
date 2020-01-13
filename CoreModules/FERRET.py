@@ -76,7 +76,7 @@ Application Module Structure.
 The code in FERRET.py defines the GUI and the logic providing 
 the application's functionality.  The GUI was built using PyQT5.
 
-The XMLReader.py class module uses the xml.etree.ElementTree package to parse
+The FerretXMLReader.py class module uses the xml.etree.ElementTree package to parse
 the XML configuration file that describes all the models to be made available
 for curve fitting.  It also contains functions that query the XML tree using
 XPath notation and return data.
@@ -193,7 +193,7 @@ from PDFWriter import PDF
 
 from ExcelWriter import ExcelWriter
 
-from XMLReader import XMLReader
+from ferretXMLReader import FerretXMLReader
  
 ########################################
 ##              CONSTANTS             ##
@@ -319,7 +319,7 @@ class FERRET:
             self.optimisedParamaterList = [] 
         
             # XML reader object to process XML configuration file
-            self.objXMLReader = XMLReader() 
+            self.objXMLReader = FerretXMLReader() 
        
             # Setup the layouts, the containers for widgets
             self.mainWidget = QWidget()
@@ -2599,7 +2599,7 @@ class FERRET:
        
        Inputs
        -----
-       objExcelFile - object instanciated from the XMLReader class
+       objExcelFile - object instanciated from the ExcellWriter class
        fileName - Name of the MR Signal data file currently being
             batch processed.
        modelName - Name of the model being used for curve fitting.
