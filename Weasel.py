@@ -8,15 +8,11 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
         QProgressBar, QComboBox )
 from PyQt5.QtGui import QCursor, QIcon
 
-import xml.etree.ElementTree as ET 
-#from xml.dom import minidom
 import pyqtgraph as pg
 import os
 import sys
 import time
 import numpy as np
-from datetime import datetime #?
-from datetime import date
 import logging
 
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
@@ -450,7 +446,7 @@ class Weasel(QMainWindow):
         self.mdiArea.closeAllSubWindows()
         self.treeView = None
 
-        ex
+        
     def displayFERRET(self):
         """
         Displays FERRET in a sub window 
