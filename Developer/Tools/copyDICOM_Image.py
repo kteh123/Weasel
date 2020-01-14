@@ -3,6 +3,7 @@ import numpy as np
 import readDICOM_Image
 import saveDICOM_Image
 from Weasel import Weasel as weasel
+from weaselXMLReader import WeaselXMLReader
 
 FILE_SUFFIX = '_copy'
 

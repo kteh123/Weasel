@@ -15,7 +15,7 @@ import os
 import sys
 import time
 import numpy as np
-from datetime import datetime
+from datetime import datetime #?
 from datetime import date
 import logging
 
@@ -298,8 +298,6 @@ class Weasel(QMainWindow):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 start_time=time.time()
-                #self.root = self.objXMLReader.parseXMLFile(
-                #    self.DICOM_XML_FilePath)
                 self.objXMLReader.parseXMLFile(
                     self.DICOM_XML_FilePath)
                 end_time=time.time()
@@ -452,6 +450,7 @@ class Weasel(QMainWindow):
         self.mdiArea.closeAllSubWindows()
         self.treeView = None
 
+        ex
     def displayFERRET(self):
         """
         Displays FERRET in a sub window 
@@ -659,15 +658,6 @@ class Weasel(QMainWindow):
                     #so just remove the image from the xml file
                     ##need to get the series (parent) containing this image (child)
                     ##then remove child from parent
-                    ##xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-                    ##']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
-                    #series = self.objXMLReader.getSeries(studyID, seriesID)
-                    ##print('XML = {}'.format(ET.tostring(series)))
-                    #for image in series:
-                    #    if image.find('name').text == deletedFilePath:
-                    #        series.remove(image)
-                    #        self.XMLtree.write(self.DICOM_XML_FilePath)
-                    #        break
                     self.objXMLReader.removeOneImageFromSeries(
                         studyID, seriesID, deletedFilePath)
                 #Update tree view with xml file modified above
@@ -724,6 +714,9 @@ class Weasel(QMainWindow):
             logger.error('Error in viewImage: ' + str(e))
 
 
+    def getImagePathList(self, studyID, seriesID):
+        return self.objXMLReader.getImagePathList(studyID, seriesID)
+
     def insertNewBinOpImageInXMLFile(self, newImageFileName, suffix):
         """This function inserts information regarding a new image 
         created by a binary operation on 2 images in the DICOM XML file
@@ -732,61 +725,12 @@ class Weasel(QMainWindow):
             logger.info("WEASEL insertNewBinOpImageInXMLFile called")
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
+            #returns new series ID
             return self.objXMLReader.insertNewBinOpsImageInXML(
                 newImageFileName, studyID, seriesID, suffix)
-
-            ##First determine if a series with parentID=seriesID exists
-            ##and typeID=suffix for a binary operation
-            #series = self.objXMLReader.getSeriesOfSpecifiedType(
-            #    studyID, seriesID, suffix)
-            ##image date & time are set to current date and time
-            #now = datetime.now()
-            #imageTime = now.strftime("%H:%M:%S")
-            #imageDate = now.strftime("%d/%m/%Y")        
-            #if series is None:
-            #    #Need to create a new series to hold this new image
-            #    newSeriesID = seriesID + suffix
-            #    #Get study branch
-            #    currentStudy = self.objXMLReader.getStudy(studyID)
-            #    newAttributes = {'id':newSeriesID, 
-            #                     'parentID':seriesID, 
-            #                     'typeID':suffix}
-                   
-            #    #Add new series to study to hold new images
-            #    newSeries = ET.SubElement(currentStudy, 
-            #                              'series', newAttributes)
-                    
-            #    comment = ET.Comment('This series holds images derived from binary operations on 2 images')
-            #    newSeries.append(comment)   
-                
-            #    #Now add image element
-            #    newImage = ET.SubElement(newSeries,'image')
-            #    #Add child nodes of the image element
-            #    nameNewImage = ET.SubElement(newImage, 'name')
-            #    nameNewImage.text = newImageFileName
-            #    timeNewImage = ET.SubElement(newImage, 'time')
-            #    timeNewImage.text = imageTime
-            #    dateNewImage = ET.SubElement(newImage, 'date')
-            #    dateNewImage.text = imageDate
-            #    self.objXMLReader.saveXMLFile(self.DICOM_XML_FilePath)
-            #    #self.XMLtree.write(self.DICOM_XML_FilePath)
-            #    return newSeriesID
-            #else:
-            #    #A series already exists to hold new images from
-            #    #the current parent series
-            #    newImage = ET.SubElement(series,'image')#error
-            #    #Add child nodes of the image element
-            #    nameNewImage = ET.SubElement(newImage, 'name')
-            #    nameNewImage.text = newImageFileName
-            #    timeNewImage = ET.SubElement(newImage, 'time')
-            #    timeNewImage.text = imageTime
-            #    dateNewImage = ET.SubElement(newImage, 'date')
-            #    dateNewImage.text = imageDate
-            #    self.objXMLReader.saveXMLFile(self.DICOM_XML_FilePath)
-            #    return series.attrib['id']
         except Exception as e:
-            print('Error in insertNewBinOpImageInXMLFile: ' + str(e))
-            logger.error('Error in insertNewBinOpImageInXMLFile: ' + str(e))
+            print('Error in Weasel.insertNewBinOpImageInXMLFile: ' + str(e))
+            logger.error('Error in Weasel.insertNewBinOpImageInXMLFile: ' + str(e))
 
 
     def insertNewImageInXMLFile(self, newImageFileName, suffix):
@@ -798,57 +742,11 @@ class Weasel(QMainWindow):
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
             imagePath = self.selectedImagePath
+            #returns new series ID or existing series ID
+            #as appropriate
             return self.objXMLReader.insertNewImageInXML(imagePath,
                    newImageFileName, studyID, seriesID, suffix)
-            ##First determine if a series with parentID=seriesID exists
-            ##and typeID=suffix
-            #series = self.objXMLReader.getSeriesOfSpecifiedType(
-            #    studyID, seriesID, suffix)       
-            #if series is None:
-            #    #Need to create a new series to hold this new image
-            #    newSeriesID = seriesID + suffix
-            #    #Get study branch
-            #    currentStudy = self.objXMLReader.getStudy(studyID)
-            #    newAttributes = {'id':newSeriesID, 
-            #                     'parentID':seriesID, 
-            #                     'typeID':suffix}
-                   
-            #    #Add new series to study to hold new images
-            #    newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
-                    
-            #    comment = ET.Comment('This series holds new images')
-            #    newSeries.append(comment)
-            #    #Get image date & time
-            #    imageTime, imageDate = self.getImageDateTime(imagePath, 
-            #                       studyID, seriesID)
-                    
-            #    #print("image time {}, date {}".format(imageTime, imageDate))
-            #    #Now add image element
-            #    newImage = ET.SubElement(newSeries,'image')
-            #    #Add child nodes of the image element
-            #    nameNewImage = ET.SubElement(newImage, 'name')
-            #    nameNewImage.text = newImageFileName
-            #    timeNewImage = ET.SubElement(newImage, 'time')
-            #    timeNewImage.text = imageTime
-            #    dateNewImage = ET.SubElement(newImage, 'date')
-            #    dateNewImage.text = imageDate
-            #    self.objXMLReader.saveXMLFile(self.DICOM_XML_FilePath)
-            #    return newSeriesID
-            #else:
-            #    #A series already exists to hold new images from
-            #    #the current parent series
-            #    imageTime, imageDate = self.getImageDateTime(imagePath, 
-            #              studyID, seriesID)
-            #    newImage = ET.SubElement(series,'image')
-            #    #Add child nodes of the image element
-            #    nameNewImage = ET.SubElement(newImage, 'name')
-            #    nameNewImage.text = newImageFileName
-            #    timeNewImage = ET.SubElement(newImage, 'time')
-            #    timeNewImage.text = imageTime
-            #    dateNewImage = ET.SubElement(newImage, 'date')
-            #    dateNewImage.text = imageDate
-            #    self.objXMLReader.saveXMLFile(self.DICOM_XML_FilePath)
-            #    return series.attrib['id']
+            
         except Exception as e:
             print('Error in insertNewImageInXMLFile: ' + str(e))
             logger.error('Error in insertNewImageInXMLFile: ' + str(e))
@@ -872,8 +770,8 @@ class Weasel(QMainWindow):
                 logger.info("WEASEL getNewSeriesName returns seriesID {}".format(seriesID))
                 return seriesID
         except Exception as e:
-            print('Error in getNewSeriesName: ' + str(e))
-            print('Error in insertNewImageInXMLFile: ' + str(e))
+            print('Error in Weasel.getNewSeriesName: ' + str(e))
+            print('Error in Weasel.getNewSeriesName: ' + str(e))
 
 
     def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
@@ -886,37 +784,13 @@ class Weasel(QMainWindow):
             #Get a new series ID
             newSeriesID = self.getNewSeriesName(studyID, seriesID, suffix)
             self.objXMLReader.insertNewSeriesInXML(origImageList, 
-                     studyID, newSeriesID, seriesID, suffix)
-            #Get study branch
-            #currentStudy = self.objXMLReader.getStudy(studyID)
-            #newAttributes = {'id':newSeriesID, 
-            #                 'parentID':seriesID,
-            #                 'typeID':suffix}
-                   
-            ##Add new series to study to hold new images
-            #newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
-                    
-            #comment = ET.Comment('This series holds a whole series of new images')
-            #newSeries.append(comment)
-            ##Get image date & time from original image
-            #for index, image in enumerate(origImageList):
-            #    imageTime, imageDate = self.getImageDateTime(image, studyID, seriesID)       
-            #    newImage = ET.SubElement(newSeries,'image')
-            #    #Add child nodes of the image element
-            #    nameNewImage = ET.SubElement(newImage, 'name')
-            #    nameNewImage.text = newImageList[index]
-            #    timeNewImage = ET.SubElement(newImage, 'time')
-            #    timeNewImage.text = imageTime
-            #    dateNewImage = ET.SubElement(newImage, 'date')
-            #    dateNewImage.text = imageDate
-
-            #self.XMLtree.write(self.DICOM_XML_FilePath)
+                     newImageList, studyID, newSeriesID, seriesID, suffix)
             self.statusBar.showMessage('New series created: - ' + newSeriesID)
             return  newSeriesID
 
         except Exception as e:
-            print('Error in insertNewSeriesInXMLFile: ' + str(e))
-            logger.error('Error in insertNewImageInXMLFile: ' + str(e))
+            print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
+            logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))
 
 
     def closeSubWindow(self, objectName):
@@ -1153,7 +1027,7 @@ class Weasel(QMainWindow):
                     #whole series from XML file
                     #No it is not the last image in a series
                     #so just remove the image from the XML file 
-                    images = getImageList(studyID, seriesID)
+                    images = self.objXMLReader.getImageList(studyID, seriesID)
                     if len(images) == 1:
                         #only one image, so remove the series from the xml file
                         #need to get study (parent) containing this series (child)
@@ -1318,8 +1192,9 @@ class Weasel(QMainWindow):
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("WEASEL refreshDICOMStudiesTreeView called.")
-            self.XMLtree = ET.parse(self.DICOM_XML_FilePath)
-            #self.root = self.objXMLReader.getXMLRoot()
+            #Load and parse updated XML file
+            self.objXMLReader.parseXMLFile(
+                    self.DICOM_XML_FilePath)
             self.treeView.clear()
             self.treeView.setColumnCount(3)
             self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
