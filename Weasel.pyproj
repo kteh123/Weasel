@@ -44,6 +44,9 @@
     </Compile>
     <Compile Include="Developer\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\Tools\invertDICOM_Image.py" />
+    <Compile Include="Developer\Tools\squareDICOM_Image.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Weasel.py" />
   </ItemGroup>
   <ItemGroup>

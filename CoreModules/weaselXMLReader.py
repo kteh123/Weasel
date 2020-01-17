@@ -128,6 +128,17 @@ class WeaselXMLReader:
             logger.error('Error in weaselXMLReader.getNumberItemsInTreeView: ' + str(e))
 
 
+    def getNumberImagesInSeries(self, studyID, seriesID):
+        try:
+            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                        ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
+                        '/image'
+            return len(self.root.find(xPath))
+        except Exception as e:
+            print('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e))
+
+
     def removeOneImageFromSeries(self, studyID, seriesID, imagePath):
         try:
             #Get the series (parent) containing this image (child)

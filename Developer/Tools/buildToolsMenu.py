@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QAction
 import invertDICOM_Image
 import copyDICOM_Image
+import squareDICOM_Image
 
 seriesOnlyTools = ['copySeriesButton', 'binaryOperationsButton']
-imageAndSeriesTools = ['invertImageButton']
+imageAndSeriesTools = ['invertImageButton', 'squareImageButton' ]
 
 def buildToolsMenu(self, toolsMenu):
         try:
@@ -32,6 +33,15 @@ def buildToolsMenu(self, toolsMenu):
                 )
             self.invertImageButton.setEnabled(False)
             toolsMenu.addAction(self.invertImageButton)
+
+            self.squareImageButton = QAction('&Square Image', self)
+            self.squareImageButton.setShortcut('Ctrl+S')
+            self.squareImageButton.setStatusTip('Square a DICOM Image or series')
+            self.squareImageButton.triggered.connect(
+                lambda: squareDICOM_Image.squareImage(self)
+                )
+            self.squareImageButton.setEnabled(False)
+            toolsMenu.addAction(self.squareImageButton)
 
         except Exception as e:
             print('Error in function buildToolsMenu.buildToolsMenu: ' + str(e))

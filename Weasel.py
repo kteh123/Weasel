@@ -157,10 +157,9 @@ class Weasel(QMainWindow):
             print('Error in function WEASEL.getScanDirectory: ' + str(e))
 
 
-    def displayMessageSubWindow(self, message):
+    def displayMessageSubWindow(self, message, title="Loading DICOM files"):
         """
-        Creates a subwindow that displays a message to the user about the 
-        progress of making an XML file from the contents of a DICOM folder. 
+        Creates a subwindow that displays a message to the user. 
         """
         try:
             logger.info('WEASEL displayMessageSubWindow called.')
@@ -174,17 +173,34 @@ class Weasel(QMainWindow):
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setWidget(widget)
             self.msgSubWindow.setObjectName("Msg_Window")
-            self.msgSubWindow.setWindowTitle("Loading DICOM files")
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setGeometry(0,0,900,200)
-            self.mdiArea.addSubWindow(self.msgSubWindow)
             self.lblMsg = QLabel('<H4>' + message + '</H4>')
             widget.layout().addWidget(self.lblMsg)
+
+            self.progBarMsg = QProgressBar(self)
+            widget.layout().addWidget(self.progBarMsg)
+            widget.layout().setAlignment(Qt.AlignTop)
+            self.progBarMsg.hide()
+            self.progBarMsg.setValue(0)
+
+            self.mdiArea.addSubWindow(self.msgSubWindow)
             self.msgSubWindow.show()
             QApplication.processEvents()
         except Exception as e:
             print('Error in : WEASEL.displayMessageSubWindow' + str(e))
             logger.error('Error in : WEASEL.displayMessageSubWindow' + str(e))
+    
 
+    def setMsgWindowProgBarMaxValue(self, maxValue):
+        self.progBarMsg.show()
+        self.progBarMsg.setMaximum(maxValue)
+
+    def setMsgWindowProgBarValue(self, value):
+        self.progBarMsg.setValue(value)
+
+    def closeMessageSubWindow(self):
+        self.msgSubWindow.close()
 
     def makeDICOM_XML_File(self, scan_directory):
         """Creates an XML file that describes the contents of the scan folder,

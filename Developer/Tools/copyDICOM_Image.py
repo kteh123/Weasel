@@ -31,10 +31,19 @@ def copySeries(objWeasel):
                     objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and make a copy of each image
             copiedImageList = []
+            numImages = len(imageList)
+            objWeasel.displayMessageSubWindow(
+              "<H4>Copying {} DICOM files</H4>".format(numImages),
+              "Copying DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            imageCounter = 0
             for imagePath in imageList:
                 copiedImageFilePath = returnCopiedFile(imagePath)
                 copiedImageList.append(copiedImageFilePath)
-         
+                imageCounter += 1
+                objWeasel.setMsgWindowProgBarValue(imageCounter)
+
+            objWeasel.closeMessageSubWindow()
             newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
                 copiedImageList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(copiedImageList, 
