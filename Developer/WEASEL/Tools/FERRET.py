@@ -159,7 +159,7 @@ import os
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
-sys.path.append(os.path.join(sys.path[0],'Developer//ModelLibrary//'))
+sys.path.append(os.path.join(sys.path[0],'Developer//FERRET//ModelLibrary//'))
 
 import numpy as np
 import pyautogui
@@ -1658,7 +1658,7 @@ class FERRET:
             #  Get the configuration file in XML format.
             # The filter parameter is set so that the 
             # user can only open an XML file.
-            defaultPath = "Developer\\ModelConfiguration\\"
+            defaultPath = "Developer\\FERRET\\ModelConfiguration\\"
             fullFilePath, _ = QFileDialog.getOpenFileName( 
                 caption="Select model configuration file", 
                 directory=defaultPath,

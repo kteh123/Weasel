@@ -3,7 +3,7 @@ import numpy as np
 import readDICOM_Image
 import saveDICOM_Image
 
-FILE_SUFFIX = '_Square'
+FILE_SUFFIX = '_Inverted'
 
 def returnPixelArray(imagePath):
     """Inverts an image. Bits that are 0 become 1, and those that are 1 become 0"""
@@ -11,34 +11,33 @@ def returnPixelArray(imagePath):
         if os.path.exists(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.getPixelArray(dataset)
-            squaredImage = squareAlgorithm(pixelArray, dataset)
-            newFilePath = saveDICOM_Image.save_automatically_and_returnFilePath(
-                imagePath, squaredImage, FILE_SUFFIX)
-            return squaredImage, newFilePath
+            derivedImage = invertAlgorithm(pixelArray, dataset)
+            derivedImageFilePath = saveDICOM_Image.save_automatically_and_returnFilePath(
+                imagePath, derivedImage, FILE_SUFFIX)
+            return derivedImage, derivedImageFilePath
         else:
             return None, None
     except Exception as e:
-            print('Error in function squareDICOM_Image.returnPixelArray: ' + str(e))
+            print('Error in function invertDICOM_Image.returnPixelArray: ' + str(e))
     
-
-def squareAlgorithm(pixelArray, dataset):
+def invertAlgorithm(pixelArray, dataset):
     try:
-        squaredImage = np.square(pixelArray.astype(dataset.pixel_array.dtype))
-        return squaredImage
+        derivedImage = np.invert(pixelArray.astype(dataset.pixel_array.dtype))
+        return derivedImage
     except Exception as e:
-            print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))
+            print('Error in function invertDICOM_Image.invertAlgorithm: ' + str(e))
 
 
-def squareImage(objWeasel):
+def invertImage(objWeasel):
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:
         if objWeasel.isAnImageSelected():
             imagePath = objWeasel.selectedImagePath
-            pixelArray, squaredImageFileName = returnPixelArray(imagePath)
-            objWeasel.displayImageSubWindow(pixelArray, squaredImageFileName)
+            pixelArray, derivedImageFileName = returnPixelArray(imagePath)
+            objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
             #Record inverted image in XML file
-            seriesID = objWeasel.insertNewImageInXMLFile(squaredImageFileName, 
+            seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
                                                       FILE_SUFFIX)
             #Update tree view with xml file modified above
             objWeasel.refreshDICOMStudiesTreeView(seriesID)
@@ -47,26 +46,26 @@ def squareImage(objWeasel):
             seriesID = objWeasel.selectedSeries
             imageList = \
                     objWeasel.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and square each image
-            squaredImageList = []
+            #Iterate through list of images and invert each image
+            derivedImageList = []
             numImages = len(imageList)
             objWeasel.displayMessageSubWindow(
-              "<H4>Squaring {} DICOM files</H4>".format(numImages),
-              "Squaring DICOM images")
+              "<H4>Inverting {} DICOM files</H4>".format(numImages),
+              "Inverting DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(numImages)
             imageCounter = 0
             for imagePath in imageList:
-                _, squaredImageFileName = returnPixelArray(imagePath)
-                squaredImageList.append(squaredImageFileName)
+                _, derivedImageFileName = returnPixelArray(imagePath)
+                derivedImageList.append(derivedImageFileName)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
 
             objWeasel.closeMessageSubWindow()
 
             newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
-                squaredImageList, FILE_SUFFIX)
+                derivedImageList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(
-                squaredImageList, studyID, newSeriesID)
+                derivedImageList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
-        print('Error in squaredDICOM_Image.squareImage: ' + str(e))
+        print('Error in invertDICOM_Image.invertImage: ' + str(e))
