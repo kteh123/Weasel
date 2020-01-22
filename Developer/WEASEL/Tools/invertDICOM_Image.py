@@ -12,11 +12,9 @@ def returnPixelArray(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.getPixelArray(dataset)
             derivedImage = invertAlgorithm(pixelArray, dataset)
-            derivedImageFilePath = saveDICOM_Image.save_automatically_and_returnFilePath(
-                imagePath, derivedImage, FILE_SUFFIX)
-            return derivedImage, derivedImageFilePath
+            return derivedImage
         else:
-            return None, None
+            return None
     except Exception as e:
             print('Error in function invertDICOM_Image.returnPixelArray: ' + str(e))
     
@@ -34,38 +32,47 @@ def invertImage(objWeasel):
     try:
         if objWeasel.isAnImageSelected():
             imagePath = objWeasel.selectedImagePath
-            pixelArray, derivedImageFileName = returnPixelArray(imagePath)
+            pixelArray = returnPixelArray(imagePath)
+            derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
             #Record inverted image in XML file
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
                                                       FILE_SUFFIX)
+            # Save the DICOM file in the new file path                                        
+            saveDICOM_Image.save_dicom_outputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX) # Still need some optional flags depending on insertNewImageInXMLFile
             #Update tree view with xml file modified above
             objWeasel.refreshDICOMStudiesTreeView(seriesID)
         elif objWeasel.isASeriesSelected():
-            studyID = objWeasel.selectedStudy 
+            # Should consider the case where Series is 1 image/file only
+            studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
-            imageList = \
+            imagePathList = \
                     objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and invert each image
+            derivedImagePathList = []
             derivedImageList = []
-            numImages = len(imageList)
+            numImages = len(imagePathList)
             objWeasel.displayMessageSubWindow(
               "<H4>Inverting {} DICOM files</H4>".format(numImages),
               "Inverting DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(numImages)
             imageCounter = 0
-            for imagePath in imageList:
-                _, derivedImageFileName = returnPixelArray(imagePath)
-                derivedImageList.append(derivedImageFileName)
+            for imagePath in imagePathList:
+                derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+                derivedImage = returnPixelArray(imagePath)
+                derivedImagePathList.append(derivedImagePath)
+                derivedImageList.append(derivedImage)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
 
             objWeasel.closeMessageSubWindow()
 
-            newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
-                derivedImageList, FILE_SUFFIX)
+            newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
+                derivedImagePathList, FILE_SUFFIX)
+            # Save new DICOM series locally
+            saveDICOM_Image.save_dicom_newSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(
-                derivedImageList, studyID, newSeriesID)
+                derivedImagePathList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
         print('Error in invertDICOM_Image.invertImage: ' + str(e))
