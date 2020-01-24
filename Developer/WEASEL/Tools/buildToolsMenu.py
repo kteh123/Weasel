@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QAction
 import invertDICOM_Image
 import copyDICOM_Image
 import squareDICOM_Image
+import B0MapDICOM_Image
 
-seriesOnlyTools = ['copySeriesButton', 'binaryOperationsButton']
+seriesOnlyTools = ['copySeriesButton', 'B0SeriesButton', 'binaryOperationsButton']
 imageAndSeriesTools = ['invertImageButton', 'squareImageButton' ]
 
 def buildToolsMenu(self, toolsMenu):
@@ -24,6 +25,14 @@ def buildToolsMenu(self, toolsMenu):
                 lambda:copyDICOM_Image.copySeries(self))
             self.copySeriesButton.setEnabled(False)
             toolsMenu.addAction(self.copySeriesButton)
+
+            self.B0SeriesButton = QAction('&B0 Map Calculation', self)
+            self.B0SeriesButton.setShortcut('Ctrl+0')
+            self.B0SeriesButton.setStatusTip('Extracts the B0 Map from the seties if applicable')
+            self.B0SeriesButton.triggered.connect(
+                lambda:B0MapDICOM_Image.saveB0MapSeries(self))
+            self.B0SeriesButton.setEnabled(False)
+            toolsMenu.addAction(self.B0SeriesButton)
 
             self.invertImageButton = QAction('&Invert Image', self)
             self.invertImageButton.setShortcut('Ctrl+I')

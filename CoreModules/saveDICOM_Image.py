@@ -78,6 +78,7 @@ def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, su
             if series_uid is None:
                 series_uid = pydicom.uid.generate_uid()
 
+            refs = None
             for index, individualDicom in enumerate(derivedImagePathList):
                 # Extra references, besides the main one, which is imagePathList
                 if list_refs_path is not None:
@@ -87,8 +88,6 @@ def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, su
                         refs = []
                         for individual_ref in list_refs_path:
                             refs.append(individual_ref[index])
-                else:
-                    refs = None
 
                 save_dicom_outputResult(individualDicom, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, list_refs_path=refs)
             del series_id, series_uid, refs
