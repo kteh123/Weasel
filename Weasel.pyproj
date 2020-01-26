@@ -31,6 +31,7 @@
     <Compile Include="CoreModules\readDICOM_Image.py" />
     <Compile Include="CoreModules\saveDICOM_Image.py" />
     <Compile Include="CoreModules\styleSheet.py" />
+    <Compile Include="CoreModules\weaselToolsXMLReader.py" />
     <Compile Include="CoreModules\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
@@ -38,7 +39,6 @@
     <Compile Include="Developer\FERRET\ModelLibrary\ModelFunctions.py" />
     <Compile Include="Developer\FERRET\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\WEASEL\Tools\binaryOperationDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\Tools\buildToolsMenu.py" />
     <Compile Include="Developer\WEASEL\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\FERRET.py" />
     <Compile Include="Developer\WEASEL\Tools\invertDICOM_Image.py" />

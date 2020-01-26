@@ -1,23 +1,20 @@
 <tools>
   <tool>
-    <action>Binary Operation</action>
-    <shortcut>Ctrl+B</shortcut>
-    <tooltip>Performs binary operations on two images</tooltip>
-    <module>self</module>
-    <function>displayBinaryOperationsWindow</function>
-  </tool>
-  <tool>
-    <action>Copy</action>
-    <shortcut>Ctrl+C</shortcut>
-    <tooltip>Copy a DICOM series</tooltip>
-    <module>copyDICOM_Image</module>
-    <function>copySeries</function>
-  </tool>
-  <tool>
+    <buttonName>invertImageButton</buttonName>
     <action>Invert</action>
     <shortcut>Ctrl+I</shortcut>
     <tooltip>Invert a DICOM Image or series</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
     <module>invertDICOM_Image</module>
     <function>invertImage</function>
+</tool>
+  <tool>
+    <buttonName>squareImageButton</buttonName>
+    <action>Square</action>
+    <shortcut>Ctrl+S</shortcut>
+    <tooltip>Square a DICOM Image or series</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
+    <module>squareDICOM_Image</module>
+    <function>squareImage</function>
   </tool>
 </tools>
