@@ -5,16 +5,13 @@ import saveDICOM_Image
 from Weasel import Weasel as weasel
 from weaselXMLReader import WeaselXMLReader
 
-FILE_SUFFIX = '_copy'
+FILE_SUFFIX = '_Copy'
 
 def returnCopiedFile(imagePath):
     """Inverts an image. Bits that are 0 become 1, and those that are 1 become 0"""
     try:
         if os.path.exists(imagePath):
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            pixelArray = readDICOM_Image.getPixelArray(dataset)
-            newFileName = saveDICOM_Image.save_automatically_and_returnFilePath(
-                 imagePath, pixelArray, FILE_SUFFIX)
+            newFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             return  newFileName
         else:
             return None
@@ -24,29 +21,34 @@ def returnCopiedFile(imagePath):
 
 def copySeries(objWeasel):
         try:
-            #imageList, studyID, _ = weasel.getImagePathList_Copy()  
+            #imagePathList, studyID, _ = weasel.getImagePathList_Copy()  
             studyID = objWeasel.selectedStudy 
             seriesID = objWeasel.selectedSeries
-            imageList = \
+            imagePathList = \
                     objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and make a copy of each image
+            copiedImagePathList = []
             copiedImageList = []
-            numImages = len(imageList)
+            numImages = len(imagePathList)
             objWeasel.displayMessageSubWindow(
               "<H4>Copying {} DICOM files</H4>".format(numImages),
               "Copying DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(numImages)
             imageCounter = 0
-            for imagePath in imageList:
+            for imagePath in imagePathList:
                 copiedImageFilePath = returnCopiedFile(imagePath)
-                copiedImageList.append(copiedImageFilePath)
+                copiedImage = readDICOM_Image.returnPixelArray(imagePath)
+                copiedImagePathList.append(copiedImageFilePath)
+                copiedImageList.append(copiedImage)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
 
             objWeasel.closeMessageSubWindow()
-            newSeriesID= objWeasel.insertNewSeriesInXMLFile(imageList, \
-                copiedImageList, FILE_SUFFIX)
-            objWeasel.displayMultiImageSubWindow(copiedImageList, 
+            newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, \
+                copiedImagePathList, FILE_SUFFIX)
+            # Save new DICOM series locally
+            saveDICOM_Image.save_dicom_newSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
+            objWeasel.displayMultiImageSubWindow(copiedImagePathList, 
                                               studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:

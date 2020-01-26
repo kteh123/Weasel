@@ -27,9 +27,71 @@ def getDicomDataset(imagePath):
         print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
 
 
+def getSeriesDicomDataset(imagePathList):
+    """This method reads the DICOM files in imagePathList and returns the DICOM Dataset object/class"""
+    try:
+        datasetList = list()
+        for imagePath in imagePathList:
+            if os.path.exists(imagePath):
+                datasetList.append(pydicom.dcmread(imagePath))
+        if datasetList:
+            return datasetList
+        else:
+            return None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+
+
+def sortSequenceByTag(imagePathList, dicomTag):
+    """This method reads the DICOM files in imagePathList and sorts the list according to the given DICOM tag"""
+    try:
+        if os.path.exists(imagePathList[0]):
+            datasetList = getSeriesDicomDataset(imagePathList)
+            if hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
+                #Enhanced MRI
+                sortedSequencePathAux = list()
+                sortedSequenceAux = list()
+                sortedSequencePath = imagePathList[0]
+                sortedSequence = datasetList[0]
+                numAttribute = datasetList[0][0x20011018].value #NumberOfSlicesMR for Philips Enhanced MRI
+            else:
+                attributeList = list()
+                sortedSequencePathAux = list()
+                sortedSequenceAux = list()
+                sortedSequencePath = imagePathList
+                sortedSequence = datasetList
+                [attributeList.append(float(individualDicom.data_element(str(dicomTag)).value)) for individualDicom in datasetList]
+                attributeList = np.unique(attributeList)
+                attributeList.sort()
+                [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeList for indexAux, individualDicom in enumerate(datasetList) if float(individualDicom.data_element(str(dicomTag)).value) == attributeValue]
+                [sortedSequenceAux.append(individualDicom) for attributeValue in attributeList for individualDicom in datasetList if float(individualDicom.data_element(str(dicomTag)).value) == attributeValue]
+                numAttribute = len(attributeList)
+                #At this point, it's sorted as 111222333. The next step will sort the values in the format 123123123
+                repetition = 0
+                index = 0
+                for indexAux, image in enumerate(sortedSequenceAux):
+                    sortedSequence[index] = image
+                    sortedSequencePath[index] = sortedSequencePathAux[indexAux]
+                    index += numAttribute
+                    if index > len(sortedSequence)-1:
+                        repetition += 1
+                        if repetition > numAttribute:
+                            break
+                        else:
+                            index = repetition
+                            
+                del datasetList, sortedSequencePathAux, sortedSequenceAux, sortedSequence
+                return sortedSequencePath, attributeList, numAttribute
+        else:
+            return None, None, None
+    except Exception as e:
+        print('Error in function readDICOM_Image.sortSequenceByTag: ' + str(e))
+
+
 def getPixelArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Image/Pixel array"""
     try:
+        #INSERT MOSAIC IMAGE CONDITION HERE
         if hasattr(dataset, 'PixelData'):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
