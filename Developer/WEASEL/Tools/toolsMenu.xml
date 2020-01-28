@@ -1,29 +1,26 @@
 <tools>
   <tool>
-    <buttonName>B0MapCalculation</buttonName>
-    <action>B0 Map Calculation</action>
-    <shortcut>Ctrl+0</shortcut>
-    <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
-    <module>B0MapDICOM_Image</module>
-    <function>saveB0MapSeries</function>
-  </tool>
-  <tool>
-    <buttonName>invertImageButton</buttonName>
     <action>Invert</action>
     <shortcut>Ctrl+I</shortcut>
     <tooltip>Invert a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>invertDICOM_Image</module>
     <function>invertImage</function>
-</tool>
+  </tool>
   <tool>
-    <buttonName>squareImageButton</buttonName>
     <action>Square</action>
     <shortcut>Ctrl+S</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>squareDICOM_Image</module>
     <function>squareImage</function>
+  </tool>
+  <tool>
+    <action>B0 Map Calculation</action>
+    <shortcut>Ctrl+0</shortcut>
+    <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
+    <applies_both_images_series>False</applies_both_images_series>
+    <module>B0MapDICOM_Image</module>
+    <function>saveB0MapSeries</function>
   </tool>
 </tools>

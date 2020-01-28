@@ -1,6 +1,6 @@
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import  Qt, pyqtSignal
+from PyQt5 import QtCore 
+from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
         QPushButton, QStatusBar,
@@ -21,7 +21,6 @@ import importlib
 sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 import readDICOM_Image
-import buildToolsMenu
 import saveDICOM_Image
 import copyDICOM_Image
 import WriteXMLfromDICOM 
@@ -30,6 +29,7 @@ import styleSheet
 from FERRET import FERRET as ferret
 from weaselXMLReader import WeaselXMLReader
 from weaselToolsXMLReader import WeaselToolsXMLReader
+from functools import partial
 
 
 __version__ = '1.0'
@@ -72,6 +72,52 @@ class Weasel(QMainWindow):
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
         logger.info("WEASEL GUI created successfully.")
+
+
+    def returnMenuItem(self, itemText):
+        """TO DO"""
+        try:
+            logger.info("WEASEL returnMenuItem called.")
+            tools = self.toolsMenu.actions()
+            for tool in tools:
+                if tool.text() == itemText:
+                    return tool
+
+            return self.userTool10
+            
+        except Exception as e:
+            print('Error in returnMenuItem: ' + str(e))
+            logger.error('Error in returnMenuItem: ' + str(e))
+
+
+    def buildUserDefinedToolsMenuItem(self, tool):
+        #create action button on the fly
+        logger.info("WEASEL buildUserDefinedToolsMenuItem called.")
+        self.menuItem = QAction(tool.find('action').text, self)
+        self.menuItem.setShortcut(tool.find('shortcut').text)
+        self.menuItem.setToolTip(tool.find('tooltip').text)
+        if tool.find('applies_both_images_series').text == 'True':
+            boolApplyBothImagesAndSeries = True
+        else:
+            #Only acts on a series
+            boolApplyBothImagesAndSeries = False
+        self.menuItem.setData(boolApplyBothImagesAndSeries)
+        self.menuItem.setEnabled(False)
+        moduleName = tool.find('module').text
+        function = tool.find('function').text
+        objFunction = getattr(importlib.import_module(moduleName, 
+                                    package=None),
+                                    function)
+        self.menuItem.triggered.connect(lambda : objFunction(self))
+        self.toolsMenu.addAction(self.menuItem)
+
+
+    def addUserDefinedToolsMenuItems(self):
+        logger.info("WEASEL addUserDefinedToolsMenuItems called.")
+        self.objXMLReader = WeaselToolsXMLReader() 
+        tools = self.objXMLReader.getTools()
+        for tool in tools:
+            self.buildUserDefinedToolsMenuItem(tool)
 
 
     def setupMenus(self):  
@@ -143,29 +189,7 @@ class Weasel(QMainWindow):
 
         #Add items to the Tools menu as defined in
         #toolsMenu.xml
-        self.objXMLReader = WeaselToolsXMLReader() 
-        tools = self.objXMLReader.getTools()
-        for tool in tools:
-            #create action button on the fly
-            objButton = setattr(
-                self, tool.find('buttonName').text, None)
-            objButton = QAction(tool.find('action').text, self) 
-            objButton.setShortcut(tool.find('shortcut').text)
-            objButton.setStatusTip(tool.find('tooltip').text)
-            if tool.find('applies_both_images_series').text == 'True':
-                boolApplyBothImagesAndSeries = True
-            else:
-                #Only acts on a series
-                boolApplyBothImagesAndSeries = False
-            objButton.setData(boolApplyBothImagesAndSeries)
-            objButton.setEnabled(False)
-            moduleName = tool.find('module').text
-            #import module on the fly
-            importedModule = importlib.import_module(moduleName, package=None)
-            function = tool.find('function').text
-            objFunction = getattr(importedModule, function)
-            objButton.triggered.connect(lambda: objFunction(self))
-            self.toolsMenu.addAction(objButton) 
+        self.addUserDefinedToolsMenuItems()
         
         self.toolsMenu.addSeparator()
         self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
@@ -1162,35 +1186,6 @@ class Weasel(QMainWindow):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-    def setEnabledSeriesOnlyTools(self, flag):
-        """In the tools menu, this function enables user 
-        defined tools that are only available when a DICOM series
-        is selected"""
-        try:
-            logger.info("WEASEL setEnabledSeriesOnlyTools called.")
-            for tool in buildToolsMenu.seriesOnlyTools:
-                button = getattr(self, tool)
-                button.setEnabled(flag)
-        except Exception as e:
-            print('Error in setEnabledSeriesOnlyTools: ' + str(e))
-            logger.error('Error in setEnabledSeriesOnlyTools: ' + str(e))
-
-
-    def setEnabledImageAndSeriesTools(self, flag):
-        """In the tools menu, this function enables user 
-            defined tools that are available when either 
-            a single DICOM image or  a DICOM series
-            is selected""" 
-        try:
-            logger.info("WEASEL setEnabledImageAndSeriesTools called.")
-            for tool in buildToolsMenu.imageAndSeriesTools:
-                button = getattr(self, tool)
-                button.setEnabled(flag)
-        except Exception as e:
-            print('Error in setEnabledImageAndSeriesTools: ' + str(e))
-            logger.error('Error in setEnabledImageAndSeriesTools: ' + str(e))
-
-
     def toggleToolButtons(self):
         """TO DO"""
         try:
@@ -1199,7 +1194,6 @@ class Weasel(QMainWindow):
             for tool in tools:
                 if not tool.isSeparator():
                     if not(tool.data() is None):
-                        print('{} - {}'.format(tool.text(), tool.data()))
                         #Assume not all tools will act on an image
                          #Assume all tools act on a series   
                         if self.isASeriesSelected():
