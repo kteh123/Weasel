@@ -120,34 +120,26 @@ class Weasel(QMainWindow):
             self.buildUserDefinedToolsMenuItem(tool)
 
 
-    def setupMenus(self):  
-        """Builds the menus in the menu bar of the MDI"""
-        logger.info("WEASEL setting up menus.")
-        mainMenu = self.menuBar()
-        self.fileMenu = mainMenu.addMenu('File')
-        self.toolsMenu = mainMenu.addMenu('Tools')
-        self.helpMenu = mainMenu.addMenu('Help')
-
-        #File Menu
+    def buildFileMenu(self):
         loadDICOM = QAction('&Load DICOM Images', self)
         loadDICOM.setShortcut('Ctrl+L')
         loadDICOM.setStatusTip('Load DICOM images from a scan folder')
         loadDICOM.triggered.connect(self.loadDICOM)
         self.fileMenu.addAction(loadDICOM)
-
+        
         closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
         closeAllImageWindowsButton.setShortcut('Ctrl+A')
         closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
         closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
         self.fileMenu.addAction(closeAllImageWindowsButton)
-
+        
         closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
         closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
         self.fileMenu.addAction(closeAllSubWindowsButton)
 
-        #Tools Menu
+    def buildToolsMenu(self):
         bothImagesAndSeries = True
         self.viewImageButton = QAction('&View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
@@ -156,7 +148,7 @@ class Weasel(QMainWindow):
         self.viewImageButton.setData(bothImagesAndSeries)
         self.viewImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageButton)
-
+        
         self.deleteImageButton = QAction('&Delete Image', self)
         self.deleteImageButton.setShortcut('Ctrl+D')
         self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
@@ -164,7 +156,7 @@ class Weasel(QMainWindow):
         self.deleteImageButton.setData(bothImagesAndSeries)
         self.deleteImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.deleteImageButton)
-
+        
         self.copySeriesButton = QAction('&Copy Series', self)
         self.copySeriesButton.setShortcut('Ctrl+C')
         self.copySeriesButton.setStatusTip('Copy a DICOM series') 
@@ -174,7 +166,7 @@ class Weasel(QMainWindow):
             lambda:copyDICOM_Image.copySeries(self))
         self.copySeriesButton.setEnabled(False)
         self.toolsMenu.addAction(self.copySeriesButton)
-
+        
         self.toolsMenu.addSeparator()
         self.binaryOperationsButton = QAction('&Binary Operations', self)
         self.binaryOperationsButton.setShortcut('Ctrl+B')
@@ -186,7 +178,7 @@ class Weasel(QMainWindow):
             self.displayBinaryOperationsWindow)
         self.binaryOperationsButton.setEnabled(False)
         self.toolsMenu.addAction(self.binaryOperationsButton)
-
+        
         #Add items to the Tools menu as defined in
         #toolsMenu.xml
         self.addUserDefinedToolsMenuItems()
@@ -198,6 +190,20 @@ class Weasel(QMainWindow):
         self.launchFerretButton.triggered.connect(self.displayFERRET)
         self.launchFerretButton.setEnabled(True)
         self.toolsMenu.addAction(self.launchFerretButton)
+
+    def setupMenus(self):  
+        """Builds the menus in the menu bar of the MDI"""
+        logger.info("WEASEL setting up menus.")
+        mainMenu = self.menuBar()
+        self.fileMenu = mainMenu.addMenu('File')
+        self.toolsMenu = mainMenu.addMenu('Tools')
+        self.helpMenu = mainMenu.addMenu('Help')
+
+        #File Menu
+        self.buildFileMenu()
+
+        #Tools Menu
+        self.buildToolsMenu()
 
 
     def setupToolBar(self):  
