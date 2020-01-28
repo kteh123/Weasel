@@ -29,7 +29,6 @@ import styleSheet
 from FERRET import FERRET as ferret
 from weaselXMLReader import WeaselXMLReader
 from weaselToolsXMLReader import WeaselToolsXMLReader
-from functools import partial
 
 
 __version__ = '1.0'
@@ -46,6 +45,7 @@ logging.basicConfig(filename=LOG_FILE_NAME,
                 level=logging.INFO, 
                 format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
+
 
 class Weasel(QMainWindow):
     def __init__(self, parent=None):
@@ -74,122 +74,120 @@ class Weasel(QMainWindow):
         logger.info("WEASEL GUI created successfully.")
 
 
-    def returnMenuItem(self, itemText):
-        """TO DO"""
-        try:
-            logger.info("WEASEL returnMenuItem called.")
-            tools = self.toolsMenu.actions()
-            for tool in tools:
-                if tool.text() == itemText:
-                    return tool
-
-            return self.userTool10
-            
-        except Exception as e:
-            print('Error in returnMenuItem: ' + str(e))
-            logger.error('Error in returnMenuItem: ' + str(e))
-
-
     def buildUserDefinedToolsMenuItem(self, tool):
-        #create action button on the fly
-        logger.info("WEASEL buildUserDefinedToolsMenuItem called.")
-        self.menuItem = QAction(tool.find('action').text, self)
-        self.menuItem.setShortcut(tool.find('shortcut').text)
-        self.menuItem.setToolTip(tool.find('tooltip').text)
-        if tool.find('applies_both_images_series').text == 'True':
-            boolApplyBothImagesAndSeries = True
-        else:
-            #Only acts on a series
-            boolApplyBothImagesAndSeries = False
-        self.menuItem.setData(boolApplyBothImagesAndSeries)
-        self.menuItem.setEnabled(False)
-        moduleName = tool.find('module').text
-        function = tool.find('function').text
-        objFunction = getattr(importlib.import_module(moduleName, 
-                                    package=None),
-                                    function)
-        self.menuItem.triggered.connect(lambda : objFunction(self))
-        self.toolsMenu.addAction(self.menuItem)
+        try:
+            #create action button on the fly
+            logger.info("WEASEL buildUserDefinedToolsMenuItem called.")
+            self.menuItem = QAction(tool.find('action').text, self)
+            self.menuItem.setShortcut(tool.find('shortcut').text)
+            self.menuItem.setToolTip(tool.find('tooltip').text)
+            if tool.find('applies_both_images_series').text == 'True':
+                boolApplyBothImagesAndSeries = True
+            else:
+                #Only acts on a series
+                boolApplyBothImagesAndSeries = False
+            self.menuItem.setData(boolApplyBothImagesAndSeries)
+            self.menuItem.setEnabled(False)
+            moduleName = tool.find('module').text
+            function = tool.find('function').text
+            objFunction = getattr(importlib.import_module(moduleName, 
+                                        package=None),
+                                        function)
+            self.menuItem.triggered.connect(lambda : objFunction(self))
+            self.toolsMenu.addAction(self.menuItem)
+        except Exception as e:
+            print('Error in function WEASEL.buildUserDefinedToolsMenuItem: ' + str(e))
 
 
     def addUserDefinedToolsMenuItems(self):
-        logger.info("WEASEL addUserDefinedToolsMenuItems called.")
-        self.objXMLReader = WeaselToolsXMLReader() 
-        tools = self.objXMLReader.getTools()
-        for tool in tools:
-            self.buildUserDefinedToolsMenuItem(tool)
+        try:
+            logger.info("WEASEL addUserDefinedToolsMenuItems called.")
+            self.objXMLReader = WeaselToolsXMLReader() 
+            tools = self.objXMLReader.getTools()
+            for tool in tools:
+                self.buildUserDefinedToolsMenuItem(tool)
+        except Exception as e:
+            print('Error in function WEASEL.addUserDefinedToolsMenuItem: ' + str(e))
 
 
     def buildFileMenu(self):
-        loadDICOM = QAction('&Load DICOM Images', self)
-        loadDICOM.setShortcut('Ctrl+L')
-        loadDICOM.setStatusTip('Load DICOM images from a scan folder')
-        loadDICOM.triggered.connect(self.loadDICOM)
-        self.fileMenu.addAction(loadDICOM)
+        try:
+            loadDICOM = QAction('&Load DICOM Images', self)
+            loadDICOM.setShortcut('Ctrl+L')
+            loadDICOM.setStatusTip('Load DICOM images from a scan folder')
+            loadDICOM.triggered.connect(self.loadDICOM)
+            self.fileMenu.addAction(loadDICOM)
         
-        closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
-        closeAllImageWindowsButton.setShortcut('Ctrl+A')
-        closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
-        closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
-        self.fileMenu.addAction(closeAllImageWindowsButton)
+            closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
+            closeAllImageWindowsButton.setShortcut('Ctrl+A')
+            closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
+            closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
+            self.fileMenu.addAction(closeAllImageWindowsButton)
         
-        closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
-        closeAllSubWindowsButton.setShortcut('Ctrl+X')
-        closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
-        closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
-        self.fileMenu.addAction(closeAllSubWindowsButton)
+            closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
+            closeAllSubWindowsButton.setShortcut('Ctrl+X')
+            closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
+            closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
+            self.fileMenu.addAction(closeAllSubWindowsButton)
+        except Exception as e:
+            print('Error in function WEASEL.buildFileMenu: ' + str(e))
+
 
     def buildToolsMenu(self):
-        bothImagesAndSeries = True
-        self.viewImageButton = QAction('&View Image', self)
-        self.viewImageButton.setShortcut('Ctrl+V')
-        self.viewImageButton.setStatusTip('View DICOM Image or series')
-        self.viewImageButton.triggered.connect(self.viewImage)
-        self.viewImageButton.setData(bothImagesAndSeries)
-        self.viewImageButton.setEnabled(False)
-        self.toolsMenu.addAction(self.viewImageButton)
+        try:
+            bothImagesAndSeries = True
+            self.viewImageButton = QAction('&View Image', self)
+            self.viewImageButton.setShortcut('Ctrl+V')
+            self.viewImageButton.setStatusTip('View DICOM Image or series')
+            self.viewImageButton.triggered.connect(self.viewImage)
+            self.viewImageButton.setData(bothImagesAndSeries)
+            self.viewImageButton.setEnabled(False)
+            self.toolsMenu.addAction(self.viewImageButton)
         
-        self.deleteImageButton = QAction('&Delete Image', self)
-        self.deleteImageButton.setShortcut('Ctrl+D')
-        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-        self.deleteImageButton.triggered.connect(self.deleteImage)
-        self.deleteImageButton.setData(bothImagesAndSeries)
-        self.deleteImageButton.setEnabled(False)
-        self.toolsMenu.addAction(self.deleteImageButton)
+            self.deleteImageButton = QAction('&Delete Image', self)
+            self.deleteImageButton.setShortcut('Ctrl+D')
+            self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
+            self.deleteImageButton.triggered.connect(self.deleteImage)
+            self.deleteImageButton.setData(bothImagesAndSeries)
+            self.deleteImageButton.setEnabled(False)
+            self.toolsMenu.addAction(self.deleteImageButton)
         
-        self.copySeriesButton = QAction('&Copy Series', self)
-        self.copySeriesButton.setShortcut('Ctrl+C')
-        self.copySeriesButton.setStatusTip('Copy a DICOM series') 
-        bothImagesAndSeries = False
-        self.copySeriesButton.setData(bothImagesAndSeries)
-        self.copySeriesButton.triggered.connect(
-            lambda:copyDICOM_Image.copySeries(self))
-        self.copySeriesButton.setEnabled(False)
-        self.toolsMenu.addAction(self.copySeriesButton)
+            self.copySeriesButton = QAction('&Copy Series', self)
+            self.copySeriesButton.setShortcut('Ctrl+C')
+            self.copySeriesButton.setStatusTip('Copy a DICOM series') 
+            bothImagesAndSeries = False
+            self.copySeriesButton.setData(bothImagesAndSeries)
+            self.copySeriesButton.triggered.connect(
+                lambda:copyDICOM_Image.copySeries(self))
+            self.copySeriesButton.setEnabled(False)
+            self.toolsMenu.addAction(self.copySeriesButton)
         
-        self.toolsMenu.addSeparator()
-        self.binaryOperationsButton = QAction('&Binary Operations', self)
-        self.binaryOperationsButton.setShortcut('Ctrl+B')
-        self.binaryOperationsButton.setStatusTip(
-            'Performs binary operations on two images')
-        bothImagesAndSeries = False
-        self.binaryOperationsButton.setData(bothImagesAndSeries)
-        self.binaryOperationsButton.triggered.connect(
-            self.displayBinaryOperationsWindow)
-        self.binaryOperationsButton.setEnabled(False)
-        self.toolsMenu.addAction(self.binaryOperationsButton)
+            self.toolsMenu.addSeparator()
+            self.binaryOperationsButton = QAction('&Binary Operations', self)
+            self.binaryOperationsButton.setShortcut('Ctrl+B')
+            self.binaryOperationsButton.setStatusTip(
+                'Performs binary operations on two images')
+            bothImagesAndSeries = False
+            self.binaryOperationsButton.setData(bothImagesAndSeries)
+            self.binaryOperationsButton.triggered.connect(
+                self.displayBinaryOperationsWindow)
+            self.binaryOperationsButton.setEnabled(False)
+            self.toolsMenu.addAction(self.binaryOperationsButton)
         
-        #Add items to the Tools menu as defined in
-        #toolsMenu.xml
-        self.addUserDefinedToolsMenuItems()
+            #Add items to the Tools menu as defined in
+            #toolsMenu.xml
+            self.addUserDefinedToolsMenuItems()
         
-        self.toolsMenu.addSeparator()
-        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
-        self.launchFerretButton.setShortcut('Ctrl+F')
-        self.launchFerretButton.setStatusTip('Launches the FERRET application')
-        self.launchFerretButton.triggered.connect(self.displayFERRET)
-        self.launchFerretButton.setEnabled(True)
-        self.toolsMenu.addAction(self.launchFerretButton)
+            self.toolsMenu.addSeparator()
+            self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
+            self.launchFerretButton.setShortcut('Ctrl+F')
+            self.launchFerretButton.setStatusTip('Launches the FERRET application')
+            self.launchFerretButton.triggered.connect(self.displayFERRET)
+            self.launchFerretButton.setEnabled(True)
+            self.toolsMenu.addAction(self.launchFerretButton)
+        except Exception as e:
+            print('Error in function WEASEL.buildToolsMenu: ' + str(e))
+
 
     def setupMenus(self):  
         """Builds the menus in the menu bar of the MDI"""
