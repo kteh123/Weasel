@@ -21,7 +21,8 @@ def returnPixelArray(imagePathList, sliceList, echoList):
                 imageList.append(readDICOM_Image.getPixelArray(individualDicom))
             volumeArray = np.array(imageList)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            imageArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))            
+            imageArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
+                    
             # Algorithm
             pixelArray = B0map(imageArray, echoList)
 

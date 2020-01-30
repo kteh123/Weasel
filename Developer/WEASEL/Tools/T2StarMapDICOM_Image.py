@@ -2,6 +2,8 @@ import os
 import numpy as np
 import math
 import re
+#import skimage
+from skimage.transform import resize
 import readDICOM_Image
 import saveDICOM_Image
 from Weasel import Weasel as weasel
@@ -23,8 +25,15 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
             # The transpose is applied here because the algorithm is developed this way
             imageArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
+            
+            #Resample Data
+            reconstPixel = 3
+            fraction = reconstPixel / dicomList[0].PixelSpacing[0] 
+            imageArray = resize(imageArray, (imageArray.shape[0] // fraction, imageArray.shape[1] // fraction, imageArray.shape[2], imageArray.shape[3]), anti_aliasing=True)
+
             # Algorithm / Don't forget to resample the 128x128 of GE
-            pixelArray = np.transpose(T2starmap(imageArray, echoList))
+            pixelArray, _, _ = T2starmap(imageArray, echoList)
+            pixelArray = np.transpose(pixelArray)
 
             del volumeArray, imageArray, imageList, dicomList
             return pixelArray
@@ -61,6 +70,7 @@ def T2starmap(imageArray, echoList):
         imageArray = np.expand_dims(imageArray, 2)
 
     t2star = np.zeros(imageArray.shape[0:3])
+    r2star = np.zeros(imageArray.shape[0:3])
     m0 = np.zeros(imageArray.shape[0:3])
     with np.errstate(invalid='ignore', over='ignore'):
         for s in range(imageArray.shape[2]):
@@ -83,7 +93,7 @@ def T2starmap(imageArray, echoList):
                     for d in range(imageArray.shape[3]):
                         te_tmp = echoList[d] * 0.001 # Conversion from ms to s
                         if imageArray[x, y, s, d] > sd:
-                            sigma = np.log(imageArray[x, y, s, d] / imageArray[x, y, s, d] - sd)
+                            sigma = np.log(imageArray[x, y, s, d] / (imageArray[x, y, s, d] - sd))
                             sig = imageArray[x, y, s, d]
                             weight = 1 / (sigma ** 2)
                         else:
@@ -100,22 +110,23 @@ def T2starmap(imageArray, echoList):
                     # Ask Charlotte about adding isinf and isnan
                     if (delta == 0.0) or (np.isinf(delta)) or (np.isnan(delta)):
                         t2star[x, y, s] = 0
+                        r2star[x, y, s] = 0
                         m0[x, y, s] = 0
                     else:
                         a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
                         b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
                         t2stars_temp = np.real(-1 / b)
+                        r2stars_temp = np.real(-b)
                         m0_temp = np.real(np.exp(a))
-                        if t2stars_temp > 500:
+                        if (t2stars_temp < 0) or (t2stars_temp > 500):
                             t2star[x, y, s] = 0
-                            m0[x, y, s] = 0
-                        elif t2stars_temp < 0:
-                            t2star[x, y, s] = 0
+                            r2star[x, y, s] = 0
                             m0[x, y, s] = 0
                         else:
                             t2star[x, y, s] = t2stars_temp
+                            r2star[x, y, s] = r2stars_temp
                             m0[x, y, s] = m0_temp
-    return t2star  # , m0
+    return t2star, r2star, m0
 
 
 def getParametersT2StarMap(imagePathList, seriesID):
@@ -179,7 +190,7 @@ def saveT2StarMapSeries(objWeasel):
                                                          T2StarImagePathList, FILE_SUFFIX)
         # Save new DICOM series locally
         saveDICOM_Image.save_dicom_newSeries(
-            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX)
+            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map = "T2Star")
         objWeasel.displayMultiImageSubWindow(T2StarImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

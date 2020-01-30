@@ -5,9 +5,9 @@ from pydicom.dataset import Dataset, FileDataset
 from pydicom.sequence import Sequence
 import datetime
 import copy
-import readDICOM_Image
 import random
-#import FileManagement.ParametricMapsDictionary as param # THIS IS FROM JOAO'S SKETCHPAD
+import readDICOM_Image
+import ParametricMapsDictionary as param
 
 
 def returnFilePath(imagePath, suffix, new_path=None):
@@ -28,7 +28,7 @@ def returnFilePath(imagePath, suffix, new_path=None):
         print('Error in function saveDICOM_Image.returnFilePath: ' + str(e))
 
 
-def save_dicom_outputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
+def save_dicom_outputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
     try:
         if os.path.exists(imagePath):
@@ -39,7 +39,9 @@ def save_dicom_outputResult(newFilePath, imagePath, pixelArray, suffix, series_i
                     refs.append(readDICOM_Image.getDicomDataset(individual_ref))
             else:
                 refs = None
-            newDataset = create_new_single_dicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=None, list_refs=refs)
+            newDataset = create_new_single_dicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
+            if image_number is not None:
+                newDataset.ImageNumber = image_number
             save_dicom_to_file(newDataset, output_path=newFilePath)
             del dataset, newDataset
             return
@@ -66,7 +68,7 @@ def save_dicom_binOpResult(imagePath1, imagePath2, pixelArray, imageFilePath, su
         print('Error in function saveDICOM_Image.save_dicom_binOpResult: ' + str(e))
 
 
-def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, list_refs_path=None):
+def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation
     # Think of a way to choose a select a new FilePath or Folder
@@ -89,7 +91,7 @@ def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, su
                         for individual_ref in list_refs_path:
                             refs.append(individual_ref[index])
 
-                save_dicom_outputResult(individualDicom, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, list_refs_path=refs)
+                save_dicom_outputResult(individualDicom, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:
@@ -206,55 +208,52 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
 
         # Parametric Map
         if parametric_map is not None:
-            # param.edit_dicom(newDicom, imageArray, parametric_map)
-            # This parametric map code exists in Joao Sousa sketchpad. It will be implemented in another occasion/time.
-            imageArray = np.rot90(imageArray, -3)
-            newDicom.PixelData = imageArray.tobytes()
-        else:
-            # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
-            # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
-            # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
-            imageArray = np.rot90(imageArray, -3)
+            param.edit_dicom(newDicom, imageArray, parametric_map)
+
+        # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
+        # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
+        # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
+        imageArray = np.rot90(imageArray, -3)
         
-            if int(np.amin(imageArray)) < 0:
-                newDicom.PixelRepresentation = 1
-                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
-                maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
-                minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
-                extra = target/(2*np.ones(np.shape(imageArray)))
-                imageScaled = target * (imageArray - minimum) / (maximum - minimum) - extra
-                slope =  target / (maximum - minimum)
-                intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
-                rescaleSlope = np.ones(np.shape(imageArray)) / slope
-                rescaleIntercept = - intercept / slope
+        if int(np.amin(imageArray)) < 0:
+            newDicom.PixelRepresentation = 1
+            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
+            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
+            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
+            extra = target/(2*np.ones(np.shape(imageArray)))
+            imageScaled = target * (imageArray - minimum) / (maximum - minimum) - extra
+            slope =  target / (maximum - minimum)
+            intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
+            rescaleSlope = np.ones(np.shape(imageArray)) / slope
+            rescaleIntercept = - intercept / slope
             
-            else:
-                newDicom.PixelRepresentation = 0
-                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
-                maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
-                minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
-                imageScaled = target * (imageArray - minimum) / (maximum - minimum)
-                slope =  target / (maximum - minimum)
-                intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
-                rescaleSlope = np.ones(np.shape(imageArray)) / slope
-                rescaleIntercept = - intercept / slope
+        else:
+            newDicom.PixelRepresentation = 0
+            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
+            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
+            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
+            imageScaled = target * (imageArray - minimum) / (maximum - minimum)
+            slope =  target / (maximum - minimum)
+            intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
+            rescaleSlope = np.ones(np.shape(imageArray)) / slope
+            rescaleIntercept = - intercept / slope
 
-            if newDicom.BitsAllocated == 8:
-                imageArrayInt = imageScaled.astype(np.int8)
-            elif newDicom.BitsAllocated == 16:
-                imageArrayInt = imageScaled.astype(np.int16)
-            elif newDicom.BitsAllocated == 32:
-                imageArrayInt = imageScaled.astype(np.int32)
-            elif newDicom.BitsAllocated == 64:
-                imageArrayInt = imageScaled.astype(np.int64)
-            else:
-                imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
+        if newDicom.BitsAllocated == 8:
+            imageArrayInt = imageScaled.astype(np.int8)
+        elif newDicom.BitsAllocated == 16:
+            imageArrayInt = imageScaled.astype(np.int16)
+        elif newDicom.BitsAllocated == 32:
+            imageArrayInt = imageScaled.astype(np.int32)
+        elif newDicom.BitsAllocated == 64:
+            imageArrayInt = imageScaled.astype(np.int64)
+        else:
+            imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
 
-            newDicom.WindowCenter = int(np.median(imageArray))
-            newDicom.WindowWidth = int((np.amin(imageArray)-np.amax(imageArray))/2)
-            newDicom.RescaleSlope = rescaleSlope.flatten()[0]
-            newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
-            newDicom.PixelData = imageArrayInt.tobytes()
+        newDicom.WindowCenter = int(np.median(imageArrayInt))
+        newDicom.WindowWidth = np.absolute(int((np.amax(imageArrayInt)-np.amin(imageArrayInt))/8))
+        newDicom.RescaleSlope = rescaleSlope.flatten()[0]
+        newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
+        newDicom.PixelData = imageArrayInt.tobytes()
 
         del dicomData, imageArray, imageScaled, imageArrayInt
 
