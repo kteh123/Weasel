@@ -19,45 +19,44 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             imageList = []
             for individualDicom in dicomList:
                 imageList.append(readDICOM_Image.getPixelArray(individualDicom))
-            imageArray = np.array(imageList)
+            volumeArray = np.array(imageList)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            np.squeeze(np.reshape(imageArray, len(echoList), len(sliceList), np.shape(imageArray)[1], np.shape(imageArray)[2]))
-            for i in range(0, 2, np.shape(imageArray)[0]):
-                print(i)
-
+            imageArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))            
             # Algorithm
-            #newFileName = saveDICOM_Image.returnFilePath(imagePathList[0], FILE_SUFFIX)
-            # return  newFileName
-            return None
+            pixelArray = B0map(imageArray, echoList)
+
+            del volumeArray, imageArray, imageList, dicomList
+            return pixelArray
         else:
             return None
     except Exception as e:
         print('Error in function B0MapDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def offsetB0Algorithm(pixelArray1, pixelArray2, echoList):
+def B0map(imageArray, echoList):
     try:
-        phaseDiff = pixelArray1 - pixelArray2
-        deltaTE = np.absolute(echoList[0] - echoList[1])
+        # Unwrapping Phase?
+        # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+        phaseDiff = np.squeeze(imageArray[0, ...] - imageArray[1, ...])
+        deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
         derivedImage = phaseDiff / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
         return derivedImage
     except Exception as e:
-        print('Error in function B0MapDICOM_Image.offsetB0Algorithm: ' + str(e))
+        print('Error in function B0MapDICOM_Image.B0map: ' + str(e))
 
 
 def getParametersB0Map(imagePathList, seriesID):
     try:
         if os.path.exists(imagePathList[0]):
-            sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
-            sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(sortedSequenceSlice, "EchoTime")
-            #phaseList = []
+            # Sort by slice last place
+            sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
+            sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
             phasePathList = []
-            dicomList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceEcho)
+            dicomList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
             for index, individualDicom in enumerate(dicomList):
                 minValue = np.amin(readDICOM_Image.getPixelArray(individualDicom))
                 maxValue = np.amax(readDICOM_Image.getPixelArray(individualDicom))
                 if (numberEchoes == 2) and (minValue < 0) and (maxValue > 0) and (re.match(".*B0.*", seriesID) or re.match(".*b0.*", seriesID)):
-                    #phaseList.append(individualDicom)
                     phasePathList.append(imagePathList[index])
 
             del dicomList, numSlices, numberEchoes
@@ -78,41 +77,36 @@ def saveB0MapSeries(objWeasel):
 
         # Should insert Slice sorting before and echotime sorting after this
         phasePathList, echoList, sliceList = getParametersB0Map(imagePathList, seriesID)
-        print(phasePathList)
-        print(echoList)
-        print(sliceList)
         if phasePathList:
-            print("Algorithm here: returnPixelArray")
-            returnPixelArray(phasePathList, sliceList, echoList)
+            B0Image = returnPixelArray(phasePathList, sliceList, echoList)
         else:
-            objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE B0 MAP")
+            B0Image = []
+            objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
+            raise ValueError("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
 
-
-        print("STILL NEED TO CORRECT FROM THIS LINE - WEASEL WILL RETURN ERROR CORRECTLY AFTER THIS MESSAGE")
-        # Iterate through list of images and make a copy of each image
-        copiedImagePathList = []
-        copiedImageList = []
-        numImages = len(imagePathList)
+        # Iterate through list of images and save B0 for each image
+        B0ImagePathList = []
+        B0ImageList = []
+        numImages = len(phasePathList)
         objWeasel.displayMessageSubWindow(
-            "<H4>Copying {} DICOM files</H4>".format(numImages),
-            "Copying DICOM images")
+            "<H4Saving {} DICOM files for B0 Map calculated</H4>".format(numImages),
+            "Saving B0 Map into DICOM Images")
         objWeasel.setMsgWindowProgBarMaxValue(numImages)
         imageCounter = 0
-        # for imagePath in imagePathList:
-        # copiedImageFilePath = returnCopiedFile(imagePath)
-        #copiedImage = readDICOM_Image.returnPixelArray(imagePath)
-        # copiedImagePathList.append(copiedImageFilePath)
-        # copiedImageList.append(copiedImage)
-        #imageCounter += 1
-        # objWeasel.setMsgWindowProgBarValue(imageCounter)
+        for index in range(np.shape(B0Image)[0]):
+            B0ImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[index], FILE_SUFFIX)
+            B0ImagePathList.append(B0ImageFilePath)
+            B0ImageList.append(B0Image[index, ...])
+            imageCounter += 1
+            objWeasel.setMsgWindowProgBarValue(imageCounter)
 
         objWeasel.closeMessageSubWindow()
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList,
-                                                         copiedImagePathList, FILE_SUFFIX)
+        newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)],
+                                                         B0ImagePathList, FILE_SUFFIX)
         # Save new DICOM series locally
         saveDICOM_Image.save_dicom_newSeries(
-            copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
-        objWeasel.displayMultiImageSubWindow(copiedImagePathList,
+            B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
+        objWeasel.displayMultiImageSubWindow(B0ImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
