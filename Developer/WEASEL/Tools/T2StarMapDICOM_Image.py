@@ -2,7 +2,6 @@ import os
 import numpy as np
 import math
 import re
-#import skimage
 from skimage.transform import resize
 import readDICOM_Image
 import saveDICOM_Image

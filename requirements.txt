@@ -12,3 +12,4 @@ joblib==0.14.1
 fpdf==1.7.2
 openpyxl==3.0.2
 pyautogui==0.9.48
+scikit-image==0.16.2

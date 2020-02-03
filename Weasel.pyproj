@@ -44,6 +44,7 @@
     <Compile Include="Developer\WEASEL\Tools\FERRET.py" />
     <Compile Include="Developer\WEASEL\Tools\invertDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\squareDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\T2StarMapDICOM_Image.py" />
     <Compile Include="Weasel.py" />
   </ItemGroup>
   <ItemGroup>
