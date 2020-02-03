@@ -585,12 +585,23 @@ class Weasel(QMainWindow):
             self.subWindow.setWidget(widget)
             self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing.hide()
+            self.lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+            self.lblROIMeanValue.show()
             layout.addWidget(self.lblImageMissing)
             layout.addWidget(imageViewer)
-            viewBox = imageViewer.addViewBox()
-            viewBox.setAspectLocked(True)
+            layout.addWidget(self.lblROIMeanValue)
+            self.viewBox = imageViewer.addViewBox()
+            self.viewBox.setAspectLocked(True)
             self.img = pg.ImageItem(border='w')
-            viewBox.addItem(self.img)
+            self.viewBox.addItem(self.img)
+            rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
+            self.viewBox.addItem(rectROI)
+            rectROI.sigRegionChanged.connect(
+                lambda: self.updateROIMeanValue(rectROI, 
+                                               self.img.image, 
+                                               self.img, 
+                                               self.lblROIMeanValue))
+
             #Check that pixel array holds an image & display it
             if pixelArray is None:
                 #Missing image, perhaps deleted,
@@ -609,9 +620,19 @@ class Weasel(QMainWindow):
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
         except Exception as e:
-            print('Error in displayImageSubWindow: ' + str(e))
-            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
+            print('Error in Weasel.displayImageSubWindow: ' + str(e))
+            logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
+
+    def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
+        try:
+            roiMean = round(np.mean(
+            roi.getArrayRegion(pixelArray, imgItem)), 3)
+            lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+        except Exception as e:
+            print('Error in Weasel.updateROIMeanValue: ' + str(e))
+            logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
+        
 
     def displayMultiImageSubWindow(self, imageList, studyName, 
                      seriesName, sliderPosition = -1):
@@ -644,6 +665,8 @@ class Weasel(QMainWindow):
             self.lblHiddenSeriesID.hide()
             self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing.hide()
+            self.lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+            self.lblROIMeanValue.show()
             self.btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
             self.btnDeleteDICOMFile.setToolTip(
             'Deletes the DICOM image being viewed')
@@ -654,10 +677,19 @@ class Weasel(QMainWindow):
             layout.addWidget(self.lblHiddenStudyID)
             layout.addWidget(self.btnDeleteDICOMFile)
             layout.addWidget(imageViewer)
-            viewBox = imageViewer.addViewBox()
-            viewBox.setAspectLocked(True)
+            layout.addWidget(self.lblROIMeanValue)
+            self.multiImageViewBox = imageViewer.addViewBox()
+            self.multiImageViewBox.setAspectLocked(True)
             self.img = pg.ImageItem(border='w')
-            viewBox.addItem(self.img)
+            self.multiImageViewBox.addItem(self.img)
+            rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
+            rectROI.sigRegionChanged.connect(
+                lambda: self.updateROIMeanValue(rectROI, 
+                                               self.img.image, 
+                                               self.img, 
+                                               self.lblROIMeanValue))
+            
+            self.multiImageViewBox.addItem(rectROI)
 
             self.imageSlider = QSlider(Qt.Horizontal)
             self.imageSlider.setMinimum(1)
@@ -671,6 +703,11 @@ class Weasel(QMainWindow):
             self.imageSlider.setTickInterval(1)
             self.imageSlider.valueChanged.connect(
                   lambda: self.imageSliderMoved(seriesName, imageList))
+            self.imageSlider.valueChanged.connect(
+                  lambda: self.updateROIMeanValue(rectROI, 
+                                               self.img.image, 
+                                               self.img, 
+                                               self.lblROIMeanValue))
             #print('Num of images = {}'.format(len(imageList)))
             layout.addWidget(self.imageSlider)
             
