@@ -1,7 +1,8 @@
 import pydicom
 import os
 import numpy as np
-import readDICOM_Image
+import CoreModules.readDICOM_Image as readDICOM_Image
+
 
 listBinaryOperations =['Select binary Operation', 'Add', 'Divide', 
                          'Multiply', 'Subtract']

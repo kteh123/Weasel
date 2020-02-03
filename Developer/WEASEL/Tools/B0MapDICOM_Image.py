@@ -2,10 +2,10 @@ import os
 import numpy as np
 import math
 import re
-import readDICOM_Image
-import saveDICOM_Image
-from Weasel import Weasel as weasel
-from weaselXMLReader import WeaselXMLReader
+import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.saveDICOM_Image as saveDICOM_Image
+#from Weasel import Weasel as weasel
+from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 
 FILE_SUFFIX = '_B0Map'
 

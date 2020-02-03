@@ -1,8 +1,8 @@
 """This module contains functions that calculate the variation 
 of concentration or MR signal with time according to a tracer kinetic model.
 """
-import MathsTools as tools
-import ExceptionHandling as exceptionHandler
+import CoreModules.MathsTools as tools
+import CoreModules.ExceptionHandling as exceptionHandler
 import numpy as np
 from scipy.optimize import fsolve
 from joblib import Parallel, delayed

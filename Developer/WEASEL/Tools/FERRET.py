@@ -162,7 +162,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'Developer//FERRET//ModelLibrary//'))
 
 import numpy as np
-import pyautogui
+#import pyautogui
 import logging
 from typing import List
 import datetime
@@ -182,18 +182,18 @@ import matplotlib.pyplot as plt
 
 from scipy.stats.distributions import  t
 
-import ModelFunctionsHelper
+import CoreModules.ModelFunctionsHelper as ModelFunctionsHelper
 
 #Import CSS file
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 #import styleSheet
 
 #Import PDF report writer class
-from PDFWriter import PDF
+from CoreModules.PDFWriter import PDF
 
-from ExcelWriter import ExcelWriter
+from CoreModules.ExcelWriter import ExcelWriter
 
-from ferretXMLReader import FerretXMLReader
+from CoreModules.ferretXMLReader import FerretXMLReader
  
 ########################################
 ##              CONSTANTS             ##
@@ -2162,21 +2162,21 @@ class FERRET:
             logger.error('Error in function FERRET ConfigureGUIForEachModel: ' + str(e) )
            
             
-    def GetScreenResolution(self):
-        """Determines the screen resolution of the device 
-        running this software.
+    #def GetScreenResolution(self):
+    #    """Determines the screen resolution of the device 
+    #    running this software.
         
-        Returns
-        -------
-            Returns the width & height of the device screen in pixels.
-        """
-        try:
-            width, height = pyautogui.size()
-            logger.info('function FERRET GetScreenResolution called. Screen width = {}, height = {}.'.format(width, height))
-            return width, height
-        except Exception as e:
-            print('Error in function FERRET GetScreenResolution: ' + str(e) )
-            logger.error('Error in function FERRET GetScreenResolution: ' + str(e) )
+    #    Returns
+    #    -------
+    #        Returns the width & height of the device screen in pixels.
+    #    """
+    #    try:
+    #        width, height = pyautogui.size()
+    #        logger.info('function FERRET GetScreenResolution called. Screen width = {}, height = {}.'.format(width, height))
+    #        return width, height
+    #    except Exception as e:
+    #        print('Error in function FERRET GetScreenResolution: ' + str(e) )
+    #        logger.error('Error in function FERRET GetScreenResolution: ' + str(e) )
         
 
     def DetermineTextSize(self):
@@ -2189,20 +2189,20 @@ class FERRET:
            """
         try:
             logger.info('function FERRET DetermineTextSize called.')
-            width, _ = self.GetScreenResolution()
+           #width, _ = self.GetScreenResolution()
             
-            if width == 1920: #Desktop
-                tickLabelSize = 12
-                xyAxisLabelSize = 14
-                titleSize = 20
-            elif width == 2560: #Laptop
-                tickLabelSize = 16
-                xyAxisLabelSize = 18
-                titleSize = 24
-            else:
-                tickLabelSize = 12
-                xyAxisLabelSize = 14
-                titleSize = 20
+            #if width == 1920: #Desktop
+            #    tickLabelSize = 12
+            #    xyAxisLabelSize = 14
+            #    titleSize = 20
+            #elif width == 2560: #Laptop
+            tickLabelSize = 16
+            xyAxisLabelSize = 18
+            titleSize = 24
+            #else:
+            #    tickLabelSize = 12
+            #    xyAxisLabelSize = 14
+            #    titleSize = 20
 
             return tickLabelSize, xyAxisLabelSize, titleSize
         except Exception as e:

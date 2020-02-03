@@ -1,6 +1,6 @@
 
-import MathsTools as tools
-import ExceptionHandling as exceptionHandler
+import CoreModules.MathsTools as tools
+import CoreModules.ExceptionHandling as exceptionHandler
 import numpy as np
 from scipy.optimize import fsolve
 from joblib import Parallel, delayed

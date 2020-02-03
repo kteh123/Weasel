@@ -1,8 +1,7 @@
 import os
 import numpy as np
-import readDICOM_Image
-import saveDICOM_Image
-
+import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.saveDICOM_Image as saveDICOM_Image
 FILE_SUFFIX = '_Square'
 
 def returnPixelArray(imagePath):

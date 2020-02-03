@@ -6,8 +6,8 @@ from pydicom.sequence import Sequence
 import datetime
 import copy
 import random
-import readDICOM_Image
-import ParametricMapsDictionary as param
+import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.ParametricMapsDictionary as param
 
 
 def returnFilePath(imagePath, suffix, new_path=None):
