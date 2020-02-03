@@ -23,4 +23,12 @@
     <module>B0MapDICOM_Image</module>
     <function>saveB0MapSeries</function>
   </tool>
+  <tool>
+    <action>T2* Map Calculation</action>
+    <shortcut>Ctrl+T</shortcut>
+    <tooltip>Applies a T2* fitting to the series if applicable</tooltip>
+    <applies_both_images_series>False</applies_both_images_series>
+    <module>T2StarMapDICOM_Image</module>
+    <function>saveT2StarMapSeries</function>
+  </tool>
 </tools>
