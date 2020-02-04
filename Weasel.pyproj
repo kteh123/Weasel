@@ -82,6 +82,7 @@
     <Content Include="images\logo-tristan.png" />
     <Content Include="images\TRISTAN LOGO.jpg" />
     <Content Include="images\uni-leeds-logo.jpg" />
+    <Content Include="license.txt" />
     <Content Include="requirements.txt" />
     <Content Include="WEASEL_README.md" />
   </ItemGroup>
