@@ -210,7 +210,7 @@ TRISTAN_LOGO = 'images\\TRISTAN LOGO.jpg'
 LARGE_TRISTAN_LOGO ='images\\logo-tristan.png'
 UNI_OF_LEEDS_LOGO ='images\\uni-leeds-logo.jpg'
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
-MODEL_DIAGRAM_FOLDER = 'Developer\\ModelDiagrams\\'
+MODEL_DIAGRAM_FOLDER = 'Developer\\FERRET\\ModelDiagrams\\'
 #######################################
 
 #Create and configure the logger
