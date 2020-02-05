@@ -57,7 +57,7 @@ def getParametersB0Map(imagePathList, seriesID):
             for index, individualDicom in enumerate(dicomList):
                 minValue = np.amin(readDICOM_Image.getPixelArray(individualDicom))
                 maxValue = np.amax(readDICOM_Image.getPixelArray(individualDicom))
-                if (numberEchoes == 2) and (minValue < 0) and (maxValue > 0) and (re.match(".*B0.*", seriesID) or re.match(".*b0.*", seriesID)):
+                if (numberEchoes == 2) and (minValue < 0) and (maxValue > 0) and (maxValue + minValue < 10) and (('P' in individualDicom.ImageType) or ('PHASE' in individualDicom.ImageType)) and (re.match(".*B0.*", seriesID) or re.match(".*b0.*", seriesID)):
                     phasePathList.append(imagePathList[index])
 
             del dicomList, numSlices, numberEchoes

@@ -139,7 +139,7 @@ def getParametersT2StarMap(imagePathList, seriesID):
             for index, individualDicom in enumerate(dicomList):
                 minValue = np.amin(readDICOM_Image.getPixelArray(individualDicom))
                 maxValue = np.amax(readDICOM_Image.getPixelArray(individualDicom))
-                if (numberEchoes == 12) and (minValue >= 0) and (maxValue > 0) and (re.match(".*T2.*", seriesID) or re.match(".*t2.*", seriesID) or re.match(".*R2.*", seriesID) or re.match(".*r2.*", seriesID)):
+                if (numberEchoes == 12) and (minValue < 0) and (maxValue > 0) and (maxValue + minValue < 10) and (('P' in individualDicom.ImageType) or ('PHASE' in individualDicom.ImageType)) and (re.match(".*T2.*", seriesID) or re.match(".*t2.*", seriesID) or re.match(".*R2.*", seriesID) or re.match(".*r2.*", seriesID)):
                     phasePathList.append(imagePathList[index])
 
             del dicomList, numSlices, numberEchoes
