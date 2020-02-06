@@ -19,6 +19,8 @@ import importlib
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
 sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//'))
+sys.path.append(os.path.join(sys.path[0],
+        'Developer//WEASEL//Tools//FERRET_Files//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image

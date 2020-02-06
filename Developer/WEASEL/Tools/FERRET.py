@@ -159,7 +159,7 @@ import os
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
-sys.path.append(os.path.join(sys.path[0],'Developer//FERRET//ModelLibrary//'))
+sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//FERRET_Files//ModelLibrary//'))
 
 import numpy as np
 #import pyautogui
@@ -184,9 +184,7 @@ from scipy.stats.distributions import  t
 
 import CoreModules.ModelFunctionsHelper as ModelFunctionsHelper
 
-#Import CSS file
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
-#import styleSheet
 
 #Import PDF report writer class
 from CoreModules.PDFWriter import PDF
@@ -194,6 +192,8 @@ from CoreModules.PDFWriter import PDF
 from CoreModules.ExcelWriter import ExcelWriter
 
 from CoreModules.ferretXMLReader import FerretXMLReader
+
+defaultPathModelLibrary = "Developer\\WEASEL\\Tools\\FERRET_Files\\ModelConfiguration\\"
  
 ########################################
 ##              CONSTANTS             ##
@@ -210,7 +210,7 @@ TRISTAN_LOGO = 'images\\TRISTAN LOGO.jpg'
 LARGE_TRISTAN_LOGO ='images\\logo-tristan.png'
 UNI_OF_LEEDS_LOGO ='images\\uni-leeds-logo.jpg'
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
-MODEL_DIAGRAM_FOLDER = 'Developer\\FERRET\\ModelDiagrams\\'
+MODEL_DIAGRAM_FOLDER = 'Developer\\WEASEL\\Tools\\FERRET_Files\\ModelDiagrams\\'
 #######################################
 
 #Create and configure the logger
@@ -1658,10 +1658,10 @@ class FERRET:
             #  Get the configuration file in XML format.
             # The filter parameter is set so that the 
             # user can only open an XML file.
-            defaultPath = "Developer\\FERRET\\ModelConfiguration\\"
+            
             fullFilePath, _ = QFileDialog.getOpenFileName( 
                 caption="Select model configuration file", 
-                directory=defaultPath,
+                directory=defaultPathModelLibrary,
                 filter="*.xml")
 
             if os.path.exists(fullFilePath):
