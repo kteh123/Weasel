@@ -91,6 +91,8 @@
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\WEASEL\" />
     <Folder Include="Developer\WEASEL\Tools\" />
+    <Folder Include="Developer\WEASEL\Tools\FERRET\" />
+    <Folder Include="Developer\WEASEL\Tools\FERRET\ModelConfiguration\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelConfiguration\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\" />

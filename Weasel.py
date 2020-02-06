@@ -53,7 +53,7 @@ class Weasel(QMainWindow):
     def __init__(self, parent=None):
         """Creates the MDI container."""
         QMainWindow.__init__(self, parent)
-        self.setGeometry(0, 0, 2500, 1400)
+        self.showFullScreen()
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
@@ -409,7 +409,9 @@ class Weasel(QMainWindow):
                 subWindow.setWidget(widget)
                 subWindow.setObjectName("tree_view")
                 subWindow.setWindowTitle("DICOM Study Structure")
-                subWindow.setGeometry(0,0,800,300)
+                height = self.mdiArea.height()
+                width = self.mdiArea.width() * 0.4
+                subWindow.setGeometry(0, 0, width, height)
                 self.mdiArea.addSubWindow(subWindow)
 
                 self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
@@ -495,7 +497,6 @@ class Weasel(QMainWindow):
                 self.lblLoading.clear()
                 self.progBar.hide()
                 self.progBar.reset()
-                subWindow.setGeometry(0,0,800,1300)
                 widget.layout().addWidget(self.treeView)   
         except Exception as e:
             print('Error in makeDICOMStudiesTreeView: ' + str(e)) 
