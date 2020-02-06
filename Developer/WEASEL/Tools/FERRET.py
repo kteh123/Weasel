@@ -193,7 +193,6 @@ from CoreModules.ExcelWriter import ExcelWriter
 
 from CoreModules.ferretXMLReader import FerretXMLReader
 
-defaultPathModelLibrary = "Developer\\WEASEL\\Tools\\FERRET_Files\\ModelConfiguration\\"
  
 ########################################
 ##              CONSTANTS             ##
@@ -204,6 +203,9 @@ IMAGE_NAME = 'model.png'
 DEFAULT_REPORT_FILE_PATH_NAME = 'report.pdf'
 DEFAULT_PLOT_DATA_FILE_PATH_NAME = 'plot.csv'
 MIN_NUM_COLUMNS_CSV_FILE = 3
+
+#Path to model library XML files folder
+defaultPathModelLibrary = "Developer\\WEASEL\\Tools\\FERRET_Files\\ModelConfiguration\\"
 
 #Image Files
 TRISTAN_LOGO = 'images\\TRISTAN LOGO.jpg'
