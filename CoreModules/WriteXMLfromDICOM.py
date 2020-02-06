@@ -4,6 +4,7 @@ import pydicom
 import xml.etree.ElementTree as ET
 import datetime
 import numpy as np
+import re
 from collections import defaultdict
 from xml.dom import minidom
 
@@ -41,6 +42,25 @@ def get_files_info(scan_directory):
             print('Error in WriteXMLfromDICOM.get_files_info: ' + str(e))
 
 
+def atof(text):
+    """ This function is auxiliary for the natural sorting of the paths names"""
+    try:
+        retval = float(text)
+    except ValueError:
+        retval = text
+    return retval
+
+
+def natural_keys(text):
+    """
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    float regex comes from https://stackoverflow.com/a/12643073/190597
+    """
+    return [ atof(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text) ] 
+
+
 def get_scan_data(scan_directory):
     """This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
@@ -49,6 +69,7 @@ def get_scan_data(scan_directory):
         list_dicom = list()
         list_paths = list()
         for dir_name, _, file_list in os.walk(scan_directory):
+            file_list.sort(key=natural_keys)
             for filename in file_list:
                 try:
                     list_dicom.append(pydicom.dcmread(

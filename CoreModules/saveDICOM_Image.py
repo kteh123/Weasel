@@ -42,6 +42,7 @@ def save_dicom_outputResult(newFilePath, imagePath, pixelArray, suffix, series_i
             newDataset = create_new_single_dicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
             if image_number is not None:
                 newDataset.ImageNumber = image_number
+                newDataset.ImageInstance = image_number
             save_dicom_to_file(newDataset, output_path=newFilePath)
             del dataset, newDataset
             return
@@ -106,7 +107,13 @@ def save_dicom_to_file(dicomData, output_path=None):
     """
     try:
         if output_path is None:
-            output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
+            try:
+                output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
+            except:
+                try:
+                    output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
+                except:
+                    output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
 
         pydicom.filewriter.dcmwrite(output_path, dicomData, write_like_original=True)
         del dicomData
