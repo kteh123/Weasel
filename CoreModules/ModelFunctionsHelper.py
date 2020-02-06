@@ -23,7 +23,7 @@ import importlib
 #Although a dynamic import of ModelFunctions is done in the 2 functions in this module
 #an import has to be done here, so that Model Functions is included when a compiled
 #version of this program is created using Pyinstaller.
-import Developer.FERRET.ModelLibrary.ModelFunctions as ModelFunctions
+import Developer.WEASEL.Tools.FERRET_Files.ModelLibrary.ModelFunctions as ModelFunctions
 
 
 logger = logging.getLogger(__name__)
