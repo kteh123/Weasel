@@ -40,8 +40,8 @@
     <Compile Include="Developer\WEASEL\Tools\binaryOperationDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\FERRET.py" />
-    <Compile Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\ModelFunctions.py" />
-    <Compile Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\Model_Function_Module_Template.py" />
+    <Compile Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\ModelFunctions.py" />
+    <Compile Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\WEASEL\Tools\invertDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\squareDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\T2StarMapDICOM_Image.py" />
@@ -60,13 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelConfiguration\Model_Library_Template.xml" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelConfiguration\MR_SignalRatLiverModels.xml" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\README.txt" />
-    <Content Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\README.txt" />
+    <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\WEASEL\Tools\FERRET_README.md" />
     <Content Include="Developer\WEASEL\Tools\toolsMenu.xml" />
     <Content Include="Developer\WEASEL\Tools\__pycache__\binaryOperationDICOM_Image.cpython-37.pyc" />
@@ -91,13 +90,11 @@
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\WEASEL\" />
     <Folder Include="Developer\WEASEL\Tools\" />
-    <Folder Include="Developer\WEASEL\Tools\FERRET\" />
-    <Folder Include="Developer\WEASEL\Tools\FERRET\ModelConfiguration\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelConfiguration\" />
-    <Folder Include="Developer\WEASEL\Tools\FERRET\ModelDiagrams\" />
-    <Folder Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\" />
-    <Folder Include="Developer\WEASEL\Tools\FERRET\ModelLibrary\__pycache__\" />
+    <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\" />
+    <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\" />
+    <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\__pycache__\" />
     <Folder Include="Developer\WEASEL\Tools\__pycache__\" />
     <Folder Include="images\" />
   </ItemGroup>
