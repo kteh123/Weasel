@@ -220,7 +220,7 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
         # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
         # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
         # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
-        imageArray = np.rot90(imageArray, -3)
+        imageArray = np.rot90(imageArray, -1)
         
         if int(np.amin(imageArray)) < 0:
             newDicom.PixelRepresentation = 1

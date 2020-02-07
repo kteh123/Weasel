@@ -591,12 +591,14 @@ class Weasel(QMainWindow):
             self.lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
             self.lblROIMeanValue.show()
             layout.addWidget(self.lblImageMissing)
-            layout.addWidget(imageViewer)
-            layout.addWidget(self.lblROIMeanValue)
+            #layout.addWidget(imageViewer)
             self.viewBox = imageViewer.addViewBox()
             self.viewBox.setAspectLocked(True)
             self.img = pg.ImageItem(border='w')
             self.viewBox.addItem(self.img)
+            self.imv= pg.ImageView(view=self.viewBox, imageItem=self.img)
+            layout.addWidget(self.imv)
+            layout.addWidget(self.lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
             self.viewBox.addItem(rectROI)
             rectROI.sigRegionChanged.connect(
@@ -611,9 +613,9 @@ class Weasel(QMainWindow):
                 #so display a missing image label 
                 self.lblImageMissing.show()
                 #Display a black box
-                self.img.setImage(np.array([[0,0,0],[0,0,0]])) 
+                self.imv.setImage(np.array([[0,0,0],[0,0,0]])) 
             else:
-                self.img.setImage(pixelArray) 
+                self.imv.setImage(pixelArray) 
                 self.lblImageMissing.hide()
                 
             self.subWindow.setObjectName(imagePath)
@@ -679,12 +681,15 @@ class Weasel(QMainWindow):
             layout.addWidget(self.lblHiddenSeriesID)
             layout.addWidget(self.lblHiddenStudyID)
             layout.addWidget(self.btnDeleteDICOMFile)
-            layout.addWidget(imageViewer)
-            layout.addWidget(self.lblROIMeanValue)
+            #layout.addWidget(imageViewer)
+            
             self.multiImageViewBox = imageViewer.addViewBox()
             self.multiImageViewBox.setAspectLocked(True)
             self.img = pg.ImageItem(border='w')
             self.multiImageViewBox.addItem(self.img)
+            self.imv = pg.ImageView(view=self.multiImageViewBox, imageItem=self.img)
+            layout.addWidget(self.imv)
+            layout.addWidget(self.lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
             rectROI.sigRegionChanged.connect(
                 lambda: self.updateROIMeanValue(rectROI, 
@@ -813,9 +818,9 @@ class Weasel(QMainWindow):
                 if pixelArray is None:
                     self.lblImageMissing.show()
                     self.btnDeleteDICOMFile.hide()
-                    self.img.setImage(np.array([[0,0,0],[0,0,0]]))  
+                    self.imv.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.img.setImage(pixelArray) 
+                    self.imv.setImage(pixelArray) 
                     self.lblImageMissing.hide()
                     self.btnDeleteDICOMFile.show()
 
@@ -966,18 +971,21 @@ class Weasel(QMainWindow):
             viewBox1.setAspectLocked(True)
             self.img1 = pg.ImageItem(border='w')
             viewBox1.addItem(self.img1)
+            self.imv1 = pg.ImageView(view=viewBox1, imageItem=self.img1)
 
             imageViewer2 = pg.GraphicsLayoutWidget()
             viewBox2 = imageViewer2.addViewBox()
             viewBox2.setAspectLocked(True)
             self.img2 = pg.ImageItem(border='w')
             viewBox2.addItem(self.img2)
+            self.imv2 = pg.ImageView(view=viewBox2, imageItem=self.img2)
 
             imageViewer3 = pg.GraphicsLayoutWidget()
             viewBox3 = imageViewer3.addViewBox()
             viewBox3.setAspectLocked(True)
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
+            self.imv3 = pg.ImageView(view=viewBox3, imageItem=self.img3)
 
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
@@ -1029,9 +1037,12 @@ class Weasel(QMainWindow):
             layout.addWidget(self.binaryOpsList, 1, 2)
             layout.addWidget(self.lblImageMissing1, 2, 0)
             layout.addWidget(self.lblImageMissing2, 2, 1)
-            layout.addWidget(imageViewer1, 3, 0)
-            layout.addWidget(imageViewer2, 3, 1)
-            layout.addWidget(imageViewer3, 3, 2)
+            #layout.addWidget(imageViewer1, 3, 0)
+            #layout.addWidget(imageViewer2, 3, 1)
+            #layout.addWidget(imageViewer3, 3, 2)
+            layout.addWidget(self.imv1, 3, 0)
+            layout.addWidget(self.imv2, 3, 1)
+            layout.addWidget(self.imv3, 3, 2)
                 
             self.subWindow.setObjectName('Binary_Operation')
             windowTitle = 'Binary Operations'
