@@ -2,6 +2,7 @@ import os
 import numpy as np
 import math
 import re
+import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 #from Weasel import Weasel as weasel
@@ -55,6 +56,7 @@ def getParametersB0Map(imagePathList, seriesID):
             phasePathList = []
             dicomList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
             for index, individualDicom in enumerate(dicomList):
+                #print(struct.unpack('h', individualDicom[0x0043102f].value)[0])
                 minValue = np.amin(readDICOM_Image.getPixelArray(individualDicom))
                 maxValue = np.amax(readDICOM_Image.getPixelArray(individualDicom))
                 if (numberEchoes == 2) and (minValue < 0) and (maxValue > 0) and (maxValue + minValue < 10) and (('P' in individualDicom.ImageType) or ('PHASE' in individualDicom.ImageType)) and (re.match(".*B0.*", seriesID) or re.match(".*b0.*", seriesID)):

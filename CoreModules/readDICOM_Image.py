@@ -96,12 +96,12 @@ def getPixelArray(dataset):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                pixelArray = (dataset.pixel_array.astype(np.float32) * slope + intercept).T
+                pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
                 pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
-            return np.rot90(pixelArray, 1) # KEEP AN EYE ON THIS
+            return pixelArray
         else:
             return None
     except Exception as e:

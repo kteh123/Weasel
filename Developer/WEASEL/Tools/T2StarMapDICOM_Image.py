@@ -5,7 +5,6 @@ import re
 from skimage.transform import resize
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
-#from Weasel import Weasel as weasel
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 
 FILE_SUFFIX = '_T2StarMap'
@@ -189,7 +188,7 @@ def saveT2StarMapSeries(objWeasel):
                                                          T2StarImagePathList, FILE_SUFFIX)
         # Save new DICOM series locally
         saveDICOM_Image.save_dicom_newSeries(
-            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map = "T2Star")
+            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map="T2Star")
         objWeasel.displayMultiImageSubWindow(T2StarImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
