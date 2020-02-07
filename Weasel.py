@@ -598,12 +598,15 @@ class Weasel(QMainWindow):
             lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
             lblROIMeanValue.show()
             layout.addWidget(lblImageMissing)
+            pg.setConfigOptions(imageAxisOrder='row-major')
             #layout.addWidget(imageViewer)
             viewBox = imageViewer.addViewBox()
             viewBox.setAspectLocked(True)
             img = pg.ImageItem(border='w')
             viewBox.addItem(img)
             imv= pg.ImageView(view=viewBox, imageItem=img)
+            imv.ui.roiBtn.hide()
+            imv.ui.menuBtn.hide()
             layout.addWidget(imv)
             layout.addWidget(lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
@@ -695,12 +698,14 @@ class Weasel(QMainWindow):
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(btnDeleteDICOMFile)
             #layout.addWidget(imageViewer)
-            
+            pg.setConfigOptions(imageAxisOrder='row-major')
             multiImageViewBox = imageViewer.addViewBox()
             multiImageViewBox.setAspectLocked(True)
             img = pg.ImageItem(border='w')
             multiImageViewBox.addItem(img)
             imv = pg.ImageView(view=multiImageViewBox, imageItem=img)
+            imv.ui.roiBtn.hide()
+            imv.ui.menuBtn.hide()
             layout.addWidget(imv)
             layout.addWidget(lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
@@ -991,6 +996,7 @@ class Weasel(QMainWindow):
             widget = QWidget()
             widget.setLayout(layout)
             self.subWindow.setWidget(widget)
+            pg.setConfigOptions(imageAxisOrder='row-major')
 
             imageViewer1 = pg.GraphicsLayoutWidget()
             viewBox1 = imageViewer1.addViewBox()
@@ -998,6 +1004,8 @@ class Weasel(QMainWindow):
             self.img1 = pg.ImageItem(border='w')
             viewBox1.addItem(self.img1)
             self.imv1 = pg.ImageView(view=viewBox1, imageItem=self.img1)
+            self.imv1.ui.roiBtn.hide()
+            self.imv1.ui.menuBtn.hide()
 
             imageViewer2 = pg.GraphicsLayoutWidget()
             viewBox2 = imageViewer2.addViewBox()
@@ -1005,6 +1013,8 @@ class Weasel(QMainWindow):
             self.img2 = pg.ImageItem(border='w')
             viewBox2.addItem(self.img2)
             self.imv2 = pg.ImageView(view=viewBox2, imageItem=self.img2)
+            self.imv2.ui.roiBtn.hide()
+            self.imv2.ui.menuBtn.hide()
 
             imageViewer3 = pg.GraphicsLayoutWidget()
             viewBox3 = imageViewer3.addViewBox()
@@ -1012,6 +1022,8 @@ class Weasel(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
             self.imv3 = pg.ImageView(view=viewBox3, imageItem=self.img3)
+            self.imv3.ui.roiBtn.hide()
+            self.imv3.ui.menuBtn.hide()
 
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
