@@ -256,7 +256,8 @@ class Weasel(QMainWindow):
             self.msgSubWindow.setWidget(widget)
             self.msgSubWindow.setObjectName("Msg_Window")
             self.msgSubWindow.setWindowTitle(title)
-            self.msgSubWindow.setGeometry(0,0,900,200)
+            height, width = self.getMDIAreaDimensions()
+            self.msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
             self.lblMsg = QLabel('<H4>' + message + '</H4>')
             widget.layout().addWidget(self.lblMsg)
 
@@ -278,11 +279,14 @@ class Weasel(QMainWindow):
         self.progBarMsg.show()
         self.progBarMsg.setMaximum(maxValue)
 
+
     def setMsgWindowProgBarValue(self, value):
         self.progBarMsg.setValue(value)
 
+
     def closeMessageSubWindow(self):
         self.msgSubWindow.close()
+
 
     def makeDICOM_XML_File(self, scan_directory):
         """Creates an XML file that describes the contents of the scan folder,
@@ -383,6 +387,10 @@ class Weasel(QMainWindow):
             logger.error('Error in function loadDICOM: ' + str(e))
          
 
+    def getMDIAreaDimensions(self):
+        return self.mdiArea.height(), self.mdiArea.width() 
+
+
     def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -409,9 +417,8 @@ class Weasel(QMainWindow):
                 subWindow.setWidget(widget)
                 subWindow.setObjectName("tree_view")
                 subWindow.setWindowTitle("DICOM Study Structure")
-                height = self.mdiArea.height()
-                width = self.mdiArea.width() * 0.4
-                subWindow.setGeometry(0, 0, width, height)
+                height, width = self.getMDIAreaDimensions()
+                subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
 
                 self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
@@ -621,7 +628,8 @@ class Weasel(QMainWindow):
             self.subWindow.setObjectName(imagePath)
             windowTitle = self.getDICOMFileData()
             self.subWindow.setWindowTitle(windowTitle)
-            self.subWindow.setGeometry(0,0,800,600)
+            height, width = self.getMDIAreaDimensions()
+            self.subWindow.setGeometry(0,0,width*0.3,height*0.5)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
         except Exception as e:
@@ -723,7 +731,8 @@ class Weasel(QMainWindow):
             self.imageSliderMoved(seriesName, imageList)
             
             self.subWindow.setObjectName(seriesName)
-            self.subWindow.setGeometry(0,0,800,600)
+            height, width = self.getMDIAreaDimensions()
+            self.subWindow.setGeometry(0,0,width*0.3,height*0.5)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
         except Exception as e:
@@ -1047,7 +1056,8 @@ class Weasel(QMainWindow):
             self.subWindow.setObjectName('Binary_Operation')
             windowTitle = 'Binary Operations'
             self.subWindow.setWindowTitle(windowTitle)
-            self.subWindow.setGeometry(0,0,1600,800)
+            height, width = self.getMDIAreaDimensions()
+            self.subWindow.setGeometry(0,0,width*0.5,height*0.5)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
         except Exception as e:
