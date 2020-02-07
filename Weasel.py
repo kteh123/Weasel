@@ -593,37 +593,37 @@ class Weasel(QMainWindow):
             widget = QWidget()
             widget.setLayout(layout)
             self.subWindow.setWidget(widget)
-            self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
-            self.lblImageMissing.hide()
-            self.lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-            self.lblROIMeanValue.show()
-            layout.addWidget(self.lblImageMissing)
+            lblImageMissing = QLabel("<h4>Image Missing</h4>")
+            lblImageMissing.hide()
+            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+            lblROIMeanValue.show()
+            layout.addWidget(lblImageMissing)
             #layout.addWidget(imageViewer)
-            self.viewBox = imageViewer.addViewBox()
-            self.viewBox.setAspectLocked(True)
-            self.img = pg.ImageItem(border='w')
-            self.viewBox.addItem(self.img)
-            self.imv= pg.ImageView(view=self.viewBox, imageItem=self.img)
-            layout.addWidget(self.imv)
-            layout.addWidget(self.lblROIMeanValue)
+            viewBox = imageViewer.addViewBox()
+            viewBox.setAspectLocked(True)
+            img = pg.ImageItem(border='w')
+            viewBox.addItem(img)
+            imv= pg.ImageView(view=viewBox, imageItem=img)
+            layout.addWidget(imv)
+            layout.addWidget(lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
-            self.viewBox.addItem(rectROI)
+            viewBox.addItem(rectROI)
             rectROI.sigRegionChanged.connect(
                 lambda: self.updateROIMeanValue(rectROI, 
-                                               self.img.image, 
-                                               self.img, 
-                                               self.lblROIMeanValue))
+                                               img.image, 
+                                               img, 
+                                               lblROIMeanValue))
 
             #Check that pixel array holds an image & display it
             if pixelArray is None:
                 #Missing image, perhaps deleted,
                 #so display a missing image label 
-                self.lblImageMissing.show()
+                lblImageMissing.show()
                 #Display a black box
-                self.imv.setImage(np.array([[0,0,0],[0,0,0]])) 
+                imv.setImage(np.array([[0,0,0],[0,0,0]])) 
             else:
-                self.imv.setImage(pixelArray) 
-                self.lblImageMissing.hide()
+                imv.setImage(pixelArray) 
+                lblImageMissing.hide()
                 
             self.subWindow.setObjectName(imagePath)
             windowTitle = self.getDICOMFileData()
@@ -656,99 +656,116 @@ class Weasel(QMainWindow):
         """
         try:
             logger.info("WEASEL displayMultiImageSubWindow called")
-            self.subWindow = QMdiSubWindow(self)
-            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+            subWindow = QMdiSubWindow(self)
+            subWindow.setAttribute(Qt.WA_DeleteOnClose)
+            subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                           Qt.WindowCloseButtonHint | 
                                           Qt.WindowMinimizeButtonHint)
             layout = QVBoxLayout()
             imageViewer = pg.GraphicsLayoutWidget()
             widget = QWidget()
             widget.setLayout(layout)
-            self.subWindow.setWidget(widget)
+            subWindow.setWidget(widget)
             #Study ID & Series ID are stored locally on the
             #sub window in case the user wishes to delete an
             #image in the series.  They may have several series
             #open at once, so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
-            self.lblHiddenStudyID = QLabel(studyName)
-            self.lblHiddenStudyID.hide()
-            self.lblHiddenSeriesID = QLabel(seriesName)
-            self.lblHiddenSeriesID.hide()
-            self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
-            self.lblImageMissing.hide()
-            self.lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-            self.lblROIMeanValue.show()
-            self.btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
-            self.btnDeleteDICOMFile.setToolTip(
+            lblHiddenStudyID = QLabel(studyName)
+            lblHiddenStudyID.hide()
+            lblHiddenSeriesID = QLabel(seriesName)
+            lblHiddenSeriesID.hide()
+            lblImageMissing = QLabel("<h4>Image Missing</h4>")
+            lblImageMissing.hide()
+            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+            lblROIMeanValue.show()
+            btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
+            btnDeleteDICOMFile.setToolTip(
             'Deletes the DICOM image being viewed')
-            self.btnDeleteDICOMFile.hide()
-            self.btnDeleteDICOMFile.clicked.connect(self.deleteImageInMultiImageViewer)
-            layout.addWidget(self.lblImageMissing)
-            layout.addWidget(self.lblHiddenSeriesID)
-            layout.addWidget(self.lblHiddenStudyID)
-            layout.addWidget(self.btnDeleteDICOMFile)
+            btnDeleteDICOMFile.hide()
+            btnDeleteDICOMFile.clicked.connect(lambda:
+                                               self.deleteImageInMultiImageViewer(
+                                      imageList[imageSlider.value() - 1], 
+                                      lblHiddenStudyID.text(), 
+                                      lblHiddenSeriesID.text(),
+                                      imageSlider.value()))
+            layout.addWidget(lblImageMissing)
+            layout.addWidget(lblHiddenSeriesID)
+            layout.addWidget(lblHiddenStudyID)
+            layout.addWidget(btnDeleteDICOMFile)
             #layout.addWidget(imageViewer)
             
-            self.multiImageViewBox = imageViewer.addViewBox()
-            self.multiImageViewBox.setAspectLocked(True)
-            self.img = pg.ImageItem(border='w')
-            self.multiImageViewBox.addItem(self.img)
-            self.imv = pg.ImageView(view=self.multiImageViewBox, imageItem=self.img)
-            layout.addWidget(self.imv)
-            layout.addWidget(self.lblROIMeanValue)
+            multiImageViewBox = imageViewer.addViewBox()
+            multiImageViewBox.setAspectLocked(True)
+            img = pg.ImageItem(border='w')
+            multiImageViewBox.addItem(img)
+            imv = pg.ImageView(view=multiImageViewBox, imageItem=img)
+            layout.addWidget(imv)
+            layout.addWidget(lblROIMeanValue)
             rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
             rectROI.sigRegionChanged.connect(
                 lambda: self.updateROIMeanValue(rectROI, 
-                                               self.img.image, 
-                                               self.img, 
-                                               self.lblROIMeanValue))
+                                               img.image, 
+                                               img, 
+                                               lblROIMeanValue))
             
-            self.multiImageViewBox.addItem(rectROI)
+            multiImageViewBox.addItem(rectROI)
 
-            self.imageSlider = QSlider(Qt.Horizontal)
-            self.imageSlider.setMinimum(1)
-            self.imageSlider.setMaximum(len(imageList))
+            imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setMinimum(1)
+            imageSlider.setMaximum(len(imageList))
             if sliderPosition == -1:
-                self.imageSlider.setValue(1)
+                imageSlider.setValue(1)
             else:
-                self.imageSlider.setValue(sliderPosition)
-            self.imageSlider.setSingleStep(1)
-            self.imageSlider.setTickPosition(QSlider.TicksBothSides)
-            self.imageSlider.setTickInterval(1)
-            self.imageSlider.valueChanged.connect(
-                  lambda: self.imageSliderMoved(seriesName, imageList))
-            self.imageSlider.valueChanged.connect(
+                imageSlider.setValue(sliderPosition)
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
+            imageSlider.valueChanged.connect(
+                  lambda: self.imageSliderMoved(seriesName, 
+                                                imageList, 
+                                                imageSlider.value(),
+                                                lblImageMissing,
+                                                btnDeleteDICOMFile,
+                                                imv,
+                                                subWindow))
+            imageSlider.valueChanged.connect(
                   lambda: self.updateROIMeanValue(rectROI, 
-                                               self.img.image, 
-                                               self.img, 
-                                               self.lblROIMeanValue))
+                                               img.image, 
+                                               img, 
+                                               lblROIMeanValue))
             #print('Num of images = {}'.format(len(imageList)))
-            layout.addWidget(self.imageSlider)
+            layout.addWidget(imageSlider)
             
             #Display the first image in the viewer
-            self.imageSliderMoved(seriesName, imageList)
+            self.imageSliderMoved(seriesName, 
+                                  imageList,
+                                  imageSlider.value(),
+                                  lblImageMissing,
+                                  btnDeleteDICOMFile,
+                                  imv,
+                                  subWindow)
             
-            self.subWindow.setObjectName(seriesName)
+            subWindow.setObjectName(seriesName)
             height, width = self.getMDIAreaDimensions()
-            self.subWindow.setGeometry(0,0,width*0.3,height*0.5)
-            self.mdiArea.addSubWindow(self.subWindow)
-            self.subWindow.show()
+            subWindow.setGeometry(0,0,width*0.3,height*0.5)
+            self.mdiArea.addSubWindow(subWindow)
+            subWindow.show()
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
             logger.error('Error in displayMultiImageSubWindow: ' + str(e))
 
 
-    def deleteImageInMultiImageViewer(self):
+    def deleteImageInMultiImageViewer(self, currentImagePath, 
+                                      studyID, seriesID,
+                                      lastSliderPosition):
         """When the Delete button is clicked on the multi image viewer,
         this function deletes the physical image and removes the 
         reference to it in the XML file."""
         try:
             logger.info("WEASEL deleteImageInMultiImageViewer called")
-            imageName = os.path.basename(self.currentImagePath)
-            studyID = self.lblHiddenStudyID.text()
-            seriesID = self.lblHiddenSeriesID.text()
+            imageName = os.path.basename(currentImagePath)
             #print ('study id {} series id {}'.format(studyID, seriesID))
             buttonReply = QMessageBox.question(self, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
@@ -756,11 +773,9 @@ class Weasel(QMainWindow):
 
             if buttonReply == QMessageBox.Ok:
                 #Delete physical file
-                deletedFilePath = self.currentImagePath
-                os.remove(deletedFilePath)
+                os.remove(currentImagePath)
                 #Remove deleted image from the list
-                self.imageList.remove(deletedFilePath)
-                lastSliderPosition = self.imageSlider.value()
+                self.imageList.remove(currentImagePath)
 
                 #Refresh the multi-image viewer to remove deleted image
                 #First close it
@@ -805,7 +820,7 @@ class Weasel(QMainWindow):
                     ##need to get the series (parent) containing this image (child)
                     ##then remove child from parent
                     self.objXMLReader.removeOneImageFromSeries(
-                        studyID, seriesID, deletedFilePath)
+                        studyID, seriesID, currentImagePath)
                 #Update tree view with xml file modified above
                 self.refreshDICOMStudiesTreeView()
         except Exception as e:
@@ -813,28 +828,30 @@ class Weasel(QMainWindow):
             logger.error('Error in deleteImageInMultiImageViewer: ' + str(e))
 
 
-    def imageSliderMoved(self, seriesName, imageList):
+    def imageSliderMoved(self, seriesName, imageList, imageNumber,
+                        lblImageMissing, btnDeleteDICOMFile, imv,
+                        subWindow):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
         try:
             logger.info("WEASEL imageSliderMoved called")
-            imageNumber = self.imageSlider.value()
-            self.currentImageNumber = imageNumber - 1
-            if self.currentImageNumber >= 0:
-                self.currentImagePath = imageList[self.currentImageNumber]
-                pixelArray = readDICOM_Image.returnPixelArray(self.currentImagePath)
+            #imageNumber = self.imageSlider.value()
+            currentImageNumber = imageNumber - 1
+            if currentImageNumber >= 0:
+                currentImagePath = imageList[currentImageNumber]
+                pixelArray = readDICOM_Image.returnPixelArray(currentImagePath)
                 if pixelArray is None:
-                    self.lblImageMissing.show()
-                    self.btnDeleteDICOMFile.hide()
-                    self.imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+                    lblImageMissing.show()
+                    btnDeleteDICOMFile.hide()
+                    imv.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.imv.setImage(pixelArray) 
-                    self.lblImageMissing.hide()
-                    self.btnDeleteDICOMFile.show()
+                    imv.setImage(pixelArray) 
+                    lblImageMissing.hide()
+                    btnDeleteDICOMFile.show()
 
-                self.subWindow.setWindowTitle(seriesName + ' - ' 
-                         + os.path.basename(self.currentImagePath))
+                subWindow.setWindowTitle(seriesName + ' - ' 
+                         + os.path.basename(currentImagePath))
         except Exception as e:
             print('Error in imageSliderMoved: ' + str(e))
             logger.error('Error in imageSliderMoved: ' + str(e))
