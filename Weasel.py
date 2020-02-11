@@ -1,12 +1,12 @@
 
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLabel,
+from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, 
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
-        QPushButton, QStatusBar,
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QAbstractSlider,  
-        QProgressBar, QComboBox )
-from PyQt5.QtGui import QCursor, QIcon
+        QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider,   
+        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem )
+from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import pyqtgraph as pg
 import os
@@ -145,6 +145,15 @@ class Weasel(QMainWindow):
             self.viewImageButton.setData(bothImagesAndSeries)
             self.viewImageButton.setEnabled(False)
             self.toolsMenu.addAction(self.viewImageButton)
+
+            self.viewMetaDataButton = QAction('&View Metadata', self)
+            self.viewMetaDataButton.setShortcut('Ctrl+M')
+            self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
+            self.viewMetaDataButton.triggered.connect(self.viewMetadata)
+            self.viewMetaDataButton.setData(bothImagesAndSeries)
+            self.viewMetaDataButton.setEnabled(False)
+            self.toolsMenu.addAction(self.viewMetaDataButton)
+
         
             self.deleteImageButton = QAction('&Delete Image', self)
             self.deleteImageButton.setShortcut('Ctrl+D')
@@ -274,6 +283,44 @@ class Weasel(QMainWindow):
             print('Error in : WEASEL.displayMessageSubWindow' + str(e))
             logger.error('Error in : WEASEL.displayMessageSubWindow' + str(e))
     
+
+    def displayMetaDataSubWindow(self, tableTitle):
+        """
+        Creates a subwindow that displays a DICOM image's metadata. 
+        """
+        try:
+            logger.info('WEASEL displayMetaDataSubWindow called.')
+            title = "DICOM Image Metadata"
+                    
+            widget = QWidget()
+            widget.setLayout(QVBoxLayout()) 
+            self.metaDataSubWindow = QMdiSubWindow(self)
+            self.metaDataSubWindow.setAttribute(Qt.WA_DeleteOnClose)
+            self.metaDataSubWindow.setWidget(widget)
+            self.metaDataSubWindow.setObjectName("metaData_Window")
+            self.metaDataSubWindow.setWindowTitle(title)
+            height, width = self.getMDIAreaDimensions()
+            self.metaDataSubWindow.setGeometry(0,0,width*0.5,height)
+            self.lblMsg = QLabel('<H4>' + tableTitle + '</H4>')
+            widget.layout().addWidget(self.lblMsg)
+
+            self.tableWidget = QTableWidget()
+            self.tableWidget.setShowGrid(True)
+            self.tableWidget.setColumnCount(3)
+            #Table header row
+            self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Tag"))
+            self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Key"))
+            self.tableWidget.setHorizontalHeaderItem(2 , QTableWidgetItem("Value"))
+            #self.tableWidget.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
+            #self.tableWidget.setRowHeight
+            widget.layout().addWidget(self.tableWidget)
+
+            self.mdiArea.addSubWindow(self.metaDataSubWindow)
+            self.metaDataSubWindow.show()
+        except Exception as e:
+            print('Error in : WEASEL.displayMetaDataSubWindow' + str(e))
+            logger.error('Error in : WEASEL.displayMetaDataSubWindow' + str(e))
+
 
     def setMsgWindowProgBarMaxValue(self, maxValue):
         self.progBarMsg.show()
@@ -639,7 +686,7 @@ class Weasel(QMainWindow):
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
-
+    
     def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
         try:
             roiMean = round(np.mean(
@@ -880,6 +927,26 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in viewImage: ' + str(e))
             logger.error('Error in viewImage: ' + str(e))
+
+
+    def viewMetadata(self):
+        """Creates a subwindow that displays a DICOM image's metadata. """
+        try:
+            logger.info("WEASEL viewMetadata called")
+            if self.isAnImageSelected():
+                imagePath = self.selectedImagePath
+                imageName = self.selectedImageName
+                pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+                self.displayMetaDataSubWindow("Metadata for image {}".format(imageName))
+            elif self.isASeriesSelected():
+                studyID = self.selectedStudy 
+                seriesID = self.selectedSeries
+                imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
+                firstImage = imageList[0]
+                self.displayMetaDataSubWindow("Metadata for series {}".format(seriesID))
+        except Exception as e:
+            print('Error in viewMetadata: ' + str(e))
+            logger.error('Error in viewMetadata: ' + str(e))
 
 
     def getImagePathList(self, studyID, seriesID):
