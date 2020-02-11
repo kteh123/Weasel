@@ -2,6 +2,7 @@ import os
 import numpy as np
 import math
 import re
+import struct
 from skimage.transform import resize
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
@@ -24,7 +25,8 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             # The transpose is applied here because the algorithm is developed this way
             imageArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
             
-            #Resample Data
+            # Resample Data
+            # This is so that data shares the same resolution and sizing. Maybe this should be a separate function and a save method
             reconstPixel = 3
             fraction = reconstPixel / dicomList[0].PixelSpacing[0] 
             imageArray = resize(imageArray, (imageArray.shape[0] // fraction, imageArray.shape[1] // fraction, imageArray.shape[2], imageArray.shape[3]), anti_aliasing=True)
@@ -133,16 +135,22 @@ def getParametersT2StarMap(imagePathList, seriesID):
             # Sort by slice last place
             sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
             sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
-            phasePathList = []
+            magnitudePathList = []
             dicomList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
             for index, individualDicom in enumerate(dicomList):
-                minValue = np.amin(readDICOM_Image.getPixelArray(individualDicom))
-                maxValue = np.amax(readDICOM_Image.getPixelArray(individualDicom))
-                if (numberEchoes == 12) and (minValue >= 0) and (maxValue > 0) and (re.match(".*T2.*", seriesID) or re.match(".*t2.*", seriesID) or re.match(".*R2.*", seriesID) or re.match(".*r2.*", seriesID)):
-                    phasePathList.append(imagePathList[index])
+                flagMagnitude = False       
+                try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
+                    if struct.unpack('h', individualDicom[0x0043102f].value)[0] == 0: 
+                        flagMagnitude = True
+                except: pass
+                if hasattr(individualDicom, 'ImageType'):
+                    if ('M' in individualDicom.ImageType) or ('MAGNITUDE' in individualDicom.ImageType):
+                        flagMagnitude = True
+                if (numberEchoes == 12) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                    magnitudePathList.append(imagePathList[index])
 
-            del dicomList, numSlices, numberEchoes
-            return phasePathList, echoList, sliceList
+            del dicomList, numSlices, numberEchoes, flagMagnitude
+            return magnitudePathList, sliceList, echoList
         else:
             return None, None, None
     except Exception as e:
@@ -158,10 +166,10 @@ def saveT2StarMapSeries(objWeasel):
             objWeasel.getImagePathList(studyID, seriesID)
 
         # Should insert Slice sorting before and echotime sorting after this
-        phasePathList, echoList, sliceList = getParametersT2StarMap(imagePathList, seriesID)
-        #print(phasePathList)
-        if phasePathList:
-            T2StarImage = returnPixelArray(phasePathList, sliceList, echoList)
+        magnitudePathList, sliceList, echoList = getParametersT2StarMap(imagePathList, seriesID)
+        #print(magnitudePathList)
+        if magnitudePathList:
+            T2StarImage = returnPixelArray(magnitudePathList, sliceList, echoList)
         else:
             T2StarImage = []
             objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE T2* MAP IN THIS SERIES.")
@@ -170,21 +178,21 @@ def saveT2StarMapSeries(objWeasel):
         # Iterate through list of images and save T2* for each image
         T2StarImagePathList = []
         T2StarImageList = []
-        numImages = len(phasePathList)
+        numImages = len(magnitudePathList)
         objWeasel.displayMessageSubWindow(
             "<H4Saving {} DICOM files for T2* Map calculated</H4>".format(numImages),
             "Saving T2* Map into DICOM Images")
         objWeasel.setMsgWindowProgBarMaxValue(numImages)
         imageCounter = 0
         for index in range(np.shape(T2StarImage)[0]):
-            T2StarImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[index], FILE_SUFFIX)
+            T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[index], FILE_SUFFIX)
             T2StarImagePathList.append(T2StarImageFilePath)
             T2StarImageList.append(T2StarImage[index, ...])
             imageCounter += 1
             objWeasel.setMsgWindowProgBarValue(imageCounter)
 
         objWeasel.closeMessageSubWindow()
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(T2StarImagePathList)],
+        newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T2StarImagePathList)],
                                                          T2StarImagePathList, FILE_SUFFIX)
         # Save new DICOM series locally
         saveDICOM_Image.save_dicom_newSeries(
