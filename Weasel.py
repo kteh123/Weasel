@@ -308,9 +308,9 @@ class Weasel(QMainWindow):
             self.tableWidget.setShowGrid(True)
             self.tableWidget.setColumnCount(3)
             #Table header row
-            self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Tag"))
-            self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Key"))
-            self.tableWidget.setHorizontalHeaderItem(2 , QTableWidgetItem("Value"))
+            self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Tag \n"))
+            self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Key \n"))
+            self.tableWidget.setHorizontalHeaderItem(2 , QTableWidgetItem("Value\n"))
             #self.tableWidget.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
             #self.tableWidget.setRowHeight
             widget.layout().addWidget(self.tableWidget)

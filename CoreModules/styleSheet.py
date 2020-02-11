@@ -87,6 +87,10 @@ TRISTAN_GREY = """
                         background-color: rgb(175, 175, 175);
                         border-color: rgb(200, 51, 255);}
 
+                QTreeWidget{
+                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
+                                                          stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+                    }
                 QTableWidget {
                     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
                                                           stop: 0 #CCCCBB, stop: 1 #FFFFFF);
@@ -100,6 +104,7 @@ TRISTAN_GREY = """
             QHeaderView, QHeaderView::section {
                 background-color: rgba(125, 125, 125, 125);
                 font-weight: bold;
+                font-size: x-large;
                 }
 
                 """
