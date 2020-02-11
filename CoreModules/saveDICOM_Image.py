@@ -6,6 +6,7 @@ from pydicom.sequence import Sequence
 import datetime
 import copy
 import random
+from scipy.stats import iqr
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
 
@@ -256,7 +257,9 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
             imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
 
         newDicom.WindowCenter = int(np.median(imageArrayInt))
-        newDicom.WindowWidth = int(np.std(imageArrayInt)) * 2
+        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
+        newDicom.SmallestImagePixelValue = 0 if int(np.amin(imageArrayInt)) < 0 else int(np.amin(imageArrayInt))
+        newDicom.LargestImagePixelValue = int(np.amax(imageArrayInt))
         newDicom.RescaleSlope = rescaleSlope.flatten()[0]
         newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()
