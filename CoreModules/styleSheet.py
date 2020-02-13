@@ -97,7 +97,7 @@ TRISTAN_GREY = """
                     }
 
                 QTableWidget::item {
-                    hborder: 5px solid rgba(68, 119, 170, 150);
+                    border: 5px solid rgba(68, 119, 170, 150);
                     background-color:rgba(68, 119, 170, 125);
                     }
 
