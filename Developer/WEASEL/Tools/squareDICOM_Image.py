@@ -35,20 +35,18 @@ def squareImage(objWeasel):
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
-            #Record inverted image in XML file
-            seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
-                                                      FILE_SUFFIX)
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.save_dicom_outputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX) # Still need some optional flags depending on insertNewImageInXMLFile
+            #Record squared image in XML file
+            seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
             objWeasel.refreshDICOMStudiesTreeView(seriesID)
         elif objWeasel.isASeriesSelected():
-            # Should consider the case where Series is 1 image/file only
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
             imagePathList = \
                     objWeasel.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and invert each image
+            #Iterate through list of images and square each image
             derivedImagePathList = []
             derivedImageList = []
             numImages = len(imagePathList)
@@ -66,11 +64,10 @@ def squareImage(objWeasel):
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
 
             objWeasel.closeMessageSubWindow()
-
-            newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
-                derivedImagePathList, FILE_SUFFIX)
             # Save new DICOM series locally
             saveDICOM_Image.save_dicom_newSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
+                derivedImagePathList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(
                 derivedImagePathList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

@@ -259,7 +259,7 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
         newDicom.WindowCenter = int(np.median(imageArrayInt))
         newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
         newDicom.SmallestImagePixelValue = 0 if int(np.amin(imageArrayInt)) < 0 else int(np.amin(imageArrayInt))
-        newDicom.LargestImagePixelValue = int(np.amax(imageArrayInt))
+        newDicom.LargestImagePixelValue = np.power(2, dicomData.BitsAllocated) - 1 if int(np.amax(imageArrayInt)) < 0 else int(np.amax(imageArrayInt))
         newDicom.RescaleSlope = rescaleSlope.flatten()[0]
         newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()

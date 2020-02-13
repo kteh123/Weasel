@@ -15,6 +15,7 @@ import time
 import numpy as np
 import logging
 import importlib
+from scipy.stats import iqr
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
@@ -672,7 +673,11 @@ class Weasel(QMainWindow):
                 #Display a black box
                 imv.setImage(np.array([[0,0,0],[0,0,0]])) 
             else:
-                imv.setImage(pixelArray) 
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                imv.setImage(pixelArray, levels=(minimumValue, maximumValue))  
                 lblImageMissing.hide()
                 
             self.subWindow.setObjectName(imagePath)
@@ -898,7 +903,11 @@ class Weasel(QMainWindow):
                     btnDeleteDICOMFile.hide()
                     imv.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    imv.setImage(pixelArray) 
+                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                        1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                    imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
                     lblImageMissing.hide()
                     btnDeleteDICOMFile.show()
 
@@ -987,12 +996,12 @@ class Weasel(QMainWindow):
             logger.error('Error in insertNewImageInXMLFile: ' + str(e))
 
 
-    def getNewSeriesName(self, studyID, seriesID, suffix):
+    def getNewSeriesName(self, studyID, dataset, suffix):
         """This function uses recursion to find the next available
         series name.  A new series name is created by adding a suffix
         at the end of an existing series name. """
         try:
-            seriesID = seriesID + suffix
+            seriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
             imageList = self.objXMLReader.getImageList(studyID, seriesID)
             if imageList:
                 #A series of images already exists 
@@ -1000,7 +1009,8 @@ class Weasel(QMainWindow):
                 #so make another new series ID 
                 #by adding the suffix to the previous
                 #new series ID
-                return self.getNewSeriesName(studyID, seriesID, suffix)
+                dataset.SeriesDescription = dataset.SeriesDescription + suffix
+                return self.getNewSeriesName(studyID, dataset, suffix)
             else:
                 logger.info("WEASEL getNewSeriesName returns seriesID {}".format(seriesID))
                 return seriesID
@@ -1017,7 +1027,8 @@ class Weasel(QMainWindow):
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries 
             #Get a new series ID
-            newSeriesID = self.getNewSeriesName(studyID, seriesID, suffix)
+            dataset = readDICOM_Image.getDicomDataset(newImageList[0])
+            newSeriesID = self.getNewSeriesName(studyID, dataset, suffix)
             self.objXMLReader.insertNewSeriesInXML(origImageList, 
                      newImageList, studyID, newSeriesID, seriesID, suffix)
             self.statusBar.showMessage('New series created: - ' + newSeriesID)
@@ -1210,7 +1221,11 @@ class Weasel(QMainWindow):
                 self.btnSave.setEnabled(True)
                 self.binOpArray = binaryOperationDICOM_Image.returnPixelArray(
                     imagePath1, imagePath2, binOp)
-                self.img3.setImage(self.binOpArray)
+                minimumValue = np.amin(self.binOpArray) if (np.median(self.binOpArray) - iqr(self.binOpArray, rng=(
+                    1, 99))/2) < np.amin(self.binOpArray) else np.median(self.binOpArray) - iqr(self.binOpArray, rng=(1, 99))/2
+                maximumValue = np.amax(self.binOpArray) if (np.median(self.binOpArray) + iqr(self.binOpArray, rng=(
+                    1, 99))/2) > np.amax(self.binOpArray) else np.median(self.binOpArray) + iqr(self.binOpArray, rng=(1, 99))/2
+                self.img3.setImage(self.binOpArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
             else:
                 self.btnSave.setEnabled(False)
         except Exception as e:
@@ -1244,7 +1259,11 @@ class Weasel(QMainWindow):
                 objImage.setImage(np.array([[0,0,0],[0,0,0]])) 
             else:
                 objImageMissingLabel.hide()
-                objImage.setImage(pixelArray) 
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                objImage.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))  
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
             logger.error('Error in displayImageForBinOp: ' + str(e))
