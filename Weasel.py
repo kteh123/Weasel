@@ -285,7 +285,52 @@ class Weasel(QMainWindow):
             logger.error('Error in : WEASEL.displayMessageSubWindow' + str(e))
     
 
-    def displayMetaDataSubWindow(self, tableTitle):
+    def buildTableView(self, dataset):
+        """Builds a Table View displaying DICOM image metadata
+        as Tag, Key (or name), Value"""
+        try:
+            tableWidget = QTableWidget()
+            tableWidget.setShowGrid(True)
+            tableWidget.setColumnCount(3)
+
+            #Create table header row
+            headerItem = QTableWidgetItem(QTableWidgetItem("Tag\n")) 
+            headerItem.setTextAlignment(Qt.AlignLeft)
+            tableWidget.setHorizontalHeaderItem(0,headerItem)
+            headerItem = QTableWidgetItem(QTableWidgetItem("Key \n")) 
+            headerItem.setTextAlignment(Qt.AlignLeft)
+            tableWidget.setHorizontalHeaderItem(1, headerItem)
+            headerItem = QTableWidgetItem(QTableWidgetItem("Value\n")) 
+            headerItem.setTextAlignment(Qt.AlignLeft)
+            headerItem = tableWidget.setHorizontalHeaderItem(2 ,headerItem)
+           
+            #Create rows of metadata
+            for data_element in dataset:
+                #Exclude pixel data from metadata listing
+                if data_element.name == 'Pixel Data':
+                    continue
+                rowPosition = tableWidget.rowCount()
+                tableWidget.insertRow(rowPosition)
+                tableWidget.setItem(rowPosition , 0, 
+                                QTableWidgetItem(data_element.VR))
+                tableWidget.setItem(rowPosition , 1, 
+                                QTableWidgetItem(data_element.name))
+                tableWidget.setItem(rowPosition , 2, 
+                                QTableWidgetItem(str(data_element.value)))
+
+            #Resize columns to fit contents
+            header = tableWidget.horizontalHeader()
+            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+
+            return tableWidget
+        except Exception as e:
+            print('Error in : WEASEL.buildTableView' + str(e))
+            logger.error('Error in : WEASEL.buildTableView' + str(e))
+
+
+    def displayMetaDataSubWindow(self, tableTitle, dataset):
         """
         Creates a subwindow that displays a DICOM image's metadata. 
         """
@@ -301,20 +346,13 @@ class Weasel(QMainWindow):
             self.metaDataSubWindow.setObjectName("metaData_Window")
             self.metaDataSubWindow.setWindowTitle(title)
             height, width = self.getMDIAreaDimensions()
-            self.metaDataSubWindow.setGeometry(0,0,width*0.5,height)
-            self.lblMsg = QLabel('<H4>' + tableTitle + '</H4>')
-            widget.layout().addWidget(self.lblMsg)
+            self.metaDataSubWindow.setGeometry(0,0,width*0.6,height)
+            lblImageName = QLabel('<H4>' + tableTitle + '</H4>')
+            widget.layout().addWidget(lblImageName)
 
-            self.tableWidget = QTableWidget()
-            self.tableWidget.setShowGrid(True)
-            self.tableWidget.setColumnCount(3)
-            #Table header row
-            self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Tag \n"))
-            self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Key \n"))
-            self.tableWidget.setHorizontalHeaderItem(2 , QTableWidgetItem("Value\n"))
-            #self.tableWidget.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
-            #self.tableWidget.setRowHeight
-            widget.layout().addWidget(self.tableWidget)
+            DICOM_Metadata_Table_View = self.buildTableView(dataset) 
+            
+            widget.layout().addWidget(DICOM_Metadata_Table_View)
 
             self.mdiArea.addSubWindow(self.metaDataSubWindow)
             self.metaDataSubWindow.show()
@@ -945,14 +983,17 @@ class Weasel(QMainWindow):
             if self.isAnImageSelected():
                 imagePath = self.selectedImagePath
                 imageName = self.selectedImageName
-                pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-                self.displayMetaDataSubWindow("Metadata for image {}".format(imageName))
+                dataset = readDICOM_Image.getDicomDataset(imagePath)
+                self.displayMetaDataSubWindow("Metadata for image {}".format(imageName), 
+                                              dataset)
             elif self.isASeriesSelected():
                 studyID = self.selectedStudy 
                 seriesID = self.selectedSeries
                 imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
-                firstImage = imageList[0]
-                self.displayMetaDataSubWindow("Metadata for series {}".format(seriesID))
+                firstImagePath = imageList[0]
+                dataset = readDICOM_Image.getDicomDataset(firstImagePath)
+                self.displayMetaDataSubWindow("Metadata for series {}".format(seriesID), 
+                                              dataset)
         except Exception as e:
             print('Error in viewMetadata: ' + str(e))
             logger.error('Error in viewMetadata: ' + str(e))
