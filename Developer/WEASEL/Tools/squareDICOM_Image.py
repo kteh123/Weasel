@@ -8,9 +8,8 @@ def returnPixelArray(imagePath):
     """Applies the squareroot on an image and returns the resulting PixelArray"""
     try:
         if os.path.exists(imagePath):
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            pixelArray = readDICOM_Image.getPixelArray(dataset)
-            derivedImage = squareAlgorithm(pixelArray, dataset)
+            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            derivedImage = squareAlgorithm(pixelArray)
             return derivedImage
         else:
             return None
@@ -18,9 +17,9 @@ def returnPixelArray(imagePath):
             print('Error in function squareDICOM_Image.returnPixelArray: ' + str(e))
     
 
-def squareAlgorithm(pixelArray, dataset):
+def squareAlgorithm(pixelArray):
     try:
-        derivedImage = np.square(pixelArray.astype(dataset.pixel_array.dtype))
+        derivedImage = np.square(pixelArray)
         return derivedImage
     except Exception as e:
             print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))

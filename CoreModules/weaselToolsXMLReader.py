@@ -214,7 +214,6 @@ class WeaselToolsXMLReader:
                 #Add child nodes of the image element
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageList[index]
-                # SHOULD THESE BE THE DATE AND TIME AT THE MOMENT OF CREATION RATHER THAN FROM THE PREVIOUS SERIES?
                 timeNewImage = ET.SubElement(newImage, 'time')
                 timeNewImage.text = imageTime
                 dateNewImage = ET.SubElement(newImage, 'date')

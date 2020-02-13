@@ -15,28 +15,33 @@ def returnPixelArray(imagePath):
         print('Error in function readDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def getDicomDataset(imagePath):
-    """This method reads the DICOM file in imagePath and returns the DICOM Dataset object/class"""
+def returnAffineArray(imagePath):
+    """This method reads the DICOM file in imagePath and returns the Affine/Orientation matrix"""
     try:
         if os.path.exists(imagePath):
-            dataset = pydicom.dcmread(imagePath)
-            return dataset
+            dataset = getDicomDataset(imagePath)
+            affineArray = getAffineArray(dataset)
+            return affineArray
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function readDICOM_Image.returnAffineArray: ' + str(e))
 
 
-def getSeriesDicomDataset(imagePathList):
-    """This method reads the DICOM files in imagePathList and returns the DICOM Dataset object/class"""
+def returnSeriesPixelArray(imagePathList):
+    """This method reads the DICOM files in imagePathList and 
+    returns a list where each element is a DICOM Dataset object/class"""
     try:
-        datasetList = list()
-        for imagePath in imagePathList:
-            if os.path.exists(imagePath):
-                datasetList.append(pydicom.dcmread(imagePath))
-        if datasetList:
-            return datasetList
+        datasetList = getSeriesDicomDataset(imagePathList)
+        imageList = list()
+        for dataset in datasetList:
+            imageList.append(getPixelArray(dataset))
+        if imageList:
+            volumeArray = np.array(imageList)
+            del imageList
+            return volumeArray
         else:
+            del imageList
             return None
     except Exception as e:
         print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
@@ -88,6 +93,33 @@ def sortSequenceByTag(imagePathList, dicomTag):
         print('Error in function readDICOM_Image.sortSequenceByTag: ' + str(e))
 
 
+def getSeriesDicomDataset(imagePathList):
+    """This method reads the DICOM files in imagePathList and 
+    returns a list where each element is a DICOM Dataset object/class"""
+    try:
+        datasetList = list()
+        for imagePath in imagePathList:
+            datasetList.append(getDicomDataset(imagePath))
+        if datasetList:
+            return datasetList
+        else:
+            return None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+
+
+def getDicomDataset(imagePath):
+    """This method reads the DICOM file in imagePath and returns the DICOM Dataset object/class"""
+    try:
+        if os.path.exists(imagePath):
+            dataset = pydicom.dcmread(imagePath)
+            return dataset
+        else:
+            return None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+
+
 def getPixelArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Image/Pixel array"""
     try:
@@ -108,7 +140,7 @@ def getPixelArray(dataset):
         print('Error in function readDICOM_Image.getPixelArray: ' + str(e))
 
 
-def returnAffineArray(dataset):
+def getAffineArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Affine/Orientation matrix"""
     try:
         if hasattr(dataset, 'PixelData'):
@@ -139,7 +171,8 @@ def returnAffineArray(dataset):
                 affine[:3, 1] = column_cosine * row_spacing
                 affine[:3, 2] = slice_cosine * slice_spacing
                 affine[:3, 3] = dataset.ImagePositionPatient
+            return affine
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.returnAffineArray: ' + str(e))
+        print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
