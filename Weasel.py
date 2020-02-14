@@ -287,22 +287,25 @@ class Weasel(QMainWindow):
 
     def buildTableView(self, dataset):
         """Builds a Table View displaying DICOM image metadata
-        as Tag, Key (or name), Value"""
+        as Tag, name, VR & Value"""
         try:
             tableWidget = QTableWidget()
             tableWidget.setShowGrid(True)
-            tableWidget.setColumnCount(3)
+            tableWidget.setColumnCount(4)
 
             #Create table header row
             headerItem = QTableWidgetItem(QTableWidgetItem("Tag\n")) 
             headerItem.setTextAlignment(Qt.AlignLeft)
             tableWidget.setHorizontalHeaderItem(0,headerItem)
-            headerItem = QTableWidgetItem(QTableWidgetItem("Key \n")) 
+            headerItem = QTableWidgetItem(QTableWidgetItem("Name \n")) 
             headerItem.setTextAlignment(Qt.AlignLeft)
             tableWidget.setHorizontalHeaderItem(1, headerItem)
+            headerItem = QTableWidgetItem(QTableWidgetItem("VR \n")) 
+            headerItem.setTextAlignment(Qt.AlignLeft)
+            tableWidget.setHorizontalHeaderItem(2, headerItem)
             headerItem = QTableWidgetItem(QTableWidgetItem("Value\n")) 
             headerItem.setTextAlignment(Qt.AlignLeft)
-            headerItem = tableWidget.setHorizontalHeaderItem(2 ,headerItem)
+            headerItem = tableWidget.setHorizontalHeaderItem(3 ,headerItem)
            
             #Create rows of metadata
             for data_element in dataset:
@@ -312,10 +315,12 @@ class Weasel(QMainWindow):
                 rowPosition = tableWidget.rowCount()
                 tableWidget.insertRow(rowPosition)
                 tableWidget.setItem(rowPosition , 0, 
-                                QTableWidgetItem(data_element.VR))
+                                QTableWidgetItem(str(data_element.tag)))
                 tableWidget.setItem(rowPosition , 1, 
                                 QTableWidgetItem(data_element.name))
                 tableWidget.setItem(rowPosition , 2, 
+                                QTableWidgetItem(data_element.VR))
+                tableWidget.setItem(rowPosition , 3, 
                                 QTableWidgetItem(str(data_element.value)))
 
             #Resize columns to fit contents
@@ -323,6 +328,7 @@ class Weasel(QMainWindow):
             header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
             header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
             header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
             return tableWidget
         except Exception as e:
