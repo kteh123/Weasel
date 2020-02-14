@@ -13,10 +13,9 @@ FILE_SUFFIX = '_B0Map'
 
 def B0map(pixelArray, echoList):
     try:
-        # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
         phaseDiff = np.squeeze(pixelArray[0, ...] - pixelArray[1, ...])
         deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
-        derivedImage = unwrap_phase(phaseDiff, wrap_around=True) / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
+        derivedImage = unwrap_phase(phaseDiff) / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
         return derivedImage
     except Exception as e:
         print('Error in function B0MapDICOM_Image.B0map: ' + str(e))
