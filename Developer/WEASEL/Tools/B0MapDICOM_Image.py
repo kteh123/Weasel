@@ -3,45 +3,36 @@ import numpy as np
 import math
 import re
 import struct
+from skimage.restoration import unwrap_phase
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
-#from Weasel import Weasel as weasel
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 
 FILE_SUFFIX = '_B0Map'
 
 
-def B0map(imageArray, echoList):
+def B0map(pixelArray, echoList):
     try:
-        # Unwrapping Phase?
         # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
-        phaseDiff = np.squeeze(imageArray[0, ...] - imageArray[1, ...])
+        phaseDiff = np.squeeze(pixelArray[0, ...] - pixelArray[1, ...])
         deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
-        derivedImage = phaseDiff / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
+        derivedImage = unwrap_phase(phaseDiff, wrap_around=True) / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
         return derivedImage
     except Exception as e:
         print('Error in function B0MapDICOM_Image.B0map: ' + str(e))
 
 
 def returnPixelArray(imagePathList, sliceList, echoList):
-    """Returns the B0 Map Array"""
+    """Returns the B0 Map Array with the Phase images as starting point"""
     try:
         if os.path.exists(imagePathList[0]):
-            # Could make a generic method - need to take the Multiframe into account
-            dicomList = readDICOM_Image.getSeriesDicomDataset(imagePathList)
-            imageList = []
-            for individualDicom in dicomList:
-                imageList.append(readDICOM_Image.getPixelArray(individualDicom))
-            volumeArray = np.array(imageList)
-            print(np.shape(volumeArray))
+            volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            imageArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
-            print(np.shape(imageArray))
+            pixelArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
             # Algorithm
-            pixelArray = B0map(imageArray, echoList)
-
-            del volumeArray, imageArray, imageList, dicomList
-            return pixelArray
+            derivedImage = B0map(pixelArray, echoList)
+            del volumeArray, pixelArray
+            return derivedImage
         else:
             return None
     except Exception as e:
@@ -49,29 +40,18 @@ def returnPixelArray(imagePathList, sliceList, echoList):
 
 
 def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
-    """Returns the B0 Map Array"""
+    """Returns the B0 Map Array with the Real and Imaginary images as starting point"""
     try:
         if os.path.exists(imagePathList[0][0]) and os.path.exists(imagePathList[1][0]):
-            # Could make a generic method - need to take the Multiframe into account
-            realDicomList = readDICOM_Image.getSeriesDicomDataset(imagePathList[0])
-            imaginaryDicomList = readDICOM_Image.getSeriesDicomDataset(imagePathList[1])
-            realImageList = []
-            imaginaryImageList = []
-            for index, individualDicom in enumerate(realDicomList):
-                realImageList.append(readDICOM_Image.getPixelArray(individualDicom))
-                imaginaryImageList.append(readDICOM_Image.getPixelArray(imaginaryDicomList[index]))
-            realVolumeArray = np.array(realImageList)
-            imaginaryVolumeArray = np.array(imaginaryImageList)       
-            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray) * 1000
-            print(np.shape(volumeArray))
+            realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
+            imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])      
+            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            imageArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
-            print(np.shape(imageArray))
+            pixelArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
             # Algorithm
-            pixelArray = B0map(imageArray, echoList)
-
-            del volumeArray, imageArray#, imageList, dicomList
-            return pixelArray
+            derivedImage = B0map(pixelArray, echoList)
+            del volumeArray, pixelArray
+            return derivedImage
         else:
             return None
     except Exception as e:
@@ -79,6 +59,7 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
 
 
 def getParametersB0Map(imagePathList, seriesID):
+    """This method checks if the series in imagePathList meets the criteria to be processed and calculate B0 Map"""
     try:
         if os.path.exists(imagePathList[0]):
             # Sort by slice last place
@@ -86,25 +67,25 @@ def getParametersB0Map(imagePathList, seriesID):
             sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
             phasePathList = []
             riPathList = [[], []]
-            dicomList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-            for index, individualDicom in enumerate(dicomList):
+            datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
+            for index, dataset in enumerate(datasetList):
                 flagPhase = False
                 flagReal = False
                 flagImaginary = False
                 try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                    if struct.unpack('h', individualDicom[0x0043102f].value)[0] == 1:
+                    if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
                         flagPhase = True
-                    if struct.unpack('h', individualDicom[0x0043102f].value)[0] == 2:
+                    if struct.unpack('h', dataset[0x0043102f].value)[0] == 2:
                         flagReal = True
-                    if struct.unpack('h', individualDicom[0x0043102f].value)[0] == 3:
+                    if struct.unpack('h', dataset[0x0043102f].value)[0] == 3:
                         flagImaginary = True
                 except: pass
-                if hasattr(individualDicom, 'ImageType'): 
-                    if ('P' in individualDicom.ImageType) or ('PHASE' in individualDicom.ImageType):
+                if hasattr(dataset, 'ImageType'): 
+                    if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType):
                         flagPhase = True
-                    elif ('R' in individualDicom.ImageType) or ('REAL' in individualDicom.ImageType):
+                    elif ('R' in dataset.ImageType) or ('REAL' in dataset.ImageType):
                         flagReal = True
-                    elif ('I' in individualDicom.ImageType) or ('IMAGINARY' in individualDicom.ImageType):
+                    elif ('I' in dataset.ImageType) or ('IMAGINARY' in dataset.ImageType):
                         flagImaginary = True
                 if (numberEchoes == 2) and flagPhase and re.match(".*b0.*", seriesID.lower()):
                     phasePathList.append(imagePathList[index])
@@ -112,9 +93,8 @@ def getParametersB0Map(imagePathList, seriesID):
                     riPathList[0].append(imagePathList[index])
                 elif (numberEchoes == 2) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
                     riPathList[1].append(imagePathList[index])
-                print(riPathList)
 
-            del dicomList, numSlices, numberEchoes, flagPhase, flagReal, flagImaginary
+            del datasetList, numSlices, numberEchoes, flagPhase, flagReal, flagImaginary
             return phasePathList, sliceList, echoList, riPathList
         else:
             return None, None, None
@@ -123,14 +103,13 @@ def getParametersB0Map(imagePathList, seriesID):
 
 
 def saveB0MapSeries(objWeasel):
+    """Main method called from WEASEL to calculate the B0 Map"""
     try:
-        #imagePathList, studyID, _ = weasel.getImagePathList_Copy()
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
         imagePathList = \
             objWeasel.getImagePathList(studyID, seriesID)
 
-        # Should insert Slice sorting before and echotime sorting after this
         phasePathList, sliceList, echoList, riPathList = getParametersB0Map(imagePathList, seriesID)
         if phasePathList:
             B0Image = returnPixelArray(phasePathList, sliceList, echoList)
@@ -138,7 +117,6 @@ def saveB0MapSeries(objWeasel):
             B0Image = returnPixelArrayFromRealIm(riPathList, sliceList, echoList)
             phasePathList = riPathList[0] # Here we're assuming that the saving will be performed based on the Real Images
         else:
-            B0Image = []
             objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
             raise ValueError("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
 
@@ -159,11 +137,12 @@ def saveB0MapSeries(objWeasel):
             objWeasel.setMsgWindowProgBarValue(imageCounter)
 
         objWeasel.closeMessageSubWindow()
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)],
-                                                         B0ImagePathList, FILE_SUFFIX)
+        
         # Save new DICOM series locally
         saveDICOM_Image.save_dicom_newSeries(
             B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
+        newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)], 
+                                                            B0ImagePathList, FILE_SUFFIX)
         objWeasel.displayMultiImageSubWindow(B0ImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
