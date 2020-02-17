@@ -44,7 +44,7 @@ def copySeries(objWeasel):
 
         objWeasel.closeMessageSubWindow()
         # Save new DICOM series locally
-        saveDICOM_Image.save_dicom_newSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
+        saveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
         newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, copiedImagePathList, FILE_SUFFIX)
         objWeasel.displayMultiImageSubWindow(copiedImagePathList, 
                                               studyID, newSeriesID)

@@ -3,10 +3,10 @@ import numpy as np
 import math
 import re
 import struct
-from skimage.transform import resize
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
+from Developer.WEASEL.Tools.imagingTools import resizePixelArray
 
 FILE_SUFFIX = '_T2StarMap'
 
@@ -101,17 +101,14 @@ def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the T2* Map Array"""
     try:
         if os.path.exists(imagePathList[0]):
+            datasetSample = readDICOM_Image.getDicomDataset(imagePathList[0])
             volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
             pixelArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
             # The transpose is applied here because the T2* algorithm is developed this way
-
-            # Resample Data / Don't forget to resample the 128x128 of GE / Will have to put this in a separate file
-            # This is so that data shares the same resolution and sizing. Maybe this should be a separate function and a save method
-            #reconstPixel = 3
-            #fraction = reconstPixel / datasetList[0].PixelSpacing[0] 
-            #pixelArray = resize(pixelArray, (pixelArray.shape[0] // fraction, pixelArray.shape[1] // fraction, pixelArray.shape[2], pixelArray.shape[3]), anti_aliasing=True)
-
+            pixelArray = resizePixelArray(pixelArray, datasetSample.PixelSpacing[0], reconstPixel=3)
+            # Resample Data / Don't forget to resample the 128x128 of GE / Will have to put this in a separate file. This is so that data shares the same resolution and sizing.
+            
             # Algorithm
             derivedImage, _, _ = T2starmap(pixelArray, echoList)
             derivedImage = np.transpose(derivedImage)
@@ -187,7 +184,7 @@ def saveT2StarMapSeries(objWeasel):
         objWeasel.closeMessageSubWindow()
         
         # Save new DICOM series locally
-        saveDICOM_Image.save_dicom_newSeries(
+        saveDICOM_Image.saveDicomNewSeries(
             T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map="T2Star")
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T2StarImagePathList)],
                                                         T2StarImagePathList, FILE_SUFFIX)

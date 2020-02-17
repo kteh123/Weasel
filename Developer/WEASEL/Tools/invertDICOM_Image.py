@@ -37,7 +37,7 @@ def invertImage(objWeasel):
             objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
             
             # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.save_dicom_outputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
+            saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
             #Record inverted image in XML file
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
                                                       FILE_SUFFIX)
@@ -69,7 +69,7 @@ def invertImage(objWeasel):
             objWeasel.closeMessageSubWindow()
 
             # Save new DICOM series locally
-            saveDICOM_Image.save_dicom_newSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(

@@ -65,11 +65,11 @@ def sortSequenceByTag(imagePathList, dicomTag):
                 sortedSequenceAux = list()
                 sortedSequencePath = imagePathList
                 sortedSequence = datasetList
-                [attributeList.append(float(individualDicom.data_element(str(dicomTag)).value)) for individualDicom in datasetList]
+                [attributeList.append(float(dataset.data_element(str(dicomTag)).value)) for dataset in datasetList]
                 attributeList = np.unique(attributeList)
                 attributeList.sort()
-                [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeList for indexAux, individualDicom in enumerate(datasetList) if float(individualDicom.data_element(str(dicomTag)).value) == attributeValue]
-                [sortedSequenceAux.append(individualDicom) for attributeValue in attributeList for individualDicom in datasetList if float(individualDicom.data_element(str(dicomTag)).value) == attributeValue]
+                [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeList for indexAux, dataset in enumerate(datasetList) if float(dataset.data_element(str(dicomTag)).value) == attributeValue]
+                [sortedSequenceAux.append(dataset) for attributeValue in attributeList for dataset in datasetList if float(dataset.data_element(str(dicomTag)).value) == attributeValue]
                 numAttribute = len(attributeList)
                 #At this point, it's sorted as 111222333. The next step will sort the values in the format 123123123
                 repetition = 0
