@@ -7,6 +7,7 @@ from skimage.restoration import unwrap_phase
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
+from Developer.WEASEL.Tools.imagingTools import resizePixelArray
 
 FILE_SUFFIX = '_B0Map'
 
@@ -25,12 +26,14 @@ def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the B0 Map Array with the Phase images as starting point"""
     try:
         if os.path.exists(imagePathList[0]):
+            datasetSample = readDICOM_Image.getDicomDataset(imagePathList[0])
             volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
             pixelArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
+            pixelArray = resizePixelArray(pixelArray, datasetSample.PixelSpacing[0]) 
             # Algorithm
             derivedImage = B0map(pixelArray, echoList)
-            del volumeArray, pixelArray
+            del volumeArray, pixelArray, datasetSample
             return derivedImage
         else:
             return None
@@ -42,14 +45,16 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
     """Returns the B0 Map Array with the Real and Imaginary images as starting point"""
     try:
         if os.path.exists(imagePathList[0][0]) and os.path.exists(imagePathList[1][0]):
+            datasetSample = readDICOM_Image.getDicomDataset(imagePathList[0][0])
             realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
             imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])      
             volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
             # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            pixelArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))    
+            pixelArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2])))   
+            pixelArray = resizePixelArray(pixelArray, datasetSample.PixelSpacing[0]) 
             # Algorithm
             derivedImage = B0map(pixelArray, echoList)
-            del volumeArray, pixelArray
+            del volumeArray, pixelArray, datasetSample
             return derivedImage
         else:
             return None
@@ -138,7 +143,7 @@ def saveB0MapSeries(objWeasel):
         objWeasel.closeMessageSubWindow()
         
         # Save new DICOM series locally
-        saveDICOM_Image.save_dicom_newSeries(
+        saveDICOM_Image.saveDicomNewSeries(
             B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)], 
                                                             B0ImagePathList, FILE_SUFFIX)

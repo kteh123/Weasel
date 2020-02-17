@@ -35,7 +35,7 @@ def squareImage(objWeasel):
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
             # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.save_dicom_outputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX) # Still need some optional flags depending on insertNewImageInXMLFile
+            saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX) # Still need some optional flags depending on insertNewImageInXMLFile
             #Record squared image in XML file
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
@@ -64,7 +64,7 @@ def squareImage(objWeasel):
 
             objWeasel.closeMessageSubWindow()
             # Save new DICOM series locally
-            saveDICOM_Image.save_dicom_newSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
             objWeasel.displayMultiImageSubWindow(

@@ -17,41 +17,45 @@ def returnFilePath(imagePath, suffix, new_path=None):
     try:
         if os.path.exists(imagePath):
             # Need to think about what new name to give to the file and how to save multiple files for the same sequence
-            oldFileName = os.path.splitext(imagePath)
             if new_path is not None:
                 newFilePath = new_path + '.dcm'
             else:
-                newFilePath = oldFileName[0] + suffix + '.dcm'
+                outputFolder = os.path.join(os.path.dirname(imagePath), "output" + suffix)
+                fileName = os.path.splitext(os.path.basename(imagePath))[0]
+                try: os.mkdir(outputFolder)
+                except: pass
+                newFilePath = os.path.join(outputFolder, fileName + suffix + '.dcm')
             return newFilePath
+
         else:
             return None
     except Exception as e:
         print('Error in function saveDICOM_Image.returnFilePath: ' + str(e))
 
 
-def save_dicom_outputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, list_refs_path=None):
+def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
     try:
         if os.path.exists(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             if list_refs_path is not None:
                 refs = []
-                for individual_ref in list_refs_path:
-                    refs.append(readDICOM_Image.getDicomDataset(individual_ref))
+                for individualRef in list_refs_path:
+                    refs.append(readDICOM_Image.getDicomDataset(individualRef))
             else:
                 refs = None
-            newDataset = create_new_single_dicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
+            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
             if image_number is not None:
+                newDataset.InstanceNumber = image_number
                 newDataset.ImageNumber = image_number
-                newDataset.ImageInstance = image_number
-            save_dicom_to_file(newDataset, output_path=newFilePath)
-            del dataset, newDataset
+            saveDicomToFile(newDataset, output_path=newFilePath)
+            del dataset, newDataset, refs, image_number
             return
         else:
             return None
 
     except Exception as e:
-        print('Error in function saveDICOM_Image.save_dicom_outputResult: ' + str(e))
+        print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
 def save_dicom_binOpResult(imagePath1, imagePath2, pixelArray, imageFilePath, suffix):
@@ -60,8 +64,8 @@ def save_dicom_binOpResult(imagePath1, imagePath2, pixelArray, imageFilePath, su
             # Need to think about what new name to give to the file and how to save multiple files for the same sequence
             dataset1 = readDICOM_Image.getDicomDataset(imagePath1)
             dataset2 = readDICOM_Image.getDicomDataset(imagePath2)
-            newDataset = create_new_single_dicom(dataset1, pixelArray, comment=suffix, list_refs=dataset2)
-            save_dicom_to_file(newDataset, output_path=imageFilePath)
+            newDataset = createNewSingleDicom(dataset1, pixelArray, comment=suffix, list_refs=dataset2)
+            saveDicomToFile(newDataset, output_path=imageFilePath)
             del dataset1, dataset2, newDataset
             return
         else:
@@ -70,49 +74,48 @@ def save_dicom_binOpResult(imagePath1, imagePath2, pixelArray, imageFilePath, su
         print('Error in function saveDICOM_Image.save_dicom_binOpResult: ' + str(e))
 
 
-def save_dicom_newSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
+def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
-    # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation
+    # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
     # Think of a way to choose a select a new FilePath or Folder
     try:
         if os.path.exists(imagePathList[0]):
             if series_id is None:
-                # Need to write a check against the XML file to see which SeriesNumber already exist - Will probably be done in the XML side
                 series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             if series_uid is None:
                 series_uid = pydicom.uid.generate_uid()
 
             refs = None
-            for index, individualDicom in enumerate(derivedImagePathList):
+            for index, dataset in enumerate(derivedImagePathList):
                 # Extra references, besides the main one, which is imagePathList
                 if list_refs_path is not None:
                     if len(np.shape(list_refs_path)) == 1:
                         refs = list_refs_path[index]
                     else:
                         refs = []
-                        for individual_ref in list_refs_path:
-                            refs.append(individual_ref[index])
+                        for individualRef in list_refs_path:
+                            refs.append(individualRef[index])
 
-                save_dicom_outputResult(individualDicom, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
+                saveDicomOutputResult(dataset, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:
             return None
     except Exception as e:
-        print('Error in function saveDICOM_Image.save_dicom_newSeries: ' + str(e))     
+        print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))     
 
 
-def save_dicom_to_file(dicomData, output_path=None):
+def saveDicomToFile(dicomData, output_path=None):
     """This method takes a DICOM object and saves it as a DICOM file 
         with the set filename in the input arguments.
     """
     try:
         if output_path is None:
             try:
-                output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
+                output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
             except:
                 try:
-                    output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
+                    output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
                 except:
                     output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
 
@@ -120,10 +123,10 @@ def save_dicom_to_file(dicomData, output_path=None):
         del dicomData
         return
     except Exception as e:
-        print('Error in function save_dicom_to_file: ' + str(e))
+        print('Error in function saveDicomToFile: ' + str(e))
 
 
-def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, list_refs=None):
+def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
     """
@@ -185,15 +188,15 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
                 refd_series1.SeriesInstanceUID = list_refs.SeriesInstanceUID
                 refd_series_sequence.append(refd_series1)
             else:
-                for individual_ref in list_refs:
+                for individualRef in list_refs:
                     refd_series1 = Dataset()
                     refd_instance_sequence = Sequence()
                     refd_series1.ReferencedInstanceSequence = refd_instance_sequence
                     refd_instance1 = Dataset()
-                    refd_instance1.ReferencedSOPInstanceUID = individual_ref.SOPInstanceUID
-                    refd_instance1.ReferencedSOPClassUID = individual_ref.SOPClassUID
+                    refd_instance1.ReferencedSOPInstanceUID = individualRef.SOPInstanceUID
+                    refd_instance1.ReferencedSOPClassUID = individualRef.SOPClassUID
                     refd_instance_sequence.append(refd_instance1)
-                    refd_series1.SeriesInstanceUID = individual_ref.SeriesInstanceUID
+                    refd_series1.SeriesInstanceUID = individualRef.SeriesInstanceUID
                     refd_series_sequence.append(refd_series1)
             del list_refs
 
@@ -213,7 +216,7 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
 
         # Parametric Map
         if parametric_map is not None:
-            param.edit_dicom(newDicom, imageArray, parametric_map)
+            param.editDicom(newDicom, imageArray, parametric_map)
 
         # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
         # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
@@ -255,6 +258,8 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
 
         newDicom.WindowCenter = int(np.median(imageArrayInt))
         newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
+        newDicom.Rows = np.shape(imageArrayInt)[0]
+        newDicom.Columns = np.shape(imageArrayInt)[1]
         newDicom.RescaleSlope = rescaleSlope.flatten()[0]
         newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()
@@ -263,4 +268,4 @@ def create_new_single_dicom(dicomData, imageArray, series_id=None, series_uid=No
 
         return newDicom
     except Exception as e:
-        print('Error in function create_new_single_dicom: ' + str(e))
+        print('Error in function createNewSingleDicom: ' + str(e))
