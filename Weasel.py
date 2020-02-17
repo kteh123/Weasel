@@ -4,7 +4,7 @@ from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, 
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider,   
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem )
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
@@ -696,19 +696,39 @@ class Weasel(QMainWindow):
             viewBox.setAspectLocked(True)
             img = pg.ImageItem(border='w')
             viewBox.addItem(img)
+            #region = pg.LinearRegionItem()
+            #region.setZValue(10)
+            #region.sigRegionChanged.connect(lambda: self.updateRegion(region))
+            #viewBox.addItem(region)
             imv= pg.ImageView(view=viewBox, imageItem=img)
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
             layout.addWidget(imv)
             layout.addWidget(lblROIMeanValue)
-            rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
-            viewBox.addItem(rectROI)
-            rectROI.sigRegionChanged.connect(
-                lambda: self.updateROIMeanValue(rectROI, 
+            chkBoxSyncROI = QCheckBox("Synchronise ROIs in other windows with this one")
+            chkBoxSyncROI.setToolTip("Check to synchronise ROIs in other windows with this one")
+            layout.addWidget(chkBoxSyncROI)
+            btnResetROI = QPushButton('Reset ROI')
+
+            polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
+                                         pen=pg.mkPen(pg.mkColor(9, 169, 188),
+                                            width=3,
+                                            style=QtCore.Qt.SolidLine), 
+                                         closed=True)
+            polyLineROI.setPos(0,0)
+            btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
+            layout.addWidget(btnResetROI)
+
+            #rectROI.addFreeHandle([0,0])
+            #imv.addItem(polyLineROI)
+            viewBox.addItem(polyLineROI)
+            polyLineROI.sigRegionChanged.connect(
+                lambda: self.updateROIMeanValue(polyLineROI, 
                                                img.image, 
                                                img, 
                                                lblROIMeanValue))
-
+            polyLineROI.sigRegionChanged.connect(
+                lambda: self.synchroniseROIs(chkBoxSyncROI))
             #Check that pixel array holds an image & display it
             if pixelArray is None:
                 #Missing image, perhaps deleted,
@@ -735,7 +755,35 @@ class Weasel(QMainWindow):
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
-    
+    def resetROI(self, polyLineROI):
+        polyLineROI.setPos(0,0)
+        polyLineROI.setPoints([[80, 60], [90, 30], [60, 40]])
+        
+    #def updateRegion(self, region): 
+    #    region.setZValue(10)
+    #    minX, maxX = region.getRegion()
+    #    print(minX, maxX) 
+
+    def synchroniseROIs(self, chkBox):
+        """Synchronises the ROIs in all the open image subwindows"""
+        logger.info("WEASEL synchroniseROIs")
+        if chkBox.isChecked():
+            for subWin in self.mdiArea.subWindowList():
+                if (subWin.objectName() == 'tree_view' 
+                    or subWin.objectName() == 'Binary_Operation'
+                    or subWin.objectName() == 'Msg_Window'
+                    or subWin.objectName() == 'metaData_Window'):
+                    continue
+                print ('subwindow object name ', subWin.objectName())
+                for item in subWin.widget().children():
+                    print ('item', item)
+                    for child in item.children():
+                        print ('child of item    ', child)
+               
+                    
+                QApplication.processEvents()
+
+
     def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
         try:
             roiMean = round(np.mean(

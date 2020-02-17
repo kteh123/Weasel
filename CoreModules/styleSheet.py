@@ -16,8 +16,9 @@ TRISTAN_GREY = """
 
                 QPushButton:hover {
                                    background-color: rgb(175, 175, 175);
-                                   border-color: rgb(200, 51, 255);}
-
+                                   border: 1px solid red;
+                                   }
+                                   
                 QPushButton:pressed {background-color: rgb(112, 112, 112);}
 
                 QComboBox {
