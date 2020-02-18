@@ -123,16 +123,29 @@ def getDicomDataset(imagePath):
 def getPixelArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Image/Pixel array"""
     try:
-        #INSERT MOSAIC IMAGE CONDITION HERE
         if hasattr(dataset, 'PixelData'):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-                slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
-                intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
+                imageList = list()
+                originalArray = dataset.pixel_array.astype(np.float32)
+                if len(np.shape(originalArray))==2:
+                    slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(originalArray.shape)
+                    intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(originalArray.shape)
+                    pixelArray = originalArray * slope + intercept
+                else:
+                    for index in range(np.shape(originalArray)[0]):
+                        sliceArray = np.squeeze(originalArray[index, ...])
+                        slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(sliceArray.shape)
+                        intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(sliceArray.shape)
+                        tempArray = sliceArray * slope + intercept
+                        imageList.append(tempArray)
+                    pixelArray = np.array(imageList)
+                    del sliceArray, tempArray, index
+                del originalArray
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
                 pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
+            del slope, intercept
             return pixelArray
         else:
             return None
@@ -145,19 +158,22 @@ def getAffineArray(dataset):
     try:
         if hasattr(dataset, 'PixelData'):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-                image_orientation = dataset.PerFrameFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
-                row_cosine = np.array(image_orientation[:3])
-                column_cosine = np.array(image_orientation[3:])
-                slice_cosine = np.cross(row_cosine, column_cosine)
-                row_spacing, column_spacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].PixelSpacing
-                slice_spacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].SpacingBetweenSlices
+                affineList = list()
+                for index in range(len(dataset.PerFrameFunctionalGroupsSequence)):
+                    image_orientation = dataset.PerFrameFunctionalGroupsSequence[index].PlaneOrientationSequence[0].ImageOrientationPatient
+                    row_cosine = np.array(image_orientation[:3])
+                    column_cosine = np.array(image_orientation[3:])
+                    slice_cosine = np.cross(row_cosine, column_cosine)
+                    row_spacing, column_spacing = dataset.PerFrameFunctionalGroupsSequence[index].PixelMeasuresSequence[0].PixelSpacing
+                    slice_spacing = dataset.PerFrameFunctionalGroupsSequence[index].PixelMeasuresSequence[0].SpacingBetweenSlices
 
-                affine = np.identity(4, dtype=np.float32)
-                affine[:3, 0] = row_cosine * column_spacing
-                affine[:3, 1] = column_cosine * row_spacing
-                affine[:3, 2] = slice_cosine * slice_spacing
-                affine[:3, 3] = dataset.PerFrameFunctionalGroupsSequence[0].PlanePositionSequence[0].ImagePositionPatient
-
+                    affine = np.identity(4, dtype=np.float32)
+                    affine[:3, 0] = row_cosine * column_spacing
+                    affine[:3, 1] = column_cosine * row_spacing
+                    affine[:3, 2] = slice_cosine * slice_spacing
+                    affine[:3, 3] = dataset.PerFrameFunctionalGroupsSequence[index].PlanePositionSequence[0].ImagePositionPatient
+                    affineList.append(affine)
+                affine = np.squeeze(np.array(affineList))
             else:
                 image_orientation = dataset.ImageOrientationPatient
                 row_cosine = np.array(image_orientation[:3])
