@@ -669,96 +669,111 @@ class Weasel(QMainWindow):
             logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
 
 
+    def setUpViewBoxForImage(self, imageViewer, layout):
+        viewBox = imageViewer.addViewBox()
+        viewBox.setAspectLocked(True)
+        #imageViewer.scene().sigMouseClicked.connect(self.getPixel)
+        #viewBox.proxy = pg.SignalProxy(viewBox.scene().sigMouseClicked, rateLimit=60, slot=self.getPixel)
+        img = pg.ImageItem(border='w')
+        viewBox.addItem(img)
+        
+        imv= pg.ImageView(view=viewBox, imageItem=img)
+        imv.ui.roiBtn.hide()
+        imv.ui.menuBtn.hide()
+        layout.addWidget(imv)
+        return img, imv, viewBox
+
+
+    def setUpROITool(self, viewBox, layout, img):
+        
+        lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+        lblROIMeanValue.show()
+        layout.addWidget(lblROIMeanValue)
+
+        polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
+                                     pen=pg.mkPen(pg.mkColor(9, 169, 188),
+                                        width=3,
+                                        style=QtCore.Qt.SolidLine), 
+                                     closed=True)
+        polyLineROI.setPos(0,0)
+        viewBox.addItem(polyLineROI)
+        polyLineROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(polyLineROI, 
+                                           img.image, 
+                                           img, 
+                                           lblROIMeanValue))
+
+        btnResetROI = QPushButton('Reset ROI')
+        btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
+        layout.addWidget(btnResetROI)
+        return polyLineROI, lblROIMeanValue
+
+
+    def displayPixelArray(self, pixelArray, 
+                          lblImageMissing, 
+                          imv, multiImage=False, deleteButton=None):
+        #create dummy button to prevent runtime error
+        if deleteButton is None:
+            deleteButton = QPushButton()
+            deleteButton.hide()
+
+        #Check that pixel array holds an image & display it
+        if pixelArray is None:
+            lblImageMissing.show()
+            if multiImage:
+                deleteButton.hide()
+            imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+        else:
+            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+            imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
+            lblImageMissing.hide()
+            if multiImage:
+                deleteButton.show()
+
+
     def displayImageSubWindow(self, pixelArray, imagePath):
         """
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
         try:
             logger.info("WEASEL displayImageSubWindow called")
-            self.subWindow = QMdiSubWindow(self)
-            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
-                                          Qt.WindowCloseButtonHint | 
-                                          Qt.WindowMinimizeButtonHint)
-            layout = QVBoxLayout()
-            imageViewer = pg.GraphicsLayoutWidget()
-            widget = QWidget()
-            widget.setLayout(layout)
-            self.subWindow.setWidget(widget)
-            lblImageMissing = QLabel("<h4>Image Missing</h4>")
-            lblImageMissing.hide()
-            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-            lblROIMeanValue.show()
-            layout.addWidget(lblImageMissing)
-            pg.setConfigOptions(imageAxisOrder='row-major')
-            #layout.addWidget(imageViewer)
-            viewBox = imageViewer.addViewBox()
-            viewBox.setAspectLocked(True)
-            img = pg.ImageItem(border='w')
-            viewBox.addItem(img)
-            #region = pg.LinearRegionItem()
-            #region.setZValue(10)
-            #region.sigRegionChanged.connect(lambda: self.updateRegion(region))
-            #viewBox.addItem(region)
-            imv= pg.ImageView(view=viewBox, imageItem=img)
-            imv.ui.roiBtn.hide()
-            imv.ui.menuBtn.hide()
-            layout.addWidget(imv)
-            layout.addWidget(lblROIMeanValue)
-            chkBoxSyncROI = QCheckBox("Synchronise ROIs in other windows with this one")
-            chkBoxSyncROI.setToolTip("Check to synchronise ROIs in other windows with this one")
-            layout.addWidget(chkBoxSyncROI)
-            btnResetROI = QPushButton('Reset ROI')
-
-            polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
-                                         pen=pg.mkPen(pg.mkColor(9, 169, 188),
-                                            width=3,
-                                            style=QtCore.Qt.SolidLine), 
-                                         closed=True)
-            polyLineROI.setPos(0,0)
-            btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
-            layout.addWidget(btnResetROI)
-
-            #rectROI.addFreeHandle([0,0])
-            #imv.addItem(polyLineROI)
-            viewBox.addItem(polyLineROI)
-            polyLineROI.sigRegionChanged.connect(
-                lambda: self.updateROIMeanValue(polyLineROI, 
-                                               img.image, 
-                                               img, 
-                                               lblROIMeanValue))
-            polyLineROI.sigRegionChanged.connect(
-                lambda: self.synchroniseROIs(chkBoxSyncROI))
-            #Check that pixel array holds an image & display it
-            if pixelArray is None:
-                #Missing image, perhaps deleted,
-                #so display a missing image label 
-                lblImageMissing.show()
-                #Display a black box
-                imv.setImage(np.array([[0,0,0],[0,0,0]])) 
-            else:
-                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                imv.setImage(pixelArray, levels=(minimumValue, maximumValue))  
-                lblImageMissing.hide()
-                
-            self.subWindow.setObjectName(imagePath)
+            imageViewer, layout, lblImageMissing, subWindow = \
+                self.setUpImageViewerSubWindow()
             windowTitle = self.getDICOMFileData()
-            self.subWindow.setWindowTitle(windowTitle)
-            height, width = self.getMDIAreaDimensions()
-            self.subWindow.setGeometry(0,0,width*0.3,height*0.5)
-            self.mdiArea.addSubWindow(self.subWindow)
-            self.subWindow.show()
+            subWindow.setWindowTitle(windowTitle)
+            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)
+            
+
+            #chkBoxSyncROI = QCheckBox("Synchronise ROIs in other windows with this one")
+            #chkBoxSyncROI.setToolTip("Check to synchronise ROIs in other windows with this one")
+            #layout.addWidget(chkBoxSyncROI)
+            
+
+            self.setUpROITool(viewBox, layout, img)
+           
+           # polyLineROI.sigRegionChanged.connect(
+           #     lambda: self.synchroniseROIs(chkBoxSyncROI))
+            self.displayPixelArray(pixelArray, lblImageMissing, imv)  
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
+
     def resetROI(self, polyLineROI):
         polyLineROI.setPos(0,0)
         polyLineROI.setPoints([[80, 60], [90, 30], [60, 40]])
-        
+     
+
+    def getPixel(self, event):
+        print('getPixel')
+        mousePoint = (event[0])
+        print(mousePoint.x(), mousePoint.y())
+        #print (str(event.pos().x()),str(event.pos().y()))
+        #event.accept()
+
     #def updateRegion(self, region): 
     #    region.setZValue(10)
     #    minX, maxX = region.getRegion()
@@ -794,6 +809,32 @@ class Weasel(QMainWindow):
             logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
         
 
+    def setUpImageViewerSubWindow(self):
+        pg.setConfigOptions(imageAxisOrder='row-major')
+        subWindow = QMdiSubWindow(self)
+        subWindow.setAttribute(Qt.WA_DeleteOnClose)
+        subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                      Qt.WindowCloseButtonHint | 
+                                      Qt.WindowMinimizeButtonHint)
+        
+        
+        height, width = self.getMDIAreaDimensions()
+        subWindow.setGeometry(0,0,width*0.3,height*0.5)
+        self.mdiArea.addSubWindow(subWindow)
+        
+        layout = QVBoxLayout()
+        imageViewer = pg.GraphicsLayoutWidget()
+        widget = QWidget()
+        widget.setLayout(layout)
+        subWindow.setWidget(widget)
+        
+        lblImageMissing = QLabel("<h4>Image Missing</h4>")
+        lblImageMissing.hide()
+        layout.addWidget(lblImageMissing)
+        subWindow.show()
+        return imageViewer, layout, lblImageMissing, subWindow
+
+
     def displayMultiImageSubWindow(self, imageList, studyName, 
                      seriesName, sliderPosition = -1):
         """
@@ -803,16 +844,9 @@ class Weasel(QMainWindow):
         """
         try:
             logger.info("WEASEL displayMultiImageSubWindow called")
-            subWindow = QMdiSubWindow(self)
-            subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
-                                          Qt.WindowCloseButtonHint | 
-                                          Qt.WindowMinimizeButtonHint)
-            layout = QVBoxLayout()
-            imageViewer = pg.GraphicsLayoutWidget()
-            widget = QWidget()
-            widget.setLayout(layout)
-            subWindow.setWidget(widget)
+            imageViewer, layout, lblImageMissing, subWindow = \
+                self.setUpImageViewerSubWindow()
+            
             #Study ID & Series ID are stored locally on the
             #sub window in case the user wishes to delete an
             #image in the series.  They may have several series
@@ -823,10 +857,6 @@ class Weasel(QMainWindow):
             lblHiddenStudyID.hide()
             lblHiddenSeriesID = QLabel(seriesName)
             lblHiddenSeriesID.hide()
-            lblImageMissing = QLabel("<h4>Image Missing</h4>")
-            lblImageMissing.hide()
-            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-            lblROIMeanValue.show()
             btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
             btnDeleteDICOMFile.setToolTip(
             'Deletes the DICOM image being viewed')
@@ -837,29 +867,14 @@ class Weasel(QMainWindow):
                                       lblHiddenStudyID.text(), 
                                       lblHiddenSeriesID.text(),
                                       imageSlider.value()))
-            layout.addWidget(lblImageMissing)
+            
             layout.addWidget(lblHiddenSeriesID)
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(btnDeleteDICOMFile)
-            #layout.addWidget(imageViewer)
-            pg.setConfigOptions(imageAxisOrder='row-major')
-            multiImageViewBox = imageViewer.addViewBox()
-            multiImageViewBox.setAspectLocked(True)
-            img = pg.ImageItem(border='w')
-            multiImageViewBox.addItem(img)
-            imv = pg.ImageView(view=multiImageViewBox, imageItem=img)
-            imv.ui.roiBtn.hide()
-            imv.ui.menuBtn.hide()
-            layout.addWidget(imv)
-            layout.addWidget(lblROIMeanValue)
-            rectROI = pg.RectROI([20, 20], [20, 20], pen=(0,9))
-            rectROI.sigRegionChanged.connect(
-                lambda: self.updateROIMeanValue(rectROI, 
-                                               img.image, 
-                                               img, 
-                                               lblROIMeanValue))
-            
-            multiImageViewBox.addItem(rectROI)
+           
+            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
+           
+            roiTool, lblROIMeanValue = self.setUpROITool(viewBox, layout, img)
 
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -871,6 +886,7 @@ class Weasel(QMainWindow):
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
+            layout.addWidget(imageSlider)
             imageSlider.valueChanged.connect(
                   lambda: self.imageSliderMoved(seriesName, 
                                                 imageList, 
@@ -880,13 +896,11 @@ class Weasel(QMainWindow):
                                                 imv,
                                                 subWindow))
             imageSlider.valueChanged.connect(
-                  lambda: self.updateROIMeanValue(rectROI, 
+                  lambda: self.updateROIMeanValue(roiTool, 
                                                img.image, 
                                                img, 
                                                lblROIMeanValue))
             #print('Num of images = {}'.format(len(imageList)))
-            layout.addWidget(imageSlider)
-            
             #Display the first image in the viewer
             self.imageSliderMoved(seriesName, 
                                   imageList,
@@ -895,12 +909,6 @@ class Weasel(QMainWindow):
                                   btnDeleteDICOMFile,
                                   imv,
                                   subWindow)
-            
-            subWindow.setObjectName(seriesName)
-            height, width = self.getMDIAreaDimensions()
-            subWindow.setGeometry(0,0,width*0.3,height*0.5)
-            self.mdiArea.addSubWindow(subWindow)
-            subWindow.show()
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
             logger.error('Error in displayMultiImageSubWindow: ' + str(e))
@@ -990,18 +998,9 @@ class Weasel(QMainWindow):
             if currentImageNumber >= 0:
                 currentImagePath = imageList[currentImageNumber]
                 pixelArray = readDICOM_Image.returnPixelArray(currentImagePath)
-                if pixelArray is None:
-                    lblImageMissing.show()
-                    btnDeleteDICOMFile.hide()
-                    imv.setImage(np.array([[0,0,0],[0,0,0]]))  
-                else:
-                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                        1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                    imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
-                    lblImageMissing.hide()
-                    btnDeleteDICOMFile.show()
+                self.displayPixelArray(pixelArray, lblImageMissing, imv,
+                                       multiImage=True,  
+                                       deleteButton=btnDeleteDICOMFile) 
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(currentImagePath))
