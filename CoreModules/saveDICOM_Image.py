@@ -242,8 +242,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
 
         newDicom.WindowCenter = int(np.median(imageArrayInt))
         newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
-        newDicom.Rows = np.shape(imageArrayInt)[0]
-        newDicom.Columns = np.shape(imageArrayInt)[1]
+        newDicom.Rows = np.shape(imageArrayInt)[-2]
+        newDicom.Columns = np.shape(imageArrayInt)[-1]
         newDicom.RescaleSlope = rescaleSlope.flatten()[0]
         newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()

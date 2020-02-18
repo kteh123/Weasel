@@ -101,7 +101,7 @@ def getParametersB0Map(imagePathList, seriesID):
             del datasetList, numSlices, numberEchoes, flagPhase, flagReal, flagImaginary
             return phasePathList, sliceList, echoList, riPathList
         else:
-            return None, None, None
+            return None, None, None, None
     except Exception as e:
         print('Error in function B0MapDICOM_Image.checkParametersB0Map: Not possible to calculate B0 Map' + str(e))
 
