@@ -67,10 +67,10 @@ def getParametersB0Map(imagePathList, seriesID):
     try:
         if os.path.exists(imagePathList[0]):
             # Sort by slice last place
-            sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
-            sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
             phasePathList = []
             riPathList = [[], []]
+            sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
+            sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
             datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
             for index, dataset in enumerate(datasetList):
                 flagPhase = False

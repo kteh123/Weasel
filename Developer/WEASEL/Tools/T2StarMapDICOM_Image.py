@@ -126,9 +126,9 @@ def getParametersT2StarMap(imagePathList, seriesID):
     try:
         if os.path.exists(imagePathList[0]):
             # Sort by slice last place
+            magnitudePathList = []
             sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
             sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
-            magnitudePathList = []
             datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
             for index, dataset in enumerate(datasetList):
                 flagMagnitude = False       
