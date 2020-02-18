@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from datetime import datetime
 import logging
+import CoreModules.readDICOM_Image as readDICOM_Image
 
 logger = logging.getLogger(__name__)
 
@@ -237,7 +238,8 @@ class WeaselXMLReader:
 
             if series is None:
                 #Need to create a new series to hold this new image
-                newSeriesID = seriesID + suffix
+                dataset = readDICOM_Image.getDicomDataset(newImageFileName)
+                newSeriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
                 #Get study branch
                 currentStudy = self.getStudy(studyID)
                 newAttributes = {'id':newSeriesID, 
@@ -296,7 +298,8 @@ class WeaselXMLReader:
             imageDate = now.strftime("%d/%m/%Y")        
             if series is None:
                 #Need to create a new series to hold this new image
-                newSeriesID = seriesID + suffix
+                dataset = readDICOM_Image.getDicomDataset(newImageFileName)
+                newSeriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
                 #Get study branch
                 currentStudy = self.getStudy(studyID)
                 newAttributes = {'id':newSeriesID, 

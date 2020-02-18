@@ -58,22 +58,6 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def save_dicom_binOpResult(imagePath1, imagePath2, pixelArray, imageFilePath, suffix):
-    try:
-        if os.path.exists(imagePath1) & os.path.exists(imagePath2):
-            # Need to think about what new name to give to the file and how to save multiple files for the same sequence
-            dataset1 = readDICOM_Image.getDicomDataset(imagePath1)
-            dataset2 = readDICOM_Image.getDicomDataset(imagePath2)
-            newDataset = createNewSingleDicom(dataset1, pixelArray, comment=suffix, list_refs=dataset2)
-            saveDicomToFile(newDataset, output_path=imageFilePath)
-            del dataset1, dataset2, newDataset
-            return
-        else:
-            return None
-    except Exception as e:
-        print('Error in function saveDICOM_Image.save_dicom_binOpResult: ' + str(e))
-
-
 def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm

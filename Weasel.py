@@ -1287,9 +1287,9 @@ class Weasel(QMainWindow):
                 newImageFileName + '.dcm'
             #print(newImageFilePath)
             #Save pixel array to a file
-            saveDICOM_Image.save_dicom_binOpResult(imagePath1, imagePath2, self.binOpArray, newImageFilePath, binaryOperation+suffix)
+            saveDICOM_Image.saveDicomOutputResult(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
             newSeriesID = self.insertNewBinOpImageInXMLFile(newImageFilePath, suffix)
-            print(newSeriesID)
+            #print(newSeriesID)
             self.refreshDICOMStudiesTreeView(newSeriesID)
         except Exception as e:
             print('Error in saveNewDICOMFileFromBinOp: ' + str(e))
