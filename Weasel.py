@@ -51,9 +51,9 @@ logger = logging.getLogger(__name__)
 
 
 class Weasel(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self): 
         """Creates the MDI container."""
-        QMainWindow.__init__(self, parent)
+        super (). __init__ () 
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -670,18 +670,18 @@ class Weasel(QMainWindow):
 
 
     def setUpViewBoxForImage(self, imageViewer, layout):
-        viewBox = imageViewer.addViewBox()
-        viewBox.setAspectLocked(True)
-        #imageViewer.scene().sigMouseClicked.connect(self.getPixel)
-        #viewBox.proxy = pg.SignalProxy(viewBox.scene().sigMouseClicked, rateLimit=60, slot=self.getPixel)
+        #viewBox = imageViewer.addViewBox()
+        #viewBox.setAspectLocked(True)
+        plotItem = imageViewer.addPlot() 
+        plotItem.getViewBox().setAspectLocked() 
         img = pg.ImageItem(border='w')
-        viewBox.addItem(img)
+        #viewBox.addItem(img)
         
-        imv= pg.ImageView(view=viewBox, imageItem=img)
+        imv= pg.ImageView(view=plotItem, imageItem=img)
         imv.ui.roiBtn.hide()
         imv.ui.menuBtn.hide()
         layout.addWidget(imv)
-        return img, imv, viewBox
+        return img, imv, plotItem
 
 
     def setUpROITool(self, viewBox, layout, img):
@@ -712,6 +712,11 @@ class Weasel(QMainWindow):
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, 
                           imv, multiImage=False, deleteButton=None):
+        global pixelArray1
+        global imv1
+        imv1 = imv
+        pixelArray1 = pixelArray
+        
         #create dummy button to prevent runtime error
         if deleteButton is None:
             deleteButton = QPushButton()
@@ -730,8 +735,30 @@ class Weasel(QMainWindow):
                 1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
             imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
             lblImageMissing.hide()
+            imv.getView().scene().sigMouseMoved.connect(self.getPixel)
+  
+            #imv.getView().scene().sigMouseMoved.connect(
+            #   lambda: self.getPixel(imv, pixelArray, pos=[]))
             if multiImage:
                 deleteButton.show()
+
+   # @QtCore.pyqtSlot(PyQt5.QtCore.QPointF, int)
+    def getPixel(self, pos):
+        try:
+            #print ("Image position: {}".format(pos))
+            container = imv1.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView (pos) 
+                x_i = round(mousePoint.x()) 
+                y_i = round(mousePoint.y()) 
+                if x_i > 0 and x_i < pixelArray1.shape [ 0 ] \
+                    and y_i > 0 and y_i < pixelArray1.shape [ 1 ]: 
+                   print( "({}, {}) = {:0.2f}" . format ( x_i , y_i , pixelArray1 [ x_i , y_i ])) 
+            
+                   
+        except Exception as e:
+            print('Error in getPixel: ' + str(e))
+            logger.error('Error in getPixel: ' + str(e))
 
 
     def displayImageSubWindow(self, pixelArray, imagePath):
@@ -765,19 +792,7 @@ class Weasel(QMainWindow):
     def resetROI(self, polyLineROI):
         polyLineROI.setPos(0,0)
         polyLineROI.setPoints([[80, 60], [90, 30], [60, 40]])
-     
 
-    def getPixel(self, event):
-        print('getPixel')
-        mousePoint = (event[0])
-        print(mousePoint.x(), mousePoint.y())
-        #print (str(event.pos().x()),str(event.pos().y()))
-        #event.accept()
-
-    #def updateRegion(self, region): 
-    #    region.setZValue(10)
-    #    minX, maxX = region.getRegion()
-    #    print(minX, maxX) 
 
     def synchroniseROIs(self, chkBox):
         """Synchronises the ROIs in all the open image subwindows"""
@@ -1579,7 +1594,7 @@ class Weasel(QMainWindow):
       
 
 def main():
-    app = QApplication([])
+    app = QApplication(sys . argv )
     winMDI = Weasel()
     winMDI.showMaximized()
     sys.exit(app.exec())
