@@ -120,6 +120,12 @@ class Weasel(QMainWindow):
             loadDICOM.setStatusTip('Load DICOM images from a scan folder')
             loadDICOM.triggered.connect(self.loadDICOM)
             self.fileMenu.addAction(loadDICOM)
+
+            tileSubWindows = QAction('&Tile Subwindows', self)
+            tileSubWindows.setShortcut('Ctrl+T')
+            tileSubWindows.setStatusTip('Returns subwindows to a tile pattern')
+            tileSubWindows.triggered.connect(self.tileAllSubWindows)
+            self.fileMenu.addAction(tileSubWindows)
         
             closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
             closeAllImageWindowsButton.setShortcut('Ctrl+A')
@@ -352,7 +358,7 @@ class Weasel(QMainWindow):
             self.metaDataSubWindow.setObjectName("metaData_Window")
             self.metaDataSubWindow.setWindowTitle(title)
             height, width = self.getMDIAreaDimensions()
-            self.metaDataSubWindow.setGeometry(0,0,width*0.6,height)
+            self.metaDataSubWindow.setGeometry(width * 0.4,0,width*0.6,height)
             lblImageName = QLabel('<H4>' + tableTitle + '</H4>')
             widget.layout().addWidget(lblImageName)
 
@@ -753,7 +759,7 @@ class Weasel(QMainWindow):
                     and y_i > 0 and y_i < pixelArray.shape [ 1 ]: 
                     lblPixelValue.setText(
                         "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
-                   . format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+                   .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
                 else:
                     lblPixelValue.setText("<h4>Pixel Value:</h4>")
             else:
@@ -832,6 +838,7 @@ class Weasel(QMainWindow):
     def setUpImageViewerSubWindow(self):
         pg.setConfigOptions(imageAxisOrder='row-major')
         subWindow = QMdiSubWindow(self)
+        subWindow.setObjectName = 'image_viewer'
         subWindow.setAttribute(Qt.WA_DeleteOnClose)
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
@@ -1169,6 +1176,20 @@ class Weasel(QMainWindow):
                 QApplication.processEvents()
                 break
 
+    def tileAllSubWindows(self):
+        logger.info("WEASEL.tileAllSubWindow called")
+        height, width = self.getMDIAreaDimensions()
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == 'tree_view':
+                subWin.setGeometry(0, 0, width * 0.4, height)
+            elif subWin.objectName() == 'Binary_Operation':
+                subWin.setGeometry(0,0,width*0.5,height*0.5)
+            elif subWin.objectName() == 'metaData_Window':
+                subWin.setGeometry(width * 0.4,0,width*0.6,height)
+            elif subWin.objectName() == 'image_viewer':
+                subWin.setGeometry(width * 0.4,0,width*0.3,height*0.5)
+        #self.mdiArea.tileSubWindows()
+
 
     def closeAllImageWindows(self):
         """Closes all the sub windows in the MDI except for
@@ -1332,7 +1353,7 @@ class Weasel(QMainWindow):
             #Get file path of image2
             imageName = self.imageList2.currentText()
             if imageName != '':
-                imagePath2 = imageDict[imageName]
+                imagePath2 = imageDict[imageNamelti]
 
             #Get binary operation to be performed
             binOp = self.binaryOpsList.currentText()
