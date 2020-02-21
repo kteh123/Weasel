@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import math
 import re
 import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
@@ -75,7 +74,6 @@ def T2starmap(pixelArray, echoList):
                         s_wy = s_wy + weight * sig
                         s_wxy = s_wxy + weight * te_tmp * sig
                     delta = (s_w * s_wx2) - (s_wx ** 2)
-                    # Ask Charlotte about adding isinf and isnan
                     if (delta == 0.0) or (np.isinf(delta)) or (np.isnan(delta)):
                         t2star[x, y, s] = 0
                         r2star[x, y, s] = 0
@@ -101,19 +99,24 @@ def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the T2* Map Array"""
     try:
         if os.path.exists(imagePathList[0]):
-            datasetSample = readDICOM_Image.getDicomDataset(imagePathList[0])
-            volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
-            # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1
-            pixelArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/len(sliceList)), len(sliceList), np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
+            dataset = readDICOM_Image.getDicomDataset(imagePathList[0])
+            if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'): # For Enhanced MRI, sliceList is a list of indices
+                volumeArray, sliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(dataset, sliceList=sliceList, sort=True)
+                sliceSpacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].PixelSpacing[0]
+            else: # For normal DICOM, slicelist is a list of slice locations in mm.
+                volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+                numberSlices = len(sliceList)
+                sliceSpacing = dataset.PixelSpacing[0]        
+            # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1. HOW ABOUT 2D??? MAY HAVE TO MAKE THIS STEP MORE GENERIC
+            pixelArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numberSlices), numberSlices, np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
             # The transpose is applied here because the T2* algorithm is developed this way
-            pixelArray = resizePixelArray(pixelArray, datasetSample.PixelSpacing[0], reconstPixel=3)
-            # Resample Data / Don't forget to resample the 128x128 of GE / Will have to put this in a separate file. This is so that data shares the same resolution and sizing.
-            
+            pixelArray = resizePixelArray(pixelArray, sliceSpacing, reconstPixel=3)
+            # Resample Data to the 128x128 of GE / This is so that data shares the same resolution and sizing.
             # Algorithm
             derivedImage, _, _ = T2starmap(pixelArray, echoList)
             derivedImage = np.transpose(derivedImage)
 
-            del volumeArray, pixelArray,# datasetList
+            del volumeArray, pixelArray, dataset
             return derivedImage
         else:
             return None
@@ -127,27 +130,47 @@ def getParametersT2StarMap(imagePathList, seriesID):
         if os.path.exists(imagePathList[0]):
             # Sort by slice last place
             magnitudePathList = []
-            sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
-            sortedSequenceSlice, sliceList, numSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
-            datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-            for index, dataset in enumerate(datasetList):
-                flagMagnitude = False       
-                try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                    if struct.unpack('h', dataset[0x0043102f].value)[0] == 0: 
-                        flagMagnitude = True
-                except: pass
-                if hasattr(dataset, 'ImageType'):
-                    if ('M' in dataset.ImageType) or ('MAGNITUDE' in dataset.ImageType):
-                        flagMagnitude = True
-                if (numberEchoes == 12) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
-                    magnitudePathList.append(imagePathList[index])
+            datasetList = readDICOM_Image.getDicomDataset(imagePathList[0]) # even though it can be 1 file only, I'm naming datasetList due to consistency
+            if hasattr(datasetList, 'PerFrameFunctionalGroupsSequence'):
+                echoList = []
+                sliceList = []
+                numberEchoes = datasetList[0x20011014].value
+                _, originalSliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(datasetList)
+                for index, dataset in enumerate(datasetList.PerFrameFunctionalGroupsSequence):
+                    flagMagnitude = False
+                    echo = dataset.MREchoSequence[0].EffectiveEchoTime
+                    if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType') and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
+                        if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                            flagMagnitude = True
+                    if (numberEchoes == 12) and echo != 0 and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                        sliceList.append(originalSliceList[index])
+                        echoList.append(echo)
+                if sliceList and echoList:
+                    echoList = np.unique(echoList)
+                    magnitudePathList = imagePathList
+            else:
+                sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
+                sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
+                datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
+                for index, dataset in enumerate(datasetList):
+                    flagMagnitude = False    
+                    echo = dataset.EchoTime   
+                    try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
+                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 0: 
+                            flagMagnitude = True
+                    except: pass
+                    if hasattr(dataset, 'ImageType'):
+                        if set(['M', 'MAGNITUDE']).intersection(set(dataset.ImageType)):
+                            flagMagnitude = True
+                    if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                        magnitudePathList.append(imagePathList[index])
 
-            del datasetList, numSlices, numberEchoes, flagMagnitude
+            del datasetList, numberSlices, numberEchoes, flagMagnitude
             return magnitudePathList, sliceList, echoList
         else:
             return None, None, None
     except Exception as e:
-        print('Error in function T2StarMapDICOM_Image.checkParametersT2StarMap: Not possible to calculate T2* Map' + str(e))
+        print('Error in function T2StarMapDICOM_Image.getParametersT2StarMap: Not possible to calculate T2* Map' + str(e))
 
 
 def saveT2StarMapSeries(objWeasel):
@@ -165,21 +188,32 @@ def saveT2StarMapSeries(objWeasel):
             objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE T2* MAP IN THIS SERIES.")
             raise ValueError("NOT POSSIBLE TO CALCULATE T2* MAP IN THIS SERIES.")
 
-        # Iterate through list of images and save T2* for each image
-        T2StarImagePathList = []
-        T2StarImageList = []
-        numImages = len(magnitudePathList)
-        objWeasel.displayMessageSubWindow(
-            "<H4Saving {} DICOM files for T2* Map calculated</H4>".format(numImages),
-            "Saving T2* Map into DICOM Images")
-        objWeasel.setMsgWindowProgBarMaxValue(numImages)
-        imageCounter = 0
-        for index in range(np.shape(T2StarImage)[0]):
-            T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[index], FILE_SUFFIX)
-            T2StarImagePathList.append(T2StarImageFilePath)
-            T2StarImageList.append(T2StarImage[index, ...])
-            imageCounter += 1
-            objWeasel.setMsgWindowProgBarValue(imageCounter)
+        if hasattr(readDICOM_Image.getDicomDataset(magnitudePathList[0]), 'PerFrameFunctionalGroupsSequence'):
+            # If it's Enhanced MRI
+            objWeasel.displayMessageSubWindow(
+                "<H4Saving 1 Enhanced DICOM file for T2* Map calculated</H4>",
+                "Saving T2* Map into DICOM")
+            objWeasel.setMsgWindowProgBarMaxValue(0)
+            T2StarImageList = [T2StarImage]
+            T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[0], FILE_SUFFIX)
+            T2StarImagePathList = [T2StarImageFilePath]
+            objWeasel.setMsgWindowProgBarMaxValue(1)
+        else:
+            # Iterate through list of images and save T2* for each image
+            T2StarImagePathList = []
+            T2StarImageList = []
+            numImages = len(magnitudePathList)
+            objWeasel.displayMessageSubWindow(
+                "<H4Saving {} DICOM files for T2* Map calculated</H4>".format(numImages),
+                "Saving T2* Map into DICOM Images")
+            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            imageCounter = 0
+            for index in range(np.shape(T2StarImage)[0]):
+                T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[index], FILE_SUFFIX)
+                T2StarImagePathList.append(T2StarImageFilePath)
+                T2StarImageList.append(T2StarImage[index, ...])
+                imageCounter += 1
+                objWeasel.setMsgWindowProgBarValue(imageCounter)
 
         objWeasel.closeMessageSubWindow()
         
