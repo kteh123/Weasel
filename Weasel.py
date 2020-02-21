@@ -752,7 +752,7 @@ class Weasel(QMainWindow):
                 if x_i > 0 and x_i < pixelArray.shape [ 0 ] \
                     and y_i > 0 and y_i < pixelArray.shape [ 1 ]: 
                     lblPixelValue.setText(
-                        "<h4>Pixel Value = {} at X: {}, Y: {}</h4>"
+                        "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
                    . format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
                 else:
                     lblPixelValue.setText("<h4>Pixel Value:</h4>")
