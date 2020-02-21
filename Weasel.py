@@ -690,6 +690,10 @@ class Weasel(QMainWindow):
         lblROIMeanValue.show()
         layout.addWidget(lblROIMeanValue)
 
+        lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
+        lblPixelValue.show()
+        layout.addWidget(lblPixelValue)
+
         polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
                                      pen=pg.mkPen(pg.mkColor(9, 169, 188),
                                         width=3,
@@ -706,17 +710,12 @@ class Weasel(QMainWindow):
         btnResetROI = QPushButton('Reset ROI')
         btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
         layout.addWidget(btnResetROI)
-        return polyLineROI, lblROIMeanValue
+        return  lblPixelValue, polyLineROI, lblROIMeanValue,
 
 
     def displayPixelArray(self, pixelArray, 
-                          lblImageMissing, 
+                          lblImageMissing, lblPixelValue,
                           imv, multiImage=False, deleteButton=None):
-        global pixelArray1
-        global imv1
-        imv1 = imv
-        pixelArray1 = pixelArray
-        
         #create dummy button to prevent runtime error
         if deleteButton is None:
             deleteButton = QPushButton()
@@ -734,31 +733,35 @@ class Weasel(QMainWindow):
             maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                 1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
             imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
-            lblImageMissing.hide()
-            imv.getView().scene().sigMouseMoved.connect(self.getPixel)
+            lblImageMissing.hide()   
   
-            #imv.getView().scene().sigMouseMoved.connect(
-            #   lambda: self.getPixel(imv, pixelArray, pos=[]))
+            imv.getView().scene().sigMouseMoved.connect(
+               lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
             if multiImage:
                 deleteButton.show()
 
-   # @QtCore.pyqtSlot(PyQt5.QtCore.QPointF, int)
-    def getPixel(self, pos):
+  
+    def getPixelValue(self, pos, imv, pixelArray, lblPixelValue):
         try:
             #print ("Image position: {}".format(pos))
-            container = imv1.getView()
+            container = imv.getView()
             if container.sceneBoundingRect().contains(pos): 
                 mousePoint = container.getViewBox().mapSceneToView (pos) 
                 x_i = round(mousePoint.x()) 
                 y_i = round(mousePoint.y()) 
-                if x_i > 0 and x_i < pixelArray1.shape [ 0 ] \
-                    and y_i > 0 and y_i < pixelArray1.shape [ 1 ]: 
-                   print( "({}, {}) = {:0.2f}" . format ( x_i , y_i , pixelArray1 [ x_i , y_i ])) 
-            
+                if x_i > 0 and x_i < pixelArray.shape [ 0 ] \
+                    and y_i > 0 and y_i < pixelArray.shape [ 1 ]: 
+                    lblPixelValue.setText(
+                        "<h4>Pixel Value = {} at X: {}, Y: {}</h4>"
+                   . format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+                else:
+                    lblPixelValue.setText("<h4>Pixel Value:</h4>")
+            else:
+                lblPixelValue.setText("<h4>Pixel Value:</h4>")
                    
         except Exception as e:
-            print('Error in getPixel: ' + str(e))
-            logger.error('Error in getPixel: ' + str(e))
+            print('Error in getPixelValue: ' + str(e))
+            logger.error('Error in getPixelValue: ' + str(e))
 
 
     def displayImageSubWindow(self, pixelArray, imagePath):
@@ -779,11 +782,13 @@ class Weasel(QMainWindow):
             #layout.addWidget(chkBoxSyncROI)
             
 
-            self.setUpROITool(viewBox, layout, img)
+            lblPixelValue, _ , _ = self.setUpROITool(viewBox, layout, img)
            
-           # polyLineROI.sigRegionChanged.connect(
-           #     lambda: self.synchroniseROIs(chkBoxSyncROI))
-            self.displayPixelArray(pixelArray, lblImageMissing, imv)  
+           
+            self.displayPixelArray(pixelArray, 
+                                   lblImageMissing,
+                                   lblPixelValue,
+                                 imv)  
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
@@ -889,7 +894,7 @@ class Weasel(QMainWindow):
            
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
            
-            roiTool, lblROIMeanValue = self.setUpROITool(viewBox, layout, img)
+            lblPixelValue, roiTool, lblROIMeanValue = self.setUpROITool(viewBox, layout, img)
 
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -907,6 +912,7 @@ class Weasel(QMainWindow):
                                                 imageList, 
                                                 imageSlider.value(),
                                                 lblImageMissing,
+                                                lblPixelValue,
                                                 btnDeleteDICOMFile,
                                                 imv,
                                                 subWindow))
@@ -921,6 +927,7 @@ class Weasel(QMainWindow):
                                   imageList,
                                   imageSlider.value(),
                                   lblImageMissing,
+                                  lblPixelValue,
                                   btnDeleteDICOMFile,
                                   imv,
                                   subWindow)
@@ -1001,7 +1008,8 @@ class Weasel(QMainWindow):
 
 
     def imageSliderMoved(self, seriesName, imageList, imageNumber,
-                        lblImageMissing, btnDeleteDICOMFile, imv,
+                        lblImageMissing, lblPixelValue, 
+                        btnDeleteDICOMFile, imv,
                         subWindow):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
@@ -1013,7 +1021,10 @@ class Weasel(QMainWindow):
             if currentImageNumber >= 0:
                 currentImagePath = imageList[currentImageNumber]
                 pixelArray = readDICOM_Image.returnPixelArray(currentImagePath)
-                self.displayPixelArray(pixelArray, lblImageMissing, imv,
+                self.displayPixelArray(pixelArray, 
+                                       lblImageMissing,
+                                       lblPixelValue,
+                                       imv,
                                        multiImage=True,  
                                        deleteButton=btnDeleteDICOMFile) 
 
