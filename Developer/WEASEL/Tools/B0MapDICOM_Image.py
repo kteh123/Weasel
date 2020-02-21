@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import math
 import re
 import struct
 from skimage.restoration import unwrap_phase
@@ -14,9 +13,12 @@ FILE_SUFFIX = '_B0Map'
 
 def B0map(pixelArray, echoList):
     try:
-        phaseDiff = np.squeeze(pixelArray[0, ...] - pixelArray[1, ...])
+        phaseDiffOriginal = np.squeeze(pixelArray[0, ...]) - np.squeeze(pixelArray[1, ...])
+        phaseDiffNormalised = phaseDiffOriginal / (np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal)))
+        phaseDiff = unwrap_phase(phaseDiffNormalised * (2 * np.pi * np.ones(np.shape(phaseDiffNormalised))))
         deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
-        derivedImage = unwrap_phase(phaseDiff) / (np.ones(np.shape(phaseDiff))*(2*math.pi*deltaTE))
+        derivedImage = phaseDiff / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
+        del phaseDiffOriginal, phaseDiffNormalised, phaseDiff, deltaTE
         return derivedImage
     except Exception as e:
         print('Error in function B0MapDICOM_Image.B0map: ' + str(e))
@@ -76,6 +78,7 @@ def getParametersB0Map(imagePathList, seriesID):
                 flagPhase = False
                 flagReal = False
                 flagImaginary = False
+                echo = dataset.EchoTime
                 try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
                     if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
                         flagPhase = True
@@ -91,11 +94,11 @@ def getParametersB0Map(imagePathList, seriesID):
                         flagReal = True
                     elif ('I' in dataset.ImageType) or ('IMAGINARY' in dataset.ImageType):
                         flagImaginary = True
-                if (numberEchoes == 2) and flagPhase and re.match(".*b0.*", seriesID.lower()):
+                if (numberEchoes == 2) and (echo != 0) and flagPhase and re.match(".*b0.*", seriesID.lower()):
                     phasePathList.append(imagePathList[index])
-                elif (numberEchoes == 2) and flagReal and re.match(".*b0.*", seriesID.lower()):
+                elif (numberEchoes == 2) and (echo != 0) and flagReal and re.match(".*b0.*", seriesID.lower()):
                     riPathList[0].append(imagePathList[index])
-                elif (numberEchoes == 2) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
+                elif (numberEchoes == 2) and (echo != 0) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
                     riPathList[1].append(imagePathList[index])
 
             del datasetList, numSlices, numberEchoes, flagPhase, flagReal, flagImaginary
@@ -103,7 +106,7 @@ def getParametersB0Map(imagePathList, seriesID):
         else:
             return None, None, None, None
     except Exception as e:
-        print('Error in function B0MapDICOM_Image.checkParametersB0Map: Not possible to calculate B0 Map' + str(e))
+        print('Error in function B0MapDICOM_Image.getParametersB0Map: Not possible to calculate B0 Map' + str(e))
 
 
 def saveB0MapSeries(objWeasel):

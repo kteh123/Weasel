@@ -202,54 +202,72 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         if parametric_map is not None:
             param.editDicom(newDicom, imageArray, parametric_map)
 
-        # COULD INSERT IF ENHANCED MRI HERE?! - Only for Slope and Intercept!
-        # if hasattr(sequence[0], 'PerFrameFunctionalGroupsSequence'):
+        # INSERT IF ENHANCED MRI HERE - First attempt below
         # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
-        
-        if int(np.amin(imageArray)) < 0:
-            newDicom.PixelRepresentation = 1
-            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
-            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
-            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
-            extra = target/(2*np.ones(np.shape(imageArray)))
-            imageScaled = target * (imageArray - minimum) / (maximum - minimum) - extra
-            slope =  target / (maximum - minimum)
-            intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
-            rescaleSlope = np.ones(np.shape(imageArray)) / slope
-            rescaleIntercept = - intercept / slope
-            
-        else:
-            newDicom.PixelRepresentation = 0
-            target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(imageArray))
-            maximum = np.ones(np.shape(imageArray))*np.amax(imageArray)
-            minimum = np.ones(np.shape(imageArray))*np.amin(imageArray)
-            imageScaled = target * (imageArray - minimum) / (maximum - minimum)
-            slope =  target / (maximum - minimum)
-            intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
-            rescaleSlope = np.ones(np.shape(imageArray)) / slope
-            rescaleIntercept = - intercept / slope
+        numberFrames = 1
+        enhancedArrayInt = []
+        if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
+            if len(np.shape(imageArray)) == 2:
+                newDicom.NumberOfFrames = 1
+            else:
+                newDicom.NumberOfFrames = np.shape(imageArray)[0]
+            del newDicom.PerFrameFunctionalGroupsSequence[newDicom.NumberOfFrames:]
+            numberFrames = newDicom.NumberOfFrames
+        for index in range(numberFrames):
+            if len(np.shape(imageArray)) == 2:
+                tempArray = imageArray
+            else:
+                tempArray = np.squeeze(imageArray[index, ...])
+            if int(np.amin(imageArray)) < 0:
+                newDicom.PixelRepresentation = 1
+                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
+                maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
+                minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
+                extra = target/(2*np.ones(np.shape(tempArray)))
+                imageScaled = target * (tempArray - minimum) / (maximum - minimum) - extra
+                slope =  target / (maximum - minimum)
+                intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
+                rescaleSlope = np.ones(np.shape(tempArray)) / slope
+                rescaleIntercept = - intercept / slope   
+            else:
+                newDicom.PixelRepresentation = 0
+                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
+                maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
+                minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
+                imageScaled = target * (tempArray - minimum) / (maximum - minimum)
+                slope =  target / (maximum - minimum)
+                intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
+                rescaleSlope = np.ones(np.shape(tempArray)) / slope
+                rescaleIntercept = - intercept / slope
 
-        if newDicom.BitsAllocated == 8:
-            imageArrayInt = imageScaled.astype(np.int8)
-        elif newDicom.BitsAllocated == 16:
-            imageArrayInt = imageScaled.astype(np.int16)
-        elif newDicom.BitsAllocated == 32:
-            imageArrayInt = imageScaled.astype(np.int32)
-        elif newDicom.BitsAllocated == 64:
-            imageArrayInt = imageScaled.astype(np.int64)
-        else:
-            imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
+            if newDicom.BitsAllocated == 8:
+                imageArrayInt = imageScaled.astype(np.int8)
+            elif newDicom.BitsAllocated == 16:
+                imageArrayInt = imageScaled.astype(np.int16)
+            elif newDicom.BitsAllocated == 32:
+                imageArrayInt = imageScaled.astype(np.int32)
+            elif newDicom.BitsAllocated == 64:
+                imageArrayInt = imageScaled.astype(np.int64)
+            else:
+                imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
+            
+            if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
+                enhancedArrayInt.append(imageArrayInt)
+                newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
+                newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
+            else:
+                newDicom.RescaleSlope = rescaleSlope.flatten()[0]
+                newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
+        if enhancedArrayInt:
+            imageArrayInt = np.array(enhancedArrayInt)
 
         newDicom.WindowCenter = int(np.median(imageArrayInt))
         newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
+        # Take Phase Encoding into account
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]
-        newDicom.RescaleSlope = rescaleSlope.flatten()[0]
-        newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         newDicom.PixelData = imageArrayInt.tobytes()
-
-        del dicomData, imageArray, imageScaled, imageArrayInt
-
+        del dicomData, imageArray, imageScaled, imageArrayInt, enhancedArrayInt, tempArray
         return newDicom
     except Exception as e:
         print('Error in function createNewSingleDicom: ' + str(e))
