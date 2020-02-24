@@ -45,7 +45,7 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
             else:
                 refs = None
             newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
-            if image_number is not None:
+            if (image_number is not None) and (len(np.shape(pixelArray)) < 3):
                 newDataset.InstanceNumber = image_number
                 newDataset.ImageNumber = image_number
             saveDicomToFile(newDataset, output_path=newFilePath)
@@ -70,7 +70,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                 series_uid = pydicom.uid.generate_uid()
 
             refs = None
-            for index, dataset in enumerate(derivedImagePathList):
+            for index, newFilePath in enumerate(derivedImagePathList):
                 # Extra references, besides the main one, which is imagePathList
                 if list_refs_path is not None:
                     if len(np.shape(list_refs_path)) == 1:
@@ -80,7 +80,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                         for individualRef in list_refs_path:
                             refs.append(individualRef[index])
 
-                saveDicomOutputResult(dataset, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
+                saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:

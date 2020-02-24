@@ -5,7 +5,7 @@ import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
-from Developer.WEASEL.Tools.imagingTools import resizePixelArray
+from Developer.WEASEL.Tools.imagingTools import resizePixelArray, formatArrayForAnalysis
 
 FILE_SUFFIX = '_T2StarMap'
 
@@ -102,17 +102,12 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             dataset = readDICOM_Image.getDicomDataset(imagePathList[0])
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'): # For Enhanced MRI, sliceList is a list of indices
                 volumeArray, sliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(dataset, sliceList=sliceList, sort=True)
-                sliceSpacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].PixelSpacing[0]
             else: # For normal DICOM, slicelist is a list of slice locations in mm.
                 volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
                 numberSlices = len(sliceList)
-                sliceSpacing = dataset.PixelSpacing[0]        
-            # Next step is to reshape to 3D or 4D - the squeeze makes it 3D if number of slices is =1. HOW ABOUT 2D??? MAY HAVE TO MAKE THIS STEP MORE GENERIC
-            pixelArray = np.transpose(np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numberSlices), numberSlices, np.shape(volumeArray)[1], np.shape(volumeArray)[2]))))
-            # The transpose is applied here because the T2* algorithm is developed this way
-            pixelArray = resizePixelArray(pixelArray, sliceSpacing, reconstPixel=3)
-            # Resample Data to the 128x128 of GE / This is so that data shares the same resolution and sizing.
-            # Algorithm
+            # The assumption is that volumeArray is 3D always/usually
+            pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', transpose=True, resize=3) # The transpose is applied here because the T2* algorithm is developed this way
+            # Algorithm 
             derivedImage, _, _ = T2starmap(pixelArray, echoList)
             derivedImage = np.transpose(derivedImage)
 
@@ -142,7 +137,7 @@ def getParametersT2StarMap(imagePathList, seriesID):
                     if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType') and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
                         if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagMagnitude = True
-                    if (numberEchoes == 12) and echo != 0 and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                    if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         sliceList.append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
@@ -152,11 +147,13 @@ def getParametersT2StarMap(imagePathList, seriesID):
                 sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
                 sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
                 datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
+                echoList = np.delete(echoList, np.where(echoList == 0.0))
+                numberEchoes = len(echoList)
                 for index, dataset in enumerate(datasetList):
-                    flagMagnitude = False    
-                    echo = dataset.EchoTime   
+                    flagMagnitude = False
+                    echo = dataset.EchoTime
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 0: 
+                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 0:
                             flagMagnitude = True
                     except: pass
                     if hasattr(dataset, 'ImageType'):
@@ -164,7 +161,6 @@ def getParametersT2StarMap(imagePathList, seriesID):
                             flagMagnitude = True
                     if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         magnitudePathList.append(imagePathList[index])
-
             del datasetList, numberSlices, numberEchoes, flagMagnitude
             return magnitudePathList, sliceList, echoList
         else:
