@@ -123,7 +123,6 @@ def getParametersT2StarMap(imagePathList, seriesID):
     """This method checks if the series in imagePathList meets the criteria to be processed and calculate T2* Map"""
     try:
         if os.path.exists(imagePathList[0]):
-            # Sort by slice last place
             magnitudePathList = []
             datasetList = readDICOM_Image.getDicomDataset(imagePathList[0]) # even though it can be 1 file only, I'm naming datasetList due to consistency
             if hasattr(datasetList, 'PerFrameFunctionalGroupsSequence'):
