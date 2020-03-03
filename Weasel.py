@@ -13,6 +13,7 @@ import os
 import sys
 import time
 import numpy as np
+import math
 import logging
 import importlib
 from scipy.stats import iqr
@@ -723,38 +724,42 @@ class Weasel(QMainWindow):
                           lblImageMissing, lblPixelValue,
                           imv, multiImage=False, deleteButton=None):
         #create dummy button to prevent runtime error
-        if deleteButton is None:
-            deleteButton = QPushButton()
-            deleteButton.hide()
-
-        #Check that pixel array holds an image & display it
-        if pixelArray is None:
-            lblImageMissing.show()
-            if multiImage:
+        try:
+            if deleteButton is None:
+                deleteButton = QPushButton()
                 deleteButton.hide()
-            imv.setImage(np.array([[0,0,0],[0,0,0]]))  
-        else:
-            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-            imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
-            lblImageMissing.hide()   
-  
-            imv.getView().scene().sigMouseMoved.connect(
-               lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
-            if multiImage:
-                deleteButton.show()
 
+            #Check that pixel array holds an image & display it
+            if pixelArray is None:
+                lblImageMissing.show()
+                if multiImage:
+                    deleteButton.hide()
+                imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                imv.setImage(pixelArray) #autoHistogramRange=False, levels=(minimumValue, maximumValue)
+                lblImageMissing.hide()   
   
+                imv.getView().scene().sigMouseMoved.connect(
+                   lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+                if multiImage:
+                    deleteButton.show()
+        except Exception as e:
+            print('Error in displayPixelArray: ' + str(e))
+            logger.error('Error in displayPixelArray: ' + str(e)) 
+
+
     def getPixelValue(self, pos, imv, pixelArray, lblPixelValue):
         try:
             #print ("Image position: {}".format(pos))
             container = imv.getView()
             if container.sceneBoundingRect().contains(pos): 
                 mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = round(mousePoint.x()) 
-                y_i = round(mousePoint.y()) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
                 z_i = imv.currentIndex + 1
                 if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
                     and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
@@ -835,8 +840,11 @@ class Weasel(QMainWindow):
     def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
         try:
             roiMean = round(np.mean(
-            roi.getArrayRegion(pixelArray, imgItem)), 3)
-            lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+            roi.getArrayRegion(pixelArray, imgItem, returnMappedCoords=False)), 3)
+           # _, coords = roi.getArrayRegion(pixelArray, imgItem, 
+              #                              returnMappedCoords=True)
+            #print(coords)
+            lbl.setText("<h4>ROI Mean Value = {} - </h4>".format(str(roiMean)))
         except Exception as e:
             print('Error in Weasel.updateROIMeanValue: ' + str(e))
             logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
