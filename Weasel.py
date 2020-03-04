@@ -839,12 +839,18 @@ class Weasel(QMainWindow):
 
     def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
         try:
-            roiMean = round(np.mean(
-            roi.getArrayRegion(pixelArray, imgItem, returnMappedCoords=False)), 3)
+            #As image's axis order is set to
+            #'row-major', then the axes are specified 
+            #in (y, x) order, axes=(1,0)
+            arrRegion = roi.getArrayRegion(pixelArray, imgItem, axes=(1,0), returnMappedCoords=False)
+            roiMean = round(np.mean(arrRegion), 3)
+            lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+            if len(arrRegion) <4:
+                print(arrRegion)
            # _, coords = roi.getArrayRegion(pixelArray, imgItem, 
-              #                              returnMappedCoords=True)
-            #print(coords)
-            lbl.setText("<h4>ROI Mean Value = {} - </h4>".format(str(roiMean)))
+            #                                returnMappedCoords=True)
+            
+            
         except Exception as e:
             print('Error in Weasel.updateROIMeanValue: ' + str(e))
             logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
