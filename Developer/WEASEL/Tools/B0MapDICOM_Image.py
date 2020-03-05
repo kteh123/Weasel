@@ -2,22 +2,19 @@ import os
 import numpy as np
 import re
 import struct
-from skimage.restoration import unwrap_phase
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
-from Developer.WEASEL.Tools.imagingTools import resizePixelArray
-from Developer.WEASEL.Tools.imagingTools import resizePixelArray, formatArrayForAnalysis
+from CoreModules.imagingTools import resizePixelArray, formatArrayForAnalysis, unWrapPhase
 
 FILE_SUFFIX = '_B0Map'
-
 # THE ENHANCED MRI B0 STILL NEEDS MORE TESTING. I DON'T HAVE ANY CASE WITH 2 TEs IN ENHANCED MRI
 
 def B0map(pixelArray, echoList):
     try:
         phaseDiffOriginal = np.squeeze(pixelArray[0, ...]) - np.squeeze(pixelArray[1, ...])
         phaseDiffNormalised = phaseDiffOriginal / (np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal)))
-        phaseDiff = unwrap_phase(phaseDiffNormalised * (2 * np.pi * np.ones(np.shape(phaseDiffNormalised))))
+        phaseDiff = unWrapPhase(phaseDiffNormalised * (2 * np.pi * np.ones(np.shape(phaseDiffNormalised))))
         deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
         derivedImage = phaseDiff / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
         del phaseDiffOriginal, phaseDiffNormalised, phaseDiff, deltaTE

@@ -1,10 +1,14 @@
 import numpy as np
 import pydicom
 from skimage.transform import resize
-
+from skimage.restoration import unwrap_phase
 
 #INSERT A METHOD TO DEAL WITH MOSAIC PIXEL ARRAYS
 #INSERT MOSAIC IMAGE CONDITION HERE / OR AT IMAGINGTOOLS.PY
+
+def unWrapPhase(pixelArray):
+    return unwrap_phase(pixelArray)
+
 
 def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
     """Resizes the given array, using reconstPixel as reference of the resizing""" 

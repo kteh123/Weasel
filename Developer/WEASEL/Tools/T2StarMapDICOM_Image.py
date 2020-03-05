@@ -5,7 +5,7 @@ import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
-from Developer.WEASEL.Tools.imagingTools import resizePixelArray, formatArrayForAnalysis
+from CoreModules.imagingTools import resizePixelArray, formatArrayForAnalysis
 
 FILE_SUFFIX = '_T2StarMap'
 
