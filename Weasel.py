@@ -520,7 +520,7 @@ class Weasel(QMainWindow):
                 subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
 
-                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
+                self.lblLoading = QLabel('P<H4>You are loading {} study(s), with {} series containing {} images</H4>'
                  .format(numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
@@ -701,23 +701,25 @@ class Weasel(QMainWindow):
         lblPixelValue.show()
         layout.addWidget(lblPixelValue)
 
-        polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
-                                     pen=pg.mkPen(pg.mkColor(9, 169, 188),
-                                        width=3,
-                                        style=QtCore.Qt.SolidLine), 
-                                     closed=True)
-        polyLineROI.setPos(0,0)
-        viewBox.addItem(polyLineROI)
-        polyLineROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(polyLineROI, 
+        #polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
+        #                             pen=pg.mkPen(pg.mkColor(9, 169, 188),
+        #                                width=3,
+        #                                style=QtCore.Qt.SolidLine), 
+        #                             closed=True)
+
+        rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9))
+        rectROI.setPos(0,0)
+        viewBox.addItem(rectROI)
+        rectROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(rectROI, 
                                            img.image, 
                                            img, 
                                            lblROIMeanValue))
 
         btnResetROI = QPushButton('Reset ROI')
-        btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
+        btnResetROI.clicked.connect(lambda: self.resetROI(rectROI))
         layout.addWidget(btnResetROI)
-        return  lblPixelValue, polyLineROI, lblROIMeanValue,
+        return  lblPixelValue, rectROI, lblROIMeanValue,
 
 
     def displayPixelArray(self, pixelArray, 
@@ -812,9 +814,9 @@ class Weasel(QMainWindow):
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
 
-    def resetROI(self, polyLineROI):
-        polyLineROI.setPos(0,0)
-        polyLineROI.setPoints([[80, 60], [90, 30], [60, 40]])
+    def resetROI(self, ROI):
+        ROI.setPos(0,0)
+        ROI.setPoints([[80, 60], [90, 30], [60, 40]])
 
 
     def synchroniseROIs(self, chkBox):
@@ -842,15 +844,17 @@ class Weasel(QMainWindow):
             #As image's axis order is set to
             #'row-major', then the axes are specified 
             #in (y, x) order, axes=(1,0)
-            arrRegion = roi.getArrayRegion(pixelArray, imgItem, axes=(1,0), returnMappedCoords=False)
-            roiMean = round(np.mean(arrRegion), 3)
+
+            arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
+                            axes=(1,0), returnMappedCoords=True)
+            #print('Mouse move')
+            #print(arrRegion)
+            roiMean = round(np.mean(arrRegion[0]), 3)
             lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
-            if len(arrRegion) <4:
-                print(arrRegion)
-           # _, coords = roi.getArrayRegion(pixelArray, imgItem, 
-            #                                returnMappedCoords=True)
-            
-            
+            if len(arrRegion[0]) <4:
+                print(arrRegion[0])
+                print ('Coords={}'.format(arrRegion[1]))
+
         except Exception as e:
             print('Error in Weasel.updateROIMeanValue: ' + str(e))
             logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
