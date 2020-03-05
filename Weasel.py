@@ -13,6 +13,7 @@ import os
 import sys
 import time
 import numpy as np
+import math
 import logging
 import importlib
 from scipy.stats import iqr
@@ -519,7 +520,7 @@ class Weasel(QMainWindow):
                 subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
 
-                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
+                self.lblLoading = QLabel('P<H4>You are loading {} study(s), with {} series containing {} images</H4>'
                  .format(numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
@@ -700,61 +701,67 @@ class Weasel(QMainWindow):
         lblPixelValue.show()
         layout.addWidget(lblPixelValue)
 
-        polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
-                                     pen=pg.mkPen(pg.mkColor(9, 169, 188),
-                                        width=3,
-                                        style=QtCore.Qt.SolidLine), 
-                                     closed=True)
-        polyLineROI.setPos(0,0)
-        viewBox.addItem(polyLineROI)
-        polyLineROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(polyLineROI, 
+        #polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
+        #                             pen=pg.mkPen(pg.mkColor(9, 169, 188),
+        #                                width=3,
+        #                                style=QtCore.Qt.SolidLine), 
+        #                             closed=True)
+
+        rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9))
+        rectROI.setPos(0,0)
+        viewBox.addItem(rectROI)
+        rectROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(rectROI, 
                                            img.image, 
                                            img, 
                                            lblROIMeanValue))
 
         btnResetROI = QPushButton('Reset ROI')
-        btnResetROI.clicked.connect(lambda: self.resetROI(polyLineROI))
+        btnResetROI.clicked.connect(lambda: self.resetROI(rectROI))
         layout.addWidget(btnResetROI)
-        return  lblPixelValue, polyLineROI, lblROIMeanValue,
+        return  lblPixelValue, rectROI, lblROIMeanValue,
 
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
                           imv, multiImage=False, deleteButton=None):
         #create dummy button to prevent runtime error
-        if deleteButton is None:
-            deleteButton = QPushButton()
-            deleteButton.hide()
-
-        #Check that pixel array holds an image & display it
-        if pixelArray is None:
-            lblImageMissing.show()
-            if multiImage:
+        try:
+            if deleteButton is None:
+                deleteButton = QPushButton()
                 deleteButton.hide()
-            imv.setImage(np.array([[0,0,0],[0,0,0]]))  
-        else:
-            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-            imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
-            lblImageMissing.hide()   
-  
-            imv.getView().scene().sigMouseMoved.connect(
-               lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
-            if multiImage:
-                deleteButton.show()
 
+            #Check that pixel array holds an image & display it
+            if pixelArray is None:
+                lblImageMissing.show()
+                if multiImage:
+                    deleteButton.hide()
+                imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                imv.setImage(pixelArray) #autoHistogramRange=False, levels=(minimumValue, maximumValue)
+                lblImageMissing.hide()   
   
+                imv.getView().scene().sigMouseMoved.connect(
+                   lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+                if multiImage:
+                    deleteButton.show()
+        except Exception as e:
+            print('Error in displayPixelArray: ' + str(e))
+            logger.error('Error in displayPixelArray: ' + str(e)) 
+
+
     def getPixelValue(self, pos, imv, pixelArray, lblPixelValue):
         try:
             #print ("Image position: {}".format(pos))
             container = imv.getView()
             if container.sceneBoundingRect().contains(pos): 
                 mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = round(mousePoint.x()) 
-                y_i = round(mousePoint.y()) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
                 z_i = imv.currentIndex + 1
                 if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
                     and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
@@ -807,9 +814,9 @@ class Weasel(QMainWindow):
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
 
-    def resetROI(self, polyLineROI):
-        polyLineROI.setPos(0,0)
-        polyLineROI.setPoints([[80, 60], [90, 30], [60, 40]])
+    def resetROI(self, ROI):
+        ROI.setPos(0,0)
+        ROI.setPoints([[80, 60], [90, 30], [60, 40]])
 
 
     def synchroniseROIs(self, chkBox):
@@ -834,9 +841,20 @@ class Weasel(QMainWindow):
 
     def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
         try:
-            roiMean = round(np.mean(
-            roi.getArrayRegion(pixelArray, imgItem)), 3)
+            #As image's axis order is set to
+            #'row-major', then the axes are specified 
+            #in (y, x) order, axes=(1,0)
+
+            arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
+                            axes=(1,0), returnMappedCoords=True)
+            #print('Mouse move')
+            #print(arrRegion)
+            roiMean = round(np.mean(arrRegion[0]), 3)
             lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+            if len(arrRegion[0]) <4:
+                print(arrRegion[0])
+                print ('Coords={}'.format(arrRegion[1]))
+
         except Exception as e:
             print('Error in Weasel.updateROIMeanValue: ' + str(e))
             logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
