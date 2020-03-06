@@ -12,14 +12,19 @@ import pyqtgraph as pg
 import os
 import sys
 import time
+import re
+import struct
 import numpy as np
 import math
-import logging
-import importlib
 from scipy.stats import iqr
+import logging
+import pathlib
+import importlib
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
+#pathlib.Path().absolute() is the current directory where the script is located. 
+#It doesn't matter if it's Python SYS or Windows SYS
 sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//'))
 sys.path.append(os.path.join(sys.path[0],
         'Developer//WEASEL//Tools//FERRET_Files//'))
@@ -33,6 +38,7 @@ import CoreModules.styleSheet as styleSheet
 from Developer.WEASEL.Tools.FERRET import FERRET as ferret
 from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
+import CoreModules.imagingTools as imagingTools
 
 
 __version__ = '1.0'
@@ -94,9 +100,12 @@ class Weasel(QMainWindow):
             self.menuItem.setEnabled(False)
             moduleName = tool.find('module').text
             function = tool.find('function').text
-            objFunction = getattr(importlib.import_module(moduleName, 
-                                        package=None),
-                                        function)
+            moduleFileName = [os.path.join(dirpath, moduleName+".py") 
+                for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
+            spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            objFunction = getattr(module, function)
             self.menuItem.triggered.connect(lambda : objFunction(self))
             self.toolsMenu.addAction(self.menuItem)
         except Exception as e:
@@ -742,7 +751,7 @@ class Weasel(QMainWindow):
                     1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                 maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                imv.setImage(pixelArray) #autoHistogramRange=False, levels=(minimumValue, maximumValue)
+                imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
