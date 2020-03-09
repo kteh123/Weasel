@@ -6,22 +6,10 @@ import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 from CoreModules.imagingTools import resizePixelArray, formatArrayForAnalysis, unWrapPhase
+from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
 # THE ENHANCED MRI B0 STILL NEEDS MORE TESTING. I DON'T HAVE ANY CASE WITH 2 TEs IN ENHANCED MRI
-
-def B0map(pixelArray, echoList):
-    try:
-        phaseDiffOriginal = np.squeeze(pixelArray[1, ...]) - np.squeeze(pixelArray[0, ...])
-        phaseDiffNormalised = phaseDiffOriginal / (np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal)))
-        phaseDiff = unWrapPhase(phaseDiffNormalised * (2 * np.pi * np.ones(np.shape(phaseDiffNormalised))))
-        deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
-        derivedImage = phaseDiff / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
-        del phaseDiffOriginal, phaseDiffNormalised, phaseDiff, deltaTE
-        return derivedImage
-    except Exception as e:
-        print('Error in function B0MapDICOM_Image.B0map: ' + str(e))
-
 
 def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the B0 Map Array with the Phase images as starting point"""
@@ -35,7 +23,7 @@ def returnPixelArray(imagePathList, sliceList, echoList):
                 numberSlices = len(sliceList)
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D') # The assumption is that volumeArray is 3D always/usually
             # Algorithm
-            derivedImage = B0map(pixelArray, echoList)
+            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList)
             del volumeArray, pixelArray, dataset
             return derivedImage
         else:
@@ -56,10 +44,10 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
                 realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
                 imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])  
                 numberSlices = len(sliceList)
-            volumeArray = np.arctan2(realVolumeArray, imaginaryVolumeArray)
+            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D') # The assumption is that volumeArray is 3D always/usually # Algorithm
             # Algorithm
-            derivedImage = B0map(pixelArray, echoList)
+            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList)
             del volumeArray, pixelArray, dataset, imaginaryVolumeArray, realVolumeArray
             return derivedImage
         else:
@@ -86,19 +74,19 @@ def getParametersB0Map(imagePathList, seriesID):
                     flagImaginary = False
                     echo = dataset.MREchoSequence[0].EffectiveEchoTime
                     if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType') and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
-                        if set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        if set(['P', 'PHASE', 'B0']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagPhase = True
-                        elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagReal = True
-                        elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagImaginary = True
-                    if (numberEchoes == 2) and (echo != 0) and flagPhase and re.match(".*b0.*", seriesID.lower()):
+                    if ((numberEchoes == 1) or (numberEchoes == 2)) and flagPhase and re.match(".*b0.*", seriesID.lower()):
                         sliceList.append(originalSliceList[index])
                         echoList.append(echo)
-                    elif (numberEchoes == 2) and (echo != 0) and flagReal and re.match(".*b0.*", seriesID.lower()):
+                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagReal and re.match(".*b0.*", seriesID.lower()):
                         riPathList[0].append(originalSliceList[index])
                         echoList.append(echo)
-                    elif (numberEchoes == 2) and (echo != 0) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
+                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
                         riPathList[1].append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
@@ -118,7 +106,7 @@ def getParametersB0Map(imagePathList, seriesID):
                     flagPhase = False
                     flagReal = False
                     flagImaginary = False
-                    echo = dataset.EchoTime
+                    #echo = dataset.EchoTime
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
                         if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
                             flagPhase = True
@@ -128,17 +116,17 @@ def getParametersB0Map(imagePathList, seriesID):
                             flagImaginary = True
                     except: pass
                     if hasattr(dataset, 'ImageType'): 
-                        if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType):
+                        if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType) or ('B0' in dataset.ImageType):
                             flagPhase = True
                         elif ('R' in dataset.ImageType) or ('REAL' in dataset.ImageType):
                             flagReal = True
                         elif ('I' in dataset.ImageType) or ('IMAGINARY' in dataset.ImageType):
                             flagImaginary = True
-                    if (numberEchoes == 2) and (echo != 0) and flagPhase and re.match(".*b0.*", seriesID.lower()):
+                    if ((numberEchoes == 1) or (numberEchoes == 2)) and flagPhase and re.match(".*b0.*", seriesID.lower()):
                         phasePathList.append(imagePathList[index])
-                    elif (numberEchoes == 2) and (echo != 0) and flagReal and re.match(".*b0.*", seriesID.lower()):
+                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagReal and re.match(".*b0.*", seriesID.lower()):
                         riPathList[0].append(imagePathList[index])
-                    elif (numberEchoes == 2) and (echo != 0) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
+                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
                         riPathList[1].append(imagePathList[index])
 
             del datasetList, numberSlices, numberEchoes, flagPhase, flagReal, flagImaginary
