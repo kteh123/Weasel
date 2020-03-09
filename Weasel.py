@@ -39,6 +39,7 @@ from Developer.WEASEL.Tools.FERRET import FERRET as ferret
 from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
+import Developer.WEASEL.Tools
 
 
 __version__ = '1.0'

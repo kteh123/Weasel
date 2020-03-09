@@ -12,10 +12,10 @@ FILE_SUFFIX = '_B0Map'
 
 def B0map(pixelArray, echoList):
     try:
-        phaseDiffOriginal = np.squeeze(pixelArray[0, ...]) - np.squeeze(pixelArray[1, ...])
+        phaseDiffOriginal = np.squeeze(pixelArray[1, ...]) - np.squeeze(pixelArray[0, ...])
         phaseDiffNormalised = phaseDiffOriginal / (np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal)))
         phaseDiff = unWrapPhase(phaseDiffNormalised * (2 * np.pi * np.ones(np.shape(phaseDiffNormalised))))
-        deltaTE = np.absolute(echoList[0] - echoList[1]) * 0.001 # Conversion from ms to s
+        deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
         derivedImage = phaseDiff / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
         del phaseDiffOriginal, phaseDiffNormalised, phaseDiff, deltaTE
         return derivedImage
@@ -56,7 +56,7 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
                 realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
                 imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])  
                 numberSlices = len(sliceList)
-            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
+            volumeArray = np.arctan2(realVolumeArray, imaginaryVolumeArray)
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D') # The assumption is that volumeArray is 3D always/usually # Algorithm
             # Algorithm
             derivedImage = B0map(pixelArray, echoList)
