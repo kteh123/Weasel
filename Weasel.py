@@ -39,6 +39,7 @@ from Developer.WEASEL.Tools.FERRET import FERRET as ferret
 from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
+import Developer.WEASEL.Tools
 
 
 __version__ = '1.0'
@@ -550,6 +551,7 @@ class Weasel(QMainWindow):
                 
                 treeWidgetItemCounter = 0 
                 studies = self.objXMLReader.getStudies()
+                self.seriesBranchList = []
                 for study in studies:
                     studyID = study.attrib['id']
                     studyBranch = QTreeWidgetItem(self.treeView)
@@ -558,7 +560,6 @@ class Weasel(QMainWindow):
                     studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                     studyBranch.setExpanded(True)
-                    self.seriesBranchList = []
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
@@ -570,7 +571,7 @@ class Weasel(QMainWindow):
                         seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                         #Expand this series branch, so that the 3 resizeColumnToContents
                         #commands can work
-                        seriesBranch.setExpanded(True)
+                       
                         for image in series:
                             #Extract filename from file path
                             if image.find('name').text:
@@ -592,6 +593,7 @@ class Weasel(QMainWindow):
                             imageLeaf.setText(1, imageDate)
                             imageLeaf.setText(2, imageTime)
                             imageLeaf.setText(3, imagePath)
+                        seriesBranch.setExpanded(True)
                 self.treeView.resizeColumnToContents(0)
                 self.treeView.resizeColumnToContents(1)
                 self.treeView.resizeColumnToContents(2)
