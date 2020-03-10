@@ -5,7 +5,7 @@ import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
-from CoreModules.imagingTools import resizePixelArray, formatArrayForAnalysis, unWrapPhase
+from CoreModules.imagingTools import formatArrayForAnalysis, unWrapPhase
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
@@ -21,7 +21,7 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             else: # For normal DICOM, slicelist is a list of slice locations in mm.
                 volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
                 numberSlices = len(sliceList)
-            pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D') # The assumption is that volumeArray is 3D always/usually
+            pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D')
             # Algorithm
             derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList)
             del volumeArray, pixelArray, dataset
@@ -45,9 +45,9 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
                 imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])  
                 numberSlices = len(sliceList)
             volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
-            pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D') # The assumption is that volumeArray is 3D always/usually # Algorithm
+            pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D')
             # Algorithm
-            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList)
+            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList) # Maybe np.invert() to have the same result as the other series
             del volumeArray, pixelArray, dataset, imaginaryVolumeArray, realVolumeArray
             return derivedImage
         else:
@@ -73,8 +73,8 @@ def getParametersB0Map(imagePathList, seriesID):
                     flagReal = False
                     flagImaginary = False
                     echo = dataset.MREchoSequence[0].EffectiveEchoTime
-                    if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType') and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
-                        if set(['P', 'PHASE', 'B0']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'): # and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
+                        if set(['P', 'PHASE', 'B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagPhase = True
                         elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagReal = True
@@ -134,7 +134,7 @@ def getParametersB0Map(imagePathList, seriesID):
         else:
             return None, None, None, None
     except Exception as e:
-        print('Error in function B0MapDICOM_Image.getParametersB0Map: Not possible to calculate B0 Map' + str(e))
+        print('Error in function B0MapDICOM_Image.getParametersB0Map: ' + str(e))
 
 
 def saveB0MapSeries(objWeasel):
@@ -153,7 +153,7 @@ def saveB0MapSeries(objWeasel):
             phasePathList = riPathList[0] # Here we're assuming that the saving will be performed based on the Real Images
         else:
             objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
-            raise ValueError("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
+            raise Exception("Not possible to calculate B0 Map in the selected series.")
 
         if hasattr(readDICOM_Image.getDicomDataset(phasePathList[0]), 'PerFrameFunctionalGroupsSequence'):
             # If it's Enhanced MRI
@@ -169,7 +169,9 @@ def saveB0MapSeries(objWeasel):
             # Iterate through list of images and save B0 for each image
             B0ImagePathList = []
             B0ImageList = []
-            numImages = len(phasePathList)
+            #numImages = len(phasePathList)
+            numImages = np.shape(B0Image)[0]
+            #print(numImages)
             objWeasel.displayMessageSubWindow(
                 "<H4Saving {} DICOM files for B0 Map calculated</H4>".format(numImages),
                 "Saving B0 Map into DICOM Images")

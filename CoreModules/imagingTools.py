@@ -10,6 +10,14 @@ def unWrapPhase(pixelArray):
     return unwrap_phase(pixelArray)
 
 
+def invertPixelArray(pixelArray, dataset):
+    return np.invert(pixelArray.astype(dataset.pixel_array.dtype))
+
+
+def squarePixelArray(pixelArray):
+    return np.square(pixelArray)
+
+
 def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
     """Resizes the given array, using reconstPixel as reference of the resizing""" 
     # Resample Data / Don't forget to resample the 128x128 of GE
@@ -22,18 +30,18 @@ def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
     
     # What happens to SliceSpacing?!
     if len(np.shape(pixelArray)) == 3:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0] // fraction, pixelArray.shape[1] // fraction, pixelArray.shape[2]), anti_aliasing=True)
+        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1] // fraction, pixelArray.shape[2] // fraction), anti_aliasing=True)
     elif len(np.shape(pixelArray)) == 4:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0] // fraction, pixelArray.shape[1] // fraction, pixelArray.shape[2], pixelArray.shape[3]), anti_aliasing=True)
+        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1] , pixelArray.shape[2] // fraction, pixelArray.shape[3] // fraction), anti_aliasing=True)
     elif len(np.shape(pixelArray)) == 5:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0] // fraction, pixelArray.shape[1] // fraction, pixelArray.shape[2], pixelArray.shape[3], pixelArray.shape[4]), anti_aliasing=True)
+        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1], pixelArray.shape[2], pixelArray.shape[3] // fraction, pixelArray.shape[4] // fraction), anti_aliasing=True)
     elif len(np.shape(pixelArray)) == 6:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0] // fraction, pixelArray.shape[1] // fraction, pixelArray.shape[2], pixelArray.shape[3], pixelArray.shape[4], pixelArray.shape[5]), anti_aliasing=True)
+        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1], pixelArray.shape[2], pixelArray.shape[3], pixelArray.shape[4] // fraction, pixelArray.shape[5] // fraction), anti_aliasing=True)
 
     return pixelArray
 
 
-def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', transpose=False, resize=None):
+def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', transpose=False, invert=False, resize=None):
     """Formats the given array in a structured manner according to the given flags"""
 
     if dimension == '3D':
@@ -44,9 +52,6 @@ def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', t
         volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2], np.shape(volumeArray)[3])))
     elif dimension == '6D':
         volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2], np.shape(volumeArray)[3], np.shape(volumeArray)[4])))
-
-    if transpose == True:
-        volumeArray = np.transpose(volumeArray)
     
     if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
         pixelSpacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].PixelSpacing[0]
@@ -54,6 +59,13 @@ def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', t
         pixelSpacing = dataset.PixelSpacing[0]
 
     pixelArray = resizePixelArray(volumeArray, pixelSpacing, reconstPixel=resize)
+
+    if transpose == True:
+        pixelArray = np.transpose(pixelArray)
+
+    if invert == True:
+        pixelArray = invertPixelArray(pixelArray, dataset)
+
     del volumeArray, pixelSpacing
     return pixelArray
 

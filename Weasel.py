@@ -530,7 +530,7 @@ class Weasel(QMainWindow):
                 subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
 
-                self.lblLoading = QLabel('P<H4>You are loading {} study(s), with {} series containing {} images</H4>'
+                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
                  .format(numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
@@ -1389,7 +1389,7 @@ class Weasel(QMainWindow):
             #Get file path of image2
             imageName = self.imageList2.currentText()
             if imageName != '':
-                imagePath2 = imageDict[imageNamelti]
+                imagePath2 = imageDict[imageName]
 
             #Get binary operation to be performed
             binOp = self.binaryOpsList.currentText()
@@ -1615,13 +1615,13 @@ class Weasel(QMainWindow):
             self.treeView.setColumnCount(3)
             self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
             studies = self.objXMLReader.getStudies()
+            self.seriesBranchList.clear()
             for study in studies:
                 studyID = study.attrib['id']
                 studyBranch = QTreeWidgetItem(self.treeView)
                 studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
-                self.seriesBranchList.clear()
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
