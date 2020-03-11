@@ -26,7 +26,7 @@ def invertAlgorithm(pixelArray, dataset):
             print('Error in function invertDICOM_Image.invertAlgorithm: ' + str(e))
 
 
-def invertImage(objWeasel):
+def saveInvertImage(objWeasel):
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:
@@ -65,15 +65,19 @@ def invertImage(objWeasel):
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
-
-            objWeasel.closeMessageSubWindow()
-
-            # Save new DICOM series locally
+            objWeasel.displayMessageSubWindow(
+              "<H4>Saving results into a new DICOM Series</H4>",
+              "Inverting DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(2)
+            objWeasel.setMsgWindowProgBarValue(1)
+            # Save new DICOM Series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
+            objWeasel.setMsgWindowProgBarValue(2)
+            objWeasel.closeMessageSubWindow()
             objWeasel.displayMultiImageSubWindow(
                 derivedImagePathList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
-        print('Error in invertDICOM_Image.invertImage: ' + str(e))
+        print('Error in invertDICOM_Image.saveInvertImage: ' + str(e))

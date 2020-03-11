@@ -5,7 +5,7 @@
     <tooltip>Invert a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>invertDICOM_Image</module>
-    <function>invertImage</function>
+    <function>saveInvertImage</function>
   </tool>
   <tool>
     <action>Square</action>
@@ -13,7 +13,7 @@
     <tooltip>Square a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>squareDICOM_Image</module>
-    <function>squareImage</function>
+    <function>saveSquareImage</function>
   </tool>
   <tool>
     <action>B0 Map Calculation</action>

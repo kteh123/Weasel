@@ -145,7 +145,20 @@ def saveB0MapSeries(objWeasel):
         imagePathList = \
             objWeasel.getImagePathList(studyID, seriesID)
 
+        objWeasel.displayMessageSubWindow(
+            "<H4>Extracting parameters to calculate B0 Map</H4>",
+            "Saving B0 Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)
+        objWeasel.setMsgWindowProgBarValue(1)
+
         phasePathList, sliceList, echoList, riPathList = getParametersB0Map(imagePathList, seriesID)
+
+        objWeasel.displayMessageSubWindow(
+            "<H4>Calculating the B0 Map</H4>",
+            "Saving B0 Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)   
+        objWeasel.setMsgWindowProgBarValue(2)
+
         if phasePathList:
             B0Image = returnPixelArray(phasePathList, sliceList, echoList)
         elif riPathList[0] and riPathList[1]:
@@ -157,40 +170,34 @@ def saveB0MapSeries(objWeasel):
 
         if hasattr(readDICOM_Image.getDicomDataset(phasePathList[0]), 'PerFrameFunctionalGroupsSequence'):
             # If it's Enhanced MRI
-            objWeasel.displayMessageSubWindow(
-                "<H4Saving 1 Enhanced DICOM file for B0 Map calculated</H4>",
-                "Saving B0 Map into DICOM")
-            objWeasel.setMsgWindowProgBarMaxValue(0)
+            numImages = 1
             B0ImageList = [B0Image]
             B0ImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[0], FILE_SUFFIX)
             B0ImagePathList = [B0ImageFilePath]
-            objWeasel.setMsgWindowProgBarMaxValue(1)
         else:
             # Iterate through list of images and save B0 for each image
             B0ImagePathList = []
             B0ImageList = []
-            #numImages = len(phasePathList)
             numImages = np.shape(B0Image)[0]
-            #print(numImages)
-            objWeasel.displayMessageSubWindow(
-                "<H4Saving {} DICOM files for B0 Map calculated</H4>".format(numImages),
-                "Saving B0 Map into DICOM Images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
             imageCounter = 0
-            for index in range(np.shape(B0Image)[0]):
+            for index in range(numImages):
                 B0ImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[index], FILE_SUFFIX)
                 B0ImagePathList.append(B0ImageFilePath)
                 B0ImageList.append(B0Image[index, ...])
-                imageCounter += 1
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
-
-        objWeasel.closeMessageSubWindow()
+        
+        objWeasel.displayMessageSubWindow(
+            "<H4>Saving {} DICOM files for the B0 Map calculated</H4>".format(numImages),
+            "Saving B0 Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)
+        objWeasel.setMsgWindowProgBarValue(3)
         
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)], 
                                                             B0ImagePathList, FILE_SUFFIX)
+        objWeasel.setMsgWindowProgBarValue(4)                                                    
+        objWeasel.closeMessageSubWindow()
         objWeasel.displayMultiImageSubWindow(B0ImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

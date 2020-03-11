@@ -41,11 +41,16 @@ def copySeries(objWeasel):
             copiedImageList.append(copiedImage)
             imageCounter += 1
             objWeasel.setMsgWindowProgBarValue(imageCounter)
-
-        objWeasel.closeMessageSubWindow()
+        objWeasel.displayMessageSubWindow(
+            "<H4>Saving results into a new DICOM Series</H4>",
+            "Copying DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(2)
+        objWeasel.setMsgWindowProgBarValue(1)
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
         newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, copiedImagePathList, FILE_SUFFIX)
+        objWeasel.setMsgWindowProgBarValue(2)
+        objWeasel.closeMessageSubWindow()
         objWeasel.displayMultiImageSubWindow(copiedImagePathList, 
                                               studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

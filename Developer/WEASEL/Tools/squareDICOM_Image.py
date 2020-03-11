@@ -25,7 +25,7 @@ def squareAlgorithm(pixelArray):
             print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))
 
 
-def squareImage(objWeasel):
+def saveSquareImage(objWeasel):
     """Creates a subwindow that displays a square rooted DICOM image. Executed using the 
     'Square Image' Menu item in the Tools menu."""
     try:
@@ -61,14 +61,19 @@ def squareImage(objWeasel):
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
-
-            objWeasel.closeMessageSubWindow()
+            objWeasel.displayMessageSubWindow(
+              "<H4>Saving results into a new DICOM Series</H4>",
+              "Squaring DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(2)
+            objWeasel.setMsgWindowProgBarValue(1)
             # Save new DICOM series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
+            objWeasel.setMsgWindowProgBarValue(2)
+            objWeasel.closeMessageSubWindow()
             objWeasel.displayMultiImageSubWindow(
                 derivedImagePathList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
-        print('Error in squaredDICOM_Image.squareImage: ' + str(e))
+        print('Error in squaredDICOM_Image.saveSquareImage: ' + str(e))
