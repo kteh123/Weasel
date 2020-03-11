@@ -21,12 +21,9 @@ def returnPixelArray(imagePathList, sliceList, echoList):
                 volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
                 numberSlices = len(sliceList)
             # The assumption is that volumeArray is 3D always/usually
-            #pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', transpose=True, resize=3) # The transpose is applied here because the T2* algorithm is developed this way
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', resize=3)
             # Algorithm 
-            #derivedImage, _, _ = ukrinMaps(pixelArray).T2StarNottingham(echoList)
             derivedImage = ukrinMaps(pixelArray).T2Star(echoList)
-            #derivedImage = np.transpose(derivedImage)
             del volumeArray, pixelArray, dataset
             return derivedImage
         else:

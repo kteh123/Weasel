@@ -1,6 +1,5 @@
 import numpy as np
-import sys
-from CoreModules.imagingTools import resizePixelArray, formatArrayForAnalysis, unWrapPhase
+from CoreModules.imagingTools import unWrapPhase
 
 class ukrinMaps():
     """Package containing algorithms that calculate parameter maps 
@@ -147,12 +146,10 @@ class ukrinMaps():
             with np.errstate(invalid='ignore', over='ignore'):
                 noise = np.sum(self.pixelArray, axis=0) / (numberEchoes * matrixOnes)
                 sd = np.absolute(np.sum(np.square(self.pixelArray), axis=0) / (numberEchoes * matrixOnes) - np.square(noise))
-                #sd = np.square(sd) # Maybe delete these. If the purpose is to turn positive, then use np.absolute()
-                #sd = np.sqrt(sd)
                 s_w = s_wx = s_wx2 = s_wy = s_wxy = np.zeros(np.shape(matrixOnes))
                 for echo in range(numberEchoes):
                     te = echoList[echo] * 0.001 * matrixOnes
-                    sig = sigma = np.zeros(np.shape(matrixOnes))
+                    sigma = sig = np.zeros(np.shape(matrixOnes))
                     matrixIterator = np.nditer(sd, flags=['multi_index'])
                     while not matrixIterator.finished:
                         index = matrixIterator.multi_index
@@ -176,8 +173,7 @@ class ukrinMaps():
                 t2Star = np.where(conditions, 0.0, t2Star)
             return t2Star
         except Exception as e:
-            _, _, exc_tb = sys.exc_info()
-            print('Error in line ' + exc_tb.tb_lineno + ' of function ukrinAlgorithms.T2Star: ' + str(e))
+            print('Error in function ukrinAlgorithms.T2Star: ' + str(e))
 
     def R2Star(self, echoList):
         try:
