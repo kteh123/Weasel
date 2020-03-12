@@ -89,7 +89,20 @@ def saveT2StarMapSeries(objWeasel):
         imagePathList = \
             objWeasel.getImagePathList(studyID, seriesID)
 
+        objWeasel.displayMessageSubWindow(
+            "<H4>Extracting parameters to calculate T2* Map</H4>",
+            "Saving T2* Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)
+        objWeasel.setMsgWindowProgBarValue(1)
+
         magnitudePathList, sliceList, echoList = getParametersT2StarMap(imagePathList, seriesID)
+
+        objWeasel.displayMessageSubWindow(
+            "<H4>Calculating the T2* Map</H4>",
+            "Saving T2* Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)   
+        objWeasel.setMsgWindowProgBarValue(2)
+
         if magnitudePathList:
             T2StarImage = returnPixelArray(magnitudePathList, sliceList, echoList)
         else:
@@ -98,38 +111,33 @@ def saveT2StarMapSeries(objWeasel):
 
         if hasattr(readDICOM_Image.getDicomDataset(magnitudePathList[0]), 'PerFrameFunctionalGroupsSequence'):
             # If it's Enhanced MRI
-            objWeasel.displayMessageSubWindow(
-                "<H4Saving 1 Enhanced DICOM file for T2* Map calculated</H4>",
-                "Saving T2* Map into DICOM")
-            objWeasel.setMsgWindowProgBarMaxValue(0)
+            numImages = 1
             T2StarImageList = [T2StarImage]
             T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[0], FILE_SUFFIX)
             T2StarImagePathList = [T2StarImageFilePath]
-            objWeasel.setMsgWindowProgBarMaxValue(1)
         else:
             # Iterate through list of images and save T2* for each image
             T2StarImagePathList = []
             T2StarImageList = []
-            numImages = len(magnitudePathList)
-            objWeasel.displayMessageSubWindow(
-                "<H4Saving {} DICOM files for T2* Map calculated</H4>".format(numImages),
-                "Saving T2* Map into DICOM Images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
-            imageCounter = 0
-            for index in range(np.shape(T2StarImage)[0]):
+            numImages = np.shape(T2StarImage)[0]
+            for index in range(numImages):
                 T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[index], FILE_SUFFIX)
                 T2StarImagePathList.append(T2StarImageFilePath)
                 T2StarImageList.append(T2StarImage[index, ...])
-                imageCounter += 1
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
 
-        objWeasel.closeMessageSubWindow()
-        
+        objWeasel.displayMessageSubWindow(
+            "<H4>Saving {} DICOM files for the T2* Map calculated</H4>".format(numImages),
+            "Saving T2* Map")
+        objWeasel.setMsgWindowProgBarMaxValue(4)
+        objWeasel.setMsgWindowProgBarValue(3)
+
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map="T2Star")
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T2StarImagePathList)],
                                                         T2StarImagePathList, FILE_SUFFIX)
+        objWeasel.setMsgWindowProgBarValue(4)                                                    
+        objWeasel.closeMessageSubWindow()
         objWeasel.displayMultiImageSubWindow(T2StarImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

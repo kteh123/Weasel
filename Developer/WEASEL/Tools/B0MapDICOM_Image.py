@@ -179,7 +179,6 @@ def saveB0MapSeries(objWeasel):
             B0ImagePathList = []
             B0ImageList = []
             numImages = np.shape(B0Image)[0]
-            imageCounter = 0
             for index in range(numImages):
                 B0ImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[index], FILE_SUFFIX)
                 B0ImagePathList.append(B0ImageFilePath)

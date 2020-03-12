@@ -2,6 +2,7 @@ import os
 import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
+from CoreModules.imagingTools import squarePixelArray
 FILE_SUFFIX = '_Square'
 
 def returnPixelArray(imagePath):
@@ -9,20 +10,22 @@ def returnPixelArray(imagePath):
     try:
         if os.path.exists(imagePath):
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            derivedImage = squareAlgorithm(pixelArray)
+            #derivedImage = squareAlgorithm(pixelArray)
+            derivedImage = squarePixelArray(pixelArray)
             return derivedImage
         else:
             return None
     except Exception as e:
             print('Error in function squareDICOM_Image.returnPixelArray: ' + str(e))
     
-
-def squareAlgorithm(pixelArray):
-    try:
-        derivedImage = np.square(pixelArray)
-        return derivedImage
-    except Exception as e:
-            print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))
+# The purpose is to demonstrate that the user can either apply a method already defined or can create and use a new method
+# Comment/Uncomment according to what's agreed with the team.
+#def squareAlgorithm(pixelArray):
+    #try:
+        #derivedImage = np.square(pixelArray)
+        #return derivedImage
+    #except Exception as e:
+        #print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))
 
 
 def saveSquareImage(objWeasel):
