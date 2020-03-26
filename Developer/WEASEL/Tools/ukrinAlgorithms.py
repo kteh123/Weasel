@@ -35,9 +35,10 @@ class ukrinMaps():
                 deltaTE = echoList[0] * 0.001 # Conversion from ms to s
             if int(round(np.amax(phaseDiffOriginal)/np.pi)) % 2 > 0:
                 phaseDiff = phaseDiffOriginal / ((1 / np.pi) * np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal))) # Normalise to -Pi and +Pi
+                derivedImage = unWrapPhase(phaseDiff) / ((np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
             else:
                 phaseDiff = phaseDiffOriginal / ((1 / (2 * np.pi)) * np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal))) # Normalise to -2Pi and +2Pi
-            derivedImage = unWrapPhase(phaseDiff) / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
+                derivedImage = unWrapPhase(phaseDiff) / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
             del phaseDiffOriginal, phaseDiff, deltaTE
             return derivedImage
         except Exception as e:

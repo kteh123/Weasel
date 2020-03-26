@@ -355,3 +355,4 @@ venv-linux/
 /Weasel.exe
 /report.pdf
 Weasel-ROI-Joao.py
+*.ipynb
