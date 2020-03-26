@@ -162,11 +162,9 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//FERRET_Files//ModelLibrary//'))
 
 import numpy as np
-#import pyautogui
 import logging
 from typing import List
 import datetime
-import pydicom
 
 from PyQt5.QtGui import QCursor, QIcon, QPixmap, QImage
 from PyQt5 import QtCore
@@ -174,7 +172,6 @@ from PyQt5.QtWidgets import QApplication, QPushButton, QDoubleSpinBox,\
      QVBoxLayout, QHBoxLayout, QGroupBox, QComboBox, QLabel,  \
      QMessageBox, QFileDialog, QCheckBox, QLineEdit, QSizePolicy, QSpacerItem, \
      QGridLayout, QWidget, QStatusBar, QProgressBar, QFrame
-
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar

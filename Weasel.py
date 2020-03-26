@@ -499,7 +499,7 @@ class Weasel(QMainWindow):
     def getMDIAreaDimensions(self):
         return self.mdiArea.height(), self.mdiArea.width() 
 
-
+   
     def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -684,7 +684,7 @@ class Weasel(QMainWindow):
             self.subWindow.showMaximized()
         except Exception as e:
             print('Error in displayFERRET: ' + str(e))
-            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
+            logger.error('Error in displayFERRET: ' + str(e)) 
 
 
     def setUpViewBoxForImage(self, imageViewer, layout):
@@ -719,7 +719,7 @@ class Weasel(QMainWindow):
         #                             closed=True)
 
         rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9))
-        rectROI.setPos(0,0)
+        #rectROI.setPos(0,0)
         viewBox.addItem(rectROI)
         rectROI.sigRegionChanged.connect(
             lambda: self.updateROIMeanValue(rectROI, 
@@ -826,8 +826,9 @@ class Weasel(QMainWindow):
 
 
     def resetROI(self, ROI):
-        ROI.setPos(0,0)
-        ROI.setPoints([[80, 60], [90, 30], [60, 40]])
+        ROI.setPos(20, 20)
+        ROI.setSize(20,20)
+        #ROI.setPoints([[80, 60], [90, 30], [60, 40]])
 
 
     def synchroniseROIs(self, chkBox):
