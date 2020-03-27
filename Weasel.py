@@ -1,11 +1,12 @@
 
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, 
-        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QMdiSubWindow, 
+from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
+        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, 
+        QMdiSubWindow, QGroupBox, QMainWindow,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
-        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem )
+        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import pyqtgraph as pg
@@ -718,20 +719,116 @@ class Weasel(QMainWindow):
         #                                style=QtCore.Qt.SolidLine), 
         #                             closed=True)
 
-        rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9))
+        #rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9), removable=True)
         #rectROI.setPos(0,0)
-        viewBox.addItem(rectROI)
-        rectROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(rectROI, 
+        #viewBox.addItem(rectROI)
+        #print('listing items')
+        #for item in viewBox.items:
+        #    #'graphicsItems.ROI'
+        #    print(item)    
+        #print('end item list')
+        #rectROI.sigRegionChanged.connect(
+        #    lambda: self.updateROIMeanValue(rectROI, 
+        #                                   img.image, 
+        #                                   img, 
+        #                                   lblROIMeanValue))
+        
+        groupBoxROI = QGroupBox('ROI')
+        gridLayout = QGridLayout()
+        groupBoxROI.setLayout(gridLayout)
+        layout.addWidget(groupBoxROI)
+
+
+        btnCircleROI = QPushButton('Circle') 
+        btnCircleROI.setToolTip('Creates a circular ROI')
+        btnCircleROI.clicked.connect(lambda: 
+               self.createCircleROI(viewBox, img, lblROIMeanValue))
+
+        
+        btnEllipseROI = QPushButton('Ellipse') 
+        btnEllipseROI.setToolTip('Creates an ellipical ROI')
+
+        btnMultiRectROI = QPushButton('Multi-Rect') 
+        btnMultiRectROI.setToolTip(
+            'Creates a chain of rectangular ROIs connected by handles')
+
+        btnPolyLineROI = QPushButton('PolyLine')
+        btnPolyLineROI.setToolTip(
+            'Allows the user to draw paths of multiple line segments')
+
+        btnRectROI = QPushButton('Rectangle') 
+        btnRectROI.setToolTip('Creates a rectangular ROI')
+        btnRectROI.clicked.connect(lambda: 
+               self.createRectangleROI(viewBox, img, lblROIMeanValue))
+
+        btnDrawROI = QPushButton('Draw') 
+        btnDrawROI.setToolTip('Allows the user to draw around a ROI')
+
+        btnRemoveROI = QPushButton('Clear')
+        btnRemoveROI.setToolTip('Clears the ROI from the image')
+        btnRemoveROI.clicked.connect(lambda: self.removeROI(viewBox))
+
+        btnResetROI = QPushButton('Reset')
+        btnResetROI.setToolTip('Resets the ROI to its original shape and position')
+        btnResetROI.clicked.connect(lambda: self.resetROI(viewBox))
+
+        gridLayout.addWidget(btnCircleROI,0,0)
+        gridLayout.addWidget(btnEllipseROI,0,1)
+        gridLayout.addWidget(btnMultiRectROI,0,2)
+        gridLayout.addWidget(btnPolyLineROI,0,3)
+        gridLayout.addWidget(btnRectROI,1,0)
+        gridLayout.addWidget(btnDrawROI,1,1)
+        gridLayout.addWidget(btnRemoveROI,1,2)
+        gridLayout.addWidget(btnResetROI,1,3)
+        return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
+
+
+    def createRectangleROI(self, viewBox, img, lblROIMeanValue):
+        self. removeROI(viewBox)
+        objROI = pg.RectROI(
+            [20, 20], [20, 20], pen=(0,9), removable=True)
+        viewBox.addItem(objROI)
+        objROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(objROI, 
                                            img.image, 
                                            img, 
                                            lblROIMeanValue))
 
-        btnResetROI = QPushButton('Reset ROI')
-        btnResetROI.clicked.connect(lambda: self.resetROI(rectROI))
-        layout.addWidget(btnResetROI)
-        return  lblPixelValue, rectROI, lblROIMeanValue,
 
+    def createCircleROI(self, viewBox, img, lblROIMeanValue):
+        self. removeROI(viewBox)
+        objROI = pg.CircleROI([20, 20], [20, 20], pen=(4,9), removable=True)
+        viewBox.addItem(objROI)
+        objROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(objROI, 
+                                           img.image, 
+                                           img, 
+                                           lblROIMeanValue))
+
+    def getROIOject(self, viewBox):
+        for item in viewBox.items:
+            if 'graphicsItems.ROI' in str(type(item)):
+                return item
+                break
+
+
+    def resetROI(self, viewBox):
+        objROI = self.getROIOject(viewBox)
+        #print(str(type(ROI)))
+        if 'RectROI' in str(type(objROI)):
+            objROI.setPos(20, 20)
+            objROI.setSize(20,20)
+        elif 'CircleROI' in str(type(objROI)):
+            objROI.setPos(20, 20)
+            objROI.setSize(20,20)
+        elif 'PolyLineROI' in str(type(objROI)):
+            objROI.setPoints([[80, 60], [90, 30], [60, 40]])     
+        
+
+    def removeROI(self, viewBox):
+       objROI = self.getROIOject(viewBox)
+       viewBox.removeItem(objROI) 
+            
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
@@ -823,12 +920,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
-
-
-    def resetROI(self, ROI):
-        ROI.setPos(20, 20)
-        ROI.setSize(20,20)
-        #ROI.setPoints([[80, 60], [90, 30], [60, 40]])
 
 
     def synchroniseROIs(self, chkBox):
