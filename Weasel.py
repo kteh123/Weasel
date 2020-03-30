@@ -747,6 +747,8 @@ class Weasel(QMainWindow):
         
         btnEllipseROI = QPushButton('Ellipse') 
         btnEllipseROI.setToolTip('Creates an ellipical ROI')
+        btnEllipseROI.clicked.connect(lambda: 
+               self.createEllipseROI(viewBox, img, lblROIMeanValue))
 
         btnMultiRectROI = QPushButton('Multi-Rect') 
         btnMultiRectROI.setToolTip(
@@ -782,28 +784,33 @@ class Weasel(QMainWindow):
         gridLayout.addWidget(btnResetROI,1,3)
         return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
 
+    def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
+        viewBox.addItem(objROI)
+        objROI.sigRegionChanged.connect(
+            lambda: self.updateROIMeanValue(objROI, 
+                                           img.image, 
+                                           img, 
+                                           lblROIMeanValue))
+
 
     def createRectangleROI(self, viewBox, img, lblROIMeanValue):
         self. removeROI(viewBox)
         objROI = pg.RectROI(
             [20, 20], [20, 20], pen=(0,9), removable=True)
-        viewBox.addItem(objROI)
-        objROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(objROI, 
-                                           img.image, 
-                                           img, 
-                                           lblROIMeanValue))
+        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
 
 
     def createCircleROI(self, viewBox, img, lblROIMeanValue):
         self. removeROI(viewBox)
-        objROI = pg.CircleROI([20, 20], [20, 20], pen=(4,9), removable=True)
-        viewBox.addItem(objROI)
-        objROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(objROI, 
-                                           img.image, 
-                                           img, 
-                                           lblROIMeanValue))
+        objROI = pg.CircleROI([20, 20], [20, 20],  pen=(4,9), removable=True)
+        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+
+
+    def createEllipseROI(self, viewBox, img, lblROIMeanValue):
+        self. removeROI(viewBox)
+        objROI = pg.EllipseROI([20, 20], [30, 20], pen=(3,9), removable=True)
+        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+
 
     def getROIOject(self, viewBox):
         for item in viewBox.items:
@@ -949,10 +956,12 @@ class Weasel(QMainWindow):
             #in (y, x) order, axes=(1,0)
 
             arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
-                            axes=(1,0), returnMappedCoords=True)
+                            axes=(1,0))
+            #, returnMappedCoords=True
             #print('Mouse move')
             #print(arrRegion)
-            roiMean = round(np.mean(arrRegion[0]), 3)
+            #roiMean = round(np.mean(arrRegion[0]), 3)
+            roiMean = round(np.mean(arrRegion), 3)
             lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
             if len(arrRegion[0]) <4:
                 print(arrRegion[0])
