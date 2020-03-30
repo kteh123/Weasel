@@ -753,10 +753,15 @@ class Weasel(QMainWindow):
         btnMultiRectROI = QPushButton('Multi-Rect') 
         btnMultiRectROI.setToolTip(
             'Creates a chain of rectangular ROIs connected by handles')
+        btnMultiRectROI.clicked.connect(lambda: 
+               self.createMultiRectROI(viewBox, img, lblROIMeanValue))
 
         btnPolyLineROI = QPushButton('PolyLine')
         btnPolyLineROI.setToolTip(
             'Allows the user to draw paths of multiple line segments')
+        btnPolyLineROI.clicked.connect(lambda: 
+               self.createPolyLineROI(viewBox, img, lblROIMeanValue))
+
 
         btnRectROI = QPushButton('Rectangle') 
         btnRectROI.setToolTip('Creates a rectangular ROI')
@@ -768,7 +773,8 @@ class Weasel(QMainWindow):
 
         btnRemoveROI = QPushButton('Clear')
         btnRemoveROI.setToolTip('Clears the ROI from the image')
-        btnRemoveROI.clicked.connect(lambda: self.removeROI(viewBox))
+        btnRemoveROI.clicked.connect(lambda: self.removeROI(viewBox, 
+                                                   lblROIMeanValue))
 
         btnResetROI = QPushButton('Reset')
         btnResetROI.setToolTip('Resets the ROI to its original shape and position')
@@ -793,22 +799,65 @@ class Weasel(QMainWindow):
                                            lblROIMeanValue))
 
 
+    def createMultiRectROI(self, viewBox, img, lblROIMeanValue):
+        #Remove existing ROI if there is one
+        self.removeROI(viewBox, lblROIMeanValue)
+        objROI = pg.MultiRectROI([[20, 90], [50, 60], [60, 90]],
+                             pen=pg.mkPen(pg.mkColor('r'),
+                                       width=5,
+                                      style=QtCore.Qt.SolidLine), 
+                             width=5,
+                           removable=True)
+        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+
+
+    def createPolyLineROI(self, viewBox, img, lblROIMeanValue):
+        #Remove existing ROI if there is one
+        self.removeROI(viewBox, lblROIMeanValue)
+        objROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]],
+                             pen=pg.mkPen(pg.mkColor('r'),
+                                       width=5,
+                                      style=QtCore.Qt.SolidLine), 
+                             closed=True,
+                             removable=True)
+        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+
+
     def createRectangleROI(self, viewBox, img, lblROIMeanValue):
-        self. removeROI(viewBox)
+        #Remove existing ROI if there is one
+        self.removeROI(viewBox, lblROIMeanValue)
         objROI = pg.RectROI(
-            [20, 20], [20, 20], pen=(0,9), removable=True)
+                            [20, 20], 
+                            [20, 20],
+                             pen=pg.mkPen(pg.mkColor('r'),
+                                       width=4,
+                                      style=QtCore.Qt.SolidLine), 
+                           removable=True)
         self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
 
 
     def createCircleROI(self, viewBox, img, lblROIMeanValue):
-        self. removeROI(viewBox)
-        objROI = pg.CircleROI([20, 20], [20, 20],  pen=(4,9), removable=True)
+        #Remove existing ROI if there is one
+        self.removeROI(viewBox, lblROIMeanValue)
+        objROI = pg.CircleROI([20, 20], 
+                              [20, 20],  
+                              pen=pg.mkPen(pg.mkColor('r'),
+                                       width=4,
+                                      style=QtCore.Qt.SolidLine),
+                              removable=True)
         self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
 
 
     def createEllipseROI(self, viewBox, img, lblROIMeanValue):
-        self. removeROI(viewBox)
-        objROI = pg.EllipseROI([20, 20], [30, 20], pen=(3,9), removable=True)
+        #Remove existing ROI if there is one
+        self.removeROI(viewBox, lblROIMeanValue)
+        objROI = pg.EllipseROI(
+                            [20, 20], 
+                            [30, 20], 
+                            pen=pg.mkPen(pg.mkColor('r'),
+                                       width=4,
+                                      style=QtCore.Qt.SolidLine),
+                            removable=True)
         self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
 
 
@@ -821,21 +870,28 @@ class Weasel(QMainWindow):
 
     def resetROI(self, viewBox):
         objROI = self.getROIOject(viewBox)
-        #print(str(type(ROI)))
-        if 'RectROI' in str(type(objROI)):
+        print(str(type(objROI)))
+        if 'MultiRectROI' in str(type(objROI)):
+            pass
+            #objROI.setPoints([[20, 90], [50, 60], [60, 90]])
+        elif 'RectROI' in str(type(objROI)):
             objROI.setPos(20, 20)
             objROI.setSize(20,20)
         elif 'CircleROI' in str(type(objROI)):
             objROI.setPos(20, 20)
             objROI.setSize(20,20)
+        elif 'EllipseROI' in str(type(objROI)):
+            objROI.setPos(20, 20)
+            objROI.setSize(30,20)
         elif 'PolyLineROI' in str(type(objROI)):
-            objROI.setPoints([[80, 60], [90, 30], [60, 40]])     
+            objROI.setPoints([[80, 60], [90, 30], [60, 40]])
         
-
-    def removeROI(self, viewBox):
+        
+    def removeROI(self, viewBox, lblROIMeanValue):
        objROI = self.getROIOject(viewBox)
        viewBox.removeItem(objROI) 
-            
+       lblROIMeanValue.clear()
+                   
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
