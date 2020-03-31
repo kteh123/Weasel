@@ -42,6 +42,7 @@ from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
 import Developer.WEASEL.Tools
+#access pyqtGraph from the source code imported into this project
 import CoreModules.pyqtgraph.__init__ as pg 
 
 
