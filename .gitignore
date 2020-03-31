@@ -355,7 +355,7 @@ venv-linux/
 /Weasel.exe
 /report.pdf
 Weasel-ROI-Joao.py
-/SimpleITK/*.pyd
-/SimpleITK/*.so
+/CoreModules/SimpleITK/*.pyd
+/CoreModules/SimpleITK/*.so
 *.ipynb
 /SimpleITK1
