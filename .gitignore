@@ -358,3 +358,4 @@ Weasel-ROI-Joao.py
 /SimpleITK/*.pyd
 /SimpleITK/*.so
 *.ipynb
+/SimpleITK1
