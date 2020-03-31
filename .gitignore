@@ -358,3 +358,4 @@ Weasel-ROI-Joao.py
 /CoreModules/SimpleITK/*.pyd
 /CoreModules/SimpleITK/*.so
 *.ipynb
+/SimpleITK1
