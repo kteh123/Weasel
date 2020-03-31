@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
-import pyqtgraph as pg
+#import pyqtgraph as pg import statement for pip installed version of pyqtGraph
 import os
 import sys
 import time
@@ -21,6 +21,7 @@ from scipy.stats import iqr
 import logging
 import pathlib
 import importlib
+
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
@@ -41,6 +42,7 @@ from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
 import Developer.WEASEL.Tools
+import CoreModules.pyqtgraph.__init__ as pg
 
 
 __version__ = '1.0'
@@ -789,6 +791,7 @@ class Weasel(QMainWindow):
         gridLayout.addWidget(btnRemoveROI,1,2)
         gridLayout.addWidget(btnResetROI,1,3)
         return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
+
 
     def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
         viewBox.addItem(objROI)
