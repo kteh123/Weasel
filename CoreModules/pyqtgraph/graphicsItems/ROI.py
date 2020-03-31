@@ -128,7 +128,7 @@ class ROI(GraphicsObject):
             pen = (255, 255, 255)
         self.setPen(pen)
         
-        self.handlePen = QtGui.QPen(QtGui.QColor(150, 255, 255))
+        self.handlePen = QtGui.QPen(QtGui.QColor('r'))
         self.handles = []
         self.state = {'pos': Point(0,0), 'size': Point(1,1), 'angle': 0}  ## angle is in degrees for ease of Qt integration
         self.lastState = None
@@ -1202,9 +1202,9 @@ class Handle(UIGraphicsItem):
         self.rois = []
         self.radius = radius
         self.typ = typ
-        self.pen = fn.mkPen(pen)
+        self.pen = fn.mkPen(color='r', width=5)
         self.currentPen = self.pen
-        self.pen.setWidth(0)
+        self.pen.setWidth(4)
         self.pen.setCosmetic(True)
         self.isMoving = False
         self.sides, self.startAng = self.types[typ]
@@ -1684,12 +1684,12 @@ class EllipseROI(ROI):
         
         p.drawEllipse(r)
         
-    def getArrayRegion(self, arr, img=None):
+    def getArrayRegion(self, arr, img=None, axes=(0,1)):
         """
         Return the result of ROI.getArrayRegion() masked by the elliptical shape
         of the ROI. Regions outside the ellipse are set to 0.
         """
-        arr = ROI.getArrayRegion(self, arr, img)
+        arr = ROI.getArrayRegion(self, arr, img, axes)
         if arr is None or arr.shape[0] == 0 or arr.shape[1] == 0:
             return None
         w = arr.shape[0]
