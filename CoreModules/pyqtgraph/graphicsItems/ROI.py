@@ -1685,9 +1685,11 @@ class EllipseROI(ROI):
         p.drawEllipse(r)
         
     def getArrayRegion(self, arr, img=None, axes=(0,1)):
-        """
+        """ 
         Return the result of ROI.getArrayRegion() masked by the elliptical shape
         of the ROI. Regions outside the ellipse are set to 0.
+
+        Added axes keyword to prevent error in source code
         """
         arr = ROI.getArrayRegion(self, arr, img, axes)
         if arr is None or arr.shape[0] == 0 or arr.shape[1] == 0:
