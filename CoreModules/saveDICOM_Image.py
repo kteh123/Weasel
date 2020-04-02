@@ -261,8 +261,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         if enhancedArrayInt:
             imageArrayInt = np.array(enhancedArrayInt)
 
-        newDicom.WindowCenter = int(np.median(imageArrayInt))
-        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(5, 95))/2)
+        newDicom.WindowCenter = int(np.mean(imageArrayInt))
+        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(1, 99)))
         # Take Phase Encoding into account
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]

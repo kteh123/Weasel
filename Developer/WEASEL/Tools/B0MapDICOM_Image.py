@@ -44,7 +44,7 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
                 realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
                 imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])  
                 numberSlices = len(sliceList)
-            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
+            volumeArray = np.arctan2(realVolumeArray, imaginaryVolumeArray)
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D')
             # Algorithm
             derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList) # Maybe np.invert() to have the same result as the other series
@@ -80,13 +80,13 @@ def getParametersB0Map(imagePathList, seriesID):
                             flagReal = True
                         elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                             flagImaginary = True
-                    if ((numberEchoes == 1) or (numberEchoes == 2)) and flagPhase and re.match(".*b0.*", seriesID.lower()):
+                    if (numberEchoes >= 1) and flagPhase and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         sliceList.append(originalSliceList[index])
                         echoList.append(echo)
-                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagReal and re.match(".*b0.*", seriesID.lower()):
+                    elif (numberEchoes >= 1) and flagReal and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         riPathList[0].append(originalSliceList[index])
                         echoList.append(echo)
-                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
+                    elif (numberEchoes >= 1) and flagImaginary and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         riPathList[1].append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
@@ -116,17 +116,17 @@ def getParametersB0Map(imagePathList, seriesID):
                             flagImaginary = True
                     except: pass
                     if hasattr(dataset, 'ImageType'): 
-                        if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType) or ('B0' in dataset.ImageType):
+                        if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType) or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
                             flagPhase = True
                         elif ('R' in dataset.ImageType) or ('REAL' in dataset.ImageType):
                             flagReal = True
                         elif ('I' in dataset.ImageType) or ('IMAGINARY' in dataset.ImageType):
                             flagImaginary = True
-                    if ((numberEchoes == 1) or (numberEchoes == 2)) and flagPhase and re.match(".*b0.*", seriesID.lower()):
+                    if (numberEchoes >= 1) and flagPhase and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         phasePathList.append(imagePathList[index])
-                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagReal and re.match(".*b0.*", seriesID.lower()):
+                    elif (numberEchoes >= 1) and flagReal and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         riPathList[0].append(imagePathList[index])
-                    elif ((numberEchoes == 1) or (numberEchoes == 2)) and flagImaginary and re.match(".*b0.*", seriesID.lower()):
+                    elif (numberEchoes >= 1) and flagImaginary and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         riPathList[1].append(imagePathList[index])
 
             del datasetList, numberSlices, numberEchoes, flagPhase, flagReal, flagImaginary

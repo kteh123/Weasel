@@ -344,6 +344,7 @@ venv-windows/
 venv-linux/
 .vscode/
 *__pycache__/
+**.pyc
 /Sample Data/00000001
 /Sample Data/joao-3-scanners
 /Sample Data/TRISTAN_DNE001_Scan1
