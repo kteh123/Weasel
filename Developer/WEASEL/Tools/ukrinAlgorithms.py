@@ -27,7 +27,7 @@ class ukrinMaps():
 
     def B0MapOriginal(self, echoList):
         try:
-            if len(echoList) == 2: # Is the given array already a Difference Phase or not?
+            if len(echoList) > 1: # Is the given array already a Difference Phase or not?
                 phaseDiffOriginal = np.squeeze(self.pixelArray[1, ...]) - np.squeeze(self.pixelArray[0, ...])
                 deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
             else: # This if/else might be removed at some point
