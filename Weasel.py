@@ -692,210 +692,235 @@ class Weasel(QMainWindow):
 
 
     def setUpViewBoxForImage(self, imageViewer, layout):
-        #viewBox = imageViewer.addViewBox()
-        #viewBox.setAspectLocked(True)
-        plotItem = imageViewer.addPlot() 
-        plotItem.getViewBox().setAspectLocked() 
-        img = pg.ImageItem(border='w')
-        #viewBox.addItem(img)
+        try:
+            logger.info("WEASEL.setUpViewBoxForImage called")
+            #viewBox = imageViewer.addViewBox()
+            #viewBox.setAspectLocked(True)
+            plotItem = imageViewer.addPlot() 
+            plotItem.getViewBox().setAspectLocked() 
+            img = pg.ImageItem(border='w')
+            #viewBox.addItem(img)
         
-        imv= pg.ImageView(view=plotItem, imageItem=img)
-        imv.ui.roiBtn.hide()
-        imv.ui.menuBtn.hide()
-        layout.addWidget(imv)
-        return img, imv, plotItem
+            imv= pg.ImageView(view=plotItem, imageItem=img)
+            imv.ui.roiBtn.hide()
+            imv.ui.menuBtn.hide()
+            layout.addWidget(imv)
+            return img, imv, plotItem
+        except Exception as e:
+            print('Error in getPixelValue: ' + str(e))
+            logger.error('Error in getPixelValue: ' + str(e))
 
 
     def setUpROITool(self, viewBox, layout, img):
+        try:
+            logger.info("WEASEL.setUpROITool called")
+            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+            lblROIMeanValue.show()
+            layout.addWidget(lblROIMeanValue)
+
+            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
+            lblPixelValue.show()
+            layout.addWidget(lblPixelValue)
         
-        lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-        lblROIMeanValue.show()
-        layout.addWidget(lblROIMeanValue)
+            groupBoxROI = QGroupBox('ROI')
+            gridLayout = QGridLayout()
+            groupBoxROI.setLayout(gridLayout)
+            layout.addWidget(groupBoxROI)
 
-        lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
-        lblPixelValue.show()
-        layout.addWidget(lblPixelValue)
-
-        #polyLineROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]], 
-        #                             pen=pg.mkPen(pg.mkColor(9, 169, 188),
-        #                                width=3,
-        #                                style=QtCore.Qt.SolidLine), 
-        #                             closed=True)
-
-        #rectROI = pg.RectROI([20, 20], [20, 20],   pen=(0,9), removable=True)
-        #rectROI.setPos(0,0)
-        #viewBox.addItem(rectROI)
-        #print('listing items')
-        #for item in viewBox.items:
-        #    #'graphicsItems.ROI'
-        #    print(item)    
-        #print('end item list')
-        #rectROI.sigRegionChanged.connect(
-        #    lambda: self.updateROIMeanValue(rectROI, 
-        #                                   img.image, 
-        #                                   img, 
-        #                                   lblROIMeanValue))
+            btnCircleROI = QPushButton('Circle') 
+            btnCircleROI.setToolTip('Creates/Resets a circular ROI')
+            btnCircleROI.clicked.connect(lambda: 
+                   self.createCircleROI(viewBox, img, lblROIMeanValue))
         
-        groupBoxROI = QGroupBox('ROI')
-        gridLayout = QGridLayout()
-        groupBoxROI.setLayout(gridLayout)
-        layout.addWidget(groupBoxROI)
+            btnEllipseROI = QPushButton('Ellipse') 
+            btnEllipseROI.setToolTip('Creates/Resets an ellipical ROI')
+            btnEllipseROI.clicked.connect(lambda: 
+                   self.createEllipseROI(viewBox, img, lblROIMeanValue))
 
+            btnMultiRectROI = QPushButton('Multi-Rect') 
+            btnMultiRectROI.setToolTip(
+                'Creates/Resets a chain of rectangular ROIs connected by handles')
+            btnMultiRectROI.clicked.connect(lambda: 
+                   self.createMultiRectROI(viewBox, img, lblROIMeanValue))
 
-        btnCircleROI = QPushButton('Circle') 
-        btnCircleROI.setToolTip('Creates a circular ROI')
-        btnCircleROI.clicked.connect(lambda: 
-               self.createCircleROI(viewBox, img, lblROIMeanValue))
+            btnPolyLineROI = QPushButton('PolyLine')
+            btnPolyLineROI.setToolTip(
+                'Allows the user to draw paths of multiple line segments')
+            btnPolyLineROI.clicked.connect(lambda: 
+                   self.createPolyLineROI(viewBox, img, lblROIMeanValue))
 
-        
-        btnEllipseROI = QPushButton('Ellipse') 
-        btnEllipseROI.setToolTip('Creates an ellipical ROI')
-        btnEllipseROI.clicked.connect(lambda: 
-               self.createEllipseROI(viewBox, img, lblROIMeanValue))
+            btnRectROI = QPushButton('Rectangle') 
+            btnRectROI.setToolTip('Creates/Resets a rectangular ROI')
+            btnRectROI.clicked.connect(lambda: 
+                   self.createRectangleROI(viewBox, img, lblROIMeanValue))
 
-        btnMultiRectROI = QPushButton('Multi-Rect') 
-        btnMultiRectROI.setToolTip(
-            'Creates a chain of rectangular ROIs connected by handles')
-        btnMultiRectROI.clicked.connect(lambda: 
-               self.createMultiRectROI(viewBox, img, lblROIMeanValue))
+            btnDrawROI = QPushButton('Draw') 
+            btnDrawROI.setToolTip('Allows the user to draw around a ROI')
 
-        btnPolyLineROI = QPushButton('PolyLine')
-        btnPolyLineROI.setToolTip(
-            'Allows the user to draw paths of multiple line segments')
-        btnPolyLineROI.clicked.connect(lambda: 
-               self.createPolyLineROI(viewBox, img, lblROIMeanValue))
+            btnRemoveROI = QPushButton('Clear')
+            btnRemoveROI.setToolTip('Clears the ROI from the image')
+            btnRemoveROI.clicked.connect(lambda: self.removeROI(viewBox, 
+                                                       lblROIMeanValue))
 
+            btnSaveROI = QPushButton('Save')
+            btnSaveROI.setToolTip('Saves the ROI in DICOM format')
+            #btnSaveROI.clicked.connect(lambda: self.resetROI(viewBox))
 
-        btnRectROI = QPushButton('Rectangle') 
-        btnRectROI.setToolTip('Creates a rectangular ROI')
-        btnRectROI.clicked.connect(lambda: 
-               self.createRectangleROI(viewBox, img, lblROIMeanValue))
-
-        btnDrawROI = QPushButton('Draw') 
-        btnDrawROI.setToolTip('Allows the user to draw around a ROI')
-
-        btnRemoveROI = QPushButton('Clear')
-        btnRemoveROI.setToolTip('Clears the ROI from the image')
-        btnRemoveROI.clicked.connect(lambda: self.removeROI(viewBox, 
-                                                   lblROIMeanValue))
-
-        btnResetROI = QPushButton('Reset')
-        btnResetROI.setToolTip('Resets the ROI to its original shape and position')
-        btnResetROI.clicked.connect(lambda: self.resetROI(viewBox))
-
-        gridLayout.addWidget(btnCircleROI,0,0)
-        gridLayout.addWidget(btnEllipseROI,0,1)
-        gridLayout.addWidget(btnMultiRectROI,0,2)
-        gridLayout.addWidget(btnPolyLineROI,0,3)
-        gridLayout.addWidget(btnRectROI,1,0)
-        gridLayout.addWidget(btnDrawROI,1,1)
-        gridLayout.addWidget(btnRemoveROI,1,2)
-        gridLayout.addWidget(btnResetROI,1,3)
-        return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
+            gridLayout.addWidget(btnCircleROI,0,0)
+            gridLayout.addWidget(btnEllipseROI,0,1)
+            gridLayout.addWidget(btnMultiRectROI,0,2)
+            gridLayout.addWidget(btnPolyLineROI,0,3)
+            gridLayout.addWidget(btnRectROI,1,0)
+            gridLayout.addWidget(btnDrawROI,1,1)
+            gridLayout.addWidget(btnRemoveROI,1,2)
+            gridLayout.addWidget(btnSaveROI,1,3)
+            return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
+        except Exception as e:
+            print('Error in setUpROITool: ' + str(e))
+            logger.error('Error in setUpROITool: ' + str(e))
 
 
     def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
-        viewBox.addItem(objROI)
-        objROI.sigRegionChanged.connect(
-            lambda: self.updateROIMeanValue(objROI, 
-                                           img.image, 
-                                           img, 
-                                           lblROIMeanValue))
+        try:
+            logger.info("WEASEL.addROIToViewBox called")
+            viewBox.addItem(objROI)
+            objROI.sigRegionChanged.connect(
+                lambda: self.updateROIMeanValue(objROI, 
+                                               img.image, 
+                                               img, 
+                                               lblROIMeanValue))
+        except Exception as e:
+            print('Error in addROIToViewBox: ' + str(e))
+            logger.error('Error in addROIToViewBox: ' + str(e))
 
 
     def createMultiRectROI(self, viewBox, img, lblROIMeanValue):
-        #Remove existing ROI if there is one
-        self.removeROI(viewBox, lblROIMeanValue)
-        objROI = pg.MultiRectROI([[20, 90], [50, 60], [60, 90]],
-                             pen=pg.mkPen(pg.mkColor('r'),
-                                       width=5,
-                                      style=QtCore.Qt.SolidLine), 
-                             width=5,
-                           removable=True)
-        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        try:
+            logger.info("WEASEL.createMultiRectROI called")
+            #Remove existing ROI if there is one
+            self.removeROI(viewBox, lblROIMeanValue)
+            objROI = pg.MultiRectROI([[20, 90], [50, 60], [60, 90]],
+                                 pen=pg.mkPen(pg.mkColor('r'),
+                                           width=5,
+                                          style=QtCore.Qt.SolidLine), 
+                                 width=5,
+                               removable=True)
+            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        except Exception as e:
+            print('Error in createMultiRectROI: ' + str(e))
+            logger.error('Error in createMultiRectROI: ' + str(e))
 
 
     def createPolyLineROI(self, viewBox, img, lblROIMeanValue):
-        #Remove existing ROI if there is one
-        self.removeROI(viewBox, lblROIMeanValue)
-        objROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]],
-                             pen=pg.mkPen(pg.mkColor('r'),
-                                       width=5,
-                                      style=QtCore.Qt.SolidLine), 
-                             closed=True,
-                             removable=True)
-        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        try:
+            logger.info("WEASEL.createPolyLineROI called")
+            #Remove existing ROI if there is one
+            self.removeROI(viewBox, lblROIMeanValue)
+            objROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]],
+                                 pen=pg.mkPen(pg.mkColor('r'),
+                                           width=5,
+                                          style=QtCore.Qt.SolidLine), 
+                                 closed=True,
+                                 removable=True)
+            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        except Exception as e:
+            print('Error in createPolyLineROI: ' + str(e))
+            logger.error('Error in createPolyLineROI: ' + str(e))
 
 
     def createRectangleROI(self, viewBox, img, lblROIMeanValue):
-        #Remove existing ROI if there is one
-        self.removeROI(viewBox, lblROIMeanValue)
-        objROI = pg.RectROI(
-                            [20, 20], 
-                            [20, 20],
-                             pen=pg.mkPen(pg.mkColor('r'),
-                                       width=4,
-                                      style=QtCore.Qt.SolidLine), 
-                           removable=True)
-        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        try:
+            logger.info("WEASEL.createRectangleROI called")
+            #Remove existing ROI if there is one
+            self.removeROI(viewBox, lblROIMeanValue)
+            objROI = pg.RectROI(
+                                [20, 20], 
+                                [20, 20],
+                                 pen=pg.mkPen(pg.mkColor('r'),
+                                           width=4,
+                                          style=QtCore.Qt.SolidLine), 
+                               removable=True)
+            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        except Exception as e:
+            print('Error in createRectangleRO: ' + str(e))
+            logger.error('Error in createRectangleRO: ' + str(e))
 
 
     def createCircleROI(self, viewBox, img, lblROIMeanValue):
-        #Remove existing ROI if there is one
-        self.removeROI(viewBox, lblROIMeanValue)
-        objROI = pg.CircleROI([20, 20], 
-                              [20, 20],  
-                              pen=pg.mkPen(pg.mkColor('r'),
-                                       width=4,
-                                      style=QtCore.Qt.SolidLine),
-                              removable=True)
-        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        try:
+            logger.info("WEASEL.createCircleROI called")
+            #Remove existing ROI if there is one
+            self.removeROI(viewBox, lblROIMeanValue)
+            objROI = pg.CircleROI([20, 20], 
+                                  [20, 20],  
+                                  pen=pg.mkPen(pg.mkColor('r'),
+                                           width=4,
+                                          style=QtCore.Qt.SolidLine),
+                                  removable=True)
+            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        except Exception as e:
+            print('Error in createCircleROI: ' + str(e))
+            logger.error('Error in createCircleROI: ' + str(e))
 
 
     def createEllipseROI(self, viewBox, img, lblROIMeanValue):
-        #Remove existing ROI if there is one
-        self.removeROI(viewBox, lblROIMeanValue)
-        objROI = pg.EllipseROI(
-                            [20, 20], 
-                            [30, 20], 
-                            pen=pg.mkPen(pg.mkColor('r'),
-                                       width=4,
-                                      style=QtCore.Qt.SolidLine),
-                            removable=True)
-        self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        try:
+            logger.info("WEASEL.createEllipseROI called")
+            #Remove existing ROI if there is one
+            self.removeROI(viewBox, lblROIMeanValue)
+            objROI = pg.EllipseROI(
+                                [20, 20], 
+                                [30, 20], 
+                                pen=pg.mkPen(pg.mkColor('r'),
+                                           width=4,
+                                          style=QtCore.Qt.SolidLine),
+                                removable=True)
+            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+        except Exception as e:
+            print('Error in createEllipseROI: ' + str(e))
+            logger.error('Error in createEllipseROI: ' + str(e))
 
 
     def getROIOject(self, viewBox):
-        for item in viewBox.items:
-            if 'graphicsItems.ROI' in str(type(item)):
-                return item
-                break
+        try:
+            logger.info("WEASEL.createEllipseROI called")
+            for item in viewBox.items:
+                if 'graphicsItems.ROI' in str(type(item)):
+                    return item
+                    break
+        except Exception as e:
+            print('Error in getROIOject: ' + str(e))
+            logger.error('Error in getROIOject: ' + str(e))
 
-
-    def resetROI(self, viewBox):
-        objROI = self.getROIOject(viewBox)
-        print(str(type(objROI)))
-        if 'MultiRectROI' in str(type(objROI)):
-            pass
-            #objROI.setPoints([[20, 90], [50, 60], [60, 90]])
-        elif 'RectROI' in str(type(objROI)):
-            objROI.setPos(20, 20)
-            objROI.setSize(20,20)
-        elif 'CircleROI' in str(type(objROI)):
-            objROI.setPos(20, 20)
-            objROI.setSize(20,20)
-        elif 'EllipseROI' in str(type(objROI)):
-            objROI.setPos(20, 20)
-            objROI.setSize(30,20)
-        elif 'PolyLineROI' in str(type(objROI)):
-            objROI.setPoints([[80, 60], [90, 30], [60, 40]])
+    #Defunct function. To be deleted
+    #def resetROI(self, viewBox):
+    #    objROI = self.getROIOject(viewBox)
+    #    print(str(type(objROI)))
+    #    if 'MultiRectROI' in str(type(objROI)):
+    #        pass
+    #        #objROI.setPoints([[20, 90], [50, 60], [60, 90]])
+    #    elif 'RectROI' in str(type(objROI)):
+    #        objROI.setPos(20, 20)
+    #        objROI.setSize(20,20)
+    #    elif 'CircleROI' in str(type(objROI)):
+    #        objROI.setPos(20, 20)
+    #        objROI.setSize(20,20)
+    #    elif 'EllipseROI' in str(type(objROI)):
+    #        objROI.setPos(20, 20)
+    #        objROI.setSize(30,20)
+    #    elif 'PolyLineROI' in str(type(objROI)):
+    #        objROI.setPoints([[80, 60], [90, 30], [60, 40]])
         
         
     def removeROI(self, viewBox, lblROIMeanValue):
-       objROI = self.getROIOject(viewBox)
-       viewBox.removeItem(objROI) 
-       lblROIMeanValue.clear()
-                   
+        try:
+            logger.info("WEASEL.removeROI called")
+            objROI = self.getROIOject(viewBox)
+            viewBox.removeItem(objROI) 
+            lblROIMeanValue.setText("<h4>ROI Mean Value:</h4>")
+        except Exception as e:
+            print('Error in removeROI: ' + str(e))
+            logger.error('Error in removeROI: ' + str(e))           
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
@@ -1043,7 +1068,7 @@ class Weasel(QMainWindow):
         
         
         height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width*0.3,height*0.5)
+        subWindow.setGeometry(0,0,width*0.3,height*0.75)
         self.mdiArea.addSubWindow(subWindow)
         
         layout = QVBoxLayout()
