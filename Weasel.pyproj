@@ -289,14 +289,7 @@
     <Content Include="CoreModules\pyqtgraph\flowchart\FlowchartCtrlTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\flowchart\FlowchartTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\plotConfigTemplate.ui" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\__pycache__\plotConfigTemplate_pyqt5.cpython-37.pyc" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\__pycache__\PlotItem.cpython-37.pyc" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\axisCtrlTemplate.ui" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\axisCtrlTemplate_pyqt5.cpython-37.pyc" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\ViewBox.cpython-37.pyc" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\ViewBoxMenu.cpython-37.pyc" />
-    <Content Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\GraphicsScene\exportDialogTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\imageview\ImageViewTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\metaarray\license.txt" />
@@ -350,11 +343,9 @@
     <Folder Include="CoreModules\pyqtgraph\flowchart\library\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\" />
-    <Folder Include="CoreModules\pyqtgraph\graphicsItems\PlotItem\__pycache__\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\tests\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\tests\" />
-    <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\" />
     <Folder Include="CoreModules\pyqtgraph\GraphicsScene\" />
     <Folder Include="CoreModules\pyqtgraph\imageview\" />
     <Folder Include="CoreModules\pyqtgraph\imageview\tests\" />
