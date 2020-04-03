@@ -346,10 +346,13 @@
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\tests\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\" />
     <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\tests\" />
+    <Folder Include="CoreModules\pyqtgraph\graphicsItems\ViewBox\__pycache__\" />
+    <Folder Include="CoreModules\pyqtgraph\graphicsItems\__pycache__\" />
     <Folder Include="CoreModules\pyqtgraph\GraphicsScene\" />
     <Folder Include="CoreModules\pyqtgraph\imageview\" />
     <Folder Include="CoreModules\pyqtgraph\imageview\tests\" />
     <Folder Include="CoreModules\pyqtgraph\metaarray\" />
+    <Folder Include="CoreModules\pyqtgraph\metaarray\__pycache__\" />
     <Folder Include="CoreModules\pyqtgraph\multiprocess\" />
     <Folder Include="CoreModules\pyqtgraph\opengl\" />
     <Folder Include="CoreModules\pyqtgraph\opengl\items\" />
@@ -363,6 +366,7 @@
     <Folder Include="CoreModules\pyqtgraph\util\tests\" />
     <Folder Include="CoreModules\pyqtgraph\widgets\" />
     <Folder Include="CoreModules\pyqtgraph\widgets\tests\" />
+    <Folder Include="CoreModules\pyqtgraph\__pycache__\" />
     <Folder Include="Developer\" />
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\WEASEL\" />
