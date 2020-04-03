@@ -43,7 +43,7 @@ from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
 import Developer.WEASEL.Tools
 #access pyqtGraph from the source code imported into this project
-import CoreModules.pyqtgraph.__init__ as pg 
+import CoreModules.pyqtgraph as pg 
 
 
 __version__ = '1.0'

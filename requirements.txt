@@ -13,3 +13,9 @@ fpdf==1.7.2
 openpyxl==3.0.2
 pyautogui==0.9.48
 scikit-image==0.16.2
+nibabel==3.0.2
+scikit-learn==0.21.3
+fslpy==3.0.0
+dipy==1.1.1
+tensorflow==2.0.0
+xnat==0.3.21
