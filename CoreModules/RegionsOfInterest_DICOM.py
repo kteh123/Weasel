@@ -8,6 +8,7 @@ import copy
 import random
 import CoreModules.readDICOM_Image as readDICOM_Image
 
+
 def calculateContourArray(dicomdata, roi):
     imageCoordinates = []
     realWorldCoordinates = []
@@ -28,12 +29,14 @@ def calculateContourArray(dicomdata, roi):
     return contourArray
 
 
-def createNewRstructSingleDicom(dicomData, newFilePath, roi, series_id=None, series_uid=None, list_refs=None):
+def createNewRstructSingleDicom(dicomData, newFilePath, series_id=None, series_uid=None, list_refs=None):
 
     newDicom = FileDataset(newFilePath, {})
 
     # Generate Unique ID
     newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
+    newDicom.is_little_endian = True
+    newDicom.is_implicit_VR = True
 
     # Series ID and UID
     if series_id is None:
@@ -81,11 +84,11 @@ def createNewRstructSingleDicom(dicomData, newFilePath, roi, series_id=None, ser
     newDicom.StudyDescription = dicomData.StudyDescription
     newDicom.InstitutionName = dicomData.InstitutionName
     newDicom.ReferringPhysicianName = dicomData.ReferringPhysicianName
-    newDicom.OperatorsName = dicomData.OperatorsName
+    #newDicom.OperatorsName = dicomData.OperatorsName
     newDicom.PatientName = dicomData.PatientName
     newDicom.PatientID = dicomData.PatientID
     newDicom.PatientSex = dicomData.PatientSex
-    newDicom.PatientBirthDate = dicomData.PatientBirthDate
+    #newDicom.PatientBirthDate = dicomData.PatientBirthDate
     newDicom.PatientPosition = dicomData.PatientPosition
 
 
@@ -103,7 +106,7 @@ def createNewRstructSingleDicom(dicomData, newFilePath, roi, series_id=None, ser
     structureSetRoi1.ROINumber = "1"
     structureSetRoi1.ReferencedFrameOfReferenceUID = dicomData.SOPInstanceUID
     structureSetRoi1.ROIName = 'KIDNEY'
-    structureSetRoi1.ROIDescription = type(roi).__name__
+    #structureSetRoi1.ROIDescription = type(roi).__name__
     #structureSetRoi1.ROIArea = [x,y,w,h] 
     structureSetRoi1.ROIGenerationAlgorithm = 'WEASEL-PYQTGRAPH'
     structureSetRoiSequence.append(structureSetRoi1)
@@ -145,3 +148,7 @@ def createNewRstructSingleDicom(dicomData, newFilePath, roi, series_id=None, ser
     rtroiObservations1.RTROIInterpretedType = 'ORGAN'
     rtroiObservations1.ROIInterpreter = ""
     rtroiObservationsSequence.append(rtroiObservations1)
+
+    pydicom.filewriter.dcmwrite(newFilePath, newDicom, write_like_original=True)
+
+    return

@@ -7,6 +7,7 @@ import datetime
 import copy
 import random
 from scipy.stats import iqr
+from matplotlib import cm
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
 
@@ -33,7 +34,7 @@ def returnFilePath(imagePath, suffix, new_path=None):
         print('Error in function saveDICOM_Image.returnFilePath: ' + str(e))
 
 
-def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, list_refs_path=None):
+def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, colormap=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
     try:
         if os.path.exists(imagePath):
@@ -44,7 +45,7 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
                     refs.append(readDICOM_Image.getDicomDataset(individualRef))
             else:
                 refs = None
-            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, list_refs=refs)
+            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, colormap=colormap, list_refs=refs)
             if (image_number is not None) and (len(np.shape(pixelArray)) < 3):
                 newDataset.InstanceNumber = image_number
                 newDataset.ImageNumber = image_number
@@ -58,7 +59,7 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, list_refs_path=None):
+def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, colormap=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
     # Think of a way to choose a select a new FilePath or Folder
@@ -80,7 +81,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                         for individualRef in list_refs_path:
                             refs.append(individualRef[index])
 
-                saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, list_refs_path=refs)
+                saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, colormap=colormap, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:
@@ -110,7 +111,7 @@ def saveDicomToFile(dicomData, output_path=None):
         print('Error in function saveDicomToFile: ' + str(e))
 
 
-def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, list_refs=None):
+def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colormap=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
     """
@@ -218,17 +219,30 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 tempArray = imageArray
             else:
                 tempArray = np.squeeze(imageArray[index, ...])
-            if int(np.amin(imageArray)) < 0:
+            #colormap = "viridis"
+            if (int(np.amin(imageArray)) < 0) and colormap is None:
                 newDicom.PixelRepresentation = 1
-                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
+                target = (np.power(2, dicomData.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
-                extra = target/(2*np.ones(np.shape(tempArray)))
+                extra = target / (2*np.ones(np.shape(tempArray)))
                 imageScaled = target * (tempArray - minimum) / (maximum - minimum) - extra
                 slope =  target / (maximum - minimum)
                 intercept = (- target * minimum - extra * (maximum - minimum))/ (maximum - minimum)
                 rescaleSlope = np.ones(np.shape(tempArray)) / slope
-                rescaleIntercept = - intercept / slope   
+                rescaleIntercept = - intercept / slope
+                if newDicom.BitsAllocated == 8:
+                    imageArrayInt = imageScaled.astype(np.int8)
+                elif newDicom.BitsAllocated == 16:
+                    imageArrayInt = imageScaled.astype(np.int16)
+                elif newDicom.BitsAllocated == 32:
+                    imageArrayInt = imageScaled.astype(np.int32)
+                elif newDicom.BitsAllocated == 64:
+                    imageArrayInt = imageScaled.astype(np.int64)
+                else:
+                    imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
+                smallestValue = pydicom.dataelem.DataElement(0x00280106, 'SS', int(np.amin(imageArrayInt)))
+                largestValue = pydicom.dataelem.DataElement(0x00280107, 'SS', int(np.amax(imageArrayInt)))
             else:
                 newDicom.PixelRepresentation = 0
                 target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
@@ -239,18 +253,19 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
                 rescaleSlope = np.ones(np.shape(tempArray)) / slope
                 rescaleIntercept = - intercept / slope
+                if newDicom.BitsAllocated == 8:
+                    imageArrayInt = imageScaled.astype(np.uint8)
+                elif newDicom.BitsAllocated == 16:
+                    imageArrayInt = imageScaled.astype(np.uint16)
+                elif newDicom.BitsAllocated == 32:
+                    imageArrayInt = imageScaled.astype(np.uint32)
+                elif newDicom.BitsAllocated == 64:
+                    imageArrayInt = imageScaled.astype(np.uint64)
+                else:
+                    imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
+                smallestValue = pydicom.dataelem.DataElement(0x00280106, 'US', int(np.amin(imageArrayInt)))
+                largestValue = pydicom.dataelem.DataElement(0x00280107, 'US', int(np.amax(imageArrayInt)))
 
-            if newDicom.BitsAllocated == 8:
-                imageArrayInt = imageScaled.astype(np.int8)
-            elif newDicom.BitsAllocated == 16:
-                imageArrayInt = imageScaled.astype(np.int16)
-            elif newDicom.BitsAllocated == 32:
-                imageArrayInt = imageScaled.astype(np.int32)
-            elif newDicom.BitsAllocated == 64:
-                imageArrayInt = imageScaled.astype(np.int64)
-            else:
-                imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
-            
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 enhancedArrayInt.append(imageArrayInt)
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
@@ -261,12 +276,33 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         if enhancedArrayInt:
             imageArrayInt = np.array(enhancedArrayInt)
 
-        newDicom.WindowCenter = int(np.mean(imageArrayInt))
-        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(1, 99)))
+        # Add colormap here
+        if colormap is not None:
+            newDicom.PhotometricInterpretation = 'PALETTE COLOR'
+            arrayForRGB = np.arange(int(np.percentile(imageArrayInt, 1)), int(np.percentile(imageArrayInt, 99)))
+            colorsList = cm.ScalarMappable(cmap=colormap).to_rgba(np.array(arrayForRGB), bytes=True)
+            stringType = ('SS' if int(np.amin(imageArrayInt)) < 0 else 'US')
+            numberValues = len(arrayForRGB)
+            minValue = int(np.amin(arrayForRGB))
+            redDesc = pydicom.dataelem.DataElement(0x00281101, stringType, [numberValues, minValue, newDicom.BitsAllocated])
+            greenDesc = pydicom.dataelem.DataElement(0x00281102, stringType, [numberValues, minValue, newDicom.BitsAllocated])
+            blueDesc = pydicom.dataelem.DataElement(0x00281103, stringType, [numberValues, minValue, newDicom.BitsAllocated])
+            newDicom.add(redDesc)
+            newDicom.add(greenDesc)
+            newDicom.add(blueDesc)
+            newDicom.RedPaletteColorLookupTableData = bytes(np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,0].flatten()]))
+            newDicom.GreenPaletteColorLookupTableData = bytes(np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,1].flatten()]))
+            newDicom.BluePaletteColorLookupTableData = bytes( np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,2].flatten()]))
+
         # Take Phase Encoding into account
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]
+        newDicom.WindowCenter = int(np.mean(imageArrayInt))
+        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(1, 99)))
+        newDicom.add(smallestValue)
+        newDicom.add(largestValue)
         newDicom.PixelData = imageArrayInt.tobytes()
+
         del dicomData, imageArray, imageScaled, imageArrayInt, enhancedArrayInt, tempArray
         return newDicom
     except Exception as e:

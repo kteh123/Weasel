@@ -31,8 +31,8 @@ class ukrinMaps():
                 phaseDiffOriginal = np.squeeze(self.pixelArray[1, ...]) - np.squeeze(self.pixelArray[0, ...])
                 deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
             else: # This if/else might be removed at some point
-                phaseDiffOriginal = self.pixelArray
-                deltaTE = echoList[0] * 0.001 # Conversion from ms to s
+                derivedImage = unWrapPhase(self.pixelArray)
+                return derivedImage
             phaseDiff = phaseDiffOriginal / ((1 / (2 * np.pi)) * np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal))) # Normalise to -2Pi and +2Pi
             derivedImage = unWrapPhase(phaseDiff) / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
             del phaseDiffOriginal, phaseDiff, deltaTE
@@ -166,7 +166,7 @@ class ukrinMaps():
                 delta = (s_w * s_wx2) - (np.square(s_wx))
                 b = (matrixOnes / delta) * (s_w * s_wxy - s_wx * s_wy)
                 t2Star = np.real(-matrixOnes / b)
-                conditions = (np.isinf(t2Star)) | (np.isnan(t2Star)) | (t2Star < 0.0) | (t2Star > 500.0)
+                conditions = (np.isinf(t2Star)) | (np.isnan(t2Star)) | (t2Star < 0.0) | (t2Star > 5.0)
                 t2Star = np.where(conditions, 0.0, t2Star)
             return t2Star
         except Exception as e:
