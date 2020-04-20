@@ -91,7 +91,7 @@ class ukrinMaps():
                             sd = sd ** 2
                             sd = np.sqrt(sd)
                             for d in range(self.pixelArray.shape[3]):
-                                te_tmp = echoList[d] * 0.001  # Conversion from ms to s
+                                te_tmp = echoList[d]  # It's in seconds and not ms
                                 if self.pixelArray[x, y, s, d] > sd:
                                     sigma = np.log(
                                         self.pixelArray[x, y, s, d] / (self.pixelArray[x, y, s, d] - sd))
@@ -145,7 +145,7 @@ class ukrinMaps():
                 sd = np.absolute(np.sum(np.square(self.pixelArray), axis=0) / (numberEchoes * matrixOnes) - np.square(noise))
                 s_w = s_wx = s_wx2 = s_wy = s_wxy = np.zeros(np.shape(matrixOnes))
                 for echo in range(numberEchoes):
-                    te = echoList[echo] * 0.001 * matrixOnes
+                    te = echoList[echo] * matrixOnes #It's in seconds and not ms
                     sigma = sig = np.zeros(np.shape(matrixOnes))
                     matrixIterator = np.nditer(sd, flags=['multi_index'])
                     while not matrixIterator.finished:
@@ -166,7 +166,7 @@ class ukrinMaps():
                 delta = (s_w * s_wx2) - (np.square(s_wx))
                 b = (matrixOnes / delta) * (s_w * s_wxy - s_wx * s_wy)
                 t2Star = np.real(-matrixOnes / b)
-                conditions = (np.isinf(t2Star)) | (np.isnan(t2Star)) | (t2Star < 0.0) | (t2Star > 5.0)
+                conditions = (np.isinf(t2Star)) | (np.isnan(t2Star)) | (t2Star < 0.0) | (t2Star > 500.0)
                 t2Star = np.where(conditions, 0.0, t2Star)
             return t2Star
         except Exception as e:
