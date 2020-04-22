@@ -6,7 +6,6 @@ from pydicom.sequence import Sequence
 import datetime
 import copy
 import random
-from scipy.stats import iqr
 from matplotlib import cm
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
@@ -145,7 +144,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom.SeriesTime = timeStr
         newDicom.ImageTime = timeStr
         newDicom.AcquisitionTime = timeStr
-        newDicom.ImageType[0] = "DERIVED"
+        newDicom.ImageType = ["DERIVED"]
 
         # Series, Instance and Class for Reference
         refd_series_sequence = Sequence()
@@ -219,7 +218,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 tempArray = imageArray
             else:
                 tempArray = np.squeeze(imageArray[index, ...])
-            #colormap = "viridis"
+            #colormap = "hot"
             if (int(np.amin(imageArray)) < 0) and colormap is None:
                 newDicom.PixelRepresentation = 1
                 target = (np.power(2, dicomData.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
@@ -241,8 +240,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                     imageArrayInt = imageScaled.astype(np.int64)
                 else:
                     imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
-                smallestValue = pydicom.dataelem.DataElement(0x00280106, 'SS', int(np.amin(imageArrayInt)))
-                largestValue = pydicom.dataelem.DataElement(0x00280107, 'SS', int(np.amax(imageArrayInt)))
+                newDicom.add_new('0x00280106', 'SS', int(np.amin(imageArrayInt)))
+                newDicom.add_new('0x00280107', 'SS', int(np.amax(imageArrayInt)))
             else:
                 newDicom.PixelRepresentation = 0
                 target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
@@ -250,7 +249,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
                 imageScaled = target * (tempArray - minimum) / (maximum - minimum)
                 slope =  target / (maximum - minimum)
-                intercept = (- target * minimum - (maximum - minimum))/ (maximum - minimum)
+                intercept = (- target * minimum)/ (maximum - minimum)
                 rescaleSlope = np.ones(np.shape(tempArray)) / slope
                 rescaleIntercept = - intercept / slope
                 if newDicom.BitsAllocated == 8:
@@ -263,9 +262,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                     imageArrayInt = imageScaled.astype(np.uint64)
                 else:
                     imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
-                smallestValue = pydicom.dataelem.DataElement(0x00280106, 'US', int(np.amin(imageArrayInt)))
-                largestValue = pydicom.dataelem.DataElement(0x00280107, 'US', int(np.amax(imageArrayInt)))
-
+                newDicom.add_new('0x00280106', 'US', int(np.amin(imageArrayInt)))
+                newDicom.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 enhancedArrayInt.append(imageArrayInt)
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
@@ -279,28 +277,28 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         # Add colormap here
         if colormap is not None:
             newDicom.PhotometricInterpretation = 'PALETTE COLOR'
-            arrayForRGB = np.arange(int(np.percentile(imageArrayInt, 1)), int(np.percentile(imageArrayInt, 99)))
-            colorsList = cm.ScalarMappable(cmap=colormap).to_rgba(np.array(arrayForRGB), bytes=True)
+            newDicom.RGBLUTTransferFunction = 'TABLE'
+            arrayForRGB = np.arange(0, target.flatten()[0])
+            colorsList = cm.ScalarMappable(cmap=colormap).to_rgba(np.array(arrayForRGB), bytes=False)
             stringType = ('SS' if int(np.amin(imageArrayInt)) < 0 else 'US')
             numberValues = len(arrayForRGB)
             minValue = int(np.amin(arrayForRGB))
-            redDesc = pydicom.dataelem.DataElement(0x00281101, stringType, [numberValues, minValue, newDicom.BitsAllocated])
-            greenDesc = pydicom.dataelem.DataElement(0x00281102, stringType, [numberValues, minValue, newDicom.BitsAllocated])
-            blueDesc = pydicom.dataelem.DataElement(0x00281103, stringType, [numberValues, minValue, newDicom.BitsAllocated])
-            newDicom.add(redDesc)
-            newDicom.add(greenDesc)
-            newDicom.add(blueDesc)
-            newDicom.RedPaletteColorLookupTableData = bytes(np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,0].flatten()]))
-            newDicom.GreenPaletteColorLookupTableData = bytes(np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,1].flatten()]))
-            newDicom.BluePaletteColorLookupTableData = bytes( np.array([value.astype('uint'+str(newDicom.BitsAllocated)) for value in colorsList[:,2].flatten()]))
+            totalBytes = newDicom.BitsAllocated
+            newDicom.add_new('0x00281101', stringType, [numberValues, minValue, totalBytes])
+            newDicom.add_new('0x00281102', stringType, [numberValues, minValue, totalBytes])
+            newDicom.add_new('0x00281103', stringType, [numberValues, minValue, totalBytes])
+            newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+            newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+            newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
 
         # Take Phase Encoding into account
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]
-        newDicom.WindowCenter = int(np.mean(imageArrayInt))
-        newDicom.WindowWidth = int(iqr(imageArrayInt, rng=(1, 99)))
-        newDicom.add(smallestValue)
-        newDicom.add(largestValue)
+        newDicom.WindowCenter = int(target.flatten()[0]/2)
+        newDicom.WindowWidth = int(target.flatten()[0])
         newDicom.PixelData = imageArrayInt.tobytes()
 
         del dicomData, imageArray, imageScaled, imageArrayInt, enhancedArrayInt, tempArray
