@@ -31,8 +31,8 @@ class ukrinMaps():
                 phaseDiffOriginal = np.squeeze(self.pixelArray[1, ...]) - np.squeeze(self.pixelArray[0, ...])
                 deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
             else: # This if/else might be removed at some point
-                phaseDiffOriginal = self.pixelArray
-                deltaTE = echoList[0] * 0.001 # Conversion from ms to s
+                derivedImage = unWrapPhase(self.pixelArray)
+                return derivedImage
             phaseDiff = phaseDiffOriginal / ((1 / (2 * np.pi)) * np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal))) # Normalise to -2Pi and +2Pi
             derivedImage = unWrapPhase(phaseDiff) / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
             del phaseDiffOriginal, phaseDiff, deltaTE
@@ -91,7 +91,7 @@ class ukrinMaps():
                             sd = sd ** 2
                             sd = np.sqrt(sd)
                             for d in range(self.pixelArray.shape[3]):
-                                te_tmp = echoList[d] * 0.001  # Conversion from ms to s
+                                te_tmp = echoList[d]  # It's in seconds and not ms
                                 if self.pixelArray[x, y, s, d] > sd:
                                     sigma = np.log(
                                         self.pixelArray[x, y, s, d] / (self.pixelArray[x, y, s, d] - sd))
@@ -145,7 +145,7 @@ class ukrinMaps():
                 sd = np.absolute(np.sum(np.square(self.pixelArray), axis=0) / (numberEchoes * matrixOnes) - np.square(noise))
                 s_w = s_wx = s_wx2 = s_wy = s_wxy = np.zeros(np.shape(matrixOnes))
                 for echo in range(numberEchoes):
-                    te = echoList[echo] * 0.001 * matrixOnes
+                    te = echoList[echo] * matrixOnes #It's in seconds and not ms
                     sigma = sig = np.zeros(np.shape(matrixOnes))
                     matrixIterator = np.nditer(sd, flags=['multi_index'])
                     while not matrixIterator.finished:

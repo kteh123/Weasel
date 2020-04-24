@@ -133,7 +133,8 @@ def getSeriesDicomDataset(imagePathList):
     try:
         datasetList = list()
         for imagePath in imagePathList:
-            datasetList.append(getDicomDataset(imagePath))
+            if getDicomDataset(imagePath) is not None:
+                datasetList.append(getDicomDataset(imagePath))
         if datasetList:
             return datasetList
         else:
@@ -147,7 +148,8 @@ def getDicomDataset(imagePath):
     try:
         if os.path.exists(imagePath):
             dataset = pydicom.dcmread(imagePath)
-            return dataset
+            if hasattr(dataset, 'InstanceNumber'):
+                return dataset
         else:
             return None
     except Exception as e:
