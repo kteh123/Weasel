@@ -1,5 +1,6 @@
 """
-GraphicsWidget displaying an image histogram along with gradient editor. Can be used to adjust the appearance of images.
+GraphicsWidget displaying an image histogram along with gradient editor. 
+Can be used to adjust the appearance of images.
 """
 
 
