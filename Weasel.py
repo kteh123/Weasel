@@ -21,6 +21,7 @@ from scipy.stats import iqr
 import logging
 import pathlib
 import importlib
+import matplotlib.pyplot as plt
 
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
@@ -699,32 +700,85 @@ class Weasel(QMainWindow):
             plotItem = imageViewer.addPlot() 
             plotItem.getViewBox().setAspectLocked() 
             img = pg.ImageItem(border='w')
-            #viewBox.addItem(img)
-        
+            
             imv= pg.ImageView(view=plotItem, imageItem=img)
+            
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
             layout.addWidget(imv)
+
+            
             return img, imv, plotItem
         except Exception as e:
             print('Error in getPixelValue: ' + str(e))
             logger.error('Error in getPixelValue: ' + str(e))
 
+    def createGreyMap(self):
+         #gray scale
+        position = np.array([1,0])
+        greys = np.array([[255,255,255,255],[0,0,0,255]],dtype=np.ubyte)
+        return pg.ColorMap(position, greys)
 
-    def setUpROITool(self, viewBox, layout, img):
-        try:
-            logger.info("WEASEL.setUpROITool called")
-            lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
-            lblROIMeanValue.show()
-            layout.addWidget(lblROIMeanValue)
+    def resetImageToGrey(self, imv):
+        greyMap = self.createGreyMap()
+        imv.setColorMap(greyMap)
+        imv.setLevels(0, 50)
 
-            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
-            lblPixelValue.show()
-            layout.addWidget(lblPixelValue)
+
+    def generatePgColormap(self, cm_name):
+        pltMap = plt.get_cmap(cm_name)
+        colors = pltMap.colors
+        colors = [c + [1.] for c in colors]
+        positions = np.linspace(0, 1, len(colors))
+        pgMap = pg.ColorMap(positions, colors)
+        return pgMap
+
+
+    def addColourToImage(self, imv):    
+        colourMap = self.generatePgColormap('viridis')
+        imv.setColorMap(colourMap)
+        imv.setLevels(0, 50)
         
+
+    def setUpColourTools(self, layout, imv):
+        groupBoxColour = QGroupBox('Colour Table')
+        gridLayoutColour = QGridLayout()
+        groupBoxColour.setLayout(gridLayoutColour)
+        layout.addWidget(groupBoxColour)
+
+        btnAdd = QPushButton('Add') 
+        btnAdd.setToolTip('Add colour to the image')
+        btnAdd.clicked.connect(lambda:self.addColourToImage(imv))
+
+        btnReset = QPushButton('Reset') 
+        btnReset.setToolTip('Resets the image to greyscale')
+        btnReset.clicked.connect(lambda:self.resetImageToGrey(imv))
+
+        btnSave = QPushButton('Save') 
+        btnSave.setToolTip('Resets the image to greyscale')
+        #btnSave.clicked.connect(lambda:self.createCircleROI(viewBox, img, lblROIMeanValue))
+
+        gridLayoutColour.addWidget(btnAdd,0,0)
+        gridLayoutColour.addWidget(btnReset,0,1)
+        gridLayoutColour.addWidget(btnSave,0,2)
+
+
+    def setUpLabels(self, layout):
+        logger.info("WEASEL.setUpROITools called")
+        lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
+        lblROIMeanValue.show()
+        layout.addWidget(lblROIMeanValue)
+        
+        lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
+        lblPixelValue.show()
+        layout.addWidget(lblPixelValue)
+        return lblPixelValue, lblROIMeanValue
+
+    def setUpROITools(self, viewBox, layout, img):
+        try:
             groupBoxROI = QGroupBox('ROI')
-            gridLayout = QGridLayout()
-            groupBoxROI.setLayout(gridLayout)
+            gridLayoutROI = QGridLayout()
+            groupBoxROI.setLayout(gridLayoutROI)
             layout.addWidget(groupBoxROI)
 
             btnCircleROI = QPushButton('Circle') 
@@ -754,8 +808,8 @@ class Weasel(QMainWindow):
             btnRectROI.clicked.connect(lambda: 
                    self.createRectangleROI(viewBox, img, lblROIMeanValue))
 
-            btnDrawROI = QPushButton('Draw') 
-            btnDrawROI.setToolTip('Allows the user to draw around a ROI')
+            #btnDrawROI = QPushButton('Draw') 
+            #btnDrawROI.setToolTip('Allows the user to draw around a ROI')
 
             btnRemoveROI = QPushButton('Clear')
             btnRemoveROI.setToolTip('Clears the ROI from the image')
@@ -766,18 +820,18 @@ class Weasel(QMainWindow):
             btnSaveROI.setToolTip('Saves the ROI in DICOM format')
             #btnSaveROI.clicked.connect(lambda: self.resetROI(viewBox))
 
-            gridLayout.addWidget(btnCircleROI,0,0)
-            gridLayout.addWidget(btnEllipseROI,0,1)
-            gridLayout.addWidget(btnMultiRectROI,0,2)
-            gridLayout.addWidget(btnPolyLineROI,0,3)
-            gridLayout.addWidget(btnRectROI,1,0)
-            gridLayout.addWidget(btnDrawROI,1,1)
-            gridLayout.addWidget(btnRemoveROI,1,2)
-            gridLayout.addWidget(btnSaveROI,1,3)
-            return  lblPixelValue, self.getROIOject(viewBox), lblROIMeanValue
+            gridLayoutROI.addWidget(btnCircleROI,0,0)
+            gridLayoutROI.addWidget(btnEllipseROI,0,1)
+            gridLayoutROI.addWidget(btnMultiRectROI,0,2)
+            gridLayoutROI.addWidget(btnPolyLineROI,0,3)
+            gridLayoutROI.addWidget(btnRectROI,1,0)
+            #gridLayoutROI.addWidget(btnDrawROI,1,1)
+            gridLayoutROI.addWidget(btnRemoveROI,1,1)
+            gridLayoutROI.addWidget(btnSaveROI,1,2)
+            return  self.getROIOject(viewBox)
         except Exception as e:
-            print('Error in setUpROITool: ' + str(e))
-            logger.error('Error in setUpROITool: ' + str(e))
+            print('Error in setUpROITools: ' + str(e))
+            logger.error('Error in setUpROITools: ' + str(e))
 
 
     def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
@@ -922,6 +976,7 @@ class Weasel(QMainWindow):
             print('Error in removeROI: ' + str(e))
             logger.error('Error in removeROI: ' + str(e))           
 
+
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
                           imv, multiImage=False, deleteButton=None):
@@ -943,6 +998,9 @@ class Weasel(QMainWindow):
                 maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
+                grayMap = self.createGreyMap()
+                imv.setColorMap(grayMap)
+                imv.setLevels(0, 50)
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
@@ -1001,8 +1059,9 @@ class Weasel(QMainWindow):
             #chkBoxSyncROI.setToolTip("Check to synchronise ROIs in other windows with this one")
             #layout.addWidget(chkBoxSyncROI)
             
-
-            lblPixelValue, _ , _ = self.setUpROITool(viewBox, layout, img)
+            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
+            self.setUpColourTools(layout, imv)
+            self.setUpROITools(viewBox, layout, img)
            
            
             self.displayPixelArray(pixelArray, 
@@ -1122,8 +1181,9 @@ class Weasel(QMainWindow):
             layout.addWidget(btnDeleteDICOMFile)
            
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
-           
-            lblPixelValue, roiTool, lblROIMeanValue = self.setUpROITool(viewBox, layout, img)
+            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
+            self.setUpColourTools(layout, imv)
+            roiTool = self.setUpROITools(viewBox, layout, img)
 
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -1855,3 +1915,6 @@ def main():
 
 if __name__ == '__main__':
         main()
+
+
+        

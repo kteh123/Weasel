@@ -717,4 +717,16 @@ class ImageView(QtGui.QWidget):
         if self.menu is None:
             self.buildMenu()
         self.menu.popup(QtGui.QCursor.pos())
+
+    def setColorMap(self, colormap):
+        """Set the color map. 
+
+        ============= =========================================================
+        **Arguments**
+        colormap      (A ColorMap() instance) The ColorMap to use for coloring 
+                      images.
+        ============= =========================================================
+        """
+        self.ui.histogram.gradient.setColorMap(colormap)
+        
         
