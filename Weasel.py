@@ -45,10 +45,14 @@ import CoreModules.imagingTools as imagingTools
 import Developer.WEASEL.Tools
 #access pyqtGraph from the source code imported into this project
 import CoreModules.pyqtgraph as pg 
+import CoreModules.pyqtgraph.exporters
+
 
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
+
+FIRST_ITEM_COLOUR_LIST = 'Select a colour table'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
 #Create and configure the logger
@@ -713,11 +717,13 @@ class Weasel(QMainWindow):
             print('Error in getPixelValue: ' + str(e))
             logger.error('Error in getPixelValue: ' + str(e))
 
+
     def createGreyMap(self):
          #gray scale
         position = np.array([1,0])
         greys = np.array([[255,255,255,255],[0,0,0,255]],dtype=np.ubyte)
         return pg.ColorMap(position, greys)
+
 
     def resetImageToGrey(self, imv):
         greyMap = self.createGreyMap()
@@ -731,14 +737,32 @@ class Weasel(QMainWindow):
         colors = [c + [1.] for c in colors]
         positions = np.linspace(0, 1, len(colors))
         pgMap = pg.ColorMap(positions, colors)
+        #from matplotlib import cm
+        #pos, rgba_colors = zip(*cmapToColormap(getattr(cm, colormap_name)), n_ticks)
+        #pgMap = pg.ColorMap(pos, rgba_colors)
         return pgMap
 
 
-    def addColourToImage(self, imv):    
-        colourMap = self.generatePgColormap('viridis')
-        imv.setColorMap(colourMap)
-        imv.setLevels(0, 50)
+    def addColourToImage(self, imv, cmbColours):  
+        if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
+            self.resetImageToGrey(imv)
+        else:
+            colourTable = cmbColours.currentText()
+            colourMap = self.generatePgColormap(colourTable)
+            imv.setColorMap(colourMap)
+            imv.setLevels(0, 50)
         
+
+    def saveColouredImage(self, imv):
+        exporter = pg.exporters.ImageExporter(imv.getImageItem())
+
+        # set export parameters if needed
+        exporter.parameters()['width'] = 100   # (note this also affects height parameter)
+        exporter.parameters()['height'] = 100
+
+        # save to file
+        exporter.export('fileName.png')
+
 
     def setUpColourTools(self, layout, imv):
         groupBoxColour = QGroupBox('Colour Table')
@@ -746,9 +770,14 @@ class Weasel(QMainWindow):
         groupBoxColour.setLayout(gridLayoutColour)
         layout.addWidget(groupBoxColour)
 
-        btnAdd = QPushButton('Add') 
-        btnAdd.setToolTip('Add colour to the image')
-        btnAdd.clicked.connect(lambda:self.addColourToImage(imv))
+        listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma',  'viridis']
+        cmbColours = QComboBox()
+        cmbColours.setToolTip('Select a colour table to apply to the image')
+        cmbColours.blockSignals(True)
+        cmbColours.addItems(listColours)
+        cmbColours.setCurrentIndex(0)
+        cmbColours.blockSignals(False)
+        cmbColours.currentIndexChanged.connect(lambda:self.addColourToImage(imv, cmbColours)) 
 
         btnReset = QPushButton('Reset') 
         btnReset.setToolTip('Resets the image to greyscale')
@@ -756,9 +785,9 @@ class Weasel(QMainWindow):
 
         btnSave = QPushButton('Save') 
         btnSave.setToolTip('Resets the image to greyscale')
-        #btnSave.clicked.connect(lambda:self.createCircleROI(viewBox, img, lblROIMeanValue))
+        #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
 
-        gridLayoutColour.addWidget(btnAdd,0,0)
+        gridLayoutColour.addWidget(cmbColours,0,0)
         gridLayoutColour.addWidget(btnReset,0,1)
         gridLayoutColour.addWidget(btnSave,0,2)
 
