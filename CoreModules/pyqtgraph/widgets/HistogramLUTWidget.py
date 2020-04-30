@@ -24,7 +24,8 @@ class HistogramLUTWidget(GraphicsView):
     def sizeHint(self):
         return QtCore.QSize(115, 200)
     
-    
+    def getHistogram(self):
+        return self.item
 
     def __getattr__(self, attr):
         return getattr(self.item, attr)

@@ -52,7 +52,7 @@ import CoreModules.pyqtgraph.exporters
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-FIRST_ITEM_COLOUR_LIST = 'Select a colour table'
+FIRST_ITEM_COLOUR_LIST = 'Grey Scale'
 DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.jpg'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -89,6 +89,9 @@ class Weasel(QMainWindow):
         self.selectedSeries = ''
         self.selectedImagePath = ''
         self.selectedImageName = ''
+        self.fixHistogramLevels = False
+        self.minLevel = 0
+        self.maxLevel = 50
         self.ApplyStyleSheet()
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
@@ -697,6 +700,11 @@ class Weasel(QMainWindow):
             logger.error('Error in displayFERRET: ' + str(e)) 
 
 
+    def blockHistogramSignals(self, imgView, block):
+        histogramObject = imgView.getHistogramWidget().getHistogram()
+        histogramObject.blockSignals(block)
+
+
     def setUpViewBoxForImage(self, imageViewer, layout):
         try:
             logger.info("WEASEL.setUpViewBoxForImage called")
@@ -707,18 +715,23 @@ class Weasel(QMainWindow):
             img = pg.ImageItem(border='w')
             
             imv= pg.ImageView(view=plotItem, imageItem=img)
-            #imv.getHistogramWidget.sigLevelChangeFinished.connect(lambda: print('levels changed'))
+            histogramObject = imv.getHistogramWidget().getHistogram()
+            histogramObject.sigLevelChangeFinished.connect(lambda: self.setHistogramLevels(imv))
             
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
             layout.addWidget(imv)
-
             
             return img, imv, plotItem
         except Exception as e:
-            print('Error in getPixelValue: ' + str(e))
-            logger.error('Error in getPixelValue: ' + str(e))
+            print('Error in setUpViewBoxForImag: ' + str(e))
+            logger.error('Error in setUpViewBoxForImag: ' + str(e))
 
+
+    def setHistogramLevels(self, imv):
+        self.fixHistogramLevels = True
+        self.minLevel, self.maxLevel = imv.getLevels()
+       
 
     def createGreyMap(self):
          #gray scale
@@ -727,35 +740,27 @@ class Weasel(QMainWindow):
         return pg.ColorMap(position, greys)
 
 
-    def setImageToGray(self, imv, cmbColours):
-        cmbColours.setCurrentIndex(0)
-        greyMap = self.createGreyMap()
-        imv.setColorMap(greyMap)
-        #imv.setLevels(0, 50)
-
-
     def generatePgColormap(self, cm_name):
         pltMap = plt.get_cmap(cm_name)
         colors = pltMap.colors
         colors = [c + [1.] for c in colors]
         positions = np.linspace(0, 1, len(colors))
         pgMap = pg.ColorMap(positions, colors)
-        #from matplotlib import cm
-        #pos, rgba_colors = zip(*cmapToColormap(getattr(cm, colormap_name)), n_ticks)
-        #pgMap = pg.ColorMap(pos, rgba_colors)
         return pgMap
 
 
-    def applyColourTableToImage(self, imv, cmbColours):  
+    def applyColourTableToImage(self, imv, cmbColours): 
+        if self.fixHistogramLevels == True:
+                imv.setLevels(self.minLevel, self.maxLevel)
+
         if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
-            self.setImageToGray(imv, cmbColours)
+            colourMap = self.createGreyMap()
         else:
             colourTable = cmbColours.currentText()
             colourMap = self.generatePgColormap(colourTable)
-            minLevel, maxLevel = imv.getLevels()
-            print(minLevel, maxLevel)
-            imv.setColorMap(colourMap)
-            imv.setLevels(minLevel, maxLevel)
+
+        imv.setColorMap(colourMap)
+            
         
 
     def exportImage(self, imv):
@@ -772,38 +777,56 @@ class Weasel(QMainWindow):
             logger.error('Error in WEASEL.exportImage: ' + str(e))
 
 
-    def setUpColourTools(self, layout, imv):
-        groupBoxColour = QGroupBox('Colour Table')
-        gridLayoutColour = QGridLayout()
-        groupBoxColour.setLayout(gridLayoutColour)
-        layout.addWidget(groupBoxColour)
+    def releaseHistogramLevels(self):
+        self.fixHistogramLevels = False
 
-        listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma',  'viridis']
-        cmbColours = QComboBox()
-        cmbColours.setToolTip('Select a colour table to apply to the image')
-        cmbColours.blockSignals(True)
-        cmbColours.addItems(listColours)
-        cmbColours.setCurrentIndex(0)
-        cmbColours.blockSignals(False)
-        cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
 
-        btnReset = QPushButton('Reset') 
-        btnReset.setToolTip('Resets the image to greyscale')
-        btnReset.clicked.connect(lambda:self.setImageToGray(imv, cmbColours))
+    def setUpColourTools(self, layout, imv, showReleaseButton = False):
+        try:
+            groupBoxColour = QGroupBox('Colour Table')
+            gridLayoutColour = QGridLayout()
+            groupBoxColour.setLayout(gridLayoutColour)
+            layout.addWidget(groupBoxColour)
 
-        btnSave = QPushButton('Save') 
-        btnSave.setToolTip('Save to DICOM')
-        #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
+            listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma',  'viridis']
+            cmbColours = QComboBox()
+            cmbColours.setToolTip('Select a colour table to apply to the image')
+            cmbColours.blockSignals(True)
+            cmbColours.addItems(listColours)
+            cmbColours.setCurrentIndex(0)
+            cmbColours.blockSignals(False)
+            cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
 
-        btnSave = QPushButton('Export Image') 
-        btnSave.setToolTip('Exports the image to an external graphic file.')
-        btnSave.clicked.connect(lambda:self.exportImage(imv))
+            #btnReset = QPushButton('Reset') 
+            #btnReset.setToolTip('Resets the image to greyscale')
+           # btnReset.clicked.connect(lambda:self.setImageToGrey(imv, cmbColours))
 
-        gridLayoutColour.addWidget(cmbColours,0,0)
-        gridLayoutColour.addWidget(btnReset,0,1)
-        gridLayoutColour.addWidget(btnSave,0,2)
+            btnReleaseLevels = QPushButton('Release Levels') 
+            btnReleaseLevels.setToolTip('Allows histogram levels to vary with each image')
+            btnReleaseLevels.clicked.connect(self.releaseHistogramLevels)
 
-        return cmbColours
+            btnSave = QPushButton('Save') 
+            btnSave.setToolTip('Save to DICOM')
+            #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
+
+            btnExport = QPushButton('Export') 
+            btnExport.setToolTip('Exports the image to an external graphic file.')
+            btnExport.clicked.connect(lambda:self.exportImage(imv))
+
+            gridLayoutColour.addWidget(cmbColours,0,0)
+            #gridLayoutColour.addWidget(btnReset,0,1)
+            if showReleaseButton:
+                gridLayoutColour.addWidget(btnReleaseLevels,0,1)
+                gridLayoutColour.addWidget(btnSave,0,2)
+                gridLayoutColour.addWidget(btnExport,0,3)
+            else:
+                gridLayoutColour.addWidget(btnSave,0,1)
+                gridLayoutColour.addWidget(btnExport,0,2)
+
+            return cmbColours
+        except Exception as e:
+            print('Error in WEASEL.setUpColourTools: ' + str(e))
+            logger.error('Error in WEASEL.setUpColourTools: ' + str(e))
 
 
     def setUpLabels(self, layout):
@@ -817,7 +840,8 @@ class Weasel(QMainWindow):
         layout.addWidget(lblPixelValue)
         return lblPixelValue, lblROIMeanValue
 
-    def setUpROITools(self, viewBox, layout, img):
+
+    def setUpROITools(self, viewBox, layout, img, lblROIMeanValue):
         try:
             groupBoxROI = QGroupBox('ROI')
             gridLayoutROI = QGridLayout()
@@ -1041,10 +1065,11 @@ class Weasel(QMainWindow):
                     1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                 maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                
+                self.blockHistogramSignals(imv, True)
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
-                #grayMap = self.createGreyMap()
-                #imv.setColorMap(grayMap)
-                #imv.setLevels(0, 50)
+                self.blockHistogramSignals(imv, False)
+        
                 self.applyColourTableToImage(imv, cmbColours)
                 lblImageMissing.hide()   
   
@@ -1106,7 +1131,7 @@ class Weasel(QMainWindow):
             
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
             cmbColours = self.setUpColourTools(layout, imv)
-            self.setUpROITools(viewBox, layout, img)
+            self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
            
             self.displayPixelArray(pixelArray, 
@@ -1227,8 +1252,8 @@ class Weasel(QMainWindow):
            
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            cmbColours = self.setUpColourTools(layout, imv)
-            roiTool = self.setUpROITools(viewBox, layout, img)
+            cmbColours = self.setUpColourTools(layout, imv, showReleaseButton=True)
+            roiTool = self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
 
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -1241,6 +1266,7 @@ class Weasel(QMainWindow):
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             layout.addWidget(imageSlider)
+            #imageSlider.valueChanged.connect(lambda:self.blockHistogramSignals(imv, True))
             imageSlider.valueChanged.connect(
                   lambda: self.imageSliderMoved(seriesName, 
                                                 imageList, 
@@ -1265,6 +1291,8 @@ class Weasel(QMainWindow):
                                   btnDeleteDICOMFile,
                                   imv, cmbColours,
                                   subWindow)
+
+            #imageSlider.sliderReleased.connect(lambda: self.blockHistogramSignals(imv, False))
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
             logger.error('Error in displayMultiImageSubWindow: ' + str(e))

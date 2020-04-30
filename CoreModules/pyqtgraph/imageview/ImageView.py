@@ -366,6 +366,7 @@ class ImageView(QtGui.QWidget):
         return self.imageDisp
     
     def getLevels(self):
+        """Returns histogram min and max levels.  Added by S Shillitoe"""
         return self.levelMin, self.levelMax
 
     def close(self):
