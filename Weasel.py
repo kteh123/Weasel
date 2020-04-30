@@ -53,6 +53,7 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 FIRST_ITEM_COLOUR_LIST = 'Select a colour table'
+DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.jpg'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
 #Create and configure the logger
@@ -758,10 +759,17 @@ class Weasel(QMainWindow):
         
 
     def exportImage(self, imv):
-        exporter = pg.exporters.ImageExporter(imv.getImageItem())
-
-        # save to file
-        exporter.export('fileName.dcm')
+        try:
+            imageName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
+                                                       directory=DEFAULT_IMAGE_FILE_PATH_NAME, 
+                                                       filter="*.png, *.tif, *.jpg")
+            if imageName:
+                exporter = pg.exporters.ImageExporter(imv.getImageItem())
+                # save to file
+                exporter.export(imageName)
+        except Exception as e:
+            print('Error in WEASEL.exportImage: ' + str(e))
+            logger.error('Error in WEASEL.exportImage: ' + str(e))
 
 
     def setUpColourTools(self, layout, imv):
