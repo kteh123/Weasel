@@ -706,6 +706,7 @@ class Weasel(QMainWindow):
             img = pg.ImageItem(border='w')
             
             imv= pg.ImageView(view=plotItem, imageItem=img)
+            #imv.getHistogramWidget.sigLevelChangeFinished.connect(lambda: print('levels changed'))
             
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
@@ -725,10 +726,11 @@ class Weasel(QMainWindow):
         return pg.ColorMap(position, greys)
 
 
-    def resetImageToGrey(self, imv):
+    def setImageToGray(self, imv, cmbColours):
+        cmbColours.setCurrentIndex(0)
         greyMap = self.createGreyMap()
         imv.setColorMap(greyMap)
-        imv.setLevels(0, 50)
+        #imv.setLevels(0, 50)
 
 
     def generatePgColormap(self, cm_name):
@@ -743,25 +745,23 @@ class Weasel(QMainWindow):
         return pgMap
 
 
-    def addColourToImage(self, imv, cmbColours):  
+    def applyColourTableToImage(self, imv, cmbColours):  
         if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
-            self.resetImageToGrey(imv)
+            self.setImageToGray(imv, cmbColours)
         else:
             colourTable = cmbColours.currentText()
             colourMap = self.generatePgColormap(colourTable)
+            minLevel, maxLevel = imv.getLevels()
+            print(minLevel, maxLevel)
             imv.setColorMap(colourMap)
-            imv.setLevels(0, 50)
+            imv.setLevels(minLevel, maxLevel)
         
 
-    def saveColouredImage(self, imv):
+    def exportImage(self, imv):
         exporter = pg.exporters.ImageExporter(imv.getImageItem())
 
-        # set export parameters if needed
-        exporter.parameters()['width'] = 100   # (note this also affects height parameter)
-        exporter.parameters()['height'] = 100
-
         # save to file
-        exporter.export('fileName.png')
+        exporter.export('fileName.dcm')
 
 
     def setUpColourTools(self, layout, imv):
@@ -777,19 +777,25 @@ class Weasel(QMainWindow):
         cmbColours.addItems(listColours)
         cmbColours.setCurrentIndex(0)
         cmbColours.blockSignals(False)
-        cmbColours.currentIndexChanged.connect(lambda:self.addColourToImage(imv, cmbColours)) 
+        cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
 
         btnReset = QPushButton('Reset') 
         btnReset.setToolTip('Resets the image to greyscale')
-        btnReset.clicked.connect(lambda:self.resetImageToGrey(imv))
+        btnReset.clicked.connect(lambda:self.setImageToGray(imv, cmbColours))
 
         btnSave = QPushButton('Save') 
-        btnSave.setToolTip('Resets the image to greyscale')
+        btnSave.setToolTip('Save to DICOM')
         #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
+
+        btnSave = QPushButton('Export Image') 
+        btnSave.setToolTip('Exports the image to an external graphic file.')
+        btnSave.clicked.connect(lambda:self.exportImage(imv))
 
         gridLayoutColour.addWidget(cmbColours,0,0)
         gridLayoutColour.addWidget(btnReset,0,1)
         gridLayoutColour.addWidget(btnSave,0,2)
+
+        return cmbColours
 
 
     def setUpLabels(self, layout):
@@ -1008,7 +1014,8 @@ class Weasel(QMainWindow):
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
-                          imv, multiImage=False, deleteButton=None):
+                          imv, cmbColours,
+                          multiImage=False, deleteButton=None):
         #create dummy button to prevent runtime error
         try:
             if deleteButton is None:
@@ -1027,9 +1034,10 @@ class Weasel(QMainWindow):
                 maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
-                grayMap = self.createGreyMap()
-                imv.setColorMap(grayMap)
-                imv.setLevels(0, 50)
+                #grayMap = self.createGreyMap()
+                #imv.setColorMap(grayMap)
+                #imv.setLevels(0, 50)
+                self.applyColourTableToImage(imv, cmbColours)
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
@@ -1089,14 +1097,14 @@ class Weasel(QMainWindow):
             #layout.addWidget(chkBoxSyncROI)
             
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            self.setUpColourTools(layout, imv)
+            cmbColours = self.setUpColourTools(layout, imv)
             self.setUpROITools(viewBox, layout, img)
            
            
             self.displayPixelArray(pixelArray, 
                                    lblImageMissing,
                                    lblPixelValue,
-                                 imv)  
+                                 imv, cmbColours)  
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
@@ -1127,18 +1135,18 @@ class Weasel(QMainWindow):
             #As image's axis order is set to
             #'row-major', then the axes are specified 
             #in (y, x) order, axes=(1,0)
-
-            arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
-                            axes=(1,0))
-            #, returnMappedCoords=True
-            #print('Mouse move')
-            #print(arrRegion)
-            #roiMean = round(np.mean(arrRegion[0]), 3)
-            roiMean = round(np.mean(arrRegion), 3)
-            lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
-            if len(arrRegion[0]) <4:
-                print(arrRegion[0])
-                print ('Coords={}'.format(arrRegion[1]))
+            if roi is not None:
+                arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
+                                axes=(1,0))
+                #, returnMappedCoords=True
+                #print('Mouse move')
+                #print(arrRegion)
+                #roiMean = round(np.mean(arrRegion[0]), 3)
+                roiMean = round(np.mean(arrRegion), 3)
+                lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+                if len(arrRegion[0]) <4:
+                    print(arrRegion[0])
+                    print ('Coords={}'.format(arrRegion[1]))
 
         except Exception as e:
             print('Error in Weasel.updateROIMeanValue: ' + str(e))
@@ -1211,7 +1219,7 @@ class Weasel(QMainWindow):
            
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            self.setUpColourTools(layout, imv)
+            cmbColours = self.setUpColourTools(layout, imv)
             roiTool = self.setUpROITools(viewBox, layout, img)
 
             imageSlider = QSlider(Qt.Horizontal)
@@ -1232,7 +1240,7 @@ class Weasel(QMainWindow):
                                                 lblImageMissing,
                                                 lblPixelValue,
                                                 btnDeleteDICOMFile,
-                                                imv,
+                                                imv, cmbColours,
                                                 subWindow))
             imageSlider.valueChanged.connect(
                   lambda: self.updateROIMeanValue(roiTool, 
@@ -1247,7 +1255,7 @@ class Weasel(QMainWindow):
                                   lblImageMissing,
                                   lblPixelValue,
                                   btnDeleteDICOMFile,
-                                  imv,
+                                  imv, cmbColours,
                                   subWindow)
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
@@ -1327,7 +1335,7 @@ class Weasel(QMainWindow):
 
     def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
-                        btnDeleteDICOMFile, imv,
+                        btnDeleteDICOMFile, imv, cmbColours,
                         subWindow):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
@@ -1342,7 +1350,7 @@ class Weasel(QMainWindow):
                 self.displayPixelArray(pixelArray, 
                                        lblImageMissing,
                                        lblPixelValue,
-                                       imv,
+                                       imv, cmbColours,
                                        multiImage=True,  
                                        deleteButton=btnDeleteDICOMFile) 
 

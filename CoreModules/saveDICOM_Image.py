@@ -80,7 +80,8 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                         for individualRef in list_refs_path:
                             refs.append(individualRef[index])
 
-                saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, colormap=colormap, list_refs_path=refs)
+                saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, 
+                                      colormap=colormap, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:
