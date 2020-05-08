@@ -64,10 +64,11 @@ class ImageExporter(Exporter):
         
         #self.png = QtGui.QImage(targetRect.size(), QtGui.QImage.Format_ARGB32)
         #self.png.fill(pyqtgraph.mkColor(self.params['background']))
-        w, h = self.params['width'], self.params['height']
+        w, h = int(self.params['width']), int(self.params['height'])
         if w == 0 or h == 0:
             raise Exception("Cannot export image with size=0 (requested export size is %dx%d)" % (w,h))
-        bg = np.empty((self.params['width'], self.params['height'], 4), dtype=np.ubyte)
+        #bg = np.empty((self.params['width'], self.params['height'], 4), dtype=np.ubyte)
+        bg = np.empty((w, h, 4), dtype=np.ubyte)
         color = self.params['background']
         bg[:,:,0] = color.blue()
         bg[:,:,1] = color.green()
@@ -84,7 +85,8 @@ class ImageExporter(Exporter):
         painter = QtGui.QPainter(self.png)
         #dtr = painter.deviceTransform()
         try:
-            self.setExportMode(True, {'antialias': self.params['antialias'], 'background': self.params['background'], 'painter': painter, 'resolutionScale': resolutionScale})
+            self.setExportMode(True, {'antialias': self.params['antialias'], 
+                                      'background': self.params['background'], 'painter': painter, 'resolutionScale': resolutionScale})
             painter.setRenderHint(QtGui.QPainter.Antialiasing, self.params['antialias'])
             self.getScene().render(painter, QtCore.QRectF(targetRect), QtCore.QRectF(sourceRect))
         finally:

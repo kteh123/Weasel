@@ -364,7 +364,11 @@ class ImageView(QtGui.QWidget):
             self.levelMin, self.levelMax = list(map(float, self.quickMinMax(self.imageDisp)))
             
         return self.imageDisp
-        
+    
+    def getLevels(self):
+        """Returns histogram min and max levels.  Added by S Shillitoe"""
+        return self.levelMin, self.levelMax
+
     def close(self):
         """Closes the widget nicely, making sure to clear the graphics scene and release memory."""
         self.ui.roiPlot.close()
