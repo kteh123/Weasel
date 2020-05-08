@@ -82,12 +82,17 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
 
 
 def sortSequenceByTag(imagePathList, dicomTag):
-    """This method reads the DICOM files in imagePathList and sorts the list according to the given DICOM tag"""
+    """This method reads the DICOM files in imagePathList and sorts the list according to the given DICOM tag
+        Outputs are : sortedSequencePath, attributeList, numAttribute
+        The output attributeList may have repeated values. 
+        Removing these repetitions will be up to the developer of the specific algorithm
+    """
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
             if hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
-                #Enhanced MRI
+                # Enhanced MRI
+                # As of May 2020, this if portion may be deleted and might change to if not hasattr
                 sortedSequencePathAux = list()
                 sortedSequenceAux = list()
                 sortedSequencePath = imagePathList[0]
@@ -95,16 +100,24 @@ def sortSequenceByTag(imagePathList, dicomTag):
                 numAttribute = datasetList[0][0x20011018].value #NumberOfSlicesMR for Philips Enhanced MRI
             else:
                 attributeList = list()
+                attributeListSorted = list()
                 sortedSequencePathAux = list()
                 sortedSequenceAux = list()
                 sortedSequencePath = imagePathList
                 sortedSequence = datasetList
-                [attributeList.append(float(dataset.data_element(str(dicomTag)).value)) for dataset in datasetList]
-                attributeList = np.unique(attributeList)
-                attributeList.sort()
-                [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeList for indexAux, dataset in enumerate(datasetList) if float(dataset.data_element(str(dicomTag)).value) == attributeValue]
-                [sortedSequenceAux.append(dataset) for attributeValue in attributeList for dataset in datasetList if float(dataset.data_element(str(dicomTag)).value) == attributeValue]
-                numAttribute = len(attributeList)
+                if isinstance(dicomTag, str):
+                    [attributeList.append(dataset.data_element(dicomTag).value) for dataset in datasetList]
+                    attributeListSorted = np.unique(attributeList)
+                    attributeListSorted.sort()
+                    [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeListSorted for indexAux, dataset in enumerate(datasetList) if dataset.data_element(str(dicomTag)).value == attributeValue]
+                    [sortedSequenceAux.append(dataset) for attributeValue in attributeListSorted for dataset in datasetList if dataset.data_element(str(dicomTag)).value == attributeValue]
+                else:
+                    [attributeList.append(dataset[hex(dicomTag)].value) for dataset in datasetList]
+                    attributeListSorted = np.unique(attributeList)
+                    attributeListSorted.sort()
+                    [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeListSorted for indexAux, dataset in enumerate(datasetList) if dataset[hex(dicomTag)].value == attributeValue]
+                    [sortedSequenceAux.append(dataset) for attributeValue in attributeListSorted for dataset in datasetList if dataset[hex(dicomTag)].value == attributeValue]
+                numAttribute = len(attributeListSorted)
                 #At this point, it's sorted as 111222333. The next step will sort the values in the format 123123123
                 repetition = 0
                 index = 0
@@ -118,8 +131,7 @@ def sortSequenceByTag(imagePathList, dicomTag):
                             break
                         else:
                             index = repetition
-                            
-                del datasetList, sortedSequencePathAux, sortedSequenceAux, sortedSequence
+                del datasetList, sortedSequencePathAux, sortedSequenceAux, sortedSequence, attributeListSorted
                 return sortedSequencePath, attributeList, numAttribute
         else:
             return None, None, None

@@ -1,5 +1,5 @@
 import numpy as np
-from CoreModules.imagingTools import unWrapPhase
+from CoreModules.imagingTools import unWrapPhase, convertToPiRange
 
 class ukrinMaps():
     """Package containing algorithms that calculate parameter maps 
@@ -25,21 +25,34 @@ class ukrinMaps():
     # Could create a Diffusion Toolbox where BValues are an atribute. Or Fitting, where Inversion Time and Echo Time are attributes.
     # https://www.youtube.com/watch?v=RSl87lqOXDE
 
-    def B0MapOriginal(self, echoList):
+
+    def B0Map(self, echoList):
+    # See the following links regarding the unwrapping approach
+    # https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FUGUE/Guide
+    # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+    # https://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.exp.html
         try:
+            radiansArray = convertToPiRange(self.pixelArray) # Convert to [-pi, pi] if not in that range
             if len(echoList) > 1: # Is the given array already a Difference Phase or not?
-                phaseDiffOriginal = np.squeeze(self.pixelArray[1, ...]) - np.squeeze(self.pixelArray[0, ...])
+                # Unwrap each phase image
+                phase0 = unWrapPhase(np.squeeze(radiansArray[0, ...]))
+                phase1 = unWrapPhase(np.squeeze(radiansArray[1, ...]))
+                phaseDiff = phase1 - phase0
                 deltaTE = np.absolute(echoList[1] - echoList[0]) * 0.001 # Conversion from ms to s
-            else: # This if/else might be removed at some point
-                derivedImage = unWrapPhase(self.pixelArray)
-                return derivedImage
-            phaseDiff = phaseDiffOriginal / ((1 / (2 * np.pi)) * np.amax(phaseDiffOriginal) * np.ones(np.shape(phaseDiffOriginal))) # Normalise to -2Pi and +2Pi
-            derivedImage = unWrapPhase(phaseDiff) / ((2 * np.pi * deltaTE) * np.ones(np.shape(phaseDiff)))
-            del phaseDiffOriginal, phaseDiff, deltaTE
+                del phase0, phase1
+            else:
+                # Unwrap difference phase image
+                phaseDiff = unWrapPhase(radiansArray)
+                try:
+                    deltaTE = echoList[0] * 0.001
+                except: # If echo is 0 or empty
+                    deltaTE = 0.001
+            derivedImage = phaseDiff / (2 * np.pi * deltaTE) #* np.ones(np.shape(phaseDiff)))
+            del phaseDiff, deltaTE
             return derivedImage
         except Exception as e:
-            print('Error in function ukrinAlgorithms.B0MapOriginal: ' + str(e))
-        
+            print('Error in function ukrinAlgorithms.B0Map: ' + str(e))
+
 
     def T2StarNottingham(self, echoList):
         """
@@ -139,8 +152,10 @@ class ukrinMaps():
             if len(self.pixelArray.shape) == 3:
                 self.pixelArray = np.expand_dims(self.pixelArray, 2)
             numberEchoes = len(echoList)
+            # for [x,y,z,TE], do self.pixelArray[..., 0]
             matrixOnes = np.ones(np.shape(np.squeeze(self.pixelArray[0, ...])))
             with np.errstate(invalid='ignore', over='ignore'):
+                # for [x,y,z,TE], do axis=3
                 noise = np.sum(self.pixelArray, axis=0) / (numberEchoes * matrixOnes)
                 sd = np.absolute(np.sum(np.square(self.pixelArray), axis=0) / (numberEchoes * matrixOnes) - np.square(noise))
                 s_w = s_wx = s_wx2 = s_wy = s_wxy = np.zeros(np.shape(matrixOnes))
@@ -149,6 +164,7 @@ class ukrinMaps():
                     sigma = sig = np.zeros(np.shape(matrixOnes))
                     matrixIterator = np.nditer(sd, flags=['multi_index'])
                     while not matrixIterator.finished:
+                        # for [x,y,z,TE], swap [echo][index] to [index][echo]
                         index = matrixIterator.multi_index
                         if self.pixelArray[echo][index] > sd[index]:
                             sigma[index] = np.log(self.pixelArray[echo][index] / (self.pixelArray[echo][index] - sd[index]))
@@ -172,8 +188,28 @@ class ukrinMaps():
         except Exception as e:
             print('Error in function ukrinAlgorithms.T2Star: ' + str(e))
 
+
     def R2Star(self, echoList):
         try:
             return np.ones(np.shape(self.pixelArray))/self.T2Star(echoList)
         except Exception as e:
             print('Error in function ukrinAlgorithms.R2Star: ' + str(e))
+
+
+    def T1MapMolli(self, inversionList):
+        try:
+            import matlab.engine
+            eng = matlab.engine.start_matlab()
+            inputArray = matlab.double(np.array(self.pixelArray).tolist())
+            ti = matlab.double(np.array(inversionList).tolist())
+            ti.reshape((len(inversionList),1))
+            mapMatlab = eng.T1Fitting(inputArray, ti, nargout=1)
+            t1Map = np.transpose(np.array(mapMatlab)) # Convert to Python array and transpose because the Matlab script does it.
+            t1Map = np.nan_to_num(t1Map) # There migh be Infs and NaNs
+            # Set boundaries
+            t1Map[t1Map>10000] = 10000
+            t1Map[t1Map<1] = 0
+            eng.quit()
+            return t1Map
+        except Exception as e:
+            print('Error in function ukrinAlgorithms.T1MapMolli: ' + str(e))
