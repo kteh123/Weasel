@@ -31,4 +31,12 @@
     <module>T2StarMapDICOM_Image</module>
     <function>saveT2StarMapSeries</function>
   </tool>
+  <tool>
+    <action>T1 Map Molli Calculation</action>
+    <shortcut>Ctrl+1</shortcut>
+    <tooltip>Applies a T1 Molli fitting to the series if applicable</tooltip>
+    <applies_both_images_series>False</applies_both_images_series>
+    <module>T1MapMolliDICOM_Image</module>
+    <function>saveT1MapSeries</function>
+  </tool>
 </tools>

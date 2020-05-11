@@ -19,12 +19,13 @@ def returnPixelArray(imagePathList, sliceList, echoList):
                 volumeArray, sliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(dataset, sliceList=sliceList, sort=True)
             else: # For normal DICOM, slicelist is a list of slice locations in mm.
                 volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
-                numberSlices = len(sliceList)
-            # The assumption is that volumeArray is 3D always/usually
+                numberSlices = len(np.unique(sliceList))
+            # The echo values repeat, so this is to remove all values=0 and repetitions
+            echoList = np.delete(np.unique(echoList), np.where(np.unique(echoList) == 0.0))
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', resize=3)
             # Algorithm 
             derivedImage = ukrinMaps(pixelArray).T2Star(echoList)
-            del volumeArray, pixelArray, dataset
+            del volumeArray, pixelArray, numberSlices, dataset, echoList
             return derivedImage
         else:
             return None
@@ -53,24 +54,27 @@ def getParametersT2StarMap(imagePathList, seriesID):
                         sliceList.append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
-                    echoList = np.unique(echoList)
+                    #echoList = np.unique(echoList)
                     magnitudePathList = imagePathList
             else:
                 sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
                 sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
                 datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-                echoList = np.delete(echoList, np.where(echoList == 0.0))
-                numberEchoes = len(echoList)
                 for index, dataset in enumerate(datasetList):
                     flagMagnitude = False
-                    echo = dataset.EchoTime
+                    echo = echoList[index]
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 0:
-                            flagMagnitude = True
+                        try:
+                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 0:
+                                flagMagnitude = True
+                        except:
+                            if dataset[0x0043102f].value == 0:
+                                flagMagnitude = True
                     except: pass
                     if hasattr(dataset, 'ImageType'):
                         if set(['M', 'MAGNITUDE']).intersection(set(dataset.ImageType)):
                             flagMagnitude = True
+                    # Can use numberEchoes > 8 or similar
                     if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         magnitudePathList.append(imagePathList[index])
             del datasetList, numberSlices, numberEchoes, flagMagnitude
@@ -119,11 +123,14 @@ def saveT2StarMapSeries(objWeasel):
             # Iterate through list of images and save T2* for each image
             T2StarImagePathList = []
             T2StarImageList = []
-            numImages = np.shape(T2StarImage)[0]
+            numImages = (1 if len(np.shape(T2StarImage)) < 3 else np.shape(T2StarImage)[0])
             for index in range(numImages):
                 T2StarImageFilePath = saveDICOM_Image.returnFilePath(magnitudePathList[index], FILE_SUFFIX)
                 T2StarImagePathList.append(T2StarImageFilePath)
-                T2StarImageList.append(T2StarImage[index, ...])
+                if numImages==1:
+                    T2StarImageList.append(T2StarImage)
+                else:
+                    T2StarImageList.append(T2StarImage[index, ...])
 
         objWeasel.displayMessageSubWindow(
             "<H4>Saving {} DICOM files for the T2* Map calculated</H4>".format(numImages),

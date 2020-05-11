@@ -20,11 +20,13 @@ def returnPixelArray(imagePathList, sliceList, echoList):
                 volumeArray, sliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(dataset, sliceList=sliceList, sort=True)
             else: # For normal DICOM, slicelist is a list of slice locations in mm.
                 volumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList)
-                numberSlices = len(sliceList)
+                numberSlices = len(np.unique(sliceList))
+            # The echo values repeat, so this is to remove all values=0 and repetitions
+            echoList = np.delete(np.unique(echoList), np.where(np.unique(echoList) == 0.0))
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D')
             # Algorithm
-            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList)
-            del volumeArray, pixelArray, dataset
+            derivedImage = ukrinMaps(pixelArray).B0Map(echoList)
+            del volumeArray, pixelArray, numberSlices, dataset, echoList
             return derivedImage
         else:
             return None
@@ -43,11 +45,13 @@ def returnPixelArrayFromRealIm(imagePathList, sliceList, echoList):
             else: # For normal DICOM, slicelist is a list of slice locations in mm.
                 realVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[0])
                 imaginaryVolumeArray = readDICOM_Image.returnSeriesPixelArray(imagePathList[1])  
-                numberSlices = len(sliceList)
-            volumeArray = np.arctan2(realVolumeArray, imaginaryVolumeArray)
+                numberSlices = len(np.unique(sliceList))
+            # The echo values repeat, so this is to remove all values=0 and repetitions
+            echoList = np.delete(np.unique(echoList), np.where(np.unique(echoList) == 0.0))
+            volumeArray = np.arctan2(imaginaryVolumeArray, realVolumeArray)
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D')
             # Algorithm
-            derivedImage = ukrinMaps(pixelArray).B0MapOriginal(echoList) # Maybe np.invert() to have the same result as the other series
+            derivedImage = ukrinMaps(pixelArray).B0Map(echoList) # Maybe np.invert() to have the same result as the other series
             del volumeArray, pixelArray, dataset, imaginaryVolumeArray, realVolumeArray
             return derivedImage
         else:
@@ -90,30 +94,35 @@ def getParametersB0Map(imagePathList, seriesID):
                         riPathList[1].append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
-                    echoList = np.unique(echoList)
+
                     phasePathList = imagePathList
                 elif riPathList and echoList:
-                    echoList = np.unique(echoList)
                     riPathList[0] = imagePathList + riPathList[0]
                     riPathList[1] = imagePathList + riPathList[1]
             else:
                 sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
                 sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
                 datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-                echoList = np.delete(echoList, np.where(echoList == 0.0))
-                numberEchoes = len(echoList)
                 for index, dataset in enumerate(datasetList):
                     flagPhase = False
                     flagReal = False
                     flagImaginary = False
-                    #echo = dataset.EchoTime
+                    echo = echoList[index]
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
-                            flagPhase = True
-                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 2:
-                            flagReal = True
-                        if struct.unpack('h', dataset[0x0043102f].value)[0] == 3:
-                            flagImaginary = True
+                        try:
+                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
+                                flagPhase = True
+                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 2:
+                                flagReal = True
+                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 3:
+                                flagImaginary = True
+                        except:
+                            if dataset[0x0043102f].value == 1:
+                                flagPhase = True
+                            if dataset[0x0043102f].value == 2:
+                                flagReal = True
+                            if dataset[0x0043102f].value == 3:
+                                flagImaginary = True
                     except: pass
                     if hasattr(dataset, 'ImageType'): 
                         if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType) or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
@@ -178,11 +187,14 @@ def saveB0MapSeries(objWeasel):
             # Iterate through list of images and save B0 for each image
             B0ImagePathList = []
             B0ImageList = []
-            numImages = np.shape(B0Image)[0]
+            numImages = (1 if len(np.shape(B0Image)) < 3 else np.shape(B0Image)[0])
             for index in range(numImages):
                 B0ImageFilePath = saveDICOM_Image.returnFilePath(phasePathList[index], FILE_SUFFIX)
                 B0ImagePathList.append(B0ImageFilePath)
-                B0ImageList.append(B0Image[index, ...])
+                if numImages==1:
+                    B0ImageList.append(B0Image)
+                else:
+                    B0ImageList.append(B0Image[index, ...])
         
         objWeasel.displayMessageSubWindow(
             "<H4>Saving {} DICOM files for the B0 Map calculated</H4>".format(numImages),

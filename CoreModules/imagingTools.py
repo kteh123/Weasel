@@ -7,7 +7,23 @@ from skimage.restoration import unwrap_phase
 #INSERT MOSAIC IMAGE CONDITION HERE / OR AT IMAGINGTOOLS.PY
 
 def unWrapPhase(pixelArray):
-    return unwrap_phase(pixelArray)
+    # Wrapping of the phase image according to https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+    wrappedPhase = np.angle(np.exp(2j * pixelArray))
+    return unwrap_phase(wrappedPhase)
+
+
+def convertToPiRange(pixelArray):
+    if (np.amax(pixelArray) > 3.2) and (np.amin(pixelArray) < -3.2):
+        # Get the image to the interval [-pi, pi]. 
+        # The value 3.2 was chosen instead of np.pi in order to give some margin 
+        piArray = np.pi * np.ones(np.shape(pixelArray))
+        minArray = np.amin(pixelArray) * np.ones(np.shape(pixelArray))
+        maxArray = np.amax(pixelArray) * np.ones(np.shape(pixelArray))
+        radiansArray = (2.0 * piArray * (pixelArray - minArray) / (maxArray - minArray)) - piArray
+    else:
+        # It means it's already on the interval [-pi, pi]
+        radiansArray = pixelArray
+    return radiansArray
 
 
 def invertPixelArray(pixelArray, dataset):
@@ -44,7 +60,9 @@ def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
 def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', transpose=False, invert=False, resize=None):
     """Formats the given array in a structured manner according to the given flags"""
 
-    if dimension == '3D':
+    if dimension == '2D':
+        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute)))
+    elif dimension == '3D':
         volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1])))
     elif dimension == '4D':
         volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2])))
