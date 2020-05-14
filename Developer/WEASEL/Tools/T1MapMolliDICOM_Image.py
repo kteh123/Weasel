@@ -67,13 +67,15 @@ def getParametersT1Map(imagePathList, seriesID):
                     inversionList = np.unique(inversionList)
                     magnitudePathList = imagePathList
             else:
+                imagePathList, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
                 if hasattr(datasetList, 'InversionTime'):
-                    sortedSequenceTI, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, "InversionTime")
+                    imagePathList, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, "InversionTime")
                 else: # Or elseif
-                    sortedSequenceTI, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, 0x20051572)
-                sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceTI, "SliceLocation")
-                datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-                for index, dataset in enumerate(datasetList):
+                    imagePathList, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, 0x20051572)
+                # After sorting, it needs to update the sliceList
+                sliceList, numberSlices = readDICOM_Image.getSeriesTagValues(imagePathList, "SliceLocation")
+                for index in range(len(imagePathList)):
+                    dataset = readDICOM_Image.getDicomDataset(imagePathList[index])
                     flagMagnitude = False
                     ti = inversionList[index]
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'

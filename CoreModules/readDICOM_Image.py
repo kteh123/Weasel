@@ -81,6 +81,32 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
         print('Error in function readDICOM_Image.getMultiframeBySlices: ' + str(e))
 
 
+def getSeriesTagValues(imagePathList, dicomTag):
+    """This method reads the DICOM files in imagePathList and returns the list of values in the given DICOM tag
+        Outputs are : attributeList, numAttribute
+        The output attributeList may have repeated values. 
+        Removing these repetitions will be up to the developer of the specific algorithm
+    """
+    try:
+        if os.path.exists(imagePathList[0]):
+            datasetList = getSeriesDicomDataset(imagePathList)
+            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
+                # This is not for Enhanced MRI. Only Classic DICOM
+                attributeList = list()
+                if isinstance(dicomTag, str):
+                    [attributeList.append(dataset.data_element(dicomTag).value) for dataset in datasetList]
+                else:
+                    [attributeList.append(dataset[hex(dicomTag)].value) for dataset in datasetList]
+                numAttribute = len(np.unique(attributeList))
+ 
+                del datasetList
+                return attributeList, numAttribute
+        else:
+            return None, None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getSeriesTagValues: ' + str(e))
+
+
 def sortSequenceByTag(imagePathList, dicomTag):
     """This method reads the DICOM files in imagePathList and sorts the list according to the given DICOM tag
         Outputs are : sortedSequencePath, attributeList, numAttribute
@@ -90,49 +116,18 @@ def sortSequenceByTag(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
-            if hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
-                # Enhanced MRI
-                # As of May 2020, this if portion may be deleted and might change to if not hasattr
-                sortedSequencePathAux = list()
-                sortedSequenceAux = list()
-                sortedSequencePath = imagePathList[0]
-                sortedSequence = datasetList[0]
-                numAttribute = datasetList[0][0x20011018].value #NumberOfSlicesMR for Philips Enhanced MRI
-            else:
-                attributeList = list()
-                attributeListSorted = list()
-                sortedSequencePathAux = list()
-                sortedSequenceAux = list()
-                sortedSequencePath = imagePathList
-                sortedSequence = datasetList
-                if isinstance(dicomTag, str):
-                    [attributeList.append(dataset.data_element(dicomTag).value) for dataset in datasetList]
-                    attributeListSorted = np.unique(attributeList)
-                    attributeListSorted.sort()
-                    [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeListSorted for indexAux, dataset in enumerate(datasetList) if dataset.data_element(str(dicomTag)).value == attributeValue]
-                    [sortedSequenceAux.append(dataset) for attributeValue in attributeListSorted for dataset in datasetList if dataset.data_element(str(dicomTag)).value == attributeValue]
-                else:
-                    [attributeList.append(dataset[hex(dicomTag)].value) for dataset in datasetList]
-                    attributeListSorted = np.unique(attributeList)
-                    attributeListSorted.sort()
-                    [sortedSequencePathAux.append(imagePathList[indexAux]) for attributeValue in attributeListSorted for indexAux, dataset in enumerate(datasetList) if dataset[hex(dicomTag)].value == attributeValue]
-                    [sortedSequenceAux.append(dataset) for attributeValue in attributeListSorted for dataset in datasetList if dataset[hex(dicomTag)].value == attributeValue]
-                numAttribute = len(attributeListSorted)
-                #At this point, it's sorted as 111222333. The next step will sort the values in the format 123123123
-                repetition = 0
-                index = 0
-                for indexAux, image in enumerate(sortedSequenceAux):
-                    sortedSequence[index] = image
-                    sortedSequencePath[index] = sortedSequencePathAux[indexAux]
-                    index += numAttribute
-                    if index > len(sortedSequence)-1:
-                        repetition += 1
-                        if repetition > numAttribute:
-                            break
-                        else:
-                            index = repetition
-                del datasetList, sortedSequencePathAux, sortedSequenceAux, sortedSequence, attributeListSorted
-                return sortedSequencePath, attributeList, numAttribute
+            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
+                # This is not for Enhanced MRI. Only Classic DICOM
+                attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
+                attributeListUnique = sorted(np.unique(attributeList))
+                indicesSorted = list()
+                for i in range(numAttribute):
+                    indices = [index for index, value in enumerate(attributeList) if value == attributeListUnique[i]]
+                    indicesSorted.extend(indices)
+                sortedSequencePath = [imagePathList[index] for index in indicesSorted]
+                attributeListSorted = [attributeList[index] for index in indicesSorted]
+                del datasetList, attributeList, attributeListUnique
+                return sortedSequencePath, attributeListSorted, numAttribute
         else:
             return None, None, None
     except Exception as e:
