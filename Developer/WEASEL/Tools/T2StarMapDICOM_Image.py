@@ -57,10 +57,12 @@ def getParametersT2StarMap(imagePathList, seriesID):
                     #echoList = np.unique(echoList)
                     magnitudePathList = imagePathList
             else:
-                sortedSequenceEcho, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
-                sortedSequenceSlice, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(sortedSequenceEcho, "SliceLocation")
-                datasetList = readDICOM_Image.getSeriesDicomDataset(sortedSequenceSlice)
-                for index, dataset in enumerate(datasetList):
+                imagePathList, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
+                imagePathList, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
+                # After sorting, it needs to update the sliceList
+                sliceList, numberSlices = readDICOM_Image.getSeriesTagValues(imagePathList, "SliceLocation")
+                for index in range(len(imagePathList)):
+                    dataset = readDICOM_Image.getDicomDataset(imagePathList[index])
                     flagMagnitude = False
                     echo = echoList[index]
                     try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'

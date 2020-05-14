@@ -47,7 +47,8 @@ class ukrinMaps():
                     deltaTE = echoList[0] * 0.001
                 except: # If echo is 0 or empty
                     deltaTE = 0.001
-            derivedImage = phaseDiff / (2 * np.pi * deltaTE) #* np.ones(np.shape(phaseDiff)))
+            derivedImage = phaseDiff / (2 * np.pi * deltaTE)
+            # For B0Map from T2*, results are better if the unWrap occurs at phase diff.
             del phaseDiff, deltaTE
             return derivedImage
         except Exception as e:
@@ -207,8 +208,8 @@ class ukrinMaps():
             t1Map = np.transpose(np.array(mapMatlab)) # Convert to Python array and transpose because the Matlab script does it.
             t1Map = np.nan_to_num(t1Map) # There migh be Infs and NaNs
             # Set boundaries
-            t1Map[t1Map>10000] = 10000
-            t1Map[t1Map<1] = 0
+            t1Map[t1Map>2500] = 2500
+            t1Map[t1Map<10] = 0
             eng.quit()
             return t1Map
         except Exception as e:
