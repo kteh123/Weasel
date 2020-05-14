@@ -746,7 +746,6 @@ class Weasel(QMainWindow):
             colourClassName = pltMap.__class__.__name__
             if colourClassName == 'ListedColormap':
                 colors = pltMap.colors
-                colors = [c + [1.] for c in colors]
                 positions = np.linspace(0, 1, len(colors))
                 pgMap = pg.ColorMap(positions, colors)
                 return pgMap
@@ -757,7 +756,6 @@ class Weasel(QMainWindow):
                 return pgMap
             else:
                 return None
-
         except Exception as e:
             print('Error in generatePgColormap: ' + str(e))
             logger.error('Error in generatePgColormap: ' + str(e))
