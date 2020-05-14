@@ -830,7 +830,7 @@ class Weasel(QMainWindow):
 
 
     def setUpLabels(self, layout):
-        logger.info("WEASEL.setUpROITools called")
+        logger.info("WEASEL.setUpLabels called")
         lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
         lblROIMeanValue.show()
         layout.addWidget(lblROIMeanValue)
@@ -895,7 +895,7 @@ class Weasel(QMainWindow):
             #gridLayoutROI.addWidget(btnDrawROI,1,1)
             gridLayoutROI.addWidget(btnRemoveROI,1,1)
             gridLayoutROI.addWidget(btnSaveROI,1,2)
-            return  self.getROIOject(viewBox)
+           
         except Exception as e:
             print('Error in setUpROITools: ' + str(e))
             logger.error('Error in setUpROITools: ' + str(e))
@@ -1004,7 +1004,7 @@ class Weasel(QMainWindow):
 
     def getROIOject(self, viewBox):
         try:
-            logger.info("WEASEL.createEllipseROI called")
+            logger.info("WEASEL.getROIOject called")
             for item in viewBox.items:
                 if 'graphicsItems.ROI' in str(type(item)):
                     return item
@@ -1253,7 +1253,7 @@ class Weasel(QMainWindow):
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
             cmbColours = self.setUpColourTools(layout, imv, showReleaseButton=True)
-            roiTool = self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
+            self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
 
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -1277,7 +1277,7 @@ class Weasel(QMainWindow):
                                                 imv, cmbColours,
                                                 subWindow))
             imageSlider.valueChanged.connect(
-                  lambda: self.updateROIMeanValue(roiTool, 
+                  lambda: self.updateROIMeanValue(self.getROIOject(viewBox), 
                                                img.image, 
                                                img, 
                                                lblROIMeanValue))
