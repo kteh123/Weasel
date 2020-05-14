@@ -741,25 +741,44 @@ class Weasel(QMainWindow):
 
 
     def generatePgColormap(self, cm_name):
-        pltMap = plt.get_cmap(cm_name)
-        colors = pltMap.colors
-        colors = [c + [1.] for c in colors]
-        positions = np.linspace(0, 1, len(colors))
-        pgMap = pg.ColorMap(positions, colors)
-        return pgMap
+        try:
+            pltMap = plt.get_cmap(cm_name)
+            colourClassName = pltMap.__class__.__name__
+            if colourClassName == 'ListedColormap':
+                colors = pltMap.colors
+                colors = [c + [1.] for c in colors]
+                positions = np.linspace(0, 1, len(colors))
+                pgMap = pg.ColorMap(positions, colors)
+                return pgMap
+            elif colourClassName == 'LinearSegmentedColormap':
+                colors = pltMap(np.linspace(0, 1, 256))
+                positions = np.linspace(0, 1, 256)
+                pgMap = pg.ColorMap(positions, colors)
+                return pgMap
+            else:
+                return None
+
+        except Exception as e:
+            print('Error in generatePgColormap: ' + str(e))
+            logger.error('Error in generatePgColormap: ' + str(e))
 
 
     def applyColourTableToImage(self, imv, cmbColours): 
-        if self.fixHistogramLevels == True:
-                imv.setLevels(self.minLevel, self.maxLevel)
+        try:
+            if self.fixHistogramLevels == True:
+                    imv.setLevels(self.minLevel, self.maxLevel)
 
-        if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
-            colourMap = self.createGreyMap()
-        else:
-            colourTable = cmbColours.currentText()
-            colourMap = self.generatePgColormap(colourTable)
+            if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
+                colourMap = self.createGreyMap()
+            else:
+                colourTable = cmbColours.currentText()
+                colourMap = self.generatePgColormap(colourTable)
 
-        imv.setColorMap(colourMap)
+            imv.setColorMap(colourMap)
+        except Exception as e:
+            print('Error in WEASEL.applyColourTableToImage: ' + str(e))
+            logger.error('Error in WEASEL.applyColourTableToImage: ' + str(e))
+        
             
         
 
@@ -788,7 +807,19 @@ class Weasel(QMainWindow):
             groupBoxColour.setLayout(gridLayoutColour)
             layout.addWidget(groupBoxColour)
 
-            listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma',  'viridis']
+            listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma', 'viridis', 
+                            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
+            'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
+            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
+            'hot', 'afmhot', 'gist_heat', 'copper',
+            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
+            'twilight', 'twilight_shifted', 'hsv',
+            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
+            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
+            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
             cmbColours = QComboBox()
             cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.blockSignals(True)
@@ -805,8 +836,8 @@ class Weasel(QMainWindow):
             btnReleaseLevels.setToolTip('Allows histogram levels to vary with each image')
             btnReleaseLevels.clicked.connect(self.releaseHistogramLevels)
 
-            btnSave = QPushButton('Save') 
-            btnSave.setToolTip('Save to DICOM')
+            btnSave = QPushButton('Update DICOM') 
+            btnSave.setToolTip('Update DICOM with a new colour table')
             #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
 
             btnExport = QPushButton('Export') 
