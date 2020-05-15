@@ -54,7 +54,7 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 FIRST_ITEM_COLOUR_LIST = 'Grey Scale'
-DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.jpg'
+DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.png'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
 #Create and configure the logger
@@ -93,6 +93,7 @@ class Weasel(QMainWindow):
         self.fixHistogramLevels = False
         self.minLevel = 0
         self.maxLevel = 50
+        self.colourMap = ''
         self.ApplyStyleSheet()
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
@@ -743,6 +744,20 @@ class Weasel(QMainWindow):
 
     def generatePgColormap(self, cm_name, imv):
         try:
+            ##Another solution to this problem
+            #pltMap = plt.get_cmap(cm_name)
+            #colourClassName = pltMap.__class__.__name__
+            #if colourClassName == 'ListedColormap':
+            #    colors = pltMap.colors
+            #    positions = np.linspace(0, 1, len(colors))
+            #    pgMap = pg.ColorMap(positions, colors)
+            #    return pgMap
+            #elif colourClassName == 'LinearSegmentedColormap':
+            #    colors = pltMap(np.linspace(0, 1, 256))
+            #    positions = np.linspace(0, 1, 256)
+            #    pgMap = pg.ColorMap(positions, colors)
+            #    return pgMap
+
             numberOfValues = len(np.unique(imv.image.flatten()))
             colorArray = np.arange(0, numberOfValues)
             colors = cm.ScalarMappable(cmap=cm_name).to_rgba(np.array(colorArray), bytes=False)
@@ -762,30 +777,44 @@ class Weasel(QMainWindow):
 
             if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
                 colourMap = self.createGreyMap()
+                self.colourMap = 'bone'
             else:
                 colourTable = cmbColours.currentText()
+                self.colourMap = colourTable
                 colourMap = self.generatePgColormap(colourTable, imv)
 
             imv.setColorMap(colourMap)
         except Exception as e:
             print('Error in WEASEL.applyColourTableToImage: ' + str(e))
-            logger.error('Error in WEASEL.applyColourTableToImage: ' + str(e))
-        
-            
+            logger.error('Error in WEASEL.applyColourTableToImage: ' + str(e))              
         
 
     def exportImage(self, imv):
         try:
-            imageName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
+            fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
                                                        directory=DEFAULT_IMAGE_FILE_PATH_NAME, 
-                                                       filter="*.png, *.tif, *.jpg")
-            if imageName:
-                exporter = pg.exporters.ImageExporter(imv.getImageItem())
+                                                       filter="*.png")
+            if fileName:
+                self.exportImageViaMatplotlib(imv.getImageItem().image,
+                                              fileName, 
+                                              self.colourMap,
+                                              self.minLevel,
+                                              self.maxLevel)
+                #exporter = pg.exporters.ImageExporter(imv.getImageItem())
                 # save to file
-                exporter.export(imageName)
+                #exporter.export(imageName)
         except Exception as e:
             print('Error in WEASEL.exportImage: ' + str(e))
             logger.error('Error in WEASEL.exportImage: ' + str(e))
+
+
+    def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
+        cmap = plt.get_cmap(cm_name)
+        pos = plt.imshow(pixelArray, cmap=cmap)
+        plt.clim(minLevel, maxLevel)
+        cBar = plt.colorbar()
+        cBar.minorticks_on()
+        plt.savefig(fname=fileName)
 
 
     def releaseHistogramLevels(self):
