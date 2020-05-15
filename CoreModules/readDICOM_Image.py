@@ -235,3 +235,33 @@ def getAffineArray(dataset):
             return None
     except Exception as e:
         print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
+    
+
+def getColourmap(dataset):
+    """This method reads the DICOM Dataset object/class and returns the colourmap if there's any"""
+    try:
+        if hasattr(dataset, 'ContentLabel'):
+            if dataset.PhotometricInterpretation == 'PALETTE COLOR':
+                colourmapName = dataset.ContentLabel
+            elif 'MONOCHROME' in dataset.PhotometricInterpretation:
+                colourmapName = 'Grey Scale'
+            else:
+                colourmapName = None
+        else:
+            colourmapName = None
+        
+        if len(dataset.dir("PaletteColor"))>=3 and dataset.PhotometricInterpretation == 'PALETTE COLOR':
+            if colourmapName is None:
+                colourmapName = 'custom'
+            redColour = list(dataset.RedPaletteColorLookupTableData)
+            greenColour = list(dataset.GreenPaletteColorLookupTableData)
+            blueColour = list(dataset.BluePaletteColorLookupTableData)
+            #Alpha too? Not really needed though...
+            colours = np.transpose([redColour, greenColour, blueColour])
+            lut = np.unique(colours/256, axis=0).tolist()
+        else:
+            lut = None
+        
+        return colourmapName, lut
+    except Exception as e:
+        print('Error in function readDICOM_Image.getColourmap: ' + str(e))

@@ -33,7 +33,7 @@ def returnFilePath(imagePath, suffix, new_path=None):
         print('Error in function saveDICOM_Image.returnFilePath: ' + str(e))
 
 
-def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, colormap=None, list_refs_path=None):
+def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
     try:
         if os.path.exists(imagePath):
@@ -44,7 +44,7 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
                     refs.append(readDICOM_Image.getDicomDataset(individualRef))
             else:
                 refs = None
-            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, colormap=colormap, list_refs=refs)
+            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, colourmap=colourmap, list_refs=refs)
             if (image_number is not None) and (len(np.shape(pixelArray)) < 3):
                 newDataset.InstanceNumber = image_number
                 newDataset.ImageNumber = image_number
@@ -58,7 +58,47 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, colormap=None, list_refs_path=None):
+def updateDicom(objWeasel, colourmap=None, lut=None):
+    try:
+        if objWeasel.isAnImageSelected():
+            objWeasel.displayMessageSubWindow(
+              "<H4>Updating 1 DICOM file</H4>",
+              "Updating DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(1)
+            objWeasel.setMsgWindowProgBarValue(0)
+            imagePath = objWeasel.selectedImagePath
+            dataset = readDICOM_Image.getDicomDataset(imagePath)
+            # Update the DICOM file
+            updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut)
+            saveDicomToFile(updatedDataset, output_path=imagePath)
+            objWeasel.setMsgWindowProgBarValue(1)
+            objWeasel.closeMessageSubWindow()
+            
+        elif objWeasel.isASeriesSelected():
+            # Should consider the case where Series is 1 image/file only
+            studyID = objWeasel.selectedStudy
+            seriesID = objWeasel.selectedSeries
+            imagePathList = objWeasel.getImagePathList(studyID, seriesID)
+            #Iterate through list of images and update each image
+            numImages = len(imagePathList)
+            objWeasel.displayMessageSubWindow(
+              "<H4>Updating {} DICOM files</H4>".format(numImages),
+              "Updating DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            imageCounter = 0
+            for imagePath in imagePathList:
+                dataset = readDICOM_Image.getDicomDataset(imagePath)
+                # Update the DICOM file                                      
+                updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut)
+                saveDicomToFile(updatedDataset, output_path=imagePath)
+                imageCounter += 1
+                objWeasel.setMsgWindowProgBarValue(imageCounter)
+            objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
+
+
+def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
     # Think of a way to choose a select a new FilePath or Folder
@@ -81,7 +121,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                             refs.append(individualRef[index])
 
                 saveDicomOutputResult(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, 
-                                      colormap=colormap, list_refs_path=refs)
+                                      colourmap=colourmap, list_refs_path=refs)
             del series_id, series_uid, refs
             return
         else:
@@ -90,28 +130,76 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
         print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))     
 
 
-def saveDicomToFile(dicomData, output_path=None):
-    """This method takes a DICOM object and saves it as a DICOM file 
-        with the set filename in the input arguments.
+def updateSingleDicom(dicomData, colourmap=None, lut=None):
+    """This function takes a DICOM Object and changes it to include the
+        new colourmap selected in the interface. It will have more features in the future.
     """
     try:
-        if output_path is None:
-            try:
-                output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
-            except:
-                try:
-                    output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
-                except:
-                    output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
+        if (colourmap is not None) and (colourmap is not 'Grey Scale') and (colourmap is not 'Custom') and isinstance(colourmap, str):
+            name, lut = readDICOM_Image.getColourmap(dicomData) # This is for testing
+            print(name)
+            print(len(lut))
+            print(lut)
+            dicomData.PhotometricInterpretation = 'PALETTE COLOR'
+            dicomData.RGBLUTTransferFunction = 'TABLE'
+            dicomData.ContentLabel = colourmap
+            dicomData.PixelRepresentation = 0
+            pixelArray = dicomData.pixel_array
+            # Because it's updating a DICOM file, I'm leaving the rescale factors aside, they're not relevant here. 
+            # pixelArray should come directly from the DICOM file.
+            minValue = int(np.amin(pixelArray))
+            maxValue = int(np.amax(pixelArray))
+            numberOfValues = int(maxValue - minValue)
+            arrayForRGB = np.arange(0, numberOfValues)
+            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
+            stringType = ('SS' if minValue < 0 else 'US')
+            totalBytes = dicomData.BitsAllocated
+            dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+        elif (colourmap is 'custom') and (isinstance(lut, np.ndarray)):
+            # 2 options here!
+            # a) We create a matplotlib.cm named "Custom" on the UI and then pass it here and process as usual
+            # b) We colourmap is not a string and we parse the array with the 3 columns/columns
+            # Below will be an attempt to situation b). It will need testing!  
+            dicomData.PhotometricInterpretation = 'PALETTE COLOR'
+            dicomData.RGBLUTTransferFunction = 'TABLE'
+            dicomData.ContentLabel = colourmap
+            dicomData.PixelRepresentation = 0
+            pixelArray = dicomData.pixel_array
+            minValue = int(np.amin(pixelArray))
+            maxValue = int(np.amax(pixelArray))
+            numberOfValues = int(maxValue - minValue)
+            # This is where I need to confirm whether it's correct - colorsList from lut
+            colorsList = lut(np.linspace(0, 1, numberOfValues))
+            stringType = ('SS' if minValue < 0 else 'US')
+            totalBytes = dicomData.BitsAllocated
+            dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+            # The next lines may change slightly depending on the format of colorsList
+            dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+        
+        # Will insert here the next set of if/else regarding the levels/histogram
 
-        pydicom.filewriter.dcmwrite(output_path, dicomData, write_like_original=True)
-        del dicomData
-        return
+        return dicomData
+        
     except Exception as e:
-        print('Error in function saveDicomToFile: ' + str(e))
+        print('Error in function updateSingleDicom: ' + str(e))
 
 
-def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colormap=None, list_refs=None):
+def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
     """
@@ -219,8 +307,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 tempArray = imageArray
             else:
                 tempArray = np.squeeze(imageArray[index, ...])
-            #colormap = "hot"
-            if (int(np.amin(imageArray)) < 0) and colormap is None:
+            #colourmap = "hot"
+            if (int(np.amin(imageArray)) < 0) and colourmap is None:
                 newDicom.PixelRepresentation = 1
                 target = (np.power(2, dicomData.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
@@ -275,19 +363,21 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         if enhancedArrayInt:
             imageArrayInt = np.array(enhancedArrayInt)
 
-        # Add colormap here
-        if colormap is not None:
+        # Add colourmap here
+        if colourmap is not None:
             newDicom.PhotometricInterpretation = 'PALETTE COLOR'
             newDicom.RGBLUTTransferFunction = 'TABLE'
+            newDicom.ContentLabel = colourmap
+            newDicom.PixelRepresentation = 0
             arrayForRGB = np.arange(0, target.flatten()[0])
-            colorsList = cm.ScalarMappable(cmap=colormap).to_rgba(np.array(arrayForRGB), bytes=False)
+            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
             stringType = ('SS' if int(np.amin(imageArrayInt)) < 0 else 'US')
-            numberValues = len(arrayForRGB)
+            numberOfValues = len(arrayForRGB)
             minValue = int(np.amin(arrayForRGB))
             totalBytes = newDicom.BitsAllocated
-            newDicom.add_new('0x00281101', stringType, [numberValues, minValue, totalBytes])
-            newDicom.add_new('0x00281102', stringType, [numberValues, minValue, totalBytes])
-            newDicom.add_new('0x00281103', stringType, [numberValues, minValue, totalBytes])
+            newDicom.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+            newDicom.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+            newDicom.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
             newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
                 2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
             newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
@@ -306,3 +396,24 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         return newDicom
     except Exception as e:
         print('Error in function createNewSingleDicom: ' + str(e))
+
+    
+def saveDicomToFile(dicomData, output_path=None):
+    """This method takes a DICOM object and saves it as a DICOM file 
+        with the set filename in the input arguments.
+    """
+    try:
+        if output_path is None:
+            try:
+                output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
+            except:
+                try:
+                    output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
+                except:
+                    output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
+
+        pydicom.filewriter.dcmwrite(output_path, dicomData, write_like_original=True)
+        del dicomData
+        return
+    except Exception as e:
+        print('Error in function saveDicomToFile: ' + str(e))
