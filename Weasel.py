@@ -22,6 +22,7 @@ import logging
 import pathlib
 import importlib
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
@@ -740,22 +741,15 @@ class Weasel(QMainWindow):
         return pg.ColorMap(position, greys)
 
 
-    def generatePgColormap(self, cm_name):
+    def generatePgColormap(self, cm_name, imv):
         try:
-            pltMap = plt.get_cmap(cm_name)
-            colourClassName = pltMap.__class__.__name__
-            if colourClassName == 'ListedColormap':
-                colors = pltMap.colors
-                positions = np.linspace(0, 1, len(colors))
-                pgMap = pg.ColorMap(positions, colors)
-                return pgMap
-            elif colourClassName == 'LinearSegmentedColormap':
-                colors = pltMap(np.linspace(0, 1, 256))
-                positions = np.linspace(0, 1, 256)
-                pgMap = pg.ColorMap(positions, colors)
-                return pgMap
-            else:
-                return None
+            numberOfValues = len(np.unique(imv.image.flatten()))
+            colorArray = np.arange(0, numberOfValues)
+            colors = cm.ScalarMappable(cmap=cm_name).to_rgba(np.array(colorArray), bytes=False)
+            colors = np.unique(colors, axis=0)[:,0:3].tolist()
+            positions = np.linspace(0, 1, len(colors))
+            pgMap = pg.ColorMap(positions, colors)
+            return pgMap
         except Exception as e:
             print('Error in generatePgColormap: ' + str(e))
             logger.error('Error in generatePgColormap: ' + str(e))
@@ -770,7 +764,7 @@ class Weasel(QMainWindow):
                 colourMap = self.createGreyMap()
             else:
                 colourTable = cmbColours.currentText()
-                colourMap = self.generatePgColormap(colourTable)
+                colourMap = self.generatePgColormap(colourTable, imv)
 
             imv.setColorMap(colourMap)
         except Exception as e:
@@ -834,8 +828,8 @@ class Weasel(QMainWindow):
             btnReleaseLevels.setToolTip('Allows histogram levels to vary with each image')
             btnReleaseLevels.clicked.connect(self.releaseHistogramLevels)
 
-            btnSave = QPushButton('Update DICOM') 
-            btnSave.setToolTip('Update DICOM with a new colour table')
+            btnSave = QPushButton('Update') 
+            btnSave.setToolTip('Update DICOM with the new colour table')
             #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
 
             btnExport = QPushButton('Export') 
