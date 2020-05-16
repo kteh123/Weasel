@@ -795,13 +795,18 @@ class Weasel(QMainWindow):
 
 
     def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
-        cmap = plt.get_cmap(cm_name)
-        pos = plt.imshow(pixelArray,  cmap=cmap)
-        plt.clim(minLevel, maxLevel)
-        cBar = plt.colorbar()
-        cBar.minorticks_on()
-        plt.savefig(fname=fileName)
-        plt.close()
+        try:
+            cmap = plt.get_cmap(cm_name)
+            pos = plt.imshow(pixelArray,  cmap=cmap)
+            plt.clim(minLevel, maxLevel)
+            cBar = plt.colorbar()
+            cBar.minorticks_on()
+            plt.savefig(fname=fileName)
+            plt.close()
+            QMessageBox.information(self, "Export Image", "Image Saved")
+        except Exception as e:
+            print('Error in WEASEL.exportImageViaMatplotlib: ' + str(e))
+            logger.error('Error in WEASEL.exportImageViaMatplotlib: ' + str(e))
 
 
     def releaseHistogramLevels(self):
