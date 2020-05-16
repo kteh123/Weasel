@@ -744,24 +744,13 @@ class Weasel(QMainWindow):
 
     def generatePgColormap(self, cm_name, imv):
         try:
-            ##Another solution to this problem
-            #pltMap = plt.get_cmap(cm_name)
-            #colourClassName = pltMap.__class__.__name__
-            #if colourClassName == 'ListedColormap':
-            #    colors = pltMap.colors
-            #    positions = np.linspace(0, 1, len(colors))
-            #    pgMap = pg.ColorMap(positions, colors)
-            #    return pgMap
-            #elif colourClassName == 'LinearSegmentedColormap':
-            #    colors = pltMap(np.linspace(0, 1, 256))
-            #    positions = np.linspace(0, 1, 256)
-            #    pgMap = pg.ColorMap(positions, colors)
-            #    return pgMap
-
-            numberOfValues = len(np.unique(imv.image.flatten()))
-            colorArray = np.arange(0, numberOfValues)
-            colors = cm.ScalarMappable(cmap=cm_name).to_rgba(np.array(colorArray), bytes=False)
-            colors = np.unique(colors, axis=0)[:,0:3].tolist()
+            cmMap = cm.get_cmap(cm_name)
+            colourClassName = cmMap.__class__.__name__
+            if colourClassName == 'ListedColormap':
+                colors = cmMap.colors
+            elif colourClassName == 'LinearSegmentedColormap':
+                numberOfValues = np.sqrt(len(imv.image.flatten()))
+                colors = cmMap(np.linspace(0, 1, numberOfValues))
             positions = np.linspace(0, 1, len(colors))
             pgMap = pg.ColorMap(positions, colors)
             return pgMap
@@ -800,9 +789,6 @@ class Weasel(QMainWindow):
                                               self.colourMap,
                                               self.minLevel,
                                               self.maxLevel)
-                #exporter = pg.exporters.ImageExporter(imv.getImageItem())
-                # save to file
-                #exporter.export(imageName)
         except Exception as e:
             print('Error in WEASEL.exportImage: ' + str(e))
             logger.error('Error in WEASEL.exportImage: ' + str(e))
@@ -810,11 +796,12 @@ class Weasel(QMainWindow):
 
     def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
         cmap = plt.get_cmap(cm_name)
-        pos = plt.imshow(pixelArray, cmap=cmap)
+        pos = plt.imshow(pixelArray,  cmap=cmap)
         plt.clim(minLevel, maxLevel)
         cBar = plt.colorbar()
         cBar.minorticks_on()
         plt.savefig(fname=fileName)
+        plt.close()
 
 
     def releaseHistogramLevels(self):
@@ -859,7 +846,7 @@ class Weasel(QMainWindow):
 
             btnSave = QPushButton('Update') 
             btnSave.setToolTip('Update DICOM with the new colour table')
-            #btnSave.clicked.connect(lambda:self.saveColouredImage(imv))
+            btnSave.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, colourmap=cmbColours.currentText()))
 
             btnExport = QPushButton('Export') 
             btnExport.setToolTip('Exports the image to an external graphic file.')
