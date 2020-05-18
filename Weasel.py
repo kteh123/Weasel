@@ -17,6 +17,7 @@ import re
 import struct
 import numpy as np
 import math
+import scipy
 from scipy.stats import iqr
 import logging
 import pathlib
@@ -796,6 +797,10 @@ class Weasel(QMainWindow):
 
     def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
         try:
+            axisOrder = pg.getConfigOption('imageAxisOrder') 
+            if axisOrder =='row-major':
+                #rotate image 90 degree so as to match the screen image
+                pixelArray = scipy.ndimage.rotate(pixelArray, 90)
             cmap = plt.get_cmap(cm_name)
             pos = plt.imshow(pixelArray,  cmap=cmap)
             plt.clim(minLevel, maxLevel)
@@ -1201,9 +1206,7 @@ class Weasel(QMainWindow):
                 for item in subWin.widget().children():
                     print ('item', item)
                     for child in item.children():
-                        print ('child of item    ', child)
-               
-                    
+                        print ('child of item    ', child)               
                 QApplication.processEvents()
 
 
