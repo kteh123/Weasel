@@ -237,14 +237,16 @@ def getAffineArray(dataset):
         print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
     
 
-def getColourmap(dataset):
+def getColourmap(imagePath):
     """This method reads the DICOM Dataset object/class and returns the colourmap if there's any"""
     try:
+        dataset = getDicomDataset(imagePath)
+
         if hasattr(dataset, 'ContentLabel'):
             if dataset.PhotometricInterpretation == 'PALETTE COLOR':
                 colourmapName = dataset.ContentLabel
             elif 'MONOCHROME' in dataset.PhotometricInterpretation:
-                colourmapName = 'Grey Scale'
+                colourmapName = 'gray'
             else:
                 colourmapName = None
         else:

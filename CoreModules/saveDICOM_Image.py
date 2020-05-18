@@ -67,9 +67,9 @@ def updateDicom(objWeasel, colourmap=None, lut=None):
             objWeasel.setMsgWindowProgBarMaxValue(1)
             objWeasel.setMsgWindowProgBarValue(0)
             imagePath = objWeasel.selectedImagePath
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
+            #dataset = readDICOM_Image.getDicomDataset(imagePath)
             # Update the DICOM file
-            updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut)
+            updatedDataset = updateSingleDicom(imagePath, colourmap=colourmap, lut=lut)
             saveDicomToFile(updatedDataset, output_path=imagePath)
             objWeasel.setMsgWindowProgBarValue(1)
             objWeasel.closeMessageSubWindow()
@@ -89,7 +89,7 @@ def updateDicom(objWeasel, colourmap=None, lut=None):
             for imagePath in imagePathList:
                 dataset = readDICOM_Image.getDicomDataset(imagePath)
                 # Update the DICOM file                                      
-                updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut)
+                updatedDataset = updateSingleDicom(imagePath, colourmap=colourmap, lut=lut)
                 saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
@@ -130,16 +130,18 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
         print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))     
 
 
-def updateSingleDicom(dicomData, colourmap=None, lut=None):
+def updateSingleDicom(imagePath, colourmap=None, lut=None):
     """This function takes a DICOM Object and changes it to include the
         new colourmap selected in the interface. It will have more features in the future.
     """
     try:
         if (colourmap is not None) and (colourmap is not 'Grey Scale') and (colourmap is not 'Custom') and isinstance(colourmap, str):
-            name, lut = readDICOM_Image.getColourmap(dicomData) # This is for testing
-            print(name)
-            print(len(lut))
-            print(lut)
+            name, lut = readDICOM_Image.getColourmap(imagePath) # This is for testing
+            #print(name)
+            #if lut is not None:
+            #    print(len(lut))
+            #    print(lut)
+            dicomData = readDICOM_Image.getDicomDataset(imagePath)
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap

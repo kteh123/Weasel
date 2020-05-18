@@ -47,14 +47,24 @@ import CoreModules.imagingTools as imagingTools
 import Developer.WEASEL.Tools
 #access pyqtGraph from the source code imported into this project
 import CoreModules.pyqtgraph as pg 
-import CoreModules.pyqtgraph.exporters
-
-
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-FIRST_ITEM_COLOUR_LIST = 'Grey Scale'
+listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis', 
+                            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
+            'binary', 'gist_yarg', 'gist_gray', 'bone', 'pink',
+            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
+            'hot', 'afmhot', 'gist_heat', 'copper',
+            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
+            'twilight', 'twilight_shifted', 'hsv',
+            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
+            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
+            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
+
 DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.png'
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -92,6 +102,7 @@ class Weasel(QMainWindow):
         self.selectedImagePath = ''
         self.selectedImageName = ''
         self.fixHistogramLevels = False
+        self.overRideSavedColourmap = False
         self.minLevel = 0
         self.maxLevel = 50
         self.colourMap = ''
@@ -734,16 +745,9 @@ class Weasel(QMainWindow):
     def setHistogramLevels(self, imv):
         self.fixHistogramLevels = True
         self.minLevel, self.maxLevel = imv.getLevels()
-       
-
-    def createGreyMap(self):
-         #gray scale
-        position = np.array([1,0])
-        greys = np.array([[255,255,255,255],[0,0,0,255]],dtype=np.ubyte)
-        return pg.ColorMap(position, greys)
 
 
-    def generatePgColormap(self, cm_name, imv):
+    def setPgColourMap(self, cm_name, imv):
         try:
             cmMap = cm.get_cmap(cm_name)
             colourClassName = cmMap.__class__.__name__
@@ -754,26 +758,22 @@ class Weasel(QMainWindow):
                 colors = cmMap(np.linspace(0, 1, numberOfValues))
             positions = np.linspace(0, 1, len(colors))
             pgMap = pg.ColorMap(positions, colors)
-            return pgMap
+            imv.setColorMap(pgMap)
+           
         except Exception as e:
-            print('Error in generatePgColormap: ' + str(e))
-            logger.error('Error in generatePgColormap: ' + str(e))
+            print('Error in setPgColourMap: ' + str(e))
+            logger.error('Error in setPgColourMap: ' + str(e))
 
 
     def applyColourTableToImage(self, imv, cmbColours): 
         try:
             if self.fixHistogramLevels == True:
                     imv.setLevels(self.minLevel, self.maxLevel)
-
-            if cmbColours.currentText() == FIRST_ITEM_COLOUR_LIST:
-                colourMap = self.createGreyMap()
-                self.colourMap = 'bone'
-            else:
-                colourTable = cmbColours.currentText()
-                self.colourMap = colourTable
-                colourMap = self.generatePgColormap(colourTable, imv)
-
-            imv.setColorMap(colourMap)
+            
+            colourTable = cmbColours.currentText()
+            self.colourMap = colourTable
+            self.setPgColourMap(colourTable, imv)
+            self.overRideSavedColourmap = True
         except Exception as e:
             print('Error in WEASEL.applyColourTableToImage: ' + str(e))
             logger.error('Error in WEASEL.applyColourTableToImage: ' + str(e))              
@@ -825,19 +825,7 @@ class Weasel(QMainWindow):
             groupBoxColour.setLayout(gridLayoutColour)
             layout.addWidget(groupBoxColour)
 
-            listColours = [FIRST_ITEM_COLOUR_LIST, 'cividis',  'magma', 'plasma', 'viridis', 
-                            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
-            'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
-            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
-            'hot', 'afmhot', 'gist_heat', 'copper',
-            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
-            'twilight', 'twilight_shifted', 'hsv',
-            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
-            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
+            
             cmbColours = QComboBox()
             cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.blockSignals(True)
@@ -846,17 +834,13 @@ class Weasel(QMainWindow):
             cmbColours.blockSignals(False)
             cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
 
-            #btnReset = QPushButton('Reset') 
-            #btnReset.setToolTip('Resets the image to greyscale')
-           # btnReset.clicked.connect(lambda:self.setImageToGrey(imv, cmbColours))
-
             btnReleaseLevels = QPushButton('Release Levels') 
             btnReleaseLevels.setToolTip('Allows histogram levels to vary with each image')
             btnReleaseLevels.clicked.connect(self.releaseHistogramLevels)
 
-            btnSave = QPushButton('Update') 
-            btnSave.setToolTip('Update DICOM with the new colour table')
-            btnSave.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, colourmap=cmbColours.currentText()))
+            btnUpdate = QPushButton('Update') 
+            btnUpdate.setToolTip('Update DICOM with the new colour table')
+            btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, colourmap=cmbColours.currentText()))
 
             btnExport = QPushButton('Export') 
             btnExport.setToolTip('Exports the image to an external graphic file.')
@@ -866,10 +850,10 @@ class Weasel(QMainWindow):
             #gridLayoutColour.addWidget(btnReset,0,1)
             if showReleaseButton:
                 gridLayoutColour.addWidget(btnReleaseLevels,0,1)
-                gridLayoutColour.addWidget(btnSave,0,2)
+                gridLayoutColour.addWidget(btnUpdate,0,2)
                 gridLayoutColour.addWidget(btnExport,0,3)
             else:
-                gridLayoutColour.addWidget(btnSave,0,1)
+                gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
 
             return cmbColours
@@ -1095,7 +1079,7 @@ class Weasel(QMainWindow):
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
-                          imv, cmbColours,
+                          imv, colourTable,
                           multiImage=False, deleteButton=None):
         #create dummy button to prevent runtime error
         try:
@@ -1119,7 +1103,11 @@ class Weasel(QMainWindow):
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
                 self.blockHistogramSignals(imv, False)
         
-                self.applyColourTableToImage(imv, cmbColours)
+                #Add Colour Table To Image
+                self.colourMap = colourTable
+                self.setPgColourMap(colourTable, imv)
+
+                
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
@@ -1161,7 +1149,7 @@ class Weasel(QMainWindow):
             logger.error('Error in getPixelValue: ' + str(e))
 
 
-    def displayImageSubWindow(self, pixelArray, imagePath):
+    def displayImageSubWindow(self, pixelArray, colourTable):
         """
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
@@ -1182,11 +1170,11 @@ class Weasel(QMainWindow):
             cmbColours = self.setUpColourTools(layout, imv)
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
-           
+            self.displayColourTableInComboBox(cmbColours, colourTable)
             self.displayPixelArray(pixelArray, 
                                    lblImageMissing,
                                    lblPixelValue,
-                                 imv, cmbColours)  
+                                 imv, colourTable)  
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
@@ -1269,6 +1257,7 @@ class Weasel(QMainWindow):
         """
         try:
             logger.info("WEASEL displayMultiImageSubWindow called")
+            self.overRideSavedColourmap = False
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
             
@@ -1416,6 +1405,14 @@ class Weasel(QMainWindow):
             logger.error('Error in deleteImageInMultiImageViewer: ' + str(e))
 
 
+    def displayColourTableInComboBox(self, cmbColours, colourTable):
+        cmbColours.blockSignals(True)
+        index = cmbColours.findText(colourTable)
+        if index >= 0:
+            cmbColours.setCurrentIndex(index)
+        cmbColours.blockSignals(False)
+
+
     def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
                         btnDeleteDICOMFile, imv, cmbColours,
@@ -1430,10 +1427,16 @@ class Weasel(QMainWindow):
             if currentImageNumber >= 0:
                 currentImagePath = imageList[currentImageNumber]
                 pixelArray = readDICOM_Image.returnPixelArray(currentImagePath)
+                if self.overRideSavedColourmap:
+                    colourTable = cmbColours.currentText()
+                else:
+                    colourTable, _ = readDICOM_Image.getColourmap(currentImagePath)
+                    self.displayColourTableInComboBox(cmbColours, colourTable)
+
                 self.displayPixelArray(pixelArray, 
                                        lblImageMissing,
                                        lblPixelValue,
-                                       imv, cmbColours,
+                                       imv, colourTable,
                                        multiImage=True,  
                                        deleteButton=btnDeleteDICOMFile) 
 
@@ -1453,7 +1456,8 @@ class Weasel(QMainWindow):
             if self.isAnImageSelected():
                 imagePath = self.selectedImagePath
                 pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-                self.displayImageSubWindow(pixelArray, imagePath)
+                colourTable, _ = readDICOM_Image.getColourmap(imagePath)
+                self.displayImageSubWindow(pixelArray, colourTable)
             elif self.isASeriesSelected():
                 studyID = self.selectedStudy 
                 seriesID = self.selectedSeries
