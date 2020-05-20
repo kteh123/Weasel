@@ -183,11 +183,15 @@ def getPixelArray(dataset):
                         imageList.append(tempArray)
                     pixelArray = np.array(imageList)
                     del sliceArray, tempArray, index
+                if dataset.SharedFunctionalGroupsSequence[0].MRFOVGeometrySequence[0].InPlanePhaseEncodingDirection == "ROW":
+                    pixelArray = np.transpose(pixelArray, axes=(-1,-2))
                 del originalArray
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
                 pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
+                if dataset.InPlanePhaseEncodingDirection == "ROW":
+                    pixelArray = np.transpose(pixelArray, axes=(-1,-2))
             del slope, intercept
             return pixelArray
         else:
