@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, 
-        QMdiSubWindow, QGroupBox, QMainWindow,
+        QMdiSubWindow, QGroupBox, QMainWindow, QCheckBox,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
@@ -352,6 +352,21 @@ class Weasel(QMainWindow):
             headerItem = tableWidget.setHorizontalHeaderItem(3 ,headerItem)
            
             #Create rows of metadata
+            #for data_element in dataset:
+            #    #Exclude pixel data from metadata listing
+            #    if data_element.name == 'Pixel Data':
+            #        continue
+            #    rowPosition = tableWidget.rowCount()
+            #    tableWidget.insertRow(rowPosition)
+            #    tableWidget.setItem(rowPosition , 0, 
+            #                    QTableWidgetItem(str(data_element.tag)))
+            #    tableWidget.setItem(rowPosition , 1, 
+            #                    QTableWidgetItem(data_element.name))
+            #    tableWidget.setItem(rowPosition , 2, 
+            #                    QTableWidgetItem(data_element.VR))
+            #    tableWidget.setItem(rowPosition , 3, 
+            #                    QTableWidgetItem(str(data_element.value)))
+
             for data_element in dataset:
                 #Exclude pixel data from metadata listing
                 if data_element.name == 'Pixel Data':
@@ -364,8 +379,19 @@ class Weasel(QMainWindow):
                                 QTableWidgetItem(data_element.name))
                 tableWidget.setItem(rowPosition , 2, 
                                 QTableWidgetItem(data_element.VR))
+                if data_element.VR == "UN" or data_element.VR == "OW":
+                    try:
+                        valueMetadata = str(data_element.value.decode('utf-8'))
+                    except:
+                        try:
+                            valueMetadata = str(list(data_element))
+                        except:
+                            valueMetadata = str(data_element.value)
+                else:
+                    valueMetadata = str(data_element.value)
                 tableWidget.setItem(rowPosition , 3, 
-                                QTableWidgetItem(str(data_element.value)))
+                                QTableWidgetItem(valueMetadata))
+
 
             #Resize columns to fit contents
             header = tableWidget.horizontalHeader()
@@ -781,8 +807,9 @@ class Weasel(QMainWindow):
 
     def exportImage(self, imv):
         try:
+            imageName = os.path.basename(self.selectedImagePath) + '.png'
             fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
-                                                       directory=DEFAULT_IMAGE_FILE_PATH_NAME, 
+                                                       directory=imageName, 
                                                        filter="*.png")
             if fileName:
                 self.exportImageViaMatplotlib(imv.getImageItem().image,
@@ -800,7 +827,7 @@ class Weasel(QMainWindow):
             axisOrder = pg.getConfigOption('imageAxisOrder') 
             if axisOrder =='row-major':
                 #rotate image 90 degree so as to match the screen image
-                pixelArray = scipy.ndimage.rotate(pixelArray, 90)
+                pixelArray = scipy.ndimage.rotate(pixelArray, 270)
             cmap = plt.get_cmap(cm_name)
             pos = plt.imshow(pixelArray,  cmap=cmap)
             plt.clim(minLevel, maxLevel)
@@ -834,9 +861,12 @@ class Weasel(QMainWindow):
             cmbColours.blockSignals(False)
             cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
 
-            btnReleaseLevels = QPushButton('Release Levels') 
-            btnReleaseLevels.setToolTip('Allows histogram levels to vary with each image')
-            btnReleaseLevels.clicked.connect(self.releaseHistogramLevels)
+            chkApply = QCheckBox("Apply User Selection")
+            chkApply.setToolTip("Tick to apply colour table and levels selected by the user to the whole series")
+
+            btnReset = QPushButton('Reset') 
+            btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
+            #btnReset.clicked.connect(self.releaseHistogramLevels)
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table')
@@ -849,9 +879,10 @@ class Weasel(QMainWindow):
             gridLayoutColour.addWidget(cmbColours,0,0)
             #gridLayoutColour.addWidget(btnReset,0,1)
             if showReleaseButton:
-                gridLayoutColour.addWidget(btnReleaseLevels,0,1)
-                gridLayoutColour.addWidget(btnUpdate,0,2)
-                gridLayoutColour.addWidget(btnExport,0,3)
+                gridLayoutColour.addWidget(chkApply,0,1)
+                gridLayoutColour.addWidget(btnReset,0,2)
+                gridLayoutColour.addWidget(btnUpdate,0,3)
+                gridLayoutColour.addWidget(btnExport,0,4)
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
@@ -1149,12 +1180,15 @@ class Weasel(QMainWindow):
             logger.error('Error in getPixelValue: ' + str(e))
 
 
-    def displayImageSubWindow(self, pixelArray, colourTable):
+    def displayImageSubWindow(self):
         """
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
         try:
             logger.info("WEASEL displayImageSubWindow called")
+            imagePath = self.selectedImagePath
+            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            colourTable, _ = readDICOM_Image.getColourmap(imagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
             windowTitle = self.getDICOMFileData()
@@ -1275,17 +1309,12 @@ class Weasel(QMainWindow):
             btnDeleteDICOMFile.setToolTip(
             'Deletes the DICOM image being viewed')
             btnDeleteDICOMFile.hide()
-            btnDeleteDICOMFile.clicked.connect(lambda:
-                                               self.deleteImageInMultiImageViewer(
-                                      imageList[imageSlider.value() - 1], 
-                                      lblHiddenStudyID.text(), 
-                                      lblHiddenSeriesID.text(),
-                                      imageSlider.value()))
+         
             
             layout.addWidget(lblHiddenSeriesID)
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(btnDeleteDICOMFile)
-           
+          
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)           
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
             cmbColours = self.setUpColourTools(layout, imv, showReleaseButton=True)
@@ -1328,6 +1357,13 @@ class Weasel(QMainWindow):
                                   imv, cmbColours,
                                   subWindow)
 
+            self.selectedImagePath = imageList[imageSlider.value() - 1]
+            btnDeleteDICOMFile.clicked.connect(lambda:
+                                               self.deleteImageInMultiImageViewer(
+                                      self.selectedImagePath, 
+                                      lblHiddenStudyID.text(), 
+                                      lblHiddenSeriesID.text(),
+                                      imageSlider.value()))
             #imageSlider.sliderReleased.connect(lambda: self.blockHistogramSignals(imv, False))
         except Exception as e:
             print('Error in displayMultiImageSubWindow: ' + str(e))
@@ -1425,12 +1461,12 @@ class Weasel(QMainWindow):
             #imageNumber = self.imageSlider.value()
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
-                currentImagePath = imageList[currentImageNumber]
-                pixelArray = readDICOM_Image.returnPixelArray(currentImagePath)
+                self.selectedImagePath = imageList[currentImageNumber]
+                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
                 if self.overRideSavedColourmap:
                     colourTable = cmbColours.currentText()
                 else:
-                    colourTable, _ = readDICOM_Image.getColourmap(currentImagePath)
+                    colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
                     self.displayColourTableInComboBox(cmbColours, colourTable)
 
                 self.displayPixelArray(pixelArray, 
@@ -1441,7 +1477,7 @@ class Weasel(QMainWindow):
                                        deleteButton=btnDeleteDICOMFile) 
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
-                         + os.path.basename(currentImagePath))
+                         + os.path.basename(self.selectedImagePath))
         except Exception as e:
             print('Error in imageSliderMoved: ' + str(e))
             logger.error('Error in imageSliderMoved: ' + str(e))
@@ -1454,10 +1490,7 @@ class Weasel(QMainWindow):
         try:
             logger.info("WEASEL viewImage called")
             if self.isAnImageSelected():
-                imagePath = self.selectedImagePath
-                pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-                colourTable, _ = readDICOM_Image.getColourmap(imagePath)
-                self.displayImageSubWindow(pixelArray, colourTable)
+                self.displayImageSubWindow()
             elif self.isASeriesSelected():
                 studyID = self.selectedStudy 
                 seriesID = self.selectedSeries
