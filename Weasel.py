@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, 
-        QMdiSubWindow, QGroupBox, QMainWindow, QCheckBox,
+        QMdiSubWindow, QGroupBox, QMainWindow,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
@@ -99,12 +99,13 @@ class Weasel(QMainWindow):
         self.centralwidget.layout().addWidget(self.statusBar)
         self.selectedStudy = ''
         self.selectedSeries = ''
-        self.selectedImagePath = ''
+        #self.selectedImagePath = ''
         self.selectedImageName = ''
-        self.fixHistogramLevels = False
-        self.overRideSavedColourmap = False
+        self.fixHistogramLevels = False #Set to True if the user adjusts the histogram levels
+        self.overRideSavedColourmapAndLevels = False #Set to True if the user checks the Apply Selection tick box
         self.minLevel = 0
         self.maxLevel = 50
+        self.userSelectionList = []
         self.colourMap = ''
         self.ApplyStyleSheet()
          # XML reader object to process XML configuration file
@@ -784,25 +785,26 @@ class Weasel(QMainWindow):
                 colors = cmMap(np.linspace(0, 1, numberOfValues))
             positions = np.linspace(0, 1, len(colors))
             pgMap = pg.ColorMap(positions, colors)
-            imv.setColorMap(pgMap)
-           
+            imv.setColorMap(pgMap)        
         except Exception as e:
             print('Error in setPgColourMap: ' + str(e))
             logger.error('Error in setPgColourMap: ' + str(e))
 
 
-    def applyColourTableToImage(self, imv, cmbColours): 
+    def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox): 
         try:
-            if self.fixHistogramLevels == True:
-                    imv.setLevels(self.minLevel, self.maxLevel)
-            
             colourTable = cmbColours.currentText()
             self.colourMap = colourTable
             self.setPgColourMap(colourTable, imv)
-            self.overRideSavedColourmap = True
+            if chkBox.isChecked():
+                self.overRideSavedColourmapAndLevels = True
+                self.fixHistogramLevels = True
+            else:
+                self.overRideSavedColourmapAndLevels = False
+                self.fixHistogramLevels = False
         except Exception as e:
-            print('Error in WEASEL.applyColourTableToImage: ' + str(e))
-            logger.error('Error in WEASEL.applyColourTableToImage: ' + str(e))              
+            print('Error in WEASEL.applyColourTableAndLevelsToSeries: ' + str(e))
+            logger.error('Error in WEASEL.applyColourTableAndLevelsToSeries: ' + str(e))              
         
 
     def exportImage(self, imv):
@@ -853,16 +855,19 @@ class Weasel(QMainWindow):
             layout.addWidget(groupBoxColour)
 
             
+            chkApply = QCheckBox("Apply Selection")
+            chkApply.stateChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, cmbColours, chkApply))
+            chkApply.setToolTip(
+              "Tick to apply colour table and levels selected by the user to the whole series")
+
             cmbColours = QComboBox()
             cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.blockSignals(True)
             cmbColours.addItems(listColours)
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
-            cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableToImage(imv, cmbColours)) 
-
-            chkApply = QCheckBox("Apply User Selection")
-            chkApply.setToolTip("Tick to apply colour table and levels selected by the user to the whole series")
+            cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, cmbColours, chkApply))
+            cmbColours.currentIndexChanged.connect(lambda:self.updateUserSelectedColourTable(cmbColours, chkApply))
 
             btnReset = QPushButton('Reset') 
             btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
@@ -881,8 +886,8 @@ class Weasel(QMainWindow):
             if showReleaseButton:
                 gridLayoutColour.addWidget(chkApply,0,1)
                 gridLayoutColour.addWidget(btnReset,0,2)
-                gridLayoutColour.addWidget(btnUpdate,0,3)
-                gridLayoutColour.addWidget(btnExport,0,4)
+                gridLayoutColour.addWidget(btnUpdate,1,1)
+                gridLayoutColour.addWidget(btnExport,1,2)
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
@@ -1076,25 +1081,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in getROIOject: ' + str(e))
             logger.error('Error in getROIOject: ' + str(e))
-
-    #Defunct function. To be deleted
-    #def resetROI(self, viewBox):
-    #    objROI = self.getROIOject(viewBox)
-    #    print(str(type(objROI)))
-    #    if 'MultiRectROI' in str(type(objROI)):
-    #        pass
-    #        #objROI.setPoints([[20, 90], [50, 60], [60, 90]])
-    #    elif 'RectROI' in str(type(objROI)):
-    #        objROI.setPos(20, 20)
-    #        objROI.setSize(20,20)
-    #    elif 'CircleROI' in str(type(objROI)):
-    #        objROI.setPos(20, 20)
-    #        objROI.setSize(20,20)
-    #    elif 'EllipseROI' in str(type(objROI)):
-    #        objROI.setPos(20, 20)
-    #        objROI.setSize(30,20)
-    #    elif 'PolyLineROI' in str(type(objROI)):
-    #        objROI.setPoints([[80, 60], [90, 30], [60, 40]])
         
         
     def removeROI(self, viewBox, lblROIMeanValue):
@@ -1125,9 +1111,13 @@ class Weasel(QMainWindow):
                     deleteButton.hide()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                if self.overRideSavedColourmapAndLevels and self.fixHistogramLevels:
+                    minimumValue = self.minLevel
+                    maximumValue = self.maxLevel
+                else:
+                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
                     1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
                 
                 self.blockHistogramSignals(imv, True)
@@ -1266,7 +1256,7 @@ class Weasel(QMainWindow):
         
         
         height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width*0.3,height*0.75)
+        subWindow.setGeometry(0,0,width*0.6,height)
         self.mdiArea.addSubWindow(subWindow)
         
         layout = QVBoxLayout()
@@ -1282,6 +1272,45 @@ class Weasel(QMainWindow):
         return imageViewer, layout, lblImageMissing, subWindow
 
 
+    def updateUserSelectedColourTable(self, cmbColours, chkBox):
+        if chkBox.isChecked() == False:
+            colourTable = cmbColours.currentText()
+            #print(self.userSelectionList)
+            if self.selectedImagePath:
+                self.selectedImageName = os.path.basename(self.selectedImagePath)
+            else:
+                #Workaround for the fact that when the first image is displayed,
+                #somehow self.selectedImageName looses its value.
+                self.selectedImageName = os.path.basename(self.imageList[0])
+            #print("self.selectedImageName={}".format(self.selectedImageName))
+            imageNumber = -1
+            for image in self.userSelectionList:
+                imageNumber += 1
+                if image[0] == self.selectedImageName:
+                    print(imageNumber)
+                    print(self.selectedImageName)
+                    break
+        
+            #Associate the selected colour table with the image being viewed
+            self.userSelectionList[imageNumber][0] =  colourTable
+            #print ('-----')
+            #print(imageNumber)
+            #print (self.userSelectionList[imageNumber][0])
+            #print ('-----')
+
+    def updateUserSelectedLevels(self, minLevel, maxLevel):
+        imageNumber = self.userSelectionList.index([self.selectedImageName,_,_,_])
+        self.userSelectionList[imageNumber][1] =  minLevel
+        self.userSelectionList[imageNumber][2] =  maxLevel
+
+
+    def returnUserSelection(self, imageNumber):
+        colourTable = self.userSelectionList[imageNumber][0] 
+        minLevel = self.userSelectionList[imageNumber][1]
+        maxLevel = self.userSelectionList[imageNumber][2] 
+        return colourTable, minLevel, maxLevel
+
+
     def displayMultiImageSubWindow(self, imageList, studyName, 
                      seriesName, sliderPosition = -1):
         """
@@ -1291,9 +1320,14 @@ class Weasel(QMainWindow):
         """
         try:
             logger.info("WEASEL displayMultiImageSubWindow called")
-            self.overRideSavedColourmap = False
+            self.overRideSavedColourmapAndLevels = False
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
+
+            #set up list of lists to hold user selected colour table and level data
+            self.userSelectionList = [[os.path.basename(imageName), 'default', -1, 0]
+                                for imageName in imageList]
+            
             
             #Study ID & Series ID are stored locally on the
             #sub window in case the user wishes to delete an
@@ -1357,7 +1391,11 @@ class Weasel(QMainWindow):
                                   imv, cmbColours,
                                   subWindow)
 
-            self.selectedImagePath = imageList[imageSlider.value() - 1]
+            #self.selectedImagePath = imageList[imageSlider.value() - 1]
+   
+            print('in displayMultiImageSubWindow')
+            print ('self.selectedImagePath={}'.format(self.selectedImagePath))
+            
             btnDeleteDICOMFile.clicked.connect(lambda:
                                                self.deleteImageInMultiImageViewer(
                                       self.selectedImagePath, 
@@ -1462,8 +1500,9 @@ class Weasel(QMainWindow):
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
                 self.selectedImagePath = imageList[currentImageNumber]
+                print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-                if self.overRideSavedColourmap:
+                if self.overRideSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
                 else:
                     colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
@@ -1478,6 +1517,7 @@ class Weasel(QMainWindow):
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
+                print("imageSliderMoved after={}".format(self.selectedImagePath))
         except Exception as e:
             print('Error in imageSliderMoved: ' + str(e))
             logger.error('Error in imageSliderMoved: ' + str(e))
