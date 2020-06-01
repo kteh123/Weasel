@@ -22,16 +22,17 @@ def returnPixelArray(imagePathList, sliceList, inversionList):
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', transpose=True)
             inversionArray = formatArrayForAnalysis(inversionList, numberSlices, dataset, dimension='2D')
             # Algorithm
-            # This MATLAB code is designed to work with [x, y, TI] as input
-            if len(np.shape(pixelArray)) == 4: # If it's 3D with different TIs
+            # The MATLAB code is designed to work with [x, y, TI] as input
+            # As of 1st June 2020, I'm using the Python version of T1
+            if len(np.shape(pixelArray)) == 4: # If it's 3D with different TIs per slice - Assumption in this specific case
                 derivedImage = []
                 for zSlice in range(np.shape(pixelArray)[2]):
-                    tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1MapMolli(inversionArray[:, zSlice])
+                    tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1Map(inversionArray[:, zSlice]) # There's MATLAB version T1MapMolli
                     derivedImage.append(tempImage)
                 derivedImage = np.array(derivedImage)
                 del tempImage
             else:
-                derivedImage = ukrinMaps(pixelArray).T1MapMolli(inversionArray)
+                derivedImage = ukrinMaps(pixelArray).T1Map(inversionArray) # There's MATLAB version T1MapMolli
             del volumeArray, pixelArray, numberSlices, dataset, inversionArray
             return derivedImage
         else:
