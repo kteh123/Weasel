@@ -72,12 +72,13 @@ def get_scan_data(scan_directory):
         for dir_name, _, file_list in os.walk(scan_directory):
             file_list.sort(key=natural_keys)
             for filename in file_list:
-                try:
-                    list_dicom.append(pydicom.dcmread(
-                        os.path.join(dir_name, filename)))
-                    list_paths.append(os.path.join(dir_name, filename))
-                except:
-                    continue
+                if ('DIRFILE' not in filename) and ('DICOMDIR' not in filename):
+                    try:
+                        list_dicom.append(pydicom.dcmread(
+                            os.path.join(dir_name, filename)))
+                        list_paths.append(os.path.join(dir_name, filename))
+                    except:
+                        continue
         if len(list_dicom) == 0:
             raise FileNotFoundError(
                 'No DICOM files present in the selected folder')
@@ -91,14 +92,20 @@ def get_studies_series(list_dicom):
     try:
         xml_dict = defaultdict(list)
         for file in list_dicom:
-            if len(file.dir("SeriesDescription"))>0:
+            if len(file.dir("SeriesDescription"))>0 and len(file.dir("PatientID"))>0:
                 xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
-            elif len(file.dir("SequenceName"))>0 & len(file.dir("PulseSequenceName"))==0:
+            elif len(file.dir("SeriesDescription"))>0 and len(file.dir("PatientName"))>0:
+                xml_dict[str(file.PatientName) + "_" + str(file.StudyDate)].append(str(file.SeriesDescription) + "_" + str(file.SeriesNumber))
+            elif len(file.dir("SequenceName"))>0 and len(file.dir("PulseSequenceName"))==0 and len(file.dir("PatientID"))>0:
                 xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
-            elif len(file.dir("ProtocolName"))>0:
+            elif len(file.dir("SequenceName"))>0 and len(file.dir("PulseSequenceName"))==0 and len(file.dir("PatientName"))>0:
+                xml_dict[str(file.PatientName) + "_" + str(file.StudyDate)].append(str(file.SequenceName) + "_" + str(file.SeriesNumber))
+            elif len(file.dir("ProtocolName"))>0 and len(file.dir("PatientID"))>0:
                 xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
+            elif len(file.dir("ProtocolName"))>0 and len(file.dir("PatientName"))>0:
+                xml_dict[str(file.PatientName) + "_" + str(file.StudyDate)].append(str(file.ProtocolName) + "_" + str(file.SeriesNumber))
             else:
-                xml_dict[str(file.PatientID) + "_" + str(file.StudyDate)].append("No Sequence Name_" + str(file.SeriesNumber))
+                xml_dict["No Study Name_" + str(file.StudyDate)].append("No Sequence Name_" + str(file.SeriesNumber))
         for study in xml_dict:
             xml_dict[study] = np.unique(xml_dict[study])
 
@@ -140,6 +147,12 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
 
         for index, file in enumerate(list_dicom):
             study_search_string = "./*[@id='" + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
+            if len(file.dir("PatientID"))>0:
+                study_search_string = "./*[@id='" + str(file.PatientID) + "_" + str(file.StudyDate) + "']"
+            elif len(file.dir("PatientName"))>0:
+                study_search_string = "./*[@id='" + str(file.PatientName) + "_" + str(file.StudyDate) + "']"
+            else:
+                study_search_string = "./*[@id='No Study Name_" + str(file.StudyDate) + "']"
             series_root = DICOM_XML_object.find(study_search_string)
             if len(file.dir("SeriesDescription"))>0:
                 series_search_string = "./*[@id='"+ str(file.SeriesDescription) + "_" + str(file.SeriesNumber) + "']"

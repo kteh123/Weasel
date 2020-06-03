@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import re
-import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
@@ -23,16 +22,17 @@ def returnPixelArray(imagePathList, sliceList, inversionList):
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', transpose=True)
             inversionArray = formatArrayForAnalysis(inversionList, numberSlices, dataset, dimension='2D')
             # Algorithm
-            # This MATLAB code is designed to work with [x, y, TI] as input
-            if len(np.shape(pixelArray)) == 4: # If it's 3D with different TIs
+            # The MATLAB code is designed to work with [x, y, TI] as input
+            # As of 1st June 2020, I'm using the Python version of T1
+            if len(np.shape(pixelArray)) == 4: # If it's 3D with different TIs per slice - Assumption in this specific case
                 derivedImage = []
                 for zSlice in range(np.shape(pixelArray)[2]):
-                    tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1MapMolli(inversionArray[:, zSlice])
+                    tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1Map(inversionArray[:, zSlice]) # There's MATLAB version T1MapMolli
                     derivedImage.append(tempImage)
                 derivedImage = np.array(derivedImage)
                 del tempImage
             else:
-                derivedImage = ukrinMaps(pixelArray).T1MapMolli(inversionArray)
+                derivedImage = ukrinMaps(pixelArray).T1Map(inversionArray) # There's MATLAB version T1MapMolli
             del volumeArray, pixelArray, numberSlices, dataset, inversionArray
             return derivedImage
         else:
@@ -55,11 +55,8 @@ def getParametersT1Map(imagePathList, seriesID):
                 numberTIs = datasetList[0x20011014].value
                 _, originalSliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(datasetList)
                 for index, dataset in enumerate(datasetList.PerFrameFunctionalGroupsSequence):
-                    flagMagnitude = False
+                    flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dataset)
                     echo = dataset.MREchoSequence[0].EffectiveEchoTime
-                    if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType') and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
-                        if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)) or set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                            flagMagnitude = True
                     if (numberTIs > 2) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         sliceList.append(originalSliceList[index])
                         inversionList.append(echo)
@@ -67,28 +64,17 @@ def getParametersT1Map(imagePathList, seriesID):
                     inversionList = np.unique(inversionList)
                     magnitudePathList = imagePathList
             else:
-                imagePathList, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
+                imagePathList, firstSliceList, numberSlices, _ = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
                 if hasattr(datasetList, 'InversionTime'):
-                    imagePathList, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, "InversionTime")
+                    imagePathList, inversionList, numberTIs, indicesSorted = readDICOM_Image.sortSequenceByTag(imagePathList, "InversionTime")
                 else: # Or elseif
-                    imagePathList, inversionList, numberTIs = readDICOM_Image.sortSequenceByTag(imagePathList, 0x20051572)
+                    imagePathList, inversionList, numberTIs, indicesSorted = readDICOM_Image.sortSequenceByTag(imagePathList, 0x20051572)
                 # After sorting, it needs to update the sliceList
-                sliceList, numberSlices = readDICOM_Image.getSeriesTagValues(imagePathList, "SliceLocation")
+                sliceList = [firstSliceList[index] for index in indicesSorted]
                 for index in range(len(imagePathList)):
                     dataset = readDICOM_Image.getDicomDataset(imagePathList[index])
-                    flagMagnitude = False
+                    flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dataset)
                     ti = inversionList[index]
-                    try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                        try:
-                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 0:
-                                flagMagnitude = True
-                        except:
-                            if dataset[0x0043102f].value == 0:
-                                flagMagnitude = True
-                    except: pass
-                    if hasattr(dataset, 'ImageType'):
-                        if set(['M', 'MAGNITUDE']).intersection(set(dataset.ImageType)):
-                            flagMagnitude = True
                     if (numberTIs > 1) and (ti != 0) and flagMagnitude and (re.match(".*t1.*", seriesID.lower()) or re.match(".*molli.*", seriesID.lower()) or re.match(".*tfl.*", seriesID.lower())):
                         magnitudePathList.append(imagePathList[index])
             del datasetList, numberSlices, numberTIs, flagMagnitude

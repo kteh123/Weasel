@@ -1,6 +1,7 @@
-import pydicom
 import os
+import struct
 import numpy as np
+import pydicom
 
 def returnPixelArray(imagePath):
     """This method reads the DICOM file in imagePath and returns the Image/Pixel array"""
@@ -33,9 +34,7 @@ def returnSeriesPixelArray(imagePathList):
     returns a list where each element is a DICOM Dataset object/class"""
     try:
         datasetList = getSeriesDicomDataset(imagePathList)
-        imageList = list()
-        for dataset in datasetList:
-            imageList.append(getPixelArray(dataset))
+        imageList = [getPixelArray(dataset) for dataset in datasetList]
         if imageList:
             volumeArray = np.array(imageList)
             del imageList
@@ -92,11 +91,10 @@ def getSeriesTagValues(imagePathList, dicomTag):
             datasetList = getSeriesDicomDataset(imagePathList)
             if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
                 # This is not for Enhanced MRI. Only Classic DICOM
-                attributeList = list()
                 if isinstance(dicomTag, str):
-                    [attributeList.append(dataset.data_element(dicomTag).value) for dataset in datasetList]
+                    attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
                 else:
-                    [attributeList.append(dataset[hex(dicomTag)].value) for dataset in datasetList]
+                    attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
                 numAttribute = len(np.unique(attributeList))
  
                 del datasetList
@@ -115,8 +113,8 @@ def sortSequenceByTag(imagePathList, dicomTag):
     """
     try:
         if os.path.exists(imagePathList[0]):
-            datasetList = getSeriesDicomDataset(imagePathList)
-            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
+            dataset = getDicomDataset(imagePathList[0])
+            if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 # This is not for Enhanced MRI. Only Classic DICOM
                 attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
                 attributeListUnique = sorted(np.unique(attributeList))
@@ -126,8 +124,8 @@ def sortSequenceByTag(imagePathList, dicomTag):
                     indicesSorted.extend(indices)
                 sortedSequencePath = [imagePathList[index] for index in indicesSorted]
                 attributeListSorted = [attributeList[index] for index in indicesSorted]
-                del datasetList, attributeList, attributeListUnique
-                return sortedSequencePath, attributeListSorted, numAttribute
+                del dataset, attributeList, attributeListUnique
+                return sortedSequencePath, attributeListSorted, numAttribute, indicesSorted
         else:
             return None, None, None
     except Exception as e:
@@ -138,10 +136,7 @@ def getSeriesDicomDataset(imagePathList):
     """This method reads the DICOM files in imagePathList and 
     returns a list where each element is a DICOM Dataset object/class"""
     try:
-        datasetList = list()
-        for imagePath in imagePathList:
-            if getDicomDataset(imagePath) is not None:
-                datasetList.append(getDicomDataset(imagePath))
+        datasetList = [getDicomDataset(imagePath) for imagePath in imagePathList if getDicomDataset(imagePath) is not None]
         if datasetList:
             return datasetList
         else:
@@ -242,10 +237,9 @@ def getAffineArray(dataset):
     
 
 def getColourmap(imagePath):
-    """This method reads the DICOM Dataset object/class and returns the colourmap if there's any"""
+    """This method reads the DICOM file in imagePath and returns the colourmap if there's any"""
     try:
         dataset = getDicomDataset(imagePath)
-
         if hasattr(dataset, 'ContentLabel'):
             if dataset.PhotometricInterpretation == 'PALETTE COLOR':
                 colourmapName = dataset.ContentLabel
@@ -271,3 +265,70 @@ def getColourmap(imagePath):
         return colourmapName, lut
     except Exception as e:
         print('Error in function readDICOM_Image.getColourmap: ' + str(e))
+    
+
+def checkImageType(dataset):
+    """This method reads the DICOM Dataset object/class and returns if it is a Real or Imaginary image or None"""
+    try:
+        flagMagnitude = False
+        flagPhase = False
+        flagReal = False
+        flagImaginary = False
+        flagMap = False
+        if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
+                if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagMagnitude = True
+                elif set(['P', 'PHASE', 'B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagPhase = True
+                elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagReal = True
+                elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagImaginary = True
+                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagMap = True
+            elif hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
+                if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagMagnitude = True
+                elif set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagPhase = True
+                elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagReal = True
+                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagMap = True
+        else:
+            try: private_ge = dataset[0x0043102f]
+            except: private_ge = None
+            if private_ge is not None: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
+                try:
+                    if struct.unpack('h', private_ge.value)[0] == 0:
+                        flagMagnitude = True
+                    elif struct.unpack('h', private_ge.value)[0] == 1:
+                        flagPhase = True
+                    elif struct.unpack('h', private_ge.value)[0] == 2:
+                        flagReal = True
+                    elif struct.unpack('h', private_ge.value)[0] == 3:
+                        flagImaginary = True
+                except:
+                    if private_ge.value == 0:
+                        flagMagnitude = True
+                    elif private_ge.value == 1:
+                        flagPhase = True
+                    elif private_ge.value == 2:
+                        flagReal = True
+                    elif private_ge.value == 3:
+                        flagImaginary = True
+            if hasattr(dataset, 'ImageType'):
+                if set(['M', 'MAGNITUDE']).intersection(set(dataset.ImageType)):
+                    flagMagnitude = True
+                elif set(['P', 'PHASE']).intersection(set(dataset.ImageType)):# or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
+                    flagPhase = True
+                elif set(['R', 'REAL']).intersection(set(dataset.ImageType)):
+                    flagReal = True
+                elif set(['I', 'IMAGINARY']).intersection(set(dataset.ImageType)):
+                    flagImaginary = True
+                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.ImageType)):
+                    flagMap = True
+        return flagMagnitude, flagPhase, flagReal, flagImaginary, flagMap
+    except Exception as e:
+        print('Error in function readDICOM_Image.checkImageType: ' + str(e))

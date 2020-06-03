@@ -135,11 +135,13 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
         new colourmap selected in the interface. It will have more features in the future.
     """
     try:
+        _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomData)
         if (colourmap is not None) and (colourmap is not 'Grey Scale') and (colourmap is not 'Custom') and isinstance(colourmap, str):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap
-            dicomData.PixelRepresentation = 0
+            if (flagReal is False and flagImaginary is False): 
+                dicomData.PixelRepresentation = 0
             pixelArray = dicomData.pixel_array
             # Because it's updating a DICOM file, I'm leaving the rescale factors aside, they're not relevant here. 
             # pixelArray should come directly from the DICOM file.
@@ -167,7 +169,8 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap
-            dicomData.PixelRepresentation = 0
+            if (flagReal is False) and (flagImaginary is False):
+                dicomData.PixelRepresentation = 0
             pixelArray = dicomData.pixel_array
             minValue = int(np.amin(pixelArray))
             maxValue = int(np.amax(pixelArray))
@@ -187,7 +190,7 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
                 2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
         
-        if levels is not None:
+        if (levels is not None) and (flagReal is False) and (flagImaginary is False):
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 #Min and Max - how to get them for enhanced MRI?!
                 slope = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1))

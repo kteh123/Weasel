@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import re
-import struct
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
@@ -73,17 +72,8 @@ def getParametersB0Map(imagePathList, seriesID):
                 numberEchoes = datasetList[0x20011014].value
                 _, originalSliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(datasetList)
                 for index, dataset in enumerate(datasetList.PerFrameFunctionalGroupsSequence):
-                    flagPhase = False
-                    flagReal = False
-                    flagImaginary = False
+                    _, flagPhase, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dataset)
                     echo = dataset.MREchoSequence[0].EffectiveEchoTime
-                    if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'): # and hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
-                        if set(['P', 'PHASE', 'B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                            flagPhase = True
-                        elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                            flagReal = True
-                        elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)): # or set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                            flagImaginary = True
                     if (numberEchoes >= 1) and flagPhase and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         sliceList.append(originalSliceList[index])
                         echoList.append(echo)
@@ -94,46 +84,20 @@ def getParametersB0Map(imagePathList, seriesID):
                         riPathList[1].append(originalSliceList[index])
                         echoList.append(echo)
                 if sliceList and echoList:
-
                     phasePathList = imagePathList
                 elif riPathList and echoList:
                     riPathList[0] = imagePathList + riPathList[0]
                     riPathList[1] = imagePathList + riPathList[1]
             else:
-                imagePathList, sliceList, numberSlices = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
-                imagePathList, echoList, numberEchoes = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
+                imagePathList, firstSliceList, numberSlices, _ = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
+                imagePathList, echoList, numberEchoes, indicesSorted = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
                 # After sorting, it needs to update the sliceList
-                sliceList, numberSlices = readDICOM_Image.getSeriesTagValues(imagePathList, "SliceLocation")
+                sliceList = [firstSliceList[index] for index in indicesSorted]
                 for index in range(len(imagePathList)):
                     dataset = readDICOM_Image.getDicomDataset(imagePathList[index])
-                    flagPhase = False
-                    flagReal = False
-                    flagImaginary = False
                     echo = echoList[index]
-                    try: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'
-                        try:
-                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 1:
-                                flagPhase = True
-                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 2:
-                                flagReal = True
-                            if struct.unpack('h', dataset[0x0043102f].value)[0] == 3:
-                                flagImaginary = True
-                        except:
-                            if dataset[0x0043102f].value == 1:
-                                flagPhase = True
-                            if dataset[0x0043102f].value == 2:
-                                flagReal = True
-                            if dataset[0x0043102f].value == 3:
-                                flagImaginary = True
-                    except: pass
-                    if hasattr(dataset, 'ImageType'): 
-                        if ('P' in dataset.ImageType) or ('PHASE' in dataset.ImageType) or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
-                            flagPhase = True
-                        elif ('R' in dataset.ImageType) or ('REAL' in dataset.ImageType):
-                            flagReal = True
-                        elif ('I' in dataset.ImageType) or ('IMAGINARY' in dataset.ImageType):
-                            flagImaginary = True
-                    if (numberEchoes >= 1) and flagPhase and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                    _, flagPhase, flagReal, flagImaginary, flagMap = readDICOM_Image.checkImageType(dataset)
+                    if (numberEchoes >= 1) and (flagPhase or flagMap) and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         phasePathList.append(imagePathList[index])
                     elif (numberEchoes >= 1) and flagReal and (re.match(".*b0.*", seriesID.lower()), re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         riPathList[0].append(imagePathList[index])

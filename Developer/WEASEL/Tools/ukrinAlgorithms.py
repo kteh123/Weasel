@@ -1,5 +1,7 @@
 import numpy as np
-from CoreModules.imagingTools import unWrapPhase, convertToPiRange
+from scipy.optimize import curve_fit
+import copy
+from CoreModules.imagingTools import unWrapPhase, convertToPiRange # Create Copy Array?
 
 class ukrinMaps():
     """Package containing algorithms that calculate parameter maps 
@@ -203,7 +205,7 @@ class ukrinMaps():
             eng = matlab.engine.start_matlab()
             inputArray = matlab.double(np.array(self.pixelArray).tolist())
             ti = matlab.double(np.array(inversionList).tolist())
-            ti.reshape((len(inversionList),1))
+            ti.reshape((len(inversionList), 1))
             mapMatlab = eng.T1Fitting(inputArray, ti, nargout=1)
             t1Map = np.transpose(np.array(mapMatlab)) # Convert to Python array and transpose because the Matlab script does it.
             t1Map = np.nan_to_num(t1Map) # There migh be Infs and NaNs
@@ -214,3 +216,89 @@ class ukrinMaps():
             return t1Map
         except Exception as e:
             print('Error in function ukrinAlgorithms.T1MapMolli: ' + str(e))
+
+
+    def T1MapDraft(self, inversionList):
+        try:
+            yData = copy.deepcopy(self.pixelArray)
+            x0 = [np.amax(self.pixelArray), np.amax(self.pixelArray)-np.amin(self.pixelArray), 50.0]
+            lb = [0, -np.inf, 0]
+            ub = [np.inf, np.inf, 3000.0]
+
+            # Null point selection - after this step everything below lowest value will be negative
+            nullPointMatrix = np.argmin(self.pixelArray, axis=2) # Get the TI indices where value is minimum
+            for ix, iy in np.ndindex(nullPointMatrix.shape):
+                tiIndex = nullPointMatrix[ix,iy]
+                if tiIndex > 0:
+                    yData[ix,iy,0:tiIndex] = -self.pixelArray[ix,iy,0:tiIndex]
+
+            T1Apparent = []
+            for ix, iy in np.ndindex(nullPointMatrix.shape):
+                T1pixel, _ = curve_fit(T1Fitting, inversionList, yData[ix,iy,:], p0=x0, bounds=(lb, ub), maxfev=2000)
+                T1Apparent.append(T1pixel)
+            T1Apparent = np.array(T1Apparent)
+
+            T1Estimated = T1Apparent[:,2] * ((T1Apparent[:,1] / T1Apparent[:,0]) - np.ones(np.shape(T1Apparent[:,0]))) #T1_estimated((B/A)-1)
+            T1Map = np.transpose(np.nan_to_num(np.reshape(T1Estimated, np.shape(nullPointMatrix))))
+            T1Map[T1Map>3000] = 3000
+            T1Map[T1Map<10] = 0
+            return T1Map
+        except Exception as e:
+            print('Error in function ukrinAlgorithms.T1MapDraft: ' + str(e))
+    
+
+    def T1Map(self, inversionList):
+        try:
+            # Initial values / Conditions
+            x0 = [np.amax(self.pixelArray), np.amax(self.pixelArray)-np.amin(self.pixelArray), 50.0]
+            lb = [0, -np.inf, 0]
+            ub = [np.inf, np.inf, 5000.0]
+            T1Fitting = lambda ti, a, b, t1: a - b * np.exp(-ti / t1)
+            T1Apparent = []
+            if len(self.pixelArray.shape) == 3:
+                # Null point selection - after this step everything below lowest value will be negative
+                nullPointMatrix = np.argmin(self.pixelArray, axis=2) # Get the TI indices where value is minimum
+                for ix, iy in np.ndindex(nullPointMatrix.shape):
+                    yData = []
+                    tiIndex = nullPointMatrix[ix,iy]
+                    if tiIndex > 0:
+                        yData[0:tiIndex] = -self.pixelArray[ix,iy,0:tiIndex]
+                        yData[tiIndex:] = self.pixelArray[ix,iy,tiIndex:]
+                    else:
+                        yData = self.pixelArray[ix,iy,:]
+                    # Perform the Levenberg-Marquardt least squares fitting
+                    try:
+                        T1pixel, _ = curve_fit(T1Fitting, inversionList, yData, p0=x0, bounds=(lb, ub), maxfev=2000)
+                    except: # If optimization fails, then perform fitting like assuming that the pizel value is zero
+                        T1pixel, _ = curve_fit(T1Fitting, inversionList, np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
+                    T1Apparent.append(T1pixel)
+            elif len(self.pixelArray.shape) == 4:
+                # Null point selection - after this step everything below lowest value will be negative
+                nullPointMatrix = np.argmin(self.pixelArray, axis=3) # Get the TI indices where value is minimum
+                for ix, iy, iz in np.ndindex(nullPointMatrix.shape):
+                    yData = []
+                    tiIndex = nullPointMatrix[ix,iy,iz]
+                    if tiIndex > 0:
+                        yData[0:tiIndex] = -self.pixelArray[ix,iy,iz,0:tiIndex]
+                        yData[tiIndex:] = self.pixelArray[ix,iy,iz,tiIndex:]
+                    else:
+                        yData = self.pixelArray[ix,iy,iz,:]
+                    # Perform the Levenberg-Marquardt least squares fitting
+                    try:
+                        T1pixel, _ = curve_fit(T1Fitting, inversionList, yData, p0=x0, bounds=(lb, ub), maxfev=2000)
+                    except: # If optimization fails, then perform fitting like assuming that the pizel value is zero
+                        T1pixel, _ = curve_fit(T1Fitting, inversionList, np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
+                    T1Apparent.append(T1pixel)
+            
+            T1Apparent = np.array(T1Apparent)
+            T1Estimated = T1Apparent[:,2] * ((T1Apparent[:,1] / T1Apparent[:,0]) - np.ones(np.shape(T1Apparent[:,0]))) #T1_estimated((B/A)-1)
+            T1Map = np.transpose(np.nan_to_num(np.reshape(T1Estimated, np.shape(nullPointMatrix))))
+            T1Map[T1Map>5000] = 5000
+            T1Map[T1Map<50] = 0
+            return T1Map
+        except Exception as e:
+            print('Error in function ukrinAlgorithms.T1Map: ' + str(e))
+
+
+#def T1Fitting(ti, a, b, t1):
+    #return a - b * np.exp(-ti / t1)
