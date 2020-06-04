@@ -210,6 +210,8 @@ def open_dicom_to_xml_iBEAT(xml_dict, list_dicom, list_paths):
 
         for index, file in enumerate(list_dicom):
             study_search_string, series_search_string = iBeatImport.getScanInfo(file)
+            study_search_string = "./*[@id='" + study_search_string + "']"
+            series_search_string = "./*[@id='" + series_search_string + "']"
             series_root = DICOM_XML_object.find(study_search_string)
             image_root = series_root.find(series_search_string)
             image_element = ET.SubElement(image_root, 'image')

@@ -268,13 +268,14 @@ def getColourmap(imagePath):
     
 
 def checkImageType(dataset):
-    """This method reads the DICOM Dataset object/class and returns if it is a Real or Imaginary image or None"""
+    """This method reads the DICOM Dataset object/class and returns if it is a Magnitude, Phase, Real or Imaginary image or None"""
     try:
         flagMagnitude = False
         flagPhase = False
         flagReal = False
         flagImaginary = False
         flagMap = False
+        mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
                 if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
@@ -285,8 +286,8 @@ def checkImageType(dataset):
                     flagReal = True
                 elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagImaginary = True
-                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagMap = True
+                elif set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagMap = list(set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)))[0]
             elif hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
                 if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagMagnitude = True
@@ -294,8 +295,10 @@ def checkImageType(dataset):
                     flagPhase = True
                 elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagReal = True
-                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagMap = True
+                elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagImaginary = True
+                elif set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagMap = list(set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)))[0]
         else:
             try: private_ge = dataset[0x0043102f]
             except: private_ge = None
@@ -327,8 +330,49 @@ def checkImageType(dataset):
                     flagReal = True
                 elif set(['I', 'IMAGINARY']).intersection(set(dataset.ImageType)):
                     flagImaginary = True
-                elif set(['B0', 'FIELD_MAP']).intersection(set(dataset.ImageType)):
-                    flagMap = True
+                elif set(mapsList).intersection(set(dataset.ImageType)):
+                    flagMap = list(set(mapsList).intersection(set(dataset.ImageType)))[0]
         return flagMagnitude, flagPhase, flagReal, flagImaginary, flagMap
     except Exception as e:
         print('Error in function readDICOM_Image.checkImageType: ' + str(e))
+
+
+def checkAcquisitionType(dataset):
+    """This method reads the DICOM Dataset object/class and returns if it is a Water, Fat, In-Phase, Out-phase image or None"""
+    try:
+        flagWater = False
+        flagFat = False
+        flagInPhase = False
+        flagOutPhase = False
+        if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
+                if set(['W', 'WATER']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagWater = True
+                elif set(['F', 'FAT']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagFat = True
+                elif set(['IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagInPhase = True
+                elif set(['OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                    flagOutPhase = True
+            elif hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
+                if set(['W', 'WATER']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagWater = True
+                elif set(['F', 'FAT']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagFat = True
+                elif set(['IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagInPhase = True
+                elif set(['OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                    flagOutPhase = True
+        else:
+            if hasattr(dataset, 'ImageType'):
+                if set(['W', 'WATER']).intersection(set(dataset.ImageType)):
+                    flagWater = True
+                elif set(['F', 'FAT']).intersection(set(dataset.ImageType)):# or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
+                    flagFat = True
+                elif set(['IN_PHASE']).intersection(set(dataset.ImageType)):
+                    flagInPhase = True
+                elif set(['OUT_PHASE']).intersection(set(dataset.ImageType)):
+                    flagOutPhase = True
+        return flagWater, flagFat, flagInPhase, flagOutPhase
+    except Exception as e:
+        print('Error in function readDICOM_Image.checkAcquisitionType: ' + str(e))
