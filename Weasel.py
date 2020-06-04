@@ -856,7 +856,7 @@ class Weasel(QMainWindow):
             image[3] = 0
          #reload current image to display it without user selected 
          #colour table and levels.
-         #This is done by advancing the slider and then moving it back 
+         #This is done by advancing the slider and then moving it i 
          #to the original image
         if imageSlider:
             imageNumber = imageSlider.value()
@@ -869,17 +869,24 @@ class Weasel(QMainWindow):
             imageSlider.setValue(imageNumber)
                     
 
-    def setUpColourTools(self, layout, imv, imageSlider = None, showReleaseButton = False):
+    def setUpColourTools(self, layout, imv,
+            imageOnlySelected,
+            lblHiddenImagePath,
+            lblHiddenSeriesID,
+            lblHiddenStudyID,              
+            imageSlider = None, showReleaseButton = False):
         try:
             groupBoxColour = QGroupBox('Colour Table')
             gridLayoutColour = QGridLayout()
             groupBoxColour.setLayout(gridLayoutColour)
             layout.addWidget(groupBoxColour)
-            
+
             chkApply = QCheckBox("Apply Selection")
-            chkApply.stateChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, cmbColours, chkApply))
+            chkApply.stateChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, 
+                                                                                        cmbColours, 
+                                                                                        chkApply))
             chkApply.setToolTip(
-              "Tick to apply colour table and levels selected by the user to the whole series")
+                    "Tick to apply colour table and levels selected by the user to the whole series")
 
             cmbColours = QComboBox()
             cmbColours.setToolTip('Select a colour table to apply to the image')
@@ -887,16 +894,17 @@ class Weasel(QMainWindow):
             cmbColours.addItems(listColours)
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
-            cmbColours.currentIndexChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, cmbColours, chkApply))
-            cmbColours.activated.connect(lambda:self.updateUserSelectedColourTable(cmbColours, chkApply))
-
-            btnReset = QPushButton('Reset') 
-            btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
-            btnReset.clicked.connect(lambda: self.clearUserSelection(imageSlider))
+            cmbColours.currentIndexChanged.connect(lambda:
+                      self.applyColourTableAndLevelsToSeries(imv, cmbColours, chkApply))
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table')
-            btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, colourmap=cmbColours.currentText()))
+            btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, imageOnlySelected,
+                                                                         lblHiddenImagePath.text(),
+                                                                         lblHiddenSeriesID.text(),
+                                                                         lblHiddenStudyID.text(),
+                                                                         colourmap=cmbColours.currentText(),
+                                                                         levels=imv.getLevels()))
 
             btnExport = QPushButton('Export') 
             btnExport.setToolTip('Exports the image to an external graphic file.')
@@ -905,9 +913,15 @@ class Weasel(QMainWindow):
             gridLayoutColour.addWidget(cmbColours,0,0)
             if showReleaseButton:
                 gridLayoutColour.addWidget(chkApply,0,1)
+                btnReset = QPushButton('Reset') 
+                btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
+                btnReset.clicked.connect(lambda: self.clearUserSelection(imageSlider))
                 gridLayoutColour.addWidget(btnReset,0,2)
                 gridLayoutColour.addWidget(btnUpdate,1,1)
                 gridLayoutColour.addWidget(btnExport,1,2)
+                cmbColours.activated.connect(lambda:
+                      self.updateUserSelectedColourTable(cmbColours, chkApply))
+
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
@@ -1202,13 +1216,24 @@ class Weasel(QMainWindow):
         """
         try:
             logger.info("WEASEL displayImageSubWindow called")
-            imagePath = self.selectedImagePath
-            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            colourTable, _ = readDICOM_Image.getColourmap(imagePath)
+            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+            colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
             windowTitle = self.getDICOMFileData()
             subWindow.setWindowTitle(windowTitle)
+
+            lblHiddenImagePath = QLabel(self.selectedImagePath)
+            lblHiddenImagePath.hide()
+            lblHiddenStudyID = QLabel()
+            lblHiddenStudyID.hide()
+            lblHiddenSeriesID = QLabel()
+            lblHiddenSeriesID.hide()
+            
+            layout.addWidget(lblHiddenSeriesID)
+            layout.addWidget(lblHiddenStudyID)
+            layout.addWidget(lblHiddenImagePath)
+
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)
             
 
@@ -1217,7 +1242,8 @@ class Weasel(QMainWindow):
             #layout.addWidget(chkBoxSyncROI)
             
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            cmbColours = self.setUpColourTools(layout, imv)
+            cmbColours = self.setUpColourTools(layout, imv, True,  
+                                               lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID )
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
             self.displayColourTableInComboBox(cmbColours, colourTable)
@@ -1369,6 +1395,8 @@ class Weasel(QMainWindow):
             #open at once, so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
+            lblHiddenImagePath = QLabel('')
+            lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel(studyName)
             lblHiddenStudyID.hide()
             lblHiddenSeriesID = QLabel(seriesName)
@@ -1378,7 +1406,8 @@ class Weasel(QMainWindow):
             'Deletes the DICOM image being viewed')
             btnDeleteDICOMFile.hide()
          
-            
+         
+            layout.addWidget(lblHiddenImagePath)
             layout.addWidget(lblHiddenSeriesID)
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(btnDeleteDICOMFile)
@@ -1387,7 +1416,9 @@ class Weasel(QMainWindow):
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
 
             imageSlider = QSlider(Qt.Horizontal)
-            cmbColours = self.setUpColourTools(layout, imv, imageSlider, showReleaseButton=True)
+            cmbColours = self.setUpColourTools(layout, imv, False,  
+                                               lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
+                                               imageSlider, showReleaseButton=True)
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
 
             

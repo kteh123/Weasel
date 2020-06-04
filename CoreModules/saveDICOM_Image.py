@@ -58,15 +58,14 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def updateDicom(objWeasel, colourmap=None, lut=None, levels=None):
+def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
     try:
-        if objWeasel.isAnImageSelected():
+        if isImage:
             objWeasel.displayMessageSubWindow(
               "<H4>Updating 1 DICOM file</H4>",
               "Updating DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(1)
             objWeasel.setMsgWindowProgBarValue(0)
-            imagePath = objWeasel.selectedImagePath
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             # Update the DICOM file
             updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
@@ -74,7 +73,7 @@ def updateDicom(objWeasel, colourmap=None, lut=None, levels=None):
             objWeasel.setMsgWindowProgBarValue(1)
             objWeasel.closeMessageSubWindow()
             
-        elif objWeasel.isASeriesSelected():
+        else:
             # Should consider the case where Series is 1 image/file only
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
