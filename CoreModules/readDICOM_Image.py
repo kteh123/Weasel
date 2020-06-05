@@ -350,18 +350,18 @@ def checkAcquisitionType(dataset):
                     flagWater = True
                 elif set(['F', 'FAT']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagFat = True
-                elif set(['IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                elif set(['IP', 'IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagInPhase = True
-                elif set(['OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                elif set(['OP', 'OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagOutPhase = True
             elif hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
                 if set(['W', 'WATER']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagWater = True
                 elif set(['F', 'FAT']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagFat = True
-                elif set(['IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                elif set(['IP', 'IN_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagInPhase = True
-                elif set(['OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                elif set(['OP', 'OUT_PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
                     flagOutPhase = True
         else:
             if hasattr(dataset, 'ImageType'):
@@ -369,9 +369,9 @@ def checkAcquisitionType(dataset):
                     flagWater = True
                 elif set(['F', 'FAT']).intersection(set(dataset.ImageType)):# or ('B0' in dataset.ImageType) or ('FIELD_MAP' in dataset.ImageType):
                     flagFat = True
-                elif set(['IN_PHASE']).intersection(set(dataset.ImageType)):
+                elif set(['IP', 'IN_PHASE']).intersection(set(dataset.ImageType)):
                     flagInPhase = True
-                elif set(['OUT_PHASE']).intersection(set(dataset.ImageType)):
+                elif set(['OP', 'OUT_PHASE']).intersection(set(dataset.ImageType)):
                     flagOutPhase = True
         return flagWater, flagFat, flagInPhase, flagOutPhase
     except Exception as e:
