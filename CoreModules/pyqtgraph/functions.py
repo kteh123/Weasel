@@ -33,6 +33,8 @@ import numpy as np
 import decimal, re
 import ctypes
 import sys, struct
+import scipy
+
 
 from . import debug
 

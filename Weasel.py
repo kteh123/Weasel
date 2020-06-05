@@ -63,7 +63,7 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'twilight', 'twilight_shifted', 'hsv',
             'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
+            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
 DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.png'
 
@@ -836,7 +836,7 @@ class Weasel(QMainWindow):
                 pixelArray = scipy.ndimage.rotate(pixelArray, 270)
             cmap = plt.get_cmap(cm_name)
             pos = plt.imshow(pixelArray,  cmap=cmap)
-            plt.clim(minLevel, maxLevel)
+            plt.clim(int(minLevel), int(maxLevel))
             cBar = plt.colorbar()
             cBar.minorticks_on()
             plt.savefig(fname=fileName)
@@ -1210,7 +1210,7 @@ class Weasel(QMainWindow):
             logger.error('Error in getPixelValue: ' + str(e))
 
 
-    def displayImageSubWindow(self):
+    def displayImageSubWindow(self, derivedImagePath=None):
         """
         Creates a subwindow that displays the DICOM image contained in pixelArray. 
         """
@@ -1223,7 +1223,10 @@ class Weasel(QMainWindow):
             windowTitle = self.getDICOMFileData()
             subWindow.setWindowTitle(windowTitle)
 
-            lblHiddenImagePath = QLabel(self.selectedImagePath)
+            if derivedImagePath:
+                lblHiddenImagePath = QLabel(derivedImagePath)
+            else:
+                lblHiddenImagePath = QLabel(self.selectedImagePath)
             lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel()
             lblHiddenStudyID.hide()
@@ -1395,6 +1398,9 @@ class Weasel(QMainWindow):
             #open at once, so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
+            print('series = {}'.format(seriesName))
+            print('study = {}'.format(studyName))
+
             lblHiddenImagePath = QLabel('')
             lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel(studyName)

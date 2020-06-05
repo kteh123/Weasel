@@ -72,11 +72,7 @@ def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', 
             saveDicomToFile(updatedDataset, output_path=imagePath)
             objWeasel.setMsgWindowProgBarValue(1)
             objWeasel.closeMessageSubWindow()
-            
         else:
-            # Should consider the case where Series is 1 image/file only
-            studyID = objWeasel.selectedStudy
-            seriesID = objWeasel.selectedSeries
             imagePathList = objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and update each image
             numImages = len(imagePathList)
@@ -91,6 +87,7 @@ def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', 
                 updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
                 saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
+                print('image counter = {}'.format(imageCounter))
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
             objWeasel.closeMessageSubWindow()
     except Exception as e:

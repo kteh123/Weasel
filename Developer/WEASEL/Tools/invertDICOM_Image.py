@@ -34,7 +34,7 @@ def saveInvertImage(objWeasel):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-            objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
+            objWeasel.displayImageSubWindow(derivedImageFileName)
             
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
