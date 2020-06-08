@@ -773,21 +773,25 @@ class Weasel(QMainWindow):
         self.minLevel, self.maxLevel = imv.getLevels()
 
 
-    def setPgColourMap(self, cm_name, imv, cmbColours=None):
+    def setPgColourMap(self, cm_name, imv, cmbColours=None, lut=None):
         try:
             if cm_name == None:
                 cm_name = 'gray'
 
             if cmbColours:
                 self.displayColourTableInComboBox(cmbColours, cm_name)   
+        
+            if cm_name == 'custom':
+                colors = lut
+            else:
+                cmMap = cm.get_cmap(cm_name)
+                colourClassName = cmMap.__class__.__name__
+                if colourClassName == 'ListedColormap':
+                    colors = cmMap.colors
+                elif colourClassName == 'LinearSegmentedColormap':
+                    numberOfValues = np.sqrt(len(imv.image.flatten()))
+                    colors = cmMap(np.linspace(0, 1, numberOfValues))
 
-            cmMap = cm.get_cmap(cm_name)
-            colourClassName = cmMap.__class__.__name__
-            if colourClassName == 'ListedColormap':
-                colors = cmMap.colors
-            elif colourClassName == 'LinearSegmentedColormap':
-                numberOfValues = np.sqrt(len(imv.image.flatten()))
-                colors = cmMap(np.linspace(0, 1, numberOfValues))
             positions = np.linspace(0, 1, len(colors))
             pgMap = pg.ColorMap(positions, colors)
             imv.setColorMap(pgMap)        
@@ -1129,7 +1133,7 @@ class Weasel(QMainWindow):
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
-                          imv, colourTable, cmbColours,
+                          imv, colourTable, cmbColours, lut=None,
                           multiImage=False, deleteButton=None):
         try:
             if deleteButton is None:
@@ -1185,8 +1189,8 @@ class Weasel(QMainWindow):
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
                 self.blockHistogramSignals(imv, False)
         
-                #Add Colour Table To Image
-                self.setPgColourMap(colourTable, imv, cmbColours)
+                #Add Colour Table or look up table To Image
+                self.setPgColourMap(colourTable, imv, cmbColours, lut)
 
                 lblImageMissing.hide()   
   
@@ -1237,7 +1241,7 @@ class Weasel(QMainWindow):
         try:
             logger.info("WEASEL displayImageSubWindow called")
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-            colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
+            colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
             windowTitle = self.getDICOMFileData()
@@ -1274,7 +1278,7 @@ class Weasel(QMainWindow):
                                    lblImageMissing,
                                    lblPixelValue,
                                  imv, colourTable,
-                                 cmbColours)  
+                                 cmbColours, lut)  
         except Exception as e:
             print('Error in Weasel.displayImageSubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
@@ -1418,8 +1422,6 @@ class Weasel(QMainWindow):
             #open at once, so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
-            print('series = {}'.format(seriesName))
-            print('study = {}'.format(studyName))
 
             lblHiddenImagePath = QLabel('')
             lblHiddenImagePath.hide()
@@ -1598,14 +1600,14 @@ class Weasel(QMainWindow):
                         colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
-                    colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
+                    colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
                     self.displayColourTableInComboBox(cmbColours, colourTable)
 
                 self.displayPixelArray(pixelArray, 
                                        lblImageMissing,
                                        lblPixelValue,
                                        imv, colourTable,
-                                       cmbColours,
+                                       cmbColours, lut,
                                        multiImage=True,  
                                        deleteButton=btnDeleteDICOMFile) 
 
