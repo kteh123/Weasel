@@ -1148,18 +1148,38 @@ class Weasel(QMainWindow):
                     if self.minLevel != -1:
                         minimumValue = self.minLevel
                     else:
-                        minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                        try:
+                            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+                            slope = float(getattr(dataset, 'RescaleSlope', 1))
+                            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                            minimumValue = dataset.SmallestImagePixelValue * slope + intercept
+                        except:
+                            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                            1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                     if self.maxLevel != 0:
                         maximumValue = self.maxLevel
                     else:
+                        try:
+                            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+                            slope = float(getattr(dataset, 'RescaleSlope', 1))
+                            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                            maximumValue = dataset.LargestImagePixelValue * slope + intercept
+                        except:
+                            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                            1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                else:
+                    try:
+                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+                        slope = float(getattr(dataset, 'RescaleSlope', 1))
+                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                        minimumValue = dataset.SmallestImagePixelValue * slope + intercept
+                        maximumValue = dataset.LargestImagePixelValue * slope + intercept
+                    except:
+                        minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                         maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                         1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                else:
-                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+
                 
                 self.blockHistogramSignals(imv, True)
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
@@ -1463,11 +1483,6 @@ class Weasel(QMainWindow):
                                   btnDeleteDICOMFile,
                                   imv, cmbColours,
                                   subWindow)
-
-            #self.selectedImagePath = imageList[imageSlider.value() - 1]
-   
-            print('in displayMultiImageSubWindow')
-            print ('self.selectedImagePath={}'.format(self.selectedImagePath))
             
             btnDeleteDICOMFile.clicked.connect(lambda:
                                                self.deleteImageInMultiImageViewer(
@@ -2141,7 +2156,6 @@ class Weasel(QMainWindow):
             for study in studies:
                 studyID = study.attrib['id']
                 studyBranch = QTreeWidgetItem(self.treeView)
-                studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
                 for series in study:
@@ -2149,7 +2163,6 @@ class Weasel(QMainWindow):
                     seriesBranch = QTreeWidgetItem(studyBranch)
                     self.seriesBranchList.append(seriesBranch)
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                    seriesBranch.setText(0, "Series - {}".format(seriesID))
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
                     for image in series:
