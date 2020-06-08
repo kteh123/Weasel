@@ -803,6 +803,10 @@ class Weasel(QMainWindow):
     def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox): 
         try:
             colourTable = cmbColours.currentText()
+            if colourTable == 'custom':
+                colourTable = 'gray'                
+                self.displayColourTableInComboBox(cmbColours, 'gray')   
+
             self.setPgColourMap(colourTable, imv)
             if chkBox.isChecked():
                 self.overRideSavedColourmapAndLevels = True
@@ -1594,10 +1598,11 @@ class Weasel(QMainWindow):
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
                 if self.overRideSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
+                    lut = None
                 elif self.applyUserSelection:
                     colourTable, self.minLevel, self.maxLevel = self.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
-                        colourTable, _ = readDICOM_Image.getColourmap(self.selectedImagePath)
+                        colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
                     colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
