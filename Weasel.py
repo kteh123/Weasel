@@ -1596,9 +1596,9 @@ class Weasel(QMainWindow):
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+                lut = None
                 if self.overRideSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
-                    lut = None
                 elif self.applyUserSelection:
                     colourTable, self.minLevel, self.maxLevel = self.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
