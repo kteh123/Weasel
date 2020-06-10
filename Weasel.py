@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, 
-        QMdiSubWindow, QGroupBox, QMainWindow,
+        QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
         QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
@@ -758,7 +758,7 @@ class Weasel(QMainWindow):
             histogramObject = imv.getHistogramWidget().getHistogram()
             histogramObject.sigLevelChangeFinished.connect(lambda: self.getHistogramLevels(imv))
             histogramObject.sigLevelChangeFinished.connect(lambda: self.updateUserSelectedLevels(imv))
-            
+            imv.ui.histogram.hide()
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
             layout.addWidget(imv)
@@ -877,6 +877,17 @@ class Weasel(QMainWindow):
             imageSlider.setValue(imageNumber)
                     
 
+    def changeLevels(self, imv, spinBoxIntensity, spinBoxContrast):
+        center = spinBoxIntensity.value()
+        width = spinBoxContrast.value()
+        halfWidth = width/2
+
+        minValue = center - halfWidth
+        maxValue = center + halfWidth
+        imv.setLevels(minValue, maxValue)
+        imv.show()
+
+
     def setUpColourTools(self, layout, imv,
             imageOnlySelected,
             lblHiddenImagePath,
@@ -885,8 +896,11 @@ class Weasel(QMainWindow):
             imageSlider = None, showReleaseButton = False):
         try:
             groupBoxColour = QGroupBox('Colour Table')
+            groupBoxLevels = QGroupBox('Levels')
             gridLayoutColour = QGridLayout()
+            levelsLayout = QGridLayout()
             groupBoxColour.setLayout(gridLayoutColour)
+            groupBoxLevels.setLayout(levelsLayout)
             layout.addWidget(groupBoxColour)
 
             chkApply = QCheckBox("Apply Selection")
@@ -919,6 +933,27 @@ class Weasel(QMainWindow):
             btnExport.setToolTip('Exports the image to an external graphic file.')
             btnExport.clicked.connect(lambda:self.exportImage(imv, cmbColours))
 
+            #Levels widgets
+            lblIntensity = QLabel("Centre (Intensity)")
+            lblContrast = QLabel("Width (Contrast)")
+            levelsSlider = QSlider(Qt.Horizontal)
+            levelsSlider.setSingleStep(1)
+            levelsSlider.setTickPosition(QSlider.TicksBothSides)
+            levelsSlider.setTickInterval(1)
+            spinBoxIntensity = QDoubleSpinBox()
+            spinBoxContrast = QDoubleSpinBox()
+            spinBoxIntensity.setMaximum(1000)
+            spinBoxContrast.setMaximum(1000)
+            spinBoxIntensity.setWrapping(True)
+            spinBoxContrast.setWrapping(True)
+            spinBoxIntensity.valueChanged.connect(lambda: self.changeLevels(imv,spinBoxIntensity, spinBoxContrast ))
+            spinBoxContrast.valueChanged.connect(lambda: self.changeLevels(imv,spinBoxIntensity, spinBoxContrast ))
+            levelsLayout.addWidget(lblIntensity, 0,0)
+            levelsLayout.addWidget(spinBoxIntensity, 0, 1)
+            levelsLayout.addWidget(lblContrast, 1,0)
+            levelsLayout.addWidget(spinBoxContrast, 1,1)
+            levelsLayout.addWidget(levelsSlider, 2, 0, 1, 4)
+
             gridLayoutColour.addWidget(cmbColours,0,0)
             if showReleaseButton:
                 gridLayoutColour.addWidget(chkApply,0,1)
@@ -928,14 +963,15 @@ class Weasel(QMainWindow):
                 gridLayoutColour.addWidget(btnReset,0,2)
                 gridLayoutColour.addWidget(btnUpdate,1,1)
                 gridLayoutColour.addWidget(btnExport,1,2)
+                gridLayoutColour.addWidget(groupBoxLevels, 2, 0, 1, 3)
                 cmbColours.activated.connect(lambda:
                       self.updateUserSelectedColourTable(cmbColours, chkApply, imv))
-
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
+                gridLayoutColour.addWidget(groupBoxLevels, 1, 0, 1, 3)
 
-            return cmbColours
+            return cmbColours, spinBoxIntensity, spinBoxContrast
         except Exception as e:
             print('Error in WEASEL.setUpColourTools: ' + str(e))
             logger.error('Error in WEASEL.setUpColourTools: ' + str(e))
@@ -1141,6 +1177,7 @@ class Weasel(QMainWindow):
 
     def displayPixelArray(self, pixelArray, 
                           lblImageMissing, lblPixelValue,
+                          spinBoxIntensity, spinBoxContrast,
                           imv, colourTable, cmbColours, lut=None,
                           multiImage=False, deleteButton=None):
         try:
@@ -1192,7 +1229,10 @@ class Weasel(QMainWindow):
                         maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                         1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
 
-                
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2 
+                width = (maximumValue) - abs(minimumValue)
+                spinBoxIntensity.setValue(centre)
+                spinBoxContrast.setValue(width)
                 self.blockHistogramSignals(imv, True)
                 imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
                 self.blockHistogramSignals(imv, False)
@@ -1277,7 +1317,7 @@ class Weasel(QMainWindow):
             #layout.addWidget(chkBoxSyncROI)
             
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            cmbColours = self.setUpColourTools(layout, imv, True,  
+            cmbColours, spinBoxIntensity, spinBoxContrast = self.setUpColourTools(layout, imv, True,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID )
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
@@ -1285,6 +1325,7 @@ class Weasel(QMainWindow):
             self.displayPixelArray(pixelArray, 
                                    lblImageMissing,
                                    lblPixelValue,
+                                   spinBoxIntensity, spinBoxContrast,
                                  imv, colourTable,
                                  cmbColours, lut)  
         except Exception as e:
@@ -1456,7 +1497,7 @@ class Weasel(QMainWindow):
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
 
             imageSlider = QSlider(Qt.Horizontal)
-            cmbColours = self.setUpColourTools(layout, imv, False,  
+            cmbColours, spinBoxIntensity, spinBoxContrast = self.setUpColourTools(layout, imv, False,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
                                                imageSlider, showReleaseButton=True)
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
@@ -1480,7 +1521,9 @@ class Weasel(QMainWindow):
                                                 lblImageMissing,
                                                 lblPixelValue,
                                                 btnDeleteDICOMFile,
-                                                imv, cmbColours,
+                                                imv, 
+                                                spinBoxIntensity, spinBoxContrast,
+                                                cmbColours,
                                                 subWindow))
             imageSlider.valueChanged.connect(
                   lambda: self.updateROIMeanValue(self.getROIOject(viewBox), 
@@ -1495,7 +1538,9 @@ class Weasel(QMainWindow):
                                   lblImageMissing,
                                   lblPixelValue,
                                   btnDeleteDICOMFile,
-                                  imv, cmbColours,
+                                  imv, 
+                                  spinBoxIntensity, spinBoxContrast,
+                                  cmbColours,
                                   subWindow)
             
             btnDeleteDICOMFile.clicked.connect(lambda:
@@ -1591,7 +1636,9 @@ class Weasel(QMainWindow):
 
     def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
-                        btnDeleteDICOMFile, imv, cmbColours,
+                        btnDeleteDICOMFile, imv, 
+                        spinBoxIntensity, spinBoxContrast,
+                        cmbColours,
                         subWindow):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
@@ -1619,6 +1666,7 @@ class Weasel(QMainWindow):
                 self.displayPixelArray(pixelArray, 
                                        lblImageMissing,
                                        lblPixelValue,
+                                       spinBoxIntensity, spinBoxContrast,
                                        imv, colourTable,
                                        cmbColours, lut,
                                        multiImage=True,  
@@ -1811,6 +1859,7 @@ class Weasel(QMainWindow):
             self.img1 = pg.ImageItem(border='w')
             viewBox1.addItem(self.img1)
             self.imv1 = pg.ImageView(view=viewBox1, imageItem=self.img1)
+            self.imv1.ui.histogram.hide()
             self.imv1.ui.roiBtn.hide()
             self.imv1.ui.menuBtn.hide()
 
@@ -1820,6 +1869,7 @@ class Weasel(QMainWindow):
             self.img2 = pg.ImageItem(border='w')
             viewBox2.addItem(self.img2)
             self.imv2 = pg.ImageView(view=viewBox2, imageItem=self.img2)
+            self.imv2.ui.histogram.hide()
             self.imv2.ui.roiBtn.hide()
             self.imv2.ui.menuBtn.hide()
 
@@ -1829,6 +1879,7 @@ class Weasel(QMainWindow):
             self.img3 = pg.ImageItem(border='w')
             viewBox3.addItem(self.img3)
             self.imv3 = pg.ImageView(view=viewBox3, imageItem=self.img3)
+            self.imv3.ui.histogram.hide()
             self.imv3.ui.roiBtn.hide()
             self.imv3.ui.menuBtn.hide()
 
