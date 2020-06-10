@@ -943,13 +943,16 @@ class Weasel(QMainWindow):
 
     def setUpLabels(self, layout):
         logger.info("WEASEL.setUpLabels called")
+        gridLayout = QGridLayout()
+        layout.addLayout(gridLayout)
+       
         lblROIMeanValue = QLabel("<h4>ROI Mean Value:</h4>")
         lblROIMeanValue.show()
-        layout.addWidget(lblROIMeanValue)
+        gridLayout.addWidget(lblROIMeanValue, 0, 0)
         
         lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
         lblPixelValue.show()
-        layout.addWidget(lblPixelValue)
+        gridLayout.addWidget(lblPixelValue, 0, 1)
         return lblPixelValue, lblROIMeanValue
 
 
