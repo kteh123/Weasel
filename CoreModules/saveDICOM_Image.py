@@ -58,7 +58,8 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
+def updateDicom(objWeasel, isImage=True, applyUserSelection=False, 
+                imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
     try:
         if isImage:
             objWeasel.displayMessageSubWindow(
@@ -73,6 +74,8 @@ def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', 
             objWeasel.setMsgWindowProgBarValue(1)
             objWeasel.closeMessageSubWindow()
         else:
+            #Update the series of images with one colour table and
+            #one set of levels or
             imagePathList = objWeasel.getImagePathList(studyID, seriesID)
             #Iterate through list of images and update each image
             numImages = len(imagePathList)
@@ -83,9 +86,20 @@ def updateDicom(objWeasel, isImage=True, imagePath='', seriesID='', studyID='', 
             imageCounter = 0
             for imagePath in imagePathList:
                 dataset = readDICOM_Image.getDicomDataset(imagePath)
-                # Update the DICOM file                                      
-                updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
-                saveDicomToFile(updatedDataset, output_path=imagePath)
+                if applyUserSelection:
+                    #apply user selected colour table & levels to 
+                    #individual images in the series
+                    selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
+                    levels = [minLevel, maxLevel]
+                    if selectedColourMap != 'default':
+                         # Update an individual DICOM file in the series                                      
+                        updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                                                           lut=lut, levels=levels)
+                        saveDicomToFile(updatedDataset, output_path=imagePath)
+                else:   
+                    # Update every DICOM file in the series                                     
+                    updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
+                    saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
                 print('image counter = {}'.format(imageCounter))
                 objWeasel.setMsgWindowProgBarValue(imageCounter)

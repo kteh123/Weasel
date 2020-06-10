@@ -908,6 +908,7 @@ class Weasel(QMainWindow):
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table')
             btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, imageOnlySelected,
+                                                                         self.applyUserSelection,
                                                                          lblHiddenImagePath.text(),
                                                                          lblHiddenSeriesID.text(),
                                                                          lblHiddenStudyID.text(),
@@ -928,7 +929,7 @@ class Weasel(QMainWindow):
                 gridLayoutColour.addWidget(btnUpdate,1,1)
                 gridLayoutColour.addWidget(btnExport,1,2)
                 cmbColours.activated.connect(lambda:
-                      self.updateUserSelectedColourTable(cmbColours, chkApply))
+                      self.updateUserSelectedColourTable(cmbColours, chkApply, imv))
 
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
@@ -1356,7 +1357,7 @@ class Weasel(QMainWindow):
         return imageViewer, layout, lblImageMissing, subWindow
 
 
-    def updateUserSelectedColourTable(self, cmbColours, chkBox):
+    def updateUserSelectedColourTable(self, cmbColours, chkBox, imv):
         if chkBox.isChecked() == False:
             self.applyUserSelection = True
             colourTable = cmbColours.currentText()
@@ -1375,6 +1376,9 @@ class Weasel(QMainWindow):
         
             #Associate the selected colour table with the image being viewed
             self.userSelectionList[imageNumber][1] =  colourTable
+            minLevel, maxLevel = imv.getLevels()
+            self.userSelectionList[imageNumber][2] =  minLevel
+            self.userSelectionList[imageNumber][3] =  maxLevel
 
 
     def returnImageNumber(self):
@@ -1390,6 +1394,7 @@ class Weasel(QMainWindow):
         if self.applyUserSelection:
             imageNumber = self.returnImageNumber()
             if imageNumber != -1:
+                #self.userSelectionList[imageNumber][1] =  cmbColours.currentText()
                 minLevel, maxLevel = imv.getLevels()
                 self.userSelectionList[imageNumber][2] =  minLevel
                 self.userSelectionList[imageNumber][3] =  maxLevel
