@@ -986,7 +986,7 @@ class Weasel(QMainWindow):
             startSlider.setSingleStep(1)
             startSlider.setTickPosition(QSlider.TicksBothSides)
             startSlider.setTickInterval(1)
-            startSlider.sliderReleased.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
+            startSlider.sliderMoved.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
                      startSlider, endSlider))
             sliderLayout.addWidget(startSlider)
 
@@ -996,7 +996,7 @@ class Weasel(QMainWindow):
             endSlider.setSingleStep(1)
             endSlider.setTickPosition(QSlider.TicksBothSides)
             endSlider.setTickInterval(1)
-            endSlider.sliderReleased.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
+            endSlider.sliderMoved.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
                      startSlider, endSlider))
             sliderLayout.addWidget(endSlider)
 
@@ -2286,12 +2286,14 @@ class Weasel(QMainWindow):
             for study in studies:
                 studyID = study.attrib['id']
                 studyBranch = QTreeWidgetItem(self.treeView)
+                studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                 studyBranch.setExpanded(True)
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
                     self.seriesBranchList.append(seriesBranch)
+                    seriesBranch.setText(0, "Series - {}".format(seriesID))
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
