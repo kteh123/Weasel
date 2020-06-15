@@ -2,11 +2,11 @@
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
-        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, 
+        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
         QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
-        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox,  
-        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem)
+        QTreeWidget, QTreeWidgetItem, QGridLayout, QSlider, QCheckBox, QLayout, 
+        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem, QFrame)
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 #import pyqtgraph as pg import statement for pip installed version of pyqtGraph
@@ -877,15 +877,48 @@ class Weasel(QMainWindow):
             imageSlider.setValue(imageNumber)
                     
 
-    def changeLevels(self, imv, spinBoxIntensity, spinBoxContrast):
-        center = spinBoxIntensity.value()
-        width = spinBoxContrast.value()
-        halfWidth = width/2
+    def changeSpinBoxLevels(self, imv, spinBoxIntensity, spinBoxContrast, 
+                     startSlider, endSlider):
+        try:
+            center = spinBoxIntensity.value()
+            width = spinBoxContrast.value()
+            halfWidth = width/2
 
-        minValue = center - halfWidth
-        maxValue = center + halfWidth
-        imv.setLevels(minValue, maxValue)
-        imv.show()
+            minValue = int(center - halfWidth)
+            maxValue = int(center + halfWidth)
+            print("centre{}, width{}, minvalue{}, maxvalue{}".format(center, width, minValue, maxValue))
+            imv.setLevels(minValue, maxValue)
+            imv.show()
+
+            startSlider.setMaximum(center)
+            startSlider.setMinimum(center - width)
+            startSlider.setValue(minValue)
+
+            endSlider.setMaximum(center + width)
+            endSlider.setMinimum(center)
+            endSlider.setValue(maxValue)
+        except Exception as e:
+            print('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
+            logger.error('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
+
+
+    def changeSliderLevels(self, imv, spinBoxContrast, 
+                     startSlider, endSlider):
+        try:
+            minValue = startSlider.value()
+            maxValue = endSlider.value()
+            #print("centre{}, width{}, minvalue{}, maxvalue{}".format(center, width, minValue, maxValue))
+            imv.setLevels(minValue, maxValue)
+            imv.show()
+
+            width = abs(maxValue - minValue)
+            spinBoxContrast.blockSignals(True)
+            spinBoxContrast.setValue(width)
+            spinBoxContrast.blockSignals(False)
+
+        except Exception as e:
+            print('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
+            logger.error('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
 
 
     def setUpColourTools(self, layout, imv,
@@ -936,23 +969,52 @@ class Weasel(QMainWindow):
             #Levels widgets
             lblIntensity = QLabel("Centre (Intensity)")
             lblContrast = QLabel("Width (Contrast)")
-            levelsSlider = QSlider(Qt.Horizontal)
-            levelsSlider.setSingleStep(1)
-            levelsSlider.setTickPosition(QSlider.TicksBothSides)
-            levelsSlider.setTickInterval(1)
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
+            
+            sliderLayout = QHBoxLayout()
+            sliderLayout.setSizeConstraint(QLayout.SetMinimumSize)
+            sliderLayout.setContentsMargins(5, 2, 5, 2)
+            sliderLayout.setSpacing(0)
+
+            slidersFrame = QFrame()
+            #slidersFrame.setMaximumSize(QtCore.QSize(16777215, 25))
+            slidersFrame.setFrameShape(QFrame.Panel)
+            slidersFrame.setFrameShadow(QFrame.Raised) 
+            slidersFrame.setLineWidth(1.0)
+            sliderLayout.addWidget(slidersFrame)
+
+            startSlider = QSlider(Qt.Horizontal)
+            startSlider.setSingleStep(1)
+            startSlider.setTickPosition(QSlider.TicksBothSides)
+            startSlider.setTickInterval(1)
+            startSlider.sliderReleased.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
+                     startSlider, endSlider))
+            sliderLayout.addWidget(startSlider)
+
+           # changeSliderLevels(self, imv, spinBoxContrast,startSlider, endSlider)
+
+            endSlider = QSlider(Qt.Horizontal)
+            endSlider.setSingleStep(1)
+            endSlider.setTickPosition(QSlider.TicksBothSides)
+            endSlider.setTickInterval(1)
+            endSlider.sliderReleased.connect(lambda: self.changeSliderLevels(imv, spinBoxContrast, 
+                     startSlider, endSlider))
+            sliderLayout.addWidget(endSlider)
+
+            spinBoxIntensity = QSpinBox()
+            spinBoxContrast = QSpinBox()
             spinBoxIntensity.setMaximum(1000)
             spinBoxContrast.setMaximum(1000)
             spinBoxIntensity.setWrapping(True)
             spinBoxContrast.setWrapping(True)
-            spinBoxIntensity.valueChanged.connect(lambda: self.changeLevels(imv,spinBoxIntensity, spinBoxContrast ))
-            spinBoxContrast.valueChanged.connect(lambda: self.changeLevels(imv,spinBoxIntensity, spinBoxContrast ))
+            spinBoxIntensity.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+                imv,spinBoxIntensity, spinBoxContrast, startSlider, endSlider ))
+            spinBoxContrast.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+                imv,spinBoxIntensity, spinBoxContrast, startSlider, endSlider ))
             levelsLayout.addWidget(lblIntensity, 0,0)
             levelsLayout.addWidget(spinBoxIntensity, 0, 1)
-            levelsLayout.addWidget(lblContrast, 1,0)
-            levelsLayout.addWidget(spinBoxContrast, 1,1)
-            levelsLayout.addWidget(levelsSlider, 2, 0, 1, 4)
+            levelsLayout.addWidget(lblContrast, 0,2)
+            levelsLayout.addWidget(spinBoxContrast, 0,3)
+            levelsLayout.addLayout(sliderLayout, 1, 0, 1, 4)
 
             gridLayoutColour.addWidget(cmbColours,0,0)
             if showReleaseButton:
@@ -1229,8 +1291,8 @@ class Weasel(QMainWindow):
                         maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                         1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
 
-                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2 
-                width = (maximumValue) - abs(minimumValue)
+                centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
+                width = int((maximumValue) - abs(minimumValue))
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
                 self.blockHistogramSignals(imv, True)
@@ -1317,7 +1379,8 @@ class Weasel(QMainWindow):
             #layout.addWidget(chkBoxSyncROI)
             
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            cmbColours, spinBoxIntensity, spinBoxContrast = self.setUpColourTools(layout, imv, True,  
+            cmbColours, spinBoxIntensity, spinBoxContrast = \
+                self.setUpColourTools(layout, imv, True,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID )
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
@@ -1497,7 +1560,8 @@ class Weasel(QMainWindow):
             lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
 
             imageSlider = QSlider(Qt.Horizontal)
-            cmbColours, spinBoxIntensity, spinBoxContrast = self.setUpColourTools(layout, imv, False,  
+            cmbColours, spinBoxIntensity, spinBoxContrast = \
+                self.setUpColourTools(layout, imv, False,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
                                                imageSlider, showReleaseButton=True)
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
