@@ -249,19 +249,20 @@ def getColourmap(imagePath):
                 colourmapName = None
         else:
             colourmapName = None
-        
         if len(dataset.dir("PaletteColor"))>=3 and dataset.PhotometricInterpretation == 'PALETTE COLOR':
             if colourmapName is None:
                 colourmapName = 'custom'
             redColour = list(dataset.RedPaletteColorLookupTableData)
             greenColour = list(dataset.GreenPaletteColorLookupTableData)
             blueColour = list(dataset.BluePaletteColorLookupTableData)
-            #Alpha too? Not really needed though...
-            colours = np.transpose([redColour, greenColour, blueColour])
-            lut = np.unique(colours/256, axis=0).tolist()
+            redLut = list(struct.unpack('<' + ('H' * dataset.RedPaletteColorLookupTableDescriptor[0]), bytearray(redColour)))
+            greenLut = list(struct.unpack('<' + ('H' * dataset.GreenPaletteColorLookupTableDescriptor[0]), bytearray(greenColour)))
+            blueLut = list(struct.unpack('<' + ('H' * dataset.BluePaletteColorLookupTableDescriptor[0]), bytearray(blueColour)))
+            colours = np.transpose([redLut, greenLut, blueLut])
+            normaliseFactor = int(np.power(2, dataset.RedPaletteColorLookupTableDescriptor[2]))
+            lut = (colours/normaliseFactor).tolist()
         else:
             lut = None
-        
         return colourmapName, lut
     except Exception as e:
         print('Error in function readDICOM_Image.getColourmap: ' + str(e))

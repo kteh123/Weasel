@@ -145,16 +145,11 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
         new colourmap selected in the interface. It will have more features in the future.
     """
     try:
-        _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomData)
-        if (colourmap is not None) and (colourmap is not 'Grey Scale') and (colourmap is not 'Custom') and isinstance(colourmap, str):
+        if (colourmap is not None) and (colourmap is not 'gray') and (colourmap is not 'custom') and isinstance(colourmap, str):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap
-            if (flagReal is False and flagImaginary is False): 
-                dicomData.PixelRepresentation = 0
             pixelArray = dicomData.pixel_array
-            # Because it's updating a DICOM file, I'm leaving the rescale factors aside, they're not relevant here. 
-            # pixelArray should come directly from the DICOM file.
             minValue = int(np.amin(pixelArray))
             maxValue = int(np.amax(pixelArray))
             numberOfValues = int(maxValue - minValue)
@@ -162,16 +157,20 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
             stringType = ('SS' if minValue < 0 else 'US')
             totalBytes = dicomData.BitsAllocated
+            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+            constant = (2 if minValue < 0 else 1)
+            dicomData.add_new('0x00280106', stringType, minValue)
+            dicomData.add_new('0x00280107', stringType, maxValue)
             dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
             dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
             dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
             dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
             dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+                2,totalBytes) /constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
             dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
-        elif (colourmap is 'Custom') and (isinstance(lut, np.ndarray)):
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+        elif (colourmap is 'custom') and (isinstance(lut, np.ndarray)):
             # 2 options here!
             # a) We create a matplotlib.cm named "Custom" on the UI and then pass it here and process as usual
             # b) We colourmap is not a string and we parse the array with the 3 columns/columns
@@ -179,8 +178,6 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap
-            if (flagReal is False) and (flagImaginary is False):
-                dicomData.PixelRepresentation = 0
             pixelArray = dicomData.pixel_array
             minValue = int(np.amin(pixelArray))
             maxValue = int(np.amax(pixelArray))
@@ -189,18 +186,22 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             colorsList = lut(np.linspace(0, 1, numberOfValues))
             stringType = ('SS' if minValue < 0 else 'US')
             totalBytes = dicomData.BitsAllocated
+            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+            constant = (2 if minValue < 0 else 1)
+            dicomData.add_new('0x00280106', stringType, minValue)
+            dicomData.add_new('0x00280107', stringType, maxValue)
             dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
             dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
             dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
             # The next lines may change slightly depending on the format of colorsList
             dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
             dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+                2,totalBytes)/constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
             dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
         
-        if (levels is not None) and (flagReal is False) and (flagImaginary is False):
+        if (levels is not None):
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 #Min and Max - how to get them for enhanced MRI?!
                 slope = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1))
@@ -208,14 +209,18 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             else:
                 slope = float(getattr(dicomData, 'RescaleSlope', 1))
                 intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
-            minValue = int((levels[0] - intercept) / slope)
-            maxValue = int((levels[1] - intercept) / slope)
-            if minValue > 0:
-                stringType = 'US'
-            else:
-                stringType = 'SS'
-            dicomData.add_new('0x00280106', stringType, minValue)
-            dicomData.add_new('0x00280107', stringType, maxValue)
+            #minValue = int((levels[0] - intercept) / slope)
+            #maxValue = int((levels[1] - intercept) / slope)
+            center = int((levels[0] - intercept) / slope)
+            width = int((levels[1] - intercept) / slope)
+            # if minValue > 0:
+            #     stringType = 'US'
+            # else:
+            #     stringType = 'SS'
+            # dicomData.add_new('0x00280106', stringType, minValue)
+            # dicomData.add_new('0x00280107', stringType, maxValue)
+            dicomData.add_new('0x00281050', 'DS', center)
+            dicomData.add_new('0x00281051', 'DS', width)
 
         return dicomData
         
