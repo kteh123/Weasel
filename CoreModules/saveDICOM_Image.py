@@ -9,6 +9,9 @@ import random
 from matplotlib import cm
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def returnFilePath(imagePath, suffix, new_path=None):
@@ -104,6 +107,84 @@ def updateDicom(objWeasel, isImage=True, applyUserSelection=False,
                 print('image counter = {}'.format(imageCounter))
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
             objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
+
+
+def updateSingleDicomImage(objWeasel,  
+                imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
+    try:
+        logger.info("In saveDICOM_Image.updateSingleDicomImage")
+        objWeasel.displayMessageSubWindow(
+            "<H4>Updating 1 DICOM file</H4>",
+            "Updating DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(1)
+        objWeasel.setMsgWindowProgBarValue(0)
+        dataset = readDICOM_Image.getDicomDataset(imagePath)
+        updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
+        saveDicomToFile(updatedDataset, output_path=imagePath)
+        objWeasel.setMsgWindowProgBarValue(1)
+        objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
+
+
+def updateDicomSeriesOneColour(objWeasel, seriesID, studyID, colourmap, levels):
+    """Updates every image in a DICOM series with one colour table and
+            one set of levels"""
+    try:
+            logger.info("In saveDICOM_Image.updateDicomSeriesOneColour")
+            lut = None
+            imagePathList = objWeasel.getImagePathList(studyID, seriesID)
+            #Iterate through list of images and update each image
+            numImages = len(imagePathList)
+            objWeasel.displayMessageSubWindow(
+              "<H4>Updating {} DICOM files</H4>".format(numImages),
+              "Updating DICOM images")
+            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            imageCounter = 0
+            for imagePath in imagePathList:
+                dataset = readDICOM_Image.getDicomDataset(imagePath) 
+                # Update every DICOM file in the series                                     
+                updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
+                saveDicomToFile(updatedDataset, output_path=imagePath)
+                imageCounter += 1
+                print('image counter = {}'.format(imageCounter))
+                objWeasel.setMsgWindowProgBarValue(imageCounter)
+            objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateDicomSeriesOneColour: ' + str(e))
+
+
+def updateDicomSeriesManyColours(objWeasel, seriesID, studyID):
+    """Updates one or more images in a DICOM series with a different table and set of levels"""
+    try:
+        logger.info("In saveDICOM_Image.updateDicomSeriesManyColours")
+        lut = None
+        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
+        #Iterate through list of images and update each image
+        numImages = len(imagePathList)
+        objWeasel.displayMessageSubWindow(
+            "<H4>Updating {} DICOM files</H4>".format(numImages),
+            "Updating DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(numImages)
+        imageCounter = 0
+        for imagePath in imagePathList:
+            dataset = readDICOM_Image.getDicomDataset(imagePath)
+            #apply user selected colour table & levels to 
+            #individual images in the series
+            selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
+            levels = [minLevel, maxLevel]
+            if selectedColourMap != 'default':
+                    # Update an individual DICOM file in the series                                      
+                updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                                                    lut=lut, levels=levels)
+                saveDicomToFile(updatedDataset, output_path=imagePath)
+      
+            imageCounter += 1
+            print('image counter = {}'.format(imageCounter))
+            objWeasel.setMsgWindowProgBarValue(imageCounter)
+        objWeasel.closeMessageSubWindow()
     except Exception as e:
         print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
 
@@ -209,18 +290,18 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             else:
                 slope = float(getattr(dicomData, 'RescaleSlope', 1))
                 intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
-            #minValue = int((levels[0] - intercept) / slope)
-            #maxValue = int((levels[1] - intercept) / slope)
-            center = int((levels[0] - intercept) / slope)
-            width = int((levels[1] - intercept) / slope)
-            # if minValue > 0:
-            #     stringType = 'US'
-            # else:
-            #     stringType = 'SS'
-            # dicomData.add_new('0x00280106', stringType, minValue)
-            # dicomData.add_new('0x00280107', stringType, maxValue)
-            dicomData.add_new('0x00281050', 'DS', center)
-            dicomData.add_new('0x00281051', 'DS', width)
+            minValue = int((levels[0] - intercept) / slope)
+            maxValue = int((levels[1] - intercept) / slope)
+           #center = int((levels[0] - intercept) / slope)
+            #width = int((levels[1] - intercept) / slope)
+            if minValue > 0:
+                stringType = 'US'
+            else:
+                stringType = 'SS'
+            dicomData.add_new('0x00280106', stringType, minValue)
+            dicomData.add_new('0x00280107', stringType, maxValue)
+            #dicomData.add_new('0x00281050', 'DS', center)
+           #dicomData.add_new('0x00281051', 'DS', width)
 
         return dicomData
         

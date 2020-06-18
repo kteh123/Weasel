@@ -781,6 +781,22 @@ class Weasel(QMainWindow):
         spinBoxWidth.blockSignals(False)
         
 
+    def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, imv):
+        try:
+            seriesID = seriesIDLabel.text()
+            studyID = studyIDLabel.text()
+            if self.overRideSavedColourmapAndLevels:
+                levels = []
+                levels = imv.getLevels()
+                colourMap = cmbColours.currentText()
+                saveDICOM_Image.updateDicomSeriesOneColour(self, seriesID, studyID, colourMap, levels)
+            if self.applyUserSelection:
+                saveDICOM_Image.updateDicomSeriesManyColours(self, seriesID, studyID)
+        except Exception as e:
+            print('Error in Weasel.updateDICOM: ' + str(e))
+            logger.error('Error in Weasel.updateDICOM: ' + str(e))
+
+
     def setPgColourMap(self, cm_name, imv, cmbColours=None, lut=None):
         try:
             if cm_name == None:
@@ -808,7 +824,7 @@ class Weasel(QMainWindow):
             logger.error('Error in setPgColourMap: ' + str(e))
 
 
-    def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox): 
+    def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox=None): 
         try:
             colourTable = cmbColours.currentText()
             if colourTable == 'custom':
@@ -818,8 +834,10 @@ class Weasel(QMainWindow):
             self.setPgColourMap(colourTable, imv)
             if chkBox.isChecked():
                 self.overRideSavedColourmapAndLevels = True
+                self.applyUserSelection = False
             else:
                 self.overRideSavedColourmapAndLevels = False
+                #self.applyUserSelection = True
 
         except Exception as e:
             print('Error in WEASEL.applyColourTableAndLevelsToSeries: ' + str(e))
@@ -885,17 +903,37 @@ class Weasel(QMainWindow):
             imageSlider.setValue(imageNumber)
                     
 
-    def changeSpinBoxLevels(self, imv, spinBoxIntensity, spinBoxContrast):
+    def changeSpinBoxLevels(self, imv, spinBoxIntensity, spinBoxContrast, chkBox=None):
         try:
             centre = spinBoxIntensity.value()
             width = spinBoxContrast.value()
             halfWidth = width/2
 
-            minValue = int(centre - halfWidth)
-            maxValue = int(centre + halfWidth)
-            print("centre{}, width{}, minvalue{}, maxvalue{}".format(centre, width, minValue, maxValue))
-            imv.setLevels(minValue, maxValue)
+            minLevel = int(centre - halfWidth)
+            maxLevel = int(centre + halfWidth)
+            print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
+            imv.setLevels(minLevel, maxLevel)
             imv.show()
+
+            if chkBox:
+                if chkBox.isChecked() == False:
+                    self.applyUserSelection = True
+            
+                    if self.selectedImagePath:
+                        self.selectedImageName = os.path.basename(self.selectedImagePath)
+                    else:
+                        #Workaround for the fact that when the first image is displayed,
+                        #somehow self.selectedImageName looses its value.
+                        self.selectedImageName = os.path.basename(self.imageList[0])
+                    #print("self.selectedImageName={}".format(self.selectedImageName))
+                    imageNumber = -1
+                    for imageNumber, image in enumerate(self.userSelectionList):
+                        if image[0] == self.selectedImageName:
+                            break
+        
+                    #Associate the levels with the image being viewed
+                    self.userSelectionList[imageNumber][2] =  minLevel
+                    self.userSelectionList[imageNumber][3] =  maxLevel
         except Exception as e:
             print('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
             logger.error('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
@@ -934,32 +972,47 @@ class Weasel(QMainWindow):
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table')
-            btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateDicom(self, imageOnlySelected,
-                                                                         self.applyUserSelection,
-                                                                         lblHiddenImagePath.text(),
-                                                                         lblHiddenSeriesID.text(),
-                                                                         lblHiddenStudyID.text(),
-                                                                         colourmap=cmbColours.currentText(),
-                                                                         levels=imv.getLevels()))
 
+            if imageOnlySelected:
+                #only a single image is being viewed
+                 btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
+                                          (self, lblHiddenImagePath.text(),
+                                                 lblHiddenSeriesID.text(),
+                                                 lblHiddenStudyID.text(),
+                                                 cmbColours.currentText(),
+                                                 lut=None, levels=imv.getLevels()))
+            else:
+                btnUpdate.clicked.connect(lambda:self.updateDICOM(lblHiddenSeriesID,lblHiddenStudyID,cmbColours,imv))
+            
+  
             btnExport = QPushButton('Export') 
             btnExport.setToolTip('Exports the image to an external graphic file.')
             btnExport.clicked.connect(lambda:self.exportImage(imv, cmbColours))
 
-            #Levels widgets
+            #Levels 
             lblIntensity = QLabel("Centre (Intensity)")
             lblContrast = QLabel("Width (Contrast)")
             lblIntensity.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             lblContrast.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             
+            spinBoxIntensity.setMinimum(-100000.00)
+            spinBoxContrast.setMinimum(-100000.00)
             spinBoxIntensity.setMaximum(100000.00)
             spinBoxContrast.setMaximum(100000.00)
             spinBoxIntensity.setWrapping(True)
             spinBoxContrast.setWrapping(True)
-            spinBoxIntensity.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+
+            if imageOnlySelected:
+                spinBoxIntensity.valueChanged.connect(lambda: self.changeSpinBoxLevels(
                 imv,spinBoxIntensity, spinBoxContrast))
-            spinBoxContrast.valueChanged.connect(lambda: self.changeSpinBoxLevels(
-                imv,spinBoxIntensity, spinBoxContrast ))
+                spinBoxContrast.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+                imv,spinBoxIntensity, spinBoxContrast))
+            else:
+                spinBoxIntensity.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+                    imv,spinBoxIntensity, spinBoxContrast, chkApply))
+                spinBoxContrast.valueChanged.connect(lambda: self.changeSpinBoxLevels(
+                    imv,spinBoxIntensity, spinBoxContrast, chkApply ))
+
             levelsLayout.addWidget(lblIntensity, 0,0)
             levelsLayout.addWidget(spinBoxIntensity, 0, 1)
             levelsLayout.addWidget(lblContrast, 0,2)
@@ -1675,8 +1728,10 @@ class Weasel(QMainWindow):
                 lut = None
                 if self.overRideSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
+                    self.minLevel, self.maxLevel = imv.getLevels()
                 elif self.applyUserSelection:
                     colourTable, self.minLevel, self.maxLevel = self.returnUserSelection(currentImageNumber)  
+
                     if colourTable == 'default':
                         colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
