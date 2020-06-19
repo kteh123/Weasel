@@ -103,8 +103,6 @@ class Weasel(QMainWindow):
         self.selectedImageName = ''
         self.overRideSavedColourmapAndLevels = False #Set to True if the user checks the Apply Selection tick box
         self.applyUserSelection = False
-        self.minLevel = 0
-        self.maxLevel = 50
         self.userSelectionList = []
         self.ApplyStyleSheet()
          # XML reader object to process XML configuration file
@@ -757,7 +755,7 @@ class Weasel(QMainWindow):
             imv= pg.ImageView(view=plotItem, imageItem=img)
             histogramObject = imv.getHistogramWidget().getHistogram()
             histogramObject.sigLevelsChanged.connect(lambda: self.getHistogramLevels(imv, spinBoxCentre, spinBoxWidth))
-            histogramObject.sigLevelsChanged.connect(lambda: self.updateUserSelectedLevels(imv))
+            #histogramObject.sigLevelsChanged.connect(lambda: self.updateUserSelectedLevels(spinBoxCentre, spinBoxWidth))
             #imv.ui.histogram.hide()
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
@@ -770,15 +768,15 @@ class Weasel(QMainWindow):
 
 
     def getHistogramLevels(self, imv, spinBoxCentre, spinBoxWidth):
-        self.minLevel, self.maxLevel = imv.getLevels()
-        width = self.maxLevel - self.minLevel
-        centre = self.minLevel + (width/2)
-        spinBoxCentre.blockSignals(True)
-        spinBoxWidth.blockSignals(True)
+        minLevel, maxLevel = imv.getLevels()
+        width = maxLevel - minLevel
+        centre = minLevel + (width/2)
+        #spinBoxCentre.blockSignals(True)
+        #spinBoxWidth.blockSignals(True)
         spinBoxCentre.setValue(centre)
         spinBoxWidth.setValue(width)
-        spinBoxCentre.blockSignals(False)
-        spinBoxWidth.blockSignals(False)
+        #spinBoxCentre.blockSignals(False)
+       # spinBoxWidth.blockSignals(False)
         
 
     def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, imv):
@@ -851,12 +849,13 @@ class Weasel(QMainWindow):
             fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
                                                        directory=imageName, 
                                                        filter="*.png")
+            minLevel, maxLevel = imv.getLevels()
             if fileName:
                 self.exportImageViaMatplotlib(imv.getImageItem().image,
                                               fileName, 
                                               colourTable,
-                                              self.minLevel,
-                                              self.maxLevel)
+                                              minLevel,
+                                              maxLevel)
         except Exception as e:
             print('Error in WEASEL.exportImage: ' + str(e))
             logger.error('Error in WEASEL.exportImage: ' + str(e))
@@ -887,7 +886,7 @@ class Weasel(QMainWindow):
         for image in self.userSelectionList:
             image[1] = 'default'
             image[2] = -1
-            image[3] = 0
+            image[3] = -1
          #reload current image to display it without user selected 
          #colour table and levels.
          #This is done by advancing the slider and then moving it i 
@@ -909,8 +908,8 @@ class Weasel(QMainWindow):
             width = spinBoxContrast.value()
             halfWidth = width/2
 
-            minLevel = int(centre - halfWidth)
-            maxLevel = int(centre + halfWidth)
+            minLevel = centre - halfWidth
+            maxLevel = centre + halfWidth
             print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
             imv.setLevels(minLevel, maxLevel)
             imv.show()
@@ -925,15 +924,18 @@ class Weasel(QMainWindow):
                         #Workaround for the fact that when the first image is displayed,
                         #somehow self.selectedImageName looses its value.
                         self.selectedImageName = os.path.basename(self.imageList[0])
-                    #print("self.selectedImageName={}".format(self.selectedImageName))
-                    imageNumber = -1
+                    print("self.selectedImageName={}".format(self.selectedImageName))
+                    
                     for imageNumber, image in enumerate(self.userSelectionList):
                         if image[0] == self.selectedImageName:
+                            #Associate the levels with the image being viewed
+                            self.userSelectionList[imageNumber][2] =  centre
+                            self.userSelectionList[imageNumber][3] =  width
                             break
         
-                    #Associate the levels with the image being viewed
-                    self.userSelectionList[imageNumber][2] =  minLevel
-                    self.userSelectionList[imageNumber][3] =  maxLevel
+                    
+
+                    print("self.userSelectionLists {}".format(self.userSelectionList))
         except Exception as e:
             print('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
             logger.error('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
@@ -1029,7 +1031,7 @@ class Weasel(QMainWindow):
                 gridLayoutColour.addWidget(btnExport,1,2)
                 gridLayoutColour.addWidget(groupBoxLevels, 2, 0, 1, 3)
                 cmbColours.activated.connect(lambda:
-                      self.updateUserSelectedColourTable(cmbColours, chkApply, imv))
+                      self.updateUserSelectedColourTable(cmbColours, chkApply, spinBoxIntensity, spinBoxContrast))
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
@@ -1239,12 +1241,90 @@ class Weasel(QMainWindow):
             logger.error('Error in removeROI: ' + str(e))           
 
 
-    def displayPixelArray(self, pixelArray, 
+    #def displayPixelArray(self, pixelArray, 
+    #                      lblImageMissing, lblPixelValue,
+    #                      spinBoxIntensity, spinBoxContrast,
+    #                      imv, colourTable, cmbColours, lut=None,
+    #                      multiImage=False, deleteButton=None):
+    #    try:
+    #        if deleteButton is None:
+    #            #create dummy button to prevent runtime error
+    #            deleteButton = QPushButton()
+    #            deleteButton.hide()
+
+    #        #Check that pixel array holds an image & display it
+    #        if pixelArray is None:
+    #            lblImageMissing.show()
+    #            if multiImage:
+    #                deleteButton.hide()
+    #            imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+    #        else:
+    #            if self.overRideSavedColourmapAndLevels or self.applyUserSelection:
+    #                if self.minLevel != -1:
+    #                    minimumValue = self.minLevel
+    #                else:
+    #                    try:
+    #                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+    #                        slope = float(getattr(dataset, 'RescaleSlope', 1))
+    #                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+    #                        minimumValue = dataset.SmallestImagePixelValue * slope + intercept
+    #                    except:
+    #                        minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+    #                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+    #                if self.maxLevel != 0:
+    #                    maximumValue = self.maxLevel
+    #                else:
+    #                    try:
+    #                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+    #                        slope = float(getattr(dataset, 'RescaleSlope', 1))
+    #                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+    #                        maximumValue = dataset.LargestImagePixelValue * slope + intercept
+    #                    except:
+    #                        maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+    #                        1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+    #            else:
+    #                try:
+    #                    dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+    #                    slope = float(getattr(dataset, 'RescaleSlope', 1))
+    #                    intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+    #                    minimumValue = dataset.SmallestImagePixelValue * slope + intercept
+    #                    maximumValue = dataset.LargestImagePixelValue * slope + intercept
+    #                except:
+    #                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+    #                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+    #                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+    #                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+
+    #            centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
+    #            width = int((maximumValue) - abs(minimumValue))
+    #            spinBoxIntensity.setValue(centre)
+    #            spinBoxContrast.setValue(width)
+    #            self.blockHistogramSignals(imv, True)
+    #            imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
+    #            self.blockHistogramSignals(imv, False)
+        
+    #            #Add Colour Table or look up table To Image
+    #            self.setPgColourMap(colourTable, imv, cmbColours, lut)
+
+    #            lblImageMissing.hide()   
+  
+    #            imv.getView().scene().sigMouseMoved.connect(
+    #               lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+
+    #            if multiImage:
+    #                deleteButton.show()
+    #    except Exception as e:
+    #        print('Error in displayPixelArray: ' + str(e))
+    #        logger.error('Error in displayPixelArray: ' + str(e)) 
+
+
+    def displayPixelArray(self, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue,
                           spinBoxIntensity, spinBoxContrast,
                           imv, colourTable, cmbColours, lut=None,
                           multiImage=False, deleteButton=None):
         try:
+            logger.info("displayPixelArray called")
             if deleteButton is None:
                 #create dummy button to prevent runtime error
                 deleteButton = QPushButton()
@@ -1257,44 +1337,60 @@ class Weasel(QMainWindow):
                     deleteButton.hide()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                if self.overRideSavedColourmapAndLevels or self.applyUserSelection:
-                    if self.minLevel != -1:
-                        minimumValue = self.minLevel
+                if self.overRideSavedColourmapAndLevels:
+                    centre = spinBoxIntensity.value()
+                    width = spinBoxContrast.value()
+                    minimumValue = centre - (width/2)
+                    maximumValue = centre + (width/2)
+                elif self.applyUserSelection:
+                    _, centre, width = self.returnUserSelection(currentImageNumber) 
+                    print("displayPixelArray currentImageNumber{}, centre{}, width{}".format(currentImageNumber,centre, width ))
+                    if centre != -1:
+                        minimumValue = centre - (width/2)
+                        maximumValue = centre + (width/2)
                     else:
                         try:
                             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                             slope = float(getattr(dataset, 'RescaleSlope', 1))
                             intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                            minimumValue = dataset.SmallestImagePixelValue * slope + intercept
+                            centre = dataset.WindowCenter * slope + intercept
+                            width = dataset.WindowWidth * slope
+                            minimumValue = int(centre - width/2)
                         except:
                             minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
                             1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                    if self.maxLevel != 0:
-                        maximumValue = self.maxLevel
-                    else:
+                            centre = spinBoxIntensity.value()
+                            width = spinBoxContrast.value()
+       
                         try:
                             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                             slope = float(getattr(dataset, 'RescaleSlope', 1))
                             intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                            maximumValue = dataset.LargestImagePixelValue * slope + intercept
+                            centre = dataset.WindowCenter * slope + intercept
+                            width = dataset.WindowWidth * slope
+                            maximumValue = int(centre + width/2)
                         except:
                             maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                             1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                            centre = spinBoxIntensity.value()
+                            width = spinBoxContrast.value()
                 else:
                     try:
                         dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                         slope = float(getattr(dataset, 'RescaleSlope', 1))
                         intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                        minimumValue = dataset.SmallestImagePixelValue * slope + intercept
-                        maximumValue = dataset.LargestImagePixelValue * slope + intercept
+                        centre = dataset.WindowCenter * slope + intercept
+                        width = dataset.WindowWidth * slope
+                        maximumValue = int(centre + width/2)
+                        minimumValue = int(centre - width/2)
                     except:
                         minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
                         1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                         maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                         1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                        centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
+                        width = int((maximumValue) - abs(minimumValue))
 
-                centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
-                width = int((maximumValue) - abs(minimumValue))
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
                 self.blockHistogramSignals(imv, True)
@@ -1390,7 +1486,7 @@ class Weasel(QMainWindow):
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
             self.displayColourTableInComboBox(cmbColours, colourTable)
-            self.displayPixelArray(pixelArray, 
+            self.displayPixelArray(pixelArray, 0,
                                    lblImageMissing,
                                    lblPixelValue,
                                    spinBoxIntensity, spinBoxContrast,
@@ -1469,7 +1565,7 @@ class Weasel(QMainWindow):
         return imageViewer, layout, lblImageMissing, subWindow
 
 
-    def updateUserSelectedColourTable(self, cmbColours, chkBox, imv):
+    def updateUserSelectedColourTable(self, cmbColours, chkBox, spinBoxIntensity, spinBoxContrast):
         if chkBox.isChecked() == False:
             self.applyUserSelection = True
             colourTable = cmbColours.currentText()
@@ -1486,11 +1582,10 @@ class Weasel(QMainWindow):
                 if image[0] == self.selectedImageName:
                     break
         
-            #Associate the selected colour table with the image being viewed
+            #Associate the selected colour table, contrast & intensity with the image being viewed
             self.userSelectionList[imageNumber][1] =  colourTable
-            minLevel, maxLevel = imv.getLevels()
-            self.userSelectionList[imageNumber][2] =  minLevel
-            self.userSelectionList[imageNumber][3] =  maxLevel
+            #self.userSelectionList[imageNumber][2] =  spinBoxIntensity.value()
+            #self.userSelectionList[imageNumber][3] =  spinBoxContrast.value()
 
 
     def returnImageNumber(self):
@@ -1502,21 +1597,19 @@ class Weasel(QMainWindow):
         return imageNumber
 
 
-    def updateUserSelectedLevels(self, imv):
+    def updateUserSelectedLevels(self, spinBoxIntensity, spinBoxContrast):
         if self.applyUserSelection:
             imageNumber = self.returnImageNumber()
             if imageNumber != -1:
-                #self.userSelectionList[imageNumber][1] =  cmbColours.currentText()
-                minLevel, maxLevel = imv.getLevels()
-                self.userSelectionList[imageNumber][2] =  minLevel
-                self.userSelectionList[imageNumber][3] =  maxLevel
+                self.userSelectionList[imageNumber][2] =  spinBoxIntensity.value()
+                self.userSelectionList[imageNumber][3] =  spinBoxContrast.value()
 
 
     def returnUserSelection(self, imageNumber):
         colourTable = self.userSelectionList[imageNumber][1] 
-        minLevel = self.userSelectionList[imageNumber][2]
-        maxLevel = self.userSelectionList[imageNumber][3] 
-        return colourTable, minLevel, maxLevel
+        intensity = self.userSelectionList[imageNumber][2]
+        contrast = self.userSelectionList[imageNumber][3] 
+        return colourTable, intensity, contrast
 
 
     def displayMultiImageSubWindow(self, imageList, studyName, 
@@ -1529,11 +1622,12 @@ class Weasel(QMainWindow):
         try:
             logger.info("WEASEL displayMultiImageSubWindow called")
             self.overRideSavedColourmapAndLevels = False
+            self.applyUserSelection = False
             imageViewer, layout, lblImageMissing, subWindow = \
                 self.setUpImageViewerSubWindow()
 
             #set up list of lists to hold user selected colour table and level data
-            self.userSelectionList = [[os.path.basename(imageName), 'default', -1, 0]
+            self.userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
                                 for imageName in imageList]
             
             
@@ -1728,18 +1822,17 @@ class Weasel(QMainWindow):
                 lut = None
                 if self.overRideSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
-                    self.minLevel, self.maxLevel = imv.getLevels()
                 elif self.applyUserSelection:
-                    colourTable, self.minLevel, self.maxLevel = self.returnUserSelection(currentImageNumber)  
-
+                    colourTable, _, _ = self.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
                         colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
                     colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
-                    self.displayColourTableInComboBox(cmbColours, colourTable)
 
-                self.displayPixelArray(pixelArray, 
+                self.displayColourTableInComboBox(cmbColours, colourTable)
+
+                self.displayPixelArray(pixelArray, currentImageNumber, 
                                        lblImageMissing,
                                        lblPixelValue,
                                        spinBoxIntensity, spinBoxContrast,
