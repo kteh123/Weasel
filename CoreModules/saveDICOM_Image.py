@@ -173,8 +173,10 @@ def updateDicomSeriesManyColours(objWeasel, seriesID, studyID):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             #apply user selected colour table & levels to 
             #individual images in the series
-            selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
-            levels = [minLevel, maxLevel]
+            # selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
+            selectedColourMap, center, width = objWeasel.returnUserSelection(imageCounter)
+            # levels = [minLevel, maxLevel]
+            levels = [center, width]
             if selectedColourMap != 'default':
                     # Update an individual DICOM file in the series                                      
                 updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
@@ -290,18 +292,19 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
             else:
                 slope = float(getattr(dicomData, 'RescaleSlope', 1))
                 intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
-            minValue = int((levels[0] - intercept) / slope)
-            maxValue = int((levels[1] - intercept) / slope)
-           #center = int((levels[0] - intercept) / slope)
-            #width = int((levels[1] - intercept) / slope)
-            if minValue > 0:
-                stringType = 'US'
-            else:
-                stringType = 'SS'
-            dicomData.add_new('0x00280106', stringType, minValue)
-            dicomData.add_new('0x00280107', stringType, maxValue)
-            #dicomData.add_new('0x00281050', 'DS', center)
-           #dicomData.add_new('0x00281051', 'DS', width)
+            #minValue = int((levels[0] - intercept) / slope)
+            #maxValue = int((levels[1] - intercept) / slope)
+            center = int((levels[0] - intercept) / slope)
+            width = int(levels[1] / slope)
+            # width = int((levels[1] - intercept) / slope)
+            #if minValue > 0:
+                #stringType = 'US'
+            #else:
+                #stringType = 'SS'
+            #dicomData.add_new('0x00280106', stringType, minValue)
+            #dicomData.add_new('0x00280107', stringType, maxValue)
+            dicomData.add_new('0x00281050', 'DS', center)
+            dicomData.add_new('0x00281051', 'DS', width)
 
         return dicomData
         
