@@ -924,7 +924,6 @@ class Weasel(QMainWindow):
                         #Workaround for the fact that when the first image is displayed,
                         #somehow self.selectedImageName looses its value.
                         self.selectedImageName = os.path.basename(self.imageList[0])
-                    print("self.selectedImageName={}".format(self.selectedImageName))
                     
                     for imageNumber, image in enumerate(self.userSelectionList):
                         if image[0] == self.selectedImageName:
@@ -932,10 +931,6 @@ class Weasel(QMainWindow):
                             self.userSelectionList[imageNumber][2] =  centre
                             self.userSelectionList[imageNumber][3] =  width
                             break
-        
-                    
-
-                    print("self.userSelectionLists {}".format(self.userSelectionList))
         except Exception as e:
             print('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
             logger.error('Error in WEASEL.changeSpinBoxLevels: ' + str(e))
@@ -1239,83 +1234,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in removeROI: ' + str(e))
             logger.error('Error in removeROI: ' + str(e))           
-
-
-    #def displayPixelArray(self, pixelArray, 
-    #                      lblImageMissing, lblPixelValue,
-    #                      spinBoxIntensity, spinBoxContrast,
-    #                      imv, colourTable, cmbColours, lut=None,
-    #                      multiImage=False, deleteButton=None):
-    #    try:
-    #        if deleteButton is None:
-    #            #create dummy button to prevent runtime error
-    #            deleteButton = QPushButton()
-    #            deleteButton.hide()
-
-    #        #Check that pixel array holds an image & display it
-    #        if pixelArray is None:
-    #            lblImageMissing.show()
-    #            if multiImage:
-    #                deleteButton.hide()
-    #            imv.setImage(np.array([[0,0,0],[0,0,0]]))  
-    #        else:
-    #            if self.overRideSavedColourmapAndLevels or self.applyUserSelection:
-    #                if self.minLevel != -1:
-    #                    minimumValue = self.minLevel
-    #                else:
-    #                    try:
-    #                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-    #                        slope = float(getattr(dataset, 'RescaleSlope', 1))
-    #                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-    #                        minimumValue = dataset.SmallestImagePixelValue * slope + intercept
-    #                    except:
-    #                        minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-    #                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-    #                if self.maxLevel != 0:
-    #                    maximumValue = self.maxLevel
-    #                else:
-    #                    try:
-    #                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-    #                        slope = float(getattr(dataset, 'RescaleSlope', 1))
-    #                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-    #                        maximumValue = dataset.LargestImagePixelValue * slope + intercept
-    #                    except:
-    #                        maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-    #                        1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-    #            else:
-    #                try:
-    #                    dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-    #                    slope = float(getattr(dataset, 'RescaleSlope', 1))
-    #                    intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-    #                    minimumValue = dataset.SmallestImagePixelValue * slope + intercept
-    #                    maximumValue = dataset.LargestImagePixelValue * slope + intercept
-    #                except:
-    #                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-    #                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-    #                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-    #                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-
-    #            centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
-    #            width = int((maximumValue) - abs(minimumValue))
-    #            spinBoxIntensity.setValue(centre)
-    #            spinBoxContrast.setValue(width)
-    #            self.blockHistogramSignals(imv, True)
-    #            imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
-    #            self.blockHistogramSignals(imv, False)
-        
-    #            #Add Colour Table or look up table To Image
-    #            self.setPgColourMap(colourTable, imv, cmbColours, lut)
-
-    #            lblImageMissing.hide()   
-  
-    #            imv.getView().scene().sigMouseMoved.connect(
-    #               lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
-
-    #            if multiImage:
-    #                deleteButton.show()
-    #    except Exception as e:
-    #        print('Error in displayPixelArray: ' + str(e))
-    #        logger.error('Error in displayPixelArray: ' + str(e)) 
 
 
     def displayPixelArray(self, pixelArray, currentImageNumber,
