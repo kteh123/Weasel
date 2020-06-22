@@ -61,138 +61,6 @@ def saveDicomOutputResult(newFilePath, imagePath, pixelArray, suffix, series_id=
         print('Error in function saveDICOM_Image.saveDicomOutputResult: ' + str(e))
 
 
-def updateDicom(objWeasel, isImage=True, applyUserSelection=False, 
-                imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
-    try:
-        if isImage:
-            objWeasel.displayMessageSubWindow(
-              "<H4>Updating 1 DICOM file</H4>",
-              "Updating DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(1)
-            objWeasel.setMsgWindowProgBarValue(0)
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            # Update the DICOM file
-            updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
-            saveDicomToFile(updatedDataset, output_path=imagePath)
-            objWeasel.setMsgWindowProgBarValue(1)
-            objWeasel.closeMessageSubWindow()
-        else:
-            #Update the series of images with one colour table and
-            #one set of levels or
-            imagePathList = objWeasel.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and update each image
-            numImages = len(imagePathList)
-            objWeasel.displayMessageSubWindow(
-              "<H4>Updating {} DICOM files</H4>".format(numImages),
-              "Updating DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
-            imageCounter = 0
-            for imagePath in imagePathList:
-                dataset = readDICOM_Image.getDicomDataset(imagePath)
-                if applyUserSelection:
-                    #apply user selected colour table & levels to 
-                    #individual images in the series
-                    selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
-                    levels = [minLevel, maxLevel]
-                    if selectedColourMap != 'default':
-                         # Update an individual DICOM file in the series                                      
-                        updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
-                                                           lut=lut, levels=levels)
-                        saveDicomToFile(updatedDataset, output_path=imagePath)
-                else:   
-                    # Update every DICOM file in the series                                     
-                    updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
-                    saveDicomToFile(updatedDataset, output_path=imagePath)
-                imageCounter += 1
-                print('image counter = {}'.format(imageCounter))
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
-            objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
-
-
-def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
-                imagePath='', seriesID='', studyID='', colourmap=None,  lut=None):
-    try:
-        logger.info("In saveDICOM_Image.updateSingleDicomImage")
-        objWeasel.displayMessageSubWindow(
-            "<H4>Updating 1 DICOM file</H4>",
-            "Updating DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(1)
-        objWeasel.setMsgWindowProgBarValue(0)
-        dataset = readDICOM_Image.getDicomDataset(imagePath)
-        levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-        updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
-        saveDicomToFile(updatedDataset, output_path=imagePath)
-        objWeasel.setMsgWindowProgBarValue(1)
-        objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
-
-
-def updateDicomSeriesOneColour(objWeasel, seriesID, studyID, colourmap, levels):
-    """Updates every image in a DICOM series with one colour table and
-            one set of levels"""
-    try:
-            logger.info("In saveDICOM_Image.updateDicomSeriesOneColour")
-            lut = None
-            imagePathList = objWeasel.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and update each image
-            numImages = len(imagePathList)
-            objWeasel.displayMessageSubWindow(
-              "<H4>Updating {} DICOM files</H4>".format(numImages),
-              "Updating DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
-            imageCounter = 0
-            for imagePath in imagePathList:
-                dataset = readDICOM_Image.getDicomDataset(imagePath) 
-                # Update every DICOM file in the series                                     
-                updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
-                saveDicomToFile(updatedDataset, output_path=imagePath)
-                imageCounter += 1
-                print('image counter = {}'.format(imageCounter))
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
-            objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateDicomSeriesOneColour: ' + str(e))
-
-
-def updateDicomSeriesManyColours(objWeasel, seriesID, studyID, colourMap):
-    """Updates one or more images in a DICOM series with a different table and set of levels"""
-    try:
-        logger.info("In saveDICOM_Image.updateDicomSeriesManyColours")
-        lut = None
-        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
-        #Iterate through list of images and update each image
-        numImages = len(imagePathList)
-        objWeasel.displayMessageSubWindow(
-            "<H4>Updating {} DICOM files</H4>".format(numImages),
-            "Updating DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(numImages)
-        imageCounter = 0
-        for imagePath in imagePathList:
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            #apply user selected colour table & levels to 
-            #individual images in the series
-            # selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
-            selectedColourMap, center, width = objWeasel.returnUserSelection(imageCounter)
-            # levels = [minLevel, maxLevel]
-            
-            if selectedColourMap != 'default' or center != -1 or width != -1:
-                    # Update an individual DICOM file in the series
-                levels = [center, width]  
-                updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
-                                                    lut=lut, levels=levels)
-                saveDicomToFile(updatedDataset, output_path=imagePath)
-      
-            imageCounter += 1
-            print('image counter = {}'.format(imageCounter))
-            objWeasel.setMsgWindowProgBarValue(imageCounter)
-        objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
-
-
 def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
@@ -222,97 +90,80 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
         else:
             return None
     except Exception as e:
-        print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))     
+        print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))
 
 
-def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
-    """This function takes a DICOM Object and changes it to include the
-        new colourmap selected in the interface. It will have more features in the future.
-    """
+def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
+                imagePath='', seriesID='', studyID='', colourmap=None, lut=None):
     try:
-        if (colourmap is not None) and (colourmap is not 'gray') \
-            and (colourmap is not 'custom') and (colourmap is not 'default') and isinstance(colourmap, str):
-            dicomData.PhotometricInterpretation = 'PALETTE COLOR'
-            dicomData.RGBLUTTransferFunction = 'TABLE'
-            dicomData.ContentLabel = colourmap
-            pixelArray = dicomData.pixel_array
-            minValue = int(np.amin(pixelArray))
-            maxValue = int(np.amax(pixelArray))
-            numberOfValues = int(maxValue - minValue)
-            arrayForRGB = np.arange(0, numberOfValues)
-            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
-            stringType = ('SS' if minValue < 0 else 'US')
-            totalBytes = dicomData.BitsAllocated
-            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
-            constant = (2 if minValue < 0 else 1)
-            dicomData.add_new('0x00280106', stringType, minValue)
-            dicomData.add_new('0x00280107', stringType, maxValue)
-            dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
-            dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
-            dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
-            dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
-            dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2,totalBytes) /constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
-            dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
-        elif (colourmap is 'custom') and (isinstance(lut, np.ndarray)):
-            # 2 options here!
-            # a) We create a matplotlib.cm named "Custom" on the UI and then pass it here and process as usual
-            # b) We colourmap is not a string and we parse the array with the 3 columns/columns
-            # Below will be an attempt to situation b). It will need testing!  
-            dicomData.PhotometricInterpretation = 'PALETTE COLOR'
-            dicomData.RGBLUTTransferFunction = 'TABLE'
-            dicomData.ContentLabel = colourmap
-            pixelArray = dicomData.pixel_array
-            minValue = int(np.amin(pixelArray))
-            maxValue = int(np.amax(pixelArray))
-            numberOfValues = int(maxValue - minValue)
-            # This is where I need to confirm whether it's correct - colorsList from lut
-            colorsList = lut(np.linspace(0, 1, numberOfValues))
-            stringType = ('SS' if minValue < 0 else 'US')
-            totalBytes = dicomData.BitsAllocated
-            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
-            constant = (2 if minValue < 0 else 1)
-            dicomData.add_new('0x00280106', stringType, minValue)
-            dicomData.add_new('0x00280107', stringType, maxValue)
-            dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
-            dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
-            dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
-            # The next lines may change slightly depending on the format of colorsList
-            dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
-            dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2,totalBytes)/constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
-            dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
-        
-        if (levels is not None):
-            if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
-                #Min and Max - how to get them for enhanced MRI?!
-                slope = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1))
-                intercept = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0))
-            else:
-                slope = float(getattr(dicomData, 'RescaleSlope', 1))
-                intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
-            #minValue = int((levels[0] - intercept) / slope)
-            #maxValue = int((levels[1] - intercept) / slope)
-            center = int((levels[0] - intercept) / slope)
-            width = int(levels[1] / slope)
-            # width = int((levels[1] - intercept) / slope)
-            #if minValue > 0:
-                #stringType = 'US'
-            #else:
-                #stringType = 'SS'
-            #dicomData.add_new('0x00280106', stringType, minValue)
-            #dicomData.add_new('0x00280107', stringType, maxValue)
-            dicomData.add_new('0x00281050', 'DS', center)
-            dicomData.add_new('0x00281051', 'DS', width)
-
-        return dicomData
-        
+        logger.info("In saveDICOM_Image.updateSingleDicomImage")
+        objWeasel.displayMessageSubWindow(
+            "<H4>Updating 1 DICOM file</H4>",
+            "Updating DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(1)
+        objWeasel.setMsgWindowProgBarValue(0)
+        dataset = readDICOM_Image.getDicomDataset(imagePath)
+        levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
+        updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
+        saveDicomToFile(updatedDataset, output_path=imagePath)
+        objWeasel.setMsgWindowProgBarValue(1)
+        objWeasel.closeMessageSubWindow()
     except Exception as e:
-        print('Error in function updateSingleDicom: ' + str(e))
+        print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
+
+
+def updateDicomSeriesOneColour(objWeasel, seriesID, studyID, colourmap, levels, lut=None):
+    """Updates every image in a DICOM series with one colour table and
+            one set of levels"""
+    try:
+        logger.info("In saveDICOM_Image.updateDicomSeriesOneColour")
+        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
+        #Iterate through list of images and update each image
+        numImages = len(imagePathList)
+        objWeasel.displayMessageSubWindow(
+            "<H4>Updating {} DICOM files</H4>".format(numImages),
+            "Updating DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(numImages)
+        imageCounter = 0
+        for imagePath in imagePathList:
+            dataset = readDICOM_Image.getDicomDataset(imagePath) 
+            # Update every DICOM file in the series                                     
+            updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
+            saveDicomToFile(updatedDataset, output_path=imagePath)
+            imageCounter += 1
+            objWeasel.setMsgWindowProgBarValue(imageCounter)
+        objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateDicomSeriesOneColour: ' + str(e))
+
+
+def updateDicomSeriesManyColours(objWeasel, seriesID, studyID, colourMap, lut=None):
+    """Updates one or more images in a DICOM series with a different table and set of levels"""
+    try:
+        logger.info("In saveDICOM_Image.updateDicomSeriesManyColours")
+        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
+        #Iterate through list of images and update each image
+        numImages = len(imagePathList)
+        objWeasel.displayMessageSubWindow(
+            "<H4>Updating {} DICOM files</H4>".format(numImages),
+            "Updating DICOM images")
+        objWeasel.setMsgWindowProgBarMaxValue(numImages)
+        imageCounter = 0
+        for imagePath in imagePathList:
+            dataset = readDICOM_Image.getDicomDataset(imagePath)
+            # Apply user selected colour table & levels to individual images in the series
+            selectedColourMap, center, width = objWeasel.returnUserSelection(imageCounter)
+            if selectedColourMap != 'default' or center != -1 or width != -1:
+                # Update an individual DICOM file in the series
+                levels = [center, width]  
+                updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                                                    levels=levels, lut=lut)
+                saveDicomToFile(updatedDataset, output_path=imagePath)
+            imageCounter += 1
+            objWeasel.setMsgWindowProgBarValue(imageCounter)
+        objWeasel.closeMessageSubWindow()
+    except Exception as e:
+        print('Error in saveDICOM_Image.updateDicomSeriesManyColours: ' + str(e))
 
 
 def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
@@ -407,10 +258,10 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         if parametric_map is not None:
             param.editDicom(newDicom, imageArray, parametric_map)
 
-        # INSERT IF ENHANCED MRI HERE - First attempt below
-        # for each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
         numberFrames = 1
         enhancedArrayInt = []
+        # If Enhanced MRI, then:
+        # For each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
         if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
             if len(np.shape(imageArray)) == 2:
                 newDicom.NumberOfFrames = 1
@@ -423,8 +274,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 tempArray = imageArray
             else:
                 tempArray = np.squeeze(imageArray[index, ...])
-            #colourmap = "hot"
-            if (int(np.amin(imageArray)) < 0) and colourmap is None:
+    
+            if int(np.amin(imageArray)) < 0:
                 newDicom.PixelRepresentation = 1
                 target = (np.power(2, dicomData.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
@@ -481,33 +332,35 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
             imageArrayInt = np.rollaxis(imageArrayInt, 0)
 
         # Add colourmap here
+        # colourmap = "hot"
         if colourmap is not None:
             newDicom.PhotometricInterpretation = 'PALETTE COLOR'
             newDicom.RGBLUTTransferFunction = 'TABLE'
             newDicom.ContentLabel = colourmap
-            newDicom.PixelRepresentation = 0
-            arrayForRGB = np.arange(0, target.flatten()[0])
+            minValue = int(np.amin(imageArrayInt))
+            numberOfValues = int(np.amax(imageArrayInt))
+            arrayForRGB = np.arange(0, numberOfValues)
             colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
-            stringType = ('SS' if int(np.amin(imageArrayInt)) < 0 else 'US')
-            numberOfValues = len(arrayForRGB)
-            minValue = int(np.amin(arrayForRGB))
-            totalBytes = newDicom.BitsAllocated
+            stringType = ('SS' if minValue < 0 else 'US')
+            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+            constant = (2 if minValue < 0 else 1)
+            totalBytes = dicomData.BitsAllocated
             newDicom.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
             newDicom.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
             newDicom.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
             newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
             newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2,totalBytes) - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+                2,totalBytes)/constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
             newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
 
         # Take Phase Encoding into account
         if newDicom.InPlanePhaseEncodingDirection == "ROW" or len(np.shape(imageArrayInt)) > 2:
             imageArrayInt = np.transpose(imageArrayInt, axes=(1,0))
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]
-        newDicom.WindowCenter = int(target.flatten()[0]/2)
+        newDicom.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
         newDicom.WindowWidth = int(target.flatten()[0])
         newDicom.PixelData = imageArrayInt.tobytes()
 
@@ -515,6 +368,86 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         return newDicom
     except Exception as e:
         print('Error in function createNewSingleDicom: ' + str(e))
+
+
+def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
+    """This function takes a DICOM Object and changes it to include the
+        new colourmap selected in the interface. It will have more features in the future.
+    """
+    try:
+        if (colourmap is not None) and (colourmap != 'gray') \
+            and (colourmap != 'custom') and (colourmap != 'default') and isinstance(colourmap, str):
+            dicomData.PhotometricInterpretation = 'PALETTE COLOR'
+            dicomData.RGBLUTTransferFunction = 'TABLE'
+            dicomData.ContentLabel = colourmap
+            pixelArray = dicomData.pixel_array
+            minValue = int(np.amin(pixelArray))
+            maxValue = int(np.amax(pixelArray))
+            numberOfValues = int(maxValue - minValue)
+            arrayForRGB = np.arange(0, numberOfValues)
+            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
+            stringType = ('SS' if minValue < 0 else 'US')
+            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+            constant = (2 if minValue < 0 else 1)
+            totalBytes = dicomData.BitsAllocated
+            dicomData.add_new('0x00280106', stringType, minValue)
+            dicomData.add_new('0x00280107', stringType, maxValue)
+            dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+            dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2,totalBytes) /constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+            dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+        # elif (colourmap is 'custom') and (isinstance(lut, np.ndarray)):
+        #     # 2 options here!
+        #     # a) We create a matplotlib.cm named "Custom" on the UI and then pass it here and process as usual
+        #     # b) We colourmap is not a string and we parse the array with the 3 columns/columns
+        #     # Below will be an attempt to situation b). It will need testing!  
+        #     dicomData.PhotometricInterpretation = 'PALETTE COLOR'
+        #     dicomData.RGBLUTTransferFunction = 'TABLE'
+        #     dicomData.ContentLabel = colourmap
+        #     pixelArray = dicomData.pixel_array
+        #     minValue = int(np.amin(pixelArray))
+        #     maxValue = int(np.amax(pixelArray))
+        #     numberOfValues = int(maxValue - minValue)
+        #     # This is where I need to confirm whether it's correct - colorsList from lut
+        #     colorsList = lut(np.linspace(0, 1, numberOfValues))
+        #     stringType = ('SS' if minValue < 0 else 'US')
+        #     totalBytes = dicomData.BitsAllocated
+        #     dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+        #     constant = (2 if minValue < 0 else 1)
+        #     dicomData.add_new('0x00280106', stringType, minValue)
+        #     dicomData.add_new('0x00280107', stringType, maxValue)
+        #     dicomData.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+        #     dicomData.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+        #     dicomData.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+        #     # The next lines may change slightly depending on the format of colorsList
+        #     dicomData.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+        #         2, totalBytes)/constant - 1)*value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+        #     dicomData.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+        #         2,totalBytes)/constant - 1)*value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+        #     dicomData.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+        #         2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+        
+        if (levels is not None):
+            if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
+                slope = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1))
+                intercept = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0))
+            else:
+                slope = float(getattr(dicomData, 'RescaleSlope', 1))
+                intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
+            center = (levels[0] - intercept) / slope
+            width = levels[1] / slope
+            dicomData.add_new('0x00281050', 'DS', center)
+            dicomData.add_new('0x00281051', 'DS', width)
+
+        return dicomData
+        
+    except Exception as e:
+        print('Error in function updateSingleDicom: ' + str(e))
 
     
 def saveDicomToFile(dicomData, output_path=None):
