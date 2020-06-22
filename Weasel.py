@@ -950,7 +950,7 @@ class Weasel(QMainWindow):
             groupBoxLevels.setLayout(levelsLayout)
             layout.addWidget(groupBoxColour)
 
-            chkApply = QCheckBox("Apply Selection")
+            chkApply = QCheckBox("Apply Selection to the whole series")
             chkApply.stateChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, 
                                                                                         cmbColours, 
                                                                                         chkApply))
@@ -1275,7 +1275,7 @@ class Weasel(QMainWindow):
                             intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                             centre = dataset.WindowCenter * slope + intercept
                             width = dataset.WindowWidth * slope
-                            minimumValue = int(centre - width/2)
+                            minimumValue = centre - width/2
                         except:
                             minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
                             1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
@@ -1288,7 +1288,7 @@ class Weasel(QMainWindow):
                             intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                             centre = dataset.WindowCenter * slope + intercept
                             width = dataset.WindowWidth * slope
-                            maximumValue = int(centre + width/2)
+                            maximumValue = centre + width/2
                         except:
                             maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                             1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
@@ -1301,15 +1301,15 @@ class Weasel(QMainWindow):
                         intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                         centre = dataset.WindowCenter * slope + intercept
                         width = dataset.WindowWidth * slope
-                        maximumValue = int(centre + width/2)
-                        minimumValue = int(centre - width/2)
+                        maximumValue = centre + width/2
+                        minimumValue = centre - width/2
                     except:
                         minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
                         1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                         maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                         1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                        centre = int(minimumValue + (abs(maximumValue) - abs(minimumValue))/2)
-                        width = int((maximumValue) - abs(minimumValue))
+                        centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                        width = maximumValue - abs(minimumValue)
 
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
