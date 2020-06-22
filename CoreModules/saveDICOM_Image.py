@@ -111,8 +111,8 @@ def updateDicom(objWeasel, isImage=True, applyUserSelection=False,
         print('Error in saveDICOM_Image.updateToDicom: ' + str(e))
 
 
-def updateSingleDicomImage(objWeasel,  
-                imagePath='', seriesID='', studyID='', colourmap=None, lut=None, levels=None):
+def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
+                imagePath='', seriesID='', studyID='', colourmap=None,  lut=None):
     try:
         logger.info("In saveDICOM_Image.updateSingleDicomImage")
         objWeasel.displayMessageSubWindow(
@@ -121,6 +121,7 @@ def updateSingleDicomImage(objWeasel,
         objWeasel.setMsgWindowProgBarMaxValue(1)
         objWeasel.setMsgWindowProgBarValue(0)
         dataset = readDICOM_Image.getDicomDataset(imagePath)
+        levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
         updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, lut=lut, levels=levels)
         saveDicomToFile(updatedDataset, output_path=imagePath)
         objWeasel.setMsgWindowProgBarValue(1)
@@ -156,7 +157,7 @@ def updateDicomSeriesOneColour(objWeasel, seriesID, studyID, colourmap, levels):
         print('Error in saveDICOM_Image.updateDicomSeriesOneColour: ' + str(e))
 
 
-def updateDicomSeriesManyColours(objWeasel, seriesID, studyID):
+def updateDicomSeriesManyColours(objWeasel, seriesID, studyID, colourMap):
     """Updates one or more images in a DICOM series with a different table and set of levels"""
     try:
         logger.info("In saveDICOM_Image.updateDicomSeriesManyColours")
@@ -176,9 +177,10 @@ def updateDicomSeriesManyColours(objWeasel, seriesID, studyID):
             # selectedColourMap, minLevel, maxLevel = objWeasel.returnUserSelection(imageCounter)
             selectedColourMap, center, width = objWeasel.returnUserSelection(imageCounter)
             # levels = [minLevel, maxLevel]
-            levels = [center, width]
-            if selectedColourMap != 'default':
-                    # Update an individual DICOM file in the series                                      
+            
+            if selectedColourMap != 'default' or center != -1 or width != -1:
+                    # Update an individual DICOM file in the series
+                levels = [center, width]  
                 updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                     lut=lut, levels=levels)
                 saveDicomToFile(updatedDataset, output_path=imagePath)
@@ -228,7 +230,8 @@ def updateSingleDicom(dicomData, colourmap=None, lut=None, levels=None):
         new colourmap selected in the interface. It will have more features in the future.
     """
     try:
-        if (colourmap is not None) and (colourmap is not 'gray') and (colourmap is not 'custom') and isinstance(colourmap, str):
+        if (colourmap is not None) and (colourmap is not 'gray') \
+            and (colourmap is not 'custom') and (colourmap is not 'default') and isinstance(colourmap, str):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap

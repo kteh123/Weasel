@@ -779,17 +779,16 @@ class Weasel(QMainWindow):
        # spinBoxWidth.blockSignals(False)
         
 
-    def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, imv):
+    def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, spinBoxIntensity, spinBoxContrast):
         try:
             seriesID = seriesIDLabel.text()
             studyID = studyIDLabel.text()
+            colourMap = cmbColours.currentText()
             if self.overRideSavedColourmapAndLevels:
-                levels = []
-                levels = imv.getLevels()
-                colourMap = cmbColours.currentText()
+                levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
                 saveDICOM_Image.updateDicomSeriesOneColour(self, seriesID, studyID, colourMap, levels)
             if self.applyUserSelection:
-                saveDICOM_Image.updateDicomSeriesManyColours(self, seriesID, studyID)
+                saveDICOM_Image.updateDicomSeriesManyColours(self, seriesID, studyID, colourMap)
         except Exception as e:
             print('Error in Weasel.updateDICOM: ' + str(e))
             logger.error('Error in Weasel.updateDICOM: ' + str(e))
@@ -973,13 +972,16 @@ class Weasel(QMainWindow):
             if imageOnlySelected:
                 #only a single image is being viewed
                  btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
-                                          (self, lblHiddenImagePath.text(),
+                                          (self, 
+                                           spinBoxIntensity, spinBoxContrast,
+                                           lblHiddenImagePath.text(),
                                                  lblHiddenSeriesID.text(),
                                                  lblHiddenStudyID.text(),
                                                  cmbColours.currentText(),
-                                                 lut=None, levels=imv.getLevels()))
+                                                 lut=None))
             else:
-                btnUpdate.clicked.connect(lambda:self.updateDICOM(lblHiddenSeriesID,lblHiddenStudyID,cmbColours,imv))
+                btnUpdate.clicked.connect(lambda:self.updateDICOM(lblHiddenSeriesID,lblHiddenStudyID,cmbColours,
+                                                                  spinBoxIntensity, spinBoxContrast))
             
   
             btnExport = QPushButton('Export') 
