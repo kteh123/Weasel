@@ -260,7 +260,12 @@ def getColourmap(imagePath):
             blueLut = list(struct.unpack('<' + ('H' * dataset.BluePaletteColorLookupTableDescriptor[0]), bytearray(blueColour)))
             colours = np.transpose([redLut, greenLut, blueLut])
             normaliseFactor = int(np.power(2, dataset.RedPaletteColorLookupTableDescriptor[2]))
-            lut = (colours/normaliseFactor).tolist()
+            # Fast ColourTable loading
+            colourTable = np.around(colours/normaliseFactor, decimals = 2)
+            indexes = np.unique(colourTable, axis=0, return_index=True)[1]
+            lut = [colourTable[index].tolist() for index in sorted(indexes)]
+            # Full / Complete Colourmap - takes 20 seconds to load each image
+            # lut = (colours/normaliseFactor).tolist()
         else:
             lut = None
         return colourmapName, lut
