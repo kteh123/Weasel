@@ -916,7 +916,7 @@ class Weasel(QMainWindow):
 
             minLevel = centre - halfWidth
             maxLevel = centre + halfWidth
-            print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
+            #print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
             imv.setLevels(minLevel, maxLevel)
             imv.show()
 
@@ -1766,16 +1766,12 @@ class Weasel(QMainWindow):
             imageSlider.setTickInterval(1)
             layout.addWidget(imageSlider)
             imageSlider.valueChanged.connect(
-                  lambda: self.imageSliderMoved(seriesName, 
-                                                imageList, 
-                                                imageSlider.value(),
-                                                lblImageMissing,
-                                                lblPixelValue,
-                                                btnDeleteDICOMFile,
-                                                imv, 
-                                                spinBoxIntensity, spinBoxContrast,
-                                                cmbColours,
-                                                subWindow))
+                  lambda: self.imageROISliderMoved(seriesName, 
+                                                   imageList, 
+                                                   imageSlider.value(),
+                                                   lblImageMissing, 
+                                                   lblPixelValue, 
+                                                   imv, subWindow))
             imageSlider.valueChanged.connect(
                   lambda: self.updateROIMeanValue(self.getROIOject(viewBox), 
                                                img.image, 
@@ -1783,16 +1779,12 @@ class Weasel(QMainWindow):
                                                lblROIMeanValue))
             #print('Num of images = {}'.format(len(imageList)))
             #Display the first image in the viewer
-            self.imageSliderMoved(seriesName, 
-                                  imageList,
-                                  imageSlider.value(),
-                                  lblImageMissing,
-                                  lblPixelValue,
-                                  btnDeleteDICOMFile,
-                                  imv, 
-                                  spinBoxIntensity, spinBoxContrast,
-                                  cmbColours,
-                                  subWindow)
+            self.imageROISliderMoved(seriesName, 
+                                    imageList, 
+                                    imageSlider.value(),
+                                    lblImageMissing, 
+                                    lblPixelValue, 
+                                    imv, subWindow)
             
         except Exception as e:
             print('Error in displayMultiImageROISubWindow: ' + str(e))
@@ -1881,10 +1873,7 @@ class Weasel(QMainWindow):
     
     def imageROISliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
-                        btnDeleteDICOMFile, imv, 
-                        spinBoxIntensity, spinBoxContrast,
-                        cmbColours,
-                        subWindow):
+                        imv, subWindow):
         """On the Multiple Image with ROI Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
@@ -1902,7 +1891,6 @@ class Weasel(QMainWindow):
                           lblImageMissing, lblPixelValue, colourTable,
                           imv)
                 
-
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
                # print("imageSliderMoved after={}".format(self.selectedImagePath))
