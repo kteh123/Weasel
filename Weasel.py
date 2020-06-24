@@ -84,6 +84,9 @@ class Weasel(QMainWindow):
     def __init__(self): 
         """Creates the MDI container."""
         super (). __init__ () 
+        self.setupMenus()
+        self.setupToolBar()
+
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -92,8 +95,6 @@ class Weasel(QMainWindow):
         self.mdiArea = QMdiArea(self.centralwidget)
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
-        self.setupMenus()
-        self.setupToolBar()
         self.currentImagePath = ''
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
@@ -189,6 +190,14 @@ class Weasel(QMainWindow):
             self.viewImageButton.setEnabled(False)
             self.toolsMenu.addAction(self.viewImageButton)
 
+            self.viewImageROIButton = QAction('View Image with &ROI', self)
+            self.viewImageROIButton.setShortcut('Ctrl+R')
+            self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
+            self.viewImageROIButton.triggered.connect(self.viewROIImage)
+            self.viewImageROIButton.setData(bothImagesAndSeries)
+            self.viewImageROIButton.setEnabled(False)
+            self.toolsMenu.addAction(self.viewImageROIButton)
+
             self.viewMetaDataButton = QAction('&View Metadata', self)
             self.viewMetaDataButton.setShortcut('Ctrl+M')
             self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
@@ -196,7 +205,6 @@ class Weasel(QMainWindow):
             self.viewMetaDataButton.setData(bothImagesAndSeries)
             self.viewMetaDataButton.setEnabled(False)
             self.toolsMenu.addAction(self.viewMetaDataButton)
-
         
             self.deleteImageButton = QAction('&Delete Image', self)
             self.deleteImageButton.setShortcut('Ctrl+D')
@@ -743,7 +751,7 @@ class Weasel(QMainWindow):
         histogramObject.blockSignals(block)
 
 
-    def setUpViewBoxForImage(self, imageViewer, layout, spinBoxCentre, spinBoxWidth):
+    def setUpViewBoxForImage(self, imageViewer, layout, spinBoxCentre = None, spinBoxWidth = None):
         try:
             logger.info("WEASEL.setUpViewBoxForImage called")
             #viewBox = imageViewer.addViewBox()
@@ -753,10 +761,9 @@ class Weasel(QMainWindow):
             img = pg.ImageItem(border='w')
             
             imv= pg.ImageView(view=plotItem, imageItem=img)
-            histogramObject = imv.getHistogramWidget().getHistogram()
-            histogramObject.sigLevelsChanged.connect(lambda: self.getHistogramLevels(imv, spinBoxCentre, spinBoxWidth))
-            #histogramObject.sigLevelsChanged.connect(lambda: self.updateUserSelectedLevels(spinBoxCentre, spinBoxWidth))
-            #imv.ui.histogram.hide()
+            if spinBoxCentre and spinBoxWidth:
+                histogramObject = imv.getHistogramWidget().getHistogram()
+                histogramObject.sigLevelsChanged.connect(lambda: self.getHistogramLevels(imv, spinBoxCentre, spinBoxWidth))
             imv.ui.roiBtn.hide()
             imv.ui.menuBtn.hide()
             layout.addWidget(imv)
@@ -950,7 +957,7 @@ class Weasel(QMainWindow):
             groupBoxLevels.setLayout(levelsLayout)
             layout.addWidget(groupBoxColour)
 
-            chkApply = QCheckBox("Apply Selection to the whole series")
+            chkApply = QCheckBox("Apply Selection to whole series")
             chkApply.stateChanged.connect(lambda:self.applyColourTableAndLevelsToSeries(imv, 
                                                                                         cmbColours, 
                                                                                         chkApply))
@@ -1264,7 +1271,6 @@ class Weasel(QMainWindow):
                     maximumValue = centre + (width/2)
                 elif self.applyUserSelection:
                     _, centre, width = self.returnUserSelection(currentImageNumber) 
-                    print("displayPixelArray currentImageNumber{}, centre{}, width{}".format(currentImageNumber,centre, width ))
                     if centre != -1:
                         minimumValue = centre - (width/2)
                         maximumValue = centre + (width/2)
@@ -1314,7 +1320,7 @@ class Weasel(QMainWindow):
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
                 self.blockHistogramSignals(imv, True)
-                imv.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))
+                imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
                 self.blockHistogramSignals(imv, False)
         
                 #Add Colour Table or look up table To Image
@@ -1330,6 +1336,44 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in displayPixelArray: ' + str(e))
             logger.error('Error in displayPixelArray: ' + str(e)) 
+
+
+    def displayROIPixelArray(self, pixelArray, currentImageNumber,
+                          lblImageMissing, lblPixelValue, colourTable,
+                          imv):
+        try:
+            logger.info("displayROIPixelArray called")
+
+            #Check that pixel array holds an image & display it
+            if pixelArray is None:
+                lblImageMissing.show()
+                imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+            else:
+                try:
+                    dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+                    slope = float(getattr(dataset, 'RescaleSlope', 1))
+                    intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                    centre = dataset.WindowCenter * slope + intercept
+                    width = dataset.WindowWidth * slope
+                    maximumValue = centre + width/2
+                    minimumValue = centre - width/2
+                except:
+                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+
+                
+                imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
+                self.setPgColourMap(colourTable, imv)
+                lblImageMissing.hide()   
+  
+                imv.getView().scene().sigMouseMoved.connect(
+                   lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+
+        except Exception as e:
+            print('Error in displayROIPixelArray: ' + str(e))
+            logger.error('Error in displayROIPixelArray: ' + str(e)) 
 
 
     def getPixelValue(self, pos, imv, pixelArray, lblPixelValue):
@@ -1360,61 +1404,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in getPixelValue: ' + str(e))
             logger.error('Error in getPixelValue: ' + str(e))
-
-
-    def displayImageSubWindow(self, derivedImagePath=None):
-        """
-        Creates a subwindow that displays the DICOM image contained in pixelArray. 
-        """
-        try:
-            logger.info("WEASEL displayImageSubWindow called")
-            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-            colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
-            imageViewer, layout, lblImageMissing, subWindow = \
-                self.setUpImageViewerSubWindow()
-            windowTitle = self.getDICOMFileData()
-            subWindow.setWindowTitle(windowTitle)
-
-            if derivedImagePath:
-                lblHiddenImagePath = QLabel(derivedImagePath)
-            else:
-                lblHiddenImagePath = QLabel(self.selectedImagePath)
-            lblHiddenImagePath.hide()
-            lblHiddenStudyID = QLabel()
-            lblHiddenStudyID.hide()
-            lblHiddenSeriesID = QLabel()
-            lblHiddenSeriesID.hide()
-            
-            layout.addWidget(lblHiddenSeriesID)
-            layout.addWidget(lblHiddenStudyID)
-            layout.addWidget(lblHiddenImagePath)
-
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
-            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout, spinBoxIntensity, spinBoxContrast)
-            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
-            cmbColours = self.setUpColourTools(layout, imv, True,  
-                                               lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
-                                               spinBoxIntensity, spinBoxContrast)
-
-            #chkBoxSyncROI = QCheckBox("Synchronise ROIs in other windows with this one")
-            #chkBoxSyncROI.setToolTip("Check to synchronise ROIs in other windows with this one")
-            #layout.addWidget(chkBoxSyncROI)
-            
-            
-            
-            self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
-           
-            self.displayColourTableInComboBox(cmbColours, colourTable)
-            self.displayPixelArray(pixelArray, 0,
-                                   lblImageMissing,
-                                   lblPixelValue,
-                                   spinBoxIntensity, spinBoxContrast,
-                                 imv, colourTable,
-                                 cmbColours, lut)  
-        except Exception as e:
-            print('Error in Weasel.displayImageSubWindow: ' + str(e))
-            logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
 
 
     def synchroniseROIs(self, chkBox):
@@ -1532,6 +1521,57 @@ class Weasel(QMainWindow):
         return colourTable, intensity, contrast
 
 
+    def displayImageSubWindow(self, derivedImagePath=None):
+        """
+        Creates a subwindow that displays the DICOM image contained in pixelArray. 
+        """
+        try:
+            logger.info("WEASEL displayImageSubWindow called")
+            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+            colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+            imageViewer, layout, lblImageMissing, subWindow = \
+                self.setUpImageViewerSubWindow()
+            windowTitle = self.getDICOMFileData()
+            subWindow.setWindowTitle(windowTitle)
+
+            if derivedImagePath:
+                lblHiddenImagePath = QLabel(derivedImagePath)
+            else:
+                lblHiddenImagePath = QLabel(self.selectedImagePath)
+            lblHiddenImagePath.hide()
+            lblHiddenStudyID = QLabel()
+            lblHiddenStudyID.hide()
+            lblHiddenSeriesID = QLabel()
+            lblHiddenSeriesID.hide()
+            
+            layout.addWidget(lblHiddenSeriesID)
+            layout.addWidget(lblHiddenStudyID)
+            layout.addWidget(lblHiddenImagePath)
+
+            spinBoxIntensity = QDoubleSpinBox()
+            spinBoxContrast = QDoubleSpinBox()
+            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout, spinBoxIntensity, spinBoxContrast)
+
+            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
+            lblPixelValue.show()
+            layout.addWidget(lblPixelValue)
+            
+            cmbColours = self.setUpColourTools(layout, imv, True,  
+                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
+                                                spinBoxIntensity, spinBoxContrast)
+            
+            self.displayColourTableInComboBox(cmbColours, colourTable)
+            self.displayPixelArray(pixelArray, 0,
+                                    lblImageMissing,
+                                    lblPixelValue,
+                                    spinBoxIntensity, spinBoxContrast,
+                                    imv, colourTable,
+                                    cmbColours, lut)  
+        except Exception as e:
+            print('Error in Weasel.displayImageSubWindow: ' + str(e))
+            logger.error('Error in Weasel.displayImageSubWindow: ' + str(e)) 
+
+
     def displayMultiImageSubWindow(self, imageList, studyName, 
                      seriesName, sliderPosition = -1):
         """
@@ -1580,14 +1620,138 @@ class Weasel(QMainWindow):
             imageSlider = QSlider(Qt.Horizontal)
 
             img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout, spinBoxIntensity, spinBoxContrast) 
-            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
+            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
+            lblPixelValue.show()
+            layout.addWidget(lblPixelValue)
             cmbColours = self.setUpColourTools(layout, imv, False,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
                                                spinBoxIntensity, spinBoxContrast,
                                                imageSlider, showReleaseButton=True)
-            
 
+            imageSlider.setMinimum(1)
+            imageSlider.setMaximum(len(imageList))
+            if sliderPosition == -1:
+                imageSlider.setValue(1)
+            else:
+                imageSlider.setValue(sliderPosition)
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
+            layout.addWidget(imageSlider)
+            #imageSlider.valueChanged.connect(lambda:self.blockHistogramSignals(imv, True))
+            imageSlider.valueChanged.connect(
+                  lambda: self.imageSliderMoved(seriesName, 
+                                                imageList, 
+                                                imageSlider.value(),
+                                                lblImageMissing,
+                                                lblPixelValue,
+                                                btnDeleteDICOMFile,
+                                                imv, 
+                                                spinBoxIntensity, spinBoxContrast,
+                                                cmbColours,
+                                                subWindow))
+           
+            #Display the first image in the viewer
+            self.imageSliderMoved(seriesName, 
+                                  imageList,
+                                  imageSlider.value(),
+                                  lblImageMissing,
+                                  lblPixelValue,
+                                  btnDeleteDICOMFile,
+                                  imv, 
+                                  spinBoxIntensity, spinBoxContrast,
+                                  cmbColours,
+                                  subWindow)
             
+            btnDeleteDICOMFile.clicked.connect(lambda:
+                                               self.deleteImageInMultiImageViewer(
+                                      self.selectedImagePath, 
+                                      lblHiddenStudyID.text(), 
+                                      lblHiddenSeriesID.text(),
+                                      imageSlider.value()))
+            #imageSlider.sliderReleased.connect(lambda: self.blockHistogramSignals(imv, False))
+        except Exception as e:
+            print('Error in displayMultiImageSubWindow: ' + str(e))
+            logger.error('Error in displayMultiImageSubWindow: ' + str(e))
+
+    
+    def displayImageROISubWindow(self, derivedImagePath=None):
+        """
+        Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
+        """
+        try:
+            logger.info("WEASEL displayImageROISubWindow called")
+            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+            colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+
+            imageViewer, layout, lblImageMissing, subWindow = \
+                self.setUpImageViewerSubWindow()
+            windowTitle = self.getDICOMFileData()
+            subWindow.setWindowTitle(windowTitle)
+
+            if derivedImagePath:
+                lblHiddenImagePath = QLabel(derivedImagePath)
+            else:
+                lblHiddenImagePath = QLabel(self.selectedImagePath)
+            lblHiddenImagePath.hide()
+            lblHiddenStudyID = QLabel()
+            lblHiddenStudyID.hide()
+            lblHiddenSeriesID = QLabel()
+            lblHiddenSeriesID.hide()
+            
+            layout.addWidget(lblHiddenSeriesID)
+            layout.addWidget(lblHiddenStudyID)
+            layout.addWidget(lblHiddenImagePath)
+
+            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout)
+            
+            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
+           
+            self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
+           
+            self.displayROIPixelArray(pixelArray, 0,
+                          lblImageMissing, lblPixelValue,
+                           colourTable,
+                          imv)
+        except Exception as e:
+            print('Error in Weasel.displayImageROISubWindow: ' + str(e))
+            logger.error('Error in Weasel.displayImageROISubWindow: ' + str(e)) 
+
+
+    def displayMultiImageROISubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1):
+        """
+        Creates a subwindow that displays all the DICOM images in a series. 
+        A slider allows the user to navigate  through the images.  
+        The user may create an ROI on the series of images.
+        """
+        try:
+            logger.info("WEASEL displayMultiImageROISubWindow called")
+            imageViewer, layout, lblImageMissing, subWindow = \
+                self.setUpImageViewerSubWindow()
+
+            #Study ID & Series ID are stored locally on the
+            #sub window in case the user wishes to delete an
+            #image in the series.  They may have several series
+            #open at once, so the selected series on the treeview
+            #may not the same as that from which the image is
+            #being deleted.
+
+            lblHiddenImagePath = QLabel('')
+            lblHiddenImagePath.hide()
+            lblHiddenStudyID = QLabel(studyName)
+            lblHiddenStudyID.hide()
+            lblHiddenSeriesID = QLabel(seriesName)
+            lblHiddenSeriesID.hide()
+           
+            layout.addWidget(lblHiddenImagePath)
+            layout.addWidget(lblHiddenSeriesID)
+            layout.addWidget(lblHiddenStudyID)
+           
+            imageSlider = QSlider(Qt.Horizontal)
+
+            img, imv, viewBox = self.setUpViewBoxForImage(imageViewer, layout) 
+            lblPixelValue, lblROIMeanValue = self.setUpLabels(layout)
             
             self.setUpROITools(viewBox, layout, img, lblROIMeanValue)
 
@@ -1601,7 +1765,6 @@ class Weasel(QMainWindow):
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             layout.addWidget(imageSlider)
-            #imageSlider.valueChanged.connect(lambda:self.blockHistogramSignals(imv, True))
             imageSlider.valueChanged.connect(
                   lambda: self.imageSliderMoved(seriesName, 
                                                 imageList, 
@@ -1631,16 +1794,10 @@ class Weasel(QMainWindow):
                                   cmbColours,
                                   subWindow)
             
-            btnDeleteDICOMFile.clicked.connect(lambda:
-                                               self.deleteImageInMultiImageViewer(
-                                      self.selectedImagePath, 
-                                      lblHiddenStudyID.text(), 
-                                      lblHiddenSeriesID.text(),
-                                      imageSlider.value()))
-            #imageSlider.sliderReleased.connect(lambda: self.blockHistogramSignals(imv, False))
         except Exception as e:
-            print('Error in displayMultiImageSubWindow: ' + str(e))
-            logger.error('Error in displayMultiImageSubWindow: ' + str(e))
+            print('Error in displayMultiImageROISubWindow: ' + str(e))
+            logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
+
 
 
     def deleteImageInMultiImageViewer(self, currentImagePath, 
@@ -1721,6 +1878,38 @@ class Weasel(QMainWindow):
             cmbColours.setCurrentIndex(index)
         cmbColours.blockSignals(False)
 
+    
+    def imageROISliderMoved(self, seriesName, imageList, imageNumber,
+                        lblImageMissing, lblPixelValue, 
+                        btnDeleteDICOMFile, imv, 
+                        spinBoxIntensity, spinBoxContrast,
+                        cmbColours,
+                        subWindow):
+        """On the Multiple Image with ROI Display sub window, this
+        function is called when the image slider is moved. 
+        It causes the next image in imageList to be displayed"""
+        try:
+            logger.info("WEASEL imageROISliderMoved called")
+            #imageNumber = self.imageSlider.value()
+            currentImageNumber = imageNumber - 1
+            if currentImageNumber >= 0:
+                self.selectedImagePath = imageList[currentImageNumber]
+                #print("imageSliderMoved before={}".format(self.selectedImagePath))
+                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+                colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+
+                self.displayROIPixelArray(pixelArray, currentImageNumber,
+                          lblImageMissing, lblPixelValue, colourTable,
+                          imv)
+                
+
+                subWindow.setWindowTitle(seriesName + ' - ' 
+                         + os.path.basename(self.selectedImagePath))
+               # print("imageSliderMoved after={}".format(self.selectedImagePath))
+        except Exception as e:
+            print('Error in imageROISliderMoved: ' + str(e))
+            logger.error('Error in imageROISliderMoved: ' + str(e))
+
 
     def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
@@ -1786,6 +1975,24 @@ class Weasel(QMainWindow):
             print('Error in viewImage: ' + str(e))
             logger.error('Error in viewImage: ' + str(e))
 
+
+    def viewROIImage(self):
+        """Creates a subwindow that displays a DICOM image with ROI creation functionality. 
+        Executed using the 'View Image with ROI' Menu item in the Tools menu."""
+        try:
+            logger.info("WEASEL viewROIImage called")
+            if self.isAnImageSelected():
+                self.displayImageROISubWindow()
+            elif self.isASeriesSelected():
+                studyID = self.selectedStudy 
+                seriesID = self.selectedSeries
+                self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
+                self.displayMultiImageROISubWindow(self.imageList, studyID, seriesID)
+        except Exception as e:
+            print('Error in viewROIImage: ' + str(e))
+            logger.error('Error in viewROIImage: ' + str(e))
+
+    
 
     def viewMetadata(self):
         """Creates a subwindow that displays a DICOM image's metadata. """
@@ -2094,7 +2301,7 @@ class Weasel(QMainWindow):
                     1, 99))/2) < np.amin(self.binOpArray) else np.median(self.binOpArray) - iqr(self.binOpArray, rng=(1, 99))/2
                 maximumValue = np.amax(self.binOpArray) if (np.median(self.binOpArray) + iqr(self.binOpArray, rng=(
                     1, 99))/2) > np.amax(self.binOpArray) else np.median(self.binOpArray) + iqr(self.binOpArray, rng=(1, 99))/2
-                self.img3.setImage(self.binOpArray, autoHistogramRange=False, levels=(minimumValue, maximumValue)) 
+                self.img3.setImage(self.binOpArray, autoHistogramRange=True, levels=(minimumValue, maximumValue)) 
             else:
                 self.btnSave.setEnabled(False)
         except Exception as e:
@@ -2132,7 +2339,7 @@ class Weasel(QMainWindow):
                     1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                 maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
                     1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                objImage.setImage(pixelArray, autoHistogramRange=False, levels=(minimumValue, maximumValue))  
+                objImage.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))  
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
             logger.error('Error in displayImageForBinOp: ' + str(e))
