@@ -256,6 +256,9 @@
     <Compile Include="CoreModules\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\TreeView.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="Developer\WEASEL\Tools\B0MapDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\binaryOperationDICOM_Image.py" />
@@ -305,6 +308,7 @@
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\win32.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\winterm.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="CoreModules\WEASEL\ReadMe.txt" />
     <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelConfiguration\Model_Library_Template.xml" />
     <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
     <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
@@ -332,6 +336,7 @@
     <Content Include="WEASEL_README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="CoreModules\WEASEL\" />
     <Folder Include="CoreModules\pyqtgraph\" />
     <Folder Include="CoreModules\pyqtgraph\canvas\" />
     <Folder Include="CoreModules\pyqtgraph\console\" />

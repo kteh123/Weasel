@@ -34,6 +34,7 @@ sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//'))
 sys.path.append(os.path.join(sys.path[0],
         'Developer//WEASEL//Tools//FERRET_Files//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
+sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
@@ -44,6 +45,7 @@ from Developer.WEASEL.Tools.FERRET import FERRET as ferret
 from CoreModules.weaselXMLReader import WeaselXMLReader
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.imagingTools as imagingTools
+import CoreModules.WEASEL.TreeView  as treeView
 import Developer.WEASEL.Tools
 #access pyqtGraph from the source code imported into this project
 import CoreModules.pyqtgraph as pg 
@@ -356,22 +358,6 @@ class Weasel(QMainWindow):
             headerItem = QTableWidgetItem(QTableWidgetItem("Value\n")) 
             headerItem.setTextAlignment(Qt.AlignLeft)
             headerItem = tableWidget.setHorizontalHeaderItem(3 ,headerItem)
-           
-            #Create rows of metadata
-            #for data_element in dataset:
-            #    #Exclude pixel data from metadata listing
-            #    if data_element.name == 'Pixel Data':
-            #        continue
-            #    rowPosition = tableWidget.rowCount()
-            #    tableWidget.insertRow(rowPosition)
-            #    tableWidget.setItem(rowPosition , 0, 
-            #                    QTableWidgetItem(str(data_element.tag)))
-            #    tableWidget.setItem(rowPosition , 1, 
-            #                    QTableWidgetItem(data_element.name))
-            #    tableWidget.setItem(rowPosition , 2, 
-            #                    QTableWidgetItem(data_element.VR))
-            #    tableWidget.setItem(rowPosition , 3, 
-            #                    QTableWidgetItem(str(data_element.value)))
 
             for data_element in dataset:
                 #Exclude pixel data from metadata listing
@@ -547,7 +533,7 @@ class Weasel(QMainWindow):
                     QApplication.restoreOverrideCursor()
 
                 QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-                self.makeDICOMStudiesTreeView(XML_File_Path)
+                treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
                 QApplication.restoreOverrideCursor()
 
         except Exception as e:
@@ -559,126 +545,6 @@ class Weasel(QMainWindow):
         return self.mdiArea.height(), self.mdiArea.width() 
 
    
-    def makeDICOMStudiesTreeView(self, XML_File_Path):
-        """Uses an XML file that describes a DICOM file structure to build a
-        tree view showing a visual representation of that file structure."""
-        try:
-            logger.info("WEASEL makeDICOMStudiesTreeView called")
-            if os.path.exists(XML_File_Path):
-                self.DICOM_XML_FilePath = XML_File_Path
-                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
-                start_time=time.time()
-                self.objXMLReader.parseXMLFile(
-                    self.DICOM_XML_FilePath)
-                end_time=time.time()
-                XMLParseTime = end_time - start_time
-                print('XML Parse Time = {}'.format(XMLParseTime))
-
-                start_time=time.time()
-                numStudies, numSeries, numImages, numTreeViewItems \
-                    = self.objXMLReader.getNumberItemsInTreeView()
-
-                QApplication.processEvents()
-                widget = QWidget()
-                widget.setLayout(QVBoxLayout()) 
-                subWindow = QMdiSubWindow(self)
-                subWindow.setWidget(widget)
-                subWindow.setObjectName("tree_view")
-                subWindow.setWindowTitle("DICOM Study Structure")
-                height, width = self.getMDIAreaDimensions()
-                subWindow.setGeometry(0, 0, width * 0.4, height)
-                self.mdiArea.addSubWindow(subWindow)
-
-                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
-                 .format(numStudies, numSeries, numImages))
-                self.lblLoading.setWordWrap(True)
-
-                widget.layout().addWidget(self.lblLoading)
-                self.progBar = QProgressBar(self)
-                widget.layout().addWidget(self.progBar)
-                widget.layout().setAlignment(Qt.AlignTop)
-                self.progBar.show()
-                self.progBar.setMaximum(numTreeViewItems)
-                self.progBar.setValue(0)
-                subWindow.show()
-
-                QApplication.processEvents()
-                self.treeView = QTreeWidget()
-                self.treeView.setUniformRowHeights(True)
-                self.treeView.setColumnCount(4)
-                self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
-                
-                treeWidgetItemCounter = 0 
-                studies = self.objXMLReader.getStudies()
-                self.seriesBranchList = []
-                for study in studies:
-                    studyID = study.attrib['id']
-                    studyBranch = QTreeWidgetItem(self.treeView)
-                    treeWidgetItemCounter += 1
-                    self.progBar.setValue(treeWidgetItemCounter)
-                    studyBranch.setText(0, "Study - {}".format(studyID))
-                    studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
-                    studyBranch.setExpanded(True)
-                    for series in study:
-                        seriesID = series.attrib['id']
-                        seriesBranch = QTreeWidgetItem(studyBranch)
-                        self.seriesBranchList.append(seriesBranch)
-                        treeWidgetItemCounter += 1
-                        self.progBar.setValue(treeWidgetItemCounter)
-                        #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                        seriesBranch.setText(0, "Series - {}".format(seriesID))
-                        seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                        #Expand this series branch, so that the 3 resizeColumnToContents
-                        #commands can work
-                       
-                        for image in series:
-                            #Extract filename from file path
-                            if image.find('name').text:
-                                imageName = os.path.basename(image.find('name').text)
-                            else:
-                                imageName = 'Name missing'
-                            #print (imageName)
-                            imageDate = image.find('date').text
-                            imageTime = image.find('time').text
-                            imagePath = image.find('name').text
-                            imageLeaf = QTreeWidgetItem(seriesBranch)
-                            treeWidgetItemCounter += 1
-                            self.progBar.setValue(treeWidgetItemCounter)
-                            imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                            #Uncomment the next 2 lines to put a checkbox in front of each image
-                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            #imageLeaf.setCheckState(0, Qt.Unchecked)
-                            imageLeaf.setText(0, 'Image - ' + imageName)
-                            imageLeaf.setText(1, imageDate)
-                            imageLeaf.setText(2, imageTime)
-                            imageLeaf.setText(3, imagePath)
-                        seriesBranch.setExpanded(True)
-                self.treeView.resizeColumnToContents(0)
-                self.treeView.resizeColumnToContents(1)
-                self.treeView.resizeColumnToContents(2)
-                #self.treeView.resizeColumnToContents(3)
-                self.treeView.hideColumn(3)
-                
-                #Now collapse all series branches so as to hide the images
-                for branch in self.seriesBranchList:
-                    branch.setExpanded(False)
-                self.treeView.itemSelectionChanged.connect(self.toggleToolButtons)
-                self.treeView.itemDoubleClicked.connect(self.viewImage)
-                self.treeView.itemClicked.connect(self.onTreeViewItemClicked)
-                self.treeView.show()
-                end_time=time.time()
-                TreeViewTime = end_time - start_time
-                print('Tree View create Time = {}'.format(TreeViewTime))
-                
-                self.lblLoading.clear()
-                self.progBar.hide()
-                self.progBar.reset()
-                widget.layout().addWidget(self.treeView)   
-        except Exception as e:
-            print('Error in makeDICOMStudiesTreeView: ' + str(e)) 
-            logger.error('Error in makeDICOMStudiesTreeView: ' + str(e)) 
-
-
     @QtCore.pyqtSlot(QTreeWidgetItem, int)
     def onTreeViewItemClicked(self, item, col):
         """When a DICOM study treeview item is clicked, this function
@@ -1713,6 +1579,15 @@ class Weasel(QMainWindow):
                           lblImageMissing, lblPixelValue,
                            colourTable,
                           imv)
+
+            #add second image
+            img2 = pg.ImageItem(border='w')
+            img2.setImage(np.array(pixelArray))
+            img2.setZValue(10) # make sure this image is on top
+            img2.setOpacity(0.5)
+            imv.setImage(img2)
+            #img2.scale(10, 10)
+
         except Exception as e:
             print('Error in Weasel.displayImageROISubWindow: ' + str(e))
             logger.error('Error in Weasel.displayImageROISubWindow: ' + str(e)) 
@@ -1857,7 +1732,7 @@ class Weasel(QMainWindow):
                     self.objXMLReader.removeOneImageFromSeries(
                         studyID, seriesID, currentImagePath)
                 #Update tree view with xml file modified above
-                self.refreshDICOMStudiesTreeView()
+                treeView.refreshDICOMStudiesTreeView(self)
         except Exception as e:
             print('Error in deleteImageInMultiImageViewer: ' + str(e))
             logger.error('Error in deleteImageInMultiImageViewer: ' + str(e))
@@ -2259,7 +2134,7 @@ class Weasel(QMainWindow):
             saveDICOM_Image.saveDicomOutputResult(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
             newSeriesID = self.insertNewBinOpImageInXMLFile(newImageFilePath, suffix)
             #print(newSeriesID)
-            self.refreshDICOMStudiesTreeView(newSeriesID)
+            treeView.refreshDICOMStudiesTreeView(self, newSeriesID)
         except Exception as e:
             print('Error in saveNewDICOMFileFromBinOp: ' + str(e))
             logger.error('Error in saveNewDICOMFileFromBinOp: ' + str(e))
@@ -2371,7 +2246,7 @@ class Weasel(QMainWindow):
                         self.objXMLReader.removeOneImageFromSeries(
                             studyID, seriesID, imagePath)
                     #Update tree view with xml file modified above
-                    self.refreshDICOMStudiesTreeView()
+                    treeView.refreshDICOMStudiesTreeView(self)
             elif self.isASeriesSelected():
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM series', "You are about to delete series {}".format(seriesID), 
@@ -2388,7 +2263,7 @@ class Weasel(QMainWindow):
                     #Remove the series from the XML file
                     self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
                     self.closeSubWindow(seriesID)
-                self.refreshDICOMStudiesTreeView()
+                treeView.refreshDICOMStudiesTreeView(self)
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
             logger.error('Error in deleteImage: ' + str(e))
@@ -2430,26 +2305,26 @@ class Weasel(QMainWindow):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-    def toggleToolButtons(self):
-        """TO DO"""
-        try:
-            logger.info("WEASEL toggleToolButtons called.")
-            tools = self.toolsMenu.actions()
-            for tool in tools:
-                if not tool.isSeparator():
-                    if not(tool.data() is None):
-                        #Assume not all tools will act on an image
-                         #Assume all tools act on a series   
-                        if self.isASeriesSelected():
-                             tool.setEnabled(True)
-                        elif self.isAnImageSelected():
-                            if tool.data():
-                                tool.setEnabled(True)
-                            else:
-                                tool.setEnabled(False) 
-        except Exception as e:
-            print('Error in toggleToolButtons: ' + str(e))
-            logger.error('Error in toggleToolButtons: ' + str(e))
+    #def toggleToolButtons(self):
+    #    """TO DO"""
+    #    try:
+    #        logger.info("WEASEL toggleToolButtons called.")
+    #        tools = self.toolsMenu.actions()
+    #        for tool in tools:
+    #            if not tool.isSeparator():
+    #                if not(tool.data() is None):
+    #                    #Assume not all tools will act on an image
+    #                     #Assume all tools act on a series   
+    #                    if self.isASeriesSelected():
+    #                         tool.setEnabled(True)
+    #                    elif self.isAnImageSelected():
+    #                        if tool.data():
+    #                            tool.setEnabled(True)
+    #                        else:
+    #                            tool.setEnabled(False) 
+    #    except Exception as e:
+    #        print('Error in toggleToolButtons: ' + str(e))
+    #        logger.error('Error in toggleToolButtons: ' + str(e))
 
 
     def getDICOMFileData(self):
@@ -2473,80 +2348,6 @@ class Weasel(QMainWindow):
             print('Error in getDICOMFileData: ' + str(e))
             logger.error('Error in getDICOMFileData: ' + str(e))
 
-
-    def expandTreeViewBranch(self, branchText = ''):
-        """TO DO"""
-        try:
-            logger.info("WEASEL expandTreeViewBranch called.")
-            for branch in self.seriesBranchList:
-                seriesID = branch.text(0).replace('Series -', '')
-                seriesID = seriesID.strip()
-                if seriesID == branchText:
-                    branch.setExpanded(True)
-                else:
-                    branch.setExpanded(False)
-        except Exception as e:
-            print('Error in expandTreeViewBranch: ' + str(e))
-            logger.error('Error in expandTreeViewBranch: ' + str(e))
-
-
-    def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
-        """Uses an XML file that describes a DICOM file structure to build a
-        tree view showing a visual representation of that file structure."""
-        try:
-            logger.info("WEASEL refreshDICOMStudiesTreeView called.")
-            #Load and parse updated XML file
-            self.objXMLReader.parseXMLFile(
-                    self.DICOM_XML_FilePath)
-            self.treeView.clear()
-            self.treeView.setColumnCount(3)
-            self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
-            studies = self.objXMLReader.getStudies()
-            self.seriesBranchList.clear()
-            for study in studies:
-                studyID = study.attrib['id']
-                studyBranch = QTreeWidgetItem(self.treeView)
-                studyBranch.setText(0, "Study - {}".format(studyID))
-                studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
-                studyBranch.setExpanded(True)
-                for series in study:
-                    seriesID = series.attrib['id']
-                    seriesBranch = QTreeWidgetItem(studyBranch)
-                    self.seriesBranchList.append(seriesBranch)
-                    seriesBranch.setText(0, "Series - {}".format(seriesID))
-                    seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                    seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                    seriesBranch.setExpanded(True)
-                    for image in series:
-                        #Extract filename from file path
-                        imageName = os.path.basename(image.find('name').text)
-                        imageDate = image.find('date').text
-                        imageTime = image.find('time').text
-                        imagePath = image.find('name').text
-                        imageLeaf = QTreeWidgetItem(seriesBranch)
-                        imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                        imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                        #Uncomment the next line to put a checkbox in front of each image
-                        #imageLeaf.setCheckState(0, Qt.Unchecked)
-                        imageLeaf.setText(0, ' Image - ' +imageName)
-                        imageLeaf.setText(1, imageDate)
-                        imageLeaf.setText(2, imageTime)
-                        imageLeaf.setText(3, imagePath)
-            self.treeView.resizeColumnToContents(0)
-            self.treeView.resizeColumnToContents(1)
-            self.treeView.resizeColumnToContents(2)
-            #Now collapse all series branches so as to hide the images
-            #except the new series branch that has been created
-            self.expandTreeViewBranch(newSeriesName)
-            #If no tree view items are now selected,
-            #disable items in the Tools menu.
-            self.toggleToolButtons()
-            self.treeView.hideColumn(3)
-            self.treeView.show()
-        except Exception as e:
-            print('Error in refreshDICOMStudiesTreeView: ' + str(e))
-            logger.error('Error in refreshDICOMStudiesTreeView: ' + str(e))
-      
 
 def main():
     app = QApplication(sys . argv )
