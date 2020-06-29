@@ -129,7 +129,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView: ' + str(e)) 
 
 
-def expandTreeViewBranch(branchText = ''):
+def expandTreeViewBranch(self, branchText = ''):
         """TO DO"""
         try:
             logger.info("TreeView.expandTreeViewBranch called.")
@@ -192,7 +192,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.treeView.resizeColumnToContents(2)
             #Now collapse all series branches so as to hide the images
             #except the new series branch that has been created
-            expandTreeViewBranch(newSeriesName)
+            expandTreeViewBranch(self, newSeriesName)
             #If no tree view items are now selected,
             #disable items in the Tools menu.
             toggleToolButtons(self)
