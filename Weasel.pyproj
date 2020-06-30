@@ -268,6 +268,9 @@
     <Compile Include="CoreModules\WEASEL\TreeView.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\ViewMetaData.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="Developer\WEASEL\Tools\B0MapDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\binaryOperationDICOM_Image.py" />

@@ -9,6 +9,7 @@ import importlib
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
+import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -79,7 +80,7 @@ def buildToolsMenu(self):
         self.viewMetaDataButton = QAction('&View Metadata', self)
         self.viewMetaDataButton.setShortcut('Ctrl+M')
         self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
-        self.viewMetaDataButton.triggered.connect(self.viewMetadata)
+        self.viewMetaDataButton.triggered.connect(lambda: viewMetaData.viewMetadata(self))
         self.viewMetaDataButton.setData(bothImagesAndSeries)
         self.viewMetaDataButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewMetaDataButton)
