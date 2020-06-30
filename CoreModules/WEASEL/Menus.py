@@ -8,6 +8,7 @@ import pathlib
 import importlib
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
+import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -32,7 +33,7 @@ def buildFileMenu(self):
         loadDICOM = QAction('&Load DICOM Images', self)
         loadDICOM.setShortcut('Ctrl+L')
         loadDICOM.setStatusTip('Load DICOM images from a scan folder')
-        loadDICOM.triggered.connect(self.loadDICOM)
+        loadDICOM.triggered.connect(lambda: loadDICOMFile.loadDICOM(self))
         self.fileMenu.addAction(loadDICOM)
 
         tileSubWindows = QAction('&Tile Subwindows', self)
@@ -131,8 +132,8 @@ def buildToolsMenu(self):
 def addUserDefinedToolsMenuItems(self):
     try:
         logger.info("WEASEL addUserDefinedToolsMenuItems called.")
-        self.objXMLReader = WeaselToolsXMLReader() 
-        tools = self.objXMLReader.getTools()
+        objXMLToolsReader = WeaselToolsXMLReader() 
+        tools = objXMLToolsReader.getTools()
         for tool in tools:
             buildUserDefinedToolsMenuItem(self, tool)
     except Exception as e:

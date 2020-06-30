@@ -256,7 +256,13 @@
     <Compile Include="CoreModules\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\LoadDICOM.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\Menus.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CoreModules\WEASEL\ToolBar.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\TreeView.py">

@@ -38,7 +38,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 # delete? import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
-import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
+
 import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
 import CoreModules.styleSheet as styleSheet
 from Developer.WEASEL.Tools.FERRET import FERRET as ferret
@@ -46,6 +46,7 @@ from CoreModules.weaselXMLReader import WeaselXMLReader
 import CoreModules.imagingTools as imagingTools
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.Menus  as menus
+import CoreModules.WEASEL.ToolBar  as toolBar
 import Developer.WEASEL.Tools
 #access pyqtGraph from the source code imported into this project
 import CoreModules.pyqtgraph as pg 
@@ -85,8 +86,6 @@ class Weasel(QMainWindow):
     def __init__(self): 
         """Creates the MDI container."""
         super (). __init__ () 
-        menus.setupMenus(self)
-        self.setupToolBar()
 
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
@@ -106,20 +105,16 @@ class Weasel(QMainWindow):
         self.overRideSavedColourmapAndLevels = False #Set to True if the user checks the Apply Selection tick box
         self.applyUserSelection = False
         self.userSelectionList = []
-        self.ApplyStyleSheet()
+        
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
         logger.info("WEASEL GUI created successfully.")
 
+        menus.setupMenus(self)
+        toolBar.setupToolBar(self)
+        self.ApplyStyleSheet()
 
-    def setupToolBar(self):  
-        logger.info("WEASEL setting up toolbar.")
-        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
-        self.launchFerretButton.triggered.connect(self.displayFERRET)
-        self.toolBar = self.addToolBar("FERRET")
-        self.toolBar.addAction(self.launchFerretButton)
-
-
+ 
     def ApplyStyleSheet(self):
         """Modifies the appearance of the GUI using CSS instructions"""
         try:
@@ -127,58 +122,17 @@ class Weasel(QMainWindow):
             logger.info('WEASEL Style Sheet applied.')
         except Exception as e:
             print('Error in function WEASEL.ApplyStyleSheet: ' + str(e))
-     
-
-    def getScanDirectory(self):
-        """Displays an open folder dialog window to allow the
-        user to select the folder holding the DICOM files"""
-        try:
-            logger.info('WEASEL getScanDirectory called.')
-            cwd = os.getcwd()
-            scan_directory = QFileDialog.getExistingDirectory(
-               self,
-               'Select the directory containing the scan', 
-               cwd, 
-               QFileDialog.ShowDirsOnly)
-            return scan_directory
-        except Exception as e:
-            print('Error in function WEASEL.getScanDirectory: ' + str(e))
+  
+            
+    def getMDIAreaDimensions(self):
+        return self.mdiArea.height(), self.mdiArea.width() 
 
 
-    def displayMessageSubWindow(self, message, title="Loading DICOM files"):
-        """
-        Creates a subwindow that displays a message to the user. 
-        """
-        try:
-            logger.info('WEASEL displayMessageSubWindow called.')
-            for subWin in self.mdiArea.subWindowList():
-                if subWin.objectName() == "Msg_Window":
-                    subWin.close()
-                    
-            widget = QWidget()
-            widget.setLayout(QVBoxLayout()) 
-            self.msgSubWindow = QMdiSubWindow(self)
-            self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.msgSubWindow.setWidget(widget)
-            self.msgSubWindow.setObjectName("Msg_Window")
-            self.msgSubWindow.setWindowTitle(title)
-            height, width = self.getMDIAreaDimensions()
-            self.msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
-            self.lblMsg = QLabel('<H4>' + message + '</H4>')
-            widget.layout().addWidget(self.lblMsg)
-
-            self.progBarMsg = QProgressBar(self)
-            widget.layout().addWidget(self.progBarMsg)
-            widget.layout().setAlignment(Qt.AlignTop)
-            self.progBarMsg.hide()
-            self.progBarMsg.setValue(0)
-
-            self.mdiArea.addSubWindow(self.msgSubWindow)
-            self.msgSubWindow.show()
-            QApplication.processEvents()
-        except Exception as e:
-            print('Error in : WEASEL.displayMessageSubWindow' + str(e))
-            logger.error('Error in : WEASEL.displayMessageSubWindow' + str(e))
+    def closeAllSubWindows(self):
+        """Closes all the sub windows open in the MDI"""
+        logger.info("WEASEL closeAllSubWindows called")
+        self.mdiArea.closeAllSubWindows()
+        self.treeView = None    
     
 
     def buildTableView(self, dataset):
@@ -286,109 +240,6 @@ class Weasel(QMainWindow):
         self.msgSubWindow.close()
 
 
-    def makeDICOM_XML_File(self, scan_directory):
-        """Creates an XML file that describes the contents of the scan folder,
-        scan_directory.  Returns the full file path of the resulting XML file,
-        which takes it's name from the scan folder."""
-        try:
-            logger.info("WEASEL makeDICOM_XML_File called.")
-            if scan_directory:
-                start_time=time.time()
-                numFiles, numFolders = WriteXMLfromDICOM.get_files_info(scan_directory)
-                if numFolders == 0:
-                    folder = os.path.basename(scan_directory) + ' folder.'
-                else:
-                    folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
-                        + 'subdirectory(s)'
-
-                self.displayMessageSubWindow(
-                    "Collecting {} DICOM files from the {}".format(numFiles, folder))
-                scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory)
-                self.displayMessageSubWindow("<H4>Reading data from each DICOM file</H4>")
-                dictionary = WriteXMLfromDICOM.get_studies_series(scans)
-                self.displayMessageSubWindow("<H4>Writing DICOM data to an XML file</H4>")
-                xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
-                self.displayMessageSubWindow("<H4>Saving XML file</H4>")
-                fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, scan_directory)
-                self.msgSubWindow.close()
-                end_time=time.time()
-                xmlCreationTime = end_time - start_time 
-                print('XML file creation time = {}'.format(xmlCreationTime))
-                logger.info("WEASEL makeDICOM_XML_File returns {}."
-                            .format(fullFilePath))
-            return fullFilePath
-        except Exception as e:
-            print('Error in function makeDICOM_XML_File: ' + str(e))
-            logger.error('Error in function makeDICOM_XML_File: ' + str(e))
- 
-
-    def existsDICOMXMLFile(self, scanDirectory):
-        """This function returns True if an XML file of scan images already
-        exists in the scan directory."""
-        try:
-            logger.info("WEASEL existsDICOMXMLFile called")
-            flag = False
-            with os.scandir(scanDirectory) as entries:
-                    for entry in entries:
-                        if entry.is_file():
-                            if entry.name.lower() == \
-                                os.path.basename(scanDirectory).lower() + ".xml":
-                                flag = True
-                                break
-            return flag                   
-        except Exception as e:
-            print('Error in function existsDICOMXMLFile: ' + str(e))
-            logger.error('Error in function existsDICOMXMLFile: ' + str(e))
-
-
-    def loadDICOM(self):
-        """This function is executed when the Load DICOM menu item is selected.
-        It displays a folder dialog box.  After the user has selected the folder
-        containing the DICOM file, an existing XML is searched for.  If one is 
-        found then the user is given the option of using it, rather than build
-        a new one from scratch.
-        """
-        try:
-            logger.info("WEASEL loadDICOM called")
-            self.closeAllSubWindows()
-
-            #browse to DICOM folder and get DICOM folder name
-            scan_directory = self.getScanDirectory()
-            if scan_directory:
-                #look inside DICOM folder for XML file with same name as DICOM folder
-                if self.existsDICOMXMLFile(scan_directory):
-                    #an XML file exists, so ask user if they wish to use it or create new one
-                    buttonReply = QMessageBox.question(self, 
-                        'Load DICOM images', 
-                        'An XML file exists for this DICOM folder. Would you like to use it?', 
-                            QMessageBox.Yes| QMessageBox.No, QMessageBox.Yes)
-                    if buttonReply == QMessageBox.Yes:
-                        XML_File_Path = scan_directory + '//' + os.path.basename(scan_directory) + '.xml'
-                    else:
-                        #the user wishes to create a new xml file,
-                        #thus overwriting the old one
-                        QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-                        XML_File_Path = self.makeDICOM_XML_File(scan_directory)
-                        QApplication.restoreOverrideCursor()
-                else:
-                    #if there is no XML file, create one
-                    QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-                    XML_File_Path = self.makeDICOM_XML_File(scan_directory)
-                    QApplication.restoreOverrideCursor()
-
-                QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-                treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
-                QApplication.restoreOverrideCursor()
-
-        except Exception as e:
-            print('Error in function loadDICOM: ' + str(e))
-            logger.error('Error in function loadDICOM: ' + str(e))
-         
-
-    def getMDIAreaDimensions(self):
-        return self.mdiArea.height(), self.mdiArea.width() 
-
-   
     @QtCore.pyqtSlot(QTreeWidgetItem, int)
     def onTreeViewItemClicked(self, item, col):
         """When a DICOM study treeview item is clicked, this function
@@ -425,13 +276,6 @@ class Weasel(QMainWindow):
             self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
 
-    def closeAllSubWindows(self):
-        """Closes all the sub windows open in the MDI"""
-        logger.info("WEASEL closeAllSubWindows called")
-        self.mdiArea.closeAllSubWindows()
-        self.treeView = None
-
-        
     def displayFERRET(self):
         """
         Displays FERRET in a sub window 
