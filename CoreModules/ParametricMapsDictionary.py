@@ -19,7 +19,7 @@ def editDicom(newDicom, imageArray, parametricMap):
     newDicom.PerformedProcedureStepStartTime = timeStr
     newDicom.PerformedProcedureStepDescription = "Post-processing application"
 
-    return
+    return newDicom
   
 class ParametricClass(object):
     def selectParametricMap(self, dicom, imageArray, argument):
@@ -69,7 +69,7 @@ class ParametricClass(object):
         dicom.BitsStored = 8
         dicom.HighBit = 7
         dicom.SmallestImagePixelValue = 0
-        dicom.LargestImagePixelValue = 255
+        dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
         dicom.PixelRepresentation = 0
         dicom.SamplesPerPixel = 1
         dicom.WindowCenter = 128
@@ -78,9 +78,9 @@ class ParametricClass(object):
         pixelArray = imageArray.astype(np.uint8)
         dicom.PixelData = pixelArray.tobytes()
 
-        #dicom.Modality = 'SEG'
+        dicom.Modality = 'SEG'
         dicom.SegmentationType = 'FRACTIONAL'
-        dicom.MaximumFractionalValue = 255
+        dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
         dicom.SegmentationFractionalType = 'OCCUPANCY'
         dicom.ContentLabel = 'SEGMENTATION'
         dicom.ContentDescription = 'Image segmentation'
