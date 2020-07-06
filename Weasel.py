@@ -115,13 +115,6 @@ class Weasel(QMainWindow):
         return self.mdiArea.height(), self.mdiArea.width() 
 
 
-    def closeAllSubWindows(self):
-        """Closes all the sub windows open in the MDI"""
-        logger.info("WEASEL closeAllSubWindows called")
-        self.mdiArea.closeAllSubWindows()
-        self.treeView = None      
-
-
     def setMsgWindowProgBarMaxValue(self, maxValue):
         self.progBarMsg.show()
         self.progBarMsg.setMaximum(maxValue)
@@ -462,6 +455,7 @@ class Weasel(QMainWindow):
   
                 imv.getView().scene().sigMouseMoved.connect(
                    lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+
         except Exception as e:
             print('Error in displayROIPixelArray: ' + str(e))
             logger.error('Error in displayROIPixelArray: ' + str(e)) 
@@ -805,44 +799,7 @@ class Weasel(QMainWindow):
 
         except Exception as e:
             print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
-            logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))
-
-
-    def closeSubWindow(self, objectName):
-        """Closes a particular sub window in the MDI"""
-        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == objectName:
-                QApplication.processEvents()
-                subWin.close()
-                QApplication.processEvents()
-                break
-
-    def tileAllSubWindows(self):
-        logger.info("WEASEL.tileAllSubWindow called")
-        height, width = self.getMDIAreaDimensions()
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == 'tree_view':
-                subWin.setGeometry(0, 0, width * 0.4, height)
-            elif subWin.objectName() == 'Binary_Operation':
-                subWin.setGeometry(0,0,width*0.5,height*0.5)
-            elif subWin.objectName() == 'metaData_Window':
-                subWin.setGeometry(width * 0.4,0,width*0.6,height)
-            elif subWin.objectName() == 'image_viewer':
-                subWin.setGeometry(width * 0.4,0,width*0.3,height*0.5)
-        #self.mdiArea.tileSubWindows()
-
-
-    def closeAllImageWindows(self):
-        """Closes all the sub windows in the MDI except for
-        the sub window displaying the DICOM file tree view"""
-        logger.info("WEASEL closeAllImageWindows called")
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == 'tree_view':
-                continue
-            subWin.close()
-            QApplication.processEvents()
-               
+            logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))           
 
     def displayBinaryOperationsWindow(self):
         """Displays the sub window for performing binary operations
@@ -1053,6 +1010,24 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in displayImageForBinOp: ' + str(e))
             logger.error('Error in displayImageForBinOp: ' + str(e))
+
+
+    def closeSubWindow(self, objectName):
+        """Closes a particular sub window in the MDI"""
+        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == objectName:
+                QApplication.processEvents()
+                subWin.close()
+                QApplication.processEvents()
+                break
+
+
+    def closeAllSubWindows(self):
+        """Closes all the sub windows open in the MDI"""
+        logger.info("WEASEL closeAllSubWindows called")
+        self.mdiArea.closeAllSubWindows()
+        self.treeView = None  
 
 
     def deleteImage(self):

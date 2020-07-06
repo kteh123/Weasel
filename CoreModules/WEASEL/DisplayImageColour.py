@@ -1,12 +1,18 @@
 from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
-        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
-        QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
-        QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
-        QTreeWidgetItem, QGridLayout, QSlider, QCheckBox, QLayout, 
-        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem, QFrame)
-from PyQt5.QtGui import QCursor, QIcon, QColor
+from PyQt5.QtCore import  Qt
+from PyQt5.QtWidgets import (QFileDialog,                            
+                            QMessageBox, 
+                            QWidget, 
+                            QGridLayout, 
+                            QVBoxLayout, 
+                            QMdiSubWindow, 
+                            QGroupBox, 
+                            QDoubleSpinBox,
+                            QPushButton,  
+                            QLabel,  
+                            QSlider, 
+                            QCheckBox,  
+                            QComboBox)
 
 import os
 import scipy
@@ -245,7 +251,7 @@ def setUpViewBoxForImage(self, imageViewer, layout, spinBoxCentre = None, spinBo
         logger.error('Error in displayImage.setUpViewBoxForImag: ' + str(e))
 
 
-def getHistogramLevels(self, imv, spinBoxCentre, spinBoxWidth):
+def getHistogramLevels(imv, spinBoxCentre, spinBoxWidth):
         minLevel, maxLevel = imv.getLevels()
         width = maxLevel - minLevel
         centre = minLevel + (width/2)
