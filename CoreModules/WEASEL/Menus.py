@@ -1,5 +1,5 @@
 from PyQt5.QtCore import  Qt
-from PyQt5.QtWidgets import (QAction)
+from PyQt5.QtWidgets import (QAction, QApplication)
 from PyQt5.QtGui import  QIcon
 import os
 import sys
@@ -40,22 +40,48 @@ def buildFileMenu(self):
         tileSubWindows = QAction('&Tile Subwindows', self)
         tileSubWindows.setShortcut('Ctrl+T')
         tileSubWindows.setStatusTip('Returns subwindows to a tile pattern')
-        tileSubWindows.triggered.connect(self.tileAllSubWindows)
+        tileSubWindows.triggered.connect(lambda: tileAllSubWindows(self))
         self.fileMenu.addAction(tileSubWindows)
         
         closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
         closeAllImageWindowsButton.setShortcut('Ctrl+A')
         closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
-        closeAllImageWindowsButton.triggered.connect(self.closeAllImageWindows)
+        closeAllImageWindowsButton.triggered.connect(lambda: closeAllImageWindows(self))
         self.fileMenu.addAction(closeAllImageWindowsButton)
         
         closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
-        closeAllSubWindowsButton.triggered.connect(self.closeAllSubWindows)
+        closeAllSubWindowsButton.triggered.connect(lambda: self.closeAllSubWindows())
         self.fileMenu.addAction(closeAllSubWindowsButton)
     except Exception as e:
         print('Error in function Menus.buildFileMenu: ' + str(e))
+
+
+def closeAllImageWindows(self):
+        """Closes all the sub windows in the MDI except for
+        the sub window displaying the DICOM file tree view"""
+        logger.info("WEASEL closeAllImageWindows called")
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == 'tree_view':
+                continue
+            subWin.close()
+            QApplication.processEvents()
+
+
+def tileAllSubWindows(self):
+    logger.info("WEASEL.tileAllSubWindow called")
+    height, width = self.getMDIAreaDimensions()
+    for subWin in self.mdiArea.subWindowList():
+        if subWin.objectName() == 'tree_view':
+            subWin.setGeometry(0, 0, width * 0.4, height)
+        elif subWin.objectName() == 'Binary_Operation':
+            subWin.setGeometry(0,0,width*0.5,height*0.5)
+        elif subWin.objectName() == 'metaData_Window':
+            subWin.setGeometry(width * 0.4,0,width*0.6,height)
+        elif subWin.objectName() == 'image_viewer':
+            subWin.setGeometry(width * 0.4,0,width*0.3,height*0.5)
+        #self.mdiArea.tileSubWindows()
 
 
 def buildToolsMenu(self):
