@@ -110,14 +110,14 @@ def makeDICOM_XML_File(self, scan_directory):
                 folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
                     + 'subdirectory(s)'
 
-            displayMessageSubWindow(self,
+            self.displayMessageSubWindow(
                 "Collecting {} DICOM files from the {}".format(numFiles, folder))
             scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory)
-            displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
+            self.displayMessageSubWindow("<H4>Reading data from each DICOM file</H4>")
             dictionary = WriteXMLfromDICOM.get_studies_series(scans)
-            displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
+            self.displayMessageSubWindow("<H4>Writing DICOM data to an XML file</H4>")
             xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
-            displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
+            self.displayMessageSubWindow("<H4>Saving XML file</H4>")
             fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, scan_directory)
             self.msgSubWindow.close()
             end_time=time.time()
@@ -131,37 +131,3 @@ def makeDICOM_XML_File(self, scan_directory):
         logger.error('Error in function LoadDICOM.makeDICOM_XML_File: ' + str(e))
 
 
-def displayMessageSubWindow(self, message, title="Loading DICOM files"):
-    """
-    Creates a subwindow that displays a message to the user. 
-    """
-    try:
-        logger.info('LoadDICOM.displayMessageSubWindow called.')
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == "Msg_Window":
-                subWin.close()
-                    
-        widget = QWidget()
-        widget.setLayout(QVBoxLayout()) 
-        msgSubWindow = QMdiSubWindow(self)
-        msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
-        msgSubWindow.setWidget(widget)
-        msgSubWindow.setObjectName("Msg_Window")
-        msgSubWindow.setWindowTitle(title)
-        height, width = self.getMDIAreaDimensions()
-        msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
-        lblMsg = QLabel('<H4>' + message + '</H4>')
-        widget.layout().addWidget(lblMsg)
-
-        progBarMsg = QProgressBar(self)
-        widget.layout().addWidget(progBarMsg)
-        widget.layout().setAlignment(Qt.AlignTop)
-        progBarMsg.hide()
-        progBarMsg.setValue(0)
-
-        mdiArea.addSubWindow(msgSubWindow)
-        msgSubWindow.show()
-        QApplication.processEvents()
-    except Exception as e:
-        print('Error in : LoadDICOM.displayMessageSubWindow' + str(e))
-        logger.error('Error in : LoadDICOM.displayMessageSubWindow' + str(e))

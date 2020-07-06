@@ -256,6 +256,9 @@
     <Compile Include="CoreModules\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\DisplayImageColour.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\LoadDICOM.py">
       <SubType>Code</SubType>
     </Compile>

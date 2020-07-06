@@ -112,60 +112,6 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
         print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
 
 
-def updateDicomSeriesOneColour(objWeasel, seriesID, studyID, colourmap, levels, lut=None):
-    """Updates every image in a DICOM series with one colour table and
-            one set of levels"""
-    try:
-        logger.info("In saveDICOM_Image.updateDicomSeriesOneColour")
-        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
-        #Iterate through list of images and update each image
-        numImages = len(imagePathList)
-        objWeasel.displayMessageSubWindow(
-            "<H4>Updating {} DICOM files</H4>".format(numImages),
-            "Updating DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(numImages)
-        imageCounter = 0
-        for imagePath in imagePathList:
-            dataset = readDICOM_Image.getDicomDataset(imagePath) 
-            # Update every DICOM file in the series                                     
-            updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
-            saveDicomToFile(updatedDataset, output_path=imagePath)
-            imageCounter += 1
-            objWeasel.setMsgWindowProgBarValue(imageCounter)
-        objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateDicomSeriesOneColour: ' + str(e))
-
-
-def updateDicomSeriesManyColours(objWeasel, seriesID, studyID, colourMap, lut=None):
-    """Updates one or more images in a DICOM series with a different table and set of levels"""
-    try:
-        logger.info("In saveDICOM_Image.updateDicomSeriesManyColours")
-        imagePathList = objWeasel.getImagePathList(studyID, seriesID)
-        #Iterate through list of images and update each image
-        numImages = len(imagePathList)
-        objWeasel.displayMessageSubWindow(
-            "<H4>Updating {} DICOM files</H4>".format(numImages),
-            "Updating DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(numImages)
-        imageCounter = 0
-        for imagePath in imagePathList:
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            # Apply user selected colour table & levels to individual images in the series
-            selectedColourMap, center, width = objWeasel.returnUserSelection(imageCounter)
-            if selectedColourMap != 'default' or center != -1 or width != -1:
-                # Update an individual DICOM file in the series
-                levels = [center, width]  
-                updatedDataset = updateSingleDicom(dataset, colourmap=selectedColourMap, 
-                                                    levels=levels, lut=lut)
-                saveDicomToFile(updatedDataset, output_path=imagePath)
-            imageCounter += 1
-            objWeasel.setMsgWindowProgBarValue(imageCounter)
-        objWeasel.closeMessageSubWindow()
-    except Exception as e:
-        print('Error in saveDICOM_Image.updateDicomSeriesManyColours: ' + str(e))
-
-
 def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
