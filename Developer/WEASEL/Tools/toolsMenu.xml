@@ -15,6 +15,14 @@
     <module>squareDICOM_Image</module>
     <function>saveSquareImage</function>
   </tool>
+   <tool>
+    <action>Threshold</action>
+    <shortcut>Ctrl+T</shortcut>
+    <tooltip>Threshold a DICOM Image or series</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
+    <module>thresholdDICOM_Image</module>
+    <function>saveThresholdedImage</function>
+  </tool>
   <tool>
     <action>B0 Map Calculation</action>
     <shortcut>Ctrl+0</shortcut>
@@ -25,7 +33,7 @@
   </tool>
   <tool>
     <action>T2* Map Calculation</action>
-    <shortcut>Ctrl+T</shortcut>
+    <shortcut>Ctrl+2</shortcut>
     <tooltip>Applies a T2* fitting to the series if applicable</tooltip>
     <applies_both_images_series>False</applies_both_images_series>
     <module>T2StarMapDICOM_Image</module>

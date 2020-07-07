@@ -202,7 +202,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
 
         # Parametric Map
         if parametric_map is not None:
-            param.editDicom(newDicom, imageArray, parametric_map)
+            #param.editDicom(newDicom, imageArray, parametric_map)
+            return param.editDicom(newDicom, imageArray, parametric_map)
 
         numberFrames = 1
         enhancedArrayInt = []

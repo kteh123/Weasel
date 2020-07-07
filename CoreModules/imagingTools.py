@@ -13,8 +13,8 @@ def unWrapPhase(pixelArray):
 
 
 def convertToPiRange(pixelArray):
-    if (np.amax(pixelArray) > 3.2) and (np.amin(pixelArray) < -3.2):
-        # Get the image to the interval [-pi, pi]. 
+    if (np.amax(pixelArray) > 3.2) or (np.amin(pixelArray) < -3.2):
+        # Scale the image to the interval [-pi, pi]. 
         # The value 3.2 was chosen instead of np.pi in order to give some margin 
         piArray = np.pi * np.ones(np.shape(pixelArray))
         minArray = np.amin(pixelArray) * np.ones(np.shape(pixelArray))
@@ -32,6 +32,26 @@ def invertPixelArray(pixelArray, dataset):
 
 def squarePixelArray(pixelArray):
     return np.square(pixelArray)
+
+
+def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
+    if (lower_threshold < 0 or lower_threshold > 100):
+        print("Raise lower t error")
+    elif (upper_threshold < 0 or upper_threshold > 100):
+        print("Raise lower t error")
+    elif (upper_threshold < lower_threshold):
+        print("Raise lower greater than upper t")
+    
+    maximum_value = np.amax(pixelArray)
+    minimum_value = np.amin(pixelArray)
+    upper_value = minimum_value + (upper_threshold / 100) * (maximum_value - minimum_value)
+    lower_value = minimum_value + (lower_threshold / 100) * (maximum_value - minimum_value)
+
+    thresholdedArray = pixelArray
+    thresholdedArray[pixelArray < lower_value] = 0
+    thresholdedArray[pixelArray > upper_value] = 0
+    thresholdedArray[thresholdedArray > 0] = 1
+    return thresholdedArray
 
 
 def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):

@@ -2,35 +2,27 @@ import os
 import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
-from CoreModules.imagingTools import squarePixelArray
-FILE_SUFFIX = '_Square'
+from CoreModules.imagingTools import thresholdPixelArray
+FILE_SUFFIX = '_Thresholded'
 
 def returnPixelArray(imagePath):
-    """Applies the squareroot on an image and returns the resulting PixelArray"""
+    """Applies a low and high threshold on an image and returns the resulting maskArray"""
     try:
         if os.path.exists(imagePath):
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            #derivedImage = squareAlgorithm(pixelArray)
-            derivedImage = squarePixelArray(pixelArray)
+            lower_threshold = 40
+            upper_threshold = 90
+            derivedImage = thresholdPixelArray(pixelArray, lower_threshold, upper_threshold)
             return derivedImage
         else:
             return None
     except Exception as e:
-            print('Error in function squareDICOM_Image.returnPixelArray: ' + str(e))
-    
-# The purpose is to demonstrate that the user can either apply a method already defined or can create and use a new method
-# Comment/Uncomment according to what's agreed with the team.
-#def squareAlgorithm(pixelArray):
-    #try:
-        #derivedImage = np.square(pixelArray)
-        #return derivedImage
-    #except Exception as e:
-        #print('Error in function squareDICOM_Image.squareAlgorithm: ' + str(e))
+            print('Error in function thresholdDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def saveSquareImage(objWeasel):
-    """Creates a subwindow that displays a square rooted DICOM image. Executed using the 
-    'Square Image' Menu item in the Tools menu."""
+def saveThresholdedImage(objWeasel):
+    """Creates a subwindow that displays a binary DICOM image. Executed using the 
+    'Threshold Image' Menu item in the Tools menu."""
     try:
         if objWeasel.isAnImageSelected():
             imagePath = objWeasel.selectedImagePath
@@ -38,7 +30,7 @@ def saveSquareImage(objWeasel):
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
             # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
+            saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
             #Record squared image in XML file
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
@@ -53,8 +45,8 @@ def saveSquareImage(objWeasel):
             derivedImageList = []
             numImages = len(imagePathList)
             objWeasel.displayMessageSubWindow(
-              "<H4>Squaring {} DICOM files</H4>".format(numImages),
-              "Squaring DICOM images")
+              "<H4>Thresholding {} DICOM files</H4>".format(numImages),
+              "Thresholding DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(numImages)
             imageCounter = 0
             for imagePath in imagePathList:
@@ -66,11 +58,11 @@ def saveSquareImage(objWeasel):
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
             objWeasel.displayMessageSubWindow(
               "<H4>Saving results into a new DICOM Series</H4>",
-              "Squaring DICOM images")
+              "Thresholding DICOM images")
             objWeasel.setMsgWindowProgBarMaxValue(2)
             objWeasel.setMsgWindowProgBarValue(1)
             # Save new DICOM series locally
-            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
             objWeasel.setMsgWindowProgBarValue(2)
@@ -79,4 +71,4 @@ def saveSquareImage(objWeasel):
                 derivedImagePathList, studyID, newSeriesID)
             objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
     except Exception as e:
-        print('Error in squaredDICOM_Image.saveSquareImage: ' + str(e))
+        print('Error in thresholdDICOM_Image.saveThresholdedImage: ' + str(e))
