@@ -10,6 +10,8 @@ from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -61,7 +63,7 @@ def buildFileMenu(self):
 def closeAllImageWindows(self):
         """Closes all the sub windows in the MDI except for
         the sub window displaying the DICOM file tree view"""
-        logger.info("WEASEL closeAllImageWindows called")
+        logger.info("Menus closeAllImageWindows called")
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == 'tree_view':
                 continue
@@ -70,7 +72,7 @@ def closeAllImageWindows(self):
 
 
 def tileAllSubWindows(self):
-    logger.info("WEASEL.tileAllSubWindow called")
+    logger.info("Menus.tileAllSubWindow called")
     height, width = self.getMDIAreaDimensions()
     for subWin in self.mdiArea.subWindowList():
         if subWin.objectName() == 'tree_view':
@@ -90,7 +92,7 @@ def buildToolsMenu(self):
         self.viewImageButton = QAction('&View Image', self)
         self.viewImageButton.setShortcut('Ctrl+V')
         self.viewImageButton.setStatusTip('View DICOM Image or series')
-        self.viewImageButton.triggered.connect(self.viewImage)
+        self.viewImageButton.triggered.connect(lambda: viewImage(self))
         self.viewImageButton.setData(bothImagesAndSeries)
         self.viewImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageButton)
@@ -156,9 +158,10 @@ def buildToolsMenu(self):
         print('Error in function Menus.buildToolsMenu: ' + str(e))
 
 
+
 def addUserDefinedToolsMenuItems(self):
     try:
-        logger.info("WEASEL addUserDefinedToolsMenuItems called.")
+        logger.info("Menus addUserDefinedToolsMenuItems called.")
         objXMLToolsReader = WeaselToolsXMLReader() 
         tools = objXMLToolsReader.getTools()
         for tool in tools:
@@ -193,3 +196,21 @@ def buildUserDefinedToolsMenuItem(self, tool):
         self.toolsMenu.addAction(self.menuItem)
     except Exception as e:
         print('Error in function Menus.buildUserDefinedToolsMenuItem: ' + str(e))
+
+
+def viewImage(self):
+        """Creates a subwindow that displays a DICOM image. Either executed using the 
+        'View Image' Menu item in the Tools menu or by double clicking the Image name 
+        in the DICOM studies tree view."""
+        try:
+            logger.info("Menus viewImage called")
+            if self.isAnImageSelected():
+                displayImageColour.displayImageSubWindow(self)
+            elif self.isASeriesSelected():
+                studyID = self.selectedStudy 
+                seriesID = self.selectedSeries
+                self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
+                displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyID, seriesID)
+        except Exception as e:
+            print('Error in Menus viewImage: ' + str(e))
+            logger.error('Error in Menus viewImage: ' + str(e))

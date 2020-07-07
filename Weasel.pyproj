@@ -259,6 +259,12 @@
     <Compile Include="CoreModules\WEASEL\DisplayImageColour.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\DisplayImageCommon.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CoreModules\WEASEL\DisplayImageROI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\LoadDICOM.py">
       <SubType>Code</SubType>
     </Compile>

@@ -22,7 +22,8 @@ import numpy as np
 import CoreModules.pyqtgraph as pg 
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.TreeView  as treeView 
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import logging
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
             colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
-                setUpImageViewerSubWindow(self)
+                displayImageCommon.setUpImageViewerSubWindow(self)
             windowTitle = self.getDICOMFileData()
             subWindow.setWindowTitle(windowTitle)
 
@@ -70,7 +71,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
 
             spinBoxIntensity = QDoubleSpinBox()
             spinBoxContrast = QDoubleSpinBox()
-            img, imv, viewBox = setUpViewBoxForImage(self, 
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage( 
                                                      imageViewer, 
                                                      layout, 
                                                      spinBoxIntensity, 
@@ -84,7 +85,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
                                                 lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
                                                 spinBoxIntensity, spinBoxContrast)
             
-            displayColourTableInComboBox(cmbColours, colourTable)
+            displayImageCommon.displayColourTableInComboBox(cmbColours, colourTable)
             displayPixelArray(self, pixelArray, 0,
                                     lblImageMissing,
                                     lblPixelValue,
@@ -108,7 +109,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             self.overRideSavedColourmapAndLevels = False
             self.applyUserSelection = False
             imageViewer, layout, lblImageMissing, subWindow = \
-                setUpImageViewerSubWindow(self)
+                displayImageCommon.setUpImageViewerSubWindow(self)
 
             #set up list of lists to hold user selected colour table and level data
             self.userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
@@ -142,7 +143,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             spinBoxContrast = QDoubleSpinBox()
             imageSlider = QSlider(Qt.Horizontal)
 
-            img, imv, viewBox = setUpViewBoxForImage(self, imageViewer, 
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(imageViewer, 
                                                      layout, spinBoxIntensity, spinBoxContrast) 
             lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
             lblPixelValue.show()
@@ -197,67 +198,6 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             print('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
             logger.error('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
 
-
-def setUpImageViewerSubWindow(self):
-    try:
-        logger.info("displyImage.setUpImageViewerSubWindow called")
-        pg.setConfigOptions(imageAxisOrder='row-major')
-        subWindow = QMdiSubWindow(self)
-        subWindow.setObjectName = 'image_viewer'
-        subWindow.setAttribute(Qt.WA_DeleteOnClose)
-        subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
-                                      Qt.WindowCloseButtonHint | 
-                                      Qt.WindowMinimizeButtonHint)
-        
-        
-        height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width*0.6,height)
-        self.mdiArea.addSubWindow(subWindow)
-        
-        layout = QVBoxLayout()
-        imageViewer = pg.GraphicsLayoutWidget()
-        widget = QWidget()
-        widget.setLayout(layout)
-        subWindow.setWidget(widget)
-        
-        lblImageMissing = QLabel("<h4>Image Missing</h4>")
-        lblImageMissing.hide()
-        layout.addWidget(lblImageMissing)
-        subWindow.show()
-        return imageViewer, layout, lblImageMissing, subWindow
-    except Exception as e:
-            print('Error in displyImage.setUpImageViewerSubWindow: ' + str(e))
-            logger.error('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
-
-
-def setUpViewBoxForImage(self, imageViewer, layout, spinBoxCentre = None, spinBoxWidth = None):
-    try:
-        logger.info("displyImage.setUpViewBoxForImage called")
-        plotItem = imageViewer.addPlot() 
-        plotItem.getViewBox().setAspectLocked() 
-        img = pg.ImageItem(border='w')
-            
-        imv= pg.ImageView(view=plotItem, imageItem=img)
-        if spinBoxCentre and spinBoxWidth:
-            histogramObject = imv.getHistogramWidget().getHistogram()
-            histogramObject.sigLevelsChanged.connect(lambda: getHistogramLevels(imv, spinBoxCentre, spinBoxWidth))
-        imv.ui.roiBtn.hide()
-        imv.ui.menuBtn.hide()
-        layout.addWidget(imv)
- 
-        return img, imv, plotItem
-    except Exception as e:
-        print('Error in displayImage.setUpViewBoxForImag: ' + str(e))
-        logger.error('Error in displayImage.setUpViewBoxForImag: ' + str(e))
-
-
-def getHistogramLevels(imv, spinBoxCentre, spinBoxWidth):
-        minLevel, maxLevel = imv.getLevels()
-        width = maxLevel - minLevel
-        centre = minLevel + (width/2)
-        spinBoxCentre.setValue(centre)
-        spinBoxWidth.setValue(width)
-       
 
 def setUpColourTools(self, layout, imv,
             imageOnlySelected,
@@ -369,18 +309,6 @@ def setUpColourTools(self, layout, imv,
             logger.error('Error in displayImageColour.setUpColourTools: ' + str(e))
 
 
-def displayColourTableInComboBox(cmbColours, colourTable):
-    try:
-        cmbColours.blockSignals(True)
-        index = cmbColours.findText(colourTable)
-        if index >= 0:
-            cmbColours.setCurrentIndex(index)
-        cmbColours.blockSignals(False)
-    except Exception as e:
-            print('Error in displayImage.displayColourTableInComboBox: ' + str(e))
-            logger.error('Error in displayImage.displayColourTableInComboBox: ' + str(e))
-
-
 def displayPixelArray(self, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue,
                           spinBoxIntensity, spinBoxContrast,
@@ -460,7 +388,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 blockHistogramSignals(imv, False)
         
                 #Add Colour Table or look up table To Image
-                setPgColourMap(colourTable, imv, cmbColours, lut)
+                displayImageCommon.setPgColourMap(colourTable, imv, cmbColours, lut)
 
                 lblImageMissing.hide()   
   
@@ -479,31 +407,7 @@ def blockHistogramSignals(imgView, block):
         histogramObject.blockSignals(block)
 
 
-def setPgColourMap(cm_name, imv, cmbColours=None, lut=None):
-    try:
-        if cm_name == None:
-            cm_name = 'gray'
 
-        if cmbColours:
-            displayColourTableInComboBox(cmbColours, cm_name)   
-        
-        if cm_name == 'custom':
-            colors = lut
-        else:
-            cmMap = cm.get_cmap(cm_name)
-            colourClassName = cmMap.__class__.__name__
-            if colourClassName == 'ListedColormap':
-                colors = cmMap.colors
-            elif colourClassName == 'LinearSegmentedColormap':
-                numberOfValues = np.sqrt(len(imv.image.flatten()))
-                colors = cmMap(np.linspace(0, 1, numberOfValues))
-
-        positions = np.linspace(0, 1, len(colors))
-        pgMap = pg.ColorMap(positions, colors)
-        imv.setColorMap(pgMap)        
-    except Exception as e:
-        print('Error in displayImage.setPgColourMap: ' + str(e))
-        logger.error('Error in displayImage.setPgColourMap: ' + str(e))
 
 
 def imageSliderMoved(self, seriesName, imageList, imageNumber,
@@ -534,7 +438,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                 else:
                     colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
-                displayColourTableInComboBox(cmbColours, colourTable)
+                displayImageCommon.displayColourTableInComboBox(cmbColours, colourTable)
 
                 displayPixelArray(self, pixelArray, currentImageNumber, 
                                        lblImageMissing,
@@ -667,9 +571,9 @@ def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox=None):
             colourTable = cmbColours.currentText()
             if colourTable == 'custom':
                 colourTable = 'gray'                
-                displayColourTableInComboBox(cmbColours, 'gray')   
+                displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
 
-            setPgColourMap(colourTable, imv)
+            displayImageCommon.setPgColourMap(colourTable, imv)
             if chkBox.isChecked():
                 self.overRideSavedColourmapAndLevels = True
                 self.applyUserSelection = False

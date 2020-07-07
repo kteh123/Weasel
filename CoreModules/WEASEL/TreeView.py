@@ -7,7 +7,9 @@ import os
 import sys
 import logging
 import time
+import CoreModules.WEASEL.Menus  as menus
 logger = logging.getLogger(__name__)
+
 
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -113,7 +115,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 for branch in self.seriesBranchList:
                     branch.setExpanded(False)
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
-                self.treeView.itemDoubleClicked.connect(self.viewImage)
+                self.treeView.itemDoubleClicked.connect(lambda: menus.viewImage(self))
                 self.treeView.itemClicked.connect(self.onTreeViewItemClicked)
                 self.treeView.show()
                 end_time=time.time()
