@@ -11,6 +11,7 @@ import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +101,7 @@ def buildToolsMenu(self):
         self.viewImageROIButton = QAction('View Image with &ROI', self)
         self.viewImageROIButton.setShortcut('Ctrl+R')
         self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
-        self.viewImageROIButton.triggered.connect(self.viewROIImage)
+        self.viewImageROIButton.triggered.connect(lambda: viewROIImage(self))
         self.viewImageROIButton.setData(bothImagesAndSeries)
         self.viewImageROIButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageROIButton)
@@ -203,7 +204,7 @@ def viewImage(self):
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
-            logger.info("Menus viewImage called")
+            logger.info("Menus.viewImage called")
             if self.isAnImageSelected():
                 displayImageColour.displayImageSubWindow(self)
             elif self.isASeriesSelected():
@@ -212,5 +213,22 @@ def viewImage(self):
                 self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
                 displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyID, seriesID)
         except Exception as e:
-            print('Error in Menus viewImage: ' + str(e))
-            logger.error('Error in Menus viewImage: ' + str(e))
+            print('Error in Menus.viewImage: ' + str(e))
+            logger.error('Error in Menus.viewImage: ' + str(e))
+
+
+def viewROIImage(self):
+    """Creates a subwindow that displays a DICOM image with ROI creation functionality. 
+    Executed using the 'View Image with ROI' Menu item in the Tools menu."""
+    try:
+        logger.info("Menus.viewROIImage called")
+        if self.isAnImageSelected():
+            displayImageROI.displayImageROISubWindow(self)
+        elif self.isASeriesSelected():
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
+            self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
+            displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyID, seriesID)
+    except Exception as e:
+        print('Error in Menus.viewROIImage: ' + str(e))
+        logger.error('Error in Menus.viewROIImage: ' + str(e))

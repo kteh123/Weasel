@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
 import numpy as np
+import math
 import logging
 logger = logging.getLogger(__name__)
 
@@ -118,3 +119,33 @@ def setUpImageViewerSubWindow(self):
     except Exception as e:
             print('Error in displyImage.setUpImageViewerSubWindow: ' + str(e))
             logger.error('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
+
+
+def getPixelValue(pos, imv, pixelArray, lblPixelValue):
+        try:
+            #print ("Image position: {}".format(pos))
+            container = imv.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView(pos) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
+                z_i = imv.currentIndex + 1
+                if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
+                    and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
+                    lblPixelValue.setText(
+                        "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
+                   .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+                elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
+                    and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
+                    and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
+                    lblPixelValue.setText(
+                        "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
+                    .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
+                else:
+                    lblPixelValue.setText("<h4>Pixel Value:</h4>")
+            else:
+                lblPixelValue.setText("<h4>Pixel Value:</h4>")
+                   
+        except Exception as e:
+            print('Error in getPixelValue: ' + str(e))
+            logger.error('Error in getPixelValue: ' + str(e))

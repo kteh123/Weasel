@@ -33,7 +33,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
         """
         try:
-            logger.info("WEASEL displayImageROISubWindow called")
+            logger.info("DisplayImageROI displayImageROISubWindow called")
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
             colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
@@ -62,22 +62,14 @@ def displayImageROISubWindow(self, derivedImagePath=None):
            
             setUpROITools(viewBox, layout, img, lblROIMeanValue)
            
-            displayROIPixelArray(pixelArray, 0,
+            displayROIPixelArray(self, pixelArray, 0,
                           lblImageMissing, lblPixelValue,
                            colourTable,
                           imv)
 
-            #add second image
-            img2 = pg.ImageItem(border='w')
-            img2.setImage(np.array(pixelArray))
-            img2.setZValue(10) # make sure this image is on top
-            img2.setOpacity(0.5)
-            imv.setImage(img2)
-            #img2.scale(10, 10)
-
         except Exception as e:
-            print('Error in Weasel.displayImageROISubWindow: ' + str(e))
-            logger.error('Error in Weasel.displayImageROISubWindow: ' + str(e)) 
+            print('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e))
+            logger.error('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e)) 
 
 
 def displayMultiImageROISubWindow(self, imageList, studyName, 
@@ -88,7 +80,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
         The user may create an ROI on the series of images.
         """
         try:
-            logger.info("WEASEL displayMultiImageROISubWindow called")
+            logger.info("DisplayImageROI.displayMultiImageROISubWindow called")
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
 
@@ -128,20 +120,20 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageSlider.setTickInterval(1)
             layout.addWidget(imageSlider)
             imageSlider.valueChanged.connect(
-                  lambda: self.imageROISliderMoved(seriesName, 
+                  lambda: imageROISliderMoved(self, seriesName, 
                                                    imageList, 
                                                    imageSlider.value(),
                                                    lblImageMissing, 
                                                    lblPixelValue, 
                                                    imv, subWindow))
             imageSlider.valueChanged.connect(
-                  lambda: self.updateROIMeanValue(self.getROIOject(viewBox), 
+                  lambda: updateROIMeanValue(getROIOject(viewBox), 
                                                img.image, 
                                                img, 
                                                lblROIMeanValue))
             #print('Num of images = {}'.format(len(imageList)))
             #Display the first image in the viewer
-            self.imageROISliderMoved(seriesName, 
+            imageROISliderMoved(self, seriesName, 
                                     imageList, 
                                     imageSlider.value(),
                                     lblImageMissing, 
@@ -154,13 +146,38 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
 
 
 
+def imageROISliderMoved(self, seriesName, imageList, imageNumber,
+                        lblImageMissing, lblPixelValue, 
+                        imv, subWindow):
+        """On the Multiple Image with ROI Display sub window, this
+        function is called when the image slider is moved. 
+        It causes the next image in imageList to be displayed"""
+        try:
+            logger.info("DisplayImageROI.imageROISliderMoved called")
+            #imageNumber = self.imageSlider.value()
+            currentImageNumber = imageNumber - 1
+            if currentImageNumber >= 0:
+                self.selectedImagePath = imageList[currentImageNumber]
+                #print("imageSliderMoved before={}".format(self.selectedImagePath))
+                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+                colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
+                displayROIPixelArray(self, pixelArray, currentImageNumber,
+                          lblImageMissing, lblPixelValue, colourTable,
+                          imv)
+                
+                subWindow.setWindowTitle(seriesName + ' - ' 
+                         + os.path.basename(self.selectedImagePath))
+               # print("imageSliderMoved after={}".format(self.selectedImagePath))
+        except Exception as e:
+            print('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
+            logger.error('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
 
 
 
 
 def setUpLabels(layout):
-        logger.info("WEASEL.setUpLabels called")
+        logger.info("DisplayImageROI.setUpLabels called")
         gridLayout = QGridLayout()
         layout.addLayout(gridLayout)
        
@@ -233,12 +250,12 @@ def setUpROITools(viewBox, layout, img, lblROIMeanValue):
             logger.error('Error in setUpROITools: ' + str(e))
 
 
-def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
+def addROIToViewBox(objROI, viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.addROIToViewBox called")
+            logger.info("DisplayImageROI.addROIToViewBox called")
             viewBox.addItem(objROI)
             objROI.sigRegionChanged.connect(
-                lambda: self.updateROIMeanValue(objROI, 
+                lambda: updateROIMeanValue(objROI, 
                                                img.image, 
                                                img, 
                                                lblROIMeanValue))
@@ -247,45 +264,45 @@ def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
             logger.error('Error in addROIToViewBox: ' + str(e))
 
 
-    def createMultiRectROI(self, viewBox, img, lblROIMeanValue):
+def createMultiRectROI(viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.createMultiRectROI called")
+            logger.info("DisplayImageROI.createMultiRectROI called")
             #Remove existing ROI if there is one
-            self.removeROI(viewBox, lblROIMeanValue)
+            removeROI(viewBox, lblROIMeanValue)
             objROI = pg.MultiRectROI([[20, 90], [50, 60], [60, 90]],
                                  pen=pg.mkPen(pg.mkColor('r'),
                                            width=5,
                                           style=QtCore.Qt.SolidLine), 
                                  width=5,
                                removable=True)
-            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+            addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
         except Exception as e:
             print('Error in createMultiRectROI: ' + str(e))
             logger.error('Error in createMultiRectROI: ' + str(e))
 
 
-    def createPolyLineROI(self, viewBox, img, lblROIMeanValue):
+def createPolyLineROI(viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.createPolyLineROI called")
+            logger.info("DisplayImageROI.createPolyLineROI called")
             #Remove existing ROI if there is one
-            self.removeROI(viewBox, lblROIMeanValue)
+            removeROI(viewBox, lblROIMeanValue)
             objROI = pg.PolyLineROI([[80, 60], [90, 30], [60, 40]],
                                  pen=pg.mkPen(pg.mkColor('r'),
                                            width=5,
                                           style=QtCore.Qt.SolidLine), 
                                  closed=True,
                                  removable=True)
-            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+            addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
         except Exception as e:
             print('Error in createPolyLineROI: ' + str(e))
             logger.error('Error in createPolyLineROI: ' + str(e))
 
 
-    def createRectangleROI(self, viewBox, img, lblROIMeanValue):
+def createRectangleROI(viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.createRectangleROI called")
+            logger.info("DisplayImageROI.createRectangleROI called")
             #Remove existing ROI if there is one
-            self.removeROI(viewBox, lblROIMeanValue)
+            removeROI(viewBox, lblROIMeanValue)
             objROI = pg.RectROI(
                                 [20, 20], 
                                 [20, 20],
@@ -293,34 +310,34 @@ def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
                                            width=4,
                                           style=QtCore.Qt.SolidLine), 
                                removable=True)
-            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+            addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
         except Exception as e:
             print('Error in createRectangleRO: ' + str(e))
             logger.error('Error in createRectangleRO: ' + str(e))
 
 
-    def createCircleROI(self, viewBox, img, lblROIMeanValue):
+def createCircleROI(viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.createCircleROI called")
+            logger.info("DisplayImageROI.createCircleROI called")
             #Remove existing ROI if there is one
-            self.removeROI(viewBox, lblROIMeanValue)
+            removeROI(viewBox, lblROIMeanValue)
             objROI = pg.CircleROI([20, 20], 
                                   [20, 20],  
                                   pen=pg.mkPen(pg.mkColor('r'),
                                            width=4,
                                           style=QtCore.Qt.SolidLine),
                                   removable=True)
-            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+            addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
         except Exception as e:
             print('Error in createCircleROI: ' + str(e))
             logger.error('Error in createCircleROI: ' + str(e))
 
 
-    def createEllipseROI(self, viewBox, img, lblROIMeanValue):
+def createEllipseROI(viewBox, img, lblROIMeanValue):
         try:
-            logger.info("WEASEL.createEllipseROI called")
+            logger.info("DisplayImageROI.createEllipseROI called")
             #Remove existing ROI if there is one
-            self.removeROI(viewBox, lblROIMeanValue)
+            removeROI(viewBox, lblROIMeanValue)
             objROI = pg.EllipseROI(
                                 [20, 20], 
                                 [30, 20], 
@@ -328,15 +345,15 @@ def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
                                            width=4,
                                           style=QtCore.Qt.SolidLine),
                                 removable=True)
-            self.addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
+            addROIToViewBox(objROI, viewBox, img, lblROIMeanValue)
         except Exception as e:
             print('Error in createEllipseROI: ' + str(e))
             logger.error('Error in createEllipseROI: ' + str(e))
 
 
-    def getROIOject(self, viewBox):
+def getROIOject(viewBox):
         try:
-            logger.info("WEASEL.getROIOject called")
+            logger.info("DisplayImageROI.getROIOject called")
             for item in viewBox.items:
                 if 'graphicsItems.ROI' in str(type(item)):
                     return item
@@ -346,22 +363,22 @@ def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
             logger.error('Error in getROIOject: ' + str(e))
         
         
-    def removeROI(self, viewBox, lblROIMeanValue):
+def removeROI(viewBox, lblROIMeanValue):
         try:
-            logger.info("WEASEL.removeROI called")
-            objROI = self.getROIOject(viewBox)
+            logger.info("DisplayImageROI.removeROI called")
+            objROI = getROIOject(viewBox)
             viewBox.removeItem(objROI) 
             lblROIMeanValue.setText("<h4>ROI Mean Value:</h4>")
         except Exception as e:
-            print('Error in removeROI: ' + str(e))
-            logger.error('Error in removeROI: ' + str(e))           
+            print('Error in DisplayImageROI.removeROI: ' + str(e))
+            logger.error('Error in DisplayImageROI.removeROI: ' + str(e))           
 
 
-    def displayROIPixelArray(self, pixelArray, currentImageNumber,
+def displayROIPixelArray(self, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue, colourTable,
                           imv):
         try:
-            logger.info("displayROIPixelArray called")
+            logger.info("DisplayImageROI.displayROIPixelArray called")
 
             #Check that pixel array holds an image & display it
             if pixelArray is None:
@@ -388,8 +405,32 @@ def addROIToViewBox(self, objROI, viewBox, img, lblROIMeanValue):
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
-                   lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+                   lambda pos: displayImageCommon.getPixelValue(pos, imv, pixelArray, lblPixelValue))
 
         except Exception as e:
-            print('Error in displayROIPixelArray: ' + str(e))
-            logger.error('Error in displayROIPixelArray: ' + str(e)) 
+            print('Error in DisplayImageROI.displayROIPixelArray: ' + str(e))
+            logger.error('Error in DisplayImageROI.displayROIPixelArray: ' + str(e))
+
+
+def updateROIMeanValue(roi, pixelArray, imgItem, lbl):
+        try:
+            logger.info("DisplayImageROI.updateROIMeanValue called")
+            #As image's axis order is set to
+            #'row-major', then the axes are specified 
+            #in (y, x) order, axes=(1,0)
+            if roi is not None:
+                arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
+                                axes=(1,0))
+                #, returnMappedCoords=True
+                #print('Mouse move')
+                #print(arrRegion)
+                #roiMean = round(np.mean(arrRegion[0]), 3)
+                roiMean = round(np.mean(arrRegion), 3)
+                lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
+                if len(arrRegion[0]) <4:
+                    print(arrRegion[0])
+                    print ('Coords={}'.format(arrRegion[1]))
+
+        except Exception as e:
+            print('Error in DisplayImageROI.updateROIMeanValue: ' + str(e))
+            logger.error('Error in DisplayImageROI.updateROIMeanValue: ' + str(e)) 

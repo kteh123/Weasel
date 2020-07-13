@@ -16,7 +16,6 @@ import time
 import re
 import struct
 import numpy as np
-import math
 import scipy
 from scipy.stats import iqr
 import logging
@@ -223,46 +222,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in : Weasel.displayMessageSubWindow' + str(e))
             logger.error('Error in : Weasel.displayMessageSubWindow' + str(e))
-    
-
-    
-
-
-    
-
-
-    
-
-
-    def getPixelValue(self, pos, imv, pixelArray, lblPixelValue):
-        try:
-            #print ("Image position: {}".format(pos))
-            container = imv.getView()
-            if container.sceneBoundingRect().contains(pos): 
-                mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = math.floor(mousePoint.x())
-                y_i = math.floor(mousePoint.y()) 
-                z_i = imv.currentIndex + 1
-                if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
-                    and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
-                    lblPixelValue.setText(
-                        "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
-                   .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
-                elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
-                    and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
-                    and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
-                    lblPixelValue.setText(
-                        "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
-                else:
-                    lblPixelValue.setText("<h4>Pixel Value:</h4>")
-            else:
-                lblPixelValue.setText("<h4>Pixel Value:</h4>")
-                   
-        except Exception as e:
-            print('Error in getPixelValue: ' + str(e))
-            logger.error('Error in getPixelValue: ' + str(e))
-
 
     def synchroniseROIs(self, chkBox):
         """Synchronises the ROIs in all the open image subwindows"""
@@ -281,83 +240,6 @@ class Weasel(QMainWindow):
                         print ('child of item    ', child)               
                 QApplication.processEvents()
 
-
-    def updateROIMeanValue(self, roi, pixelArray, imgItem, lbl):
-        try:
-            #As image's axis order is set to
-            #'row-major', then the axes are specified 
-            #in (y, x) order, axes=(1,0)
-            if roi is not None:
-                arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
-                                axes=(1,0))
-                #, returnMappedCoords=True
-                #print('Mouse move')
-                #print(arrRegion)
-                #roiMean = round(np.mean(arrRegion[0]), 3)
-                roiMean = round(np.mean(arrRegion), 3)
-                lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
-                if len(arrRegion[0]) <4:
-                    print(arrRegion[0])
-                    print ('Coords={}'.format(arrRegion[1]))
-
-        except Exception as e:
-            print('Error in Weasel.updateROIMeanValue: ' + str(e))
-            logger.error('Error in Weasel.updateROIMeanValue: ' + str(e)) 
-
-    
-    
-
-
-    
-
-    
-    def imageROISliderMoved(self, seriesName, imageList, imageNumber,
-                        lblImageMissing, lblPixelValue, 
-                        imv, subWindow):
-        """On the Multiple Image with ROI Display sub window, this
-        function is called when the image slider is moved. 
-        It causes the next image in imageList to be displayed"""
-        try:
-            logger.info("WEASEL imageROISliderMoved called")
-            #imageNumber = self.imageSlider.value()
-            currentImageNumber = imageNumber - 1
-            if currentImageNumber >= 0:
-                self.selectedImagePath = imageList[currentImageNumber]
-                #print("imageSliderMoved before={}".format(self.selectedImagePath))
-                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-                colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
-
-                self.displayROIPixelArray(pixelArray, currentImageNumber,
-                          lblImageMissing, lblPixelValue, colourTable,
-                          imv)
-                
-                subWindow.setWindowTitle(seriesName + ' - ' 
-                         + os.path.basename(self.selectedImagePath))
-               # print("imageSliderMoved after={}".format(self.selectedImagePath))
-        except Exception as e:
-            print('Error in imageROISliderMoved: ' + str(e))
-            logger.error('Error in imageROISliderMoved: ' + str(e))
-
-
-    
-
-
-    def viewROIImage(self):
-        """Creates a subwindow that displays a DICOM image with ROI creation functionality. 
-        Executed using the 'View Image with ROI' Menu item in the Tools menu."""
-        try:
-            logger.info("WEASEL viewROIImage called")
-            if self.isAnImageSelected():
-                self.displayImageROISubWindow()
-            elif self.isASeriesSelected():
-                studyID = self.selectedStudy 
-                seriesID = self.selectedSeries
-                self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
-                self.displayMultiImageROISubWindow(self.imageList, studyID, seriesID)
-        except Exception as e:
-            print('Error in viewROIImage: ' + str(e))
-            logger.error('Error in viewROIImage: ' + str(e))
-  
 
     def getImagePathList(self, studyID, seriesID):
         return self.objXMLReader.getImagePathList(studyID, seriesID)

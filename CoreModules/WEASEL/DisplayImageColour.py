@@ -393,7 +393,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 lblImageMissing.hide()   
   
                 imv.getView().scene().sigMouseMoved.connect(
-                   lambda pos: self.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+                   lambda pos: displayImageCommon.getPixelValue(pos, imv, pixelArray, lblPixelValue))
 
                 if multiImage:
                     deleteButton.show()
