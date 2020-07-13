@@ -39,7 +39,6 @@ import CoreModules.saveDICOM_Image as saveDICOM_Image
 
 import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
 import CoreModules.styleSheet as styleSheet
-from Developer.WEASEL.Tools.FERRET import FERRET as ferret
 from CoreModules.weaselXMLReader import WeaselXMLReader
 import CoreModules.imagingTools as imagingTools
 import CoreModules.WEASEL.TreeView  as treeView
@@ -55,7 +54,6 @@ __author__ = 'Steve Shillitoe'
 
 
 DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.png'
-FERRET_LOGO = 'images\\FERRET_LOGO.png'
 #Create and configure the logger
 #First delete the previous log file if there is one
 LOG_FILE_NAME = "WEASEL1.log"
@@ -163,28 +161,7 @@ class Weasel(QMainWindow):
             self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
 
-    def displayFERRET(self):
-        """
-        Displays FERRET in a sub window 
-        """
-        try:
-            logger.info("WEASEL displayFERRET called")
-            self.closeAllSubWindows()
-            self.subWindow = QMdiSubWindow(self)
-            self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
-                                          Qt.WindowCloseButtonHint)
-            
-            ferretWidget = ferret(self.subWindow, self.statusBar)
-            self.subWindow.setWidget(ferretWidget.returnFerretWidget())
-            
-            self.subWindow.setWindowTitle('FERRET')
-            self.subWindow.setWindowIcon(QIcon(FERRET_LOGO))
-            self.mdiArea.addSubWindow(self.subWindow)
-            self.subWindow.showMaximized()
-        except Exception as e:
-            print('Error in displayFERRET: ' + str(e))
-            logger.error('Error in displayFERRET: ' + str(e)) 
+    
 
 
     def displayMessageSubWindow(self, message, title="Loading DICOM files"):

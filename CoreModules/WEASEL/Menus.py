@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import (QAction, QApplication)
 from PyQt5.QtGui import  QIcon
 import os
 import sys
-import logging
 import pathlib
 import importlib
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
@@ -12,7 +11,9 @@ import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
+import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
 
+import logging
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -152,7 +153,7 @@ def buildToolsMenu(self):
         self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
         self.launchFerretButton.setShortcut('Ctrl+F')
         self.launchFerretButton.setStatusTip('Launches the FERRET application')
-        self.launchFerretButton.triggered.connect(self.displayFERRET)
+        self.launchFerretButton.triggered.connect(lambda: menuToolBarCommon.displayFERRET(self))
         self.launchFerretButton.setEnabled(True)
         self.toolsMenu.addAction(self.launchFerretButton)
     except Exception as e:
