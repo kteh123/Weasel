@@ -236,6 +236,7 @@ def viewROIImage(self):
         print('Error in Menus.viewROIImage: ' + str(e))
         logger.error('Error in Menus.viewROIImage: ' + str(e))
 
+
 def deleteImage(self):
         """TO DO"""
         """This method deletes an image or a series of images by 

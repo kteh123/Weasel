@@ -4,6 +4,7 @@ import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 
 FILE_SUFFIX = '_Copy'
 
@@ -52,7 +53,7 @@ def copySeries(objWeasel):
         newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, copiedImagePathList, FILE_SUFFIX)
         objWeasel.setMsgWindowProgBarValue(2)
         objWeasel.closeMessageSubWindow()
-        objWeasel.displayMultiImageSubWindow(copiedImagePathList, 
+        displayImageColour.displayMultiImageSubWindow(objWeasel, copiedImagePathList, 
                                               studyID, newSeriesID)
         treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
