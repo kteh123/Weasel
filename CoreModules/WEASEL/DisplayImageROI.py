@@ -39,7 +39,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
 
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
-            windowTitle = self.getDICOMFileData()
+            windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
             if derivedImagePath:

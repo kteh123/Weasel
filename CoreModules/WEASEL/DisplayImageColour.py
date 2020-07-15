@@ -52,7 +52,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
             colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
-            windowTitle = self.getDICOMFileData()
+            windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
             if derivedImagePath:

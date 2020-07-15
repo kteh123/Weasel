@@ -3,6 +3,8 @@ import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.imagingTools import thresholdPixelArray
+import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 FILE_SUFFIX = '_Thresholded'
 
 def returnPixelArray(imagePath):
@@ -28,13 +30,13 @@ def saveThresholdedImage(objWeasel):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-            objWeasel.displayImageSubWindow(pixelArray, derivedImageFileName)
+            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
             #Record squared image in XML file
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
-            objWeasel.refreshDICOMStudiesTreeView(seriesID)
+            treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
         elif objWeasel.isASeriesSelected():
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
@@ -67,8 +69,8 @@ def saveThresholdedImage(objWeasel):
                 derivedImagePathList, FILE_SUFFIX)
             objWeasel.setMsgWindowProgBarValue(2)
             objWeasel.closeMessageSubWindow()
-            objWeasel.displayMultiImageSubWindow(
+            displayImageColour.displayMultiImageSubWindow(objWeasel,
                 derivedImagePathList, studyID, newSeriesID)
-            objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+            treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in thresholdDICOM_Image.saveThresholdedImage: ' + str(e))

@@ -1,28 +1,17 @@
 
 from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
-        QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
-        QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
-        QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
-        QTreeWidgetItem, QGridLayout, QSlider, QCheckBox, QLayout, 
-        QProgressBar, QComboBox, QTableWidget, QTableWidgetItem, QFrame)
-from PyQt5.QtGui import QCursor, QIcon, QColor
+from PyQt5.QtCore import  Qt, pyqtSignal
+from PyQt5.QtWidgets import (QApplication,                         
+        QMdiArea, QWidget, QVBoxLayout, 
+        QMdiSubWindow, QMainWindow,  
+        QStatusBar, QLabel, 
+        QTreeWidgetItem,
+        QProgressBar)
 
-#import pyqtgraph as pg import statement for pip installed version of pyqtGraph
 import os
 import sys
-import time
-import re
-import struct
-import numpy as np
-import scipy
-from scipy.stats import iqr
 import logging
-import pathlib
 import importlib
-import matplotlib.pyplot as plt #delete?
-from matplotlib import cm #delete?
 
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
@@ -37,10 +26,8 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 
-import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
 import CoreModules.styleSheet as styleSheet
 from CoreModules.weaselXMLReader import WeaselXMLReader
-import CoreModules.imagingTools as imagingTools
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.Menus  as menus
 import CoreModules.WEASEL.ToolBar  as toolBar
@@ -107,7 +94,25 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in function WEASEL.ApplyStyleSheet: ' + str(e))
   
-            
+    
+    def closeSubWindow(self, objectName):
+        """Closes a particular sub window in the MDI"""
+        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == objectName:
+                QApplication.processEvents()
+                subWin.close()
+                QApplication.processEvents()
+                break
+
+
+    def closeAllSubWindows(self):
+        """Closes all the sub windows open in the MDI"""
+        logger.info("WEASEL closeAllSubWindows called")
+        self.mdiArea.closeAllSubWindows()
+        self.treeView = None  
+
+
     def getMDIAreaDimensions(self):
         return self.mdiArea.height(), self.mdiArea.width() 
 
@@ -279,138 +284,6 @@ class Weasel(QMainWindow):
             print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
             logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))           
 
-    #def displayBinaryOperationsWindow(self):
-    #    """Displays the sub window for performing binary operations
-    #    on 2 images"""
-    #    try:
-    #        logger.info("WEASEL displayBinaryOperationsWindow called")
-    #        self.subWindow = QMdiSubWindow(self)
-    #        self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
-    #        self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
-    #              | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
-    #        layout = QGridLayout()
-    #        widget = QWidget()
-    #        widget.setLayout(layout)
-    #        self.subWindow.setWidget(widget)
-    #        pg.setConfigOptions(imageAxisOrder='row-major')
-
-    #        imageViewer1 = pg.GraphicsLayoutWidget()
-    #        viewBox1 = imageViewer1.addViewBox()
-    #        viewBox1.setAspectLocked(True)
-    #        self.img1 = pg.ImageItem(border='w')
-    #        viewBox1.addItem(self.img1)
-    #        self.imv1 = pg.ImageView(view=viewBox1, imageItem=self.img1)
-    #        self.imv1.ui.histogram.hide()
-    #        self.imv1.ui.roiBtn.hide()
-    #        self.imv1.ui.menuBtn.hide()
-
-    #        imageViewer2 = pg.GraphicsLayoutWidget()
-    #        viewBox2 = imageViewer2.addViewBox()
-    #        viewBox2.setAspectLocked(True)
-    #        self.img2 = pg.ImageItem(border='w')
-    #        viewBox2.addItem(self.img2)
-    #        self.imv2 = pg.ImageView(view=viewBox2, imageItem=self.img2)
-    #        self.imv2.ui.histogram.hide()
-    #        self.imv2.ui.roiBtn.hide()
-    #        self.imv2.ui.menuBtn.hide()
-
-    #        imageViewer3 = pg.GraphicsLayoutWidget()
-    #        viewBox3 = imageViewer3.addViewBox()
-    #        viewBox3.setAspectLocked(True)
-    #        self.img3 = pg.ImageItem(border='w')
-    #        viewBox3.addItem(self.img3)
-    #        self.imv3 = pg.ImageView(view=viewBox3, imageItem=self.img3)
-    #        self.imv3.ui.histogram.hide()
-    #        self.imv3.ui.roiBtn.hide()
-    #        self.imv3.ui.menuBtn.hide()
-
-    #        studyID = self.selectedStudy 
-    #        seriesID = self.selectedSeries
-    #        self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
-    #        self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
-    #        self.lblImageMissing1.hide()
-    #        self.lblImageMissing2.hide()
-
-    #        self.btnSave = QPushButton('Save')
-    #        self.btnSave.setEnabled(False)
-    #        self.btnSave.clicked.connect(self.saveNewDICOMFileFromBinOp)
-
-    #        studyID = self.selectedStudy 
-    #        seriesID = self.selectedSeries
-    #        imagePathList = self.objXMLReader.getImagePathList(studyID, 
-    #                                                           seriesID)
-    #        #form a list of image file names without extensions
-    #        imageNameList = [os.path.splitext(os.path.basename(image))[0] 
-    #                         for image in imagePathList]
-    #        self.image_Name_Path_Dict = dict(zip(
-    #            imageNameList, imagePathList))
-    #        self.imageList1 = QComboBox()
-    #        self.imageList2 = QComboBox()
-    #        self.imageList1.currentIndexChanged.connect(
-    #            lambda:self.displayImageForBinOp(1, self.image_Name_Path_Dict))
-    #        self.imageList1.currentIndexChanged.connect(
-    #            self.enableBinaryOperationsCombo)
-    #        self.imageList1.currentIndexChanged.connect(
-    #            lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
-            
-    #        self.imageList2.currentIndexChanged.connect(
-    #            lambda:self.displayImageForBinOp(2, self.image_Name_Path_Dict))
-    #        self.imageList2.currentIndexChanged.connect(
-    #            self.enableBinaryOperationsCombo)
-    #        self.imageList2.currentIndexChanged.connect(
-    #            lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
-
-    #        self.binaryOpsList = QComboBox()
-    #        self.binaryOpsList.currentIndexChanged.connect(
-    #            lambda:self.doBinaryOperation(self.image_Name_Path_Dict))
-    #        self.imageList1.addItems(imageNameList)
-    #        self.imageList2.addItems(imageNameList)
-    #        self.binaryOpsList.addItems(
-    #            binaryOperationDICOM_Image.listBinaryOperations)
-
-    #        layout.addWidget(self.btnSave, 0, 2)
-    #        layout.addWidget(self.imageList1, 1, 0)
-    #        layout.addWidget(self.imageList2, 1, 1)
-    #        layout.addWidget(self.binaryOpsList, 1, 2)
-    #        layout.addWidget(self.lblImageMissing1, 2, 0)
-    #        layout.addWidget(self.lblImageMissing2, 2, 1)
-    #        #layout.addWidget(imageViewer1, 3, 0)
-    #        #layout.addWidget(imageViewer2, 3, 1)
-    #        #layout.addWidget(imageViewer3, 3, 2)
-    #        layout.addWidget(self.imv1, 3, 0)
-    #        layout.addWidget(self.imv2, 3, 1)
-    #        layout.addWidget(self.imv3, 3, 2)
-                
-    #        self.subWindow.setObjectName('Binary_Operation')
-    #        windowTitle = 'Binary Operations'
-    #        self.subWindow.setWindowTitle(windowTitle)
-    #        height, width = self.getMDIAreaDimensions()
-    #        self.subWindow.setGeometry(0,0,width*0.5,height*0.5)
-    #        self.mdiArea.addSubWindow(self.subWindow)
-    #        self.subWindow.show()
-    #    except Exception as e:
-    #        print('Error in displayBinaryOperationsWindow: ' + str(e))
-    #        logger.error('Error in displayBinaryOperationsWindow: ' + str(e))
-
-
-
-    def closeSubWindow(self, objectName):
-        """Closes a particular sub window in the MDI"""
-        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == objectName:
-                QApplication.processEvents()
-                subWin.close()
-                QApplication.processEvents()
-                break
-
-
-    def closeAllSubWindows(self):
-        """Closes all the sub windows open in the MDI"""
-        logger.info("WEASEL closeAllSubWindows called")
-        self.mdiArea.closeAllSubWindows()
-        self.treeView = None  
-
 
     def isAnImageSelected(self):
         """Returns True is a single image is selected in the DICOM
@@ -446,28 +319,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in isASeriesSelected: ' + str(e))
             logger.error('Error in isASeriesSelected: ' + str(e))
-
-
-    def getDICOMFileData(self):
-        """When a DICOM image is selected in the tree view, this function
-        returns its description in the form - study number: series number: image name"""
-        try:
-            logger.info("WEASEL getDICOMFileData called.")
-            selectedImage = self.treeView.selectedItems()
-            if selectedImage:
-                imageNode = selectedImage[0]
-                seriesNode  = imageNode.parent()
-                imageName = imageNode.text(0)
-                series = seriesNode.text(0)
-                studyNode = seriesNode.parent()
-                study = studyNode.text(0)
-                fullImageName = study + ': ' + series + ': '  + imageName
-                return fullImageName
-            else:
-                return ''
-        except Exception as e:
-            print('Error in getDICOMFileData: ' + str(e))
-            logger.error('Error in getDICOMFileData: ' + str(e))
 
 
 def main():
