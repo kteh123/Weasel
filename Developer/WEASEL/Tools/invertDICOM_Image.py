@@ -3,6 +3,7 @@ import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 FILE_SUFFIX = '_Inverted'
 
@@ -54,10 +55,10 @@ def saveInvertImage(objWeasel):
             derivedImagePathList = []
             derivedImageList = []
             numImages = len(imagePathList)
-            objWeasel.displayMessageSubWindow(
+            messageWindow.displayMessageSubWindow(objWeasel,
               "<H4>Inverting {} DICOM files</H4>".format(numImages),
               "Inverting DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(objWeasel, numImages)
             imageCounter = 0
             for imagePath in imagePathList:
                 derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -65,18 +66,18 @@ def saveInvertImage(objWeasel):
                 derivedImagePathList.append(derivedImagePath)
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
-            objWeasel.displayMessageSubWindow(
+                messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
+            messageWindow.displayMessageSubWindow(objWeasel,
               "<H4>Saving results into a new DICOM Series</H4>",
               "Inverting DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(2)
-            objWeasel.setMsgWindowProgBarValue(1)
+            messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 2)
+            messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
             # Save new DICOM Series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
-            objWeasel.setMsgWindowProgBarValue(2)
-            objWeasel.closeMessageSubWindow()
+            messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
+            messageWindow.closeMessageSubWindow(objWeasel)
             displayImageColour.displayMultiImageSubWindow(objWeasel, derivedImagePathList, studyID, newSeriesID)
             treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:

@@ -31,10 +31,7 @@ from CoreModules.weaselXMLReader import WeaselXMLReader
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.Menus  as menus
 import CoreModules.WEASEL.ToolBar  as toolBar
-import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
-import Developer.WEASEL.Tools
-#access pyqtGraph from the source code imported into this project
-import CoreModules.pyqtgraph as pg 
+
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -57,7 +54,6 @@ class Weasel(QMainWindow):
     def __init__(self): 
         """Creates the MDI container."""
         super (). __init__ () 
-
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -79,46 +75,15 @@ class Weasel(QMainWindow):
         
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
-        logger.info("WEASEL GUI created successfully.")
 
         menus.setupMenus(self)
         toolBar.setupToolBar(self)
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
+        logger.info("WEASEL GUI created successfully.")
   
-    
-    def closeSubWindow(self, objectName):
-        """Closes a particular sub window in the MDI"""
-        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == objectName:
-                QApplication.processEvents()
-                subWin.close()
-                QApplication.processEvents()
-                break
-
-
-    def closeAllSubWindows(self):
-        """Closes all the sub windows open in the MDI"""
-        logger.info("WEASEL closeAllSubWindows called")
-        self.mdiArea.closeAllSubWindows()
-        self.treeView = None  
-
 
     def getMDIAreaDimensions(self):
-        return self.mdiArea.height(), self.mdiArea.width() 
-
-
-    def setMsgWindowProgBarMaxValue(self, maxValue):
-        self.progBarMsg.show()
-        self.progBarMsg.setMaximum(maxValue)
-
-
-    def setMsgWindowProgBarValue(self, value):
-        self.progBarMsg.setValue(value)
-
-
-    def closeMessageSubWindow(self):
-        self.msgSubWindow.close()
+      return self.mdiArea.height(), self.mdiArea.width() 
 
 
     @QtCore.pyqtSlot(QTreeWidgetItem, int)
@@ -155,43 +120,6 @@ class Weasel(QMainWindow):
             self.selectedImageName = imageID.strip()
             fullImageID = studyID + ': ' + seriesID + ': '  + imageID
             self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
-
-
-    def displayMessageSubWindow(self, message, title="Loading DICOM files"):
-        """
-        Creates a subwindow that displays a message to the user. 
-        """
-        try:
-            
-            logger.info('LoadDICOM.displayMessageSubWindow called.')
-            for subWin in self.mdiArea.subWindowList():
-                if subWin.objectName() == "Msg_Window":
-                    subWin.close()
-                    
-            widget = QWidget()
-            widget.setLayout(QVBoxLayout()) 
-            self.msgSubWindow = QMdiSubWindow(self)
-            self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
-            self.msgSubWindow.setWidget(widget)
-            self.msgSubWindow.setObjectName("Msg_Window")
-            self.msgSubWindow.setWindowTitle(title)
-            height, width = self.getMDIAreaDimensions()
-            self.msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
-            lblMsg = QLabel('<H4>' + message + '</H4>')
-            widget.layout().addWidget(lblMsg)
-
-            self.progBarMsg = QProgressBar(self)
-            widget.layout().addWidget(self.progBarMsg)
-            widget.layout().setAlignment(Qt.AlignTop)
-            self.progBarMsg.hide()
-            self.progBarMsg.setValue(0)
-
-            self.mdiArea.addSubWindow(self.msgSubWindow)
-            self.msgSubWindow.show()
-            QApplication.processEvents()
-        except Exception as e:
-            print('Error in : Weasel.displayMessageSubWindow' + str(e))
-            logger.error('Error in : Weasel.displayMessageSubWindow' + str(e))
 
 
     def getImagePathList(self, studyID, seriesID):

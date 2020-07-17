@@ -9,6 +9,9 @@ import random
 from matplotlib import cm
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
+import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 import logging
 
 logger = logging.getLogger(__name__)
@@ -97,17 +100,17 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
                 imagePath='', seriesID='', studyID='', colourmap=None, lut=None):
     try:
         logger.info("In saveDICOM_Image.updateSingleDicomImage")
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Updating 1 DICOM file</H4>",
             "Updating DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(1)
-        objWeasel.setMsgWindowProgBarValue(0)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel,1)
+        messageWindow.setMsgWindowProgBarValue(objWeasel,0)
         dataset = readDICOM_Image.getDicomDataset(imagePath)
         levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
         updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
         saveDicomToFile(updatedDataset, output_path=imagePath)
-        objWeasel.setMsgWindowProgBarValue(1)
-        objWeasel.closeMessageSubWindow()
+        messageWindow.setMsgWindowProgBarValue(objWeasel,1)
+        messageWindow.closeMessageSubWindow(objWeasel)
     except Exception as e:
         print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
 

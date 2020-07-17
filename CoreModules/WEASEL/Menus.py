@@ -11,6 +11,7 @@ import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
 import CoreModules.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
@@ -59,7 +60,7 @@ def buildFileMenu(self):
         closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
         closeAllSubWindowsButton.setShortcut('Ctrl+X')
         closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
-        closeAllSubWindowsButton.triggered.connect(lambda: self.closeAllSubWindows())
+        closeAllSubWindowsButton.triggered.connect(lambda: displayImageCommon.closeAllSubWindows(self))
         self.fileMenu.addAction(closeAllSubWindowsButton)
     except Exception as e:
         print('Error in function Menus.buildFileMenu: ' + str(e))

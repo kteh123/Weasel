@@ -24,6 +24,7 @@ import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 import logging
 logger = logging.getLogger(__name__)
 
@@ -710,10 +711,10 @@ def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=N
         imagePathList = self.getImagePathList(studyID, seriesID)
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
-        self.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(self,
             "<H4>Updating {} DICOM files</H4>".format(numImages),
             "Updating DICOM images")
-        self.setMsgWindowProgBarMaxValue(numImages)
+        messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
         imageCounter = 0
         for imagePath in imagePathList:
             dataset = readDICOM_Image.getDicomDataset(imagePath) 
@@ -721,7 +722,7 @@ def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=N
             updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
             saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
-            self.setMsgWindowProgBarValue(imageCounter)
+            messageWindow.setMsgWindowProgBarValue(self, imageCounter)
         self.closeMessageSubWindow()
     except Exception as e:
         print('Error in DisplayImageColour.updateDicomSeriesOneColour: ' + str(e))
@@ -734,10 +735,10 @@ def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
         imagePathList = self.getImagePathList(studyID, seriesID)
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
-        self.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(self,
             "<H4>Updating {} DICOM files</H4>".format(numImages),
             "Updating DICOM images")
-        self.setMsgWindowProgBarMaxValue(numImages)
+        messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
         imageCounter = 0
         for imagePath in imagePathList:
             dataset = readDICOM_Image.getDicomDataset(imagePath)

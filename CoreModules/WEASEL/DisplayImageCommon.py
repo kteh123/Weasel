@@ -171,3 +171,21 @@ def getDICOMFileData(self):
         except Exception as e:
             print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
             logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+
+
+def closeSubWindow(self, objectName):
+        """Closes a particular sub window in the MDI"""
+        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == objectName:
+                QApplication.processEvents()
+                subWin.close()
+                QApplication.processEvents()
+                break
+
+
+def closeAllSubWindows(self):
+        """Closes all the sub windows open in the MDI"""
+        logger.info("WEASEL closeAllSubWindows called")
+        self.mdiArea.closeAllSubWindows()
+        self.treeView = None  

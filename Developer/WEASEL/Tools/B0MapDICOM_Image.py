@@ -5,6 +5,9 @@ import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 from CoreModules.imagingTools import formatArrayForAnalysis, unWrapPhase
+import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
@@ -120,19 +123,19 @@ def saveB0MapSeries(objWeasel):
         imagePathList = \
             objWeasel.getImagePathList(studyID, seriesID)
 
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate B0 Map</H4>",
             "Saving B0 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)
-        objWeasel.setMsgWindowProgBarValue(1)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 4)
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
 
         phasePathList, sliceList, echoList, riPathList = getParametersB0Map(imagePathList, seriesID)
 
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Calculating the B0 Map</H4>",
             "Saving B0 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)   
-        objWeasel.setMsgWindowProgBarValue(2)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 4)   
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
 
         if phasePathList:
             B0Image = returnPixelArray(phasePathList, sliceList, echoList)
@@ -140,7 +143,7 @@ def saveB0MapSeries(objWeasel):
             B0Image = returnPixelArrayFromRealIm(riPathList, sliceList, echoList)
             phasePathList = riPathList[0] # Here we're assuming that the saving will be performed based on the Real Images
         else:
-            objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
+            messageWindow.displayMessageSubWindow(objWeasel, "NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
             raise Exception("Not possible to calculate B0 Map in the selected series.")
 
         if hasattr(readDICOM_Image.getDicomDataset(phasePathList[0]), 'PerFrameFunctionalGroupsSequence'):
@@ -162,19 +165,19 @@ def saveB0MapSeries(objWeasel):
                 else:
                     B0ImageList.append(B0Image[index, ...])
         
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Saving {} DICOM files for the B0 Map calculated</H4>".format(numImages),
             "Saving B0 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)
-        objWeasel.setMsgWindowProgBarValue(3)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel,4)
+        messageWindow.setMsgWindowProgBarValue(objWeasel,3)
         
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)], 
                                                             B0ImagePathList, FILE_SUFFIX)
-        objWeasel.setMsgWindowProgBarValue(4)                                                    
-        objWeasel.closeMessageSubWindow()
+        messageWindow.setMsgWindowProgBarValue(objWeasel,4)                                                    
+        messageWindow.closeMessageSubWindow(objWeasel)
         objWeasel.displayMultiImageSubWindow(B0ImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

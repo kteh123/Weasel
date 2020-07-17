@@ -5,6 +5,7 @@ import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.imagingTools import thresholdPixelArray
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 FILE_SUFFIX = '_Thresholded'
 
 def returnPixelArray(imagePath):
@@ -46,10 +47,10 @@ def saveThresholdedImage(objWeasel):
             derivedImagePathList = []
             derivedImageList = []
             numImages = len(imagePathList)
-            objWeasel.displayMessageSubWindow(
+            messageWindow.displayMessageSubWindow(objWeasel,
               "<H4>Thresholding {} DICOM files</H4>".format(numImages),
               "Thresholding DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(objWeasel,numImages)
             imageCounter = 0
             for imagePath in imagePathList:
                 derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -58,17 +59,17 @@ def saveThresholdedImage(objWeasel):
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
                 objWeasel.setMsgWindowProgBarValue(imageCounter)
-            objWeasel.displayMessageSubWindow(
+            messageWindow.displayMessageSubWindow(objWeasel,
               "<H4>Saving results into a new DICOM Series</H4>",
               "Thresholding DICOM images")
-            objWeasel.setMsgWindowProgBarMaxValue(2)
-            objWeasel.setMsgWindowProgBarValue(1)
+            messageWindow.setMsgWindowProgBarMaxValue(objWeasel,2)
+            messageWindow.setMsgWindowProgBarValue(objWeasel,1)
             # Save new DICOM series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
             newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
                 derivedImagePathList, FILE_SUFFIX)
-            objWeasel.setMsgWindowProgBarValue(2)
-            objWeasel.closeMessageSubWindow()
+            messageWindow.setMsgWindowProgBarValue(objWeasel,2)
+            messageWindow.closeMessageSubWindow(objWeasel)
             displayImageColour.displayMultiImageSubWindow(objWeasel,
                 derivedImagePathList, studyID, newSeriesID)
             treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)

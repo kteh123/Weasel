@@ -5,6 +5,7 @@ import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 FILE_SUFFIX = '_Copy'
 
@@ -31,10 +32,10 @@ def copySeries(objWeasel):
         copiedImagePathList = []
         copiedImageList = []
         numImages = len(imagePathList)
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Copying {} DICOM files</H4>".format(numImages),
             "Copying DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(numImages)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, numImages)
         imageCounter = 0
         for imagePath in imagePathList:
             copiedImageFilePath = returnCopiedFile(imagePath)
@@ -42,17 +43,17 @@ def copySeries(objWeasel):
             copiedImagePathList.append(copiedImageFilePath)
             copiedImageList.append(copiedImage)
             imageCounter += 1
-            objWeasel.setMsgWindowProgBarValue(imageCounter)
-        objWeasel.displayMessageSubWindow(
+            messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Saving results into a new DICOM Series</H4>",
             "Copying DICOM images")
-        objWeasel.setMsgWindowProgBarMaxValue(2)
-        objWeasel.setMsgWindowProgBarValue(1)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 2)
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
         newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, copiedImagePathList, FILE_SUFFIX)
-        objWeasel.setMsgWindowProgBarValue(2)
-        objWeasel.closeMessageSubWindow()
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
+        messageWindow.closeMessageSubWindow(objWeasel)
         displayImageColour.displayMultiImageSubWindow(objWeasel, copiedImagePathList, 
                                               studyID, newSeriesID)
         treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)

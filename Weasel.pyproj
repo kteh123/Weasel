@@ -277,6 +277,9 @@
     <Compile Include="CoreModules\WEASEL\MenuToolBarCommon.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\MessageWindow.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\ToolBar.py">
       <SubType>Code</SubType>
     </Compile>

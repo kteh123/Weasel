@@ -5,6 +5,9 @@ import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 from CoreModules.imagingTools import formatArrayForAnalysis
+import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.MessageWindow  as messageWindow
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T1Map'
@@ -93,24 +96,24 @@ def saveT1MapSeries(objWeasel):
         imagePathList = \
             objWeasel.getImagePathList(studyID, seriesID)
 
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate T1 Map</H4>",
             "Saving T1 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)
-        objWeasel.setMsgWindowProgBarValue(1)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel,4)
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
 
         magnitudePathList, sliceList, inversionList = getParametersT1Map(imagePathList, seriesID)
 
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Calculating the T1 Map</H4>",
             "Saving T1 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)   
-        objWeasel.setMsgWindowProgBarValue(2)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 4)   
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
 
         if magnitudePathList:
             T1Image = returnPixelArray(magnitudePathList, sliceList, inversionList)
         else:
-            objWeasel.displayMessageSubWindow("NOT POSSIBLE TO CALCULATE T1 MAP IN THIS SERIES.")
+            messageWindow.displayMessageSubWindow(objWeasel, "NOT POSSIBLE TO CALCULATE T1 MAP IN THIS SERIES.")
             raise Exception("Not possible to calculate T1 Map in the selected series.")
 
         if hasattr(readDICOM_Image.getDicomDataset(magnitudePathList[0]), 'PerFrameFunctionalGroupsSequence'):
@@ -132,19 +135,19 @@ def saveT1MapSeries(objWeasel):
                 else:
                     T1ImageList.append(T1Image[index, ...])
 
-        objWeasel.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel, 
             "<H4>Saving {} DICOM files for the T1 Map calculated</H4>".format(numImages),
             "Saving T1 Map")
-        objWeasel.setMsgWindowProgBarMaxValue(4)
-        objWeasel.setMsgWindowProgBarValue(3)
+        messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 4)
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 3)
 
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             T1ImagePathList, imagePathList, T1ImageList, FILE_SUFFIX)
         newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T1ImagePathList)],
                                                         T1ImagePathList, FILE_SUFFIX)
-        objWeasel.setMsgWindowProgBarValue(4)                                                    
-        objWeasel.closeMessageSubWindow()
+        messageWindow.setMsgWindowProgBarValue(objWeasel, 4)                                                    
+        messageWindow.closeMessageSubWindow(objWeasel)
         objWeasel.displayMultiImageSubWindow(T1ImagePathList,
                                              studyID, newSeriesID)
         objWeasel.refreshDICOMStudiesTreeView(newSeriesID)

@@ -14,6 +14,8 @@ from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
+import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ def loadDICOM(self):
     """
     try:
         logger.info("LoadDICOM.loadDICOM called")
-        self.closeAllSubWindows()
+        displayImageCommon.closeAllSubWindows(self)
 
         #browse to DICOM folder and get DICOM folder name
         scan_directory = getScanDirectory(self)
@@ -110,14 +112,14 @@ def makeDICOM_XML_File(self, scan_directory):
                 folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
                     + 'subdirectory(s)'
 
-            self.displayMessageSubWindow(
+            messageWindow.displayMessageSubWindow(self,
                 "Collecting {} DICOM files from the {}".format(numFiles, folder))
             scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory)
-            self.displayMessageSubWindow("<H4>Reading data from each DICOM file</H4>")
+            messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
             dictionary = WriteXMLfromDICOM.get_studies_series(scans)
-            self.displayMessageSubWindow("<H4>Writing DICOM data to an XML file</H4>")
+            messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
             xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
-            self.displayMessageSubWindow("<H4>Saving XML file</H4>")
+            messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
             fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, scan_directory)
             self.msgSubWindow.close()
             end_time=time.time()
