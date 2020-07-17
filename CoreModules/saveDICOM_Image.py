@@ -205,8 +205,8 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
 
         # Parametric Map
         if parametric_map is not None:
-            #param.editDicom(newDicom, imageArray, parametric_map)
-            return param.editDicom(newDicom, imageArray, parametric_map)
+            param.editDicom(newDicom, imageArray, parametric_map)
+            #return param.editDicom(newDicom, imageArray, parametric_map)
 
         numberFrames = 1
         enhancedArrayInt = []
@@ -227,7 +227,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
     
             if int(np.amin(imageArray)) < 0:
                 newDicom.PixelRepresentation = 1
-                target = (np.power(2, dicomData.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
+                target = (np.power(2, newDicom.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
                 extra = target / (2*np.ones(np.shape(tempArray)))
@@ -250,7 +250,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.add_new('0x00280107', 'SS', int(np.amax(imageArrayInt)))
             else:
                 newDicom.PixelRepresentation = 0
-                target = (np.power(2, dicomData.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
+                target = (np.power(2, newDicom.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
                 imageScaled = target * (tempArray - minimum) / (maximum - minimum)

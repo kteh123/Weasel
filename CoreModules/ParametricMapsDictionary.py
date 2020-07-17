@@ -69,20 +69,20 @@ class ParametricClass(object):
         dicom.BitsStored = 8
         dicom.HighBit = 7
         dicom.SmallestImagePixelValue = 0
-        dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
+        #dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
         dicom.PixelRepresentation = 0
         dicom.SamplesPerPixel = 1
         dicom.WindowCenter = 128
         dicom.WindowWidth = 128
         dicom.LossyImageCompression = '00'
         pixelArray = imageArray.astype(np.uint8)
-        dicom.PixelData = pixelArray.tobytes()
+        #dicom.PixelData = pixelArray.tobytes()
 
         dicom.Modality = 'SEG'
         dicom.SegmentationType = 'FRACTIONAL'
-        dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
+        #dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
         dicom.SegmentationFractionalType = 'OCCUPANCY'
-        dicom.ContentLabel = 'SEGMENTATION'
+        #dicom.ContentLabel = 'SEGMENTATION'
         dicom.ContentDescription = 'Image segmentation'
 
         # Segment Labels

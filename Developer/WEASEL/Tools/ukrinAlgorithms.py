@@ -268,9 +268,9 @@ class ukrinMaps():
                         yData = self.pixelArray[ix,iy,:]
                     # Perform the Levenberg-Marquardt least squares fitting
                     try:
-                        T1pixel, _ = curve_fit(T1Fitting, inversionList, yData, p0=x0, bounds=(lb, ub), maxfev=2000)
+                        T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.array(yData), p0=x0, bounds=(lb, ub), maxfev=2000)
                     except: # If optimization fails, then perform fitting like assuming that the pizel value is zero
-                        T1pixel, _ = curve_fit(T1Fitting, inversionList, np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
+                        T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
                     T1Apparent.append(T1pixel)
             elif len(self.pixelArray.shape) == 4:
                 # Null point selection - after this step everything below lowest value will be negative
@@ -285,9 +285,9 @@ class ukrinMaps():
                         yData = self.pixelArray[ix,iy,iz,:]
                     # Perform the Levenberg-Marquardt least squares fitting
                     try:
-                        T1pixel, _ = curve_fit(T1Fitting, inversionList, yData, p0=x0, bounds=(lb, ub), maxfev=2000)
+                        T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.array(yData), p0=x0, bounds=(lb, ub), maxfev=2000)
                     except: # If optimization fails, then perform fitting like assuming that the pizel value is zero
-                        T1pixel, _ = curve_fit(T1Fitting, inversionList, np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
+                        T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.zeros(np.shape(yData)), p0=x0, bounds=(lb, ub), maxfev=2000)
                     T1Apparent.append(T1pixel)
             
             T1Apparent = np.array(T1Apparent)
@@ -298,7 +298,6 @@ class ukrinMaps():
             return T1Map
         except Exception as e:
             print('Error in function ukrinAlgorithms.T1Map: ' + str(e))
-
 
 #def T1Fitting(ti, a, b, t1):
     #return a - b * np.exp(-ti / t1)
