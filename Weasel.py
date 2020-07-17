@@ -83,16 +83,7 @@ class Weasel(QMainWindow):
 
         menus.setupMenus(self)
         toolBar.setupToolBar(self)
-        self.ApplyStyleSheet()
-
- 
-    def ApplyStyleSheet(self):
-        """Modifies the appearance of the GUI using CSS instructions"""
-        try:
-            self.setStyleSheet(styleSheet.TRISTAN_GREY)
-            logger.info('WEASEL Style Sheet applied.')
-        except Exception as e:
-            print('Error in function WEASEL.ApplyStyleSheet: ' + str(e))
+        self.setStyleSheet(styleSheet.TRISTAN_GREY)
   
     
     def closeSubWindow(self, objectName):
