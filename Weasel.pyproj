@@ -256,6 +256,9 @@
     <Compile Include="CoreModules\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreModules\WEASEL\BinaryOperationsOnImages.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\DisplayImageColour.py">
       <SubType>Code</SubType>
     </Compile>
@@ -269,6 +272,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\Menus.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CoreModules\WEASEL\MenuToolBarCommon.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\ToolBar.py">
@@ -289,8 +295,11 @@
     <Compile Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\WEASEL\Tools\invertDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\squareDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\T1MapMolliDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\T2StarMapDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
+    <Compile Include="Developer\WEASEL\Tools\thresholdDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\ukrinAlgorithms.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
@@ -339,14 +348,6 @@
     <Content Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\WEASEL\Tools\FERRET_README.md" />
     <Content Include="Developer\WEASEL\Tools\toolsMenu.xml" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\binaryOperationDICOM_Image.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\buildToolsMenu.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\copyDICOM_Image.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\FERRET.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\invertDICOM_Image.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\readDICOM_Image.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\saveDICOM_Image.cpython-37.pyc" />
-    <Content Include="Developer\WEASEL\Tools\__pycache__\squareDICOM_Image.cpython-37.pyc" />
     <Content Include="images\FERRET_ICON.ico" />
     <Content Include="images\FERRET_LOGO.png" />
     <Content Include="images\logo-tristan.png" />
@@ -402,7 +403,6 @@
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelDiagrams\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\" />
     <Folder Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\__pycache__\" />
-    <Folder Include="Developer\WEASEL\Tools\__pycache__\" />
     <Folder Include="images\" />
     <Folder Include="CoreModules\SimpleITK\" />
   </ItemGroup>

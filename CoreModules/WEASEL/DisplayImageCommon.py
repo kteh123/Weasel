@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
 import numpy as np
+import math
 import logging
 logger = logging.getLogger(__name__)
 
@@ -43,8 +44,8 @@ def setPgColourMap(cm_name, imv, cmbColours=None, lut=None):
         pgMap = pg.ColorMap(positions, colors)
         imv.setColorMap(pgMap)        
     except Exception as e:
-        print('Error in displayImage.setPgColourMap: ' + str(e))
-        logger.error('Error in displayImage.setPgColourMap: ' + str(e))
+        print('Error in DisplayImageCommon.setPgColourMap: ' + str(e))
+        logger.error('Error in DisplayImageCommon.setPgColourMap: ' + str(e))
 
 
 def displayColourTableInComboBox(cmbColours, colourTable):
@@ -55,13 +56,13 @@ def displayColourTableInComboBox(cmbColours, colourTable):
             cmbColours.setCurrentIndex(index)
         cmbColours.blockSignals(False)
     except Exception as e:
-            print('Error in displayImage.displayColourTableInComboBox: ' + str(e))
-            logger.error('Error in displayImage.displayColourTableInComboBox: ' + str(e))
+            print('Error in DisplayImageCommon.displayColourTableInComboBox: ' + str(e))
+            logger.error('Error in DisplayImageCommon.displayColourTableInComboBox: ' + str(e))
 
 
 def setUpViewBoxForImage(imageViewer, layout, spinBoxCentre = None, spinBoxWidth = None):
     try:
-        logger.info("displyImage.setUpViewBoxForImage called")
+        logger.info("DisplayImageCommon.setUpViewBoxForImage called")
         plotItem = imageViewer.addPlot() 
         plotItem.getViewBox().setAspectLocked() 
         img = pg.ImageItem(border='w')
@@ -76,8 +77,8 @@ def setUpViewBoxForImage(imageViewer, layout, spinBoxCentre = None, spinBoxWidth
  
         return img, imv, plotItem
     except Exception as e:
-        print('Error in displayImage.setUpViewBoxForImag: ' + str(e))
-        logger.error('Error in displayImage.setUpViewBoxForImag: ' + str(e))
+        print('Error in DisplayImageCommon.setUpViewBoxForImag: ' + str(e))
+        logger.error('Error in DisplayImageCommon.setUpViewBoxForImag: ' + str(e))
 
 
 def getHistogramLevels(imv, spinBoxCentre, spinBoxWidth):
@@ -90,7 +91,7 @@ def getHistogramLevels(imv, spinBoxCentre, spinBoxWidth):
 
 def setUpImageViewerSubWindow(self):
     try:
-        logger.info("displyImage.setUpImageViewerSubWindow called")
+        logger.info("DisplayImageCommon.setUpImageViewerSubWindow called")
         pg.setConfigOptions(imageAxisOrder='row-major')
         subWindow = QMdiSubWindow(self)
         subWindow.setObjectName = 'image_viewer'
@@ -116,5 +117,57 @@ def setUpImageViewerSubWindow(self):
         subWindow.show()
         return imageViewer, layout, lblImageMissing, subWindow
     except Exception as e:
-            print('Error in displyImage.setUpImageViewerSubWindow: ' + str(e))
-            logger.error('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
+            print('Error in DisplayImageCommon.setUpImageViewerSubWindow: ' + str(e))
+            logger.error('Error in DisplayImageCommon.displayMultiImageSubWindow: ' + str(e))
+
+
+def getPixelValue(pos, imv, pixelArray, lblPixelValue):
+        try:
+            #print ("Image position: {}".format(pos))
+            container = imv.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView(pos) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
+                z_i = imv.currentIndex + 1
+                if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
+                    and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
+                    lblPixelValue.setText(
+                        "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
+                   .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+                elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
+                    and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
+                    and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
+                    lblPixelValue.setText(
+                        "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
+                    .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
+                else:
+                    lblPixelValue.setText("<h4>Pixel Value:</h4>")
+            else:
+                lblPixelValue.setText("<h4>Pixel Value:</h4>")
+                   
+        except Exception as e:
+            print('Error in DisplayImageCommon.getPixelValue: ' + str(e))
+            logger.error('Error in DisplayImageCommon.getPixelValue: ' + str(e))
+
+
+def getDICOMFileData(self):
+        """When a DICOM image is selected in the tree view, this function
+        returns its description in the form - study number: series number: image name"""
+        try:
+            logger.info("DisplayImageCommon.getDICOMFileData called.")
+            selectedImage = self.treeView.selectedItems()
+            if selectedImage:
+                imageNode = selectedImage[0]
+                seriesNode  = imageNode.parent()
+                imageName = imageNode.text(0)
+                series = seriesNode.text(0)
+                studyNode = seriesNode.parent()
+                study = studyNode.text(0)
+                fullImageName = study + ': ' + series + ': '  + imageName
+                return fullImageName
+            else:
+                return ''
+        except Exception as e:
+            print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+            logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))

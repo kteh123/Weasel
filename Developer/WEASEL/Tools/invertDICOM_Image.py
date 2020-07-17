@@ -2,7 +2,8 @@ import os
 import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 import CoreModules.saveDICOM_Image as saveDICOM_Image
-
+import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 FILE_SUFFIX = '_Inverted'
 
 def returnPixelArray(imagePath):
@@ -30,11 +31,11 @@ def saveInvertImage(objWeasel):
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:
-        if objWeasel.isAnImageSelected():
+        if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-            objWeasel.displayImageSubWindow(derivedImageFileName)
+            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
             
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
@@ -42,8 +43,8 @@ def saveInvertImage(objWeasel):
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
                                                       FILE_SUFFIX)
             #Update tree view with xml file modified above
-            objWeasel.refreshDICOMStudiesTreeView(seriesID)
-        elif objWeasel.isASeriesSelected():
+            treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
+        elif treeView.isASeriesSelected(objWeasel):
             # Should consider the case where Series is 1 image/file only
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
@@ -76,8 +77,7 @@ def saveInvertImage(objWeasel):
                 derivedImagePathList, FILE_SUFFIX)
             objWeasel.setMsgWindowProgBarValue(2)
             objWeasel.closeMessageSubWindow()
-            objWeasel.displayMultiImageSubWindow(
-                derivedImagePathList, studyID, newSeriesID)
-            objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+            displayImageColour.displayMultiImageSubWindow(objWeasel, derivedImagePathList, studyID, newSeriesID)
+            treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in invertDICOM_Image.saveInvertImage: ' + str(e))

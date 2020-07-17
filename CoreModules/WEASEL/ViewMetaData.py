@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem, QFrame)
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
-
+import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.readDICOM_Image as readDICOM_Image
 import logging
 logger = logging.getLogger(__name__)
@@ -18,13 +18,13 @@ def viewMetadata(self):
     """Creates a subwindow that displays a DICOM image's metadata. """
     try:
         logger.info("ViewMataData.viewMetadata called")
-        if self.isAnImageSelected():
+        if treeView.isAnImageSelected(self):
             imagePath = self.selectedImagePath
             imageName = self.selectedImageName
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 
                                             dataset)
-        elif self.isASeriesSelected():
+        elif treeView.isASeriesSelected(self):
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
             imageList = self.objXMLReader.getImagePathList(studyID, seriesID)

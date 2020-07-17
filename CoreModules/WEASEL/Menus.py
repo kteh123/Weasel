@@ -1,17 +1,22 @@
 from PyQt5.QtCore import  Qt
-from PyQt5.QtWidgets import (QAction, QApplication)
+from PyQt5.QtWidgets import (QAction, QApplication, QMessageBox)
 from PyQt5.QtGui import  QIcon
 import os
 import sys
-import logging
 import pathlib
 import importlib
+import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.DisplayImageROI as displayImageROI
+import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
+import CoreModules.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
 
+
+import logging
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
@@ -100,7 +105,7 @@ def buildToolsMenu(self):
         self.viewImageROIButton = QAction('View Image with &ROI', self)
         self.viewImageROIButton.setShortcut('Ctrl+R')
         self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
-        self.viewImageROIButton.triggered.connect(self.viewROIImage)
+        self.viewImageROIButton.triggered.connect(lambda: viewROIImage(self))
         self.viewImageROIButton.setData(bothImagesAndSeries)
         self.viewImageROIButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageROIButton)
@@ -116,7 +121,7 @@ def buildToolsMenu(self):
         self.deleteImageButton = QAction('&Delete Image', self)
         self.deleteImageButton.setShortcut('Ctrl+D')
         self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-        self.deleteImageButton.triggered.connect(self.deleteImage)
+        self.deleteImageButton.triggered.connect(lambda: deleteImage(self))
         self.deleteImageButton.setData(bothImagesAndSeries)
         self.deleteImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.deleteImageButton)
@@ -139,7 +144,7 @@ def buildToolsMenu(self):
         bothImagesAndSeries = False
         self.binaryOperationsButton.setData(bothImagesAndSeries)
         self.binaryOperationsButton.triggered.connect(
-            self.displayBinaryOperationsWindow)
+            lambda: binaryOperationsOnImages.displayBinaryOperationsWindow(self))
         self.binaryOperationsButton.setEnabled(False)
         self.toolsMenu.addAction(self.binaryOperationsButton)
         
@@ -151,7 +156,7 @@ def buildToolsMenu(self):
         self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
         self.launchFerretButton.setShortcut('Ctrl+F')
         self.launchFerretButton.setStatusTip('Launches the FERRET application')
-        self.launchFerretButton.triggered.connect(self.displayFERRET)
+        self.launchFerretButton.triggered.connect(lambda: menuToolBarCommon.displayFERRET(self))
         self.launchFerretButton.setEnabled(True)
         self.toolsMenu.addAction(self.launchFerretButton)
     except Exception as e:
@@ -203,14 +208,92 @@ def viewImage(self):
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
-            logger.info("Menus viewImage called")
-            if self.isAnImageSelected():
+            logger.info("Menus.viewImage called")
+            if treeView.isAnImageSelected(self):
                 displayImageColour.displayImageSubWindow(self)
-            elif self.isASeriesSelected():
+            elif treeView.isASeriesSelected(self):
                 studyID = self.selectedStudy 
                 seriesID = self.selectedSeries
                 self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
                 displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyID, seriesID)
         except Exception as e:
-            print('Error in Menus viewImage: ' + str(e))
-            logger.error('Error in Menus viewImage: ' + str(e))
+            print('Error in Menus.viewImage: ' + str(e))
+            logger.error('Error in Menus.viewImage: ' + str(e))
+
+
+def viewROIImage(self):
+    """Creates a subwindow that displays a DICOM image with ROI creation functionality. 
+    Executed using the 'View Image with ROI' Menu item in the Tools menu."""
+    try:
+        logger.info("Menus.viewROIImage called")
+        if treeView.isAnImageSelected(self):
+            displayImageROI.displayImageROISubWindow(self)
+        elif treeView.isASeriesSelected(self):
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
+            self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
+            displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyID, seriesID)
+    except Exception as e:
+        print('Error in Menus.viewROIImage: ' + str(e))
+        logger.error('Error in Menus.viewROIImage: ' + str(e))
+
+
+def deleteImage(self):
+        """TO DO"""
+        """This method deletes an image or a series of images by 
+        deleting the physical file(s) and then removing their entries
+        in the XML file."""
+        try:
+            studyID = self.selectedStudy
+            seriesID = self.selectedSeries
+            if treeView.isAnImageSelected(self):
+                imageName = self.selectedImageName
+                imagePath = self.selectedImagePath
+                buttonReply = QMessageBox.question(self, 
+                  'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+                  QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+                if buttonReply == QMessageBox.Ok:
+                    #Delete physical file if it exists
+                    if os.path.exists(imagePath):
+                        os.remove(imagePath)
+                    #If this image is displayed, close its subwindow
+                    self.closeSubWindow(imagePath)
+                    #Is this the last image in a series?
+                    #Get the series containing this image and count the images it contains
+                    #If it is the last image in a series then remove the
+                    #whole series from XML file
+                    #No it is not the last image in a series
+                    #so just remove the image from the XML file 
+                    images = self.objXMLReader.getImageList(studyID, seriesID)
+                    if len(images) == 1:
+                        #only one image, so remove the series from the xml file
+                        #need to get study (parent) containing this series (child)
+                        #then remove child from parent
+                        self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+                    elif len(images) > 1:
+                        #more than 1 image in the series, 
+                        #so just remove the image from the xml file
+                        self.objXMLReader.removeOneImageFromSeries(
+                            studyID, seriesID, imagePath)
+                    #Update tree view with xml file modified above
+                    treeView.refreshDICOMStudiesTreeView(self)
+            elif treeView.isASeriesSelected(self):
+                buttonReply = QMessageBox.question(self, 
+                  'Delete DICOM series', "You are about to delete series {}".format(seriesID), 
+                  QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+                if buttonReply == QMessageBox.Ok:
+                    #Delete each physical file in the series
+                    #Get a list of names of images in that series
+                    imageList = self.objXMLReader.getImagePathList(studyID, 
+                                                                   seriesID) 
+                    #Iterate through list of images and delete each image
+                    for imagePath in imageList:
+                        if os.path.exists(imagePath):
+                            os.remove(imagePath)
+                    #Remove the series from the XML file
+                    self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+                    self.closeSubWindow(seriesID)
+                treeView.refreshDICOMStudiesTreeView(self)
+        except Exception as e:
+            print('Error in deleteImage: ' + str(e))
+            logger.error('Error in deleteImage: ' + str(e))
