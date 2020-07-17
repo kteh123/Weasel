@@ -26,7 +26,7 @@ def saveThresholdedImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
-        if objWeasel.isAnImageSelected():
+        if treeView.isAnImageSelected(self):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -37,7 +37,7 @@ def saveThresholdedImage(objWeasel):
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
-        elif objWeasel.isASeriesSelected():
+        elif treeView.isASeriesSelected(self):
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
             imagePathList = \

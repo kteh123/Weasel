@@ -15,6 +15,7 @@ import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
 import CoreModules.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
 
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -208,9 +209,9 @@ def viewImage(self):
         in the DICOM studies tree view."""
         try:
             logger.info("Menus.viewImage called")
-            if self.isAnImageSelected():
+            if treeView.isAnImageSelected(self):
                 displayImageColour.displayImageSubWindow(self)
-            elif self.isASeriesSelected():
+            elif treeView.isASeriesSelected(self):
                 studyID = self.selectedStudy 
                 seriesID = self.selectedSeries
                 self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
@@ -225,9 +226,9 @@ def viewROIImage(self):
     Executed using the 'View Image with ROI' Menu item in the Tools menu."""
     try:
         logger.info("Menus.viewROIImage called")
-        if self.isAnImageSelected():
+        if treeView.isAnImageSelected(self):
             displayImageROI.displayImageROISubWindow(self)
-        elif self.isASeriesSelected():
+        elif treeView.isASeriesSelected(self):
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
             self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
@@ -245,7 +246,7 @@ def deleteImage(self):
         try:
             studyID = self.selectedStudy
             seriesID = self.selectedSeries
-            if self.isAnImageSelected():
+            if treeView.isAnImageSelected(self):
                 imageName = self.selectedImageName
                 imagePath = self.selectedImagePath
                 buttonReply = QMessageBox.question(self, 
@@ -276,7 +277,7 @@ def deleteImage(self):
                             studyID, seriesID, imagePath)
                     #Update tree view with xml file modified above
                     treeView.refreshDICOMStudiesTreeView(self)
-            elif self.isASeriesSelected():
+            elif treeView.isASeriesSelected(self):
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM series', "You are about to delete series {}".format(seriesID), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)

@@ -31,7 +31,7 @@ def saveInvertImage(objWeasel):
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:
-        if objWeasel.isAnImageSelected():
+        if treeView.isAnImageSelected(self):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -44,7 +44,7 @@ def saveInvertImage(objWeasel):
                                                       FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
-        elif objWeasel.isASeriesSelected():
+        elif treeView.isASeriesSelected(self):
             # Should consider the case where Series is 1 image/file only
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries

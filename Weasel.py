@@ -262,7 +262,7 @@ class Weasel(QMainWindow):
                 return seriesID
         except Exception as e:
             print('Error in Weasel.getNewSeriesName: ' + str(e))
-            print('Error in Weasel.getNewSeriesName: ' + str(e))
+            
 
 
     def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
@@ -283,42 +283,6 @@ class Weasel(QMainWindow):
         except Exception as e:
             print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
             logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))           
-
-
-    def isAnImageSelected(self):
-        """Returns True is a single image is selected in the DICOM
-        tree view, else returns False"""
-        try:
-            logger.info("WEASEL isAnImageSelected called.")
-            selectedItem = self.treeView.currentItem()
-            if selectedItem:
-                if 'image' in selectedItem.text(0).lower():
-                    return True
-                else:
-                    return False
-            else:
-               return False
-        except Exception as e:
-            print('Error in isAnImageSelected: ' + str(e))
-            logger.error('Error in isAnImageSelected: ' + str(e))
-            
-
-    def isASeriesSelected(self):
-        """Returns True is a series is selected in the DICOM
-        tree view, else returns False"""
-        try:
-            logger.info("WEASEL isASeriesSelected called.")
-            selectedItem = self.treeView.currentItem()
-            if selectedItem:
-                if 'series' in selectedItem.text(0).lower():
-                    return True
-                else:
-                    return False
-            else:
-               return False
-        except Exception as e:
-            print('Error in isASeriesSelected: ' + str(e))
-            logger.error('Error in isASeriesSelected: ' + str(e))
 
 
 def main():

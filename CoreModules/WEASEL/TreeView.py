@@ -204,6 +204,41 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
 
+def isAnImageSelected(self):
+        """Returns True is a single image is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("WEASEL isAnImageSelected called.")
+            selectedItem = self.treeView.currentItem()
+            if selectedItem:
+                if 'image' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
+            else:
+               return False
+        except Exception as e:
+            print('Error in isAnImageSelected: ' + str(e))
+            logger.error('Error in isAnImageSelected: ' + str(e))
+            
+
+def isASeriesSelected(self):
+        """Returns True is a series is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("WEASEL isASeriesSelected called.")
+            selectedItem = self.treeView.currentItem()
+            if selectedItem:
+                if 'series' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
+            else:
+               return False
+        except Exception as e:
+            print('Error in isASeriesSelected: ' + str(e))
+            logger.error('Error in isASeriesSelected: ' + str(e))
+
 
 def toggleToolButtons(self):
         """TO DO"""
@@ -215,9 +250,9 @@ def toggleToolButtons(self):
                     if not(tool.data() is None):
                         #Assume not all tools will act on an image
                          #Assume all tools act on a series   
-                        if self.isASeriesSelected():
+                        if isASeriesSelected(self):
                              tool.setEnabled(True)
-                        elif self.isAnImageSelected():
+                        elif isAnImageSelected(self):
                             if tool.data():
                                 tool.setEnabled(True)
                             else:
