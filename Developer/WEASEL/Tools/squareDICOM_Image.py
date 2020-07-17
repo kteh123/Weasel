@@ -34,7 +34,7 @@ def saveSquareImage(objWeasel):
     """Creates a subwindow that displays a square rooted DICOM image. Executed using the 
     'Square Image' Menu item in the Tools menu."""
     try:
-        if treeView.isAnImageSelected(self):
+        if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
             pixelArray = returnPixelArray(imagePath)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -45,7 +45,7 @@ def saveSquareImage(objWeasel):
             seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
-        elif treeView.isASeriesSelected(self):
+        elif treeView.isASeriesSelected(objWeasel):
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
             imagePathList = \

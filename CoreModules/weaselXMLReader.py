@@ -20,6 +20,7 @@ class WeaselXMLReader:
             print('Error in WeaselXMLReader.__init__: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.__init__: ' + str(e)) 
             
+
     def parseXMLFile(self, fullFilePath): 
         """Loads and parses the XML configuration file at fullFilePath.
        After successful parsing, the XML tree and its root node
@@ -46,12 +47,14 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.parseConfigFile: ' + str(e)) 
             self.hasXMLFileParsedOK = False
     
+
     def getXMLRoot(self):
         return self.root
 
 
     def getStudies(self):
         return self.root.findall('./study')
+
 
     def getImageList(self, studyID, seriesID):
         try:
@@ -171,23 +174,33 @@ class WeaselXMLReader:
             logger.error('Error in weaseXMLReader.removeSeriesFromXMLFile: ' + str(e))
 
 
-    def getImageTime(self, studyID, seriesID, imageName):
+    def getImageTime(self, studyID, seriesID, imageName = None):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            if imageName is None:
+                now = datetime.now()
+                return now.strftime("%H:%M:%S")
+            else:
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                         ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                         '/image[name=' + chr(34) + imageName + chr(34) +']/time'
-            return self.root.find(xPath).text
+                return self.root.find(xPath).text
         except Exception as e:
             print('Error in WeaselXMLReader.getImageTime: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getImageTime: ' + str(e))
 
     
-    def getImageDate(self, studyID, seriesID, imageName):
+    def getImageDate(self, studyID, seriesID, imageName = None):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            if imageName is None:
+                now = datetime.now()
+                return now.strftime("%d/%m/%Y") 
+            else:
+                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                     '/image[name=' + chr(34) + imageName + chr(34) +']/date'
-            return self.root.find(xPath).text
+            
+                return self.root.find(xPath).text
+                 
         except Exception as e:
             print('Error in WeaselXMLReader.getImageDate: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getImageDate: ' + str(e))
@@ -251,9 +264,6 @@ class WeaselXMLReader:
                     
                 comment = ET.Comment('This series holds new images')
                 newSeries.append(comment)
-                #Get image date & time
-                imageTime = self.getImageTime(studyID, seriesID, imageName)
-                imageDate = self.getImageDate(studyID, seriesID, imageName)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
@@ -283,65 +293,4 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e))
-
-
-    def insertNewBinOpsImageInXML(self, newImageFileName,
-                                  studyID, seriesID, suffix):
-        #First determine if a series with parentID=seriesID exists
-        #and typeID=suffix for a binary operation
-        try:
-            series = self.getSeriesOfSpecifiedType(
-                studyID, seriesID, suffix)
-            #image date & time are set to current date and time
-            now = datetime.now()
-            imageTime = now.strftime("%H:%M:%S")
-            imageDate = now.strftime("%d/%m/%Y")        
-            if series is None:
-                #Need to create a new series to hold this new image
-                dataset = readDICOM_Image.getDicomDataset(newImageFileName)
-                newSeriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
-                #Get study branch
-                currentStudy = self.getStudy(studyID)
-                newAttributes = {'id':newSeriesID, 
-                                    'parentID':seriesID, 
-                                    'typeID':suffix}
-                   
-                #Add new series to study to hold new images
-                newSeries = ET.SubElement(currentStudy, 
-                                            'series', newAttributes)
-                    
-                comment = ET.Comment(
-                    'This series holds images derived from binary operations on 2 images')
-                newSeries.append(comment)   
-                
-                #Now add image element
-                newImage = ET.SubElement(newSeries,'image')
-                #Add child nodes of the image element
-                nameNewImage = ET.SubElement(newImage, 'name')
-                nameNewImage.text = newImageFileName
-                timeNewImage = ET.SubElement(newImage, 'time')
-                timeNewImage.text = imageTime
-                dateNewImage = ET.SubElement(newImage, 'date')
-                dateNewImage.text = imageDate
-                self.tree.write(self.fullFilePath)
-                return newSeriesID
-            else:
-                #A series already exists to hold new images from
-                #the current parent series
-                newImage = ET.SubElement(series,'image')#error
-                #Add child nodes of the image element
-                nameNewImage = ET.SubElement(newImage, 'name')
-                nameNewImage.text = newImageFileName
-                timeNewImage = ET.SubElement(newImage, 'time')
-                timeNewImage.text = imageTime
-                dateNewImage = ET.SubElement(newImage, 'date')
-                dateNewImage.text = imageDate
-                self.tree.write(self.fullFilePath)
-                return series.attrib['id']
-        except Exception as e:
-            print('Error in WeaselXMLReader.insertNewBinOpsImageInXML: ' + str(e)) 
-            logger.error('Error in WeaselXMLReader.insertNewBinOpsImageInXML: ' + str(e))
-
-            
-
 

@@ -153,7 +153,7 @@ def saveNewDICOMFileFromBinOp(self):
             #print(newImageFilePath)
             #Save pixel array to a file
             saveDICOM_Image.saveDicomOutputResult(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
-            newSeriesID = self.insertNewBinOpImageInXMLFile(newImageFilePath, suffix)
+            newSeriesID = self.insertNewImageInXMLFile(newImageFilePath, suffix)
             #print(newSeriesID)
             treeView.refreshDICOMStudiesTreeView(self, newSeriesID)
         except Exception as e:

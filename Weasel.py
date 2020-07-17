@@ -207,22 +207,6 @@ class Weasel(QMainWindow):
         return self.objXMLReader.getImagePathList(studyID, seriesID)
 
 
-    def insertNewBinOpImageInXMLFile(self, newImageFileName, suffix):
-        """This function inserts information regarding a new image 
-        created by a binary operation on 2 images in the DICOM XML file
-       """
-        try:
-            logger.info("WEASEL insertNewBinOpImageInXMLFile called")
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
-            #returns new series ID
-            return self.objXMLReader.insertNewBinOpsImageInXML(
-                newImageFileName, studyID, seriesID, suffix)
-        except Exception as e:
-            print('Error in Weasel.insertNewBinOpImageInXMLFile: ' + str(e))
-            logger.error('Error in Weasel.insertNewBinOpImageInXMLFile: ' + str(e))
-
-
     def insertNewImageInXMLFile(self, newImageFileName, suffix):
         """This function inserts information regarding a new image 
          in the DICOM XML file
@@ -231,7 +215,10 @@ class Weasel(QMainWindow):
             logger.info("WEASEL insertNewImageInXMLFile called")
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
-            imagePath = self.selectedImagePath
+            if self.selectedImagePath:
+                imagePath = self.selectedImagePath
+            else:
+                imagePath = None
             #returns new series ID or existing series ID
             #as appropriate
             return self.objXMLReader.insertNewImageInXML(imagePath,
