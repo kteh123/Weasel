@@ -708,7 +708,8 @@ def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=N
             one set of levels"""
     try:
         logger.info("In DisplayImageColour.updateDicomSeriesOneColour")
-        imagePathList = self.getImagePathList(studyID, seriesID)
+        imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
+
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
         messageWindow.displayMessageSubWindow(self,
@@ -723,7 +724,7 @@ def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=N
             saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
-        self.closeMessageSubWindow()
+        messageWindow.closeMessageSubWindow(self)
     except Exception as e:
         print('Error in DisplayImageColour.updateDicomSeriesOneColour: ' + str(e))
 
@@ -732,7 +733,9 @@ def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
     """Updates one or more images in a DICOM series with a different table and set of levels"""
     try:
         logger.info("In DisplayImageColour.updateDicomSeriesManyColours")
-        imagePathList = self.getImagePathList(studyID, seriesID)
+       
+        imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
+
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
         messageWindow.displayMessageSubWindow(self,
@@ -751,7 +754,7 @@ def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
                                                     levels=levels, lut=lut)
                 saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
-            self.setMsgWindowProgBarValue(imageCounter)
-        self.closeMessageSubWindow()
+            messageWindow.setMsgWindowProgBarValue(self, imageCounter)
+        messageWindow.closeMessageSubWindow(self)
     except Exception as e:
         print('Error in DisplayImageColour.updateDicomSeriesManyColours: ' + str(e))

@@ -120,8 +120,10 @@ def saveB0MapSeries(objWeasel):
     try:
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
-        imagePathList = \
-            objWeasel.getImagePathList(studyID, seriesID)
+        #imagePathList = \
+        #    objWeasel.getImagePathList(studyID, seriesID)
+        imagePathList = self.objXMLReader.getImagePathList(studyID, 
+                                                               seriesID)
 
         messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate B0 Map</H4>",

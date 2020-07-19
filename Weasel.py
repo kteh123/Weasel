@@ -122,10 +122,6 @@ class Weasel(QMainWindow):
             self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
 
-    def getImagePathList(self, studyID, seriesID):
-        return self.objXMLReader.getImagePathList(studyID, seriesID)
-
-
     def insertNewImageInXMLFile(self, newImageFileName, suffix):
         """This function inserts information regarding a new image 
          in the DICOM XML file
@@ -185,7 +181,6 @@ class Weasel(QMainWindow):
                      newImageList, studyID, newSeriesID, seriesID, suffix)
             self.statusBar.showMessage('New series created: - ' + newSeriesID)
             return  newSeriesID
-
         except Exception as e:
             print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
             logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))           

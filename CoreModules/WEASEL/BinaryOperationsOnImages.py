@@ -78,8 +78,8 @@ def displayBinaryOperationsWindow(self):
 
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
-            imagePathList = self.objXMLReader.getImagePathList(studyID, 
-                                                               seriesID)
+            imagePathList =self.objXMLReader.getImagePathList(studyID, 
+                                                               seriesID) 
             #form a list of image file names without extensions
             imageNameList = [os.path.splitext(os.path.basename(image))[0] 
                              for image in imagePathList]
