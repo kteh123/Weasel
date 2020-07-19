@@ -15,6 +15,7 @@ import CoreModules.saveDICOM_Image as saveDICOM_Image
 import CoreModules.readDICOM_Image as readDICOM_Image
 import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -153,7 +154,8 @@ def saveNewDICOMFileFromBinOp(self):
             #print(newImageFilePath)
             #Save pixel array to a file
             saveDICOM_Image.saveDicomOutputResult(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
-            newSeriesID = self.insertNewImageInXMLFile(newImageFilePath, suffix)
+            newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, 
+                                                            newImageFilePath, suffix)
             #print(newSeriesID)
             treeView.refreshDICOMStudiesTreeView(self, newSeriesID)
         except Exception as e:

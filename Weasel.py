@@ -1,18 +1,11 @@
-
-from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt, pyqtSignal
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
         QMdiSubWindow, QMainWindow,  
-        QStatusBar, QLabel, 
-        QTreeWidgetItem,
-        QProgressBar)
+        QStatusBar)
 
 import os
 import sys
 import logging
-import importlib
-
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
@@ -23,12 +16,9 @@ sys.path.append(os.path.join(sys.path[0],
         'Developer//WEASEL//Tools//FERRET_Files//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
-import CoreModules.readDICOM_Image as readDICOM_Image
-import CoreModules.saveDICOM_Image as saveDICOM_Image
 
 import CoreModules.styleSheet as styleSheet
 from CoreModules.weaselXMLReader import WeaselXMLReader
-import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.Menus  as menus
 import CoreModules.WEASEL.ToolBar  as toolBar
 
@@ -37,7 +27,6 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 
-DEFAULT_IMAGE_FILE_PATH_NAME = 'C:\DICOM_Image.png'
 #Create and configure the logger
 #First delete the previous log file if there is one
 LOG_FILE_NAME = "WEASEL1.log"
@@ -67,7 +56,6 @@ class Weasel(QMainWindow):
         self.centralwidget.layout().addWidget(self.statusBar)
         self.selectedStudy = ''
         self.selectedSeries = ''
-        #self.selectedImagePath = ''
         self.selectedImageName = ''
         self.overRideSavedColourmapAndLevels = False #Set to True if the user checks the Apply Selection tick box
         self.applyUserSelection = False
@@ -84,71 +72,6 @@ class Weasel(QMainWindow):
 
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
-
-
-    def insertNewImageInXMLFile(self, newImageFileName, suffix):
-        """This function inserts information regarding a new image 
-         in the DICOM XML file
-       """
-        try:
-            logger.info("WEASEL insertNewImageInXMLFile called")
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
-            if self.selectedImagePath:
-                imagePath = self.selectedImagePath
-            else:
-                imagePath = None
-            #returns new series ID or existing series ID
-            #as appropriate
-            return self.objXMLReader.insertNewImageInXML(imagePath,
-                   newImageFileName, studyID, seriesID, suffix)
-            
-        except Exception as e:
-            print('Error in insertNewImageInXMLFile: ' + str(e))
-            logger.error('Error in insertNewImageInXMLFile: ' + str(e))
-
-
-    def getNewSeriesName(self, studyID, dataset, suffix):
-        """This function uses recursion to find the next available
-        series name.  A new series name is created by adding a suffix
-        at the end of an existing series name. """
-        try:
-            seriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
-            imageList = self.objXMLReader.getImageList(studyID, seriesID)
-            if imageList:
-                #A series of images already exists 
-                #for the series called seriesID
-                #so make another new series ID 
-                #by adding the suffix to the previous
-                #new series ID
-                dataset.SeriesDescription = dataset.SeriesDescription + suffix
-                return self.getNewSeriesName(studyID, dataset, suffix)
-            else:
-                logger.info("WEASEL getNewSeriesName returns seriesID {}".format(seriesID))
-                return seriesID
-        except Exception as e:
-            print('Error in Weasel.getNewSeriesName: ' + str(e))
-            
-
-
-    def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
-        """Creates a new series to hold the series of New images"""
-        try:
-            logger.info("WEASEL insertNewSeriesInXMLFile called")
-            #Get current study & series IDs
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries 
-            #Get a new series ID
-            dataset = readDICOM_Image.getDicomDataset(newImageList[0])
-            newSeriesID = self.getNewSeriesName(studyID, dataset, suffix)
-            self.objXMLReader.insertNewSeriesInXML(origImageList, 
-                     newImageList, studyID, newSeriesID, seriesID, suffix)
-            self.statusBar.showMessage('New series created: - ' + newSeriesID)
-            return  newSeriesID
-        except Exception as e:
-            print('Error in Weasel.insertNewSeriesInXMLFile: ' + str(e))
-            logger.error('Error in Weasel.insertNewImageInXMLFile: ' + str(e))           
-
 
 def main():
     app = QApplication(sys . argv )

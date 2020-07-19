@@ -6,6 +6,7 @@ from CoreModules.weaselToolsXMLReader import WeaselToolsXMLReader
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 
 FILE_SUFFIX = '_Copy'
 
@@ -27,7 +28,7 @@ def copySeries(objWeasel):
         studyID = objWeasel.selectedStudy 
         seriesID = objWeasel.selectedSeries
         imagePathList = \
-            objWeasel.getImagePathList(studyID, seriesID)
+            objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
         #Iterate through list of images and make a copy of each image
         copiedImagePathList = []
         copiedImageList = []
@@ -51,7 +52,10 @@ def copySeries(objWeasel):
         messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
-        newSeriesID= objWeasel.insertNewSeriesInXMLFile(imagePathList, copiedImagePathList, FILE_SUFFIX)
+        newSeriesID= interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                               imagePathList, 
+                                               copiedImagePathList, 
+                                               FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
         messageWindow.closeMessageSubWindow(objWeasel)
         displayImageColour.displayMultiImageSubWindow(objWeasel, copiedImagePathList, 

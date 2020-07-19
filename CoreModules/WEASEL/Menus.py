@@ -15,6 +15,7 @@ import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
 import CoreModules.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
+#import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 
 
 import logging
