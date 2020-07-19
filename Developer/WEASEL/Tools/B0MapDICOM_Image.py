@@ -178,8 +178,8 @@ def saveB0MapSeries(objWeasel):
                                                             B0ImagePathList, FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel,4)                                                    
         messageWindow.closeMessageSubWindow(objWeasel)
-        objWeasel.displayMultiImageSubWindow(B0ImagePathList,
+        displayImageColour.displayMultiImageSubWindow(objWeasel, B0ImagePathList,
                                              studyID, newSeriesID)
-        objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in B0MapDICOM_Image.saveB0MapSeries: ' + str(e))

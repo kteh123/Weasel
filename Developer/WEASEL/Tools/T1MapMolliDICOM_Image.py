@@ -148,8 +148,8 @@ def saveT1MapSeries(objWeasel):
                                                         T1ImagePathList, FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel, 4)                                                    
         messageWindow.closeMessageSubWindow(objWeasel)
-        objWeasel.displayMultiImageSubWindow(T1ImagePathList,
+        displayImageColour.displayMultiImageSubWindow(objWeasel,T1ImagePathList,
                                              studyID, newSeriesID)
-        objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in T1MapDICOM_Image.saveT1MapSeries: ' + str(e))
