@@ -86,42 +86,6 @@ class Weasel(QMainWindow):
       return self.mdiArea.height(), self.mdiArea.width() 
 
 
-    @QtCore.pyqtSlot(QTreeWidgetItem, int)
-    def onTreeViewItemClicked(self, item, col):
-        """When a DICOM study treeview item is clicked, this function
-        populates the relevant class variables that store the following
-        DICOM image data: study ID, Series ID, Image name, image file path"""
-        logger.info("WEASEL onTreeViewItemClicked called")
-        selectedText = item.text(0)
-        if 'study' in selectedText.lower():
-            studyID = selectedText.replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = ''
-            self.selectedImagePath = ''
-            self.selectedImageName = ''
-            self.statusBar.showMessage('Study - ' + studyID + ' selected.')
-        elif 'series' in selectedText.lower():
-            seriesID = selectedText.replace('Series -', '').strip()
-            studyID = item.parent().text(0).replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = seriesID
-            self.selectedImagePath = ''
-            self.selectedImageName = ''
-            fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
-            self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
-        elif 'image' in selectedText.lower():
-            imageID = selectedText.replace('Image -', '')
-            imagePath =item.text(3)
-            seriesID = item.parent().text(0).replace('Series -', '').strip()
-            studyID = item.parent().parent().text(0).replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = seriesID
-            self.selectedImagePath = imagePath.strip()
-            self.selectedImageName = imageID.strip()
-            fullImageID = studyID + ': ' + seriesID + ': '  + imageID
-            self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
-
-
     def insertNewImageInXMLFile(self, newImageFileName, suffix):
         """This function inserts information regarding a new image 
          in the DICOM XML file
