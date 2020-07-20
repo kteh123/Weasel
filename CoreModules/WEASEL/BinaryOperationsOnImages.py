@@ -9,16 +9,66 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 import os
 import numpy as np
+import pydicom
 from scipy.stats import iqr
 import CoreModules.pyqtgraph as pg
 import CoreModules.saveDICOM_Image as saveDICOM_Image
 import CoreModules.readDICOM_Image as readDICOM_Image
-import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
+#import Developer.WEASEL.Tools.binaryOperationDICOM_Image as binaryOperationDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
 import logging
 logger = logging.getLogger(__name__)
+
+listBinaryOperations =['Select binary Operation', 'Add', 'Divide', 
+                         'Multiply', 'Subtract']
+
+
+def getBinOperationFilePrefix(binaryOperation):
+    if binaryOperation == 'Subtract':
+        prefix = 'Sub'
+    elif binaryOperation == 'Divide':
+        prefix = 'Div'
+    elif binaryOperation == 'Multiply':
+        prefix = 'Multi'
+    elif binaryOperation == 'Add':
+        prefix = 'Add'
+    return prefix
+
+
+def returnPixelArray(imagePath1, imagePath2, binaryOperation):
+    """returns the Image/Pixel array"""
+    try:
+        if os.path.exists(imagePath1):
+            dataset1 = readDICOM_Image.getDicomDataset(imagePath1)
+            pixelArray1 = readDICOM_Image.getPixelArray(dataset1)
+        
+        if os.path.exists(imagePath2):
+            dataset2 = readDICOM_Image.getDicomDataset(imagePath2)
+            pixelArray2 = readDICOM_Image.getPixelArray(dataset2)
+            
+        if binaryOperation == 'Add':
+            pixelArray3 = np.add(pixelArray1, pixelArray2)
+           
+        elif binaryOperation == 'Divide':
+            #If there is division by zero, then zero is returned
+            pixelArray3 = np.divide(pixelArray1, pixelArray2,
+            out=np.zeros_like(pixelArray1), where=pixelArray2!=0)
+           
+        elif binaryOperation == 'Multiply':
+            pixelArray3 = np.multiply(pixelArray1, pixelArray2)
+           
+        elif binaryOperation == 'Subtract':
+            pixelArray3 = np.subtract(pixelArray1, pixelArray2)
+        
+        if pixelArray3.any():
+             return pixelArray3
+        else:
+             return np.zeros(np.array(pixelArray1).shape)
+       
+    except Exception as e:
+        print('Error in function binaryOperationDICOM_Image.returnPixelArray: ' + str(e))
 
 
 def displayBinaryOperationsWindow(self):
@@ -105,8 +155,7 @@ def displayBinaryOperationsWindow(self):
                 lambda: doBinaryOperation(self, self.image_Name_Path_Dict))
             self.imageList1.addItems(imageNameList)
             self.imageList2.addItems(imageNameList)
-            self.binaryOpsList.addItems(
-                binaryOperationDICOM_Image.listBinaryOperations)
+            self.binaryOpsList.addItems(listBinaryOperations)
 
             layout.addWidget(self.btnSave, 0, 2)
             layout.addWidget(self.imageList1, 1, 0)
@@ -114,9 +163,6 @@ def displayBinaryOperationsWindow(self):
             layout.addWidget(self.binaryOpsList, 1, 2)
             layout.addWidget(self.lblImageMissing1, 2, 0)
             layout.addWidget(self.lblImageMissing2, 2, 1)
-            #layout.addWidget(imageViewer1, 3, 0)
-            #layout.addWidget(imageViewer2, 3, 1)
-            #layout.addWidget(imageViewer3, 3, 2)
             layout.addWidget(self.imv1, 3, 0)
             layout.addWidget(self.imv2, 3, 1)
             layout.addWidget(self.imv3, 3, 2)
@@ -144,8 +190,7 @@ def saveNewDICOMFileFromBinOp(self):
             imagePath2 = self.image_Name_Path_Dict[imageName2]
             
             binaryOperation = self.binaryOpsList.currentText()
-            prefix = binaryOperationDICOM_Image.getBinOperationFilePrefix(
-                                     binaryOperation)
+            prefix = getBinOperationFilePrefix(binaryOperation)
             
             newImageFileName = prefix + '_' + imageName1 \
                 + '_' + imageName2 
@@ -181,8 +226,7 @@ def doBinaryOperation(self, imageDict):
             if binOp != 'Select binary Operation' \
                 and binOp != '':
                 self.btnSave.setEnabled(True)
-                self.binOpArray = binaryOperationDICOM_Image.returnPixelArray(
-                    imagePath1, imagePath2, binOp)
+                self.binOpArray = returnPixelArray(imagePath1, imagePath2, binOp)
                 minimumValue = np.amin(self.binOpArray) if (np.median(self.binOpArray) - iqr(self.binOpArray, rng=(
                     1, 99))/2) < np.amin(self.binOpArray) else np.median(self.binOpArray) - iqr(self.binOpArray, rng=(1, 99))/2
                 maximumValue = np.amax(self.binOpArray) if (np.median(self.binOpArray) + iqr(self.binOpArray, rng=(

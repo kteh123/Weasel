@@ -294,7 +294,6 @@
     </Compile>
     <Compile Include="CoreModules\WriteXMLfromDICOM.py" />
     <Compile Include="Developer\WEASEL\Tools\B0MapDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\Tools\binaryOperationDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\WEASEL\Tools\FERRET.py" />
     <Compile Include="Developer\WEASEL\Tools\FERRET_Files\ModelLibrary\ModelFunctions.py" />

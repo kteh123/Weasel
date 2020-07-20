@@ -4,8 +4,6 @@ import numpy as np
 import CoreModules.readDICOM_Image as readDICOM_Image
 
 
-listBinaryOperations =['Select binary Operation', 'Add', 'Divide', 
-                         'Multiply', 'Subtract']
 
 def returnPixelArray(imagePath1, imagePath2, binaryOperation):
     """returns the Image/Pixel array"""
@@ -40,14 +38,4 @@ def returnPixelArray(imagePath1, imagePath2, binaryOperation):
     except Exception as e:
         print('Error in function binaryOperationDICOM_Image.returnPixelArray: ' + str(e))
 
-def getBinOperationFilePrefix(binaryOperation):
-    if binaryOperation == 'Subtract':
-        prefix = 'Sub'
-    elif binaryOperation == 'Divide':
-        prefix = 'Div'
-    elif binaryOperation == 'Multiply':
-        prefix = 'Multi'
-    elif binaryOperation == 'Add':
-        prefix = 'Add'
 
-    return prefix
