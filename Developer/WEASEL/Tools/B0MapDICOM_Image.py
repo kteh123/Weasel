@@ -121,7 +121,7 @@ def saveB0MapSeries(objWeasel):
     try:
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
-        imagePathList = self.objXMLReader.getImagePathList(studyID, 
+        imagePathList = objWeasel.objXMLReader.getImagePathList(studyID, 
                                                                seriesID)
 
         messageWindow.displayMessageSubWindow(objWeasel,
