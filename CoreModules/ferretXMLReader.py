@@ -82,7 +82,7 @@ class FerretXMLReader:
             imageList = [image.find('name').text for image in images]
             return imageList
         except Exception as e:
-            print('Error in getImagePathList: ' + str(e))
+            print('Error in getImagePathListForSeries: ' + str(e))
 
 
     def getListModelShortNames(self):

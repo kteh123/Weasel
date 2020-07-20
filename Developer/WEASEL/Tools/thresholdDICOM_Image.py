@@ -6,6 +6,7 @@ from CoreModules.imagingTools import thresholdPixelArray
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 FILE_SUFFIX = '_Thresholded'
 
 def returnPixelArray(imagePath):
@@ -35,14 +36,15 @@ def saveThresholdedImage(objWeasel):
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
             #Record squared image in XML file
-            seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, FILE_SUFFIX)
+            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                                                 derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
         elif treeView.isASeriesSelected(objWeasel):
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
             imagePathList = \
-                    objWeasel.getImagePathList(studyID, seriesID)
+                    objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
             #Iterate through list of images and square each image
             derivedImagePathList = []
             derivedImageList = []
@@ -58,7 +60,7 @@ def saveThresholdedImage(objWeasel):
                 derivedImagePathList.append(derivedImagePath)
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
-                objWeasel.setMsgWindowProgBarValue(imageCounter)
+                messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
             messageWindow.displayMessageSubWindow(objWeasel,
               "<H4>Saving results into a new DICOM Series</H4>",
               "Thresholding DICOM images")
@@ -66,8 +68,9 @@ def saveThresholdedImage(objWeasel):
             messageWindow.setMsgWindowProgBarValue(objWeasel,1)
             # Save new DICOM series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
-            newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
-                derivedImagePathList, FILE_SUFFIX)
+            newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                                   imagePathList,
+                                                   derivedImagePathList, FILE_SUFFIX)
             messageWindow.setMsgWindowProgBarValue(objWeasel,2)
             messageWindow.closeMessageSubWindow(objWeasel)
             displayImageColour.displayMultiImageSubWindow(objWeasel,

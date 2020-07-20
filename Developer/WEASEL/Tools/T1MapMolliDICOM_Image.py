@@ -8,6 +8,7 @@ from CoreModules.imagingTools import formatArrayForAnalysis
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T1Map'
@@ -94,7 +95,7 @@ def saveT1MapSeries(objWeasel):
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
         imagePathList = \
-            objWeasel.getImagePathList(studyID, seriesID)
+            objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
 
         messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate T1 Map</H4>",
@@ -144,12 +145,13 @@ def saveT1MapSeries(objWeasel):
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             T1ImagePathList, imagePathList, T1ImageList, FILE_SUFFIX)
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T1ImagePathList)],
+        newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                                     magnitudePathList[:len(T1ImagePathList)],
                                                         T1ImagePathList, FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel, 4)                                                    
         messageWindow.closeMessageSubWindow(objWeasel)
-        objWeasel.displayMultiImageSubWindow(T1ImagePathList,
+        displayImageColour.displayMultiImageSubWindow(objWeasel,T1ImagePathList,
                                              studyID, newSeriesID)
-        objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in T1MapDICOM_Image.saveT1MapSeries: ' + str(e))

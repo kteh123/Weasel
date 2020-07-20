@@ -5,6 +5,7 @@ import CoreModules.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 FILE_SUFFIX = '_Inverted'
 
 def returnPixelArray(imagePath):
@@ -41,7 +42,8 @@ def saveInvertImage(objWeasel):
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX)
             #Record inverted image in XML file
-            seriesID = objWeasel.insertNewImageInXMLFile(derivedImageFileName, 
+            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                                                        derivedImageFileName, 
                                                       FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
@@ -50,7 +52,7 @@ def saveInvertImage(objWeasel):
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
             imagePathList = \
-                    objWeasel.getImagePathList(studyID, seriesID)
+                    objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
             #Iterate through list of images and invert each image
             derivedImagePathList = []
             derivedImageList = []
@@ -74,7 +76,8 @@ def saveInvertImage(objWeasel):
             messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
             # Save new DICOM Series locally
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
-            newSeriesID = objWeasel.insertNewSeriesInXMLFile(imagePathList, \
+            newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                imagePathList, 
                 derivedImagePathList, FILE_SUFFIX)
             messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
             messageWindow.closeMessageSubWindow(objWeasel)

@@ -1,4 +1,4 @@
-
+from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QMdiSubWindow,
     QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
@@ -116,7 +116,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                     branch.setExpanded(False)
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
                 self.treeView.itemDoubleClicked.connect(lambda: menus.viewImage(self))
-                self.treeView.itemClicked.connect(self.onTreeViewItemClicked)
+                self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
                 self.treeView.show()
                 end_time=time.time()
                 TreeViewTime = end_time - start_time
@@ -260,3 +260,43 @@ def toggleToolButtons(self):
         except Exception as e:
             print('Error in TreeView.toggleToolButtons: ' + str(e))
             logger.error('Error in TreeView.toggleToolButtons: ' + str(e))
+
+
+
+def onTreeViewItemClicked(self, item):
+    """When a DICOM study treeview item is clicked, this function
+    populates the relevant class variables that store the following
+    DICOM image data: study ID, Series ID, Image name, image file path"""
+    logger.info("TreeView.onTreeViewItemClicked called")
+    try:
+        selectedText = item.text(0)
+        if 'study' in selectedText.lower():
+            studyID = selectedText.replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = ''
+            self.selectedImagePath = ''
+            self.selectedImageName = ''
+            self.statusBar.showMessage('Study - ' + studyID + ' selected.')
+        elif 'series' in selectedText.lower():
+            seriesID = selectedText.replace('Series -', '').strip()
+            studyID = item.parent().text(0).replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = seriesID
+            self.selectedImagePath = ''
+            self.selectedImageName = ''
+            fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
+            self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
+        elif 'image' in selectedText.lower():
+            imageID = selectedText.replace('Image -', '')
+            imagePath =item.text(3)
+            seriesID = item.parent().text(0).replace('Series -', '').strip()
+            studyID = item.parent().parent().text(0).replace('Study -', '').strip()
+            self.selectedStudy = studyID
+            self.selectedSeries = seriesID
+            self.selectedImagePath = imagePath.strip()
+            self.selectedImageName = imageID.strip()
+            fullImageID = studyID + ': ' + seriesID + ': '  + imageID
+            self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
+    except Exception as e:
+            print('Error in TreeView.onTreeViewItemClicked: ' + str(e))
+            logger.error('Error in TreeView.onTreeViewItemClicked: ' + str(e))

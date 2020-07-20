@@ -8,6 +8,7 @@ from CoreModules.imagingTools import formatArrayForAnalysis, unWrapPhase
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
@@ -120,8 +121,8 @@ def saveB0MapSeries(objWeasel):
     try:
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
-        imagePathList = \
-            objWeasel.getImagePathList(studyID, seriesID)
+        imagePathList = self.objXMLReader.getImagePathList(studyID, 
+                                                               seriesID)
 
         messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate B0 Map</H4>",
@@ -174,12 +175,13 @@ def saveB0MapSeries(objWeasel):
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             B0ImagePathList, imagePathList, B0ImageList, FILE_SUFFIX)
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(phasePathList[:len(B0ImagePathList)], 
+        newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                                            phasePathList[:len(B0ImagePathList)], 
                                                             B0ImagePathList, FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel,4)                                                    
         messageWindow.closeMessageSubWindow(objWeasel)
-        objWeasel.displayMultiImageSubWindow(B0ImagePathList,
+        displayImageColour.displayMultiImageSubWindow(objWeasel, B0ImagePathList,
                                              studyID, newSeriesID)
-        objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in B0MapDICOM_Image.saveB0MapSeries: ' + str(e))

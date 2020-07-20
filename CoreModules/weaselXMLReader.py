@@ -294,3 +294,24 @@ class WeaselXMLReader:
             print('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e))
 
+
+    #def insertNewImageInXMLFile(self, newImageFileName, suffix):
+    #    """This function inserts information regarding a new image 
+    #     in the DICOM XML file
+    #   """
+    #    try:
+    #        logger.info("WeaselXMLReader.insertNewImageInXMLFile called")
+    #        studyID = self.selectedStudy 
+    #        seriesID = self.selectedSeries
+    #        if self.selectedImagePath:
+    #            imagePath = self.selectedImagePath
+    #        else:
+    #            imagePath = None
+    #        #returns new series ID or existing series ID
+    #        #as appropriate
+    #        return insertNewImageInXML(imagePath,
+    #               newImageFileName, studyID, seriesID, suffix)
+            
+    #    except Exception as e:
+    #        print('Error in WeaselXMLReader.insertNewImageInXMLFile: ' + str(e))
+    #        logger.error('Error in WeaselXMLReader.insertNewImageInXMLFile: ' + str(e))

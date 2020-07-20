@@ -8,6 +8,7 @@ from CoreModules.imagingTools import formatArrayForAnalysis
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 from ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T2StarMap'
@@ -81,7 +82,7 @@ def saveT2StarMapSeries(objWeasel):
         studyID = objWeasel.selectedStudy
         seriesID = objWeasel.selectedSeries
         imagePathList = \
-            objWeasel.getImagePathList(studyID, seriesID)
+            objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
 
         messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Extracting parameters to calculate T2* Map</H4>",
@@ -131,12 +132,13 @@ def saveT2StarMapSeries(objWeasel):
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
             T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map="T2Star")
-        newSeriesID = objWeasel.insertNewSeriesInXMLFile(magnitudePathList[:len(T2StarImagePathList)],
+        newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                                        magnitudePathList[:len(T2StarImagePathList)],
                                                         T2StarImagePathList, FILE_SUFFIX)
         messageWindow.setMsgWindowProgBarValue(objWeasel,4)                                                    
         messageWindow.closeMessageSubWindow(objWeasel)
-        objWeasel.displayMultiImageSubWindow(T2StarImagePathList,
+        displayImageColour.displayMultiImageSubWindow(objWeasel, T2StarImagePathList,
                                              studyID, newSeriesID)
-        objWeasel.refreshDICOMStudiesTreeView(newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in T2StarMapDICOM_Image.saveT2StarMapSeries: ' + str(e))
