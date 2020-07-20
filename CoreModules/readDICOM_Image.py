@@ -174,7 +174,7 @@ def getPixelArray(dataset):
                         sliceArray = np.squeeze(originalArray[index, ...])
                         slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(sliceArray.shape)
                         intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(sliceArray.shape)
-                        tempArray = sliceArray * slope + intercept
+                        tempArray = sliceArray * slope.astype(np.float32) + intercept.astype(np.float32)
                         imageList.append(tempArray)
                     pixelArray = np.array(imageList)
                     del sliceArray, tempArray, index
