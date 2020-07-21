@@ -7,7 +7,7 @@ import numpy as np
 import re
 from collections import defaultdict
 from xml.dom import minidom
-import CoreModules.iBeatImport as iBeatImport
+import CoreModules.WEASEL.iBeatImport as iBeatImport
 
 
 def select_path():

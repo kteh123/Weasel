@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import logging
 logger = logging.getLogger(__name__)
 

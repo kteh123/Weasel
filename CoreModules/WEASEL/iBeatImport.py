@@ -1,7 +1,7 @@
 import pydicom
 import datetime
 import re
-import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 
 
 def getScanInfo(dicomData):

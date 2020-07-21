@@ -158,7 +158,7 @@ import csv
 import os
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
-sys.path.append(os.path.join(sys.path[0],'CoreModules'))
+sys.path.append(os.path.join(sys.path[0],'CoreModules//FERRET//'))
 sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//FERRET_Files//ModelLibrary//'))
 
 import numpy as np
@@ -179,16 +179,16 @@ import matplotlib.pyplot as plt
 
 from scipy.stats.distributions import  t
 
-import CoreModules.ModelFunctionsHelper as ModelFunctionsHelper
+import CoreModules.FERRET.ModelFunctionsHelper as ModelFunctionsHelper
 
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 
 #Import PDF report writer class
-from CoreModules.PDFWriter import PDF
+from CoreModules.FERRET.PDFWriter import PDF
 
-from CoreModules.ExcelWriter import ExcelWriter
+from CoreModules.FERRET.ExcelWriter import ExcelWriter
 
-from CoreModules.ferretXMLReader import FerretXMLReader
+from CoreModules.FERRET.ferretXMLReader import FerretXMLReader
 
  
 ########################################

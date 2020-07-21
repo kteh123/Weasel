@@ -1,27 +1,30 @@
 import os
 import numpy as np
-import CoreModules.readDICOM_Image as readDICOM_Image
-import CoreModules.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 FILE_SUFFIX = '_Inverted'
 
-def returnPixelArray(imagePath):
+def returnPixelArray(imagePath): #Developer tool
+    #return original pixel array
     """Inverts an image. Bits that are 0 become 1, and those that are 1 become 0"""
     try:
         if os.path.exists(imagePath):
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.getPixelArray(dataset)
-            derivedImage = invertAlgorithm(pixelArray, dataset)
+            #derivedImage = invertAlgorithm(pixelArray, dataset)
             return derivedImage
         else:
             return None
     except Exception as e:
             print('Error in function invertDICOM_Image.returnPixelArray: ' + str(e))
     
-def invertAlgorithm(pixelArray, dataset):
+#1 get a pixel array from image path
+#2call algorithm
+def invertAlgorithm(pixelArray, dataset): #scientific library
     try:
         derivedImage = np.invert(pixelArray.astype(dataset.pixel_array.dtype))
         return derivedImage
@@ -29,7 +32,7 @@ def invertAlgorithm(pixelArray, dataset):
             print('Error in function invertDICOM_Image.invertAlgorithm: ' + str(e))
 
 
-def saveInvertImage(objWeasel):
+def saveInvertImage(objWeasel): #developer tool
     """Creates a subwindow that displays an inverted DICOM image. Executed using the 
     'Invert Image' Menu item in the Tools menu."""
     try:

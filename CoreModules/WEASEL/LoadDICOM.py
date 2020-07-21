@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (QMessageBox, QApplication, QFileDialog, QVBoxLayout
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
+import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 

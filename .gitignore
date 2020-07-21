@@ -362,3 +362,5 @@ Weasel-ROI-Joao.py
 /CoreModules/SimpleITK/*.so
 *.ipynb
 /SimpleITK1
+/WeaselData/003/1030/DICOM
+/WeaselData/003

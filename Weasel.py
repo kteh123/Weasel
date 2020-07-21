@@ -17,8 +17,8 @@ sys.path.append(os.path.join(sys.path[0],
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
 
-import CoreModules.styleSheet as styleSheet
-from CoreModules.weaselXMLReader import WeaselXMLReader
+import CoreModules.WEASEL.styleSheet as styleSheet
+from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader
 import CoreModules.WEASEL.Menus  as menus
 import CoreModules.WEASEL.ToolBar  as toolBar
 

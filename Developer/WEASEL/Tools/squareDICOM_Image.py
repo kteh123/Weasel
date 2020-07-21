@@ -1,8 +1,8 @@
 import os
 import numpy as np
-import CoreModules.readDICOM_Image as readDICOM_Image
-import CoreModules.saveDICOM_Image as saveDICOM_Image
-from CoreModules.imagingTools import squarePixelArray
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+from CoreModules.WEASEL.imagingTools import squarePixelArray
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
