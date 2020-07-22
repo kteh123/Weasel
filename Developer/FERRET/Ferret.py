@@ -2376,6 +2376,7 @@ class Ferret:
     def closeWindow(self):
         """Closes the Model Fitting application."""
         logger.info("FERRET closed using the Exit button.")
+        self.statusBar.clearMessage()
         self.thisWindow.close() 
 
 

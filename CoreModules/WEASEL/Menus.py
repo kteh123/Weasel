@@ -8,13 +8,13 @@ import importlib
 import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.WEASEL.weaselToolsXMLReader import WeaselToolsXMLReader
 import Developer.WEASEL.copyDICOM_Image as copyDICOM_Image
+import Developer.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
+import Developer.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
-import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
-import CoreModules.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
 
 
 import logging
