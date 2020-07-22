@@ -11,11 +11,14 @@ import logging
 #path[0] is the current working directory
 #pathlib.Path().absolute() is the current directory where the script is located. 
 #It doesn't matter if it's Python SYS or Windows SYS
-sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//'))
+sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//'))
+sys.path.append(os.path.join(sys.path[0],'Developer//FERRET//'))
 sys.path.append(os.path.join(sys.path[0],
-        'Developer//WEASEL//Tools//FERRET_Files//'))
+        'Developer//FERRET//FERRET_Files//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
+sys.path.append(os.path.join(sys.path[0],'CoreModules//FERRET//'))
+
 
 import CoreModules.WEASEL.styleSheet as styleSheet
 from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader

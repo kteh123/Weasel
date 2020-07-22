@@ -159,7 +159,7 @@ import os
 #Add folders CoreModules & Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
 sys.path.append(os.path.join(sys.path[0],'CoreModules//FERRET//'))
-sys.path.append(os.path.join(sys.path[0],'Developer//WEASEL//Tools//FERRET_Files//ModelLibrary//'))
+sys.path.append(os.path.join(sys.path[0],'Developer//FERRET//FERRET_Files//ModelLibrary//'))
 
 import numpy as np
 import logging
@@ -202,14 +202,14 @@ DEFAULT_PLOT_DATA_FILE_PATH_NAME = 'plot.csv'
 MIN_NUM_COLUMNS_CSV_FILE = 3
 
 #Path to model library XML files folder
-defaultPathModelLibrary = "Developer\\WEASEL\\Tools\\FERRET_Files\\ModelConfiguration\\"
+defaultPathModelLibrary = "Developer\\FERRET\\FERRET_Files\\ModelConfiguration\\"
 
 #Image Files
 TRISTAN_LOGO = 'images\\TRISTAN LOGO.jpg'
 LARGE_TRISTAN_LOGO ='images\\logo-tristan.png'
 UNI_OF_LEEDS_LOGO ='images\\uni-leeds-logo.jpg'
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
-MODEL_DIAGRAM_FOLDER = 'Developer\\WEASEL\\Tools\\FERRET_Files\\ModelDiagrams\\'
+MODEL_DIAGRAM_FOLDER = 'Developer\\FERRET\\FERRET_Files\\ModelDiagrams\\'
 #######################################
 
 #Create and configure the logger
@@ -254,7 +254,7 @@ class NoModelInletTypeDefined(Error):
     from the XML configuration file."""
    pass
 
-class FERRET:   
+class Ferret:   
     """This class defines the FERRET Model Fitting software 
        based on the QWidget class that provides the GUI.
        This includes seting up the GUI and defining the methods 

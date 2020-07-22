@@ -7,7 +7,7 @@ import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.WEASEL.weaselToolsXMLReader import WeaselToolsXMLReader
-import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
+import Developer.WEASEL.copyDICOM_Image as copyDICOM_Image
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
