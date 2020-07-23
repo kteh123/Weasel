@@ -260,6 +260,8 @@
     <Compile Include="CoreModules\WEASEL\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\ModelFunctions.py" />
+    <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\WEASEL\BinaryOperationsOnImages.py">
       <SubType>Code</SubType>
     </Compile>
@@ -291,6 +293,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\TreeView.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Developer\WEASEL\toolsModuleTemplate.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\WEASEL\ViewMetaData.py">
@@ -336,6 +341,12 @@
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\WEASEL\ReadMe.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelConfiguration\Model_Library_Template.xml" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel.png" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\FERRET\FERRET_README.md" />
     <Content Include="Developer\WEASEL\toolsMenu.xml" />
     <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
@@ -4127,6 +4138,9 @@
     <Folder Include="Developer\" />
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\FERRET\" />
+    <Folder Include="Developer\FERRET\FERRET_Files\ModelDiagrams\" />
+    <Folder Include="Developer\FERRET\FERRET_Files\ModelLibrary\" />
+    <Folder Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\" />
     <Folder Include="Developer\WEASEL\" />
     <Folder Include="Developer\FERRET\FERRET_Files\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />

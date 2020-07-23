@@ -1,3 +1,4 @@
+
 import os
 import numpy as np
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
@@ -11,8 +12,10 @@ import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 #Added by third party developer to the template module. 
 #The function containing the image processing algorithm must be given the 
 #generic name, funcAlgorithm
-from CoreModules.WEASEL.imagingTools import squarePixelArray as funcAlgorithm
-FILE_SUFFIX = '_Square'
+#uncomment and edit the following line of code to import the function 
+#containing your image processing algorith. 
+#from CoreModules.WEASEL.someModule import someFunction as funcAlgorithm
+FILE_SUFFIX = '_SomeSuffix'
 #***************************************************************************
 
 #This function name must not be changed

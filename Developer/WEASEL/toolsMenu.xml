@@ -13,7 +13,7 @@
     <tooltip>Square a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>squareDICOM_Image</module>
-    <function>saveSquareImage</function>
+    <function>saveImage</function>
   </tool>
    <tool>
     <action>Threshold</action>

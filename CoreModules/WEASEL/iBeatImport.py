@@ -4,7 +4,7 @@ import re
 import pandas as pd
 #Also need to do pip install xlrd
 import warnings
-import CoreModules.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 
 
 def getScanInfo(dicomData):
