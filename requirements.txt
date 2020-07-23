@@ -17,5 +17,6 @@ nibabel==3.0.2
 scikit-learn==0.21.3
 fslpy==3.0.0
 dipy==1.1.1
+xlrd==1.2.0
 tensorflow==2.0.0
 xnat==0.3.21
