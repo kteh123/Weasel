@@ -3,12 +3,12 @@ import numpy as np
 import re
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-from CoreModules.WEASEL.imagingTools import formatArrayForAnalysis
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from ukrinAlgorithms import ukrinMaps
+from ScientificLibrary.imagingTools import formatArrayForAnalysis
+from ScientificLibrary.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T2StarMap'
 

@@ -2,7 +2,7 @@ import os
 import numpy as np
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-from CoreModules.WEASEL.imagingTools import thresholdPixelArray
+from ScientificLibrary.imagingTools import thresholdPixelArray
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow

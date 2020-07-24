@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import copy
-from CoreModules.WEASEL.imagingTools import unWrapPhase, convertToPiRange # Create Copy Array?
+from ScientificLibrary.imagingTools import unWrapPhase, convertToPiRange
 
 class ukrinMaps():
     """Package containing algorithms that calculate parameter maps 

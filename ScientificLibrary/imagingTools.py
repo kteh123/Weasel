@@ -26,12 +26,18 @@ def convertToPiRange(pixelArray):
     return radiansArray
 
 
-def invertPixelArray(pixelArray, dataset):
-    return np.invert(pixelArray.astype(dataset.pixel_array.dtype))
+def invertAlgorithm(pixelArray, dataset):
+    try:
+        return np.invert(pixelArray.astype(dataset.pixel_array.dtype))
+    except Exception as e:
+        print('Error in function imagingTools.invertAlgorithm: ' + str(e))
 
 
-def squarePixelArray(pixelArray):
-    return np.square(pixelArray)
+def squareAlgorithm(pixelArray):
+    try:
+        return np.square(pixelArray)
+    except Exception as e:
+        print('Error in function imagingTools.squareAlgorithm: ' + str(e))
 
 
 def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
