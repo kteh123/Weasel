@@ -266,8 +266,8 @@ def setUpColourTools(self, layout, imv,
             
             spinBoxIntensity.setMinimum(-100000.00)
             spinBoxContrast.setMinimum(-100000.00)
-            spinBoxIntensity.setMaximum(100000.00)
-            spinBoxContrast.setMaximum(100000.00)
+            spinBoxIntensity.setMaximum(1000000000.00)
+            spinBoxContrast.setMaximum(1000000000.00)
             spinBoxIntensity.setWrapping(True)
             spinBoxContrast.setWrapping(True)
 
