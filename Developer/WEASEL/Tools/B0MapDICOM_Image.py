@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from ScientificLibrary.imagingTools import formatArrayForAnalysis, unWrapPhase
-from ScientificLibrary.ukrinAlgorithms import ukrinMaps
+from Developer.WEASEL.ScientificLibrary.imagingTools import formatArrayForAnalysis, unWrapPhase
+from Developer.WEASEL.ScientificLibrary.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
 # THE ENHANCED MRI B0 STILL NEEDS MORE TESTING. I DON'T HAVE ANY CASE WITH 2 TEs IN ENHANCED MRI

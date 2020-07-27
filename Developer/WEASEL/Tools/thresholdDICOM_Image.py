@@ -2,7 +2,7 @@ import os
 import numpy as np
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-from ScientificLibrary.imagingTools import thresholdPixelArray
+from Developer.WEASEL.ScientificLibrary.imagingTools import thresholdPixelArray
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
@@ -24,7 +24,7 @@ def returnPixelArray(imagePath):
             print('Error in function thresholdDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def saveThresholdedImage(objWeasel):
+def saveImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
@@ -77,4 +77,4 @@ def saveThresholdedImage(objWeasel):
                 derivedImagePathList, studyID, newSeriesID)
             treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
-        print('Error in thresholdDICOM_Image.saveThresholdedImage: ' + str(e))
+        print('Error in thresholdDICOM_Image.saveImage: ' + str(e))

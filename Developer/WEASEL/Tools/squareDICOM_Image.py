@@ -11,7 +11,7 @@ import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 #Added by third party developer to the template module. 
 #The function containing the image processing algorithm must be given the 
 #generic name, funcAlgorithm
-from ScientificLibrary.imagingTools import squareAlgorithm as funcAlgorithm
+from Developer.WEASEL.ScientificLibrary.imagingTools import squareAlgorithm as funcAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 

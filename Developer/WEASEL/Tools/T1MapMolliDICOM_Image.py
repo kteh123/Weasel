@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from ScientificLibrary.imagingTools import formatArrayForAnalysis
-from ScientificLibrary.ukrinAlgorithms import ukrinMaps
+from Developer.WEASEL.ScientificLibrary.imagingTools import formatArrayForAnalysis
+from Developer.WEASEL.ScientificLibrary.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T1Map'
 

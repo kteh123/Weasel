@@ -7,9 +7,9 @@ import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.WEASEL.weaselToolsXMLReader import WeaselToolsXMLReader
-import Developer.WEASEL.copyDICOM_Image as copyDICOM_Image
-import Developer.WEASEL.BinaryOperationsOnImages as binaryOperationsOnImages
-import Developer.WEASEL.ViewMetaData  as viewMetaData
+import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
+import Developer.WEASEL.Tools.BinaryOperationsOnImages as binaryOperationsOnImages
+import Developer.WEASEL.Tools.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
@@ -192,6 +192,7 @@ def buildUserDefinedToolsMenuItem(self, tool):
         self.menuItem.setEnabled(False)
         moduleName = tool.find('module').text
         function = tool.find('function').text
+        #function = "saveImage"
         moduleFileName = [os.path.join(dirpath, moduleName+".py") 
             for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
         spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)

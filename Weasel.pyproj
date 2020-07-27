@@ -262,7 +262,7 @@
     </Compile>
     <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\ModelFunctions.py" />
     <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
-    <Compile Include="Developer\WEASEL\BinaryOperationsOnImages.py">
+    <Compile Include="Developer\WEASEL\Tools\BinaryOperationsOnImages.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\DisplayImageColour.py">
@@ -295,23 +295,25 @@
     <Compile Include="CoreModules\WEASEL\TreeView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\WEASEL\toolsModuleTemplate.py">
+    <Compile Include="Developer\WEASEL\Tools\toolsModuleTemplate.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\WEASEL\ViewMetaData.py">
+    <Compile Include="Developer\WEASEL\Tools\ViewMetaData.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\WriteXMLfromDICOM.py" />
-    <Compile Include="Developer\WEASEL\B0MapDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\copyDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\B0MapDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\copyDICOM_Image.py" />
     <Compile Include="Developer\FERRET\Ferret.py" />
-    <Compile Include="Developer\WEASEL\invertDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\squareDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\T1MapMolliDICOM_Image.py" />
-    <Compile Include="Developer\WEASEL\T2StarMapDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\invertDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\squareDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\T1MapMolliDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\T2StarMapDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
-    <Compile Include="Developer\WEASEL\thresholdDICOM_Image.py" />
+    <Compile Include="Developer\WEASEL\Tools\thresholdDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\ukrinAlgorithms.py" />
+    <Compile Include="Developer\WEASEL\ScientificLibrary\imagingTools.py" />
+    <Compile Include="Developer\WEASEL\ScientificLibrary\ukrinAlgorithms.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
@@ -348,7 +350,7 @@
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\FERRET\FERRET_README.md" />
-    <Content Include="Developer\WEASEL\toolsMenu.xml" />
+    <Content Include="Developer\WEASEL\Tools\toolsMenu.xml" />
     <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver3__SI_TRISTAN Rat Model v2.0__Signals.csv" />
@@ -4144,10 +4146,12 @@
     <Folder Include="Developer\WEASEL\" />
     <Folder Include="Developer\FERRET\FERRET_Files\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />
+    <Folder Include="Developer\WEASEL\Tools\" />
     <Folder Include="FerretData\" />
     <Folder Include="FerretData\MSD_PRE\" />
     <Folder Include="images\" />
     <Folder Include="CoreModules\SimpleITK\" />
+    <Folder Include="Developer\WEASEL\ScientificLibrary\" />
     <Folder Include="WeaselData\" />
     <Folder Include="WeaselData\003\" />
     <Folder Include="WeaselData\003\1030\" />

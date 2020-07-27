@@ -5,7 +5,7 @@
     <tooltip>Invert a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>invertDICOM_Image</module>
-    <function>saveInvertImage</function>
+    <function>saveImage</function>
   </tool>
   <tool>
     <action>Square</action>
@@ -21,7 +21,7 @@
     <tooltip>Threshold a DICOM Image or series</tooltip>
     <applies_both_images_series>True</applies_both_images_series>
     <module>thresholdDICOM_Image</module>
-    <function>saveThresholdedImage</function>
+    <function>saveImage</function>
   </tool>
   <tool>
     <action>B0 Map Calculation</action>
