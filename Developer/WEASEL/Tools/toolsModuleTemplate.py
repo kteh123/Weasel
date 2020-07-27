@@ -49,20 +49,15 @@ def saveImage(objWeasel):
                                          derivedImageFileName, FILE_SUFFIX)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
+
         elif treeView.isASeriesSelected(objWeasel):
-            studyID = objWeasel.selectedStudy
-            seriesID = objWeasel.selectedSeries
-            imagePathList = \
-                    objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and square each image
+            imagePathList, studyID = returnImagePathList(objWeasel)
+            setupMessageBox(objWeasel, len(imagePathList))
+
+            #Iterate through list of images and apply the algorithm
+            imageCounter = 0
             derivedImagePathList = []
             derivedImageList = []
-            numImages = len(imagePathList)
-            messageWindow.displayMessageSubWindow(objWeasel,
-              "<H4>Processing {} DICOM files</H4>".format(numImages),
-              "Squaring DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(objWeasel, numImages)
-            imageCounter = 0
             for imagePath in imagePathList:
                 derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
                 derivedImage = returnPixelArray(imagePath, funcAlgorithm)
@@ -70,20 +65,43 @@ def saveImage(objWeasel):
                 derivedImageList.append(derivedImage)
                 imageCounter += 1
                 messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
-            messageWindow.displayMessageSubWindow(objWeasel,
-              "<H4>Saving results into a new DICOM Series</H4>",
-              "Processing DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 2)
-            messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
+            
+            
             # Save new DICOM series locally
+            showSavingResultsMessageBox(objWeasel)
             saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            #Insert new series into the DICOM XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                             imagePathList,
                             derivedImagePathList, FILE_SUFFIX)
-            messageWindow.setMsgWindowProgBarValue(objWeasel, 2)
             messageWindow.closeMessageSubWindow(objWeasel)
+
+            #Display series of images in a subwindow
             displayImageColour.displayMultiImageSubWindow(objWeasel,
                 derivedImagePathList, studyID, newSeriesID)
+
+            #Refresh the tree view so to include the new series
             treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
-        print('Error in squaredDICOM_Image.saveSquareImage: ' + str(e))
+        print('Error in #.saveImage: ' + str(e))
+
+
+def returnImagePathList(objWeasel):
+    studyID = objWeasel.selectedStudy
+    seriesID = objWeasel.selectedSeries
+    return objWeasel.objXMLReader.getImagePathList(studyID, seriesID), studyID
+
+
+def setupMessageBox(objWeasel, numImages):
+    messageWindow.displayMessageSubWindow(objWeasel,
+              "<H4>Processing {} DICOM files</H4>".format(numImages),
+              "Processing DICOM images")
+    messageWindow.setMsgWindowProgBarMaxValue(objWeasel, numImages)
+
+
+def showSavingResultsMessageBox(objWeasel):
+    messageWindow.hideProgressBar(objWeasel)
+    messageWindow.displayMessageSubWindow(objWeasel,
+        "<H4>Saving results into a new DICOM Series</H4>",
+        "Processing DICOM images")
+    

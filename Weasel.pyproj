@@ -27,7 +27,6 @@
     <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
     <Compile Include="CoreModules\WEASEL\iBeatImport.py" />
-    <Compile Include="CoreModules\WEASEL\imagingTools.py" />
     <Compile Include="CoreModules\FERRET\MathsTools.py" />
     <Compile Include="CoreModules\FERRET\ModelFunctionsHelper.py" />
     <Compile Include="CoreModules\FERRET\PDFWriter.py" />
@@ -311,7 +310,6 @@
     <Compile Include="Developer\WEASEL\Tools\T2StarMapDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
     <Compile Include="Developer\WEASEL\Tools\thresholdDICOM_Image.py" />
-    <Compile Include="CoreModules\WEASEL\ukrinAlgorithms.py" />
     <Compile Include="Developer\WEASEL\ScientificLibrary\imagingTools.py" />
     <Compile Include="Developer\WEASEL\ScientificLibrary\ukrinAlgorithms.py" />
     <Compile Include="Weasel.py" />

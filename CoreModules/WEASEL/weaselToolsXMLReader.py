@@ -7,7 +7,7 @@ class WeaselToolsXMLReader:
     def __init__(self): 
         try:
             self.hasXMLFileParsedOK = True
-            self.fullFilePath = "Developer//WEASEL//toolsMenu.xml"
+            self.fullFilePath = "Developer//WEASEL//Tools//toolsMenu.xml"
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
             
