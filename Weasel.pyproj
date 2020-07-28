@@ -294,6 +294,10 @@
     <Compile Include="CoreModules\WEASEL\TreeView.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Developer\WEASEL\Tools\developerToolsModule.py" />
+    <Compile Include="Developer\WEASEL\Tools\ToolsFunctions.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\WEASEL\Tools\toolsModuleTemplate.py">
       <SubType>Code</SubType>
     </Compile>

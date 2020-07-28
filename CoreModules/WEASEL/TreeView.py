@@ -98,8 +98,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                             self.progBar.setValue(treeWidgetItemCounter)
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                             #Uncomment the next 2 lines to put a checkbox in front of each image
-                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            #imageLeaf.setCheckState(0, Qt.Unchecked)
+                            imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+                            imageLeaf.setCheckState(0, Qt.Unchecked)
                             imageLeaf.setText(0, 'Image - ' + imageName)
                             imageLeaf.setText(1, imageDate)
                             imageLeaf.setText(2, imageTime)
