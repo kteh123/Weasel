@@ -373,6 +373,7 @@
     <Content Include="images\uni-leeds-logo.jpg" />
     <Content Include="license.txt" />
     <Content Include="requirements.txt" />
+    <Content Include="WeaselData\003\003.xml" />
     <Content Include="WeaselData\003\1030\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-1030-14-1mn51ni.dcm" />
     <Content Include="WeaselData\003\1030\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-1030-2-95d8u9.dcm" />
     <Content Include="WeaselData\003\1030\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-1030-20-gqhbam.dcm" />
