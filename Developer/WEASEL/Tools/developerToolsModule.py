@@ -162,13 +162,18 @@ def saveAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix
 
 def pipelineImage(objWeasel):
     """Creates a subwindow that displays either a DICOM image or series of DICOM images
-    processed using the algorithm in func."""
+    processed using the algorithm(s) in func."""
     try:
         if treeView.isAnImageSelected(objWeasel):
             imagePath = getImagePath(objWeasel)
             derivedImageFileName = setNewFilePath(imagePath, FILE_SUFFIX)
+            ############
+
             pixelArray = openPixelArrayFromDICOM(imagePath)
+            getParameters
             derivedImage = applyProcessInOneImage(pixelArray, func)
+
+            #####################
             saveAndDisplayResult(objWeasel, imagePath, derivedImageFileName, derivedImage, FILE_SUFFIX)
 
         elif treeView.isASeriesSelected(objWeasel):
@@ -181,7 +186,7 @@ def pipelineImage(objWeasel):
 
 
 def pipelineImageAndSeries(objWeasel):
-    """Creates a subwindow that displays either a series of DICOM images
+    """Creates a subwindow that displays a series of DICOM images
     processed using the algorithm(s) in func."""
     try:
         imagePathList = getImagePathList(objWeasel)

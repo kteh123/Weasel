@@ -25,6 +25,7 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             # The echo values repeat, so this is to remove all values=0 and repetitions
             echoList = np.delete(np.unique(echoList), np.where(np.unique(echoList) == 0.0))
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', resize=3)
+            print(np.shape(pixelArray))
             # Algorithm 
             derivedImage = ukrinMaps(pixelArray).T2Star(echoList)
             del volumeArray, pixelArray, numberSlices, dataset, echoList
@@ -42,17 +43,17 @@ def getParametersT2StarMap(imagePathList, seriesID):
             magnitudePathList = []
             datasetList = readDICOM_Image.getDicomDataset(imagePathList[0]) # even though it can be 1 file only, I'm naming datasetList due to consistency
             if hasattr(datasetList, 'PerFrameFunctionalGroupsSequence'):
-                echoList = []
+                echoListFinal = []
                 sliceList = []
                 numberEchoes = datasetList[0x20011014].value
                 _, originalSliceList, numberSlices = readDICOM_Image.getMultiframeBySlices(datasetList)
                 for index, dataset in enumerate(datasetList.PerFrameFunctionalGroupsSequence):
                     flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dataset)
                     echo = dataset.MREchoSequence[0].EffectiveEchoTime
-                    if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                    if (numberEchoes > 4) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         sliceList.append(originalSliceList[index])
-                        echoList.append(echo)
-                if sliceList and echoList:
+                        echoListFinal.append(echo)
+                if sliceList and echoListFinal:
                     #echoList = np.unique(echoList)
                     magnitudePathList = imagePathList
             else:
@@ -60,15 +61,17 @@ def getParametersT2StarMap(imagePathList, seriesID):
                 imagePathList, echoList, numberEchoes, indicesSorted = readDICOM_Image.sortSequenceByTag(imagePathList, "EchoTime")
                 # After sorting, it needs to update the sliceList
                 sliceList = [firstSliceList[index] for index in indicesSorted]
+                echoListFinal = []
                 for index in range(len(imagePathList)):
                     dataset = readDICOM_Image.getDicomDataset(imagePathList[index])
                     flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dataset)
                     echo = echoList[index]
                     # Can use numberEchoes > 8 or similar
-                    if (numberEchoes == 12) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
+                    if (numberEchoes > 4) and (echo != 0) and flagMagnitude and (re.match(".*t2.*", seriesID.lower()) or re.match(".*r2.*", seriesID.lower())):
                         magnitudePathList.append(imagePathList[index])
-            del datasetList, numberSlices, numberEchoes, flagMagnitude
-            return magnitudePathList, sliceList, echoList
+                        echoListFinal.append(echo)
+            del datasetList, numberSlices, numberEchoes, flagMagnitude, echoList
+            return magnitudePathList, sliceList, echoListFinal
         else:
             return None, None, None
     except Exception as e:
