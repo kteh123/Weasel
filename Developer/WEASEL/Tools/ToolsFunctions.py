@@ -15,8 +15,9 @@ def returnPixelArray(imagePath, func):
    an image and returns the resulting PixelArray"""
     try:
         if os.path.exists(imagePath):
+            dataset = readDICOM_Image.getDicomDataset(imagePath)
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            derivedImage = func(pixelArray)
+            derivedImage = func(pixelArray, dataset)
             return derivedImage
         else:
             return None

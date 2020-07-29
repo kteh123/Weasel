@@ -33,7 +33,8 @@ def invertAlgorithm(pixelArray, dataset):
         print('Error in function imagingTools.invertAlgorithm: ' + str(e))
 
 
-def squareAlgorithm(pixelArray):
+
+def squareAlgorithm(pixelArray, dataset = None):
     try:
         return np.square(pixelArray)
     except Exception as e:
