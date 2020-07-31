@@ -47,20 +47,20 @@ def setupMessageBox(objWeasel, numImages):
 
 
 def showSavingResultsMessageBox(objWeasel):
-    messageWindow.hideProgressBar(objWeasel)
+    #messageWindow.hideProgressBar(objWeasel)
     messageWindow.displayMessageSubWindow(objWeasel,
         "<H4>Saving results into a new DICOM Series</H4>",
         "Processing DICOM images")
 
 
 def showProcessingMessageBox(objWeasel):
-    messageWindow.hideProgressBar(objWeasel)
+    #messageWindow.hideProgressBar(objWeasel)
     messageWindow.displayMessageSubWindow(objWeasel,
         "<H4>Running the selected algorithm...</H4>",
         "Processing algorithm")
 
 
-def openPixelArrayFromDICOM(inputPath):
+def getPixelArrayFromDICOM(inputPath):
     """Open the DICOM file(s) the PixelArray of the file(s)"""
     try:
         if isinstance(inputPath, str) and os.path.exists(inputPath):
@@ -72,45 +72,52 @@ def openPixelArrayFromDICOM(inputPath):
         else:
             return None
     except Exception as e:
-        print('Error in function #.openPixelArrayFromDICOM: ' + str(e))
+        print('Error in function #.getPixelArrayFromDICOM: ' + str(e))
 
 
-def applyProcessInOneImage(pixelArray, func):
+def applyProcessInOneImage(func, *args):
     try:
-        derivedImage = func(pixelArray)
-        return derivedImage
+        derivedImage = func(*args)
+        return np.squeeze(derivedImage) # results ave always 1st dimension = 1
     except Exception as e:
         print('Error in function #.applyProcessInOneImage: ' + str(e))
 
 
-def applyProcessIterativelyInSeries(objWeasel, inputPathList, suffix, func):
-    try:
-        numImages = len(inputPathList)
-        setupMessageBox(objWeasel, numImages)
+def applyProcessIterativelyInSeries(objWeasel, inputPathList, suffix, func, *args, progress_bar=True):
+    try: 
+        if progress_bar:
+            numImages = len(inputPathList)
+            setupMessageBox(objWeasel, numImages)
+            imageCounter = 0
         #Iterate through list of images and apply the algorithm
-        imageCounter = 0
         derivedImagePathList = []
         derivedImageList = []
         for imagePath in inputPathList:
             derivedImagePath = setNewFilePath(imagePath, suffix)
-            inputImage = openPixelArrayFromDICOM(imagePath)
-            derivedImage = applyProcessInOneImage(inputImage, func)
+            inputImage = getPixelArrayFromDICOM(imagePath)
+            if args:
+                derivedImage = applyProcessInOneImage(func, inputImage, *args)
+            else:
+                derivedImage = applyProcessInOneImage(func, inputImage)
             derivedImagePathList.append(derivedImagePath)
             derivedImageList.append(derivedImage)
-            imageCounter += 1
-            messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
+            if progress_bar:
+                imageCounter += 1
+                messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
+        if progress_bar:
+            messageWindow.closeMessageSubWindow(objWeasel)
         return derivedImagePathList, derivedImageList
     except Exception as e:
         print('Error in function #.applyProcessIterativelyInSeries: ' + str(e))
 
 
-def prepareBulkSeriesSave(objWeasel, inputPathList, derivedImage):
+def prepareBulkSeriesSave(objWeasel, inputPathList, derivedImage, suffix):
     try:
         if hasattr(readDICOM_Image.getDicomDataset(inputPathList[0]), 'PerFrameFunctionalGroupsSequence'):
             # If it's Enhanced MRI
             numImages = 1
             derivedImageList = [derivedImage]
-            derivedImageFilePath = setNewFilePath(inputPathList[0], FILE_SUFFIX)
+            derivedImageFilePath = setNewFilePath(inputPathList[0], suffix)
             derivedImagePathList = [derivedImageFilePath]
         else:
             # Iterate through list of images (slices) and save the resulting Map for each DICOM image
@@ -118,7 +125,7 @@ def prepareBulkSeriesSave(objWeasel, inputPathList, derivedImage):
             derivedImageList = []
             numImages = (1 if len(np.shape(derivedImage)) < 3 else np.shape(derivedImage)[0])
             for index in range(numImages):
-                derivedImageFilePath = setNewFilePath(inputPathList[index], FILE_SUFFIX)
+                derivedImageFilePath = setNewFilePath(inputPathList[index], suffix)
                 derivedImagePathList.append(derivedImageFilePath)
                 if numImages==1:
                     derivedImageList.append(derivedImage)
@@ -129,20 +136,22 @@ def prepareBulkSeriesSave(objWeasel, inputPathList, derivedImage):
         print('Error in function #.prepareBulkSeriesSave: ' + str(e))
 
 
-def saveAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix):
+def saveNewDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix):
     try:
         showSavingResultsMessageBox(objWeasel)
         if treeView.isAnImageSelected(objWeasel):
             # Save new DICOM file locally                                    
             saveDICOM_Image.saveDicomOutputResult(derivedPath, inputPath, derivedImage, suffix)
+            messageWindow.closeMessageSubWindow(objWeasel)
             # Record derived image in XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
-                                         derivedImageFileName, suffix)
+                                         derivedPath, suffix)
             # Display image in a new subwindow
-            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+            displayImageColour.displayImageSubWindow(objWeasel, derivedPath)
         elif treeView.isASeriesSelected(objWeasel):
             # Save new DICOM series locally
             saveDICOM_Image.saveDicomNewSeries(derivedPath, inputPath, derivedImage, suffix)
+            messageWindow.closeMessageSubWindow(objWeasel)
             # Insert new series into the DICOM XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                             inputPath, derivedPath, suffix)
@@ -152,40 +161,63 @@ def saveAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix
                 derivedPath, studyID, newSeriesID)
         #Refresh the tree view so to include the new series
         treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+    except Exception as e:
+        print('Error in function #.saveNewDICOMAndDisplayResult: ' + str(e))
+    
+
+def overwriteDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix):
+    try:
+        showSavingResultsMessageBox(objWeasel)
+        #if treeView.isAnImageSelected(objWeasel):
+            # Save new DICOM file locally                                    
+            # saveDICOM_Image.saveDicomOutputResult(derivedPath, inputPath, derivedImage, suffix)
+            # Record derived image in XML file
+            # newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                                         #derivedPath, suffix)
+            # Display image in a new subwindow
+            #displayImageColour.displayImageSubWindow(objWeasel, derivedPath)
+        #elif treeView.isASeriesSelected(objWeasel):
+            # Save new DICOM series locally
+            # saveDICOM_Image.saveDicomNewSeries(derivedPath, inputPath, derivedImage, suffix)
+            # Insert new series into the DICOM XML file
+            # newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                            #inputPath, derivedPath, suffix)
+            #Display series of images in a subwindow
+            # studyID = getStudyID(objWeasel)
+            #displayImageColour.displayMultiImageSubWindow(objWeasel,
+                #derivedPath, studyID, newSeriesID)
+        #Refresh the tree view so to include the new series
+        # treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
         messageWindow.closeMessageSubWindow(objWeasel)
     except Exception as e:
-        print('Error in function #.saveAndDisplayResult: ' + str(e))
+        print('Error in function #.overwriteDICOMAndDisplayResult: ' + str(e))
 
 
 ####################################################################################
 
 
-def pipelineImage(objWeasel):
+def pipelineImage(objWeasel, func, *args):
     """Creates a subwindow that displays either a DICOM image or series of DICOM images
     processed using the algorithm(s) in func."""
     try:
         if treeView.isAnImageSelected(objWeasel):
             imagePath = getImagePath(objWeasel)
             derivedImageFileName = setNewFilePath(imagePath, FILE_SUFFIX)
-            ############
-
-            pixelArray = openPixelArrayFromDICOM(imagePath)
-            getParameters
-            derivedImage = applyProcessInOneImage(pixelArray, func)
-
             #####################
-            saveAndDisplayResult(objWeasel, imagePath, derivedImageFileName, derivedImage, FILE_SUFFIX)
+            pixelArray = getPixelArrayFromDICOM(imagePath)
+            derivedImage = applyProcessInOneImage(pixelArray, func, *args)
+            #####################
+            saveNewDICOMAndDisplayResult(objWeasel, imagePath, derivedImageFileName, derivedImage, FILE_SUFFIX)
 
         elif treeView.isASeriesSelected(objWeasel):
             imagePathList = getImagePathList(objWeasel)
-            derivedImagePathList, derivedImageList = applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, func)        
-            saveAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
-            
+            derivedImagePathList, derivedImageList = applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, func, *args)        
+            saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX) 
     except Exception as e:
         print('Error in #.pipelineImage: ' + str(e))
 
 
-def pipelineImageAndSeries(objWeasel):
+def pipelineImageAndSeries(objWeasel, func, *args):
     """Creates a subwindow that displays a series of DICOM images
     processed using the algorithm(s) in func."""
     try:
@@ -194,8 +226,8 @@ def pipelineImageAndSeries(objWeasel):
         showProcessingMessageBox(objWeasel)
         # **************************************************************************************************
         # Here is where I can make things different - getParameters
-        pixelArray = openPixelArrayFromDICOM(imagePathList)
-        derivedImage = applyProcessInOneImage(pixelArray, func)
+        pixelArray = getPixelArrayFromDICOM(imagePathList)
+        derivedImage = applyProcessInOneImage(pixelArray, func, *args)
 		
 		# Get resulting array. Not tested yet, hence it's commented
 		# pixelArray = returnPixelArray(imagePathList, funcAlgorithm)
@@ -204,56 +236,16 @@ def pipelineImageAndSeries(objWeasel):
 		# Suggestion for error management
 		# For eg., the script could "conclude" that the algorithm is not applicable
 
-		if isinstance(pixelArray, str):
-            messageWindow.displayMessageSubWindow(objWeasel, pixelArray)
-            raise Exception(pixelArray)
+		#if isinstance(pixelArray, str):
+            #messageWindow.displayMessageSubWindow(objWeasel, pixelArray)
+            #raise Exception(pixelArray)
         # ***************************************************************************************************
-		
 
+        derivedImagePathList, derivedImageList = prepareBulkSeriesSave(objWeasel, imagePathList, derivedImage, FILE_SUFFIX)
 
-		if hasattr(readDICOM_Image.getDicomDataset(imagePathList[0]), 'PerFrameFunctionalGroupsSequence'):
-            # If it's Enhanced MRI
-            numImages = 1
-            derivedImageList = [pixelArray]
-            derivedImageFilePath = saveDICOM_Image.returnFilePath(imagePathList[0], FILE_SUFFIX)
-            derivedImagePathList = [derivedImageFilePath]
-        else:
-            # Iterate through list of images (slices) and save the resulting Map for each DICOM image
-            derivedImagePathList = []
-            derivedImageList = []
-            numImages = (1 if len(np.shape(derivedImage)) < 3 else np.shape(derivedImage)[0])
-            for index in range(numImages):
-				#Joao Sousa needs to review the use of imagePathList in the following line
-                derivedImageFilePath = saveDICOM_Image.returnFilePath(imagePathList[index], FILE_SUFFIX)
-                derivedImagePathList.append(derivedImageFilePath)
-                if numImages==1:
-                    derivedImageList.append(derivedImage)
-                else:
-                    derivedImageList.append(derivedImage[index, ...])
-            
-        messageWindow.closeMessageSubWindow(objWeasel)
-
-        # Replace with saveAndDisplayResult
-        # Bear in mind the following: imagePathList[:len(derivedImagePathList)]
-
-        messageWindow.displayMessageSubWindow(objWeasel, 
-            "<H4>Saving {} DICOM files for <Insert message here></H4>".format(numImages),
-            "Saving Template Parametric Map")
-        messageWindow.setMsgWindowProgBarMaxValue(objWeasel,3)
-        messageWindow.setMsgWindowProgBarValue(objWeasel,2)
-
-        # Save new DICOM series locally
-        saveDICOM_Image.saveDicomNewSeries(
-            derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
-		#Joao Sousa needs to review the use of imagePathList in the following line
-        newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
-                        imagePathList[:len(derivedImagePathList)],
-                        derivedImagePathList, FILE_SUFFIX)
-        messageWindow.setMsgWindowProgBarValue(objWeasel,3)                                              
-        messageWindow.closeMessageSubWindow(objWeasel)
-        displayImageColour.displayMultiImageSubWindow(objWeasel,
-            derivedImagePathList, studyID, newSeriesID)
-        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+        imagePathList = imagePathList[:len(derivedImagePathList)]
+        
+        saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
 
     except Exception as e:
         print('Error in #.pipelineImageAndSeries: ' + str(e))

@@ -1,5 +1,6 @@
 import numpy as np
 import pydicom
+import scipy.ndimage
 from skimage.transform import resize
 from skimage.restoration import unwrap_phase
 
@@ -33,12 +34,18 @@ def invertAlgorithm(pixelArray, dataset):
         print('Error in function imagingTools.invertAlgorithm: ' + str(e))
 
 
-
 def squareAlgorithm(pixelArray, dataset = None):
     try:
         return np.square(pixelArray)
     except Exception as e:
         print('Error in function imagingTools.squareAlgorithm: ' + str(e))
+
+
+def gaussianFilter(pixelArray, sigma):
+    try:
+        return scipy.ndimage.gaussian_filter(pixelArray, sigma)
+    except Exception as e:
+        print('Error in function imagingTools.gaussianFilter: ' + str(e))
 
 
 def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
