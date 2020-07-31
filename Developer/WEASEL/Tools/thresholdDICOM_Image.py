@@ -7,16 +7,15 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
+import CoreModules.WEASEL.InputDialog as inputDialog
 FILE_SUFFIX = '_Thresholded'
 
-def returnPixelArray(imagePath):
+def returnPixelArray(imagePath, *args):
     """Applies a low and high threshold on an image and returns the resulting maskArray"""
     try:
         if os.path.exists(imagePath):
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            lower_threshold = 40
-            upper_threshold = 90
-            derivedImage = thresholdPixelArray(pixelArray, lower_threshold, upper_threshold)
+            derivedImage = thresholdPixelArray(pixelArray, args[0], args[1])
             return derivedImage
         else:
             return None
@@ -28,9 +27,11 @@ def saveImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
+        inputDlg = inputDialog.ParameterInputDialog("Lower Threshold", "Upper Threshold")
+        listParams = inputDlg.returnListParameterValues()
         if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
-            pixelArray = returnPixelArray(imagePath)
+            pixelArray = returnPixelArray(imagePath, listParams[0], listParams[1])
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
             # Save the DICOM file in the new file path                                        
@@ -56,7 +57,7 @@ def saveImage(objWeasel):
             imageCounter = 0
             for imagePath in imagePathList:
                 derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-                derivedImage = returnPixelArray(imagePath)
+                derivedImage = returnPixelArray(imagePath, listParams[0], listParams[1])
                 derivedImagePathList.append(derivedImagePath)
                 derivedImageList.append(derivedImage)
                 imageCounter += 1

@@ -251,6 +251,9 @@
     <Compile Include="CoreModules\pyqtgraph\widgets\VerticalLabel.py" />
     <Compile Include="CoreModules\pyqtgraph\widgets\__init__.py" />
     <Compile Include="CoreModules\pyqtgraph\__init__.py" />
+    <Compile Include="CoreModules\WEASEL\InputDialog.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\RegionsOfInterest_DICOM.py" />
     <Compile Include="CoreModules\WEASEL\readDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\saveDICOM_Image.py" />
