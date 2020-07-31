@@ -29,9 +29,11 @@ def saveImage(objWeasel):
     try:
         inputDlg = inputDialog.ParameterInputDialog("Lower Threshold", "Upper Threshold")
         listParams = inputDlg.returnListParameterValues()
+        lowerThreshold = listParams[0]
+        upperThreshold = listParams[1]
         if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
-            pixelArray = returnPixelArray(imagePath, listParams[0], listParams[1])
+            pixelArray = returnPixelArray(imagePath, lowerThreshold, upperThreshold)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
             # Save the DICOM file in the new file path                                        
