@@ -240,6 +240,24 @@ def isASeriesSelected(self):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
+def isAStudySelected(self):
+        """Returns True is a study is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("WEASEL isAStudySelected called.")
+            selectedItem = self.treeView.currentItem()
+            if selectedItem:
+                if 'study' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
+            else:
+               return False
+        except Exception as e:
+            print('Error in isAStudySelected: ' + str(e))
+            logger.error('Error in isAStudySelected: ' + str(e))
+
+
 def toggleToolButtons(self):
         """TO DO"""
         try:
