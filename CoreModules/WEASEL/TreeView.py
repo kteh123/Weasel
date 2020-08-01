@@ -298,7 +298,6 @@ def onTreeViewItemClicked(self, item):
     DICOM image data: study ID, Series ID, Image name, image file path"""
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
-        print(returnListSelectedSeries(self))
         selectedText = item.text(0)
         if 'study' in selectedText.lower():
             studyID = selectedText.replace('Study -', '').strip()
