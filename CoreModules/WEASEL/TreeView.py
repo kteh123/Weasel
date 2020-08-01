@@ -70,6 +70,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                     self.progBar.setValue(treeWidgetItemCounter)
                     studyBranch.setText(0, "Study - {}".format(studyID))
                     studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                    #uncomment next 2 lines of code to put a checkbox in front of this branch
+                    #studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
+                    #studyBranch.setCheckState(0, Qt.Unchecked)
                     studyBranch.setExpanded(True)
                     for series in study:
                         seriesID = series.attrib['id']
@@ -80,6 +83,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                         #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
                         seriesBranch.setText(0, "Series - {}".format(seriesID))
                         seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                        #put a checkbox in front of this branch
+                        seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
+                        seriesBranch.setCheckState(0, Qt.Unchecked)
                         #Expand this series branch, so that the 3 resizeColumnToContents
                         #commands can work
                        
@@ -98,8 +104,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                             self.progBar.setValue(treeWidgetItemCounter)
                             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                             #Uncomment the next 2 lines to put a checkbox in front of each image
-                            imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            imageLeaf.setCheckState(0, Qt.Unchecked)
+                            #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+                            #imageLeaf.setCheckState(0, Qt.Unchecked)
                             imageLeaf.setText(0, 'Image - ' + imageName)
                             imageLeaf.setText(1, imageDate)
                             imageLeaf.setText(2, imageTime)
@@ -165,13 +171,18 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
                 studyBranch = QTreeWidgetItem(self.treeView)
                 studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
+                #Uncomment the next 2 lines toput a checkbox in front of this branch
+                #studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
+                #studyBranch.setCheckState(0, Qt.Unchecked)
                 studyBranch.setExpanded(True)
                 for series in study:
                     seriesID = series.attrib['id']
                     seriesBranch = QTreeWidgetItem(studyBranch)
                     self.seriesBranchList.append(seriesBranch)
                     seriesBranch.setText(0, "Series - {}".format(seriesID))
+                     #Uncomment the next 2 lines toput a checkbox in front of this branch
                     seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
+                    seriesBranch.setCheckState(0, Qt.Unchecked)
                     seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                     seriesBranch.setExpanded(True)
                     for image in series:
@@ -182,8 +193,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
                         imagePath = image.find('name').text
                         imageLeaf = QTreeWidgetItem(seriesBranch)
                         imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                        imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                        #Uncomment the next line to put a checkbox in front of each image
+                        #Uncomment the next 2 lines to put a checkbox in front of each image
+                        #imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
                         #imageLeaf.setCheckState(0, Qt.Unchecked)
                         imageLeaf.setText(0, ' Image - ' +imageName)
                         imageLeaf.setText(1, imageDate)
@@ -287,6 +298,7 @@ def onTreeViewItemClicked(self, item):
     DICOM image data: study ID, Series ID, Image name, image file path"""
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
+        print(returnListSelectedSeries(self))
         selectedText = item.text(0)
         if 'study' in selectedText.lower():
             studyID = selectedText.replace('Study -', '').strip()
@@ -318,3 +330,26 @@ def onTreeViewItemClicked(self, item):
     except Exception as e:
             print('Error in TreeView.onTreeViewItemClicked: ' + str(e))
             logger.error('Error in TreeView.onTreeViewItemClicked: ' + str(e))
+
+
+def returnListSelectedSeries(self):
+    """This function generates and returns a list of selected series."""
+    logger.info("TreeView.returnListSelectedSeries called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        studyCount = root.childCount()
+        selectedSeriesList = list()
+        for i in range(studyCount):
+            study = root.child(i)
+            seriesCount = study.childCount()
+            for n in range(seriesCount):
+                series = study.child(n)
+                if series.checkState(0) == Qt.Checked:
+                    selectedSeriesList.append(series.text(0).replace('Series -', '').strip())
+
+        return selectedSeriesList
+        
+   
+    except Exception as e:
+            print('Error in TreeView.returnListSelectedSeries: ' + str(e))
+            logger.error('Error in TreeView.returnListSelectedSeries: ' + str(e))
