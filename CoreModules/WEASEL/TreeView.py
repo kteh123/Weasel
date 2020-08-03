@@ -298,6 +298,8 @@ def onTreeViewItemClicked(self, item):
     DICOM image data: study ID, Series ID, Image name, image file path"""
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
+        #test for returning dictionary of studyIDs:seriesIDs
+        print(returnSelectedSeries(self))
         selectedText = item.text(0)
         if 'study' in selectedText.lower():
             studyID = selectedText.replace('Study -', '').strip()
@@ -331,24 +333,24 @@ def onTreeViewItemClicked(self, item):
             logger.error('Error in TreeView.onTreeViewItemClicked: ' + str(e))
 
 
-def returnListSelectedSeries(self):
+def returnSelectedSeries(self):
     """This function generates and returns a list of selected series."""
-    logger.info("TreeView.returnListSelectedSeries called")
+    logger.info("TreeView.returnSelectedSeries called")
     try:
         root = self.treeView.invisibleRootItem()
         studyCount = root.childCount()
-        selectedSeriesList = list()
+        selectedSeriesDict = {}
         for i in range(studyCount):
             study = root.child(i)
+            studyID = study.text(0).replace('Study -', '').strip()
             seriesCount = study.childCount()
+            selectedSeriesDict[studyID] = []
             for n in range(seriesCount):
                 series = study.child(n)
                 if series.checkState(0) == Qt.Checked:
-                    selectedSeriesList.append(series.text(0).replace('Series -', '').strip())
+                    selectedSeriesDict[studyID].append(series.text(0).replace('Series -', '').strip())
 
-        return selectedSeriesList
-        
-   
+        return selectedSeriesDict
     except Exception as e:
-            print('Error in TreeView.returnListSelectedSeries: ' + str(e))
-            logger.error('Error in TreeView.returnListSelectedSeries: ' + str(e))
+            print('Error in TreeView.returnSelectedSeries: ' + str(e))
+            logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
