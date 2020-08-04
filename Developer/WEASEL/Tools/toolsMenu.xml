@@ -24,7 +24,7 @@
     <function>processPipeline2D</function>
   </tool>
   <tool>
-    <action>Square Developer (Pipeline3D)</action>
+    <action>Square Developer (Pipeline3D/GroupWise)</action>
     <shortcut>Ctrl+S+3</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
     <applies_both_images_series>False</applies_both_images_series>
@@ -32,12 +32,20 @@
     <function>processPipeline3D</function>
   </tool>
   <tool>
-    <action>Gaussian Filter</action>
+    <action>Gaussian Filter Developer (GroupWise)</action>
     <shortcut>Ctrl+F+3</shortcut>
     <tooltip>gaussian</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
+    <applies_both_images_series>False</applies_both_images_series>
     <module>gaussianFilterDICOM_Image_Developer</module>
-    <function>processPipeline3D</function>
+    <function>GroupWise</function>
+  </tool>
+  <tool>
+    <action>Edit DICOM Tag Developer</action>
+    <shortcut>Ctrl+D</shortcut>
+    <tooltip>Choose DICOM header and change the selected files</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
+    <module>editDICOM_Image_Developer</module>
+    <function>editDICOM</function>
   </tool>
   <tool>
     <action>Threshold</action>
