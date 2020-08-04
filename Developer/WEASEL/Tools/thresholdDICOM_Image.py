@@ -15,7 +15,7 @@ def returnPixelArray(imagePath, *args):
     try:
         if os.path.exists(imagePath):
             pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-            derivedImage = thresholdPixelArray(pixelArray, args[0], args[1])
+            derivedImage = thresholdPixelArray(pixelArray, *args)
             return derivedImage
         else:
             return None
@@ -27,13 +27,12 @@ def saveImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
-        inputDlg = inputDialog.ParameterInputDialog("Lower Threshold", "Upper Threshold")
+        paramDict = {"lower Threshold":"integer", "upper Threshold":"integer"}
+        inputDlg = inputDialog.ParameterInputDialog(paramDict)
         listParams = inputDlg.returnListParameterValues()
-        lowerThreshold = listParams[0]
-        upperThreshold = listParams[1]
         if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
-            pixelArray = returnPixelArray(imagePath, lowerThreshold, upperThreshold)
+            pixelArray = returnPixelArray(imagePath, *listParams)
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
             # Save the DICOM file in the new file path                                        

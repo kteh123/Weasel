@@ -299,7 +299,7 @@ def onTreeViewItemClicked(self, item):
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
         #test for returning dictionary of studyIDs:seriesIDs
-        print(returnSelectedSeries(self))
+        #print(returnSelectedSeries(self))
         selectedText = item.text(0)
         if 'study' in selectedText.lower():
             studyID = selectedText.replace('Study -', '').strip()
@@ -342,12 +342,12 @@ def returnSelectedSeries(self):
         selectedSeriesDict = {}
         for i in range(studyCount):
             study = root.child(i)
-            studyID = study.text(0).replace('Study -', '').strip()
             seriesCount = study.childCount()
             selectedSeriesDict[studyID] = []
             for n in range(seriesCount):
                 series = study.child(n)
                 if series.checkState(0) == Qt.Checked:
+                    studyID = study.text(0).replace('Study -', '').strip()
                     selectedSeriesDict[studyID].append(series.text(0).replace('Series -', '').strip())
 
         return selectedSeriesDict
