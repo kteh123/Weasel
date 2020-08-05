@@ -27,7 +27,7 @@ def saveImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
-        paramDict = {"lower Threshold":"integer", "upper Threshold":"integer"}
+        paramDict = {"lower Threshold":"intege", "upper Threshold":"integer"}
         inputDlg = inputDialog.ParameterInputDialog(paramDict)
         listParams = inputDlg.returnListParameterValues()
         if treeView.isAnImageSelected(objWeasel):

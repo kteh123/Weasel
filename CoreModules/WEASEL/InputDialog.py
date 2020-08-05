@@ -5,6 +5,15 @@ import sys
 import logging
 logger = logging.getLogger(__name__)
 
+# User-defined exceptions
+class Error(Exception):
+   """Base class for other exceptions"""
+   pass
+
+class IncorrectParameterTypeError(Error):
+   """Raised when a parameter type is not 'integer', 'float' or 'string'."""
+   pass
+
 class ParameterInputDialog(QDialog):
 
     #def __init__(self,   *args, title="Input Parameters", integer=True):
@@ -49,6 +58,8 @@ class ParameterInputDialog(QDialog):
             self.listWidget = []
             for  key in paramDict:
                 paramType = paramDict[key].lower()
+                if paramType not in ("integer", "float", "string"):
+                    raise IncorrectParameterTypeError
                 if paramType == "integer":
                     self.input = QSpinBox()
                     self.input.setMaximum(100)
@@ -62,6 +73,16 @@ class ParameterInputDialog(QDialog):
             self.layout.addRow("", self.buttonBox)
             self.setLayout(self.layout)
             self.exec_()
+        except IncorrectParameterTypeError:
+            str1 = 'Cannot procede because the parameter type for an input field '
+            str2 = 'in the parameter input dialog is incorrect. ' 
+            str3 = chr(34) + paramType + chr(34)+  ' was used. '
+            str4 = 'Permitted types are' + chr(34) + 'integer,' + chr(34) + 'float' + chr(34) 
+            str5 = ' and ' + chr(34) + 'string' + chr(34) + ' input as strings.'
+            warningString =  str1 + str2 + str3 + str4 + str5
+            print(warningString)
+            logger.info('InputDialog - ' + warningString)
+            QMessageBox().critical( self,  "Parameter Input Dialog", warningString, QMessageBox.Ok)
         except Exception as e:
             print('Error in class ParameterInputDialog.__init__: ' + str(e))
             logger.error('Error in class ParameterInputDialog.__init__: ' + str(e)) 
