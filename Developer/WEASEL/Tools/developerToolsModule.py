@@ -7,15 +7,6 @@ import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
-#***************************************************************************
-#Added by third party developer to the template module. 
-#The function containing the image processing algorithm must be given the 
-#generic name, funcAlgorithm
-#uncomment and edit the following line of code to import the function 
-#containing your image processing algorith. 
-#from CoreModules.WEASEL.someModule import someFunction as funcAlgorithm
-FILE_SUFFIX = '_SomeSuffix'
-#***************************************************************************
 
 def getStudyID(objWeasel):
     return objWeasel.selectedStudy
@@ -58,6 +49,13 @@ def showProcessingMessageBox(objWeasel):
     messageWindow.displayMessageSubWindow(objWeasel,
         "<H4>Running the selected algorithm...</H4>",
         "Processing algorithm")
+
+
+def editDICOMTag(inputPath, dicomTag, newValue):
+    try:
+        saveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
+    except Exception as e:
+        print('Error in function #.editDICOMTag: ' + str(e))
 
 
 def getPixelArrayFromDICOM(inputPath):
@@ -194,7 +192,7 @@ def overwriteDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedIma
 
 
 ####################################################################################
-
+FILE_SUFFIX = '_SomeSuffix'
 
 def pipelineImage(objWeasel, func, *args):
     """Creates a subwindow that displays either a DICOM image or series of DICOM images

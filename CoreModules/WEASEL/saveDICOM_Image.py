@@ -142,7 +142,7 @@ def mergeDicomIntoOneSeries(imagePathList, series_uid=None, series_id=None, seri
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
     try:
-        if isinstance(imagePath, list()):
+        if isinstance(imagePath, list):
             datasetList = readDICOM_Image.getSeriesDicomDataset(imagePath)
             for index, dataset in enumerate(datasetList):
                 if isinstance(dicomTag, str):
