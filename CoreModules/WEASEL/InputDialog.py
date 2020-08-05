@@ -42,7 +42,7 @@ class ParameterInputDialog(QDialog):
     #    self.setLayout(self.layout)
     #    self.exec_()
 
-    def __init__(self,   paramDict, title="Input Parameters"):
+    def __init__(self,   paramDict, title="Input Parameters", helpText=None):
         try:
             super(ParameterInputDialog, self).__init__()
         
@@ -55,6 +55,10 @@ class ParameterInputDialog(QDialog):
             self.buttonBox.accepted.connect(self.accept)
             #self.buttonBox.rejected.connect(self.reject)
             self.layout = QFormLayout()
+            if helpText:
+                self.helpTextLbl = QLabel("<H4>" + helpText  +"</H4>")
+                self.helpTextLbl.setWordWrap(True)
+                self.layout.addRow(self.helpTextLbl)
             self.listWidget = []
             for  key in paramDict:
                 paramType = paramDict[key].lower()
