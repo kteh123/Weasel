@@ -38,7 +38,7 @@ def saveImage(objWeasel):
             else:
                 if warning:
                     helpMsg = helpMsg + "<H4><font color=\"red\"> Check input parameter values.</font></H4>"
-                    warning = False
+                    warning = False  #only show this message once
 
         if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
