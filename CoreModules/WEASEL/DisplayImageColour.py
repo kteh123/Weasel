@@ -1,3 +1,10 @@
+"""This module contains functions for the display of a single DICOM image
+or a series of DICOM images in an MDI subwindow that includes functionality
+for the selecting and applying a colour table to the image/image series and
+adjusting the contrast and intensity of the image/image series.  
+It is possible to update the DICOM image/image series with the new 
+colour table, contrast & intensity values."""
+
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QFileDialog,                            
@@ -28,6 +35,7 @@ import CoreModules.WEASEL.MessageWindow  as messageWindow
 import logging
 logger = logging.getLogger(__name__)
 
+#List of colour tables supported by matplotlib
 listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis', 
                             'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
             'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
@@ -45,10 +53,12 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 
 def displayImageSubWindow(self, derivedImagePath=None):
         """
-        Creates a subwindow that displays the DICOM image contained in pixelArray. 
+        Creates a subwindow that displays a single DICOM image. 
         """
         try:
             logger.info("displayImage.displayImageSubWindow called")
+            #self.selectedImagePath is populated when the image in the
+            #tree view is clicked & selected
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
             colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
             imageViewer, layout, lblImageMissing, subWindow = \
@@ -66,6 +76,13 @@ def displayImageSubWindow(self, derivedImagePath=None):
             lblHiddenSeriesID = QLabel()
             lblHiddenSeriesID.hide()
             
+            #Maintain image data in hidden labels on the subwindow.
+            #These values will used when updating an image with a
+            #new colour table & intensity & contrast values. This
+            #is done because several of these windows may be open
+            #at once and the global self.selectedImagePath maybe
+            #points to an image in a window other than the one
+            #the user is working on
             layout.addWidget(lblHiddenSeriesID)
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(lblHiddenImagePath)
@@ -104,6 +121,11 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         Creates a subwindow that displays all the DICOM images in a series. 
         A slider allows the user to navigate  through the images.  A delete
         button allows the user to delete the image they are viewing.
+
+        The user can either update the whole series with a new colour table 
+        and contrast & intensity values  or they can update individual
+        images in the series with a new colour table 
+        and contrast & intensity values.
         """
         try:
             logger.info("displayImage.displayMultiImageSubWindow called")
@@ -119,11 +141,12 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             
             #Study ID & Series ID are stored locally on the
             #sub window in case the user wishes to delete an
-            #image in the series.  They may have several series
-            #open at once, so the selected series on the treeview
+            #image in the series or update an image/image series
+            #with new colour table, contrast & intensity values.
+            #They may have several series open at once,
+            #so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
-
             lblHiddenImagePath = QLabel('')
             lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel(studyName)
@@ -206,6 +229,7 @@ def setUpColourTools(self, layout, imv,
             lblHiddenSeriesID,
             lblHiddenStudyID, spinBoxIntensity, spinBoxContrast,             
             imageSlider = None, showReleaseButton = False):
+    """ """
         try:
             logger.info("displayImageColour.setUpColourTools called")
             groupBoxColour = QGroupBox('Colour Table')
