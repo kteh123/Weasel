@@ -6,6 +6,8 @@ import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
+import CoreModules.WEASEL.InputDialog as inputDialog
+from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 
 
 def getStudyID(objWeasel):
@@ -37,11 +39,11 @@ def setupMessageBox(objWeasel, numImages):
     messageWindow.setMsgWindowProgBarMaxValue(objWeasel, numImages)
 
 
-def showSavingResultsMessageBox(objWeasel):
+def showSavingResultsMessageBox(objWeasel, numImages):
     #messageWindow.hideProgressBar(objWeasel)
     messageWindow.displayMessageSubWindow(objWeasel,
-        "<H4>Saving results into a new DICOM Series</H4>",
-        "Processing DICOM images")
+        "<H4>Saving results into {} DICOM files</H4>".format(numImages),
+        "Saving DICOM images")
 
 
 def showProcessingMessageBox(objWeasel):
@@ -49,6 +51,28 @@ def showProcessingMessageBox(objWeasel):
     messageWindow.displayMessageSubWindow(objWeasel,
         "<H4>Running the selected algorithm...</H4>",
         "Processing algorithm")
+
+
+def inputWindow(paramDict, title="Input Parameters", helpText=""):
+    """Eg. of paramDict (this will need more documentation):
+        paramDict = {"Tag":"string", "Value":"string"}
+        The variable types are int, float and string.
+        The user may add extra validation of the parameters. Read the file
+        thresholdDICOM_Image.py as it contains a good example of validation.
+    """
+    try:
+        inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText)
+        listParams = inputDlg.returnListParameterValues()
+        outputList = []
+        # Sometimes the values parsed could be list or hexadecimals in strings
+        for param in listParams:
+            try:
+                outputList.append(literal_eval(param))
+            except:
+                outputList.append(param)
+        return outputList
+    except Exception as e:
+        print('Error in function #.inputWindow: ' + str(e))
 
 
 def editDICOMTag(inputPath, dicomTag, newValue):
@@ -93,6 +117,8 @@ def applyProcessIterativelyInSeries(objWeasel, inputPathList, suffix, func, *arg
         for imagePath in inputPathList:
             derivedImagePath = setNewFilePath(imagePath, suffix)
             inputImage = getPixelArrayFromDICOM(imagePath)
+            if inputImage is None:
+                continue
             if args:
                 derivedImage = applyProcessInOneImage(func, inputImage, *args)
             else:
@@ -136,8 +162,8 @@ def prepareBulkSeriesSave(objWeasel, inputPathList, derivedImage, suffix):
 
 def saveNewDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix):
     try:
-        showSavingResultsMessageBox(objWeasel)
         if treeView.isAnImageSelected(objWeasel):
+            showSavingResultsMessageBox(objWeasel, 1)
             # Save new DICOM file locally                                    
             saveDICOM_Image.saveDicomOutputResult(derivedPath, inputPath, derivedImage, suffix)
             messageWindow.closeMessageSubWindow(objWeasel)
@@ -147,7 +173,10 @@ def saveNewDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage
             # Display image in a new subwindow
             displayImageColour.displayImageSubWindow(objWeasel, derivedPath)
         elif treeView.isASeriesSelected(objWeasel):
+            showSavingResultsMessageBox(objWeasel, len(derivedPath))
             # Save new DICOM series locally
+            if len(derivedPath) > len(inputPath):
+                inputPath = inputPath[:len(derivedPath)]
             saveDICOM_Image.saveDicomNewSeries(derivedPath, inputPath, derivedImage, suffix)
             messageWindow.closeMessageSubWindow(objWeasel)
             # Insert new series into the DICOM XML file
@@ -163,29 +192,27 @@ def saveNewDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage
         print('Error in function #.saveNewDICOMAndDisplayResult: ' + str(e))
     
 
-def overwriteDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage, suffix):
+def overwriteDICOMAndDisplayResult(objWeasel, inputPath, derivedImage):
+    """MAYBE USE IMAGE INSTEAD OF DICOM IN FUNCTION TITLE
+       ALSO NEED TO WRITE A FUNCTION TO OVERWRITE AN IMAGE ON CURRENT DICOM (IT INVOLVES SLOPE, INTERCEPT, ETC.)
+    """
     try:
-        showSavingResultsMessageBox(objWeasel)
-        #if treeView.isAnImageSelected(objWeasel):
-            # Save new DICOM file locally                                    
-            # saveDICOM_Image.saveDicomOutputResult(derivedPath, inputPath, derivedImage, suffix)
-            # Record derived image in XML file
-            # newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
-                                         #derivedPath, suffix)
+        if treeView.isAnImageSelected(objWeasel):
+            showSavingResultsMessageBox(objWeasel, 1)
+            # Overwrite image in DICOM file                                   
+            # saveDICOM_Image.overwriteDicomFileTag(inputPath, "PixelData", derivedImage.tobytes())
+            saveDICOM_Image.saveDicomOutputResult(inputPath, inputPath, derivedImage, '')
             # Display image in a new subwindow
-            #displayImageColour.displayImageSubWindow(objWeasel, derivedPath)
-        #elif treeView.isASeriesSelected(objWeasel):
-            # Save new DICOM series locally
-            # saveDICOM_Image.saveDicomNewSeries(derivedPath, inputPath, derivedImage, suffix)
-            # Insert new series into the DICOM XML file
-            # newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
-                            #inputPath, derivedPath, suffix)
+            displayImageColour.displayImageSubWindow(objWeasel, inputPath)
+        elif treeView.isASeriesSelected(objWeasel):
+            showSavingResultsMessageBox(objWeasel, len(inputPath))
+            # Overwrite image in  multiple DICOM file
+            saveDICOM_Image.saveDicomNewSeries(inputPath, inputPath, derivedImage, '')
+            studyID = getStudyID(objWeasel)
+            seriesID = getSeriesID(objWeasel)
             #Display series of images in a subwindow
-            # studyID = getStudyID(objWeasel)
-            #displayImageColour.displayMultiImageSubWindow(objWeasel,
-                #derivedPath, studyID, newSeriesID)
-        #Refresh the tree view so to include the new series
-        # treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+            displayImageColour.displayMultiImageSubWindow(objWeasel,
+                inputPath, studyID, seriesID)
         messageWindow.closeMessageSubWindow(objWeasel)
     except Exception as e:
         print('Error in function #.overwriteDICOMAndDisplayResult: ' + str(e))
