@@ -229,7 +229,11 @@ def setUpColourTools(self, layout, imv,
             lblHiddenSeriesID,
             lblHiddenStudyID, spinBoxIntensity, spinBoxContrast,             
             imageSlider = None, showReleaseButton = False):
-    """ """
+        """
+            Generates the widgets associated with the display of a 
+            dropdown list containing colour tables
+            and spin boxes for setting the contrast and intensity.
+        """
         try:
             logger.info("displayImageColour.setUpColourTools called")
             groupBoxColour = QGroupBox('Colour Table')
@@ -240,6 +244,7 @@ def setUpColourTools(self, layout, imv,
             groupBoxLevels.setLayout(levelsLayout)
             layout.addWidget(groupBoxColour)
 
+            #When this checkbox is checked, the 
             chkApply = QCheckBox("Apply Selection to whole series")
             chkApply.stateChanged.connect(lambda:applyColourTableAndLevelsToSeries(self, imv, 
                                                                                         cmbColours, 
@@ -254,28 +259,28 @@ def setUpColourTools(self, layout, imv,
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
             cmbColours.currentIndexChanged.connect(lambda:
-                      applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkApply))
+                        applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkApply))
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table')
 
             if imageOnlySelected:
                 #only a single image is being viewed
-                 btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
-                                          (self, 
-                                           spinBoxIntensity, spinBoxContrast,
-                                           lblHiddenImagePath.text(),
-                                                 lblHiddenSeriesID.text(),
-                                                 lblHiddenStudyID.text(),
-                                                 cmbColours.currentText(),
-                                                 lut=None))
+                    btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
+                                            (self, 
+                                            spinBoxIntensity, spinBoxContrast,
+                                            lblHiddenImagePath.text(),
+                                                    lblHiddenSeriesID.text(),
+                                                    lblHiddenStudyID.text(),
+                                                    cmbColours.currentText(),
+                                                    lut=None))
             else:
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
-                                                             lblHiddenSeriesID,
-                                                             lblHiddenStudyID,
-                                                             cmbColours,
-                                                                  spinBoxIntensity, 
-                                                                  spinBoxContrast))
+                                                                lblHiddenSeriesID,
+                                                                lblHiddenStudyID,
+                                                                cmbColours,
+                                                                    spinBoxIntensity, 
+                                                                    spinBoxContrast))
             
   
             btnExport = QPushButton('Export') 
@@ -322,7 +327,7 @@ def setUpColourTools(self, layout, imv,
                 gridLayoutColour.addWidget(btnExport,1,2)
                 gridLayoutColour.addWidget(groupBoxLevels, 2, 0, 1, 3)
                 cmbColours.activated.connect(lambda:
-                      updateUserSelectedColourTable(self, cmbColours, chkApply, spinBoxIntensity, spinBoxContrast))
+                        updateUserSelectedColourTable(self, cmbColours, chkApply, spinBoxIntensity, spinBoxContrast))
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
