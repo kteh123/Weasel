@@ -59,17 +59,21 @@ def displayImageSubWindow(self, derivedImagePath=None):
             logger.info("displayImage.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
-            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-            colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+            
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
             if derivedImagePath:
-                lblHiddenImagePath = QLabel(derivedImagePath)
+                imagePathForDisplay = derivedImagePath
             else:
-                lblHiddenImagePath = QLabel(self.selectedImagePath)
+                imagePathForDisplay = self.selectedImagePath
+            
+            lblHiddenImagePath = QLabel(imagePathForDisplay)
+            pixelArray = readDICOM_Image.returnPixelArray(imagePathForDisplay)
+            colourTable, lut = readDICOM_Image.getColourmap(imagePathForDisplay)
+
             lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel()
             lblHiddenStudyID.hide()

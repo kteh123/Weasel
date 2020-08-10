@@ -36,12 +36,16 @@ def saveImage(objWeasel, fileSuffix, funcAlgorithm):
             pixelArray = returnPixelArray(imagePath, funcAlgorithm)
             
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, fileSuffix)
-            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+           
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, fileSuffix)
             #Record squared image in XML file
             seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
                                          derivedImageFileName, fileSuffix)
+
+            #Display the image in a subwindow
+            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
 
