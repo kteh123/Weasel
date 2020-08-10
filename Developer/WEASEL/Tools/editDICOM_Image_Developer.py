@@ -1,17 +1,19 @@
 import Developer.WEASEL.Tools.developerToolsModule as tool
-import Developer.WEASEL.Tools.ViewMetaData as ViewMetaData
-# from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
+import Developer.WEASEL.Tools.ViewMetaData as viewMetaData
 
 def editDICOM(objWeasel):
-    tool.showProcessingMessageBox(objWeasel)
     # tag = "ImageType"
     # value = "[DERIVED, JOAO_TYPE]"
-    # literal_eval(value)
-    tag = "0x00100010" # (0010, 0010) or PatientName
-    value = "JoaoSousaTest"
+    # tag = "0x00100010" # (0010, 0010) or PatientName
+    # value = "Anonymous"
+    inputDict = {"DICOM Tag":"string", "Value":"string"}
+    helpMsg = 'The DICOM Tag can be inserted in string or hexadecimal format.\nExample:\n'\
+              '(0010,0010) => type PatientName or 0x00100010'
+    paramList = tool.inputWindow(inputDict, title="Insert DICOM Tag element to change and its new value", helpText=helpMsg)
+    tag = paramList[0]
+    value = paramList[1]
+    tool.showProcessingMessageBox(objWeasel)
     imagePath = tool.getImagePathList(objWeasel)
     tool.editDICOMTag(imagePath, tag, value)
     tool.messageWindow.closeMessageSubWindow(objWeasel)
-    # For some reason, the line below is not working and it makes Weasel crash
-    # The following line should display the metadata of the updated/overwritten data
-    # ViewMetaData.viewMetaData(objWeasel)
+    viewMetaData.viewMetadata(objWeasel)

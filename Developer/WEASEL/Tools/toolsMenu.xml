@@ -56,6 +56,14 @@
     <function>saveImage</function>
   </tool>
   <tool>
+    <action>Threshold Developer (SlicebySlice)</action>
+    <shortcut>Ctrl+L</shortcut>
+    <tooltip>Threshold a DICOM Image or series</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
+    <module>thresholdDICOM_Image_Developer</module>
+    <function>SliceBySlice</function>
+  </tool>
+  <tool>
     <action>B0 Map Calculation</action>
     <shortcut>Ctrl+0</shortcut>
     <tooltip>Extracts the B0 Map from the series if applicable</tooltip>

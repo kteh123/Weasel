@@ -29,5 +29,4 @@ def processPipeline3D(objWeasel):
         pixelArray = tool.getPixelArrayFromDICOM(imagePathList)
         derivedImage = tool.applyProcessInOneImage(squareAlgorithm, pixelArray)
         derivedImagePathList, derivedImageList = tool.prepareBulkSeriesSave(objWeasel, imagePathList, derivedImage, FILE_SUFFIX)
-        imagePathList = imagePathList[:len(derivedImagePathList)]
         tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
