@@ -56,7 +56,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
         Creates a subwindow that displays a single DICOM image. 
         """
         try:
-            logger.info("displayImage.displayImageSubWindow called")
+            logger.info("DisplayImageColour.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
             
@@ -115,8 +115,8 @@ def displayImageSubWindow(self, derivedImagePath=None):
                                     imv, colourTable,
                                     cmbColours, lut)  
         except Exception as e:
-            print('Error in displayImage.displayImageSubWindow: ' + str(e))
-            logger.error('Error in  displayImage.displayImageSubWindow: ' + str(e)) 
+            print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
+            logger.error('Error in  DisplayImageColour.displayImageSubWindow: ' + str(e)) 
 
 
 def displayMultiImageSubWindow(self, imageList, studyName, 
@@ -132,7 +132,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         and contrast & intensity values.
         """
         try:
-            logger.info("displayImage.displayMultiImageSubWindow called")
+            logger.info("DisplayImageColour.displayMultiImageSubWindow called")
             self.overRideSavedColourmapAndLevels = False
             self.applyUserSelection = False
             imageViewer, layout, lblImageMissing, subWindow = \
@@ -179,7 +179,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             cmbColours = setUpColourTools(self, layout, imv, False,  
                                                lblHiddenImagePath, lblHiddenSeriesID, lblHiddenStudyID, 
                                                spinBoxIntensity, spinBoxContrast,
-                                               imageSlider, showReleaseButton=True)
+                                               imageSlider, showResetButton=True)
 
             imageSlider.setMinimum(1)
             imageSlider.setMaximum(len(imageList))
@@ -223,39 +223,42 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                       imageSlider.value()))
            
         except Exception as e:
-            print('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
-            logger.error('Error in displayImage.displayMultiImageSubWindow: ' + str(e))
+            print('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))
+            logger.error('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))
 
 
 def setUpColourTools(self, layout, imv,
-            imageOnlySelected,
+            singleImageSelected,
             lblHiddenImagePath,
             lblHiddenSeriesID,
             lblHiddenStudyID, spinBoxIntensity, spinBoxContrast,             
-            imageSlider = None, showReleaseButton = False):
+            imageSlider = None, showResetButton = False):
         """
-            Generates the widgets associated with the display of a 
+            Generates widgets for the display of a 
             dropdown list containing colour tables
-            and spin boxes for setting the contrast and intensity.
+            and spin boxes for setting image contrast and intensity.
         """
         try:
             logger.info("displayImageColour.setUpColourTools called")
             groupBoxColour = QGroupBox('Colour Table')
             groupBoxLevels = QGroupBox('Levels')
+            #gridLayoutColour will later be added to groupBoxLevels
             gridLayoutColour = QGridLayout()
-            levelsLayout = QGridLayout()
+            gridLayoutLevels = QGridLayout()
+            #add grid layouts to the group boxes
             groupBoxColour.setLayout(gridLayoutColour)
-            groupBoxLevels.setLayout(levelsLayout)
+            groupBoxLevels.setLayout(gridLayoutLevels)
             layout.addWidget(groupBoxColour)
 
-            #When this checkbox is checked, the 
+            #When this checkbox is checked, the selected colour table, 
+            #contrast and intensity levels are added to the whole series
             chkApply = QCheckBox("Apply Selection to whole series")
             chkApply.stateChanged.connect(lambda:applyColourTableAndLevelsToSeries(self, imv, 
                                                                                         cmbColours, 
-                                                                                        chkApply))
+                                                                                       chkApply))
             chkApply.setToolTip(
                     "Tick to apply colour table and levels selected by the user to the whole series")
-
+       
             cmbColours = QComboBox()
             cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.blockSignals(True)
@@ -266,10 +269,10 @@ def setUpColourTools(self, layout, imv,
                         applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkApply))
 
             btnUpdate = QPushButton('Update') 
-            btnUpdate.setToolTip('Update DICOM with the new colour table')
-
-            if imageOnlySelected:
-                #only a single image is being viewed
+            btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
+            #For the update button, connect signal to slot
+            if singleImageSelected:
+                #Viewing and potentially updating a single DICOM images
                     btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
                                             (self, 
                                             spinBoxIntensity, spinBoxContrast,
@@ -279,6 +282,7 @@ def setUpColourTools(self, layout, imv,
                                                     cmbColours.currentText(),
                                                     lut=None))
             else:
+                #Viewing and potentially updating a series of DICOM images
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
                                                                 lblHiddenSeriesID,
                                                                 lblHiddenStudyID,
@@ -303,28 +307,31 @@ def setUpColourTools(self, layout, imv,
             spinBoxContrast.setMaximum(1000000000.00)
             spinBoxIntensity.setWrapping(True)
             spinBoxContrast.setWrapping(True)
+            spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(self,
+            imv,spinBoxIntensity, spinBoxContrast))
+            spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(self,
+            imv,spinBoxIntensity, spinBoxContrast))
+            
+            if not singleImageSelected: #series selected
+                spinBoxIntensity.valueChanged.connect(lambda: updateUserSelectionList(self,
+                chkApply,spinBoxIntensity, spinBoxContrast))
+                spinBoxContrast.valueChanged.connect(lambda: updateUserSelectionList(self,
+                chkApply,spinBoxIntensity, spinBoxContrast))
 
-            if imageOnlySelected:
-                spinBoxIntensity.valueChanged.connect(lambda: changeSpinBoxLevels(self,
-                imv,spinBoxIntensity, spinBoxContrast))
-                spinBoxContrast.valueChanged.connect(lambda: changeSpinBoxLevels(self,
-                imv,spinBoxIntensity, spinBoxContrast))
-            else:
-                spinBoxIntensity.valueChanged.connect(lambda: changeSpinBoxLevels(self,
-                    imv,spinBoxIntensity, spinBoxContrast, chkApply))
-                spinBoxContrast.valueChanged.connect(lambda: changeSpinBoxLevels(self,
-                    imv,spinBoxIntensity, spinBoxContrast, chkApply ))
-
-            levelsLayout.addWidget(lblIntensity, 0,0)
-            levelsLayout.addWidget(spinBoxIntensity, 0, 1)
-            levelsLayout.addWidget(lblContrast, 0,2)
-            levelsLayout.addWidget(spinBoxContrast, 0,3)
+            gridLayoutLevels.addWidget(lblIntensity, 0,0)
+            gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
+            gridLayoutLevels.addWidget(lblContrast, 0,2)
+            gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
             gridLayoutColour.addWidget(cmbColours,0,0)
 
-            if showReleaseButton:
+            if showResetButton:
+                #Viewing a DICOM series, so show the Reset button
+                #and Apply to Series checkbox
                 gridLayoutColour.addWidget(chkApply,0,1)
                 btnReset = QPushButton('Reset') 
                 btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
+                #Clicking Reset button deletes user selected colour table and contrast 
+                #and intensity levelts and returns images to values in the original DICOM file.
                 btnReset.clicked.connect(lambda: clearUserSelection(self, imageSlider))
                 gridLayoutColour.addWidget(btnReset,0,2)
                 gridLayoutColour.addWidget(btnUpdate,1,1)
@@ -349,7 +356,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                           imv, colourTable, cmbColours, lut=None,
                           multiImage=False, deleteButton=None):
         try:
-            logger.info("displayImage.displayPixelArray called")
+            logger.info("DisplayImageColour.displayPixelArray called")
             if deleteButton is None:
                 #create dummy button to prevent runtime error
                 deleteButton = QPushButton()
@@ -432,16 +439,13 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 if multiImage:
                     deleteButton.show()
         except Exception as e:
-            print('Error in displayImage.displayPixelArray: ' + str(e))
-            logger.error('Error in displayImage.displayPixelArray: ' + str(e))
+            print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
+            logger.error('Error in DisplayImageColour.displayPixelArray: ' + str(e))
 
 
 def blockHistogramSignals(imgView, block):
         histogramObject = imgView.getHistogramWidget().getHistogram()
         histogramObject.blockSignals(block)
-
-
-
 
 
 def imageSliderMoved(self, seriesName, imageList, imageNumber,
@@ -454,7 +458,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
         try:
-            logger.info("displayImage.imageSliderMoved called")
+            logger.info("DisplayImageColour.imageSliderMoved called")
             #imageNumber = self.imageSlider.value()
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
@@ -487,8 +491,8 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                          + os.path.basename(self.selectedImagePath))
                # print("imageSliderMoved after={}".format(self.selectedImagePath))
         except Exception as e:
-            print('Error in displayImage.imageSliderMoved: ' + str(e))
-            logger.error('Error in displayImage.imageSliderMoved: ' + str(e))
+            print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
+            logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
 
 
 def deleteImageInMultiImageViewer(self, currentImagePath, 
@@ -558,8 +562,8 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(self)
     except Exception as e:
-        print('Error in displayImage.deleteImageInMultiImageViewer: ' + str(e))
-        logger.error('Error in displayImage.deleteImageInMultiImageViewer: ' + str(e))
+        print('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
+        logger.error('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
 
 
 def exportImage(self, imv, cmbColours):
@@ -641,7 +645,35 @@ def clearUserSelection(self, imageSlider):
         imageSlider.setValue(imageNumber)
                     
 
-def changeSpinBoxLevels(self, imv, spinBoxIntensity, spinBoxContrast, chkBox=None):
+def updateUserSelectionList(self, chkBox, spinBoxIntensity, spinBoxContrast):
+    """This function associates new intensity and contrast values with a
+        particular image in the series of images.
+    """
+    try:
+        if chkBox.isChecked() == False:
+            self.applyUserSelection = True
+        
+            if self.selectedImagePath:
+                self.selectedImageName = os.path.basename(self.selectedImagePath)
+            else:
+                #Workaround for the fact that when the first image is displayed,
+                #somehow self.selectedImageName looses its value.
+                self.selectedImageName = os.path.basename(self.imageList[0])
+                
+            for imageNumber, image in enumerate(self.userSelectionList):
+                if image[0] == self.selectedImageName:
+                    #Associate the levels with the image being viewed
+                    self.userSelectionList[imageNumber][2] = spinBoxIntensity.value()
+                    self.userSelectionList[imageNumber][3] = spinBoxContrast.value()
+                    break
+    except Exception as e:
+        print('Error in DisplayImageColour.updateUserSelectionList: ' + str(e))
+        logger.error('Error in DisplayImageColour.updateUserSelectionList: ' + str(e))
+
+
+def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
+    """When the contrast and intensity values are adjusted using the spinboxes, 
+    this function sets the corresponding values in the image being viewed. """
     try:
         centre = spinBoxIntensity.value()
         width = spinBoxContrast.value()
@@ -652,27 +684,10 @@ def changeSpinBoxLevels(self, imv, spinBoxIntensity, spinBoxContrast, chkBox=Non
         #print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
         imv.setLevels(minLevel, maxLevel)
         imv.show()
-
-        if chkBox:
-            if chkBox.isChecked() == False:
-                self.applyUserSelection = True
-            
-                if self.selectedImagePath:
-                    self.selectedImageName = os.path.basename(self.selectedImagePath)
-                else:
-                    #Workaround for the fact that when the first image is displayed,
-                    #somehow self.selectedImageName looses its value.
-                    self.selectedImageName = os.path.basename(self.imageList[0])
-                    
-                for imageNumber, image in enumerate(self.userSelectionList):
-                    if image[0] == self.selectedImageName:
-                        #Associate the levels with the image being viewed
-                        self.userSelectionList[imageNumber][2] =  centre
-                        self.userSelectionList[imageNumber][3] =  width
-                        break
+ 
     except Exception as e:
-        print('Error in DisplayImageColour.changeSpinBoxLevels: ' + str(e))
-        logger.error('Error in DisplayImageColour.changeSpinBoxLevels: ' + str(e))
+        print('Error in DisplayImageColour.updateImageLevels: ' + str(e))
+        logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
         
 def updateUserSelectedColourTable(self, cmbColours, chkBox, spinBoxIntensity, spinBoxContrast):

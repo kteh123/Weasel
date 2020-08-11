@@ -43,7 +43,7 @@ def saveImage(objWeasel, fileSuffix, funcAlgorithm):
             seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
                                          derivedImageFileName, fileSuffix)
 
-            #Display the image in a subwindow
+            #Display the derived image in a subwindow
             displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
 
             #Update tree view with xml file modified above
