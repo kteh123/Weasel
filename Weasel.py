@@ -60,8 +60,9 @@ class Weasel(QMainWindow):
         self.selectedStudy = ''
         self.selectedSeries = ''
         self.selectedImageName = ''
-        self.overRideSavedColourmapAndLevels = False #Set to True if the user checks the Apply Selection tick box
-        self.applyUserSelection = False
+        #The following boolean is set to True if the user checks the Apply Selection tick box
+        self.overRideSeriesSavedColourmapAndLevels = False 
+        self.applyUserSelectionToAnImage = False
         self.userSelectionList = []
         
          # XML reader object to process XML configuration file

@@ -133,8 +133,8 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
-            self.overRideSavedColourmapAndLevels = False
-            self.applyUserSelection = False
+            self.overRideSeriesSavedColourmapAndLevels = False
+            self.applyUserSelectionToAnImage = False
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
 
@@ -253,7 +253,7 @@ def setUpColourTools(self, layout, imv,
             #When this checkbox is checked, the selected colour table, 
             #contrast and intensity levels are added to the whole series
             chkApply = QCheckBox("Apply Selection to whole series")
-            chkApply.stateChanged.connect(lambda:applyColourTableAndLevelsToSeries(self, imv, 
+            chkApply.stateChanged.connect(lambda:applyColourTableToSeries(self, imv, 
                                                                                         cmbColours, 
                                                                                        chkApply))
             chkApply.setToolTip(
@@ -266,7 +266,7 @@ def setUpColourTools(self, layout, imv,
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
             cmbColours.currentIndexChanged.connect(lambda:
-                        applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkApply))
+                        applyColourTableToSeries(self, imv, cmbColours, chkApply))
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
@@ -355,31 +355,46 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                           spinBoxIntensity, spinBoxContrast,
                           imv, colourTable, cmbColours, lut=None,
                           multiImage=False, deleteButton=None):
+        """Displays the an image's pixel array in a pyqtGraph imageView widget 
+        & sets its colour table, contrast and intensity levels. 
+        Also, sets the contrast and intensity in the associated histogram."""
         try:
             logger.info("DisplayImageColour.displayPixelArray called")
-            if deleteButton is None:
-                #create dummy button to prevent runtime error
+           
+            if multiImage:
+                #only show delete button when viewing a series
+                deleteButton.show()
+            else:
+                #Create dummy button to prevent runtime error
+                #This is the case when viewing a single image
                 deleteButton = QPushButton()
                 deleteButton.hide()
 
             #Check that pixel array holds an image & display it
             if pixelArray is None:
+                #the image is missing, so show a black screen
                 lblImageMissing.show()
-                if multiImage:
-                    deleteButton.hide()
+                deleteButton.hide()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                if self.overRideSavedColourmapAndLevels:
+                if self.overRideSeriesSavedColourmapAndLevels:
+                    #apply selected contrast and intensity values
+                    #for the whole series to this image
                     centre = spinBoxIntensity.value()
                     width = spinBoxContrast.value()
                     minimumValue = centre - (width/2)
                     maximumValue = centre + (width/2)
-                elif self.applyUserSelection:
+                elif self.applyUserSelectionToAnImage:
+                    #try to retrieve saved user selected levels for this image
                     _, centre, width = returnUserSelection(self, currentImageNumber) 
                     if centre != -1:
+                        #saved values exist, so use them
                         minimumValue = centre - (width/2)
                         maximumValue = centre + (width/2)
-                    else:
+                    else:  
+                        # No user selected values exist for this image, 
+                        # so retrieve them from the DICOM image
+                        #Get minimum value
                         try:
                             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                             slope = float(getattr(dataset, 'RescaleSlope', 1))
@@ -392,7 +407,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                             1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
                             centre = spinBoxIntensity.value()
                             width = spinBoxContrast.value()
-       
+                        #Get Maximum value
                         try:
                             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                             slope = float(getattr(dataset, 'RescaleSlope', 1))
@@ -405,7 +420,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                             1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
                             centre = spinBoxIntensity.value()
                             width = spinBoxContrast.value()
-                else:
+                else: #Read levels directly from the DICOM image
                     try:
                         dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
                         slope = float(getattr(dataset, 'RescaleSlope', 1))
@@ -436,8 +451,6 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 imv.getView().scene().sigMouseMoved.connect(
                    lambda pos: displayImageCommon.getPixelValue(pos, imv, pixelArray, lblPixelValue))
 
-                if multiImage:
-                    deleteButton.show()
         except Exception as e:
             print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
             logger.error('Error in DisplayImageColour.displayPixelArray: ' + str(e))
@@ -459,16 +472,15 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         It causes the next image in imageList to be displayed"""
         try:
             logger.info("DisplayImageColour.imageSliderMoved called")
-            #imageNumber = self.imageSlider.value()
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
                 lut = None
-                if self.overRideSavedColourmapAndLevels:
+                if self.overRideSeriesSavedColourmapAndLevels:
                     colourTable = cmbColours.currentText()
-                elif self.applyUserSelection:
+                elif self.applyUserSelectionToAnImage:
                     colourTable, _, _ = returnUserSelection(self, currentImageNumber)  
                     if colourTable == 'default':
                         colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
@@ -489,7 +501,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
-               # print("imageSliderMoved after={}".format(self.selectedImagePath))
+              
         except Exception as e:
             print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
@@ -499,8 +511,8 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
                                       studyID, seriesID,
                                       lastSliderPosition):
     """When the Delete button is clicked on the multi image viewer,
-    this function deletes the physical image and removes the 
-    reference to it in the XML file."""
+    this function deletes the physical image, removes the 
+    reference to it in the XML file and removes it from the image viewer."""
     try:
         logger.info("DisplayImageColour.deleteImageInMultiImageViewer called")
         imageName = os.path.basename(currentImagePath)
@@ -567,13 +579,22 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
 
 
 def exportImage(self, imv, cmbColours):
+    """Function executed when the Export button is clicked.  
+    It exports the DICOM image and its colour table to a png graphics file."""
     try:
         colourTable = cmbColours.currentText()
-        imageName = os.path.basename(self.selectedImagePath) + '.png'
+        #Default file name is derived from the DICOM image name
+        defaultImageName = os.path.basename(self.selectedImagePath) 
+        #remove .dcm extension
+        defaultImageName = os.path.splitext(defaultImageName)[0] + '.png'
+        #Display a save file dialog to get the full file path and name of
+        #where to export the DICOM image & its colour table to a png file
         fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
-                                                    directory=imageName, 
+                                                    directory=defaultImageName, 
                                                     filter="*.png")
         minLevel, maxLevel = imv.getLevels()
+
+        #Test if the user has selected a file name
         if fileName:
             exportImageViaMatplotlib(self, imv.getImageItem().image,
                                             fileName, 
@@ -604,27 +625,32 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxL
         logger.error('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
 
 
-def applyColourTableAndLevelsToSeries(self, imv, cmbColours, chkBox=None): 
-        try:
-            colourTable = cmbColours.currentText()
-            if colourTable == 'custom':
-                colourTable = 'gray'                
-                displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
+def applyColourTableToSeries(self, imv, cmbColours, chkBox=None): 
+    """This function applies a user selected colour map to the current image.
+    If the Apply checkbox is checked then the new colour map is also applied to 
+    the whole series of DICOM images by setting the boolean flag
+    self.overRideSeriesSavedColourmapAndLevels to True.
+    """
+    try:
+        colourTable = cmbColours.currentText().lower()
+        if colourTable == 'custom':
+            colourTable = 'gray'                
+            displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
 
-            displayImageCommon.setPgColourMap(colourTable, imv)
-            if chkBox.isChecked():
-                self.overRideSavedColourmapAndLevels = True
-                self.applyUserSelection = False
-            else:
-                self.overRideSavedColourmapAndLevels = False
+        displayImageCommon.setPgColourMap(colourTable, imv)
+        if chkBox.isChecked():
+            self.overRideSeriesSavedColourmapAndLevels = True
+            self.applyUserSelectionToAnImage = False
+        else:
+            self.overRideSeriesSavedColourmapAndLevels = False
                
-        except Exception as e:
-            print('Error in DisplayImageColour.applyColourTableAndLevelsToSeries: ' + str(e))
-            logger.error('Error in DisplayImageColour.applyColourTableAndLevelsToSeries: ' + str(e))              
+    except Exception as e:
+        print('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))
+        logger.error('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))              
         
 
 def clearUserSelection(self, imageSlider):
-    self.applyUserSelection = False
+    self.applyUserSelectionToAnImage = False
     #reset list of image lists that hold user selected colour table, min and max levels
     for image in self.userSelectionList:
         image[1] = 'default'
@@ -651,7 +677,7 @@ def updateUserSelectionList(self, chkBox, spinBoxIntensity, spinBoxContrast):
     """
     try:
         if chkBox.isChecked() == False:
-            self.applyUserSelection = True
+            self.applyUserSelectionToAnImage = True
         
             if self.selectedImagePath:
                 self.selectedImageName = os.path.basename(self.selectedImagePath)
@@ -692,7 +718,7 @@ def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
         
 def updateUserSelectedColourTable(self, cmbColours, chkBox, spinBoxIntensity, spinBoxContrast):
         if chkBox.isChecked() == False:
-            self.applyUserSelection = True
+            self.applyUserSelectionToAnImage = True
             colourTable = cmbColours.currentText()
             #print(self.userSelectionList)
             if self.selectedImagePath:
@@ -721,7 +747,7 @@ def returnImageNumber(self):
 
 
 def updateUserSelectedLevels(self, spinBoxIntensity, spinBoxContrast):
-        if self.applyUserSelection:
+        if self.applyUserSelectionToAnImage:
             imageNumber = returnImageNumber(self)
             if imageNumber != -1:
                 self.userSelectionList[imageNumber][2] =  spinBoxIntensity.value()
@@ -741,10 +767,10 @@ def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, spinBoxIntensity,
             seriesID = seriesIDLabel.text()
             studyID = studyIDLabel.text()
             colourMap = cmbColours.currentText()
-            if self.overRideSavedColourmapAndLevels:
+            if self.overRideSeriesSavedColourmapAndLevels:
                 levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
                 updateDicomSeriesOneColour(self, seriesID, studyID, colourMap, levels)
-            if self.applyUserSelection:
+            if self.applyUserSelectionToAnImage:
                 updateDicomSeriesManyColours(self, seriesID, studyID, colourMap)
         except Exception as e:
             print('Error in DisplayImageColour.updateDICOM: ' + str(e))
