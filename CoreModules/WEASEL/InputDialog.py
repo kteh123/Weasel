@@ -97,6 +97,10 @@ class ParameterInputDialog(QDialog):
                     self.input.setMaximum(100.00)
                 elif paramType == "string":
                     self.input = QLineEdit()
+                    self.input.setPlaceholderText("Enter your text")
+                    #uncomment to set an input mask
+                    #self.input.setInputMask('000.000.000.000;_')
+
                 self.layout.addRow(key,  self.input)
                 self.listWidget.append(self.input)
             self.layout.addRow("", self.buttonBox)
