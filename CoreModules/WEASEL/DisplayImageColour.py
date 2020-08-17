@@ -52,7 +52,20 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
-#global variables for this module
+#Global variable for this module
+#When several DICOM series of images are open at the the same time 
+#in WEASEL, the user may wish to switch between the various subwindows
+#updating the colour table, intensity and contrast levels of one or more
+#images in each series. This dictionary supports this by linking series 
+#name (key) to a list of sublists, userSelectionList (value), where each sublist 
+#        represents an image thus:
+#            [0] - Image name (used as key to search the list of sublists for a particular image)
+#            [1] - colour table name
+#            [2] - intensity level
+#            [3] - contrast level
+# userSelectionList is initialised with default values in the function displayMultiImageSubWindow
+#The class UserSelection in CoreModules.WEASEL.UserImageColourSelection supplies the functionality
+#to manipulate userSelectionList. 
 userSelectionDict = {}
 
 def displayImageSubWindow(self, derivedImagePath=None):
@@ -721,7 +734,8 @@ def updateUserSelectedLevels(self, chkBox,
             
             global userSelectionDict
             obj = userSelectionDict[seriesName]
-            obj.updateLevels(self.selectedImageName, intensity, contrast)
+            imageNumber = obj.returnImageNumber(self.selectedImageName)
+            obj.updateLevels(imageNumber, intensity, contrast)
     except Exception as e:
         print('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
         logger.error('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
@@ -759,22 +773,17 @@ def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstIma
         if chkBox.isChecked() == False:
             #The apply user selection to whole series checkbox 
             #is not checked
-            
             colourTable = cmbColours.currentText()
-            #print("*******************************************************")
-            #print("In updateUserSelectedColourTable")
-            #print ("series={}, colourTable={}".format(seriesName,colourTable))
             if self.selectedImagePath:
                 self.selectedImageName = os.path.basename(self.selectedImagePath)
             else:
                 #Workaround for the fact that when the first image is displayed,
                 #somehow self.selectedImageName looses its value.
                 self.selectedImageName = os.path.basename(firstImagePath)
-            #print("self.selectedImageName={}".format(self.selectedImageName))
+            
             global userSelectionDict
             obj = userSelectionDict[seriesName]
             imageNumber = obj.returnImageNumber(self.selectedImageName)
-            #print("imageNumber = {}".format(imageNumber))
             if imageNumber != -1:
                 #Associate the selected colour table with the image being viewed
                 obj.updateColourTable(imageNumber, colourTable)
@@ -846,17 +855,12 @@ def updateDicomSeriesImageByImage(self, seriesID, studyID, colourMap, lut=None):
             "Updating DICOM images")
         messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
         imageCounter = 0
-        print("In updateDicomSeriesImageByImage")
-        print("***************************************")
         for imagePath in imagePathList:
             # Apply user selected colour table & levels to individual images in the series
             global userSelectionDict
             obj = userSelectionDict[seriesID]
             selectedColourMap, center, width = obj.returnUserSelection(imageCounter)
-            print(selectedColourMap, center, width)
             if selectedColourMap != 'default' or center != -1 or width != -1:
-                print(imagePath)
-                print("***************************************")
                 # Update an individual DICOM file in the series
                 levels = [center, width]  
                 dataset = readDICOM_Image.getDicomDataset(imagePath)
