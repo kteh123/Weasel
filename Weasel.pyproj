@@ -258,6 +258,9 @@
     <Compile Include="CoreModules\WEASEL\readDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\saveDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\styleSheet.py" />
+    <Compile Include="CoreModules\WEASEL\UserImageColourSelection.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\weaselToolsXMLReader.py" />
     <Compile Include="CoreModules\WEASEL\weaselXMLReader.py">
       <SubType>Code</SubType>

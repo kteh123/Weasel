@@ -32,6 +32,8 @@ import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
+from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -50,6 +52,8 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
+#global variables for this module
+userSelectionDict = {}
 
 def displayImageSubWindow(self, derivedImagePath=None):
         """
@@ -112,7 +116,7 @@ def displayImageSubWindow(self, derivedImagePath=None):
                                     lblImageMissing,
                                     lblPixelValue,
                                     spinBoxIntensity, spinBoxContrast,
-                                    imv, colourTable,
+                                    imv, colourTable, lblHiddenSeriesID.text(),
                                     cmbColours, lut)  
         except Exception as e:
             print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
@@ -133,15 +137,15 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
-            self.overRideSeriesSavedColourmapAndLevels = False
-            self.applyUserSelectionToAnImage = False
             imageViewer, layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
 
             #set up list of lists to hold user selected colour table and level data
-            self.userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
+            userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
                                 for imageName in imageList]
-            
+            #add user selection object to dictionary
+            global userSelectionDict
+            userSelectionDict[seriesName] = UserSelection(userSelectionList)
             
             #Study ID & Series ID are stored locally on the
             #sub window in case the user wishes to delete an
@@ -151,8 +155,9 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             #so the selected series on the treeview
             #may not the same as that from which the image is
             #being deleted.
-            lblHiddenImagePath = QLabel('')
-            lblHiddenImagePath.hide()
+            firstImagePath = imageList[0]
+            lblHiddenImagePath = QLabel(firstImagePath)
+            #lblHiddenImagePath.hide()
             lblHiddenStudyID = QLabel(studyName)
             lblHiddenStudyID.hide()
             lblHiddenSeriesID = QLabel(seriesName)
@@ -254,8 +259,9 @@ def setUpColourTools(self, layout, imv,
             #contrast and intensity levels are added to the whole series
             chkApply = QCheckBox("Apply Selection to whole series")
             chkApply.stateChanged.connect(lambda:applyColourTableToSeries(self, imv, 
-                                                                                        cmbColours, 
-                                                                                       chkApply))
+                                                                         cmbColours, 
+                                                                         lblHiddenSeriesID.text(),
+                                                                         chkApply))
             chkApply.setToolTip(
                     "Tick to apply colour table and levels selected by the user to the whole series")
        
@@ -266,7 +272,7 @@ def setUpColourTools(self, layout, imv,
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
             cmbColours.currentIndexChanged.connect(lambda:
-                        applyColourTableToSeries(self, imv, cmbColours, chkApply))
+                        applyColourTableToSeries(self, imv, cmbColours, lblHiddenSeriesID.text(), chkApply))
 
             btnUpdate = QPushButton('Update') 
             btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
@@ -313,10 +319,10 @@ def setUpColourTools(self, layout, imv,
             imv,spinBoxIntensity, spinBoxContrast))
             
             if not singleImageSelected: #series selected
-                spinBoxIntensity.valueChanged.connect(lambda: updateUserSelectionList(self,
-                chkApply,spinBoxIntensity, spinBoxContrast))
-                spinBoxContrast.valueChanged.connect(lambda: updateUserSelectionList(self,
-                chkApply,spinBoxIntensity, spinBoxContrast))
+                spinBoxIntensity.valueChanged.connect(lambda: updateUserSelectedLevels(self,
+                chkApply,spinBoxIntensity.value(), spinBoxContrast.value(), lblHiddenSeriesID.text()))
+                spinBoxContrast.valueChanged.connect(lambda: updateUserSelectedLevels(self,
+                chkApply,spinBoxIntensity.value(), spinBoxContrast.value(), lblHiddenSeriesID.text()))
 
             gridLayoutLevels.addWidget(lblIntensity, 0,0)
             gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
@@ -332,13 +338,16 @@ def setUpColourTools(self, layout, imv,
                 btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
                 #Clicking Reset button deletes user selected colour table and contrast 
                 #and intensity levelts and returns images to values in the original DICOM file.
-                btnReset.clicked.connect(lambda: clearUserSelection(self, imageSlider))
+                btnReset.clicked.connect(lambda: clearUserSelection(self, imageSlider,
+                                                                   lblHiddenSeriesID.text()))
                 gridLayoutColour.addWidget(btnReset,0,2)
                 gridLayoutColour.addWidget(btnUpdate,1,1)
                 gridLayoutColour.addWidget(btnExport,1,2)
                 gridLayoutColour.addWidget(groupBoxLevels, 2, 0, 1, 3)
                 cmbColours.activated.connect(lambda:
-                        updateUserSelectedColourTable(self, cmbColours, chkApply, spinBoxIntensity, spinBoxContrast))
+                        updateUserSelectedColourTable(self, cmbColours, chkApply, 
+                                                      lblHiddenSeriesID.text(),
+                                                      lblHiddenImagePath.text()))
             else:
                 gridLayoutColour.addWidget(btnUpdate,0,1)
                 gridLayoutColour.addWidget(btnExport,0,2)
@@ -353,14 +362,17 @@ def setUpColourTools(self, layout, imv,
 def displayPixelArray(self, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue,
                           spinBoxIntensity, spinBoxContrast,
-                          imv, colourTable, cmbColours, lut=None,
+                          imv, colourTable, cmbColours, 
+                          seriesID,
+                          lut=None,
                           multiImage=False, deleteButton=None):
         """Displays the an image's pixel array in a pyqtGraph imageView widget 
         & sets its colour table, contrast and intensity levels. 
         Also, sets the contrast and intensity in the associated histogram."""
         try:
             logger.info("DisplayImageColour.displayPixelArray called")
-           
+            global userSelectionDict
+            obj = userSelectionDict[seriesID]
             if multiImage:
                 #only show delete button when viewing a series
                 deleteButton.show()
@@ -377,16 +389,16 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 deleteButton.hide()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                if self.overRideSeriesSavedColourmapAndLevels:
+                if obj.getSeriesUpdateStatus():
                     #apply selected contrast and intensity values
                     #for the whole series to this image
                     centre = spinBoxIntensity.value()
                     width = spinBoxContrast.value()
                     minimumValue = centre - (width/2)
                     maximumValue = centre + (width/2)
-                elif self.applyUserSelectionToAnImage:
+                elif obj.getImageUpdateStatus():
                     #try to retrieve saved user selected levels for this image
-                    _, centre, width = returnUserSelection(self, currentImageNumber) 
+                    _, centre, width = obj.returnUserSelection(currentImageNumber) 
                     if centre != -1:
                         #saved values exist, so use them
                         minimumValue = centre - (width/2)
@@ -457,6 +469,9 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
 
 
 def blockHistogramSignals(imgView, block):
+        """ Toggles (off/on) blocking the signals from the histogram associated with image view imgView. 
+        block - boolean taking values True/False
+        """
         histogramObject = imgView.getHistogramWidget().getHistogram()
         histogramObject.blockSignals(block)
 
@@ -471,6 +486,9 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
         try:
+            global userSelectionDict
+            obj = userSelectionDict[seriesName]
+
             logger.info("DisplayImageColour.imageSliderMoved called")
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
@@ -478,16 +496,18 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
                 lut = None
-                if self.overRideSeriesSavedColourmapAndLevels:
+                #Get colour table of the image to be displayed
+                if obj.getSeriesUpdateStatus():
                     colourTable = cmbColours.currentText()
-                elif self.applyUserSelectionToAnImage:
-                    colourTable, _, _ = returnUserSelection(self, currentImageNumber)  
+                elif obj.getImageUpdateStatus():
+                    colourTable, _, _ = obj.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
                         colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
                     colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
+                #display above colour table in colour table dropdown list
                 displayImageCommon.displayColourTableInComboBox(cmbColours, colourTable)
 
                 displayPixelArray(self, pixelArray, currentImageNumber, 
@@ -495,7 +515,8 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                                        lblPixelValue,
                                        spinBoxIntensity, spinBoxContrast,
                                        imv, colourTable,
-                                       cmbColours, lut,
+                                       cmbColours, seriesName,
+                                       lut,
                                        multiImage=True,  
                                        deleteButton=btnDeleteDICOMFile) 
 
@@ -607,6 +628,8 @@ def exportImage(self, imv, cmbColours):
 
 
 def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
+    """This function uses matplotlib.pyplot to save the DICOM image being viewed 
+    and its colour table in a png file with the path+filename in fileName. """ 
     try:
         axisOrder = pg.getConfigOption('imageAxisOrder') 
         if axisOrder =='row-major':
@@ -625,41 +648,44 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxL
         logger.error('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
 
 
-def applyColourTableToSeries(self, imv, cmbColours, chkBox=None): 
+def applyColourTableToSeries(self, imv, cmbColours, seriesID, chkBox=None): 
     """This function applies a user selected colour map to the current image.
     If the Apply checkbox is checked then the new colour map is also applied to 
     the whole series of DICOM images by setting the boolean flag
-    self.overRideSeriesSavedColourmapAndLevels to True.
+    overRideSeriesSavedColourmapAndLevels to True.
     """
+    global userSelectionDict
+    obj = userSelectionDict[seriesID]
     try:
-        colourTable = cmbColours.currentText().lower()
-        if colourTable == 'custom':
+        colourTable = cmbColours.currentText()
+        if colourTable.lower() == 'custom':
             colourTable = 'gray'                
             displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
 
         displayImageCommon.setPgColourMap(colourTable, imv)
         if chkBox.isChecked():
-            self.overRideSeriesSavedColourmapAndLevels = True
-            self.applyUserSelectionToAnImage = False
+            obj.setSeriesUpdateStatus(True)
+            obj.setImageUpdateStatus(False)
         else:
-            self.overRideSeriesSavedColourmapAndLevels = False
+            obj.setSeriesUpdateStatus(False)
                
     except Exception as e:
         print('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))
         logger.error('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))              
         
 
-def clearUserSelection(self, imageSlider):
-    self.applyUserSelectionToAnImage = False
-    #reset list of image lists that hold user selected colour table, min and max levels
-    for image in self.userSelectionList:
-        image[1] = 'default'
-        image[2] = -1
-        image[3] = -1
-        #reload current image to display it without user selected 
-        #colour table and levels.
-        #This is done by advancing the slider and then moving it i 
-        #to the original image
+def clearUserSelection(self, imageSlider, seriesName):
+    """This function removes the user selected colour tables, contrast & intensity values from
+    the list of image lists that hold these values.  They are reset to the default values of
+    'default' for the colour table and -1 for the contrast & intensity values"""
+    global userSelectionDict
+    obj = userSelectionDict[seriesName]
+    obj.clearUserSelection()
+
+    #reload current image to display it without user selected 
+    #colour table and levels.
+    #This is done by advancing the slider and then moving it  
+    #back to the original image
     if imageSlider:
         imageNumber = imageSlider.value()
         if imageNumber == 1:
@@ -671,30 +697,34 @@ def clearUserSelection(self, imageSlider):
         imageSlider.setValue(imageNumber)
                     
 
-def updateUserSelectionList(self, chkBox, spinBoxIntensity, spinBoxContrast):
-    """This function associates new intensity and contrast values with a
-        particular image in the series of images.
-    """
+def updateUserSelectedLevels(self, chkBox, 
+                             intensity, 
+                             contrast,
+                             seriesName):
+    """When the levels associated with an image are changed, their values
+        are associated with that image in the list of lists userSelectionList, where each sublist 
+        represents an image thus:
+            [0] - Image name (used as key to search the list of lists)
+            [1] - colour table name
+            [2] - intensity level
+            [3] - contrast level
+        userSelectionList is initialised with default values in the function displayMultiImageSubWindow
+        """
     try:
         if chkBox.isChecked() == False:
-            self.applyUserSelectionToAnImage = True
-        
             if self.selectedImagePath:
                 self.selectedImageName = os.path.basename(self.selectedImagePath)
             else:
                 #Workaround for the fact that when the first image is displayed,
                 #somehow self.selectedImageName looses its value.
                 self.selectedImageName = os.path.basename(self.imageList[0])
-                
-            for imageNumber, image in enumerate(self.userSelectionList):
-                if image[0] == self.selectedImageName:
-                    #Associate the levels with the image being viewed
-                    self.userSelectionList[imageNumber][2] = spinBoxIntensity.value()
-                    self.userSelectionList[imageNumber][3] = spinBoxContrast.value()
-                    break
+            
+            global userSelectionDict
+            obj = userSelectionDict[seriesName]
+            obj.updateLevels(self.selectedImageName, intensity, contrast)
     except Exception as e:
-        print('Error in DisplayImageColour.updateUserSelectionList: ' + str(e))
-        logger.error('Error in DisplayImageColour.updateUserSelectionList: ' + str(e))
+        print('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
+        logger.error('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
 
 
 def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
@@ -710,78 +740,76 @@ def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
         #print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
         imv.setLevels(minLevel, maxLevel)
         imv.show()
- 
     except Exception as e:
         print('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
         
-def updateUserSelectedColourTable(self, cmbColours, chkBox, spinBoxIntensity, spinBoxContrast):
+def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstImagePath):
+    """When the colour table associated with an image is changed, the name of the new colour table
+    is associated with that image in the list of lists userSelectionList, where each sublist 
+    represents an image thus:
+            [0] - Image name (used as key to search the list of lists)
+            [1] - colour table name
+            [2] - intensity level
+            [3] - contrast level
+        userSelectionList is initialised with default values in the function displayMultiImageSubWindow
+    """
+    try:
         if chkBox.isChecked() == False:
-            self.applyUserSelectionToAnImage = True
+            #The apply user selection to whole series checkbox 
+            #is not checked
+            
             colourTable = cmbColours.currentText()
-            #print(self.userSelectionList)
+            #print("*******************************************************")
+            #print("In updateUserSelectedColourTable")
+            #print ("series={}, colourTable={}".format(seriesName,colourTable))
             if self.selectedImagePath:
                 self.selectedImageName = os.path.basename(self.selectedImagePath)
             else:
                 #Workaround for the fact that when the first image is displayed,
                 #somehow self.selectedImageName looses its value.
-                self.selectedImageName = os.path.basename(self.imageList[0])
+                self.selectedImageName = os.path.basename(firstImagePath)
             #print("self.selectedImageName={}".format(self.selectedImageName))
-            imageNumber = -1
-            for imageNumber, image in enumerate(self.userSelectionList):
-                if image[0] == self.selectedImageName:
-                    break
-        
-            #Associate the selected colour table, contrast & intensity with the image being viewed
-            self.userSelectionList[imageNumber][1] =  colourTable
-           
-
-def returnImageNumber(self):
-    imageNumber = -1
-    for count, image in enumerate(self.userSelectionList, 0):
-        if image[0] == self.selectedImageName:
-            imageNumber = count
-            break
-    return imageNumber
-
-
-def updateUserSelectedLevels(self, spinBoxIntensity, spinBoxContrast):
-        if self.applyUserSelectionToAnImage:
-            imageNumber = returnImageNumber(self)
+            global userSelectionDict
+            obj = userSelectionDict[seriesName]
+            imageNumber = obj.returnImageNumber(self.selectedImageName)
+            #print("imageNumber = {}".format(imageNumber))
             if imageNumber != -1:
-                self.userSelectionList[imageNumber][2] =  spinBoxIntensity.value()
-                self.userSelectionList[imageNumber][3] =  spinBoxContrast.value()
+                #Associate the selected colour table with the image being viewed
+                obj.updateColourTable(imageNumber, colourTable)
+    except Exception as e:
+        print('Error in DisplayImageColour.updateUserSelectedColourTable: ' + str(e))
+        logger.error('Error in DisplayImageColour.updateUserSelectedColourTable: ' + str(e))      
 
 
-def returnUserSelection(self, imageNumber):
-        colourTable = self.userSelectionList[imageNumber][1] 
-        intensity = self.userSelectionList[imageNumber][2]
-        contrast = self.userSelectionList[imageNumber][3] 
-        return colourTable, intensity, contrast
-
-
-def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, spinBoxIntensity, spinBoxContrast):
+def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, 
+                spinBoxIntensity, spinBoxContrast):
+        """This function is executed when the Update button 
+        is clicked and it coordinates the calling of the functions, 
+        updateWholeDicomSeries & updateDicomSeriesImageByImage."""
         try:
             logger.info("DisplayImageColour.updateDICOM called")
             seriesID = seriesIDLabel.text()
             studyID = studyIDLabel.text()
             colourMap = cmbColours.currentText()
-            if self.overRideSeriesSavedColourmapAndLevels:
+            global userSelectionDict
+            obj = userSelectionDict[seriesID]
+            if obj.getSeriesUpdateStatus():
                 levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-                updateDicomSeriesOneColour(self, seriesID, studyID, colourMap, levels)
-            if self.applyUserSelectionToAnImage:
-                updateDicomSeriesManyColours(self, seriesID, studyID, colourMap)
+                updateWholeDicomSeries(self, seriesID, studyID, colourMap, levels)
+            if obj.getImageUpdateStatus():
+                updateDicomSeriesImageByImage(self, seriesID, studyID, colourMap)
         except Exception as e:
             print('Error in DisplayImageColour.updateDICOM: ' + str(e))
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))
 
 
-def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=None):
+def updateWholeDicomSeries(self, seriesID, studyID, colourmap, levels, lut=None):
     """Updates every image in a DICOM series with one colour table and
             one set of levels"""
     try:
-        logger.info("In DisplayImageColour.updateDicomSeriesOneColour")
+        logger.info("In DisplayImageColour.updateWholeDicomSeries")
         imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
 
         #Iterate through list of images and update each image
@@ -800,13 +828,14 @@ def updateDicomSeriesOneColour(self, seriesID, studyID, colourmap, levels, lut=N
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
         messageWindow.closeMessageSubWindow(self)
     except Exception as e:
-        print('Error in DisplayImageColour.updateDicomSeriesOneColour: ' + str(e))
+        print('Error in DisplayImageColour.updateWholeDicomSeries: ' + str(e))
 
 
-def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
-    """Updates one or more images in a DICOM series with a different table and set of levels"""
+def updateDicomSeriesImageByImage(self, seriesID, studyID, colourMap, lut=None):
+    """Updates one or more images in a DICOM series each with potentially
+    a different table and set of levels"""
     try:
-        logger.info("In DisplayImageColour.updateDicomSeriesManyColours")
+        logger.info("In DisplayImageColour.updateDicomSeriesImageByImage")
        
         imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
 
@@ -817,13 +846,20 @@ def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
             "Updating DICOM images")
         messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
         imageCounter = 0
+        print("In updateDicomSeriesImageByImage")
+        print("***************************************")
         for imagePath in imagePathList:
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
             # Apply user selected colour table & levels to individual images in the series
-            selectedColourMap, center, width = returnUserSelection(self, imageCounter)
+            global userSelectionDict
+            obj = userSelectionDict[seriesID]
+            selectedColourMap, center, width = obj.returnUserSelection(imageCounter)
+            print(selectedColourMap, center, width)
             if selectedColourMap != 'default' or center != -1 or width != -1:
+                print(imagePath)
+                print("***************************************")
                 # Update an individual DICOM file in the series
                 levels = [center, width]  
+                dataset = readDICOM_Image.getDicomDataset(imagePath)
                 updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                     levels=levels, lut=lut)
                 saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
@@ -831,4 +867,4 @@ def updateDicomSeriesManyColours(self, seriesID, studyID, colourMap, lut=None):
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
         messageWindow.closeMessageSubWindow(self)
     except Exception as e:
-        print('Error in DisplayImageColour.updateDicomSeriesManyColours: ' + str(e))
+        print('Error in DisplayImageColour.updateDicomSeriesImageByImage: ' + str(e))
