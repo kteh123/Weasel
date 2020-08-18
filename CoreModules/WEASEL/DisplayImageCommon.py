@@ -1,3 +1,5 @@
+"""This module contains functions used by functions in modules 
+DisplayImageColour.py & DisplayImageROI.py"""
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QFileDialog,                            
@@ -22,6 +24,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 def setPgColourMap(cm_name, imv, cmbColours=None, lut=None):
+    """This function converts a matplotlib colour map into
+    a colour map that can be used by pyqtGraph imageView widget. 
+    Input Parmeters
+    ***************
+        cm_name - name of the colour map
+        imv - name of the imageView widget
+        cmbColours - name of the dropdown lists of colour map names
+        lut - name of the look up table containing raw colour data
+    """
+
     try:
         if cm_name == None:
             cm_name = 'gray'
