@@ -48,19 +48,21 @@ class UserSelection:
             image[3] = -1 
 
 
-    def updateLevels(this, imageNumber, intensity, contrast):
+    def updateLevels(this, imageName, intensity, contrast):
         """Saves the new intensity and contrast levels the user has
         selected for the image called imageName in the list of lists
         called listImageLists"""
         this._applyUserSelectionToAnImage = True 
+        imageNumber = this.returnImageNumber(imageName)
         #Associate the levels with the image being viewed
         this.listImageLists[imageNumber][2] = intensity
         this.listImageLists[imageNumber][3] = contrast       
 
 
-    def updateColourTable(this, imageNumber, colourTable):
+    def updateColourTable(this, imageName, colourTable):
         """Updates the name of the colour table belonging to an image"""
         this.applyUserSelectionToAnImage = True
+        imageNumber = this.returnImageNumber(imageName)
         this.listImageLists[imageNumber][1] =  colourTable
 
 

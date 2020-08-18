@@ -734,8 +734,8 @@ def updateUserSelectedLevels(self, chkBox,
             
             global userSelectionDict
             obj = userSelectionDict[seriesName]
-            imageNumber = obj.returnImageNumber(self.selectedImageName)
-            obj.updateLevels(imageNumber, intensity, contrast)
+            self.selectedImageName
+            obj.updateLevels(self.selectedImageName, intensity, contrast)
     except Exception as e:
         print('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
         logger.error('Error in DisplayImageColour.updateUserSelectedLevels: ' + str(e))
@@ -783,10 +783,7 @@ def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstIma
             
             global userSelectionDict
             obj = userSelectionDict[seriesName]
-            imageNumber = obj.returnImageNumber(self.selectedImageName)
-            if imageNumber != -1:
-                #Associate the selected colour table with the image being viewed
-                obj.updateColourTable(imageNumber, colourTable)
+            obj.updateColourTable(self.selectedImageName, colourTable)
     except Exception as e:
         print('Error in DisplayImageColour.updateUserSelectedColourTable: ' + str(e))
         logger.error('Error in DisplayImageColour.updateUserSelectedColourTable: ' + str(e))      
