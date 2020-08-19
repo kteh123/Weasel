@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 
 import os
 import scipy
+from scipy.stats import iqr
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -68,7 +69,7 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 #to manipulate userSelectionList. 
 userSelectionDict = {}
 
-def displayImageSubWindow(self, derivedImagePath=None):
+def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         """
         Creates a subwindow that displays a single DICOM image. 
 
@@ -99,9 +100,9 @@ def displayImageSubWindow(self, derivedImagePath=None):
             colourTable, lut = readDICOM_Image.getColourmap(imagePathForDisplay)
 
             lblHiddenImagePath.hide()
-            lblHiddenStudyName = QLabel()
+            lblHiddenStudyName = QLabel(studyName)
             lblHiddenStudyName.hide()
-            lblHiddenSeriesName = QLabel()
+            lblHiddenSeriesName = QLabel(seriesName)
             lblHiddenSeriesName.hide()
             
             #Maintain image data in hidden labels on the subwindow.
@@ -137,8 +138,9 @@ def displayImageSubWindow(self, derivedImagePath=None):
                                     lblImageMissing,
                                     lblPixelValue,
                                     spinBoxIntensity, spinBoxContrast,
-                                    imv, colourTable, lblHiddenSeriesName.text(),
-                                    cmbColours, lut)  
+                                    imv, colourTable, cmbColours, lblHiddenSeriesName.text(),
+                                    lut) 
+
         except Exception as e:
             print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
             logger.error('Error in  DisplayImageColour.displayImageSubWindow: ' + str(e)) 
@@ -438,8 +440,6 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
 
         try:
             logger.info("DisplayImageColour.displayPixelArray called")
-            global userSelectionDict
-            obj = userSelectionDict[seriesName]
             if multiImage:
                 #only show delete button when viewing a series
                 deleteButton.show()
@@ -456,68 +456,23 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 deleteButton.hide()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                if obj.getSeriesUpdateStatus():
-                    #apply selected contrast and intensity values
-                    #for the whole series to this image
+                if multiImage: #series
                     centre = spinBoxIntensity.value()
                     width = spinBoxContrast.value()
-                    minimumValue = centre - (width/2)
-                    maximumValue = centre + (width/2)
-                elif obj.getImageUpdateStatus():
-                    #try to retrieve saved user selected levels for this image
-                    _, centre, width = obj.returnUserSelection(currentImageNumber) 
-                    if centre != -1:
-                        #saved values exist, so use them
-                        minimumValue = centre - (width/2)
-                        maximumValue = centre + (width/2)
-                    else:  
-                        # No user selected values exist for this image, 
-                        # so retrieve them from the DICOM image
-                        #Get minimum value
-                        try:
-                            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-                            slope = float(getattr(dataset, 'RescaleSlope', 1))
-                            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                            centre = dataset.WindowCenter * slope + intercept
-                            width = dataset.WindowWidth * slope
-                            minimumValue = centre - width/2
-                        except:
-                            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                            1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                            centre = spinBoxIntensity.value()
-                            width = spinBoxContrast.value()
-                        #Get Maximum value
-                        try:
-                            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-                            slope = float(getattr(dataset, 'RescaleSlope', 1))
-                            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                            centre = dataset.WindowCenter * slope + intercept
-                            width = dataset.WindowWidth * slope
-                            maximumValue = centre + width/2
-                        except:
-                            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                            1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                            centre = spinBoxIntensity.value()
-                            width = spinBoxContrast.value()
-                else: #Read levels directly from the DICOM image
-                    try:
-                        dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-                        slope = float(getattr(dataset, 'RescaleSlope', 1))
-                        intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                        centre = dataset.WindowCenter * slope + intercept
-                        width = dataset.WindowWidth * slope
-                        maximumValue = centre + width/2
-                        minimumValue = centre - width/2
-                    except:
-                        minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                        1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                        maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                        1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                        centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
-                        width = maximumValue - abs(minimumValue)
+                    success, minimumValue, maximumValue = returnUserSelectedLevels(seriesName, 
+                                                                               centre, 
+                                                                               width, 
+                                                                               currentImageNumber)
+                    if not success:
+                        centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
 
+                else:  #single image 
+                    centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
+
+                blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, True)
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
+                blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, False)
                 blockHistogramSignals(imv, True)
                 imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
                 blockHistogramSignals(imv, False)
@@ -533,6 +488,100 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
         except Exception as e:
             print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
             logger.error('Error in DisplayImageColour.displayPixelArray: ' + str(e))
+
+
+def readLevelsFromDICOMImage(self, pixelArray): 
+        """Reads levels directly from the DICOM image
+        
+        Input Parmeters
+        ***************
+        self - an object reference to the WEASEL interface.
+        pixelArray - pixel array to be displayed
+
+        Output Parameters
+        *****************
+        centre - Image intensity
+        width - Image contrast
+        maximumValue - Maximum pixel value in the image
+        minimumValue - Minimum pixel value in the image
+        """
+        try:
+            logger.info("DisplayImageColour.readLevelsFromDICOMImage called")
+            #set default values
+            centre = -1 
+            width = -1 
+            maximumValue = -1  
+            minimumValue = -1 
+            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+            slope = float(getattr(dataset, 'RescaleSlope', 1))
+            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+            centre = dataset.WindowCenter * slope + intercept
+            width = dataset.WindowWidth * slope
+            maximumValue = centre + width/2
+            minimumValue = centre - width/2
+        except:
+            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+            1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+            1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+            centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+            width = maximumValue - abs(minimumValue)
+
+        return centre, width, maximumValue, minimumValue
+
+
+def returnUserSelectedLevels(seriesName, centre, width, currentImageNumber):
+    """
+    When the user has selected new image levels that must override the 
+    levels saved in the DICOM series/image, this function returns those selected levels
+
+    Input parameters
+    ****************
+    seriesName - string variable containing the name of DICOM series of images to be displayed
+    centre - Image intensity
+    width - Image contrast
+    currentImageNumber - The ordinal number of the image being viewed in the image list
+
+    Output parameters
+    *****************
+    success - boolean, set to true if level values are successfully retrieved
+    maximumValue - Maximum pixel value in the image
+    minimumValue - Minimum pixel value in the image
+    """
+    try:
+        logger.info("DisplayImageColour.returnUserSelectedLevels called")
+        minimumValue = -1
+        maximumValue = -1
+        success = False
+        global userSelectionDict
+        obj = userSelectionDict[seriesName]
+        if obj.getSeriesUpdateStatus():
+            #apply contrast and intensity values
+            #selected in the GUI spinboxes
+            #for the whole series to this image
+            minimumValue = centre - (width/2)
+            maximumValue = centre + (width/2)
+            success = True
+        elif obj.getImageUpdateStatus():
+            #the user has opted to change the levels of individual images
+            #in a series.
+            #if user selected levels exist for this image, retrieve them
+            _, centre, width = obj.returnUserSelection(currentImageNumber) 
+            if centre != -1:
+                #saved values exist, so use them
+                minimumValue = centre - (width/2)
+                maximumValue = centre + (width/2)
+                success = True
+
+        return success, minimumValue, maximumValue
+    except Exception as e:
+        print('Error in DisplayImageColour.returnUserSelectedLevels: ' + str(e))
+        logger.error('Error in DisplayImageColour.returnUserSelectedLevels: ' + str(e))
+
+
+def blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, block):
+    spinBoxIntensity.blockSignals(block)
+    spinBoxContrast.blockSignals(block)
 
 
 def blockHistogramSignals(imgView, block):

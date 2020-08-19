@@ -211,11 +211,11 @@ def viewImage(self):
         in the DICOM studies tree view."""
         try:
             logger.info("Menus.viewImage called")
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
             if treeView.isAnImageSelected(self):
-                displayImageColour.displayImageSubWindow(self)
+                displayImageColour.displayImageSubWindow(self, studyID, seriesID)
             elif treeView.isASeriesSelected(self):
-                studyID = self.selectedStudy 
-                seriesID = self.selectedSeries
                 self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
                 displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyID, seriesID)
         except Exception as e:
