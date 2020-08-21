@@ -1,4 +1,4 @@
-"""This module contains functions used by functions in modules 
+"""This module contains helper functions used by functions in modules 
 DisplayImageColour.py & DisplayImageROI.py"""
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt

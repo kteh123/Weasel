@@ -647,6 +647,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
         cmbColours - A dropdown list of colour table names based on the QComboBox class
+        subWindow - object reference to the subwindow hosting the slider control
         """
 
         try:
@@ -702,11 +703,14 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
     Input Parmeters
     ***************
         self - an object reference to the WEASEL interface.
+        currentImagePath - file path to the image being viewed.
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be displayed
         seriesName - string variable containing the name of DICOM series
                 of images to be displayed
-    
+        lastSliderPosition - integer variable holding the value of the 
+                    slider when the delete button is clicked; i.e., the
+                    number of the image being deleted.
     """
     try:
         logger.info("DisplayImageColour.deleteImageInMultiImageViewer called")
@@ -736,8 +740,8 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
                 #There is only one image left in the display
                 displayMultiImageSubWindow(self, self.imageList, studyName, seriesName)
             elif len(self.imageList) + 1 == lastSliderPosition:    
-                    #we are deleting the nth image in a series of n images
-                    #so move the slider back to penultimate image in list 
+                    #we are deleting the last image in the series of images
+                    #so move the slider back to the penultimate image in list 
                 displayMultiImageSubWindow(self, self.imageList, 
                                     studyName, seriesName, len(self.imageList))
             else:
@@ -776,6 +780,9 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
 def exportImage(self, imv, cmbColours):
     """Function executed when the Export button is clicked.  
     It exports the DICOM image and its colour table to a png graphics file.
+    It launches a file dialog, so that the user can select the file path to 
+    the png file in which the exported file will be stored. It also collects 
+    the name of the image colour table and the image levels.
     
     Input Parmeters
     ***************
@@ -794,21 +801,21 @@ def exportImage(self, imv, cmbColours):
         fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
                                                     directory=defaultImageName, 
                                                     filter="*.png")
-        minLevel, maxLevel = imv.getLevels()
+        minimumValue, maximumValue = imv.getLevels()
 
         #Test if the user has selected a file name
         if fileName:
             exportImageViaMatplotlib(self, imv.getImageItem().image,
                                             fileName, 
                                             colourTable,
-                                            minLevel,
-                                            maxLevel)
+                                             minimumValue,
+                                            maximumValue)
     except Exception as e:
         print('Error in DisplayImageColour.exportImage: ' + str(e))
         logger.error('Error in DisplayImageColour.exportImage: ' + str(e))
 
 
-def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxLevel):
+def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumValue, maximumValue):
     """This function uses matplotlib.pyplot to save the DICOM image being viewed 
     and its colour table in a png file with the path+filename in fileName. 
     
@@ -816,15 +823,19 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxL
     ***************
         self - an object reference to the WEASEL interface.
         pixelArray - pixel array to be exported as a png file
+        fileName - file path to the png file in which the exported file will be stored.
+        colourTable - String variable containing the name of a colour table
+        maximumValue - Maximum pixel value in the image
+        minimumValue - Minimum pixel value in the image
     """ 
     try:
         axisOrder = pg.getConfigOption('imageAxisOrder') 
         if axisOrder =='row-major':
             #rotate image 90 degree so as to match the screen image
             pixelArray = scipy.ndimage.rotate(pixelArray, 270)
-        cmap = plt.get_cmap(cm_name)
+        cmap = plt.get_cmap(colourTable)
         pos = plt.imshow(pixelArray,  cmap=cmap)
-        plt.clim(int(minLevel), int(maxLevel))
+        plt.clim(int(minimumValue), int(maximumValue))
         cBar = plt.colorbar()
         cBar.minorticks_on()
         plt.savefig(fname=fileName)
@@ -835,11 +846,10 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, cm_name, minLevel, maxL
         logger.error('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
 
 
-def applyColourTableToSeries(self, imv, cmbColours, seriesName, chkBox=None): 
+def applyColourTableToSeries(self, imv, cmbColours, seriesName, applySeriesCheckBox=None): 
     """This function applies a user selected colour map to the current image.
     If the Apply checkbox is checked then the new colour map is also applied to 
-    the whole series of DICOM images by setting the boolean flag
-    overRideSeriesSavedColourmapAndLevels to True.
+    the whole series of DICOM images by setting a boolean flag to True.
 
     Input Parmeters
     ***************
@@ -848,7 +858,7 @@ def applyColourTableToSeries(self, imv, cmbColours, seriesName, chkBox=None):
         cmbColours - A dropdown list of colour table names based on the QComboBox class
         seriesName - string variable containing the name of 
             DICOM series of images to be displayed
-
+        applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
     """
     global userSelectionDict
     obj = userSelectionDict[seriesName]
@@ -859,7 +869,7 @@ def applyColourTableToSeries(self, imv, cmbColours, seriesName, chkBox=None):
             displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
 
         displayImageCommon.setPgColourMap(colourTable, imv)
-        if chkBox.isChecked():
+        if applySeriesCheckBox.isChecked():
             obj.setSeriesUpdateStatus(True)
             obj.setImageUpdateStatus(False)
         else:
@@ -901,7 +911,7 @@ def clearUserSelection(self, imageSlider, seriesName):
         imageSlider.setValue(imageNumber)
                     
 
-def updateUserSelectedLevels(self, chkBox, 
+def updateUserSelectedLevels(self, applySeriesCheckBox, 
                              intensity, 
                              contrast,
                              seriesName):
@@ -917,10 +927,13 @@ def updateUserSelectedLevels(self, chkBox,
         Input Parmeters
         ***************
         self - an object reference to the WEASEL interface.
+        applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
+        intensity - Image intensity
+        contrast - Image contrast
         seriesName - string variable containing the name of DICOM series of images to be displayed
         """
     try:
-        if chkBox.isChecked() == False:
+        if applySeriesCheckBox.isChecked() == False:
             if self.selectedImagePath:
                 self.selectedImageName = os.path.basename(self.selectedImagePath)
             else:
@@ -953,17 +966,17 @@ def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
         width = spinBoxContrast.value()
         halfWidth = width/2
 
-        minLevel = centre - halfWidth
-        maxLevel = centre + halfWidth
-        #print("centre{}, width{}, minLevel{}, maxLevel{}".format(centre, width, minLevel, maxLevel))
-        imv.setLevels(minLevel, maxLevel)
+        minimumValue = centre - halfWidth
+        maximumValue = centre + halfWidth
+        #print("centre{}, width{},  minimumValue{}, maximumValue{}".format(centre, width,  minimumValue, maximumValue))
+        imv.setLevels( minimumValue, maximumValue)
         imv.show()
     except Exception as e:
         print('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
         
-def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstImagePath):
+def updateUserSelectedColourTable(self, cmbColours, applySeriesCheckBox, seriesName, firstImagePath):
     """When the colour table associated with an image is changed, the name of the new colour table
     is associated with that image in the list of lists userSelectionList, where each sublist 
     represents an image thus:
@@ -977,10 +990,12 @@ def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstIma
      ***************
         self - an object reference to the WEASEL interface. 
         cmbColours - A dropdown list of colour table names based on the QComboBox class
+        applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
         seriesName - string variable containing the name of DICOM series of images to be displayed
+        firstImagePath -  file path to the first image in the DICOM series of images.
     """
     try:
-        if chkBox.isChecked() == False:
+        if applySeriesCheckBox.isChecked() == False:
             #The apply user selection to whole series checkbox 
             #is not checked
             colourTable = cmbColours.currentText()
@@ -999,7 +1014,7 @@ def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstIma
         logger.error('Error in DisplayImageColour.updateUserSelectedColourTable: ' + str(e))      
 
 
-def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours, 
+def updateDICOM(self, lblHiddenSeriesName, lblHiddenStudyName, cmbColours, 
                 spinBoxIntensity, spinBoxContrast):
         """
         This function is executed when the Update button 
@@ -1009,14 +1024,20 @@ def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours,
         Input Parmeters
         ***************
         self - an object reference to the WEASEL interface.
+        lblHiddenSeriesName - name of the hidden label widget whose text
+                    contains the name of the DICOM series whose images are 
+                    being viewed.
+        lblHiddenStudyName - name of the hidden label widget whose text
+                contains the name of the DICOM study containing the series
+                whose images are  being viewed.
         cmbColours - A dropdown list of colour table names based on the QComboBox class
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
         """
         try:
             logger.info("DisplayImageColour.updateDICOM called")
-            seriesName = seriesIDLabel.text()
-            studyName = studyIDLabel.text()
+            seriesName = lblHiddenSeriesName.text()
+            studyName = lblHiddenStudyName.text()
             colourTable = cmbColours.currentText()
             global userSelectionDict
             obj = userSelectionDict[seriesName]
@@ -1042,9 +1063,10 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be updated
         colourTable - String variable containing the name of a colour table
+        levels  - 2 item list containing the image contrast and intensity values as integers, 
+                    [contrast, intensity]
         lut - array holding a lookup table of colours. A custom colour map
-        
-            """
+        """
     try:
         logger.info("In DisplayImageColour.updateWholeDicomSeries")
         imagePathList = self.objXMLReader.getImagePathList(studyName, seriesName)
