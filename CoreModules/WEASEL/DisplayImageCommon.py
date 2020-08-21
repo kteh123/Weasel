@@ -61,6 +61,10 @@ def setPgColourMap(cm_name, imv, cmbColours=None, lut=None):
 
 
 def displayColourTableInComboBox(cmbColours, colourTable):
+    """
+    cmbColours - name of the dropdown lists of colour map names
+    colourTable - String variable containing the name of a colour table
+    """
     try:
         cmbColours.blockSignals(True)
         index = cmbColours.findText(colourTable)
@@ -134,33 +138,38 @@ def setUpImageViewerSubWindow(self):
 
 
 def getPixelValue(pos, imv, pixelArray, lblPixelValue):
-        try:
-            #print ("Image position: {}".format(pos))
-            container = imv.getView()
-            if container.sceneBoundingRect().contains(pos): 
-                mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = math.floor(mousePoint.x())
-                y_i = math.floor(mousePoint.y()) 
-                z_i = imv.currentIndex + 1
-                if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
-                    and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
-                    lblPixelValue.setText(
-                        "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
-                   .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
-                elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
-                    and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
-                    and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
-                    lblPixelValue.setText(
-                        "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
-                else:
-                    lblPixelValue.setText("<h4>Pixel Value:</h4>")
+    """
+
+    lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
+                and the X,Y coordinates of the mouse pointer.
+    """
+    try:
+        #print ("Image position: {}".format(pos))
+        container = imv.getView()
+        if container.sceneBoundingRect().contains(pos): 
+            mousePoint = container.getViewBox().mapSceneToView(pos) 
+            x_i = math.floor(mousePoint.x())
+            y_i = math.floor(mousePoint.y()) 
+            z_i = imv.currentIndex + 1
+            if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
+                and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
+                lblPixelValue.setText(
+                    "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
+                .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+            elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
+                and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
+                and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
+                lblPixelValue.setText(
+                    "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
+                .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
             else:
                 lblPixelValue.setText("<h4>Pixel Value:</h4>")
+        else:
+            lblPixelValue.setText("<h4>Pixel Value:</h4>")
                    
-        except Exception as e:
-            print('Error in DisplayImageCommon.getPixelValue: ' + str(e))
-            logger.error('Error in DisplayImageCommon.getPixelValue: ' + str(e))
+    except Exception as e:
+        print('Error in DisplayImageCommon.getPixelValue: ' + str(e))
+        logger.error('Error in DisplayImageCommon.getPixelValue: ' + str(e))
 
 
 def getDICOMFileData(self):

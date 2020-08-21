@@ -76,9 +76,11 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         Input Parmeters
         ***************
         self - an object reference to the WEASEL interface.
-
+        studyName - string variable containing name of the DICOMstudy 
+                containing the DICOM series of images to be displayed
+        seriesName - string variable containing the name of DICOM series of images to be displayed
         derivedImagePath - optional parameter containing the path to a
-        new image created by an operation on an existing image.
+            new image created by an operation on an existing image.
         """
         try:
             logger.info("DisplayImageColour.displayImageSubWindow called")
@@ -297,6 +299,10 @@ def setUpColourTools(self, layout, imv,
             spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
             spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
             imageSlider - name of the slider widget used to scroll through the images.
+
+        Output Parameters
+        *****************
+            cmbColours - A dropdown list of colour table names based on the QComboBox class
         """
         try:
             logger.info("displayImageColour.setUpColourTools called")
@@ -431,11 +437,21 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
         pixelArray - pixel array to be displayed in imv
         currentImageNumber - ordinal number of the image to be displayed
                 in the list of images forming the series.
-        imv - pyqtGraph imageView widget
-        seriesName - string variable containing the name of DICOM series 
-            of images to be displayed
+        lblImageMissing - Label widget that displays the text 'Missing Image'
+        lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
+                and the X,Y coordinates of the mouse pointer.
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+        imv - pyqtGraph imageView widget
+        colourTable - String variable containing the name of a colour table
+        cmbColours - Name of the dropdown list of colour table names
+        seriesName - string variable containing the name of DICOM series 
+            of images to be displayed
+        lut - array holding a lookup table of colours. A custom colour map
+        multiImage - optional boolean variable, default False,
+                    set to True if a series of DICOM images is being viewed.
+        deleteButton - name of the button widget, which when 
+                clicked causes an image to be deleted
         """
 
         try:
@@ -513,21 +529,25 @@ def readLevelsFromDICOMImage(self, pixelArray):
             maximumValue = -1  
             minimumValue = -1 
             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-            slope = float(getattr(dataset, 'RescaleSlope', 1))
-            intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-            centre = dataset.WindowCenter * slope + intercept
-            width = dataset.WindowWidth * slope
-            maximumValue = centre + width/2
-            minimumValue = centre - width/2
-        except:
-            minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-            1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-            maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-            1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-            centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
-            width = maximumValue - abs(minimumValue)
+            if dataset:
+                slope = float(getattr(dataset, 'RescaleSlope', 1))
+                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                centre = dataset.WindowCenter * slope + intercept
+                width = dataset.WindowWidth * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                width = maximumValue - abs(minimumValue)
 
-        return centre, width, maximumValue, minimumValue
+            return centre, width, maximumValue, minimumValue
+        except Exception as e:
+            print('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
+            logger.error('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
 
 
 def returnUserSelectedLevels(seriesName, centre, width, currentImageNumber):
@@ -580,6 +600,15 @@ def returnUserSelectedLevels(seriesName, centre, width, currentImageNumber):
 
 
 def blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, block):
+    """ 
+    Toggles (off/on) blocking the signals from the spinboxes associated 
+    with input of intensity and contrast values. 
+    Input Parmeters
+    ***************
+        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+        block - boolean taking values True/False
+    """
     spinBoxIntensity.blockSignals(block)
     spinBoxContrast.blockSignals(block)
 
@@ -610,10 +639,14 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         
         self - object reference to the WEASEL GUI
         seriesName - string variable containing the name of DICOM series of images to be displayed
+        lblImageMissing - Label widget that displays the text 'Missing Image'
+        lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
+                and the X,Y coordinates of the mouse pointer.
         imv - pyqtGraph imageView widget
         imageList - list of image file paths of the images in the series to be displayed
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+        cmbColours - A dropdown list of colour table names based on the QComboBox class
         """
 
         try:
@@ -748,6 +781,7 @@ def exportImage(self, imv, cmbColours):
     ***************
         self - an object reference to the WEASEL interface.
         imv - pyqtGraph imageView widget
+        cmbColours - A dropdown list of colour table names based on the QComboBox class
     """
     try:
         colourTable = cmbColours.currentText()
@@ -811,6 +845,7 @@ def applyColourTableToSeries(self, imv, cmbColours, seriesName, chkBox=None):
     ***************
         self - an object reference to the WEASEL interface.
         imv - pyqtGraph imageView widget
+        cmbColours - A dropdown list of colour table names based on the QComboBox class
         seriesName - string variable containing the name of 
             DICOM series of images to be displayed
 
@@ -941,6 +976,7 @@ def updateUserSelectedColourTable(self, cmbColours, chkBox, seriesName, firstIma
      Input Parmeters
      ***************
         self - an object reference to the WEASEL interface. 
+        cmbColours - A dropdown list of colour table names based on the QComboBox class
         seriesName - string variable containing the name of DICOM series of images to be displayed
     """
     try:
@@ -973,6 +1009,7 @@ def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours,
         Input Parmeters
         ***************
         self - an object reference to the WEASEL interface.
+        cmbColours - A dropdown list of colour table names based on the QComboBox class
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
         """
@@ -980,20 +1017,20 @@ def updateDICOM(self, seriesIDLabel, studyIDLabel, cmbColours,
             logger.info("DisplayImageColour.updateDICOM called")
             seriesName = seriesIDLabel.text()
             studyName = studyIDLabel.text()
-            colourMap = cmbColours.currentText()
+            colourTable = cmbColours.currentText()
             global userSelectionDict
             obj = userSelectionDict[seriesName]
             if obj.getSeriesUpdateStatus():
                 levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-                updateWholeDicomSeries(self, seriesName, studyName, colourMap, levels)
+                updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels)
             if obj.getImageUpdateStatus():
-                updateDicomSeriesImageByImage(self, seriesName, studyName, colourMap)
+                updateDicomSeriesImageByImage(self, seriesName, studyName, colourTable)
         except Exception as e:
             print('Error in DisplayImageColour.updateDICOM: ' + str(e))
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))
 
 
-def updateWholeDicomSeries(self, seriesName, studyName, colourmap, levels, lut=None):
+def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut=None):
     """
     Updates every image in a DICOM series with one colour table and
             one set of levels
@@ -1004,6 +1041,8 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourmap, levels, lut=N
         seriesName - string variable containing the name of DICOM series of images to be updated
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be updated
+        colourTable - String variable containing the name of a colour table
+        lut - array holding a lookup table of colours. A custom colour map
         
             """
     try:
@@ -1020,7 +1059,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourmap, levels, lut=N
         for imagePath in imagePathList:
             dataset = readDICOM_Image.getDicomDataset(imagePath) 
             # Update every DICOM file in the series                                     
-            updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
+            updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourTable=colourTable, levels=levels, lut=lut)
             saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
@@ -1029,7 +1068,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourmap, levels, lut=N
         print('Error in DisplayImageColour.updateWholeDicomSeries: ' + str(e))
 
 
-def updateDicomSeriesImageByImage(self, seriesName, studyName, colourMap, lut=None):
+def updateDicomSeriesImageByImage(self, seriesName, studyName, colourTable, lut=None):
     """Updates one or more images in a DICOM series each with potentially
     a different table and set of levels
     
@@ -1040,6 +1079,8 @@ def updateDicomSeriesImageByImage(self, seriesName, studyName, colourMap, lut=No
         of images to be updated
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to updated
+        colourTable - String variable containing the name of a colour table
+        lut - array holding a lookup table of colours. A custom colour map
     
     """
     try:
@@ -1063,7 +1104,7 @@ def updateDicomSeriesImageByImage(self, seriesName, studyName, colourMap, lut=No
                 # Update an individual DICOM file in the series
                 levels = [center, width]  
                 dataset = readDICOM_Image.getDicomDataset(imagePath)
-                updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourTable=selectedColourMap, 
                                                     levels=levels, lut=lut)
                 saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
