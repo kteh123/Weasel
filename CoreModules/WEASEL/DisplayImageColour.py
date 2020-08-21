@@ -480,10 +480,12 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                                                                                width, 
                                                                                currentImageNumber)
                     if not success:
-                        centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
+                        centre, width, maximumValue, minimumValue = displayImageCommon.readLevelsFromDICOMImage(
+                                                                                            self, pixelArray)
 
                 else:  #single image 
-                    centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
+                    centre, width, maximumValue, minimumValue = displayImageCommon.readLevelsFromDICOMImage(
+                                                                                        self, pixelArray)
 
                 blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, True)
                 spinBoxIntensity.setValue(centre)
@@ -504,50 +506,6 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
         except Exception as e:
             print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
             logger.error('Error in DisplayImageColour.displayPixelArray: ' + str(e))
-
-
-def readLevelsFromDICOMImage(self, pixelArray): 
-        """Reads levels directly from the DICOM image
-        
-        Input Parmeters
-        ***************
-        self - an object reference to the WEASEL interface.
-        pixelArray - pixel array to be displayed
-
-        Output Parameters
-        *****************
-        centre - Image intensity
-        width - Image contrast
-        maximumValue - Maximum pixel value in the image
-        minimumValue - Minimum pixel value in the image
-        """
-        try:
-            logger.info("DisplayImageColour.readLevelsFromDICOMImage called")
-            #set default values
-            centre = -1 
-            width = -1 
-            maximumValue = -1  
-            minimumValue = -1 
-            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-            if dataset:
-                slope = float(getattr(dataset, 'RescaleSlope', 1))
-                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                centre = dataset.WindowCenter * slope + intercept
-                width = dataset.WindowWidth * slope
-                maximumValue = centre + width/2
-                minimumValue = centre - width/2
-            else:
-                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
-                width = maximumValue - abs(minimumValue)
-
-            return centre, width, maximumValue, minimumValue
-        except Exception as e:
-            print('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
-            logger.error('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
 
 
 def returnUserSelectedLevels(seriesName, centre, width, currentImageNumber):

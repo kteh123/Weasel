@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 
 from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import numpy as np
 import math
 import logging
@@ -192,6 +193,49 @@ def getDICOMFileData(self):
         except Exception as e:
             print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
             logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+
+def readLevelsFromDICOMImage(self, pixelArray): 
+        """Reads levels directly from the DICOM image
+        
+        Input Parmeters
+        ***************
+        self - an object reference to the WEASEL interface.
+        pixelArray - pixel array to be displayed
+
+        Output Parameters
+        *****************
+        centre - Image intensity
+        width - Image contrast
+        maximumValue - Maximum pixel value in the image
+        minimumValue - Minimum pixel value in the image
+        """
+        try:
+            logger.info("DisplayImageCommon.readLevelsFromDICOMImage called")
+            #set default values
+            centre = -1 
+            width = -1 
+            maximumValue = -1  
+            minimumValue = -1 
+            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+            if dataset:
+                slope = float(getattr(dataset, 'RescaleSlope', 1))
+                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                centre = dataset.WindowCenter * slope + intercept
+                width = dataset.WindowWidth * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                width = maximumValue - abs(minimumValue)
+
+            return centre, width, maximumValue, minimumValue
+        except Exception as e:
+            print('Error in DisplayImageCommon.readLevelsFromDICOMImage: ' + str(e))
+            logger.error('Error in DisplayImageCommon.readLevelsFromDICOMImage: ' + str(e))
 
 
 def closeSubWindow(self, objectName):
