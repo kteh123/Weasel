@@ -385,21 +385,8 @@ def displayROIPixelArray(self, pixelArray, currentImageNumber,
                 lblImageMissing.show()
                 imv.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                try:
-                    dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-                    slope = float(getattr(dataset, 'RescaleSlope', 1))
-                    intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                    centre = dataset.WindowCenter * slope + intercept
-                    width = dataset.WindowWidth * slope
-                    maximumValue = centre + width/2
-                    minimumValue = centre - width/2
-                except:
-                    minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                    1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                    maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                    1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-
-                
+                _, _, maximumValue, minimumValue = displayImageCommon.readLevelsFromDICOMImage(
+                                                                                            self, pixelArray)
                 imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
                 displayImageCommon.setPgColourMap(colourTable, imv)
                 lblImageMissing.hide()   
