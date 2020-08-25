@@ -953,6 +953,7 @@ def updateUserSelectedColourTable(self, cmbColours, applySeriesCheckBox, seriesN
         firstImagePath -  file path to the first image in the DICOM series of images.
     """
     try:
+        print("In updateUserSelectedColourTable seriesName={}".format(seriesName))
         if applySeriesCheckBox.isChecked() == False:
             #The apply user selection to whole series checkbox 
             #is not checked
@@ -964,6 +965,7 @@ def updateUserSelectedColourTable(self, cmbColours, applySeriesCheckBox, seriesN
                 #somehow self.selectedImageName looses its value.
                 self.selectedImageName = os.path.basename(firstImagePath)
             
+            print("self.selectedImageName ={}".format(self.selectedImageName))
             global userSelectionDict
             obj = userSelectionDict[seriesName]
             obj.updateColourTable(self.selectedImageName, colourTable)
@@ -999,11 +1001,14 @@ def updateDICOM(self, lblHiddenSeriesName, lblHiddenStudyName, cmbColours,
             colourTable = cmbColours.currentText()
             global userSelectionDict
             obj = userSelectionDict[seriesName]
+            print("DisplayImageColour.updateDICOM called")
+            print("obj.getSeriesUpdateStatus() = {}".format(obj.getSeriesUpdateStatus()))
+            print("obj.getImageUpdateStatus() = {}".format(obj.getImageUpdateStatus()))
             if obj.getSeriesUpdateStatus():
                 levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
                 updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels)
             if obj.getImageUpdateStatus():
-                updateDicomSeriesImageByImage(self, seriesName, studyName, colourTable)
+                updateDicomSeriesImageByImage(self, seriesName, studyName)
         except Exception as e:
             print('Error in DisplayImageColour.updateDICOM: ' + str(e))
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))
@@ -1048,7 +1053,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut
         print('Error in DisplayImageColour.updateWholeDicomSeries: ' + str(e))
 
 
-def updateDicomSeriesImageByImage(self, seriesName, studyName, colourTable, lut=None):
+def updateDicomSeriesImageByImage(self, seriesName, studyName):
     """Updates one or more images in a DICOM series each with potentially
     a different table and set of levels
     
@@ -1084,8 +1089,8 @@ def updateDicomSeriesImageByImage(self, seriesName, studyName, colourTable, lut=
                 # Update an individual DICOM file in the series
                 levels = [center, width]  
                 dataset = readDICOM_Image.getDicomDataset(imagePath)
-                updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourTable=selectedColourMap, 
-                                                    levels=levels, lut=lut)
+                updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                                                    levels=levels, lut=None)
                 saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import  Qt
-from PyQt5.QtWidgets import (QAction, QApplication, QMessageBox)
+from PyQt5.QtWidgets import (QAction, QApplication, QMessageBox, QMenu)
 from PyQt5.QtGui import  QIcon
 import os
 import sys
@@ -91,17 +91,30 @@ def tileAllSubWindows(self):
             subWin.setGeometry(width * 0.4,0,width*0.3,height*0.5)
         #self.mdiArea.tileSubWindows()
 
+def buildContextMenu(self, pos):
+    bothImagesAndSeries = True
+    context = QMenu()
+    viewImageButton = QAction('View Image with colour table', self)
+    viewImageButton.triggered.connect(lambda: viewImage(self))
+    viewImageButton.setData(bothImagesAndSeries)
+    context.addAction(viewImageButton)
+    context.exec_(self.treeView.mapToGlobal(pos))
+
+def returnViewAction(self):
+    bothImagesAndSeries = True
+    self.viewImageButton = QAction('&View Image', self)
+    self.viewImageButton.setShortcut('Ctrl+V')
+    self.viewImageButton.setStatusTip('View DICOM Image or series')
+    self.viewImageButton.triggered.connect(lambda: viewImage(self))
+    self.viewImageButton.setData(bothImagesAndSeries)
+    self.viewImageButton.setEnabled(False)
+    return self.viewImageButton
 
 def buildToolsMenu(self):
     try:
         bothImagesAndSeries = True
-        self.viewImageButton = QAction('&View Image', self)
-        self.viewImageButton.setShortcut('Ctrl+V')
-        self.viewImageButton.setStatusTip('View DICOM Image or series')
-        self.viewImageButton.triggered.connect(lambda: viewImage(self))
-        self.viewImageButton.setData(bothImagesAndSeries)
-        self.viewImageButton.setEnabled(False)
-        self.toolsMenu.addAction(self.viewImageButton)
+        self.viewAction = returnViewAction(self)
+        self.toolsMenu.addAction(self.viewAction)
 
         self.viewImageROIButton = QAction('View Image with &ROI', self)
         self.viewImageROIButton.setShortcut('Ctrl+R')

@@ -61,8 +61,10 @@ class UserSelection:
 
     def updateColourTable(this, imageName, colourTable):
         """Updates the name of the colour table belonging to an image"""
-        this.applyUserSelectionToAnImage = True
+        this._applyUserSelectionToAnImage = True
+        print("in updateColourTable apply={}".format(this._applyUserSelectionToAnImage))
         imageNumber = this.returnImageNumber(imageName)
+        print("in updateColourTable name={}, number={}".format(imageName,imageNumber))
         this.listImageLists[imageNumber][1] =  colourTable
 
 

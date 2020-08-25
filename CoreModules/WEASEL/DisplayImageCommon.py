@@ -24,28 +24,28 @@ import math
 import logging
 logger = logging.getLogger(__name__)
 
-def setPgColourMap(cm_name, imv, cmbColours=None, lut=None):
+def setPgColourMap(colourTable, imv, cmbColours=None, lut=None):
     """This function converts a matplotlib colour map into
     a colour map that can be used by pyqtGraph imageView widget. 
     Input Parmeters
     ***************
-        cm_name - name of the colour map
+        colourTable - name of the colour map
         imv - name of the imageView widget
         cmbColours - name of the dropdown lists of colour map names
         lut - name of the look up table containing raw colour data
     """
 
     try:
-        if cm_name == None:
-            cm_name = 'gray'
+        if colourTable == None:
+            colourTable = 'gray'
 
         if cmbColours:
-            displayColourTableInComboBox(cmbColours, cm_name)   
+            displayColourTableInComboBox(cmbColours, colourTable)   
         
-        if cm_name == 'custom':
+        if colourTable == 'custom':
             colors = lut
         else:
-            cmMap = cm.get_cmap(cm_name)
+            cmMap = cm.get_cmap(colourTable)
             colourClassName = cmMap.__class__.__name__
             if colourClassName == 'ListedColormap':
                 colors = cmMap.colors
@@ -217,7 +217,7 @@ def readLevelsFromDICOMImage(self, pixelArray):
             maximumValue = -1  
             minimumValue = -1 
             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-            if dataset:
+            if dataset and hasattr(dataset, 'WindowCenter'):
                 slope = float(getattr(dataset, 'RescaleSlope', 1))
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                 centre = dataset.WindowCenter * slope + intercept

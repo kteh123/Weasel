@@ -1,7 +1,8 @@
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QMdiSubWindow,
-    QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, 
+                             QMdiSubWindow, QMenu, QAction,
+                            QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
 
 import os
 import sys
@@ -10,6 +11,12 @@ import time
 import CoreModules.WEASEL.Menus  as menus
 logger = logging.getLogger(__name__)
 
+def on_context_menu(self, pos):
+  context = QMenu(self)
+  context.addAction(QAction("test 1", self))
+  context.addAction(QAction("test 2", self))
+  context.addAction(QAction("test 3", self))
+  context.exec_(self.treeView.mapToGlobal(pos))
 
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -59,6 +66,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
+                self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+                self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
                 
                 treeWidgetItemCounter = 0 
                 studies = self.objXMLReader.getStudies()
