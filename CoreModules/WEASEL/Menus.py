@@ -92,35 +92,43 @@ def tileAllSubWindows(self):
         #self.mdiArea.tileSubWindows()
 
 def buildContextMenu(self, pos):
-    bothImagesAndSeries = True
-    context = QMenu()
-    viewImageButton = QAction('View Image with colour table', self)
-    viewImageButton.triggered.connect(lambda: viewImage(self))
-    viewImageButton.setData(bothImagesAndSeries)
+    context = QMenu(self)
+
+    viewImageButton = returnViewAction(self)
     context.addAction(viewImageButton)
+
+    viewImageROIButton = returnViewROIAction(self)
+    context.addAction(viewImageROIButton)
+
     context.exec_(self.treeView.mapToGlobal(pos))
 
-def returnViewAction(self):
-    bothImagesAndSeries = True
+
+def returnViewAction(self, bothImagesAndSeries = True):
     self.viewImageButton = QAction('&View Image', self)
     self.viewImageButton.setShortcut('Ctrl+V')
     self.viewImageButton.setStatusTip('View DICOM Image or series')
     self.viewImageButton.triggered.connect(lambda: viewImage(self))
     self.viewImageButton.setData(bothImagesAndSeries)
-    self.viewImageButton.setEnabled(False)
     return self.viewImageButton
+
+
+def returnViewROIAction(self, bothImagesAndSeries = True):
+    self.viewImageROIButton = QAction('View Image with &ROI', self)
+    self.viewImageROIButton.setShortcut('Ctrl+R')
+    self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
+    self.viewImageROIButton.triggered.connect(lambda: viewROIImage(self))
+    self.viewImageROIButton.setData(bothImagesAndSeries)
+    return self.viewImageROIButton
+
 
 def buildToolsMenu(self):
     try:
-        bothImagesAndSeries = True
+        bothImagesAndSeries = True  #delete later?
         self.viewAction = returnViewAction(self)
+        self.viewAction.setEnabled(False)
         self.toolsMenu.addAction(self.viewAction)
 
-        self.viewImageROIButton = QAction('View Image with &ROI', self)
-        self.viewImageROIButton.setShortcut('Ctrl+R')
-        self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
-        self.viewImageROIButton.triggered.connect(lambda: viewROIImage(self))
-        self.viewImageROIButton.setData(bothImagesAndSeries)
+        self.viewImageROIButton  = returnViewROIAction(self)
         self.viewImageROIButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageROIButton)
 

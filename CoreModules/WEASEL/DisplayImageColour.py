@@ -143,6 +143,12 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
                                     imv, colourTable, cmbColours, lblHiddenSeriesName.text(),
                                     lut) 
 
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox()
+                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()
         except Exception as e:
             print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
             logger.error('Error in  DisplayImageColour.displayImageSubWindow: ' + str(e)) 
@@ -263,7 +269,13 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
                                       imageSlider.value()))
-           
+
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox() 
+                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()  
         except Exception as e:
             print('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))
             logger.error('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))

@@ -67,6 +67,12 @@ def displayImageROISubWindow(self, derivedImagePath=None):
                            colourTable,
                           imv)
 
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox()
+                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()
         except Exception as e:
             print('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e))
             logger.error('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e)) 
@@ -139,7 +145,13 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     lblImageMissing, 
                                     lblPixelValue, 
                                     imv, subWindow)
-            
+
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox()
+                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()    
         except Exception as e:
             print('Error in displayMultiImageROISubWindow: ' + str(e))
             logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
