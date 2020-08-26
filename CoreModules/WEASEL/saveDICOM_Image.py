@@ -372,8 +372,9 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
         new colourmap selected in the interface. It will have more features in the future.
     """
     try:
-        if (colourmap is not None) and (colourmap != 'gray') \
-            and (colourmap != 'custom') and (colourmap != 'default') and isinstance(colourmap, str):
+        #and (colourmap != 'gray') removed from If statement below, so as to save gray colour tables
+        if ((colourmap is not None)  and (colourmap != 'custom') 
+            and (colourmap != 'default') and isinstance(colourmap, str)):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'
             dicomData.RGBLUTTransferFunction = 'TABLE'
             dicomData.ContentLabel = colourmap

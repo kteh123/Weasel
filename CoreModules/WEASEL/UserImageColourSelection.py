@@ -48,6 +48,23 @@ class UserSelection:
             image[3] = -1 
 
 
+    def updateUserSelection(this, imageName, colourTable, intensity, contrast):
+        """Saves the new colour table name,  intensity and contrast levels the user has
+        selected for the image called imageName in the list of lists
+        called listImageLists"""
+        try:
+            this._applyUserSelectionToAnImage = True 
+            imageNumber = this.returnImageNumber(imageName)
+             
+            #Associate the levels with the image being viewed
+            this.listImageLists[imageNumber][1] = colourTable
+            this.listImageLists[imageNumber][2] = intensity
+            this.listImageLists[imageNumber][3] = contrast    
+        except Exception as e:
+            print('Error in UserImageColourSelection.updateUserSelection: ' + str(e))
+            logger.error('Error in UserImageColourSelection.updateUserSelection: ' + str(e)) 
+
+
     def updateLevels(this, imageName, intensity, contrast):
         """Saves the new intensity and contrast levels the user has
         selected for the image called imageName in the list of lists
@@ -62,9 +79,9 @@ class UserSelection:
     def updateColourTable(this, imageName, colourTable):
         """Updates the name of the colour table belonging to an image"""
         this._applyUserSelectionToAnImage = True
-        print("in updateColourTable apply={}".format(this._applyUserSelectionToAnImage))
+        #print("in updateColourTable apply={}".format(this._applyUserSelectionToAnImage))
         imageNumber = this.returnImageNumber(imageName)
-        print("in updateColourTable name={}, number={}".format(imageName,imageNumber))
+        #print("in updateColourTable name={}, number={}".format(imageName,imageNumber))
         this.listImageLists[imageNumber][1] =  colourTable
 
 
@@ -81,8 +98,8 @@ class UserSelection:
                     break
             return imageNumber
         except Exception as e:
-            print('Error in DisplayImageColour.UserSelection.returnImageNumber: ' + str(e))
-            logger.error('Error in DisplayImageColour.UserSelection.returnImageNumber: ' + str(e)) 
+            print('Error in UserImageColourSelection.returnImageNumber: ' + str(e))
+            logger.error('Error in UserImageColourSelection.returnImageNumber: ' + str(e)) 
 
 
     def returnUserSelection(this, imageNumber):
