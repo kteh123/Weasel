@@ -20,6 +20,7 @@ from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import numpy as np
+from scipy.stats import iqr
 import math
 import logging
 logger = logging.getLogger(__name__)
@@ -44,15 +45,16 @@ def setPgColourMap(colourTable, imv, cmbColours=None, lut=None):
         
         if colourTable == 'custom':
             colors = lut
+        elif colourTable == 'gray':
+            colors = [[0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0]]
         else:
             cmMap = cm.get_cmap(colourTable)
             colourClassName = cmMap.__class__.__name__
             if colourClassName == 'ListedColormap':
                 colors = cmMap.colors
             elif colourClassName == 'LinearSegmentedColormap':
-                numberOfValues = np.sqrt(len(imv.image.flatten()))
-                colors = cmMap(np.linspace(0, 1, numberOfValues))
-
+                colors = cmMap(np.linspace(0, 1))
+          
         positions = np.linspace(0, 1, len(colors))
         pgMap = pg.ColorMap(positions, colors)
         imv.setColorMap(pgMap)        
@@ -217,7 +219,7 @@ def readLevelsFromDICOMImage(self, pixelArray):
             maximumValue = -1  
             minimumValue = -1 
             dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
-            if dataset and hasattr(dataset, 'WindowCenter'):
+            if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
                 slope = float(getattr(dataset, 'RescaleSlope', 1))
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                 centre = dataset.WindowCenter * slope + intercept
