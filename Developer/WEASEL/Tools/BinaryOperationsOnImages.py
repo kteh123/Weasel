@@ -173,6 +173,13 @@ def displayBinaryOperationsWindow(self):
             self.subWindow.setGeometry(0,0,width*0.5,height*0.5)
             self.mdiArea.addSubWindow(self.subWindow)
             self.subWindow.show()
+
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Binary operations on a DICOM series")
+                msgBox.setText("Select a series")
+                msgBox.exec()
         except Exception as e:
             print('Error in displayBinaryOperationsWindow: ' + str(e))
             logger.error('Error in displayBinaryOperationsWindow: ' + str(e))

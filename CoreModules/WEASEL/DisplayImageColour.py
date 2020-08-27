@@ -146,7 +146,7 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
-                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setWindowTitle("View a DICOM series or image")
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()
         except Exception as e:
@@ -273,7 +273,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox() 
-                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setWindowTitle("View a DICOM series or image")
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()  
         except Exception as e:
@@ -1035,7 +1035,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut
         for imagePath in imagePathList:
             dataset = readDICOM_Image.getDicomDataset(imagePath) 
             # Update every DICOM file in the series                                     
-            updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourTable=colourTable, levels=levels, lut=lut)
+            updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=colourTable, levels=levels, lut=lut)
             saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)

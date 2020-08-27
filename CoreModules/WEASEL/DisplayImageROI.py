@@ -70,7 +70,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
-                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setWindowTitle("View a DICOM series or image with an ROI")
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()
         except Exception as e:
@@ -149,7 +149,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
-                msgbox.setWindowTitle("View a DICOM series or image")
+                msgBox.setWindowTitle("View a DICOM series or image with an ROI")
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()    
         except Exception as e:

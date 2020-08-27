@@ -22,6 +22,11 @@ logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'
 
+class NoTreeViewItemSelected(Exception):
+   """Raised when the name of the function corresponding 
+   to a model is not returned from the XML configuration file."""
+   pass
+
 def setupMenus(self):  
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
@@ -91,6 +96,7 @@ def tileAllSubWindows(self):
             subWin.setGeometry(width * 0.4,0,width*0.3,height*0.5)
         #self.mdiArea.tileSubWindows()
 
+
 def buildContextMenu(self, pos):
     context = QMenu(self)
 
@@ -99,6 +105,18 @@ def buildContextMenu(self, pos):
 
     viewImageROIButton = returnViewROIAction(self)
     context.addAction(viewImageROIButton)
+
+    viewMetaDataButton =  returnViewMetaDataAction(self)
+    context.addAction(viewMetaDataButton)
+
+    deleteImageButton =  returnDeleteImageAction(self)
+    context.addAction(deleteImageButton)
+
+    copySeriesButton =  returnCopySeriesAction(self)
+    context.addAction(copySeriesButton)
+
+    binaryOperationsButton = returnBinaryOperationsAction(self)
+    context.addAction(binaryOperationsButton)
 
     context.exec_(self.treeView.mapToGlobal(pos))
 
@@ -121,6 +139,45 @@ def returnViewROIAction(self, bothImagesAndSeries = True):
     return self.viewImageROIButton
 
 
+def returnViewMetaDataAction(self, bothImagesAndSeries = True):
+    self.viewMetaDataButton = QAction('&View Metadata', self)
+    self.viewMetaDataButton.setShortcut('Ctrl+M')
+    self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
+    self.viewMetaDataButton.triggered.connect(lambda: viewMetaData.viewMetadata(self))
+    self.viewMetaDataButton.setData(bothImagesAndSeries)
+    return self.viewMetaDataButton
+
+
+def returnDeleteImageAction(self, bothImagesAndSeries = True):
+    self.deleteImageButton = QAction('&Delete Image', self)
+    self.deleteImageButton.setShortcut('Ctrl+D')
+    self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
+    self.deleteImageButton.triggered.connect(lambda: deleteImage(self))
+    self.deleteImageButton.setData(bothImagesAndSeries)
+    return self.deleteImageButton
+
+
+def returnCopySeriesAction(self, bothImagesAndSeries = False):
+    self.copySeriesButton = QAction('&Copy Series', self)
+    self.copySeriesButton.setShortcut('Ctrl+C')
+    self.copySeriesButton.setStatusTip('Copy a DICOM series') 
+    self.copySeriesButton.setData(bothImagesAndSeries)
+    self.copySeriesButton.triggered.connect(
+        lambda:copyDICOM_Image.copySeries(self))
+    return self.copySeriesButton
+
+
+def returnBinaryOperationsAction(self, bothImagesAndSeries = False):
+    self.binaryOperationsButton = QAction('&Binary Operations', self)
+    self.binaryOperationsButton.setShortcut('Ctrl+B')
+    self.binaryOperationsButton.setStatusTip(
+        'Performs binary operations on two images')
+    self.binaryOperationsButton.setData(bothImagesAndSeries)
+    self.binaryOperationsButton.triggered.connect(
+        lambda: binaryOperationsOnImages.displayBinaryOperationsWindow(self))
+    return self.binaryOperationsButton
+
+
 def buildToolsMenu(self):
     try:
         bothImagesAndSeries = True  #delete later?
@@ -132,41 +189,23 @@ def buildToolsMenu(self):
         self.viewImageROIButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewImageROIButton)
 
-        self.viewMetaDataButton = QAction('&View Metadata', self)
-        self.viewMetaDataButton.setShortcut('Ctrl+M')
-        self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
-        self.viewMetaDataButton.triggered.connect(lambda: viewMetaData.viewMetadata(self))
-        self.viewMetaDataButton.setData(bothImagesAndSeries)
+        self.viewMetaDataButton = returnViewMetaDataAction(self)
         self.viewMetaDataButton.setEnabled(False)
         self.toolsMenu.addAction(self.viewMetaDataButton)
         
-        self.deleteImageButton = QAction('&Delete Image', self)
-        self.deleteImageButton.setShortcut('Ctrl+D')
-        self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-        self.deleteImageButton.triggered.connect(lambda: deleteImage(self))
-        self.deleteImageButton.setData(bothImagesAndSeries)
+        self.deleteImageButton = returnDeleteImageAction(self)
         self.deleteImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.deleteImageButton)
         
-        self.copySeriesButton = QAction('&Copy Series', self)
-        self.copySeriesButton.setShortcut('Ctrl+C')
-        self.copySeriesButton.setStatusTip('Copy a DICOM series') 
-        bothImagesAndSeries = False
-        self.copySeriesButton.setData(bothImagesAndSeries)
-        self.copySeriesButton.triggered.connect(
-            lambda:copyDICOM_Image.copySeries(self))
+        
+        self.copySeriesButton =  returnCopySeriesAction(self)
         self.copySeriesButton.setEnabled(False)
         self.toolsMenu.addAction(self.copySeriesButton)
         
+
         self.toolsMenu.addSeparator()
-        self.binaryOperationsButton = QAction('&Binary Operations', self)
-        self.binaryOperationsButton.setShortcut('Ctrl+B')
-        self.binaryOperationsButton.setStatusTip(
-            'Performs binary operations on two images')
-        bothImagesAndSeries = False
-        self.binaryOperationsButton.setData(bothImagesAndSeries)
-        self.binaryOperationsButton.triggered.connect(
-            lambda: binaryOperationsOnImages.displayBinaryOperationsWindow(self))
+      
+        self.binaryOperationsButton = returnBinaryOperationsAction(self)
         self.binaryOperationsButton.setEnabled(False)
         self.toolsMenu.addAction(self.binaryOperationsButton)
         
@@ -183,7 +222,6 @@ def buildToolsMenu(self):
         self.toolsMenu.addAction(self.launchFerretButton)
     except Exception as e:
         print('Error in function Menus.buildToolsMenu: ' + str(e))
-
 
 
 def addUserDefinedToolsMenuItems(self):
@@ -249,6 +287,12 @@ def viewROIImage(self):
     Executed using the 'View Image with ROI' Menu item in the Tools menu."""
     try:
         logger.info("Menus.viewROIImage called")
+        #print('treeView.isAnItemSelected(self)={}'.format(treeView.isAnItemSelected(self)))
+        #print('treeView.isAnImageSelected(self)={}'.format(treeView.isAnImageSelected(self)))
+        #print('treeView.isASeriesSelected(self)={}'.format(treeView.isASeriesSelected(self)))
+        if treeView.isAnItemSelected(self) == False:
+            raise NoTreeViewItemSelected
+
         if treeView.isAnImageSelected(self):
             displayImageROI.displayImageROISubWindow(self)
         elif treeView.isASeriesSelected(self):
@@ -256,17 +300,25 @@ def viewROIImage(self):
             seriesID = self.selectedSeries
             self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
             displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyID, seriesID)
+
+    except NoTreeViewItemSelected:
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("View DICOM series or image with ROI")
+            msgBox.setText("Select either a series or an image")
+            msgBox.exec()
     except Exception as e:
         print('Error in Menus.viewROIImage: ' + str(e))
         logger.error('Error in Menus.viewROIImage: ' + str(e))
 
 
 def deleteImage(self):
-        """TO DO"""
         """This method deletes an image or a series of images by 
         deleting the physical file(s) and then removing their entries
         in the XML file."""
         try:
+            if treeView.isAnItemSelected(self) == False:
+                raise NoTreeViewItemSelected
+
             studyID = self.selectedStudy
             seriesID = self.selectedSeries
             if treeView.isAnImageSelected(self):
@@ -280,7 +332,7 @@ def deleteImage(self):
                     if os.path.exists(imagePath):
                         os.remove(imagePath)
                     #If this image is displayed, close its subwindow
-                    self.closeSubWindow(imagePath)
+                    displayImageCommon.closeSubWindow(imagePath)
                     #Is this the last image in a series?
                     #Get the series containing this image and count the images it contains
                     #If it is the last image in a series then remove the
@@ -315,8 +367,13 @@ def deleteImage(self):
                             os.remove(imagePath)
                     #Remove the series from the XML file
                     self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
-                    self.closeSubWindow(seriesID)
+                    displayImageCommon.closeSubWindow(seriesID)
                 treeView.refreshDICOMStudiesTreeView(self)
+        except NoTreeViewItemSelected:
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("Delete a DICOM series or image")
+            msgBox.setText("Select either a series or an image")
+            msgBox.exec()
         except Exception as e:
             print('Error in deleteImage: ' + str(e))
             logger.error('Error in deleteImage: ' + str(e))

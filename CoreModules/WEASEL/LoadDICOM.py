@@ -29,7 +29,10 @@ def loadDICOM(self):
     try:
         logger.info("LoadDICOM.loadDICOM called")
         displayImageCommon.closeAllSubWindows(self)
-
+        self.selectedStudy = ''
+        self.selectedSeries = ''
+        self.selectedImageName = ''
+        self.currentImagePath = ''
         #browse to DICOM folder and get DICOM folder name
         scan_directory = getScanDirectory(self)
         if scan_directory:

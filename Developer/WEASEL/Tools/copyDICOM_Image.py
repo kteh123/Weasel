@@ -6,6 +6,7 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
+from PyQt5.QtWidgets import QMessageBox
 
 FILE_SUFFIX = '_Copy'
 
@@ -60,6 +61,12 @@ def copySeries(objWeasel):
         displayImageColour.displayMultiImageSubWindow(objWeasel, copiedImagePathList, 
                                               studyID, newSeriesID)
         treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+
+    except (IndexError, AttributeError):
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Copy a DICOM series")
+                msgBox.setText("Select either a series")
+                msgBox.exec()
     except Exception as e:
         print('Error in copyDICOM_Image.copySeries: ' + str(e))
 

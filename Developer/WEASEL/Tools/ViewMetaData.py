@@ -32,6 +32,11 @@ def viewMetadata(self):
             dataset = readDICOM_Image.getDicomDataset(firstImagePath)
             displayMetaDataSubWindow(self, "Metadata for series {}".format(seriesID), 
                                             dataset)
+    except (IndexError, AttributeError):
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("View DICOM Metadata")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()
     except Exception as e:
         print('Error in ViewMataData.viewMetadata: ' + str(e))
         logger.error('Error in ViewMataData.viewMetadata: ' + str(e))

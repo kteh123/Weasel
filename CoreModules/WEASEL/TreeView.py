@@ -11,13 +11,6 @@ import time
 import CoreModules.WEASEL.Menus  as menus
 logger = logging.getLogger(__name__)
 
-def on_context_menu(self, pos):
-  context = QMenu(self)
-  context.addAction(QAction("test 1", self))
-  context.addAction(QAction("test 2", self))
-  context.addAction(QAction("test 3", self))
-  context.exec_(self.treeView.mapToGlobal(pos))
-
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -223,6 +216,20 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
+
+def isAnItemSelected(self):
+    """Returns True is an item is selected DICOM
+    tree view, else returns False"""
+    try:
+        logger.info("WEASEL isAnItemSelected called.")
+        selectedItem = self.treeView.currentItem()
+        if selectedItem:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print('Error in isAnItemSelected: ' + str(e))
+        logger.error('Error in isAnItemSelected: ' + str(e))
 
 def isAnImageSelected(self):
         """Returns True is a single image is selected in the DICOM

@@ -54,12 +54,12 @@ class Weasel(QMainWindow):
         self.mdiArea = QMdiArea(self.centralwidget)
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
-        self.currentImagePath = ''
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
         self.selectedStudy = ''
         self.selectedSeries = ''
         self.selectedImageName = ''
+        self.currentImagePath = ''
         
          # XML reader object to process XML configuration file
         self.objXMLReader = WeaselXMLReader() 
