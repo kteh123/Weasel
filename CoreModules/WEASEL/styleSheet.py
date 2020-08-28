@@ -87,15 +87,47 @@ TRISTAN_GREY = """
                 QCheckBox:hover{
                         background-color: rgb(175, 175, 175);
                         border-color: rgb(200, 51, 255);}
-
-                QTreeWidget{
+                
+                QTreeView {
                     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
                                                           stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+
+                    show-decoration-selected: 1;
                     }
+
+                QTreeView::branch:hover {
+                    background: #cce5ff;
+                    }
+
+               QTreeView::branch:selected {
+                    background: darkblue;
+                    color: white;
+                    }
+
+                QTreeView::branch:selected:hover {
+                    background: darkblue;
+                    color: white;
+                    }
+
+                QTreeView::item:selected {
+                    background: darkblue;
+                    color: white;
+                    }
+
+                QTreeView::item:hover {
+                    background: #cce5ff;
+                    }
+
+                QTreeView::item:selected:hover {
+                    background: darkblue;
+                    color: white;
+                    }
+
                 QTableWidget {
                     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
                                                           stop: 0 #CCCCBB, stop: 1 #FFFFFF);
                     }
+                
 
                 QTableWidget::item {
                     border: 5px solid rgba(68, 119, 170, 150);

@@ -18,6 +18,8 @@ def viewMetadata(self):
     """Creates a subwindow that displays a DICOM image's metadata. """
     try:
         logger.info("ViewMataData.viewMetadata called")
+        QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
+
         if treeView.isAnImageSelected(self):
             imagePath = self.selectedImagePath
             imageName = self.selectedImageName
@@ -32,7 +34,10 @@ def viewMetadata(self):
             dataset = readDICOM_Image.getDicomDataset(firstImagePath)
             displayMetaDataSubWindow(self, "Metadata for series {}".format(seriesID), 
                                             dataset)
+
+        QApplication.restoreOverrideCursor()
     except (IndexError, AttributeError):
+                QApplication.restoreOverrideCursor()
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle("View DICOM Metadata")
                 msgBox.setText("Select either a series or an image")
