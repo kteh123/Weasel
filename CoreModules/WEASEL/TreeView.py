@@ -222,8 +222,7 @@ def isAnItemSelected(self):
     tree view, else returns False"""
     try:
         logger.info("WEASEL isAnItemSelected called.")
-        selectedItem = self.treeView.currentItem()
-        if selectedItem:
+        if self.treeView.selectedItems():
             return True
         else:
             return False

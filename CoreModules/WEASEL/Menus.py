@@ -109,14 +109,13 @@ def buildContextMenu(self, pos):
     viewMetaDataButton =  returnViewMetaDataAction(self)
     context.addAction(viewMetaDataButton)
 
-    deleteImageButton =  returnDeleteImageAction(self)
-    context.addAction(deleteImageButton)
-
     copySeriesButton =  returnCopySeriesAction(self)
     context.addAction(copySeriesButton)
 
-    binaryOperationsButton = returnBinaryOperationsAction(self)
-    context.addAction(binaryOperationsButton)
+    #deleteImageButton =  returnDeleteImageAction(self)
+    #context.addAction(deleteImageButton)
+    #binaryOperationsButton = returnBinaryOperationsAction(self)
+    #context.addAction(binaryOperationsButton)
 
     context.exec_(self.treeView.mapToGlobal(pos))
 
@@ -149,7 +148,7 @@ def returnViewMetaDataAction(self, bothImagesAndSeries = True):
 
 
 def returnDeleteImageAction(self, bothImagesAndSeries = True):
-    self.deleteImageButton = QAction('&Delete Image', self)
+    self.deleteImageButton = QAction('&Delete Series/Image', self)
     self.deleteImageButton.setShortcut('Ctrl+D')
     self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
     self.deleteImageButton.triggered.connect(lambda: deleteImage(self))
@@ -270,13 +269,13 @@ def viewImage(self):
         in the DICOM studies tree view."""
         try:
             logger.info("Menus.viewImage called")
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
+            studyName = self.selectedStudy 
+            seriesName = self.selectedSeries
             if treeView.isAnImageSelected(self):
-                displayImageColour.displayImageSubWindow(self, studyID, seriesID)
+                displayImageColour.displayImageSubWindow(self, studyName, seriesName)
             elif treeView.isASeriesSelected(self):
-                self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
-                displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyID, seriesID)
+                self.imageList = self.objXMLReader.getImagePathList(studyName, seriesName)
+                displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyName, seriesName)
         except Exception as e:
             print('Error in Menus.viewImage: ' + str(e))
             logger.error('Error in Menus.viewImage: ' + str(e))
@@ -290,16 +289,17 @@ def viewROIImage(self):
         #print('treeView.isAnItemSelected(self)={}'.format(treeView.isAnItemSelected(self)))
         #print('treeView.isAnImageSelected(self)={}'.format(treeView.isAnImageSelected(self)))
         #print('treeView.isASeriesSelected(self)={}'.format(treeView.isASeriesSelected(self)))
+        
         if treeView.isAnItemSelected(self) == False:
             raise NoTreeViewItemSelected
 
         if treeView.isAnImageSelected(self):
             displayImageROI.displayImageROISubWindow(self)
         elif treeView.isASeriesSelected(self):
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
-            self.imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyID, seriesID)
+            studyName = self.selectedStudy 
+            seriesName = self.selectedSeries
+            self.imageList = self.objXMLReader.getImagePathList(studyName, seriesName)
+            displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyName, seriesName)
 
     except NoTreeViewItemSelected:
             msgBox = QMessageBox()
@@ -315,12 +315,13 @@ def deleteImage(self):
         """This method deletes an image or a series of images by 
         deleting the physical file(s) and then removing their entries
         in the XML file."""
+        logger.info("Menus.deleteImage called")
         try:
             if treeView.isAnItemSelected(self) == False:
                 raise NoTreeViewItemSelected
 
-            studyID = self.selectedStudy
-            seriesID = self.selectedSeries
+            studyName = self.selectedStudy
+            seriesName = self.selectedSeries
             if treeView.isAnImageSelected(self):
                 imageName = self.selectedImageName
                 imagePath = self.selectedImagePath
@@ -332,42 +333,42 @@ def deleteImage(self):
                     if os.path.exists(imagePath):
                         os.remove(imagePath)
                     #If this image is displayed, close its subwindow
-                    displayImageCommon.closeSubWindow(imagePath)
+                    displayImageCommon.closeSubWindow(self, imagePath)
                     #Is this the last image in a series?
                     #Get the series containing this image and count the images it contains
                     #If it is the last image in a series then remove the
                     #whole series from XML file
                     #No it is not the last image in a series
                     #so just remove the image from the XML file 
-                    images = self.objXMLReader.getImageList(studyID, seriesID)
+                    images = self.objXMLReader.getImageList(studyName, seriesName)
                     if len(images) == 1:
                         #only one image, so remove the series from the xml file
                         #need to get study (parent) containing this series (child)
                         #then remove child from parent
-                        self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+                        self.objXMLReader.removeSeriesFromXMLFile(studyName, seriesName)
                     elif len(images) > 1:
                         #more than 1 image in the series, 
                         #so just remove the image from the xml file
                         self.objXMLReader.removeOneImageFromSeries(
-                            studyID, seriesID, imagePath)
+                            studyName, seriesName, imagePath)
                     #Update tree view with xml file modified above
                     treeView.refreshDICOMStudiesTreeView(self)
             elif treeView.isASeriesSelected(self):
                 buttonReply = QMessageBox.question(self, 
-                  'Delete DICOM series', "You are about to delete series {}".format(seriesID), 
+                  'Delete DICOM series', "You are about to delete series {}".format(seriesName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if buttonReply == QMessageBox.Ok:
                     #Delete each physical file in the series
                     #Get a list of names of images in that series
-                    imageList = self.objXMLReader.getImagePathList(studyID, 
-                                                                   seriesID) 
+                    imageList = self.objXMLReader.getImagePathList(studyName, 
+                                                                   seriesName) 
                     #Iterate through list of images and delete each image
                     for imagePath in imageList:
                         if os.path.exists(imagePath):
                             os.remove(imagePath)
                     #Remove the series from the XML file
-                    self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
-                    displayImageCommon.closeSubWindow(seriesID)
+                    self.objXMLReader.removeSeriesFromXMLFile(studyName, seriesName)
+                    displayImageCommon.closeSubWindow(self, seriesName)
                 treeView.refreshDICOMStudiesTreeView(self)
         except NoTreeViewItemSelected:
             msgBox = QMessageBox()
@@ -375,5 +376,5 @@ def deleteImage(self):
             msgBox.setText("Select either a series or an image")
             msgBox.exec()
         except Exception as e:
-            print('Error in deleteImage: ' + str(e))
-            logger.error('Error in deleteImage: ' + str(e))
+            print('Error in Menus.deleteImage: ' + str(e))
+            logger.error('Error in Menus.deleteImage: ' + str(e))

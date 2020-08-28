@@ -705,7 +705,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
 
             #Refresh the multi-image viewer to remove deleted image
             #First close it
-            self.closeSubWindow(seriesName)
+            displayImageCommon.closeSubWindow(self, seriesName)
                 
             if len(self.imageList) == 0:
                 #Only redisplay the multi-image viewer if there
