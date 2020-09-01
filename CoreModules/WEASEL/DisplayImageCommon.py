@@ -121,7 +121,9 @@ def setUpViewBoxForImage(layout, spinBoxIntensity = None, spinBoxContrast = None
 
 def getHistogramLevels(imv, spinBoxIntensity, spinBoxContrast):
         """
-        
+        This function determines contrast and intensity from the image
+        and set the contrast & intensity spinboxes to these values.
+
         Input Parameters
         *****************
         imv - pyqtGraph imageView widget
@@ -139,6 +141,10 @@ def setUpImageViewerSubWindow(self):
     """
     This function creates a subwindow with a vertical layout &
     a missing image label.
+
+    Input Parameters
+    ****************
+    self - an object reference to the WEASEL interface.
 
     Output Parameters
     *****************
@@ -163,7 +169,6 @@ def setUpImageViewerSubWindow(self):
         self.mdiArea.addSubWindow(subWindow)
         
         layout = QVBoxLayout()
-        #imageViewer = pg.GraphicsLayoutWidget()
         widget = QWidget()
         widget.setLayout(layout)
         subWindow.setWidget(widget)
@@ -180,7 +185,16 @@ def setUpImageViewerSubWindow(self):
 
 def getPixelValue(pos, imv, pixelArray, lblPixelValue):
     """
+    This function checks that the mouse pointer is over the
+    image and when it is, it determines the value of the pixel
+    under the mouse pointer and displays this in the label
+    lblPixelValue.
 
+    Input parameters
+    ****************
+    pos - X,Y coordinates of the mouse pointer
+    imv - pyqtGraph imageView widget
+    pixelArray - pixel array to be displayed in imv
     lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
                 and the X,Y coordinates of the mouse pointer.
     """
