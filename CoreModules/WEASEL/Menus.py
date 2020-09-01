@@ -109,8 +109,8 @@ def buildContextMenu(self, pos):
     viewMetaDataButton =  returnViewMetaDataAction(self)
     context.addAction(viewMetaDataButton)
 
-    copySeriesButton =  returnCopySeriesAction(self)
-    context.addAction(copySeriesButton)
+    #copySeriesButton =  returnCopySeriesAction(self)
+    #context.addAction(copySeriesButton)
 
     #deleteImageButton =  returnDeleteImageAction(self)
     #context.addAction(deleteImageButton)

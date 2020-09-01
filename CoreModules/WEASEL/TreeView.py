@@ -75,7 +75,6 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                     studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
                     studyBranch.setCheckState(0, Qt.Unchecked)
                     studyBranch.setExpanded(True)
-                    #elf.treeView.itemClicked(studyBranch, 0).connect(lambda: handleStudyChecked(self))
                     for series in study:
                         seriesID = series.attrib['id']
                         seriesBranch = QTreeWidgetItem(studyBranch)
@@ -124,7 +123,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                     branch.setExpanded(False)
 
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
-                self.treeView.itemChanged.connect(lambda item, col: handleStudyChecked(self, item, col))
+                self.treeView.itemChanged.connect(lambda item, col: selectSeriesInStudy(self, item, col))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
                 self.treeView.itemDoubleClicked.connect(lambda: menus.viewImage(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
@@ -142,7 +141,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView: ' + str(e)) 
 
 
-def handleStudyChecked(self, item, col):
+def selectSeriesInStudy(self, item, col):
     """If the state of a checkbox of a study is changed,
     this function sets the state of the child series checkboxes to
     match that of the parent study.
@@ -151,20 +150,22 @@ def handleStudyChecked(self, item, col):
     ****************
 
     """
-    logger.info("TreeView.handleStudyChecked called")
+    logger.info("TreeView.selectSeriesInStudy called")
     try:
         #Only run this function if the state of a study 
         #checkbox is changed. It has no parent
-        if item.parent() is None:
+        if item.parent() is None and col == 0:
             seriesCount = item.childCount()
             for n in range(seriesCount):
                 series = item.child(n)
                 #Give series checkboxes the same state as the 
                 #study checkboxes
                 series.setCheckState(0, item.checkState(0))
+                #series.setSelected(True)
+
     except Exception as e:
-            print('Error in TreeView.handleStudyChecked: ' + str(e))
-            logger.error('Error in TreeView.handleStudyChecked: ' + str(e))
+            print('Error in TreeView.selectSeriesInStudy: ' + str(e))
+            logger.error('Error in TreeView.selectSeriesInStudy: ' + str(e))
 
 
 def expandTreeViewBranch(self, branchText = ''):

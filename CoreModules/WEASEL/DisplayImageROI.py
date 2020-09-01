@@ -37,7 +37,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
             colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
-            imageViewer, layout, lblImageMissing, subWindow = \
+            layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
@@ -56,7 +56,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(lblHiddenImagePath)
 
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(imageViewer, layout)
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(layout)
             
             lblPixelValue, lblROIMeanValue = setUpLabels(layout)
            
@@ -87,7 +87,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageROI.displayMultiImageROISubWindow called")
-            imageViewer, layout, lblImageMissing, subWindow = \
+            layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
 
             #Study ID & Series ID are stored locally on the
@@ -110,7 +110,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
            
             imageSlider = QSlider(Qt.Horizontal)
 
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(imageViewer, layout) 
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(layout) 
             lblPixelValue, lblROIMeanValue = setUpLabels(layout)
             
             setUpROITools(viewBox, layout, img, lblROIMeanValue)

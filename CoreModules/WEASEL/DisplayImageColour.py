@@ -87,7 +87,7 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
             
-            imageViewer, layout, lblImageMissing, subWindow = \
+            layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
@@ -120,8 +120,7 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
 
             spinBoxIntensity = QDoubleSpinBox()
             spinBoxContrast = QDoubleSpinBox()
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage( 
-                                                     imageViewer, 
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(                                               
                                                      layout, 
                                                      spinBoxIntensity, 
                                                      spinBoxContrast)
@@ -178,7 +177,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
-            imageViewer, layout, lblImageMissing, subWindow = \
+            layout, lblImageMissing, subWindow = \
                 displayImageCommon.setUpImageViewerSubWindow(self)
 
             #set up list of lists to hold user selected colour table and level data
@@ -219,7 +218,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             spinBoxContrast = QDoubleSpinBox()
             imageSlider = QSlider(Qt.Horizontal)
 
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(imageViewer, 
+            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage( 
                                                      layout, spinBoxIntensity, spinBoxContrast) 
             lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
             lblPixelValue.show()

@@ -27,7 +27,8 @@ logger = logging.getLogger(__name__)
 
 def setPgColourMap(colourTable, imv, cmbColours=None, lut=None):
     """This function converts a matplotlib colour map into
-    a colour map that can be used by pyqtGraph imageView widget. 
+    a colour map that can be used by the pyqtGraph imageView widget.
+    
     Input Parmeters
     ***************
         colourTable - name of the colour map
@@ -65,6 +66,12 @@ def setPgColourMap(colourTable, imv, cmbColours=None, lut=None):
 
 def displayColourTableInComboBox(cmbColours, colourTable):
     """
+    This function causes the combobox widget cmbColours to 
+    display the name of the colour table stored in the string
+    variable colourTable. 
+
+     Input Parmeters
+     ****************
     cmbColours - name of the dropdown lists of colour map names
     colourTable - String variable containing the name of a colour table
     """
@@ -79,17 +86,29 @@ def displayColourTableInComboBox(cmbColours, colourTable):
             logger.error('Error in DisplayImageCommon.displayColourTableInComboBox: ' + str(e))
 
 
-def setUpViewBoxForImage(imageViewer, layout, spinBoxCentre = None, spinBoxWidth = None):
+def setUpViewBoxForImage(layout, spinBoxIntensity = None, spinBoxContrast = None):
+    """
+    Sets up the pyqtGraph imageView widget and associated colour levels histogram
+    for viewing a DICOM image.
+
+    Input Parameters
+    *****************
+    layout - PyQt5 QVBoxLayout vertical layout box
+    spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+    spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+    """
     try:
         logger.info("DisplayImageCommon.setUpViewBoxForImage called")
+        #imageViewer  = pyqtGraph Graphics Layout Used for laying out GraphicsWidgets in a grid
+        imageViewer = pg.GraphicsLayoutWidget()
         plotItem = imageViewer.addPlot() 
         plotItem.getViewBox().setAspectLocked() 
         img = pg.ImageItem(border='w')
             
         imv= pg.ImageView(view=plotItem, imageItem=img)
-        if spinBoxCentre and spinBoxWidth:
+        if spinBoxIntensity and spinBoxContrast:
             histogramObject = imv.getHistogramWidget().getHistogram()
-            histogramObject.sigLevelsChanged.connect(lambda: getHistogramLevels(imv, spinBoxCentre, spinBoxWidth))
+            histogramObject.sigLevelsChanged.connect(lambda: getHistogramLevels(imv, spinBoxIntensity, spinBoxContrast))
         imv.ui.roiBtn.hide()
         imv.ui.menuBtn.hide()
         layout.addWidget(imv)
@@ -100,15 +119,34 @@ def setUpViewBoxForImage(imageViewer, layout, spinBoxCentre = None, spinBoxWidth
         logger.error('Error in DisplayImageCommon.setUpViewBoxForImag: ' + str(e))
 
 
-def getHistogramLevels(imv, spinBoxCentre, spinBoxWidth):
+def getHistogramLevels(imv, spinBoxIntensity, spinBoxContrast):
+        """
+        
+        Input Parameters
+        *****************
+        imv - pyqtGraph imageView widget
+        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+        """
         minLevel, maxLevel = imv.getLevels()
         width = maxLevel - minLevel
         centre = minLevel + (width/2)
-        spinBoxCentre.setValue(centre)
-        spinBoxWidth.setValue(width)
+        spinBoxIntensity.setValue(centre)
+        spinBoxContrast.setValue(width)
 
 
 def setUpImageViewerSubWindow(self):
+    """
+    This function creates a subwindow with a vertical layout &
+    a missing image label.
+
+    Output Parameters
+    *****************
+    layout - PyQt5 QVBoxLayout vertical layout box
+    lblImageMissing - Label displaying the text 'Missing Image'. Hidden 
+                        until WEASEL tries to display a missing image
+    subWindow - An QMdiSubWindow subwindow
+    """
     try:
         logger.info("DisplayImageCommon.setUpImageViewerSubWindow called")
         pg.setConfigOptions(imageAxisOrder='row-major')
@@ -125,7 +163,7 @@ def setUpImageViewerSubWindow(self):
         self.mdiArea.addSubWindow(subWindow)
         
         layout = QVBoxLayout()
-        imageViewer = pg.GraphicsLayoutWidget()
+        #imageViewer = pg.GraphicsLayoutWidget()
         widget = QWidget()
         widget.setLayout(layout)
         subWindow.setWidget(widget)
@@ -134,7 +172,7 @@ def setUpImageViewerSubWindow(self):
         lblImageMissing.hide()
         layout.addWidget(lblImageMissing)
         subWindow.show()
-        return imageViewer, layout, lblImageMissing, subWindow
+        return layout, lblImageMissing, subWindow
     except Exception as e:
             print('Error in DisplayImageCommon.setUpImageViewerSubWindow: ' + str(e))
             logger.error('Error in DisplayImageCommon.displayMultiImageSubWindow: ' + str(e))
