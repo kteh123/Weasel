@@ -12,7 +12,7 @@ FILE_SUFFIX = '_Thresholded'
 def SliceBySlice(objWeasel):
     if tool.treeView.isAnImageSelected(objWeasel):
         imagePath = tool.getImagePath(objWeasel)
-        derivedImageFileName = tool.setNewFilePath(imagePath, FILE_SUFFIX)
+        #derivedImageFileName = tool.setNewFilePath(imagePath, FILE_SUFFIX)
         pixelArray = tool.getPixelArrayFromDICOM(imagePath)
         # Lower and upper threshold from the input window. No parameter validation here
         inputDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
@@ -25,5 +25,6 @@ def SliceBySlice(objWeasel):
     elif tool.treeView.isASeriesSelected(objWeasel):
         imagePathList = tool.getImagePathList(objWeasel)
         # Progress bar set to True and threshold values hard-coded (inserted in code)
-        derivedImagePathList, derivedImageList = tool.applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, thresholdPixelArray, 10, 70, progress_bar=True)        
-        tool.overwriteDICOMAndDisplayResult(objWeasel, imagePathList,  derivedImageList)
+        derivedImagePathList, derivedImageList = tool.applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, thresholdPixelArray, 0, 100, progress_bar=False)
+        #tool.overwriteDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList)
+        tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
