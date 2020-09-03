@@ -12,8 +12,8 @@ def editDICOM(objWeasel):
     paramList = tool.inputWindow(inputDict, title="Insert DICOM Tag element to change and its new value", helpText=helpMsg)
     tag = paramList[0]
     value = paramList[1]
-    tool.showProcessingMessageBox(objWeasel)
+    tool.showProcessingMessageBox(objWeasel, msg="")
     imagePath = tool.getImagePathList(objWeasel)
     tool.editDICOMTag(imagePath, tag, value)
     tool.messageWindow.closeMessageSubWindow(objWeasel)
-    viewMetaData.viewMetadata(objWeasel)
+    viewMetaData.viewMetadata(objWeasel) # Put it in Developer Tool

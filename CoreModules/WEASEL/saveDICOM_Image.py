@@ -196,7 +196,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom.SeriesTime = timeStr
         newDicom.ImageTime = timeStr
         newDicom.AcquisitionTime = timeStr
-        newDicom.ImageType = ["DERIVED"]
+        newDicom.ImageType.insert(0, "DERIVED")
 
         # Series, Instance and Class for Reference
         refd_series_sequence = Sequence()
@@ -273,7 +273,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 tempArray = np.squeeze(imageArray[index, ...])
     
             if int(np.amin(imageArray)) < 0:
-                newDicom.PixelRepresentation = 1
+                #newDicom.PixelRepresentation = 1
                 target = (np.power(2, newDicom.BitsAllocated) - 1)*(np.ones(np.shape(tempArray)))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
@@ -296,7 +296,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.add_new('0x00280106', 'SS', int(np.amin(imageArrayInt)))
                 newDicom.add_new('0x00280107', 'SS', int(np.amax(imageArrayInt)))
             else:
-                newDicom.PixelRepresentation = 0
+                #newDicom.PixelRepresentation = 0
                 target = (np.power(2, newDicom.BitsAllocated) - 1)*np.ones(np.shape(tempArray))
                 maximum = np.ones(np.shape(tempArray))*np.amax(tempArray)
                 minimum = np.ones(np.shape(tempArray))*np.amin(tempArray)
