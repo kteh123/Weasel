@@ -229,7 +229,17 @@ def getPixelValue(pos, imv, pixelArray, lblPixelValue):
 
 def getDICOMFileData(self):
         """When a DICOM image is selected in the tree view, this function
-        returns its description in the form - study number: series number: image name"""
+        returns its description in the form - study number: series number: image name
+        
+         Input Parameters
+        ****************
+            self - an object reference to the WEASEL interface.
+
+
+        Output Parameters
+        *****************
+        fullImageName - string containing the full description of a DICOM image
+        """
         try:
             logger.info("DisplayImageCommon.getDICOMFileData called.")
             selectedImage = self.treeView.selectedItems()
@@ -247,6 +257,7 @@ def getDICOMFileData(self):
         except Exception as e:
             print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
             logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+
 
 def readLevelsFromDICOMImage(self, pixelArray): 
         """Reads levels directly from the DICOM image
@@ -293,7 +304,13 @@ def readLevelsFromDICOMImage(self, pixelArray):
 
 
 def closeSubWindow(self, objectName):
-        """Closes a particular sub window in the MDI"""
+        """Closes a particular sub window in the MDI
+        
+        Input Parmeters
+        ***************
+        self - an object reference to the WEASEL interface.
+        objectName - object name of the subwindow to be closed
+        """
         logger.info("WEASEL closeSubWindow called for {}".format(objectName))
         for subWin in self.mdiArea.subWindowList():
             if subWin.objectName() == objectName:
