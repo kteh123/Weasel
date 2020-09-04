@@ -33,60 +33,64 @@ def saveImage(objWeasel):
         while True:
             inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg)
             listParams = inputDlg.returnListParameterValues()
-            if listParams[0] < listParams[1]:
+            if inputDlg.closeInputDialog():
+                print ("inputDlg.closeInputDialog()={}".format(inputDlg.closeInputDialog()))
+                break
+            if (listParams[0] < listParams[1]):
                 break
             else:
                 if warning:
                     helpMsg = helpMsg + "<H4><font color=\"red\"> Check input parameter values.</font></H4>"
                     warning = False  #only show this message once
-
-        if treeView.isAnImageSelected(objWeasel):
-            imagePath = objWeasel.selectedImagePath
-            pixelArray = returnPixelArray(imagePath, *listParams)
-            derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
-            # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
-            #Record squared image in XML file
-            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
-                                                 derivedImageFileName, FILE_SUFFIX)
-            #Update tree view with xml file modified above
-            treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
-        elif treeView.isASeriesSelected(objWeasel):
-            studyID = objWeasel.selectedStudy
-            seriesID = objWeasel.selectedSeries
-            imagePathList = \
-                    objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
-            #Iterate through list of images and square each image
-            derivedImagePathList = []
-            derivedImageList = []
-            numImages = len(imagePathList)
-            messageWindow.displayMessageSubWindow(objWeasel,
-              "<H4>Thresholding {} DICOM files</H4>".format(numImages),
-              "Thresholding DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(objWeasel,numImages)
-            imageCounter = 0
-            for imagePath in imagePathList:
-                derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-                derivedImage = returnPixelArray(imagePath, listParams[0], listParams[1])
-                derivedImagePathList.append(derivedImagePath)
-                derivedImageList.append(derivedImage)
-                imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
-            messageWindow.displayMessageSubWindow(objWeasel,
-              "<H4>Saving results into a new DICOM Series</H4>",
-              "Thresholding DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(objWeasel,2)
-            messageWindow.setMsgWindowProgBarValue(objWeasel,1)
-            # Save new DICOM series locally
-            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
-            newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
-                                                   imagePathList,
-                                                   derivedImagePathList, FILE_SUFFIX)
-            messageWindow.setMsgWindowProgBarValue(objWeasel,2)
-            messageWindow.closeMessageSubWindow(objWeasel)
-            displayImageColour.displayMultiImageSubWindow(objWeasel,
-                derivedImagePathList, studyID, newSeriesID)
-            treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+        
+        if inputDlg.closeInputDialog() == False: 
+            if treeView.isAnImageSelected(objWeasel):
+                imagePath = objWeasel.selectedImagePath
+                pixelArray = returnPixelArray(imagePath, *listParams)
+                derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+                displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+                # Save the DICOM file in the new file path                                        
+                saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
+                #Record squared image in XML file
+                seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                                                     derivedImageFileName, FILE_SUFFIX)
+                #Update tree view with xml file modified above
+                treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
+            elif treeView.isASeriesSelected(objWeasel):
+                studyID = objWeasel.selectedStudy
+                seriesID = objWeasel.selectedSeries
+                imagePathList = \
+                        objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
+                #Iterate through list of images and square each image
+                derivedImagePathList = []
+                derivedImageList = []
+                numImages = len(imagePathList)
+                messageWindow.displayMessageSubWindow(objWeasel,
+                  "<H4>Thresholding {} DICOM files</H4>".format(numImages),
+                  "Thresholding DICOM images")
+                messageWindow.setMsgWindowProgBarMaxValue(objWeasel,numImages)
+                imageCounter = 0
+                for imagePath in imagePathList:
+                    derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+                    derivedImage = returnPixelArray(imagePath, listParams[0], listParams[1])
+                    derivedImagePathList.append(derivedImagePath)
+                    derivedImageList.append(derivedImage)
+                    imageCounter += 1
+                    messageWindow.setMsgWindowProgBarValue(objWeasel, imageCounter)
+                messageWindow.displayMessageSubWindow(objWeasel,
+                  "<H4>Saving results into a new DICOM Series</H4>",
+                  "Thresholding DICOM images")
+                messageWindow.setMsgWindowProgBarMaxValue(objWeasel,2)
+                messageWindow.setMsgWindowProgBarValue(objWeasel,1)
+                # Save new DICOM series locally
+                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
+                newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                                                       imagePathList,
+                                                       derivedImagePathList, FILE_SUFFIX)
+                messageWindow.setMsgWindowProgBarValue(objWeasel,2)
+                messageWindow.closeMessageSubWindow(objWeasel)
+                displayImageColour.displayMultiImageSubWindow(objWeasel,
+                    derivedImagePathList, studyID, newSeriesID)
+                treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
         print('Error in thresholdDICOM_Image.saveImage: ' + str(e))

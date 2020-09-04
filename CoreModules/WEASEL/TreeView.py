@@ -124,6 +124,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
 
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
+                self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
                 self.treeView.itemDoubleClicked.connect(lambda: menus.viewImage(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
@@ -141,32 +142,6 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView: ' + str(e)) 
 
 
-#def selectSeriesInStudy(self, item, col):
-#    """If the state of a checkbox of a study is changed,
-#    this function sets the state of the child series checkboxes to
-#    match that of the parent study.
-    
-#    Input Parameters
-#    ****************
-
-#    """
-#    logger.info("TreeView.selectSeriesInStudy called")
-#    try:
-#        #Only run this function if the state of a study 
-#        #checkbox is changed. It has no parent
-#        if item.parent() is None and col == 0:
-#            seriesCount = item.childCount()
-#            for n in range(seriesCount):
-#                series = item.child(n)
-#                #Give series checkboxes the same state as the 
-#                #study checkboxes
-#                series.setCheckState(0, item.checkState(0))
-#                #series.setSelected(True)
-
-#    except Exception as e:
-#            print('Error in TreeView.selectSeriesInStudy: ' + str(e))
-#            logger.error('Error in TreeView.selectSeriesInStudy: ' + str(e))
-
 def checkChildItems(item):
     """This function uses recursion to set the state of child checkboxes to
     match that of their parent.
@@ -177,24 +152,24 @@ def checkChildItems(item):
     """
     logger.info("TreeView.checkChildItems called")
     try:
-        #Only run this function if the state of a study 
-        #checkbox is changed.
         if item.childCount() > 0:
             itemCount = item.childCount()
             for n in range(itemCount):
                 childItem = item.child(n)
-                #Give series checkboxes the same state as the 
-                #study checkboxes
+                #Give child checkboxes the same state as their 
+                #parent checkboxe
+                item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, item.checkState(0))
+                item.treeWidget().blockSignals(False)
                 checkChildItems(childItem)
-
     except Exception as e:
             print('Error in TreeView.checkChildItems: ' + str(e))
             logger.error('Error in TreeView.checkChildItems: ' + str(e))
 
+
 def checkParentItems(item):
     """This function uses recursion to set the state of Parent checkboxes to
-    match that of their child.
+    match collective state of their children.
     
     Input Parameters
     ****************
@@ -202,20 +177,47 @@ def checkParentItems(item):
     """
     logger.info("TreeView.checkParentItems called")
     try:
-        #Only run this function if the state of a study 
-        #checkbox is changed.
-        if item.childCount() > 0:
-            itemCount = item.childCount()
-            for n in range(itemCount):
-                childItem = item.child(n)
-                #Give series checkboxes the same state as the 
-                #study checkboxes
-                childItem.setCheckState(0, item.checkState(0))
-                checkParentItems(childItem)
-
+        if item.parent():
+            item.treeWidget().blockSignals(True)
+            if areAllChildrenChecked(item.parent()):
+                item.parent().setCheckState(0, Qt.Checked)
+            else:
+                item.parent().setCheckState(0, Qt.Unchecked)
+            item.treeWidget().blockSignals(False)
+            checkParentItems(item.parent())
     except Exception as e:
             print('Error in TreeView.checkParentItems: ' + str(e))
             logger.error('Error in TreeView.checkParentItems: ' + str(e))
+
+
+def areAllChildrenChecked(item):
+    """ Returns True is all the children of a QTreeWidgetItem are checked
+    otherwise returns False 
+
+    Input Parameter
+    ****************
+    item  - A QTreeWidgetItem whose checkbox state has just changed
+
+    Output Parameter
+    *****************
+    True or False
+    """
+    logger.info("TreeView.areAllChildrenChecked called")
+    try:
+        childCount = item.childCount()
+        checkedCount = 0
+        for n in range(childCount):
+            childItem = item.child(n)
+            if childItem.checkState(0)  == Qt.Checked:
+                checkedCount +=1
+
+        if checkedCount == childCount:
+            return True
+        else:
+            return False
+    except Exception as e:
+            print('Error in TreeView.areAllChildrenChecked: ' + str(e))
+            logger.error('Error in TreeView.areAllChildrenChecked: ' + str(e))
 
 
 def expandTreeViewBranch(self, branchText = ''):

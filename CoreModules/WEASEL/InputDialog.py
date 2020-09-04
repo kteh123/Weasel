@@ -71,11 +71,12 @@ class ParameterInputDialog(QDialog):
             self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
             #Hide top right hand corner X close button
             self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowCloseButtonHint)
-            #QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel   #OK and Cancel button
-            QBtn = QDialogButtonBox.Ok    #OK button only
+            QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel   #OK and Cancel button
+            #QBtn = QDialogButtonBox.Ok    #OK button only
             self.buttonBox = QDialogButtonBox(QBtn)
             self.buttonBox.accepted.connect(self.accept)   #OK button
-            #self.buttonBox.rejected.connect(self.reject)  #Cancel button
+            self.buttonBox.rejected.connect(self.close)  #Cancel button
+            self.closeInputDialog = False
             self.layout = QFormLayout()
             if helpText:
                 self.helpTextLbl = QLabel("<H4>" + helpText  +"</H4>")
@@ -119,6 +120,14 @@ class ParameterInputDialog(QDialog):
         except Exception as e:
             print('Error in class ParameterInputDialog.__init__: ' + str(e))
             logger.error('Error in class ParameterInputDialog.__init__: ' + str(e)) 
+
+
+    def close(self):
+        self.closeInputDialog =True
+
+
+    def closeInputDialog(self):
+            return self.closeInputDialog
 
 
     def returnListParameterValues(self):
