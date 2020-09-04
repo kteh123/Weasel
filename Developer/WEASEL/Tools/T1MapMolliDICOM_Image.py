@@ -37,7 +37,7 @@ def returnPixelArray(imagePathList, sliceList, inversionList):
             else:
                 derivedImage = ukrinMaps(pixelArray).T1Map(inversionArray) # There's MATLAB version T1MapMolli
             del volumeArray, pixelArray, numberSlices, dataset, inversionArray
-            return derivedImage
+            return np.transpose(derivedImage)
         else:
             return None
     except Exception as e:

@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
+import concurrent.futures
 import copy
 from Developer.WEASEL.ScientificLibrary.imagingTools import unWrapPhase, convertToPiRange
 
@@ -247,12 +248,15 @@ class ukrinMaps():
             print('Error in function ukrinAlgorithms.T1MapDraft: ' + str(e))
     
 
-    def T1Map(self, inversionList):
+    def T1MapMain(self, inversionList):
         try:
             # Initial values / Conditions
-            x0 = [np.amax(self.pixelArray), np.amax(self.pixelArray)-np.amin(self.pixelArray), 50.0]
-            lb = [0, -np.inf, 0]
-            ub = [np.inf, np.inf, 5000.0]
+            #x0 = [np.amax(self.pixelArray), np.amax(self.pixelArray)-np.amin(self.pixelArray), 50.0]
+            #lb = [0, -np.inf, 0]
+            #ub = [np.inf, np.inf, 5000.0]
+            x0 = [1000, 30000, 2]
+            lb = [0, 0, 1]
+            ub = [4000, 1000000, 2]
             T1Fitting = lambda ti, a, b, t1: a - b * np.exp(-ti / t1)
             T1Apparent = []
             if len(self.pixelArray.shape) == 3:
@@ -298,6 +302,76 @@ class ukrinMaps():
             return T1Map
         except Exception as e:
             print('Error in function ukrinAlgorithms.T1Map: ' + str(e))
+    
+
+    def T1Map(self, inversionList):
+        try:
+            # Initial values / Conditions
+            #x0 = [np.amax(self.pixelArray), np.amax(self.pixelArray)-np.amin(self.pixelArray), 50.0]
+            #lb = [0, -np.inf, 0]
+            #ub = [np.inf, np.inf, 5000.0]
+            x0 = [1000, 30000, 2]
+            lb = [0, 0, 1]
+            ub = [4000, 1000000, 2]
+            dataToFit = np.zeros(np.shape(self.pixelArray))
+            if len(self.pixelArray.shape) == 3:
+                # Null point selection - after this step everything below lowest value will be negative
+                nullPointMatrix = np.argmin(self.pixelArray, axis=2) # Get the TI indices where value is minimum
+                for ix, iy in np.ndindex(nullPointMatrix.shape):
+                    yData = []
+                    tiIndex = nullPointMatrix[ix,iy]
+                    if tiIndex > 0:
+                        yData[0:tiIndex] = -self.pixelArray[ix,iy,0:tiIndex]
+                        yData[tiIndex:] = self.pixelArray[ix,iy,tiIndex:]
+                    else:
+                        yData = self.pixelArray[ix,iy,:]
+                    dataToFit[ix,iy,:] = yData
+                # Perform the Levenberg-Marquardt least squares fitting
+                with concurrent.futures.ProcessPoolExecutor() as executor:
+                    results = [[executor.submit(FittingScript, inversionList, dataToFit[ix,iy,:], x0, lb, ub), (ix, iy)] for ix, iy in np.ndindex(nullPointMatrix.shape)]
+                
+            elif len(self.pixelArray.shape) == 4:
+                # Null point selection - after this step everything below lowest value will be negative
+                nullPointMatrix = np.argmin(self.pixelArray, axis=3) # Get the TI indices where value is minimum
+                for ix, iy, iz in np.ndindex(nullPointMatrix.shape):
+                    yData = []
+                    tiIndex = nullPointMatrix[ix,iy,iz]
+                    if tiIndex > 0:
+                        yData[0:tiIndex] = -self.pixelArray[ix,iy,iz,0:tiIndex]
+                        yData[tiIndex:] = self.pixelArray[ix,iy,iz,tiIndex:]
+                    else:
+                        yData = self.pixelArray[ix,iy,iz,:]
+                    dataToFit[ix,iy,iz,:] = yData
+                # Perform the Levenberg-Marquardt least squares fitting
+                with concurrent.futures.ProcessPoolExecutor() as executor:
+                    results = [[executor.submit(FittingScript, inversionList, dataToFit[ix,iy,iz,:], x0, lb, ub), (ix, iy, iz)] for ix, iy, iz in np.ndindex(nullPointMatrix.shape)]
+
+            indexes = []
+            fittedData = []
+            T1Map = np.zeros(np.shape(nullPointMatrix))
+            for individual_result in results:
+                fittedData.append(individual_result[0].result())
+                indexes.append(individual_result[1])
+            T1Apparent = np.array(fittedData)
+            T1Estimated = T1Apparent[:,2] * ((T1Apparent[:,1] / T1Apparent[:,0]) - np.ones(np.shape(T1Apparent[:,0]))) #T1_estimated((B/A)-1)
+            for index, location in enumerate(indexes): T1Map[location] = T1Estimated[index]
+            T1Map = np.nan_to_num(T1Map)
+            T1Map[T1Map>5000] = 0
+            T1Map[T1Map<50] = 0
+            return T1Map
+        except Exception as e:
+            print('Error in function ukrinAlgorithms.T1Map: ' + str(e))
+
+def FittingScript(inversionList, data, p0, lb, ub):
+    try:
+        T1Fitting = lambda ti, a, b, t1: a - b * np.exp(-ti / t1)
+        try:
+            T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.array(data), p0=p0, bounds=(lb, ub), maxfev=2000)
+        except: # If optimization fails, then perform fitting like assuming that the pixel value is zero
+            T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.zeros(np.shape(data)), p0=p0, bounds=(lb, ub), maxfev=2000)
+        return T1pixel
+    except Exception as e:
+        print('Error in function ukrinAlgorithms.FittingScript: ' + str(e))
 
 #def T1Fitting(ti, a, b, t1):
     #return a - b * np.exp(-ti / t1)
