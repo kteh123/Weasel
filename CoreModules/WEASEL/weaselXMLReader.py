@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET  
+import xml.etree.cElementTree as ET  
 from pathlib import Path
 from datetime import datetime
 import logging
@@ -53,12 +53,15 @@ class WeaselXMLReader:
 
 
     def getStudies(self):
-        return self.root.findall('./study')
+        return self.root.findall('./subject/study')
+
+    def getSubjects(self):
+        return self.root.findall('./subject')
 
 
     def getImageList(self, studyID, seriesID):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
             return self.root.findall(xPath)
         except Exception as e:
@@ -68,7 +71,7 @@ class WeaselXMLReader:
 
     def getSeries(self, studyID, seriesID):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
             return self.root.find(xPath)
         except Exception as e:
@@ -86,7 +89,7 @@ class WeaselXMLReader:
 
     def getStudy(self, studyID):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + ']'
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + ']'
             return self.root.find(xPath)
         except Exception as e:
             print('Error in WeaselXMLReader.getStudy: ' + str(e)) 
@@ -95,7 +98,7 @@ class WeaselXMLReader:
 
     def getSeriesOfSpecifiedType(self, studyID, seriesID, suffix):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
              ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
              '[@typeID=' + chr(34) + suffix + chr(34) +']'
             return self.root.find(xPath)
@@ -106,7 +109,7 @@ class WeaselXMLReader:
 
     def getImagePathList(self, studyID, seriesID):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
             ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
             #print(xPath)
             images = self.root.findall(xPath)
@@ -122,11 +125,12 @@ class WeaselXMLReader:
         determine the number of items forming the tree view"""
         try:
             logger.info("weaselXMLReader.getNumberItemsInTreeView called")
-            numStudies = len(self.root.findall('./study'))
-            numSeries = len(self.root.findall('./study/series'))
-            numImages = len(self.root.findall('./study/series/image'))
-            numItems = numStudies + numSeries + numImages
-            return numStudies, numSeries, numImages, numItems
+            numSubjects = len(self.root.findall('./subject'))
+            numStudies = len(self.root.findall('./subject/study'))
+            numSeries = len(self.root.findall('./subject/study/series'))
+            numImages = len(self.root.findall('./subject/study/series/image'))
+            numItems = numSubjects + numStudies + numSeries + numImages
+            return numSubjects, numStudies, numSeries, numImages, numItems
         except Exception as e:
             print('Error in function weaselXMLReader.getNumberItemsInTreeView: ' + str(e))
             logger.error('Error in weaselXMLReader.getNumberItemsInTreeView: ' + str(e))
@@ -134,7 +138,7 @@ class WeaselXMLReader:
 
     def getNumberImagesInSeries(self, studyID, seriesID):
         try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                         ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                         '/image'
             return len(self.root.find(xPath))
@@ -180,7 +184,7 @@ class WeaselXMLReader:
                 now = datetime.now()
                 return now.strftime("%H:%M:%S")
             else:
-                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                         ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                         '/image[name=' + chr(34) + imageName + chr(34) +']/time'
                 return self.root.find(xPath).text
@@ -195,7 +199,7 @@ class WeaselXMLReader:
                 now = datetime.now()
                 return now.strftime("%d/%m/%Y") 
             else:
-                xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
+                xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                     ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
                     '/image[name=' + chr(34) + imageName + chr(34) +']/date'
             

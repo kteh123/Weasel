@@ -27,7 +27,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 print('XML Parse Time = {}'.format(XMLParseTime))
 
                 start_time=time.time()
-                numStudies, numSeries, numImages, numTreeViewItems \
+                numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
                     = self.objXMLReader.getNumberItemsInTreeView()
 
                 QApplication.processEvents()
@@ -41,8 +41,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
 
-                self.lblLoading = QLabel('<H4>You are loading {} study(s), with {} series containing {} images</H4>'
-                 .format(numStudies, numSeries, numImages))
+                self.lblLoading = QLabel('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
+                 .format(numSubjects, numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
                 widget.layout().addWidget(self.lblLoading)
@@ -62,56 +62,66 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
                 treeWidgetItemCounter = 0 
-                studies = self.objXMLReader.getStudies()
-                self.seriesBranchList = []
-                for study in studies:
-                    studyID = study.attrib['id']
-                    studyBranch = QTreeWidgetItem(self.treeView)
+                subjects = self.objXMLReader.getSubjects()
+
+                for subject in subjects:
+                    subjectName = subject.attrib['id']
+                    subjectBranch = QTreeWidgetItem(self.treeView)
                     treeWidgetItemCounter += 1
                     self.progBar.setValue(treeWidgetItemCounter)
-                    studyBranch.setText(0, "Study - {}".format(studyID))
-                    studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
-                    #uncomment next 2 lines of code to put a checkbox in front of this branch
-                    studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
-                    studyBranch.setCheckState(0, Qt.Unchecked)
-                    studyBranch.setExpanded(True)
-                    for series in study:
-                        seriesID = series.attrib['id']
-                        seriesBranch = QTreeWidgetItem(studyBranch)
-                        self.seriesBranchList.append(seriesBranch)
+                    subjectBranch.setText(0, "Subject - {}".format(subjectName))
+                    subjectBranch.setFlags(subjectBranch.flags() & ~Qt.ItemIsSelectable)
+                    subjectBranch.setFlags(subjectBranch.flags() | Qt.ItemIsUserCheckable)
+                    subjectBranch.setCheckState(0, Qt.Unchecked)
+                    subjectBranch.setExpanded(True)
+
+                    self.seriesBranchList = []
+                    for study in subject:
+                        studyID = study.attrib['id']
+                        studyBranch = QTreeWidgetItem(subjectBranch)
                         treeWidgetItemCounter += 1
                         self.progBar.setValue(treeWidgetItemCounter)
-                        #seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                        seriesBranch.setText(0, "Series - {}".format(seriesID))
-                        seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                        studyBranch.setText(0, "Study - {}".format(studyID))
+                        studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
                         #put a checkbox in front of this branch
-                        seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
-                        seriesBranch.setCheckState(0, Qt.Unchecked)
-                        #Expand this series branch, so that the 3 resizeColumnToContents
-                        #commands can work
-                       
-                        for image in series:
-                            #Extract filename from file path
-                            if image.find('name').text:
-                                imageName = os.path.basename(image.find('name').text)
-                            else:
-                                imageName = 'Name missing'
-                            #print (imageName)
-                            imageDate = image.find('date').text
-                            imageTime = image.find('time').text
-                            imagePath = image.find('name').text
-                            imageLeaf = QTreeWidgetItem(seriesBranch)
+                        studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
+                        studyBranch.setCheckState(0, Qt.Unchecked)
+                        studyBranch.setExpanded(True)
+
+                        for series in study:
+                            seriesID = series.attrib['id']
+                            seriesBranch = QTreeWidgetItem(studyBranch)
+                            self.seriesBranchList.append(seriesBranch)
                             treeWidgetItemCounter += 1
                             self.progBar.setValue(treeWidgetItemCounter)
-                            imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                            #Uncomment the next 2 lines to put a checkbox in front of each image
-                            imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                            imageLeaf.setCheckState(0, Qt.Unchecked)
-                            imageLeaf.setText(0, 'Image - ' + imageName)
-                            imageLeaf.setText(1, imageDate)
-                            imageLeaf.setText(2, imageTime)
-                            imageLeaf.setText(3, imagePath)
-                        seriesBranch.setExpanded(True)
+                            seriesBranch.setText(0, "Series - {}".format(seriesID))
+                            seriesBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                            #put a checkbox in front of this branch
+                            seriesBranch.setFlags(seriesBranch.flags() | Qt.ItemIsUserCheckable)
+                            seriesBranch.setCheckState(0, Qt.Unchecked)
+                       
+                            for image in series:
+                                #Extract filename from file path
+                                if image.find('name').text:
+                                    imageName = os.path.basename(image.find('name').text)
+                                else:
+                                    imageName = 'Name missing'
+                                #print (imageName)
+                                imageDate = image.find('date').text
+                                imageTime = image.find('time').text
+                                imagePath = image.find('name').text
+                                imageLeaf = QTreeWidgetItem(seriesBranch)
+                                treeWidgetItemCounter += 1
+                                self.progBar.setValue(treeWidgetItemCounter)
+                                imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                                #put a checkbox in front of each image
+                                imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+                                imageLeaf.setCheckState(0, Qt.Unchecked)
+                                imageLeaf.setText(0, 'Image - ' + imageName)
+                                imageLeaf.setText(1, imageDate)
+                                imageLeaf.setText(2, imageTime)
+                                imageLeaf.setText(3, imagePath)
+                            seriesBranch.setExpanded(True)
                 self.treeView.resizeColumnToContents(0)
                 self.treeView.resizeColumnToContents(1)
                 self.treeView.resizeColumnToContents(2)
@@ -138,8 +148,11 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.progBar.reset()
                 widget.layout().addWidget(self.treeView)   
         except Exception as e:
-            print('Error in TreeView.makeDICOMStudiesTreeView: ' + str(e)) 
-            logger.error('Error in TreeView.makeDICOMStudiesTreeView: ' + str(e)) 
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            #filename = exception_traceback.tb_frame.f_code.co_filename
+            line_number = exception_traceback.tb_lineno
+            print('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
+            logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
 
 
 def checkChildItems(item):
@@ -254,9 +267,6 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
                 studyBranch = QTreeWidgetItem(self.treeView)
                 studyBranch.setText(0, "Study - {}".format(studyID))
                 studyBranch.setFlags(studyBranch.flags() & ~Qt.ItemIsSelectable)
-                #Uncomment the next 2 lines toput a checkbox in front of this branch
-                #studyBranch.setFlags(studyBranch.flags() | Qt.ItemIsUserCheckable)
-                #studyBranch.setCheckState(0, Qt.Unchecked)
                 studyBranch.setExpanded(True)
                 for series in study:
                     seriesID = series.attrib['id']
