@@ -34,7 +34,7 @@ def saveImage(objWeasel):
             inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg)
             listParams = inputDlg.returnListParameterValues()
             if inputDlg.closeInputDialog():
-                print ("inputDlg.closeInputDialog()={}".format(inputDlg.closeInputDialog()))
+                #Cancel button has been clicked
                 break
             if (listParams[0] < listParams[1]):
                 break
@@ -44,6 +44,7 @@ def saveImage(objWeasel):
                     warning = False  #only show this message once
         
         if inputDlg.closeInputDialog() == False: 
+            #The OK button was clicked & the Cancel has not been clicked
             if treeView.isAnImageSelected(objWeasel):
                 imagePath = objWeasel.selectedImagePath
                 pixelArray = returnPixelArray(imagePath, *listParams)

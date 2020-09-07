@@ -76,7 +76,7 @@ class ParameterInputDialog(QDialog):
             self.buttonBox = QDialogButtonBox(QBtn)
             self.buttonBox.accepted.connect(self.accept)   #OK button
             self.buttonBox.rejected.connect(self.close)  #Cancel button
-            self.closeInputDialog = False
+            self.closeDialog = False
             self.layout = QFormLayout()
             if helpText:
                 self.helpTextLbl = QLabel("<H4>" + helpText  +"</H4>")
@@ -123,11 +123,13 @@ class ParameterInputDialog(QDialog):
 
 
     def close(self):
-        self.closeInputDialog =True
+        self.closeDialog =True
+        #Now programmatically click OK to close the dialog
+        self.accept()
 
 
     def closeInputDialog(self):
-            return self.closeInputDialog
+            return self.closeDialog
 
 
     def returnListParameterValues(self):
