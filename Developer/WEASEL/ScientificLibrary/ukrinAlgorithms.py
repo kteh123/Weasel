@@ -1,4 +1,5 @@
 import numpy as np
+import cython
 from scipy.optimize import curve_fit
 import concurrent.futures
 import copy
@@ -362,13 +363,13 @@ class ukrinMaps():
         except Exception as e:
             print('Error in function ukrinAlgorithms.T1Map: ' + str(e))
 
+T1Fitting = np.vectorize(lambda ti, a, b, t1: a - b * np.exp(-ti / t1))
 def FittingScript(inversionList, data, p0, lb, ub):
     try:
-        T1Fitting = lambda ti, a, b, t1: a - b * np.exp(-ti / t1)
         try:
-            T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.array(data), p0=p0, bounds=(lb, ub), maxfev=2000)
+            T1pixel, _ = curve_fit(T1Fitting, np.array(inversionList), np.array(data), p0=p0, bounds=(lb, ub))
         except: # If optimization fails, then perform fitting like assuming that the pixel value is zero
-            T1pixel, _ = curve_fit(np.vectorize(T1Fitting), np.array(inversionList), np.zeros(np.shape(data)), p0=p0, bounds=(lb, ub), maxfev=2000)
+            T1pixel, _ = curve_fit(T1Fitting, np.array(inversionList), np.zeros(np.shape(data)), p0=p0, bounds=(lb, ub))
         return T1pixel
     except Exception as e:
         print('Error in function ukrinAlgorithms.FittingScript: ' + str(e))
