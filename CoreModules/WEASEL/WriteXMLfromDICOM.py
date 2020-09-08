@@ -59,7 +59,15 @@ def natural_keys(text):
     (See Toothy's implementation in the comments)
     float regex comes from https://stackoverflow.com/a/12643073/190597
     """
-    return [atof(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text)] 
+    return [atof(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text)]
+
+
+def series_sort(elem):
+    """
+    This is a helper function that will be used in key argument of sorted()
+    in order to sort the list of series by series number
+    """
+    return int(elem.split("_")[-1])
 
 
 def get_scan_data(scan_directory):
@@ -96,7 +104,7 @@ def get_study_series(dicom):
             subject = str(dicom.PatientID)
         else:
             subject = "No Subject Name"
-        study = str(dicom.StudyDate)
+        study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0]
         if hasattr(dicom, "SeriesDescription"):
             sequence = str(dicom.SeriesDescription)
         elif hasattr(dicom, "SequenceName"):
@@ -122,7 +130,7 @@ def build_dictionary(list_dicom):
             xml_dict[subject][study].append(sequence + "_" + series_number)
         for subject in xml_dict:
             for study in xml_dict[subject]:
-                xml_dict[subject][study] = np.unique(xml_dict[subject][study])
+                xml_dict[subject][study] = sorted(np.unique(xml_dict[subject][study]), key=series_sort)
         return xml_dict
     except Exception as e:
         print('Error in WriteXMLfromDICOM.build_dictionary: ' + str(e))
@@ -172,9 +180,11 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             series_search_string = "./*[@id='"+ sequence + "_" + series_number + "']"
             image_root = series_root.find(series_search_string)
             image_element = ET.SubElement(image_root, 'image')
+            label = ET.SubElement(image_element, 'label')
             name = ET.SubElement(image_element, 'name')
             time = ET.SubElement(image_element, 'time')
             date = ET.SubElement(image_element, 'date')
+            label.text = str(len(image_root.getchildren())).zfill(6)
             name.text =  os.path.normpath(list_paths[index])
             
             # The next lines save the time and date to XML - They consider multiple/eventual formats

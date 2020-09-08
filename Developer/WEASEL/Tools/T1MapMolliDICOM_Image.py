@@ -31,13 +31,13 @@ def returnPixelArray(imagePathList, sliceList, inversionList):
                 derivedImage = []
                 for zSlice in range(np.shape(pixelArray)[2]):
                     tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1Map(inversionArray[:, zSlice]) # There's MATLAB version T1MapMolli
-                    derivedImage.append(tempImage)
+                    derivedImage.append(np.transpose(tempImage))
                 derivedImage = np.array(derivedImage)
                 del tempImage
             else:
-                derivedImage = ukrinMaps(pixelArray).T1Map(inversionArray) # There's MATLAB version T1MapMolli
+                derivedImage = np.transpose(ukrinMaps(pixelArray).T1Map(inversionArray)) # There's MATLAB version T1MapMolli
             del volumeArray, pixelArray, numberSlices, dataset, inversionArray
-            return np.transpose(derivedImage)
+            return derivedImage
         else:
             return None
     except Exception as e:

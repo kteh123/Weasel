@@ -139,12 +139,16 @@ def saveB0MapSeries(objWeasel):
 
         if phasePathList:
             B0Image = returnPixelArray(phasePathList, sliceList, echoList)
-        elif riPathList[0] and riPathList[1]:
-            B0Image = returnPixelArrayFromRealIm(riPathList, sliceList, echoList)
-            phasePathList = riPathList[0] # Here we're assuming that the saving will be performed based on the Real Images
+        elif riPathList:
+            if riPathList[0] and riPathList[1]:
+                B0Image = returnPixelArrayFromRealIm(riPathList, sliceList, echoList)
+                phasePathList = riPathList[0] # Here we're assuming that the saving will be performed based on the Real Images
+            else:
+                messageWindow.displayMessageSubWindow(objWeasel, "NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
+                raise Exception("This series doesn't meet the criteria to calculate B0 Map.")
         else:
             messageWindow.displayMessageSubWindow(objWeasel, "NOT POSSIBLE TO CALCULATE B0 MAP IN THIS SERIES.")
-            raise Exception("Not possible to calculate B0 Map in the selected series.")
+            raise Exception("This series doesn't meet the criteria to calculate B0 Map.")
 
         if hasattr(readDICOM_Image.getDicomDataset(phasePathList[0]), 'PerFrameFunctionalGroupsSequence'):
             # If it's Enhanced MRI
