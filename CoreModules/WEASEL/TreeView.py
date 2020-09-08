@@ -28,6 +28,28 @@ def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter, br
     return thisBranch, treeWidgetItemCounter
 
 
+def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
+    #Extract filename from file path
+    if image.find('name').text:
+        imageName = os.path.basename(image.find('name').text)
+    else:
+        imageName = 'Name missing'
+    imageDate = image.find('date').text
+    imageTime = image.find('time').text
+    imagePath = image.find('name').text
+    imageLeaf = QTreeWidgetItem(seriesBranch)
+    imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+    #put a checkbox in front of each image
+    imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+    imageLeaf.setCheckState(0, Qt.Unchecked)
+    imageLeaf.setText(0, ' Image - ' + imageName)
+    imageLeaf.setText(1, imageDate)
+    imageLeaf.setText(2, imageTime)
+    imageLeaf.setText(3, imagePath)
+    treeWidgetItemCounter += 1
+    self.progBar.setValue(treeWidgetItemCounter)
+
+
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -78,8 +100,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
                 treeWidgetItemCounter = 0 
-                subjects = self.objXMLReader.getSubjects()
 
+                subjects = self.objXMLReader.getSubjects()
                 for subject in subjects:
                     studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
                                                                         "Subject", 
@@ -104,26 +126,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                                                                                    self.seriesBranchList)
 
                             for image in series:
-                                #Extract filename from file path
-                                if image.find('name').text:
-                                    imageName = os.path.basename(image.find('name').text)
-                                else:
-                                    imageName = 'Name missing'
-                                #print (imageName)
-                                imageDate = image.find('date').text
-                                imageTime = image.find('time').text
-                                imagePath = image.find('name').text
-                                imageLeaf = QTreeWidgetItem(seriesBranch)
-                                treeWidgetItemCounter += 1
-                                self.progBar.setValue(treeWidgetItemCounter)
-                                imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                                #put a checkbox in front of each image
-                                imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                                imageLeaf.setCheckState(0, Qt.Unchecked)
-                                imageLeaf.setText(0, 'Image - ' + imageName)
-                                imageLeaf.setText(1, imageDate)
-                                imageLeaf.setText(2, imageTime)
-                                imageLeaf.setText(3, imagePath)
+                                createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
                            
                 self.treeView.resizeColumnToContents(0)
                 self.treeView.resizeColumnToContents(1)
@@ -167,7 +170,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.treeView.setColumnCount(3)
             self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
             treeWidgetItemCounter = 0 
-            subjects = self.objXMLReader.getSubjects()
+            
             self.seriesBranchList.clear()
 
             numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
@@ -179,6 +182,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.progBar.setMaximum(numTreeViewItems)
             self.progBar.setValue(0)
 
+            subjects = self.objXMLReader.getSubjects()
             for subject in subjects:
                     studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
                                                                         "Subject", 
@@ -203,20 +207,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
                                                                                    self.seriesBranchList)
 
                             for image in series:
-                                #Extract filename from file path
-                                imageName = os.path.basename(image.find('name').text)
-                                imageDate = image.find('date').text
-                                imageTime = image.find('time').text
-                                imagePath = image.find('name').text
-                                imageLeaf = QTreeWidgetItem(seriesBranch)
-                                imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                                #put a checkbox in front of each image
-                                imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-                                imageLeaf.setCheckState(0, Qt.Unchecked)
-                                imageLeaf.setText(0, ' Image - ' +imageName)
-                                imageLeaf.setText(1, imageDate)
-                                imageLeaf.setText(2, imageTime)
-                                imageLeaf.setText(3, imagePath)
+                                createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
 
             self.treeView.resizeColumnToContents(0)
             self.treeView.resizeColumnToContents(1)
@@ -430,34 +421,35 @@ def onTreeViewItemClicked(self, item):
     try:
         #test for returning dictionary of studyIDs:seriesIDs
         #print(returnSelectedSeries(self))
-        selectedText = item.text(0)
-        if 'study' in selectedText.lower():
-            studyID = selectedText.replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = ''
-            self.selectedImagePath = ''
-            self.selectedImageName = ''
-            self.statusBar.showMessage('Study - ' + studyID + ' selected.')
-        elif 'series' in selectedText.lower():
-            seriesID = selectedText.replace('Series -', '').strip()
-            studyID = item.parent().text(0).replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = seriesID
-            self.selectedImagePath = ''
-            self.selectedImageName = ''
-            fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
-            self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
-        elif 'image' in selectedText.lower():
-            imageID = selectedText.replace('Image -', '')
-            imagePath =item.text(3)
-            seriesID = item.parent().text(0).replace('Series -', '').strip()
-            studyID = item.parent().parent().text(0).replace('Study -', '').strip()
-            self.selectedStudy = studyID
-            self.selectedSeries = seriesID
-            self.selectedImagePath = imagePath.strip()
-            self.selectedImageName = imageID.strip()
-            fullImageID = studyID + ': ' + seriesID + ': '  + imageID
-            self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
+        if item.text(0):
+            selectedText = item.text(0)
+            if 'study' in selectedText.lower():
+                studyID = selectedText.replace('Study -', '').strip()
+                self.selectedStudy = studyID
+                self.selectedSeries = ''
+                self.selectedImagePath = ''
+                self.selectedImageName = ''
+                self.statusBar.showMessage('Study - ' + studyID + ' selected.')
+            elif 'series' in selectedText.lower():
+                seriesID = selectedText.replace('Series -', '').strip()
+                studyID = item.parent().text(0).replace('Study -', '').strip()
+                self.selectedStudy = studyID
+                self.selectedSeries = seriesID
+                self.selectedImagePath = ''
+                self.selectedImageName = ''
+                fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
+                self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
+            elif 'image' in selectedText.lower():
+                imageID = selectedText.replace('Image -', '')
+                imagePath =item.text(3)
+                seriesID = item.parent().text(0).replace('Series -', '').strip()
+                studyID = item.parent().parent().text(0).replace('Study -', '').strip()
+                self.selectedStudy = studyID
+                self.selectedSeries = seriesID
+                self.selectedImagePath = imagePath.strip()
+                self.selectedImageName = imageID.strip()
+                fullImageID = studyID + ': ' + seriesID + ': '  + imageID
+                self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
 
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
