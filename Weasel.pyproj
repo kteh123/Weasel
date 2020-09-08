@@ -6154,6 +6154,7 @@
     <Content Include="WeaselData\Sample Data\IM_2046" />
     <Content Include="WeaselData\Sample Data\IM_2047" />
     <Content Include="WeaselData\Sample Data\IM_2048" />
+    <Content Include="WeaselData\Sample Data\Sample Data.xml" />
     <Content Include="WEASEL_README.md" />
   </ItemGroup>
   <ItemGroup>
