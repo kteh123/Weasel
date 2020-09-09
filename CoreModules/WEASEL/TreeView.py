@@ -55,10 +55,43 @@ def resizeTreeViewColumns(self):
     self.treeView.resizeColumnToContents(2)
     self.treeView.hideColumn(3)
 
+
 def closeProgressBar(self):
     self.lblLoading.clear()
     self.progBar.hide()
     self.progBar.reset()
+
+
+def buildTreeView(self):
+    self.treeView.clear()
+    treeWidgetItemCounter = 0 
+    subjects = self.objXMLReader.getSubjects()
+    for subject in subjects:
+        studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                            "Subject", 
+                                                            subject, 
+                                                            self.treeView, 
+                                                            treeWidgetItemCounter)
+        
+        for study in subject:
+            studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                                "Study", 
+                                                                study, 
+                                                                studyBranch, 
+                                                                treeWidgetItemCounter)
+           
+            self.seriesBranchList = []                                                    
+            for series in study:
+                seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                                       "Series", 
+                                                                       series, 
+                                                                       studyBranch, 
+                                                                       treeWidgetItemCounter,
+                                                                       self.seriesBranchList)
+    
+                for image in series:
+                    createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
+
 
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -80,22 +113,16 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-                numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
-                    = self.objXMLReader.getNumberItemsInTreeView()
-                self.lblLoading = QLabel('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
-                 .format(numSubjects, numStudies, numSeries, numImages))
-                self.lblLoading.setWordWrap(True)
-
-                widget.layout().addWidget(self.lblLoading)
                 
+                self.lblLoading = QLabel()
+                widget.layout().addWidget(self.lblLoading)
 
- 
                 self.progBar = QProgressBar(self)
                 widget.layout().addWidget(self.progBar)
                 widget.layout().setAlignment(Qt.AlignTop)
-                self.progBar.show()
-                self.progBar.setMaximum(numTreeViewItems)
-                self.progBar.setValue(0)
+
+                numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
+                initialiseProgressBar(self, numTreeViewItems)
                
                 self.treeView = QTreeWidget()
                 #Enable multiple selection using up arrow and Ctrl keys
@@ -106,35 +133,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
                 widget.layout().addWidget(self.treeView)
 
-                treeWidgetItemCounter = 0 
-
-                subjects = self.objXMLReader.getSubjects()
-                for subject in subjects:
-                    studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                        "Subject", 
-                                                                        subject, 
-                                                                        self.treeView, 
-                                                                        treeWidgetItemCounter)
-                    
-                    for study in subject:
-                        studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                            "Study", 
-                                                                            study, 
-                                                                            studyBranch, 
-                                                                            treeWidgetItemCounter)
-                       
-                        self.seriesBranchList = []                                                    
-                        for series in study:
-                            seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                                   "Series", 
-                                                                                   series, 
-                                                                                   studyBranch, 
-                                                                                   treeWidgetItemCounter,
-                                                                                   self.seriesBranchList)
-
-                            for image in series:
-                                createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
-
+                buildTreeView(self)
 
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
@@ -160,6 +159,19 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
 
 
+def setupLoadingLabel(self, lblLoading):
+    numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
+            = self.objXMLReader.getNumberItemsInTreeView()
+    lblLoading.setText('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
+         .format(numSubjects, numStudies, numSeries, numImages))
+    self.lblLoading.setWordWrap(True)
+    return numTreeViewItems
+
+def initialiseProgressBar(self, numTreeViewItems):
+    self.progBar.show()
+    self.progBar.setMaximum(numTreeViewItems)
+    self.progBar.setValue(0)
+
 def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -167,44 +179,13 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
             self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-            self.treeView.clear()
-            treeWidgetItemCounter = 0 
             
             self.seriesBranchList.clear()
 
-            numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
-                    = self.objXMLReader.getNumberItemsInTreeView()
-            self.lblLoading = QLabel('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
-                 .format(numSubjects, numStudies, numSeries, numImages))
-            self.lblLoading.setWordWrap(True)
-            self.progBar.show()
-            self.progBar.setMaximum(numTreeViewItems)
-            self.progBar.setValue(0)
+            numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
+            initialiseProgressBar(self, numTreeViewItems)
 
-            subjects = self.objXMLReader.getSubjects()
-            for subject in subjects:
-                    studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                        "Subject", 
-                                                                        subject, 
-                                                                        self.treeView, 
-                                                                        treeWidgetItemCounter)
-                    
-                    for study in subject:
-                        studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                            "Study", 
-                                                                            study, 
-                                                                            studyBranch, 
-                                                                            treeWidgetItemCounter)
-                                                                         
-                        for series in study:
-                            seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                                   "Series", 
-                                                                                   series, 
-                                                                                   studyBranch, 
-                                                                                   treeWidgetItemCounter)
-
-                            for image in series:
-                                createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
+            buildTreeView(self)
 
             resizeTreeViewColumns(self)
             closeProgressBar(self)
