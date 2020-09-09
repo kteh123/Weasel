@@ -29,8 +29,8 @@ def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter, br
 
 def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
     #Extract filename from file path
-    if image.find('name').text:
-        imageName = os.path.basename(image.find('name').text)
+    if image.find('label').text:
+        imageName = image.find('label').text
     else:
         imageName = 'Name missing'
     imageDate = image.find('date').text
