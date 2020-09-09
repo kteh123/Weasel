@@ -1,9 +1,8 @@
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, 
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemView,
                              QMdiSubWindow, QMenu, QAction,
                             QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
-
 import os
 import sys
 import logging
@@ -50,21 +49,23 @@ def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
     self.progBar.setValue(treeWidgetItemCounter)
 
 
+def resizeTreeViewColumns(self):
+    self.treeView.resizeColumnToContents(0)
+    self.treeView.resizeColumnToContents(1)
+    self.treeView.resizeColumnToContents(2)
+    self.treeView.hideColumn(3)
+
+def closeProgressBar(self):
+    self.lblLoading.clear()
+    self.progBar.hide()
+    self.progBar.reset()
+
 def makeDICOMStudiesTreeView(self, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("TreeView.makeDICOMStudiesTreeView called")
             if os.path.exists(XML_File_Path):
-                self.DICOM_XML_FilePath = XML_File_Path
-                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
-                self.objXMLReader.parseXMLFile(
-                    self.DICOM_XML_FilePath)
-           
-                numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
-                    = self.objXMLReader.getNumberItemsInTreeView()
-
-                QApplication.processEvents()
                 widget = QWidget()
                 widget.setLayout(QVBoxLayout()) 
                 subWindow = QMdiSubWindow(self)
@@ -74,30 +75,36 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 height, width = self.getMDIAreaDimensions()
                 subWindow.setGeometry(0, 0, width * 0.4, height)
                 self.mdiArea.addSubWindow(subWindow)
+                subWindow.show()
 
+                self.DICOM_XML_FilePath = XML_File_Path
+                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
+                self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
+                numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
+                    = self.objXMLReader.getNumberItemsInTreeView()
                 self.lblLoading = QLabel('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
                  .format(numSubjects, numStudies, numSeries, numImages))
                 self.lblLoading.setWordWrap(True)
 
                 widget.layout().addWidget(self.lblLoading)
+                
+
+ 
                 self.progBar = QProgressBar(self)
                 widget.layout().addWidget(self.progBar)
                 widget.layout().setAlignment(Qt.AlignTop)
-
-                numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
-                    = self.objXMLReader.getNumberItemsInTreeView()
-
                 self.progBar.show()
                 self.progBar.setMaximum(numTreeViewItems)
                 self.progBar.setValue(0)
-                subWindow.show()
-
-                QApplication.processEvents()
+               
                 self.treeView = QTreeWidget()
+                #Enable multiple selection using up arrow and Ctrl keys
+                self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
                 self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+                widget.layout().addWidget(self.treeView)
 
                 treeWidgetItemCounter = 0 
 
@@ -127,16 +134,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
 
                             for image in series:
                                 createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
-                           
-                self.treeView.resizeColumnToContents(0)
-                self.treeView.resizeColumnToContents(1)
-                self.treeView.resizeColumnToContents(2)
-                self.treeView.hideColumn(3)
-                
-                #Now collapse all series branches so as to hide the images
-                for branch in self.seriesBranchList:
-                    if branch !=0:
-                        branch.setExpanded(False)
+
 
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
@@ -146,10 +144,14 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
                 self.treeView.show()
                 
-                self.lblLoading.clear()
-                self.progBar.hide()
-                self.progBar.reset()
-                widget.layout().addWidget(self.treeView)   
+                resizeTreeViewColumns(self)
+                closeProgressBar(self)
+
+                 #Now collapse all series branches so as to hide the images
+                for branch in self.seriesBranchList:
+                    if branch !=0:
+                        branch.setExpanded(False)
+                   
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -164,11 +166,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
-            self.objXMLReader.parseXMLFile(
-                    self.DICOM_XML_FilePath)
+            self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
             self.treeView.clear()
-            self.treeView.setColumnCount(3)
-            self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
             treeWidgetItemCounter = 0 
             
             self.seriesBranchList.clear()
@@ -196,33 +195,27 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
                                                                             study, 
                                                                             studyBranch, 
                                                                             treeWidgetItemCounter)
-                       
-                        self.seriesBranchList = []                                                    
+                                                                         
                         for series in study:
                             seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
                                                                                    "Series", 
                                                                                    series, 
                                                                                    studyBranch, 
-                                                                                   treeWidgetItemCounter,
-                                                                                   self.seriesBranchList)
+                                                                                   treeWidgetItemCounter)
 
                             for image in series:
                                 createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
 
-            self.treeView.resizeColumnToContents(0)
-            self.treeView.resizeColumnToContents(1)
-            self.treeView.resizeColumnToContents(2)
-            #Now collapse all series branches so as to hide the images
-            #except the new series branch that has been created
-            expandTreeViewBranch(self, newSeriesName)
+            resizeTreeViewColumns(self)
+            closeProgressBar(self)
+
             #If no tree view items are now selected,
             #disable items in the Tools menu.
             toggleToolButtons(self)
-            self.lblLoading.clear()
-            self.progBar.hide()
-            self.progBar.reset()
-            self.treeView.hideColumn(3)
-            self.treeView.show()
+
+            #Now collapse all series branches so as to hide the images
+            #except the new series branch that has been created
+            expandTreeViewBranch(self, newSeriesName)
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
