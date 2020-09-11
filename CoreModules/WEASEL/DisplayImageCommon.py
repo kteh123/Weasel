@@ -206,14 +206,14 @@ def getPixelValue(pos, imv, pixelArray, lblPixelValue):
             x_i = math.floor(mousePoint.x())
             y_i = math.floor(mousePoint.y()) 
             z_i = imv.currentIndex + 1
-            if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 0 ] \
-                and x_i > 0 and x_i < pixelArray.shape [ 1 ]: 
+            if (len(np.shape(pixelArray)) == 2) and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
+                and x_i > 0 and x_i < pixelArray.shape [ 0 ]: 
                 lblPixelValue.setText(
                     "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
                 .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
-            elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
+            elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 2 ] \
                 and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
-                and x_i > 0 and x_i < pixelArray.shape [ 2 ]: 
+                and x_i > 0 and x_i < pixelArray.shape [ 0 ]: 
                 lblPixelValue.setText(
                     "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
                 .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
