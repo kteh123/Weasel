@@ -318,10 +318,17 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.add_new('0x00280106', 'US', int(np.amin(imageArrayInt)))
                 newDicom.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
-                enhancedArrayInt.append(imageArrayInt)
+                # Rotate back to Original Position
+                image_orientation = newDicom.PerFrameFunctionalGroupsSequence[index].PlaneOrientationSequence[0].ImageOrientationPatient
+                enhancedArrayInt.append(readDICOM_Image.rotatePixelArray(imageArrayInt, image_orientation, invert_rotation=True))
+                # Rescsale Slope and Intercept
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
             else:
+                # Rotate back to Original Position
+                image_orientation = newDicom.ImageOrientationPatient
+                imageArrayInt = readDICOM_Image.rotatePixelArray(imageArrayInt, image_orientation, invert_rotation=True)
+                # Rescsale Slope and Intercept
                 newDicom.RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
         if enhancedArrayInt:
@@ -352,9 +359,6 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
             newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
                 2, totalBytes)/constant - 1)*value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
 
-        # Take Phase Encoding into account
-        if newDicom.InPlanePhaseEncodingDirection == "ROW" or len(np.shape(imageArrayInt)) > 2:
-            imageArrayInt = np.transpose(imageArrayInt, axes=(1,0))
         newDicom.Rows = np.shape(imageArrayInt)[-2]
         newDicom.Columns = np.shape(imageArrayInt)[-1]
         newDicom.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
