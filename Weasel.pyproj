@@ -6000,6 +6000,7 @@
     <Content Include="WeaselData\Joao-3-scanners-2019\003\29\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-29-547-f10k1j.dcm" />
     <Content Include="WeaselData\Joao-3-scanners-2019\003\29\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-29-548-f10k1k.dcm" />
     <Content Include="WeaselData\Joao-3-scanners-2019\003\29\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-29-549-f10k1l.dcm" />
+    <Content Include="WeaselData\Joao-3-scanners-2019\Joao-3-scanners-2019.xml" />
     <Content Include="WeaselData\Sample Data\IM_0001" />
     <Content Include="WeaselData\Sample Data\IM_0002" />
     <Content Include="WeaselData\Sample Data\IM_0003" />

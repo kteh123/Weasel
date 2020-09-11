@@ -67,7 +67,7 @@ def buildTreeView(self):
     treeWidgetItemCounter = 0 
     subjects = self.objXMLReader.getSubjects()
     for subject in subjects:
-        studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
+        subjectBranch, treeWidgetItemCounter = createTreeBranch(self, 
                                                             "Subject", 
                                                             subject, 
                                                             self.treeView, 
@@ -77,7 +77,7 @@ def buildTreeView(self):
             studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
                                                                 "Study", 
                                                                 study, 
-                                                                studyBranch, 
+                                                                subjectBranch, 
                                                                 treeWidgetItemCounter)
            
             self.seriesBranchList = []                                                    
