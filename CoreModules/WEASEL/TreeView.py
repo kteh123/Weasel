@@ -11,42 +11,55 @@ import CoreModules.WEASEL.Menus  as menus
 logger = logging.getLogger(__name__)
 
 
-def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter, branchList = None):
-    branchID = branch.attrib['id']
-    thisBranch = QTreeWidgetItem(parent)
-    if type(branchList) == list:
-        branchList.append(thisBranch)
-    treeWidgetItemCounter += 1
-    self.progBar.setValue(treeWidgetItemCounter)
-    thisBranch.setText(0, branchName + " - {}".format(branchID))
-    thisBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-    #put a checkbox in front of this branch
-    thisBranch.setFlags(thisBranch.flags() | Qt.ItemIsUserCheckable)
-    thisBranch.setCheckState(0, Qt.Unchecked)
-    thisBranch.setExpanded(True)
-    return thisBranch, treeWidgetItemCounter
+def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter):
+    try:
+        branchID = branch.attrib['id']
+        thisBranch = QTreeWidgetItem(parent)
+        treeWidgetItemCounter += 1
+        self.progBar.setValue(treeWidgetItemCounter)
+        thisBranch.setText(0, branchName + " - {}".format(branchID))
+        thisBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        #put a checkbox in front of this branch
+        thisBranch.setFlags(thisBranch.flags() | Qt.ItemIsUserCheckable)
+        thisBranch.setCheckState(0, Qt.Unchecked)
+        thisBranch.setExpanded(True)
+        return thisBranch, treeWidgetItemCounter
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
+        logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
 def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
-    #Extract filename from file path
-    if image.find('label').text:
-        imageName = image.find('label').text
-    else:
-        imageName = 'Name missing'
-    imageDate = image.find('date').text
-    imageTime = image.find('time').text
-    imagePath = image.find('name').text
-    imageLeaf = QTreeWidgetItem(seriesBranch)
-    imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-    #put a checkbox in front of each image
-    imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
-    imageLeaf.setCheckState(0, Qt.Unchecked)
-    imageLeaf.setText(0, ' Image - ' + imageName)
-    imageLeaf.setText(1, imageDate)
-    imageLeaf.setText(2, imageTime)
-    imageLeaf.setText(3, imagePath)
-    treeWidgetItemCounter += 1
-    self.progBar.setValue(treeWidgetItemCounter)
+    try:
+        #Extract filename from file path
+        if image:
+            if image.find('label') is None:
+                imageName = os.path.basename(image.find('name').text)
+            else:
+                imageName = image.find('label').text
+            imageDate = image.find('date').text
+            imageTime = image.find('time').text
+            imagePath = image.find('name').text
+            imageLeaf = QTreeWidgetItem(seriesBranch)
+            imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            #put a checkbox in front of each image
+            imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
+            imageLeaf.setCheckState(0, Qt.Unchecked)
+            imageLeaf.setText(0, ' Image - ' + imageName)
+            imageLeaf.setText(1, imageDate)
+            imageLeaf.setText(2, imageTime)
+            imageLeaf.setText(3, imagePath)
+            treeWidgetItemCounter += 1
+            self.progBar.setValue(treeWidgetItemCounter)
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
+        logger.error('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
 
 
 def resizeTreeViewColumns(self):
@@ -63,34 +76,40 @@ def closeProgressBar(self):
 
 
 def buildTreeView(self):
-    self.treeView.clear()
-    treeWidgetItemCounter = 0 
-    subjects = self.objXMLReader.getSubjects()
-    for subject in subjects:
-        subjectBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                            "Subject", 
-                                                            subject, 
-                                                            self.treeView, 
-                                                            treeWidgetItemCounter)
-        
-        for study in subject:
-            studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                "Study", 
-                                                                study, 
-                                                                subjectBranch, 
+    try:
+        self.treeView.clear()
+        treeWidgetItemCounter = 0 
+        subjects = self.objXMLReader.getSubjects()
+        for subject in subjects:
+            subjectBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                                "Subject", 
+                                                                subject, 
+                                                                self.treeView, 
                                                                 treeWidgetItemCounter)
-           
-            self.seriesBranchList = []                                                    
-            for series in study:
-                seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                       "Series", 
-                                                                       series, 
-                                                                       studyBranch, 
-                                                                       treeWidgetItemCounter,
-                                                                       self.seriesBranchList)
+        
+            for study in subject:
+                studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                                    "Study", 
+                                                                    study, 
+                                                                    subjectBranch, 
+                                                                    treeWidgetItemCounter)
+                                                             
+                for series in study:
+                    seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
+                                                                           "Series", 
+                                                                           series, 
+                                                                           studyBranch, 
+                                                                           treeWidgetItemCounter)
     
-                for image in series:
-                    createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
+                    for image in series:
+                        createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
+             
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
+        logger.error('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
 
 
 def makeDICOMStudiesTreeView(self, XML_File_Path):
@@ -144,13 +163,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.show()
                 
                 resizeTreeViewColumns(self)
-                closeProgressBar(self)
-
-                 #Now collapse all series branches so as to hide the images
-                for branch in self.seriesBranchList:
-                    if branch !=0:
-                        branch.setExpanded(False)
-                   
+                collapseSeriesBranches(self.treeView.invisibleRootItem())
+                closeProgressBar(self)    
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -167,6 +181,7 @@ def setupLoadingLabel(self, lblLoading):
     self.lblLoading.setWordWrap(True)
     return numTreeViewItems
 
+
 def initialiseProgressBar(self, numTreeViewItems):
     self.progBar.show()
     self.progBar.setMaximum(numTreeViewItems)
@@ -179,15 +194,13 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
             self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-            
-            self.seriesBranchList.clear()
 
             numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
             initialiseProgressBar(self, numTreeViewItems)
 
             buildTreeView(self)
 
-            resizeTreeViewColumns(self)
+            #resizeTreeViewColumns(self)
             closeProgressBar(self)
 
             #If no tree view items are now selected,
@@ -196,10 +209,34 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
 
             #Now collapse all series branches so as to hide the images
             #except the new series branch that has been created
-            expandTreeViewBranch(self, newSeriesName)
+            expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName)
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
+
+
+def collapseSeriesBranches(item):
+    """This function uses recursion to colapse all series branches
+    
+    Input Parameters
+    ****************
+    item  - A QTreeWidgetItem 
+    """
+    logger.info("TreeView.collapseSeriesBranches called")
+    try:
+        if item.childCount() > 0:
+            itemCount = item.childCount()
+            for n in range(itemCount):
+                childItem = item.child(n)
+                if 'series' in childItem.text(0).lower():
+                    item.treeWidget().blockSignals(True)
+                    childItem.setExpanded(False)
+                    item.treeWidget().blockSignals(False)
+                else:
+                    collapseSeriesBranches(childItem)
+    except Exception as e:
+            print('Error in TreeView.collapseSeriesBranches: ' + str(e))
+            logger.error('Error in TreeView.collapseSeriesBranches: ' + str(e))
 
 
 def checkChildItems(item):
@@ -280,17 +317,25 @@ def areAllChildrenChecked(item):
             logger.error('Error in TreeView.areAllChildrenChecked: ' + str(e))
 
 
-def expandTreeViewBranch(self, branchText = ''):
+def expandTreeViewBranch(item, newSeriesName = ''):
         """TO DO"""
         try:
             logger.info("TreeView.expandTreeViewBranch called.")
-            for branch in self.seriesBranchList:
-                seriesID = branch.text(0).replace('Series -', '')
-                seriesID = seriesID.strip()
-                if seriesID == branchText:
-                    branch.setExpanded(True)
-                else:
-                    branch.setExpanded(False)
+            if item.childCount() > 0:
+                itemCount = item.childCount()
+                for n in range(itemCount):
+                    childItem = item.child(n)
+                    branchText = childItem.text(0).lower()
+                    if 'series' in branchText:
+                        seriesName = branchText.replace('series -', '').strip()
+                        item.treeWidget().blockSignals(True)
+                        if seriesName == newSeriesName.lower():
+                            childItem.setExpanded(True)
+                        else:
+                            childItem.setExpanded(False)
+                        item.treeWidget().blockSignals(False)
+                    else:
+                        expandTreeViewBranch(childItem, newSeriesName)
         except Exception as e:
             print('Error in TreeView.expandTreeViewBranch: ' + str(e))
             logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
@@ -386,7 +431,6 @@ def toggleToolButtons(self):
             logger.error('Error in TreeView.toggleToolButtons: ' + str(e))
 
 
-
 def onTreeViewItemClicked(self, item):
     """When a DICOM study treeview item is clicked, this function
     populates the relevant class variables that store the following
@@ -424,7 +468,6 @@ def onTreeViewItemClicked(self, item):
                 self.selectedImageName = imageID.strip()
                 fullImageID = studyID + ': ' + seriesID + ': '  + imageID
                 self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
-
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
