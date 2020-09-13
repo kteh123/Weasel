@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def viewMetadata(self):
     """Creates a subwindow that displays a DICOM image's metadata. """
     try:
-        logger.info("ViewMataData.viewMetadata called")
+        logger.info("ViewMetaData.viewMetadata called")
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
         if treeView.isAnImageSelected(self):
@@ -43,8 +43,8 @@ def viewMetadata(self):
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()
     except Exception as e:
-        print('Error in ViewMataData.viewMetadata: ' + str(e))
-        logger.error('Error in ViewMataData.viewMetadata: ' + str(e))
+        print('Error in ViewMetaData.viewMetadata: ' + str(e))
+        logger.error('Error in ViewMetaData.viewMetadata: ' + str(e))
 
 
 def displayMetaDataSubWindow(self, tableTitle, dataset):
@@ -52,7 +52,7 @@ def displayMetaDataSubWindow(self, tableTitle, dataset):
     Creates a subwindow that displays a DICOM image's metadata. 
     """
     try:
-        logger.info('ViewMataData.displayMetaDataSubWindow called.')
+        logger.info('ViewMetaData.displayMetaDataSubWindow called.')
         title = "DICOM Image Metadata"
                     
         widget = QWidget()
@@ -74,8 +74,8 @@ def displayMetaDataSubWindow(self, tableTitle, dataset):
         self.mdiArea.addSubWindow(metaDataSubWindow)
         metaDataSubWindow.show()
     except Exception as e:
-        print('Error in : ViewMataData.displayMetaDataSubWindow' + str(e))
-        logger.error('Error in : ViewMataData.displayMetaDataSubWindow' + str(e))
+        print('Error in : ViewMetaData.displayMetaDataSubWindow' + str(e))
+        logger.error('Error in : ViewMetaData.displayMetaDataSubWindow' + str(e))
 
 
 def buildTableView(self, dataset):
@@ -135,7 +135,7 @@ def buildTableView(self, dataset):
 
             return tableWidget
         except Exception as e:
-            print('Error in : ViewMataData.buildTableView' + str(e))
-            logger.error('Error in : ViewMataData.buildTableView' + str(e))
+            print('Error in : ViewMetaData.buildTableView' + str(e))
+            logger.error('Error in : ViewMetaData.buildTableView' + str(e))
 
 

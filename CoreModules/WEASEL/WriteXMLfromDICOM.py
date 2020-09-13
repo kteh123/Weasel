@@ -82,9 +82,10 @@ def get_scan_data(scan_directory):
             for filename in file_list:
                 if ('DIRFILE' not in filename) and ('DICOMDIR' not in filename):
                     try:
-                        list_dicom.append(pydicom.dcmread(
-                            os.path.join(dir_name, filename)))
-                        list_paths.append(os.path.join(dir_name, filename))
+                        dataset = pydicom.dcmread(os.path.join(dir_name, filename))
+                        if hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID'):
+                            list_dicom.append(dataset)
+                            list_paths.append(os.path.join(dir_name, filename))
                     except:
                         continue
         if len(list_dicom) == 0:

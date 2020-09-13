@@ -1,6 +1,7 @@
 import os
 import struct
 import numpy as np
+import nibabel.orientations as nib
 import pydicom
 from scipy.spatial.transform import Rotation
 
@@ -151,9 +152,7 @@ def getDicomDataset(imagePath):
     """This method reads the DICOM file in imagePath and returns the DICOM Dataset object/class"""
     try:
         if os.path.exists(imagePath):
-            dataset = pydicom.dcmread(imagePath)
-            if hasattr(dataset, 'InstanceNumber'):
-                return dataset
+            return pydicom.dcmread(imagePath)
         else:
             return None
     except Exception as e:
@@ -170,30 +169,25 @@ def getPixelArray(dataset):
                 if len(np.shape(originalArray))==2:
                     slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(originalArray.shape)
                     intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(originalArray.shape)
-                    pixelArray = originalArray * slope + intercept
-                    # Ensure that the image will have the correct orientation in the XY plane of the GUI
-                    image_orientation = dataset.PerFrameFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
-                    pixelArray = rotatePixelArray(pixelArray, image_orientation)
+                    orient = nib.io_orientation(getAffineArray(dataset))
+                    pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orient[:2, :]))
                 else:
                     for index in range(np.shape(originalArray)[0]):
                         sliceArray = np.squeeze(originalArray[index, ...])
                         slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(sliceArray.shape)
                         intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(sliceArray.shape)
-                        tempArray = sliceArray * slope.astype(np.float32) + intercept.astype(np.float32)
-                        # Ensure that the image will have the correct orientation in the XY plane of the GUI
-                        image_orientation = dataset.PerFrameFunctionalGroupsSequence[index].PlaneOrientationSequence[0].ImageOrientationPatient
-                        imageList.append(rotatePixelArray(tempArray, image_orientation))
+                        orient = nib.io_orientation(getAffineArray(dataset))
+                        tempArray = np.rot90(nib.apply_orientation(sliceArray * slope.astype(np.float32) + intercept.astype(np.float32), orient[:2, :]))
+                        imageList.append(tempArray)
                     pixelArray = np.array(imageList)
                     del sliceArray, tempArray, index
                 del originalArray, imageList
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                pixelArray = dataset.pixel_array.astype(np.float32) * slope + intercept
-                # Ensure that the image will have the correct orientation in the XY plane of the GUI
-                image_orientation = dataset.ImageOrientationPatient
-                pixelArray = rotatePixelArray(pixelArray, image_orientation)
-            del slope, intercept, image_orientation
+                orient = nib.io_orientation(getAffineArray(dataset))
+                pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orient[:2, :]))
+            del slope, intercept
             return pixelArray
         else:
             return None
@@ -240,27 +234,6 @@ def getAffineArray(dataset):
             return None
     except Exception as e:
         print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
-
-
-def rotatePixelArray(pixelArray, imageOrientation, invert_rotation=False):
-    """This method reads the pixelArray imageOrientation
-        and returns the rotated pixelArray in the XY plane.
-       Default rotation is counter-clockwise. 
-       If invert_rotation=True, then it's clockwise.
-       In WEASEL, invert_rotation flag is used in saveDICOM_Image.py
-    """
-    try:
-        row_cosine = np.array(imageOrientation[:3])
-        column_cosine = np.array(imageOrientation[3:])
-        rotation_matrix = np.array([row_cosine, column_cosine, np.cross(row_cosine, column_cosine)])
-        rotation_angle = Rotation.from_matrix(rotation_matrix).as_euler('xyz', degrees=True)[0]
-        if invert_rotation: rotation_angle = - rotation_angle
-        number_rotations = int(rotation_angle / 90) if rotation_angle > 0 else int((rotation_angle + 360) / 90)
-        # If number_rotations = 0, it won't rotate the pixelArray
-        rotatedPixelArray = np.rot90(pixelArray, number_rotations)
-        return rotatedPixelArray
-    except Exception as e:
-        print('Error in function readDICOM_Image.rotatePixelArray: ' + str(e))
 
 
 def getColourmap(imagePath):
