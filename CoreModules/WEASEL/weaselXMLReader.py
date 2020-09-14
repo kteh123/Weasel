@@ -178,6 +178,20 @@ class WeaselXMLReader:
             logger.error('Error in weaseXMLReader.removeSeriesFromXMLFile: ' + str(e))
 
 
+    def getImageLabel(self, studyID, seriesID, imageName = None):
+        try:
+            if imageName is None:
+                return "000000"
+            else:
+                xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                        ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
+                        '/image[name=' + chr(34) + imageName + chr(34) +']/label'
+                return self.root.find(xPath).text
+        except Exception as e:
+            print('Error in WeaselXMLReader.getImageLabel: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getImageLabel: ' + str(e))
+
+
     def getImageTime(self, studyID, seriesID, imageName = None):
         try:
             if imageName is None:
@@ -220,15 +234,18 @@ class WeaselXMLReader:
                    
             #Add new series to study to hold new images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
-                    
+              
             comment = ET.Comment('This series holds a whole series of new images')
             newSeries.append(comment)
             #Get image date & time from original image
-            for index, imageName in enumerate(origImageList): 
+            for index, imageName in enumerate(origImageList):
+                imageLabel = self.getImageLabel(studyID, seriesID, imageName)
                 imageTime = self.getImageTime(studyID, seriesID, imageName)
                 imageDate = self.getImageDate(studyID, seriesID, imageName)
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
+                labelNewImage = ET.SubElement(newImage, 'label')
+                labelNewImage.text = imageLabel
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageList[index]
                 timeNewImage = ET.SubElement(newImage, 'time')
@@ -249,7 +266,8 @@ class WeaselXMLReader:
         try:
             series = self.getSeriesOfSpecifiedType(
                 studyID, seriesID, suffix)    
-            #Get image date & time
+            #Get image label, date & time
+            imageLabel = self.getImageLabel(studyID, seriesID, imageName)
             imageTime = self.getImageTime(studyID, seriesID, imageName)
             imageDate = self.getImageDate(studyID, seriesID, imageName)
 
@@ -273,6 +291,8 @@ class WeaselXMLReader:
                 #Now add image element
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
+                labelNewImage = ET.SubElement(newImage, 'label')
+                labelNewImage.text = imageLabel
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
                 timeNewImage = ET.SubElement(newImage, 'time')
@@ -286,6 +306,8 @@ class WeaselXMLReader:
                 #the current parent series
                 newImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
+                labelNewImage = ET.SubElement(newImage, 'label')
+                labelNewImage.text = imageLabel
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
                 timeNewImage = ET.SubElement(newImage, 'time')

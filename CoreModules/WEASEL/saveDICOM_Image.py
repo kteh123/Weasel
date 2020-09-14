@@ -3,6 +3,7 @@ import numpy as np
 import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from pydicom.sequence import Sequence
+import nibabel.orientations as nib
 import datetime
 import copy
 import random
@@ -319,15 +320,15 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 # Rotate back to Original Position
-                image_orientation = newDicom.PerFrameFunctionalGroupsSequence[index].PlaneOrientationSequence[0].ImageOrientationPatient
-                enhancedArrayInt.append(readDICOM_Image.rotatePixelArray(imageArrayInt, image_orientation, invert_rotation=True))
+                orientation = nib.io_orientation(readDICOM_Image.getAffineArray(newDicom))[:2, :]
+                enhancedArrayInt.append(nib.apply_orientation(np.rot90(imageArrayInt, 3), orientation))
                 # Rescsale Slope and Intercept
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
             else:
                 # Rotate back to Original Position
-                image_orientation = newDicom.ImageOrientationPatient
-                imageArrayInt = readDICOM_Image.rotatePixelArray(imageArrayInt, image_orientation, invert_rotation=True)
+                orientation = nib.io_orientation(readDICOM_Image.getAffineArray(newDicom))[:2, :]
+                imageArrayInt = nib.apply_orientation(np.rot90(imageArrayInt, 3), orientation)
                 # Rescsale Slope and Intercept
                 newDicom.RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]

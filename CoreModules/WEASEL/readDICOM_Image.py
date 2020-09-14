@@ -169,15 +169,15 @@ def getPixelArray(dataset):
                 if len(np.shape(originalArray))==2:
                     slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(originalArray.shape)
                     intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(originalArray.shape)
-                    orient = nib.io_orientation(getAffineArray(dataset))
-                    pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orient[:2, :]))
+                    orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
+                    pixelArray = np.rot90(nib.apply_orientation(originalArray * slope + intercept, orientation))
                 else:
                     for index in range(np.shape(originalArray)[0]):
                         sliceArray = np.squeeze(originalArray[index, ...])
                         slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(sliceArray.shape)
                         intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(sliceArray.shape)
-                        orient = nib.io_orientation(getAffineArray(dataset))
-                        tempArray = np.rot90(nib.apply_orientation(sliceArray * slope.astype(np.float32) + intercept.astype(np.float32), orient[:2, :]))
+                        orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
+                        tempArray = np.rot90(nib.apply_orientation(sliceArray * slope + intercept, orientation))
                         imageList.append(tempArray)
                     pixelArray = np.array(imageList)
                     del sliceArray, tempArray, index
@@ -185,8 +185,8 @@ def getPixelArray(dataset):
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                orient = nib.io_orientation(getAffineArray(dataset))
-                pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orient[:2, :]))
+                orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
+                pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orientation))
             del slope, intercept
             return pixelArray
         else:
