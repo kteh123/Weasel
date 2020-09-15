@@ -1,5 +1,4 @@
 import numpy as np
-import cython
 from scipy.optimize import curve_fit
 import concurrent.futures
 import copy
