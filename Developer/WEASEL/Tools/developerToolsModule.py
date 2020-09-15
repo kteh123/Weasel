@@ -1,5 +1,7 @@
 import os
 import numpy as np
+import random
+import pydicom
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
@@ -75,11 +77,93 @@ def inputWindow(paramDict, title="Input Parameters", helpText=""):
         print('Error in function #.inputWindow: ' + str(e))
 
 
+def copyDICOM(inputPath, series_id=None, series_uid=None):
+    try:
+        if len(inputPath) == 1:
+            if series_id is None:
+                series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
+            if series_uid is None:
+                series_uid = pydicom.uid.generate_uid()
+            newDataset = readDICOM_Image.getDicomDataset(inputPath)
+            derivedPath = setNewFilePath(inputPath, "_Copy")
+            saveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
+            # The next lines perform an overwrite operation over the copied images
+            saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
+            saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
+            saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + "_Copy"))
+        else:
+            derivedPath = []
+            if series_id is None:
+                series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
+            if series_uid is None:
+                series_uid = pydicom.uid.generate_uid()
+            for path in inputPath:
+                newDataset = readDICOM_Image.getDicomDataset(path)
+                newFilePath = setNewFilePath(path, "Copy")
+                saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
+                derivedPath.append(newFilePath)
+                # The next lines perform an overwrite operation over the copied images
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + "_Copy"))
+        return derivedPath
+    except Exception as e:
+        print('Error in function #.copyDICOM: ' + str(e))
+
+
+def deleteDICOM(inputPath):
+    try:
+        if len(inputPath) == 1:
+            inputDict = {"Confirmation":"string"}
+            paramList = inputWindow(inputDict, title="Are you sure you want to delete these images?", helpText="Type YES to delete selected images")
+            reply = paramList[0]
+            if reply=="YES":
+                os.remove(inputPath)
+        else:
+            inputDict = {"Confirmation":"string"}
+            paramList = inputWindow(inputDict, title="Are you sure you want to delete these images?", helpText="Type YES to delete selected images")
+            reply = paramList[0]
+            if reply=="YES":
+                for path in inputPath:
+                    os.remove(path)
+    except Exception as e:
+        print('Error in function #.deleteDICOM: ' + str(e))
+
+
 def editDICOMTag(inputPath, dicomTag, newValue):
     try:
         saveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
     except Exception as e:
         print('Error in function #.editDICOMTag: ' + str(e))
+
+
+def mergeDicomIntoOneSeries(imagePathList, series_description="New Series", series_uid=None, series_id=None, overwrite=False):
+    try:
+        if os.path.exists(imagePathList[0]):
+            if series_id is None:
+                series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
+            if series_uid is None:
+                series_uid = pydicom.uid.generate_uid()
+        newImagePathList = []
+        if overwrite:
+            for path in imagePathList:
+                saveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
+                saveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
+                saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_description)
+            newImagePathList = imagePathList
+        else:
+            for path in imagePathList:
+                newDataset = readDICOM_Image.getDicomDataset(path)
+                newFilePath = setNewFilePath(path, "Copy")
+                saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
+                # The next lines perform an overwrite operation over the copied images
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
+                saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_description)
+                newImagePathList.append(newFilePath)
+        return newImagePathList
+    except Exception as e:
+        print('Error in #.mergeDicomIntoOneSeries: ' + str(e))
 
 
 def getPixelArrayFromDICOM(inputPath):
@@ -175,7 +259,7 @@ def saveNewDICOMAndDisplayResult(objWeasel, inputPath, derivedPath, derivedImage
         elif treeView.isASeriesSelected(objWeasel):
             showSavingResultsMessageBox(objWeasel, len(derivedPath))
             # Save new DICOM series locally
-            if len(derivedPath) > len(inputPath):
+            if len(inputPath) > len(derivedPath):
                 inputPath = inputPath[:len(derivedPath)]
             saveDICOM_Image.saveDicomNewSeries(derivedPath, inputPath, derivedImage, suffix)
             messageWindow.closeMessageSubWindow(objWeasel)
@@ -216,6 +300,27 @@ def overwriteDICOMAndDisplayResult(objWeasel, inputPath, derivedImage):
         messageWindow.closeMessageSubWindow(objWeasel)
     except Exception as e:
         print('Error in function #.overwriteDICOMAndDisplayResult: ' + str(e))
+    
+
+def updateXMLAndDisplayResult(objWeasel, inputPath, derivedPath, suffix):
+    """
+    """
+    try:
+        if len(inputPath) == 1:
+            showSavingResultsMessageBox(objWeasel, 1)
+            newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                            derivedPath, suffix)
+            displayImageColour.displayImageSubWindow(objWeasel, inputPath)
+        else:
+            studyID = getStudyID(objWeasel)
+            newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
+                            inputPath, derivedPath, suffix)
+            #Display series of images in a subwindow
+            displayImageColour.displayMultiImageSubWindow(objWeasel,
+                derivedPath, studyID, newSeriesID)
+        treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+    except Exception as e:
+        print('Error in function #.updateXMLAndDisplayResult: ' + str(e))
 
 
 ####################################################################################

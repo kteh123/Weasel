@@ -64,6 +64,22 @@
     <function>SliceBySlice</function>
   </tool>
   <tool>
+    <action>Merge Series (Developer)</action>
+    <shortcut>Ctrl+M+E</shortcut>
+    <tooltip>Merge selected images or series into 1 series</tooltip>
+    <applies_both_images_series>True</applies_both_images_series>
+    <module>mergeDICOM_Developer</module>
+    <function>MergeSeries</function>
+  </tool>
+  <tool>
+    <action>MIP (Developer)</action>
+    <shortcut>Ctrl+M+I</shortcut>
+    <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
+    <applies_both_images_series>False</applies_both_images_series>
+    <module>calculateMIP_Developer</module>
+    <function>TimeMIP</function>
+  </tool>
+  <tool>
     <action>B0 Map Calculation</action>
     <shortcut>Ctrl+0</shortcut>
     <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
