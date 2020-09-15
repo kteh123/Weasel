@@ -3,7 +3,6 @@ import numpy as np
 import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from pydicom.sequence import Sequence
-import nibabel.orientations as nib
 import datetime
 import copy
 import random
@@ -115,30 +114,7 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
     except Exception as e:
         print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
 
-
-def mergeDicomIntoOneSeries(imagePathList, series_uid=None, series_id=None, series_description="New Series", overwrite=False):
-    try:
-        if os.path.exists(imagePathList[0]):
-            if series_id is None:
-                series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
-            if series_uid is None:
-                series_uid = pydicom.uid.generate_uid()
-        if overwrite:
-            for path in imagePathList:
-                overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
-                overwriteDicomFileTag(path, "SeriesNumber", series_id)
-                overwriteDicomFileTag(path, "SeriesDescription", series_description)
-        else:
-            for path in imagePathList:
-                newDataset = readDICOM_Image.getDicomDataset(path)
-                newFilePath = returnFilePath(path, "Copy")
-                saveDicomToFile(newDataset, output_path=newFilePath)
-                overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
-                overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
-                overwriteDicomFileTag(newFilePath, "SeriesDescription", series_description)
-    except Exception as e:
-        print('Error in saveDICOM_Image.overwriteDicomSeries: ' + str(e))
-    
+   
 # Perhaps write a function that just creates a copy of the DICOM file.
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
@@ -320,15 +296,13 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
             if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
                 # Rotate back to Original Position
-                orientation = nib.io_orientation(readDICOM_Image.getAffineArray(newDicom))[:2, :]
-                enhancedArrayInt.append(nib.apply_orientation(np.rot90(imageArrayInt, 3), orientation))
+                enhancedArrayInt.append(np.transpose(imageArrayInt))
                 # Rescsale Slope and Intercept
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
             else:
                 # Rotate back to Original Position
-                orientation = nib.io_orientation(readDICOM_Image.getAffineArray(newDicom))[:2, :]
-                imageArrayInt = nib.apply_orientation(np.rot90(imageArrayInt, 3), orientation)
+                imageArrayInt = np.transpose(imageArrayInt)
                 # Rescsale Slope and Intercept
                 newDicom.RescaleSlope = rescaleSlope.flatten()[0]
                 newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
