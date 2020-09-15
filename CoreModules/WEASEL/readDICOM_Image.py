@@ -1,7 +1,6 @@
 import os
 import struct
 import numpy as np
-import nibabel.orientations as nib
 import pydicom
 from scipy.spatial.transform import Rotation
 
@@ -169,15 +168,13 @@ def getPixelArray(dataset):
                 if len(np.shape(originalArray))==2:
                     slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(originalArray.shape)
                     intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(originalArray.shape)
-                    orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
-                    pixelArray = np.rot90(nib.apply_orientation(originalArray * slope + intercept, orientation))
+                    pixelArray = np.transpose(originalArray * slope + intercept)
                 else:
                     for index in range(np.shape(originalArray)[0]):
                         sliceArray = np.squeeze(originalArray[index, ...])
                         slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(sliceArray.shape)
                         intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(sliceArray.shape)
-                        orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
-                        tempArray = np.rot90(nib.apply_orientation(sliceArray * slope + intercept, orientation))
+                        tempArray = np.transpose(sliceArray * slope + intercept)
                         imageList.append(tempArray)
                     pixelArray = np.array(imageList)
                     del sliceArray, tempArray, index
@@ -185,8 +182,7 @@ def getPixelArray(dataset):
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                orientation = nib.io_orientation(getAffineArray(dataset))[:2, :]
-                pixelArray = np.rot90(nib.apply_orientation(dataset.pixel_array.astype(np.float32) * slope + intercept, orientation))
+                pixelArray = np.transpose(dataset.pixel_array.astype(np.float32) * slope + intercept)
             del slope, intercept
             return pixelArray
         else:

@@ -19,7 +19,7 @@ def processPipeline2D(objWeasel):
         tool.saveNewDICOMAndDisplayResult(objWeasel, imagePath, derivedImageFileName, derivedImage, FILE_SUFFIX)
     elif tool.treeView.isASeriesSelected(objWeasel):
         imagePathList = tool.getImagePathList(objWeasel)
-        derivedImagePathList, derivedImageList = tool.applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, squareAlgorithm, progress_bar=False)        
+        derivedImagePathList, derivedImageList = tool.applyProcessIterativelyInSeries(objWeasel, imagePathList, FILE_SUFFIX, squareAlgorithm, progress_bar=True)        
         tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
 
 
