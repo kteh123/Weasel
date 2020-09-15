@@ -338,11 +338,11 @@ def setUpColourTools(self, layout, imv,
                     "Tick to apply colour table and levels selected by the user to the whole series")
        
             cmbColours = QComboBox()
-            cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.blockSignals(True)
             cmbColours.addItems(listColours)
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
+            cmbColours.setToolTip('Select a colour table to apply to the image')
             cmbColours.currentIndexChanged.connect(lambda:
                         applyColourTableToSeries(self, imv, cmbColours, lblHiddenSeriesName.text(), chkApply))
 

@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
@@ -27,11 +28,22 @@ def saveImage(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
-        paramDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
+        paramDict = {"Lower Threshold":"integer, 10, 0, 1000", 
+                     "Upper Threshold":"float, 100, 0, 1000", 
+                     "Some String":"string, default value",
+                     "Drop down list": "dropdownlist, 1",
+                     "Second drop down list": "dropdownlist, 2"}  
+        #In "dropdownlist, 2" 2 is index of the item to display in the drop down list 
+        #for integer & float, the format is "type, default value, minimum value, maximum value" 
+
+        list1 = ["item1","default","item3"] #list to display in the first dropdown list 
+        list2 = ["item7","item8","default"] #list to display in the second dropdown list 
+        listOfLists = [list1, list2]
+
         helpMsg = "Lower threshold must be less than the upper threshold."
         warning = True
         while True:
-            inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg)
+            inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg, lists=listOfLists)
             listParams = inputDlg.returnListParameterValues()
             if inputDlg.closeInputDialog():
                 #Cancel button has been clicked
@@ -51,7 +63,8 @@ def saveImage(objWeasel):
                 derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
                 displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
                 # Save the DICOM file in the new file path                                        
-                saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, pixelArray, FILE_SUFFIX, parametric_map="SEG")
+                saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, 
+                                                      pixelArray, FILE_SUFFIX, parametric_map="SEG")
                 #Record squared image in XML file
                 seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
                                                      derivedImageFileName, FILE_SUFFIX)
@@ -94,4 +107,7 @@ def saveImage(objWeasel):
                     derivedImagePathList, studyID, newSeriesID)
                 treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
-        print('Error in thresholdDICOM_Image.saveImage: ' + str(e))
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in thresholdDICOM_Image.saveImage at line {}: '.format(line_number) + str(e))

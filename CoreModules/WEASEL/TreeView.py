@@ -439,7 +439,7 @@ def onTreeViewItemClicked(self, item):
     try:
         #test for returning dictionary of studyIDs:seriesIDs
         #print(returnSelectedSeries(self))
-        if item.text(0):
+        if item:
             selectedText = item.text(0)
             if 'study' in selectedText.lower():
                 studyID = selectedText.replace('Study -', '').strip()
