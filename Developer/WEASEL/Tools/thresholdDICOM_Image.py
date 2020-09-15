@@ -32,13 +32,15 @@ def saveImage(objWeasel):
                      "Upper Threshold":"float, 100, 0, 1000", 
                      "Some String":"string, default value",
                      "Drop down list": "dropdownlist, 1",
-                     "Second drop down list": "dropdownlist, 2"}  
+                     "Second drop down list": "dropdownlist, 2",
+                     "List View": "listview"}  
         #In "dropdownlist, 2" 2 is index of the item to display in the drop down list 
         #for integer & float, the format is "type, default value, minimum value, maximum value" 
 
         list1 = ["item1","default","item3"] #list to display in the first dropdown list 
         list2 = ["item7","item8","default"] #list to display in the second dropdown list 
-        listOfLists = [list1, list2]
+        list3 = ["item17","This is item18","item19", "This is another item in the list"] #list to display in the second dropdown list 
+        listOfLists = [list1, list2, list3]
 
         helpMsg = "Lower threshold must be less than the upper threshold."
         warning = True
