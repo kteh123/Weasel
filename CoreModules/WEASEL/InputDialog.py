@@ -21,7 +21,7 @@ while True:
 """
 
 from PyQt5.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox,
-                             QStyledItemDelegate, QLabel, QSpinBox, QMessageBox,
+                             QStyledItemDelegate, QLabel, QSpinBox, QMessageBox, QScrollBar,
                              QDoubleSpinBox, QLineEdit, QListWidget, QAbstractItemView )
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
@@ -135,6 +135,10 @@ class ParameterInputDialog(QDialog):
                     self.input.setFixedSize(self.input.sizeHintForColumn(0) + 
                                             2 * self.input.frameWidth(), 
                       self.input.sizeHintForRow(0) * self.input.count() + 2 * self.input.frameWidth())
+                    # scroll bar 
+                    scrollBar = QScrollBar(self) 
+                    # setting vertical scroll bar to it 
+                    self.input.setVerticalScrollBar(scrollBar) 
                     listCounter += 1
                     
                 self.layout.addRow(key,  self.input)

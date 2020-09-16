@@ -123,10 +123,34 @@ TRISTAN_GREY = """
                     color: white;
                     }
 
-                QTableWidget {
-                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
-                                                          stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+
+QListWidget {
+alternate-background-color: yellow;
+}
+
+QListWidget {
+    show-decoration-selected: 1; /* make the selection span the entire width of the view */
+}
+
+QListWidget::item:alternate {
+    background: #EEEEEE;
+}
+
+
+QListWidget::item:selected:hover {
+                    background: darkblue;
+                    color: white;
                     }
+
+QListWidget::item:hover {
+                    background: #cce5ff;
+}
+
+
+QTableWidget {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
+                                            stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+    }
                 
 
                 QTableWidget::item {

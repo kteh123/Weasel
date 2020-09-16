@@ -11,6 +11,7 @@ import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
 FILE_SUFFIX = '_Thresholded'
 
+
 def returnPixelArray(imagePath, *args):
     """Applies a low and high threshold on an image and returns the resulting maskArray"""
     try:
@@ -39,7 +40,7 @@ def saveImage(objWeasel):
 
         list1 = ["item1","default","item3"] #list to display in the first dropdown list 
         list2 = ["item7","item8","default"] #list to display in the second dropdown list 
-        list3 = ["item17","This is item18","item19", "This is another item in the list"] #list to display in the second dropdown list 
+        list3 = ["ferret", "weasel", "elephant", "tiger", "an animal with a long name"] #list to display in the second dropdown list 
         listOfLists = [list1, list2, list3]
 
         helpMsg = "Lower threshold must be less than the upper threshold."
@@ -47,6 +48,7 @@ def saveImage(objWeasel):
         while True:
             inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg, lists=listOfLists)
             listParams = inputDlg.returnListParameterValues()
+            print('list params =', listParams)
             if inputDlg.closeInputDialog():
                 #Cancel button has been clicked
                 break
@@ -59,22 +61,23 @@ def saveImage(objWeasel):
         
         if inputDlg.closeInputDialog() == False: 
             #The OK button was clicked & the Cancel has not been clicked
+            studyID = objWeasel.selectedStudy
+            seriesID = objWeasel.selectedSeries
             if treeView.isAnImageSelected(objWeasel):
                 imagePath = objWeasel.selectedImagePath
                 pixelArray = returnPixelArray(imagePath, *listParams)
                 derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-                displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+                displayImageColour.displayImageSubWindow(objWeasel, studyID, 
+                                                         seriesID, derivedImageFileName)
                 # Save the DICOM file in the new file path                                        
                 saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, 
                                                       pixelArray, FILE_SUFFIX, parametric_map="SEG")
                 #Record squared image in XML file
-                seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
                                                      derivedImageFileName, FILE_SUFFIX)
                 #Update tree view with xml file modified above
-                treeView.refreshDICOMStudiesTreeView(objWeasel,seriesID)
+                treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
             elif treeView.isASeriesSelected(objWeasel):
-                studyID = objWeasel.selectedStudy
-                seriesID = objWeasel.selectedSeries
                 imagePathList = \
                         objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
                 #Iterate through list of images and square each image
