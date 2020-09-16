@@ -199,7 +199,7 @@ class ParameterInputDialog(QDialog):
                 elif isinstance(item, QComboBox):
                     paramList.append(item.currentText())
                 elif isinstance(item, QListWidget):
-                    paramList.append(item.selectedItems())
+                    paramList.append([itemText.text() for itemText in item.selectedItems()])
                 else:
                     paramList.append(item.value())
 
