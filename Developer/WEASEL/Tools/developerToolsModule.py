@@ -55,7 +55,7 @@ def showProcessingMessageBox(objWeasel):
         "Processing algorithm")
 
 
-def inputWindow(paramDict, title="Input Parameters", helpText=""):
+def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
     """Eg. of paramDict (this will need more documentation):
         paramDict = {"Tag":"string", "Value":"string"}
         The variable types are int, float and string.
@@ -63,7 +63,7 @@ def inputWindow(paramDict, title="Input Parameters", helpText=""):
         thresholdDICOM_Image.py as it contains a good example of validation.
     """
     try:
-        inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText)
+        inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
         listParams = inputDlg.returnListParameterValues()
         outputList = []
         # Sometimes the values parsed could be list or hexadecimals in strings

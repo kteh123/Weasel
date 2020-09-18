@@ -103,4 +103,12 @@
     <module>T1MapMolliDICOM_Image</module>
     <function>saveT1MapSeries</function>
   </tool>
+    <tool>
+    <action>UKRIN-MAPS</action>
+    <shortcut>Ctrl+U</shortcut>
+    <tooltip>Choose which UKRIN-MAPS algorithm to run</tooltip>
+    <applies_both_images_series>False</applies_both_images_series>
+    <module>UKRIN_Developer</module>
+    <function>chooseAndRunAlgorithm</function>
+  </tool>
 </tools>
