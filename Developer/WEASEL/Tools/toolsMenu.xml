@@ -1,25 +1,24 @@
 <tools>
   <tool>
+    <action>Binary Operations</action>
+    <shortcut>Ctrl+B</shortcut>
+    <tooltip>Performs binary operations on two images</tooltip>
+    <module>BinaryOperationsOnImages</module>
+  </tool>
+  <tool>
     <action>Invert</action>
-    <shortcut>Ctrl+I</shortcut>
-    <tooltip>Invert a DICOM Image or series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>invertDICOM_Image</module>
-    <function>saveImage</function>
   </tool>
   <tool>
     <action>Square</action>
     <shortcut>Ctrl+S</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>squareDICOM_Image</module>
-    <function>saveImage</function>
   </tool>
   <tool>
     <action>Square Developer (Pipeline2D)</action>
     <shortcut>Ctrl+S+1</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>squareDICOM_Image_Developer</module>
     <function>processPipeline2D</function>
   </tool>
@@ -27,7 +26,6 @@
     <action>Square Developer (Pipeline3D/GroupWise)</action>
     <shortcut>Ctrl+S+3</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>squareDICOM_Image_Developer</module>
     <function>processPipeline3D</function>
   </tool>
@@ -35,7 +33,6 @@
     <action>Gaussian Filter Developer (GroupWise)</action>
     <shortcut>Ctrl+F+3</shortcut>
     <tooltip>gaussian</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>gaussianFilterDICOM_Image_Developer</module>
     <function>GroupWise</function>
   </tool>
@@ -43,7 +40,6 @@
     <action>Edit DICOM Tag Developer</action>
     <shortcut>Ctrl+D</shortcut>
     <tooltip>Choose DICOM header and change the selected files</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>editDICOM_Image_Developer</module>
     <function>editDICOM</function>
   </tool>
@@ -51,15 +47,12 @@
     <action>Threshold</action>
     <shortcut>Ctrl+T</shortcut>
     <tooltip>Threshold a DICOM Image or series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>thresholdDICOM_Image</module>
-    <function>saveImage</function>
   </tool>
   <tool>
     <action>Threshold Developer (SlicebySlice)</action>
     <shortcut>Ctrl+L</shortcut>
     <tooltip>Threshold a DICOM Image or series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>thresholdDICOM_Image_Developer</module>
     <function>SliceBySlice</function>
   </tool>
@@ -67,7 +60,6 @@
     <action>Merge Series (Developer)</action>
     <shortcut>Ctrl+M+E</shortcut>
     <tooltip>Merge selected images or series into 1 series</tooltip>
-    <applies_both_images_series>True</applies_both_images_series>
     <module>mergeDICOM_Developer</module>
     <function>MergeSeries</function>
   </tool>
@@ -75,7 +67,6 @@
     <action>MIP (Developer)</action>
     <shortcut>Ctrl+M+I</shortcut>
     <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>calculateMIP_Developer</module>
     <function>TimeMIP</function>
   </tool>
@@ -83,7 +74,6 @@
     <action>B0 Map Calculation</action>
     <shortcut>Ctrl+0</shortcut>
     <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>B0MapDICOM_Image</module>
     <function>saveB0MapSeries</function>
   </tool>
@@ -91,7 +81,6 @@
     <action>T2* Map Calculation</action>
     <shortcut>Ctrl+2</shortcut>
     <tooltip>Applies a T2* fitting to the series if applicable</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>T2StarMapDICOM_Image</module>
     <function>saveT2StarMapSeries</function>
   </tool>
@@ -99,7 +88,6 @@
     <action>T1 Map Molli Calculation</action>
     <shortcut>Ctrl+1</shortcut>
     <tooltip>Applies a T1 Molli fitting to the series if applicable</tooltip>
-    <applies_both_images_series>False</applies_both_images_series>
     <module>T1MapMolliDICOM_Image</module>
     <function>saveT1MapSeries</function>
   </tool>

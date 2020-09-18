@@ -12,6 +12,11 @@ from Developer.WEASEL.ScientificLibrary.imagingTools import formatArrayForAnalys
 FILE_SUFFIX = '_MIP'
 #***************************************************************************
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def TimeMIP(objWeasel):
     if tool.treeView.isASeriesSelected(objWeasel):
         imagePathList = tool.getImagePathList(objWeasel)

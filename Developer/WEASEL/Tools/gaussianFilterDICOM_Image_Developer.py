@@ -9,6 +9,11 @@ from Developer.WEASEL.ScientificLibrary.imagingTools import gaussianFilter
 FILE_SUFFIX = '_Gaussian'
 #***************************************************************************
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def SliceBySlice(objWeasel):
     if tool.treeView.isAnImageSelected(objWeasel):
         imagePath = tool.getImagePath(objWeasel)

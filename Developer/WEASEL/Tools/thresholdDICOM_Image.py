@@ -25,7 +25,7 @@ def returnPixelArray(imagePath, *args):
             print('Error in function thresholdDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def saveImage(objWeasel):
+def processImages(objWeasel):
     """Creates a subwindow that displays a binary DICOM image. Executed using the 
     'Threshold Image' Menu item in the Tools menu."""
     try:
@@ -115,4 +115,4 @@ def saveImage(objWeasel):
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
-        print('Error in thresholdDICOM_Image.saveImage at line {}: '.format(line_number) + str(e))
+        print('Error in thresholdDICOM_Image.processImages at line {}: '.format(line_number) + str(e))

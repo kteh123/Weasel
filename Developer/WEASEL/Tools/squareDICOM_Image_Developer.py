@@ -10,6 +10,11 @@ from Developer.WEASEL.ScientificLibrary.imagingTools import squareAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def processPipeline2D(objWeasel):
     if tool.treeView.isAnImageSelected(objWeasel):
         imagePath = tool.getImagePath(objWeasel)

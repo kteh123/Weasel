@@ -300,7 +300,11 @@
     <Compile Include="CoreModules\WEASEL\TreeView.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Developer\WEASEL\Tools\calculateMIP_Developer.py" />
     <Compile Include="Developer\WEASEL\Tools\developerToolsModule.py" />
+    <Compile Include="Developer\WEASEL\Tools\gaussianFilterDICOM_Image_Developer.py" />
+    <Compile Include="Developer\WEASEL\Tools\squareDICOM_Image_Developer.py" />
+    <Compile Include="Developer\WEASEL\Tools\thresholdDICOM_Image_Developer.py" />
     <Compile Include="Developer\WEASEL\Tools\ToolsFunctions.py">
       <SubType>Code</SubType>
     </Compile>

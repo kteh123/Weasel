@@ -10,6 +10,10 @@ from PyQt5.QtWidgets import QMessageBox
 
 FILE_SUFFIX = '_Copy'
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
 def returnCopiedFile(imagePath):
     """Returns the filepath of the new copied file."""
     try:

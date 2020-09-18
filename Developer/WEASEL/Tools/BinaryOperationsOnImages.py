@@ -70,11 +70,15 @@ def returnPixelArray(imagePath1, imagePath2, binaryOperation):
         print('Error in function binaryOperationDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def displayBinaryOperationsWindow(self):
+def isSeriesOnly(self):
+    return True
+
+
+def processImages(self):
         """Displays the sub window for performing binary operations
         on 2 images"""
         try:
-            logger.info("BinaryOperationsOnImages.displayBinaryOperationsWindow called")
+            logger.info("BinaryOperationsOnImages.processImages called")
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
@@ -181,8 +185,8 @@ def displayBinaryOperationsWindow(self):
                 msgBox.setText("Select a series")
                 msgBox.exec()
         except Exception as e:
-            print('Error in displayBinaryOperationsWindow: ' + str(e))
-            logger.error('Error in displayBinaryOperationsWindow: ' + str(e))
+            print('Error in processImages: ' + str(e))
+            logger.error('Error in processImages: ' + str(e))
 
 
 def saveNewDICOMFileFromBinOp(self):
