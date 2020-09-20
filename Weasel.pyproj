@@ -362,6 +362,7 @@
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\FERRET\FERRET_README.md" />
+    <Content Include="Developer\WEASEL\Tools\Menus.xml" />
     <Content Include="Developer\WEASEL\Tools\toolsMenu.xml" />
     <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />

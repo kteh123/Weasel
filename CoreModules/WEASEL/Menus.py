@@ -27,6 +27,7 @@ class NoTreeViewItemSelected(Exception):
    to a model is not returned from the XML configuration file."""
    pass
 
+
 def setupMenus(self):  
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
@@ -166,17 +167,6 @@ def returnCopySeriesAction(self, bothImagesAndSeries = False):
     return self.copySeriesButton
 
 
-#def returnBinaryOperationsAction(self, bothImagesAndSeries = False):
-#    self.binaryOperationsButton = QAction('&Binary Operations', self)
-#    self.binaryOperationsButton.setShortcut('Ctrl+B')
-#    self.binaryOperationsButton.setStatusTip(
-#        'Performs binary operations on two images')
-#    self.binaryOperationsButton.setData(bothImagesAndSeries)
-#    self.binaryOperationsButton.triggered.connect(
-#        lambda: binaryOperationsOnImages.processImages(self))
-#    return self.binaryOperationsButton
-
-
 def buildToolsMenu(self):
     try:
         bothImagesAndSeries = True  #delete later?
@@ -201,10 +191,6 @@ def buildToolsMenu(self):
         self.toolsMenu.addAction(self.copySeriesButton)
 
         self.toolsMenu.addSeparator()
-      
-        #self.binaryOperationsButton = returnBinaryOperationsAction(self)
-        #self.binaryOperationsButton.setEnabled(False)
-        #self.toolsMenu.addAction(self.binaryOperationsButton)
         
         #Add items to the Tools menu as defined in
         #toolsMenu.xml
@@ -236,7 +222,7 @@ def buildUserDefinedToolsMenuItem(self, tool):
     try:
         #create action button on the fly
         logger.info("Menus.buildUserDefinedToolsMenuItem called.")
-        self.menuItem = QAction(tool.find('action').text, self)
+        self.menuItem = QAction(tool.find('label').text, self)
         if tool.find('shortcut') is not None:
             self.menuItem.setShortcut(tool.find('shortcut').text)
         if tool.find('tooltip') is not None:
