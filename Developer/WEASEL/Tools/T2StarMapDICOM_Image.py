@@ -12,6 +12,11 @@ from Developer.WEASEL.ScientificLibrary.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T2StarMap'
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the T2* Map Array"""
     try:

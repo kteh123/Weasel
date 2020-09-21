@@ -13,6 +13,12 @@ from Developer.WEASEL.ScientificLibrary.ukrinAlgorithms import ukrinMaps
 FILE_SUFFIX = '_B0Map'
 # THE ENHANCED MRI B0 STILL NEEDS MORE TESTING. I DON'T HAVE ANY CASE WITH 2 TEs IN ENHANCED MRI
 
+
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def returnPixelArray(imagePathList, sliceList, echoList):
     """Returns the B0 Map Array with the Phase images as starting point"""
     try:

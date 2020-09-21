@@ -27,6 +27,7 @@ class NoTreeViewItemSelected(Exception):
    to a model is not returned from the XML configuration file."""
    pass
 
+
 def setupMenus(self):  
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
@@ -166,17 +167,6 @@ def returnCopySeriesAction(self, bothImagesAndSeries = False):
     return self.copySeriesButton
 
 
-def returnBinaryOperationsAction(self, bothImagesAndSeries = False):
-    self.binaryOperationsButton = QAction('&Binary Operations', self)
-    self.binaryOperationsButton.setShortcut('Ctrl+B')
-    self.binaryOperationsButton.setStatusTip(
-        'Performs binary operations on two images')
-    self.binaryOperationsButton.setData(bothImagesAndSeries)
-    self.binaryOperationsButton.triggered.connect(
-        lambda: binaryOperationsOnImages.displayBinaryOperationsWindow(self))
-    return self.binaryOperationsButton
-
-
 def buildToolsMenu(self):
     try:
         bothImagesAndSeries = True  #delete later?
@@ -196,17 +186,11 @@ def buildToolsMenu(self):
         self.deleteImageButton.setEnabled(False)
         self.toolsMenu.addAction(self.deleteImageButton)
         
-        
         self.copySeriesButton =  returnCopySeriesAction(self)
         self.copySeriesButton.setEnabled(False)
         self.toolsMenu.addAction(self.copySeriesButton)
-        
 
         self.toolsMenu.addSeparator()
-      
-        self.binaryOperationsButton = returnBinaryOperationsAction(self)
-        self.binaryOperationsButton.setEnabled(False)
-        self.toolsMenu.addAction(self.binaryOperationsButton)
         
         #Add items to the Tools menu as defined in
         #toolsMenu.xml
@@ -238,19 +222,19 @@ def buildUserDefinedToolsMenuItem(self, tool):
     try:
         #create action button on the fly
         logger.info("Menus.buildUserDefinedToolsMenuItem called.")
-        self.menuItem = QAction(tool.find('action').text, self)
-        self.menuItem.setShortcut(tool.find('shortcut').text)
-        self.menuItem.setToolTip(tool.find('tooltip').text)
-        if tool.find('applies_both_images_series').text == 'True':
-            boolApplyBothImagesAndSeries = True
-        else:
-            #Only acts on a series
-            boolApplyBothImagesAndSeries = False
-        self.menuItem.setData(boolApplyBothImagesAndSeries)
+        self.menuItem = QAction(tool.find('label').text, self)
+        if tool.find('shortcut') is not None:
+            self.menuItem.setShortcut(tool.find('shortcut').text)
+        if tool.find('tooltip') is not None:
+            self.menuItem.setToolTip(tool.find('tooltip').text)
         self.menuItem.setEnabled(False)
         moduleName = tool.find('module').text
-        function = tool.find('function').text
-        #function = "saveImage"
+
+        if tool.find('function') is not None:
+            function = tool.find('function').text
+        else:
+            function = "processImages"
+
         moduleFileName = [os.path.join(dirpath, moduleName+".py") 
             for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
         spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
@@ -258,9 +242,19 @@ def buildUserDefinedToolsMenuItem(self, tool):
         spec.loader.exec_module(module)
         objFunction = getattr(module, function)
         self.menuItem.triggered.connect(lambda : objFunction(self))
+
+        if hasattr(module, "isSeriesOnly"):
+            boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
+        else:
+            boolApplyBothImagesAndSeries = True
+
+        self.menuItem.setData(boolApplyBothImagesAndSeries)
         self.toolsMenu.addAction(self.menuItem)
     except Exception as e:
-        print('Error in function Menus.buildUserDefinedToolsMenuItem: ' + str(e))
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {}: '.format(line_number) + str(e))
 
 
 def viewImage(self):

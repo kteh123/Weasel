@@ -12,6 +12,11 @@ from Developer.WEASEL.ScientificLibrary.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T1Map'
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+
 def returnPixelArray(imagePathList, sliceList, inversionList):
     """Returns the T1 Map Array"""
     try:

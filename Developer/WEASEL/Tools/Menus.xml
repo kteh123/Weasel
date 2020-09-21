@@ -1,98 +1,98 @@
 <tools>
   <tool>
-    <label>Binary Operations</label>
+    <action>Binary Operations</action>
     <shortcut>Ctrl+B</shortcut>
     <tooltip>Performs binary operations on two images</tooltip>
     <module>BinaryOperationsOnImages</module>
   </tool>
   <tool>
-    <label>Invert</label>
+    <action>Invert</action>
     <module>invertDICOM_Image</module>
   </tool>
   <tool>
-    <label>Square</label>
+    <action>Square</action>
     <shortcut>Ctrl+S</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
     <module>squareDICOM_Image</module>
   </tool>
   <tool>
-    <label>Square Developer (Pipeline2D)</label>
+    <action>Square Developer (Pipeline2D)</action>
     <shortcut>Ctrl+S+1</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
     <module>squareDICOM_Image_Developer</module>
     <function>processPipeline2D</function>
   </tool>
   <tool>
-    <label>Square Developer (Pipeline3D/GroupWise)</label>
+    <action>Square Developer (Pipeline3D/GroupWise)</action>
     <shortcut>Ctrl+S+3</shortcut>
     <tooltip>Square a DICOM Image or series</tooltip>
     <module>squareDICOM_Image_Developer</module>
     <function>processPipeline3D</function>
   </tool>
   <tool>
-    <label>Gaussian Filter Developer (GroupWise)</label>
+    <action>Gaussian Filter Developer (GroupWise)</action>
     <shortcut>Ctrl+F+3</shortcut>
     <tooltip>gaussian</tooltip>
     <module>gaussianFilterDICOM_Image_Developer</module>
     <function>GroupWise</function>
   </tool>
   <tool>
-    <label>Edit DICOM Tag Developer</label>
+    <action>Edit DICOM Tag Developer</action>
     <shortcut>Ctrl+D</shortcut>
     <tooltip>Choose DICOM header and change the selected files</tooltip>
     <module>editDICOM_Image_Developer</module>
     <function>editDICOM</function>
   </tool>
   <tool>
-    <label>Threshold</label>
+    <action>Threshold</action>
     <shortcut>Ctrl+T</shortcut>
     <tooltip>Threshold a DICOM Image or series</tooltip>
     <module>thresholdDICOM_Image</module>
   </tool>
   <tool>
-    <label>Threshold Developer (SlicebySlice)</label>
+    <action>Threshold Developer (SlicebySlice)</action>
     <shortcut>Ctrl+L</shortcut>
     <tooltip>Threshold a DICOM Image or series</tooltip>
     <module>thresholdDICOM_Image_Developer</module>
     <function>SliceBySlice</function>
   </tool>
   <tool>
-    <label>Merge Series (Developer)</label>
+    <action>Merge Series (Developer)</action>
     <shortcut>Ctrl+M+E</shortcut>
     <tooltip>Merge selected images or series into 1 series</tooltip>
     <module>mergeDICOM_Developer</module>
     <function>MergeSeries</function>
   </tool>
   <tool>
-    <label>MIP (Developer)</label>
+    <action>MIP (Developer)</action>
     <shortcut>Ctrl+M+I</shortcut>
     <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
     <module>calculateMIP_Developer</module>
     <function>TimeMIP</function>
   </tool>
   <tool>
-    <label>B0 Map Calculation</label>
+    <action>B0 Map Calculation</action>
     <shortcut>Ctrl+0</shortcut>
     <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
     <module>B0MapDICOM_Image</module>
     <function>saveB0MapSeries</function>
   </tool>
   <tool>
-    <label>T2* Map Calculation</label>
+    <action>T2* Map Calculation</action>
     <shortcut>Ctrl+2</shortcut>
     <tooltip>Applies a T2* fitting to the series if applicable</tooltip>
     <module>T2StarMapDICOM_Image</module>
     <function>saveT2StarMapSeries</function>
   </tool>
   <tool>
-    <label>T1 Map Molli Calculation</label>
+    <action>T1 Map Molli Calculation</action>
     <shortcut>Ctrl+1</shortcut>
     <tooltip>Applies a T1 Molli fitting to the series if applicable</tooltip>
     <module>T1MapMolliDICOM_Image</module>
     <function>saveT1MapSeries</function>
   </tool>
     <tool>
-    <label>UKRIN-MAPS</label>
+    <action>UKRIN-MAPS</action>
     <shortcut>Ctrl+U</shortcut>
     <tooltip>Choose which UKRIN-MAPS algorithm to run</tooltip>
     <applies_both_images_series>False</applies_both_images_series>
