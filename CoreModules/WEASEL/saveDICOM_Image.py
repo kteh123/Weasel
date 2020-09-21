@@ -364,7 +364,7 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
             arrayForRGB = np.arange(0, numberOfValues)
             colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
             stringType = ('SS' if minValue < 0 else 'US')
-            dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
+            #dicomData.PixelRepresentation = (1 if minValue < 0 else 0)
             constant = (2 if minValue < 0 else 1)
             totalBytes = dicomData.BitsAllocated
             dicomData.add_new('0x00280106', stringType, minValue)

@@ -1,9 +1,6 @@
 import pydicom
 from pydicom.dataset import Dataset
 from pydicom.sequence import Sequence
-#from matplotlib import cm
-#from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-#from pydicom.pixel_data_handlers.util import apply_color_lut
 import numpy as np
 import datetime
 import struct
@@ -37,8 +34,9 @@ class ParametricClass(object):
         #dicom.BitsAllocated = 32
         #dicom.BitsStored = 32
         #dicom.HighBit = 31
+        dicom.FloatPixelData = imageArray.tobytes()
         #dicom.FloatPixelData = list(imageArray.astype(np.float32).flatten())
-        dicom.PixelData = imageArray.astype(dicom.pixel_array.dtype)
+        #dicom.PixelData = imageArray.astype(dicom.pixel_array.dtype)
         
         dicom.RealWorldValueMappingSequence = [Dataset(), Dataset(), Dataset(), Dataset()]
         dicom.RealWorldValueMappingSequence[0].QuantityDefinitionSequence = [Dataset(), Dataset()]
