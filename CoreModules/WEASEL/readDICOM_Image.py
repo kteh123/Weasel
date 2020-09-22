@@ -50,7 +50,7 @@ def returnSeriesPixelArray(imagePathList):
 
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
     try:
-        if hasattr(dataset, 'PixelData') and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+        if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']) and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             originalArray = getPixelArray(dataset)
             numberSlices = dataset[0x20011018].value
             sortedArray = list()
@@ -161,7 +161,7 @@ def getDicomDataset(imagePath):
 def getPixelArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Image/Pixel array"""
     try:
-        if hasattr(dataset, 'PixelData'):
+        if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 imageList = list()
                 originalArray = dataset.pixel_array.astype(np.float32)
@@ -194,7 +194,7 @@ def getPixelArray(dataset):
 def getAffineArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Affine/Orientation matrix"""
     try:
-        if hasattr(dataset, 'PixelData'):
+        if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 affineList = list()
                 for index in range(len(dataset.PerFrameFunctionalGroupsSequence)):

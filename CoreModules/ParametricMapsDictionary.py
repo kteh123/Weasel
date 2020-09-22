@@ -26,18 +26,26 @@ class ParametricClass(object):
 
     def ADC(self, dicom, imageArray):
         # The commented parts are to apply when we decide to include Parametric Map IOD. No readers can deal with this yet
-        #dicom.SOPClassUID='1.2.840.10008.5.1.4.1.1.30'
+        # dicom.SOPClassUID = '1.2.840.10008.5.1.4.1.1.67'
         dicom.SeriesDescription = "Apparent Diffusion Coefficient (um2/s)"
         dicom.Modality = "RWV"
         dicom.FrameLaterality = "U"
         dicom.DerivedPixelContrast = "ADC"
-        #dicom.BitsAllocated = 32
-        #dicom.BitsStored = 32
-        #dicom.HighBit = 31
-        dicom.FloatPixelData = imageArray.tobytes()
-        #dicom.FloatPixelData = list(imageArray.astype(np.float32).flatten())
-        #dicom.PixelData = imageArray.astype(dicom.pixel_array.dtype)
-        
+        dicom.BitsAllocated = 32
+        dicom.PixelRepresentation = 1
+        dicom.PhotometricInterpretation = "MONOCHROME2"
+        dicom.PixelAspectRatio = ["1", "1"] # Need to have a better look at this
+        dicom.RescaleSlope = 1
+        dicom.RescaleIntercept = 0
+        # Rotate the image back to the original orientation
+        imageArray = np.transpose(imageArray)
+        dicom.Rows = np.shape(imageArray)[-2]
+        dicom.Columns = np.shape(imageArray)[-1]
+        dicom.WindowCenter = int((np.amax(imageArray) - np.amin(imageArray)) / 2)
+        dicom.WindowWidth = np.absolute(int(np.amax(imageArray) - np.amin(imageArray)))
+        dicom.FloatPixelData = bytes(imageArray.astype(np.float32).flatten())
+        del dicom.PixelData, dicom.BitsStored, dicom.HighBit
+
         dicom.RealWorldValueMappingSequence = [Dataset(), Dataset(), Dataset(), Dataset()]
         dicom.RealWorldValueMappingSequence[0].QuantityDefinitionSequence = [Dataset(), Dataset()]
         dicom.RealWorldValueMappingSequence[0].QuantityDefinitionSequence[0].ValueType = "CODE"
