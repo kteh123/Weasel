@@ -7,6 +7,7 @@ import os
 import sys
 import logging
 import time
+from collections import defaultdict
 import CoreModules.WEASEL.Menus  as menus
 logger = logging.getLogger(__name__)
 
@@ -186,6 +187,7 @@ def initialiseProgressBar(self, numTreeViewItems):
     self.progBar.show()
     self.progBar.setMaximum(numTreeViewItems)
     self.progBar.setValue(0)
+
 
 def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
@@ -439,7 +441,7 @@ def onTreeViewItemClicked(self, item):
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
         #test for returning dictionary of studyIDs:seriesIDs
-        #print(returnSelectedSeries(self))
+        print(returnSelectedSeries(self))
         if item:
             selectedText = item.text(0)
             if 'study' in selectedText.lower():
@@ -482,19 +484,57 @@ def returnSelectedSeries(self):
     logger.info("TreeView.returnSelectedSeries called")
     try:
         root = self.treeView.invisibleRootItem()
-        studyCount = root.childCount()
+        subjectCount = root.childCount()
         selectedSeriesDict = {}
-        for i in range(studyCount):
-            study = root.child(i)
-            seriesCount = study.childCount()
-            selectedSeriesDict[studyID] = []
-            for n in range(seriesCount):
-                series = study.child(n)
-                if series.checkState(0) == Qt.Checked:
-                    studyID = study.text(0).replace('Study -', '').strip()
-                    selectedSeriesDict[studyID].append(series.text(0).replace('Series -', '').strip())
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            subjectID = subject.text(0).replace('Subject -', '').strip()
+            selectedSeriesDict[subjectID] = defaultdict(list)
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                studyID = study.text(0).replace('Study -', '').strip()
+                selectedSeriesDict[subjectID][studyID] = []
+                for n in range(seriesCount):
+                    series = study.child(n)
+                    if series.checkState(0) == Qt.Checked:
+                        selectedSeriesDict[subjectID][studyID].append(series.text(0).replace('Series -', '').strip())
 
         return selectedSeriesDict
     except Exception as e:
-            print('Error in TreeView.returnSelectedSeries: ' + str(e))
-            logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
+        print('Error in TreeView.returnSelectedSeries: ' + str(e))
+        logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
+    
+
+def returnSelectedImages(self):
+    """This function generates and returns a list of selected images."""
+    logger.info("TreeView.returnSelectedImages called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        selectedImagesDict = {}
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            subjectID = subject.text(0).replace('Subject -', '').strip()
+            selectedImagesDict[subjectID] = defaultdict(list)
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                studyID = study.text(0).replace('Study -', '').strip()
+                selectedImagesDict[subjectID][studyID] = defaultdict(list)
+                for k in range(seriesCount):
+                    series = study.child(k)
+                    imageCount = series.childCount()
+                    seriesID = series.text(0).replace('Series -', '').strip()
+                    selectedImagesDict[subjectID][studyID][seriesID] = []
+                    for n in range(imageCount):
+                        image = series.child(n)
+                        if image.checkState(0) == Qt.Checked:
+                            selectedImagesDict[subjectID][studyID][seriesID].append(image.text(3))
+
+        return selectedImagesDict
+    except Exception as e:
+        print('Error in TreeView.returnSelectedImages: ' + str(e))
+        logger.error('Error in TreeView.returnSelectedImages: ' + str(e))

@@ -13,7 +13,7 @@ import Developer.WEASEL.Tools.T2StarMapDICOM_Image as t2_star
 
 def chooseAndRunAlgorithm(objWeasel):
     if tool.treeView.isASeriesSelected(objWeasel):
-        # Lower and upper threshold from the input window. No parameter validation here
+        # Setting Window Input window
         inputDict = {"Algorithm":"dropdownlist", "Dummy":"listview"}
         scriptsList = ["B0", "T2*", "T1 Molli"]
         dummyList = ["Animals", "Plants", "Trees"]

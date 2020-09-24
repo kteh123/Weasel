@@ -2,6 +2,7 @@ import os
 import numpy as np
 import random
 import pydicom
+import itertools
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
@@ -11,6 +12,12 @@ import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 
+def NestedDictValues(dictionary):
+  for value in dictionary.values():
+    if isinstance(value, dict):
+      yield from NestedDictValues(value)
+    else:
+      yield value
 
 def getStudyID(objWeasel):
     return objWeasel.selectedStudy
@@ -22,6 +29,15 @@ def getSeriesID(objWeasel):
 
 def getImagePath(objWeasel):
     return objWeasel.selectedImagePath
+
+
+def getCheckedSeriesIDs(objWeasel):
+    return treeView.returnSelectedSeries(objWeasel)
+
+
+def getAllCheckedImages(objWeasel):
+    imagesDict = treeView.returnSelectedImages(objWeasel)
+    return list(itertools.chain(*NestedDictValues(imagesDict)))
 
 
 def getImagePathList(objWeasel):
