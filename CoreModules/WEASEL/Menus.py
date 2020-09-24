@@ -28,48 +28,70 @@ class NoTreeViewItemSelected(Exception):
    pass
 
 
-def setupMenus(self):  
+def setupMenus(self):
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
+    self.listMenus = []
     mainMenu = self.menuBar()
-    self.fileMenu = mainMenu.addMenu('File')
-    self.toolsMenu = mainMenu.addMenu('Tools')
-    self.helpMenu = mainMenu.addMenu('Help')
+    objXMLToolsReader = WeaselToolsXMLReader() 
+    menus = objXMLToolsReader.getMenus()
+    for menu in menus:
+        menuName = menu.attrib['name']
+        self.topMenu = mainMenu.addMenu(menuName)
+        self.listMenus.append(self.topMenu)
+        for item in menu:
+            buildUserDefinedToolsMenuItem(self, self.topMenu, item)
 
-    #File Menu
-    buildFileMenu(self)
 
-    #Tools Menu
-    buildToolsMenu(self)
-
-
-def buildFileMenu(self):
+def buildUserDefinedToolsMenuItem(self, topMenu, item):
     try:
-        loadDICOM = QAction('&Load DICOM Images', self)
-        loadDICOM.setShortcut('Ctrl+L')
-        loadDICOM.setStatusTip('Load DICOM images from a scan folder')
-        loadDICOM.triggered.connect(lambda: loadDICOMFile.loadDICOM(self))
-        self.fileMenu.addAction(loadDICOM)
+        #create action button on the fly
+        logger.info("Menus.buildUserDefinedToolsMenuItem called.")
+        if item.find('separator') is not None:
+            self.topMenu.addSeparator()
+        else:
+            if item.find('icon') is not None:
+                icon = item.find('icon').text
+                self.menuItem = QAction(QIcon(icon), item.find('label').text, self)
+            else:
+                self.menuItem = QAction(item.find('label').text, self)
+            if item.find('shortcut') is not None:
+                self.menuItem.setShortcut(item.find('shortcut').text)
+            if item.find('tooltip') is not None:
+                self.menuItem.setToolTip(item.find('tooltip').text)
+            if item.find('enabled') is not None:
+                if item.find('enabled').text == 'True':
+                    self.menuItem.setEnabled(True)
+                else:
+                    self.menuItem.setEnabled(False)
 
-        tileSubWindows = QAction('&Tile Subwindows', self)
-        tileSubWindows.setShortcut('Ctrl+T')
-        tileSubWindows.setStatusTip('Returns subwindows to a tile pattern')
-        tileSubWindows.triggered.connect(lambda: tileAllSubWindows(self))
-        self.fileMenu.addAction(tileSubWindows)
-        
-        closeAllImageWindowsButton = QAction('Close &All Image Windows', self)
-        closeAllImageWindowsButton.setShortcut('Ctrl+A')
-        closeAllImageWindowsButton.setStatusTip('Closes all image sub windows')
-        closeAllImageWindowsButton.triggered.connect(lambda: closeAllImageWindows(self))
-        self.fileMenu.addAction(closeAllImageWindowsButton)
-        
-        closeAllSubWindowsButton = QAction('&Close All Sub Windows', self)
-        closeAllSubWindowsButton.setShortcut('Ctrl+X')
-        closeAllSubWindowsButton.setStatusTip('Closes all sub windows')
-        closeAllSubWindowsButton.triggered.connect(lambda: displayImageCommon.closeAllSubWindows(self))
-        self.fileMenu.addAction(closeAllSubWindowsButton)
+            moduleName = item.find('module').text
+
+            if item.find('function') is not None:
+                function = item.find('function').text
+            else:
+                function = "processImages"
+
+            moduleFileName = [os.path.join(dirpath, moduleName+".py") 
+                for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
+            spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            objFunction = getattr(module, function)
+            self.menuItem.triggered.connect(lambda : objFunction(self))
+
+            if hasattr(module, "isSeriesOnly"):
+                boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
+            else:
+                boolApplyBothImagesAndSeries = True
+
+            self.menuItem.setData(boolApplyBothImagesAndSeries)
+            topMenu.addAction(self.menuItem)
     except Exception as e:
-        print('Error in function Menus.buildFileMenu: ' + str(e))
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {}: '.format(line_number) + str(e))
 
 
 def closeAllImageWindows(self):
@@ -98,163 +120,50 @@ def tileAllSubWindows(self):
         #self.mdiArea.tileSubWindows()
 
 
-def buildContextMenu(self, pos):
-    context = QMenu(self)
+def buildContextMenuItem(context, item, self):
+    menuItem = QAction(item.find('label').text, self)
+    menuItem.setEnabled(True)
+    moduleName = item.find('module').text
+    
+    if item.find('function') is not None:
+        function = item.find('function').text
+    else:
+        function = "processImages"
+    
+    moduleFileName = [os.path.join(dirpath, moduleName+".py") 
+        for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
+    spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    objFunction = getattr(module, function)
+    menuItem.triggered.connect(lambda : objFunction(self))
+    
+    if hasattr(module, "isSeriesOnly"):
+        boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
+    else:
+        boolApplyBothImagesAndSeries = True
+    
+    menuItem.setData(boolApplyBothImagesAndSeries)
+    context.addAction(menuItem)
+    
 
-    viewImageButton = returnViewAction(self)
-    context.addAction(viewImageButton)
-
-    viewImageROIButton = returnViewROIAction(self)
-    context.addAction(viewImageROIButton)
-
-    viewMetaDataButton =  returnViewMetaDataAction(self)
-    context.addAction(viewMetaDataButton)
-
-    #copySeriesButton =  returnCopySeriesAction(self)
-    #context.addAction(copySeriesButton)
-
-    #deleteImageButton =  returnDeleteImageAction(self)
-    #context.addAction(deleteImageButton)
-    #binaryOperationsButton = returnBinaryOperationsAction(self)
-    #context.addAction(binaryOperationsButton)
-
-    context.exec_(self.treeView.mapToGlobal(pos))
-
-
-def returnViewAction(self, bothImagesAndSeries = True):
-    self.viewImageButton = QAction('&View Image', self)
-    self.viewImageButton.setShortcut('Ctrl+V')
-    self.viewImageButton.setStatusTip('View DICOM Image or series')
-    self.viewImageButton.triggered.connect(lambda: viewImage(self))
-    self.viewImageButton.setData(bothImagesAndSeries)
-    return self.viewImageButton
-
-
-def returnViewROIAction(self, bothImagesAndSeries = True):
-    self.viewImageROIButton = QAction('View Image with &ROI', self)
-    self.viewImageROIButton.setShortcut('Ctrl+R')
-    self.viewImageROIButton.setStatusTip('View DICOM Image or series with the ROI tool')
-    self.viewImageROIButton.triggered.connect(lambda: viewROIImage(self))
-    self.viewImageROIButton.setData(bothImagesAndSeries)
-    return self.viewImageROIButton
+def displayContextMenu(self, pos):
+    self.context.exec_(self.treeView.mapToGlobal(pos))
 
 
-def returnViewMetaDataAction(self, bothImagesAndSeries = True):
-    self.viewMetaDataButton = QAction('&View Metadata', self)
-    self.viewMetaDataButton.setShortcut('Ctrl+M')
-    self.viewMetaDataButton.setStatusTip('View DICOM Image or series metadata')
-    self.viewMetaDataButton.triggered.connect(lambda: viewMetaData.viewMetadata(self))
-    self.viewMetaDataButton.setData(bothImagesAndSeries)
-    return self.viewMetaDataButton
-
-
-def returnDeleteImageAction(self, bothImagesAndSeries = True):
-    self.deleteImageButton = QAction('&Delete Series/Image', self)
-    self.deleteImageButton.setShortcut('Ctrl+D')
-    self.deleteImageButton.setStatusTip('Delete a DICOM Image or series')
-    self.deleteImageButton.triggered.connect(lambda: deleteImage(self))
-    self.deleteImageButton.setData(bothImagesAndSeries)
-    return self.deleteImageButton
-
-
-def returnCopySeriesAction(self, bothImagesAndSeries = False):
-    self.copySeriesButton = QAction('&Copy Series', self)
-    self.copySeriesButton.setShortcut('Ctrl+C')
-    self.copySeriesButton.setStatusTip('Copy a DICOM series') 
-    self.copySeriesButton.setData(bothImagesAndSeries)
-    self.copySeriesButton.triggered.connect(
-        lambda:copyDICOM_Image.copySeries(self))
-    return self.copySeriesButton
-
-
-def buildToolsMenu(self):
+def buildContextMenu(self):
+    logger.info("Menus.buildContextMenu called")
     try:
-        bothImagesAndSeries = True  #delete later?
-        self.viewAction = returnViewAction(self)
-        self.viewAction.setEnabled(False)
-        self.toolsMenu.addAction(self.viewAction)
-
-        self.viewImageROIButton  = returnViewROIAction(self)
-        self.viewImageROIButton.setEnabled(False)
-        self.toolsMenu.addAction(self.viewImageROIButton)
-
-        self.viewMetaDataButton = returnViewMetaDataAction(self)
-        self.viewMetaDataButton.setEnabled(False)
-        self.toolsMenu.addAction(self.viewMetaDataButton)
-        
-        self.deleteImageButton = returnDeleteImageAction(self)
-        self.deleteImageButton.setEnabled(False)
-        self.toolsMenu.addAction(self.deleteImageButton)
-        
-        self.copySeriesButton =  returnCopySeriesAction(self)
-        self.copySeriesButton.setEnabled(False)
-        self.toolsMenu.addAction(self.copySeriesButton)
-
-        self.toolsMenu.addSeparator()
-        
-        #Add items to the Tools menu as defined in
-        #toolsMenu.xml
-        addUserDefinedToolsMenuItems(self)
-        
-        self.toolsMenu.addSeparator()
-        self.launchFerretButton = QAction(QIcon(FERRET_LOGO), '&FERRET', self)
-        self.launchFerretButton.setShortcut('Ctrl+F')
-        self.launchFerretButton.setStatusTip('Launches the FERRET application')
-        self.launchFerretButton.triggered.connect(lambda: menuToolBarCommon.displayFERRET(self))
-        self.launchFerretButton.setEnabled(True)
-        self.toolsMenu.addAction(self.launchFerretButton)
-    except Exception as e:
-        print('Error in function Menus.buildToolsMenu: ' + str(e))
-
-
-def addUserDefinedToolsMenuItems(self):
-    try:
-        logger.info("Menus addUserDefinedToolsMenuItems called.")
+        self.context = QMenu(self)
         objXMLToolsReader = WeaselToolsXMLReader() 
-        tools = objXMLToolsReader.getTools()
-        for tool in tools:
-            buildUserDefinedToolsMenuItem(self, tool)
+        items = objXMLToolsReader.getContextMenuItems()
+        for item in items:
+            buildContextMenuItem(self.context, item, self)
     except Exception as e:
-        print('Error in function Menus.addUserDefinedToolsMenuItem: ' + str(e))
-
-
-def buildUserDefinedToolsMenuItem(self, tool):
-    try:
-        #create action button on the fly
-        logger.info("Menus.buildUserDefinedToolsMenuItem called.")
-        self.menuItem = QAction(tool.find('label').text, self)
-        if tool.find('shortcut') is not None:
-            self.menuItem.setShortcut(tool.find('shortcut').text)
-        if tool.find('tooltip') is not None:
-            self.menuItem.setToolTip(tool.find('tooltip').text)
-        self.menuItem.setEnabled(False)
-        moduleName = tool.find('module').text
-
-        if tool.find('function') is not None:
-            function = tool.find('function').text
-        else:
-            function = "processImages"
-
-        moduleFileName = [os.path.join(dirpath, moduleName+".py") 
-            for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
-        spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        objFunction = getattr(module, function)
-        self.menuItem.triggered.connect(lambda : objFunction(self))
-
-        if hasattr(module, "isSeriesOnly"):
-            boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
-        else:
-            boolApplyBothImagesAndSeries = True
-
-        self.menuItem.setData(boolApplyBothImagesAndSeries)
-        self.toolsMenu.addAction(self.menuItem)
-    except Exception as e:
-        exception_type, exception_object, exception_traceback = sys.exc_info()
-        #filename = exception_traceback.tb_frame.f_code.co_filename
-        line_number = exception_traceback.tb_lineno
-        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {}: '.format(line_number) + str(e))
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            #filename = exception_traceback.tb_frame.f_code.co_filename
+            line_number = exception_traceback.tb_lineno
+            print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
 
 
 def viewImage(self):

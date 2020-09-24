@@ -74,16 +74,6 @@ class FerretXMLReader:
             logger.error('Error in FerretXMLReader.parseConfigFile: ' + str(e)) 
             self.hasXMLFileParsedOK = False
 
-    def getImagePathListForSeries(self, studyID, seriesID):
-        try:
-            xPath = './study[@id=' + chr(34) + studyID + chr(34) + \
-            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-            images = self.root.findall(xPath)
-            imageList = [image.find('name').text for image in images]
-            return imageList
-        except Exception as e:
-            print('Error in getImagePathListForSeries: ' + str(e))
-
 
     def getListModelShortNames(self):
         """Returns a list of model short names for display

@@ -65,6 +65,7 @@ class Weasel(QMainWindow):
         self.objXMLReader = WeaselXMLReader() 
 
         menus.setupMenus(self)
+        menus.buildContextMenu(self)
         toolBar.setupToolBar(self)
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")

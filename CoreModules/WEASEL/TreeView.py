@@ -154,7 +154,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
 
                 buildTreeView(self)
 
-                self.treeView.customContextMenuRequested.connect(lambda pos: menus.buildContextMenu(self, pos))
+                self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
@@ -413,19 +413,20 @@ def toggleToolButtons(self):
         """TO DO"""
         try:
             logger.info("TreeView.toggleToolButtons called.")
-            tools = self.toolsMenu.actions()
-            for tool in tools:
-                if not tool.isSeparator():
-                    if not(tool.data() is None):
-                        #Assume not all tools will act on an image
-                         #Assume all tools act on a series   
-                        if isASeriesSelected(self):
-                             tool.setEnabled(True)
-                        elif isAnImageSelected(self):
-                            if tool.data():
-                                tool.setEnabled(True)
-                            else:
-                                tool.setEnabled(False) 
+            for menu in self.listMenus:
+                menuItems = menu.actions()
+                for menuItem in menuItems:
+                    if not menuItem.isSeparator():
+                        if not(menuItem.data() is None):
+                            #Assume not all tools will act on an image
+                             #Assume all tools act on a series   
+                            if isASeriesSelected(self):
+                                 menuItem.setEnabled(True)
+                            elif isAnImageSelected(self):
+                                if menuItem.data():
+                                    menuItem.setEnabled(True)
+                                else:
+                                    menuItem.setEnabled(False) 
         except Exception as e:
             print('Error in TreeView.toggleToolButtons: ' + str(e))
             logger.error('Error in TreeView.toggleToolButtons: ' + str(e))
