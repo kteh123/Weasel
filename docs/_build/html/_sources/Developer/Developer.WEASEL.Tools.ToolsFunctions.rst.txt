@@ -1,0 +1,7 @@
+Developer.WEASEL.Tools.ToolsFunctions module
+============================================
+
+.. automodule:: Developer.WEASEL.Tools.ToolsFunctions
+   :members:
+   :undoc-members:
+   :show-inheritance:

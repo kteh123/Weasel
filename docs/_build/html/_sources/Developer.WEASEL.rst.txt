@@ -1,0 +1,16 @@
+Developer.WEASEL
+================
+
+.. automodule:: Developer.WEASEL
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Developer.WEASEL.ScientificLibrary
+   Developer.WEASEL.Tools

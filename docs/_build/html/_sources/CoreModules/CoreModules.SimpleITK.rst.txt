@@ -1,0 +1,18 @@
+CoreModules.SimpleITK package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.SimpleITK.SimpleITK
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.SimpleITK
+   :members:
+   :undoc-members:
+   :show-inheritance:

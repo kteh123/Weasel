@@ -1,0 +1,7 @@
+CoreModules.WEASEL.RegionsOfInterest\_DICOM module
+==================================================
+
+.. automodule:: CoreModules.WEASEL.RegionsOfInterest_DICOM
+   :members:
+   :undoc-members:
+   :show-inheritance:

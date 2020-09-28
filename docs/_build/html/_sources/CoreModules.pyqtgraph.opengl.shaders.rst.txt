@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.opengl.shaders module
+===========================================
+
+.. automodule:: CoreModules.pyqtgraph.opengl.shaders
+   :members:
+   :undoc-members:
+   :show-inheritance:

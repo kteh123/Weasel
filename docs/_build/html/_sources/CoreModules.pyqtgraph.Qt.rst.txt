@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.Qt module
+===============================
+
+.. automodule:: CoreModules.pyqtgraph.Qt
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.numpy\_fix module
+==============================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.numpy_fix
+   :members:
+   :undoc-members:
+   :show-inheritance:

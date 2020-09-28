@@ -1,0 +1,7 @@
+Developer.WEASEL.Tools.editDICOM\_Image\_Developer module
+=========================================================
+
+.. automodule:: Developer.WEASEL.Tools.editDICOM_Image_Developer
+   :members:
+   :undoc-members:
+   :show-inheritance:

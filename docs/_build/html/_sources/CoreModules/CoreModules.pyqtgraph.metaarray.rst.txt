@@ -1,0 +1,18 @@
+CoreModules.pyqtgraph.metaarray package
+=======================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.metaarray.MetaArray
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.metaarray
+   :members:
+   :undoc-members:
+   :show-inheritance:

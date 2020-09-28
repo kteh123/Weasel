@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.InputDialog &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.InputDialog</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.InputDialog</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The ParameterInputDialog class creates a pop-up input dialog that </span>
+<span class="sd">allows the user to input one or more integers, floats or strings.  </span>
+<span class="sd">These data items can be returned to the calling program in a list. </span>
+
+<span class="sd">This class would be imported thus,</span>
+<span class="sd">import CoreModules.WEASEL.InputDialog as inputDialog</span>
+<span class="sd">and example usage within a while loop to validate the input data could be</span>
+
+<span class="sd">paramDict = {&quot;Lower Threshold&quot;:&quot;integer&quot;, &quot;Upper Threshold&quot;:&quot;integer&quot;}</span>
+<span class="sd">helpMsg = &quot;Lower threshold must be less than the upper threshold.&quot;</span>
+<span class="sd">warning = True</span>
+<span class="sd">while True:</span>
+<span class="sd">    inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg)</span>
+<span class="sd">    listParams = inputDlg.returnListParameterValues()</span>
+<span class="sd">    if listParams[0] &lt; listParams[1]:</span>
+<span class="sd">        break</span>
+<span class="sd">    else:</span>
+<span class="sd">        if warning:</span>
+<span class="sd">            helpMsg = helpMsg + &quot;&lt;H4&gt;&lt;font color=\&quot;red\&quot;&gt; Check input parameter values.&lt;/font&gt;&lt;/H4&gt;&quot;</span>
+<span class="sd">            warning = False #only show this message once</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">QFormLayout</span><span class="p">,</span> <span class="n">QDialogButtonBox</span><span class="p">,</span> <span class="n">QComboBox</span><span class="p">,</span>
+                             <span class="n">QStyledItemDelegate</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QSpinBox</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QScrollBar</span><span class="p">,</span>
+                             <span class="n">QDoubleSpinBox</span><span class="p">,</span> <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QListWidget</span><span class="p">,</span> <span class="n">QAbstractItemView</span> <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># User-defined exceptions</span>
+<div class="viewcode-block" id="Error"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.Error">[docs]</a><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Base class for other exceptions&quot;&quot;&quot;</span>
+   <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IncorrectParameterTypeError"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.IncorrectParameterTypeError">[docs]</a><span class="k">class</span> <span class="nc">IncorrectParameterTypeError</span><span class="p">(</span><span class="n">Error</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Raised when a parameter type is not &#39;integer&#39;, &#39;float&#39; or &#39;string&#39;.</span>
+<span class="sd">   A unit test for developers to avoid typos.&quot;&quot;&quot;</span>
+   <span class="k">pass</span></div>
+
+<span class="k">class</span> <span class="nc">ParameterInputDialog</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class inherits from the Qt QDialog class and it generates a pop-up dialog</span>
+<span class="sd">  window with one or more input widgets that can accept either an integer, float or string. </span>
+<span class="sd">  The order and type of input widgets is defined in the paramDict Python dictionary </span>
+<span class="sd">  input parameter in the class initialisation function. </span>
+<span class="sd">  </span>
+<span class="sd">  Input Parameters</span>
+<span class="sd">  *****************</span>
+<span class="sd">  paramDict contains name:value pairs of strings in the form &#39;parmeter name&#39;:&#39;parameter type&#39; </span>
+<span class="sd">  Parameter type can only take the values: &#39;integer&#39;, &#39;float&#39;, &#39;string&#39;, &#39;dropdownlist&#39;</span>
+<span class="sd">  So &#39;Lower Threshold&#39;:&#39;integer&#39; would create a spin box labeled &#39;Lower Threshold&#39; on the dialog</span>
+<span class="sd">  So &#39;Upper Threshold&#39;:&#39;float&#39; would create a double spin box labeled &#39;Upper Threshold&#39; on the dialog</span>
+<span class="sd">  So &#39;Series Name&#39;:&#39;string&#39; would create a textbox labeled &#39;Series Name&#39; on the dialog</span>
+<span class="sd">  Thus,</span>
+<span class="sd">  paramDict = {&#39;Lower Threshold&#39;:&#39;integer&#39;, &#39;Upper Threshold&#39;:&#39;float&#39;, &#39;Series Name&#39;:&#39;string&#39;, </span>
+<span class="sd">  &#39;label name&#39;: &#39;dropdownlist&#39;,</span>
+<span class="sd">  &#39;second label name&#39;: &#39;dropdownlist&#39;}</span>
+<span class="sd">  list1=[&#39;item1&#39;, &#39;item2&#39;, &#39;item3&#39;]</span>
+<span class="sd">  listOfList =[list1, list2]</span>
+<span class="sd">  Widgets are created in the same order on the dialog they occupy in the dictionary; ie., </span>
+<span class="sd">  the first dictionary item is uppermost input widget on the dialog </span>
+<span class="sd">  and the last dictionary item is the last input widget on the dialog.</span>
+<span class="sd">  </span>
+<span class="sd">  title - optional string containing the input dialog title. Has a default string &quot;Input Parameters&quot;</span>
+
+<span class="sd">  helpText - optional help text to be displayed above the input widgets.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ParameterInputDialog"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.ParameterInputDialog">[docs]</a><span class="k">class</span> <span class="nc">ParameterInputDialog</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramDict</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Input Parameters&quot;</span><span class="p">,</span> <span class="n">helpText</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lists</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">ParameterInputDialog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="c1">#Hide ? help button</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowFlags</span><span class="p">()</span> <span class="o">^</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowContextHelpButtonHint</span><span class="p">)</span>
+            <span class="c1">#Hide top right hand corner X close button</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowFlags</span><span class="p">()</span> <span class="o">^</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowCloseButtonHint</span><span class="p">)</span>
+            <span class="n">QBtn</span> <span class="o">=</span> <span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span>   <span class="c1">#OK and Cancel button</span>
+            <span class="c1">#QBtn = QDialogButtonBox.Ok    #OK button only</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span> <span class="o">=</span> <span class="n">QDialogButtonBox</span><span class="p">(</span><span class="n">QBtn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="o">.</span><span class="n">accepted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span>   <span class="c1">#OK button</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="o">.</span><span class="n">rejected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>  <span class="c1">#Cancel button</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">closeDialog</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">helpText</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">helpTextLbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;&lt;H4&gt;&quot;</span> <span class="o">+</span> <span class="n">helpText</span>  <span class="o">+</span><span class="s2">&quot;&lt;/H4&gt;&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">helpTextLbl</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helpTextLbl</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">listWidget</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">listCounter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span>  <span class="n">key</span> <span class="ow">in</span> <span class="n">paramDict</span><span class="p">:</span>
+                <span class="c1">#paramType = paramDict[key].lower()</span>
+                <span class="n">paramType</span><span class="p">,</span> <span class="n">value1</span><span class="p">,</span> <span class="n">value2</span><span class="p">,</span> <span class="n">value3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getParamData</span><span class="p">(</span><span class="n">paramDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">paramType</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;dropdownlist&quot;</span><span class="p">,</span> <span class="s2">&quot;listview&quot;</span><span class="p">):</span>
+                    <span class="c1">#This unit test is for developers who mistype the above 3 parameter </span>
+                    <span class="c1">#types when they are developing new WEASEL tools that need</span>
+                    <span class="c1">#an input dialog</span>
+                    <span class="k">raise</span> <span class="n">IncorrectParameterTypeError</span>
+                <span class="k">if</span> <span class="n">paramType</span> <span class="o">==</span> <span class="s2">&quot;integer&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">QSpinBox</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">value2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value2</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">value3</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value3</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">value1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value1</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">paramType</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">value2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value2</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">value3</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value3</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">value1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value1</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">paramType</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">value1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">value1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Enter your text&quot;</span><span class="p">)</span>
+                    <span class="c1">#uncomment to set an input mask</span>
+                    <span class="c1">#self.input.setInputMask(&#39;000.000.000.000;_&#39;)</span>
+                <span class="k">elif</span> <span class="n">paramType</span> <span class="o">==</span> <span class="s2">&quot;dropdownlist&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">lists</span><span class="p">[</span><span class="n">listCounter</span><span class="p">])</span>
+                    <span class="n">listCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">value1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value1</span><span class="p">))</span>   
+                <span class="k">elif</span> <span class="n">paramType</span> <span class="o">==</span> <span class="s2">&quot;listview&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">QListWidget</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setSelectionMode</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">ExtendedSelection</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">lists</span><span class="p">[</span><span class="n">listCounter</span><span class="p">])</span>
+                    <span class="c1">#self.input.setFlags(item.flags() | Qt.ItemIsUserCheckable)</span>
+                    <span class="c1">#self.input.setCheckState(Qt.Unchecked)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">sizeHintForColumn</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> 
+                                            <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">frameWidth</span><span class="p">(),</span> 
+                      <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">sizeHintForRow</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">frameWidth</span><span class="p">())</span>
+                    <span class="c1"># scroll bar </span>
+                    <span class="n">scrollBar</span> <span class="o">=</span> <span class="n">QScrollBar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> 
+                    <span class="c1"># setting vertical scroll bar to it </span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">setVerticalScrollBar</span><span class="p">(</span><span class="n">scrollBar</span><span class="p">)</span> 
+                    <span class="n">listCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+                    
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">key</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">listWidget</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>  <span class="c1">#display input dialog</span>
+        <span class="k">except</span> <span class="n">IncorrectParameterTypeError</span><span class="p">:</span>
+            <span class="n">str1</span> <span class="o">=</span> <span class="s1">&#39;Cannot procede because the parameter type for an input field &#39;</span>
+            <span class="n">str2</span> <span class="o">=</span> <span class="s1">&#39;in the parameter input dialog is incorrect. &#39;</span> 
+            <span class="n">str3</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">paramType</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span><span class="o">+</span>  <span class="s1">&#39; was used. &#39;</span>
+            <span class="n">str4</span> <span class="o">=</span> <span class="s1">&#39;Permitted types are&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;integer,&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;float&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> 
+            <span class="n">str5</span> <span class="o">=</span> <span class="s1">&#39; and &#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;string&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; input as strings.&#39;</span>
+            <span class="n">warningString</span> <span class="o">=</span>  <span class="n">str1</span> <span class="o">+</span> <span class="n">str2</span> <span class="o">+</span> <span class="n">str3</span> <span class="o">+</span> <span class="n">str4</span> <span class="o">+</span> <span class="n">str5</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">warningString</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;InputDialog - &#39;</span> <span class="o">+</span> <span class="n">warningString</span><span class="p">)</span>
+            <span class="n">QMessageBox</span><span class="p">()</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>  <span class="s2">&quot;Parameter Input Dialog&quot;</span><span class="p">,</span> <span class="n">warningString</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in class ParameterInputDialog.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in class ParameterInputDialog.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+
+
+<div class="viewcode-block" id="ParameterInputDialog.getParamData"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.ParameterInputDialog.getParamData">[docs]</a>    <span class="k">def</span> <span class="nf">getParamData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramDescription</span><span class="p">):</span>
+        <span class="n">commaCount</span> <span class="o">=</span> <span class="n">paramDescription</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commaCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">paramDescription</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">commaCount</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">paramList</span> <span class="o">=</span> <span class="n">paramDescription</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">commaCount</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">paramList</span> <span class="o">=</span> <span class="n">paramDescription</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">commaCount</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">paramList</span> <span class="o">=</span> <span class="n">paramDescription</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">paramList</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ParameterInputDialog.close"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.ParameterInputDialog.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closeDialog</span> <span class="o">=</span><span class="kc">True</span>
+        <span class="c1">#Now programmatically click OK to close the dialog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ParameterInputDialog.closeInputDialog"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.ParameterInputDialog.closeInputDialog">[docs]</a>    <span class="k">def</span> <span class="nf">closeInputDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">closeDialog</span></div>
+
+
+<div class="viewcode-block" id="ParameterInputDialog.returnListParameterValues"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.InputDialog.ParameterInputDialog.returnListParameterValues">[docs]</a>    <span class="k">def</span> <span class="nf">returnListParameterValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of parameter values as input by the user, </span>
+<span class="sd">        in the same as order as the widgets</span>
+<span class="sd">        on the input dialog from top most (first item in the list) </span>
+<span class="sd">        to the bottom most (last item in the list).&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">paramList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listWidget</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QLineEdit</span><span class="p">):</span>
+                    <span class="n">paramList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QComboBox</span><span class="p">):</span>
+                    <span class="n">paramList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">currentText</span><span class="p">())</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QListWidget</span><span class="p">):</span>
+                    <span class="n">paramList</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">itemText</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="k">for</span> <span class="n">itemText</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">paramList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+            <span class="k">return</span> <span class="n">paramList</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in class ParameterInputDialog.returnListParameterValues: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in class ParameterInputDialog.returnListParameterValues: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

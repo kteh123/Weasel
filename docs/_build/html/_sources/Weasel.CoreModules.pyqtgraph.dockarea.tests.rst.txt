@@ -1,0 +1,10 @@
+Weasel.CoreModules.pyqtgraph.dockarea.tests namespace
+=====================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.dockarea.tests.test_dock

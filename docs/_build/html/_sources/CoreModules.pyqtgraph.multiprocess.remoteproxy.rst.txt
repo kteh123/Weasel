@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.multiprocess.remoteproxy module
+=====================================================
+
+.. automodule:: CoreModules.pyqtgraph.multiprocess.remoteproxy
+   :members:
+   :undoc-members:
+   :show-inheritance:

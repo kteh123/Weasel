@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.ErrorBarItem module
+==============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ErrorBarItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

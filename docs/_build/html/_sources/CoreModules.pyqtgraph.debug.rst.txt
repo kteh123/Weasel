@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.debug module
+==================================
+
+.. automodule:: CoreModules.pyqtgraph.debug
+   :members:
+   :undoc-members:
+   :show-inheritance:

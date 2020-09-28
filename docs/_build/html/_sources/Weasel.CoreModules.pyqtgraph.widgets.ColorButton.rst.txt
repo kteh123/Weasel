@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.ColorButton module
+=======================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.ColorButton
+   :members:
+   :undoc-members:
+   :show-inheritance:

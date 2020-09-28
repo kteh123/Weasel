@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate\_pyqt module
+================================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.canvas.CanvasItem module
+=====================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.canvas.CanvasItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

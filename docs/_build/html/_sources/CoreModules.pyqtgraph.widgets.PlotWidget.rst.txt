@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.PlotWidget module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.PlotWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

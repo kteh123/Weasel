@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.GraphicsScene.mouseEvents module
+=============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.GraphicsScene.mouseEvents
+   :members:
+   :undoc-members:
+   :show-inheritance:

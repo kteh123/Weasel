@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.RawImageWidget module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.RawImageWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

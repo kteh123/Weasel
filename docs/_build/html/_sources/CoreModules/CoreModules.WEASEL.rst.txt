@@ -1,0 +1,37 @@
+CoreModules.WEASEL package
+==========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.WEASEL.DisplayImageColour
+   CoreModules.WEASEL.DisplayImageCommon
+   CoreModules.WEASEL.DisplayImageROI
+   CoreModules.WEASEL.InputDialog
+   CoreModules.WEASEL.InterfaceDICOMXMLFile
+   CoreModules.WEASEL.LoadDICOM
+   CoreModules.WEASEL.MenuToolBarCommon
+   CoreModules.WEASEL.Menus
+   CoreModules.WEASEL.MessageWindow
+   CoreModules.WEASEL.RegionsOfInterest_DICOM
+   CoreModules.WEASEL.ToolBar
+   CoreModules.WEASEL.TreeView
+   CoreModules.WEASEL.UserImageColourSelection
+   CoreModules.WEASEL.WriteXMLfromDICOM
+   CoreModules.WEASEL.iBeatImport
+   CoreModules.WEASEL.readDICOM_Image
+   CoreModules.WEASEL.saveDICOM_Image
+   CoreModules.WEASEL.styleSheet
+   CoreModules.WEASEL.weaselToolsXMLReader
+   CoreModules.WEASEL.weaselXMLReader
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.WEASEL
+   :members:
+   :undoc-members:
+   :show-inheritance:

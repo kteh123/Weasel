@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.FERRET.ExcelWriter &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.FERRET.ExcelWriter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.FERRET.ExcelWriter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This class module provides the functionality for the creation</span>
+<span class="sd">of an Excel spreadsheet to store the results from the batch</span>
+<span class="sd">processing of time-MR signal data files. </span>
+
+<span class="sd">This is done using the openpyxl Python package.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span>
+<span class="kn">from</span> <span class="nn">openpyxl.drawing.image</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExcelWriter"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.ExcelWriter.ExcelWriter">[docs]</a><span class="k">class</span> <span class="nc">ExcelWriter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fullFilePath</span><span class="p">,</span> <span class="n">logo</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;Creates an instance of the ExcelWriter class that</span>
+<span class="sd">       contains an Excel Workbook with one worksheet with a tab</span>
+<span class="sd">       entitled &#39;Skipped files&#39;.</span>
+<span class="sd">       </span>
+<span class="sd">       Input Parameter</span>
+<span class="sd">       ----------------</span>
+<span class="sd">       fullFilePath - location where the Excel spreadsheet will be stored.</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span> <span class="o">=</span> <span class="n">fullFilePath</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logo</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">logo</span><span class="p">)</span>
+            <span class="c1">#Resize logo</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logo</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">50</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logo</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">50</span>
+           
+            <span class="bp">self</span><span class="o">.</span><span class="n">wb</span> <span class="o">=</span> <span class="n">Workbook</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="o">.</span><span class="n">active</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Skipped files&quot;</span>
+
+            <span class="c1">#Adjust size of cell A1 to accomodate logo</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span><span class="o">.</span><span class="n">column_dimensions</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">7</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span><span class="o">.</span><span class="n">row_dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mf">37.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logo</span><span class="p">,</span> <span class="s1">&#39;A1&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;If any of the data files could not be &quot;</span> <span class="o">+</span> \
+               <span class="s2">&quot;loaded, their names and the reason(s) are recorded here.&quot;</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> 
+                    <span class="o">+</span> <span class="s1">&#39;. Created an instance of class ExcelWriter.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+
+
+<div class="viewcode-block" id="ExcelWriter.isWorksheet"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.ExcelWriter.ExcelWriter.isWorksheet">[docs]</a>    <span class="k">def</span> <span class="nf">isWorksheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if the worksheet called title already </span>
+<span class="sd">        exists in the Excel workbook.&quot;&quot;&quot;</span>
+        <span class="n">boolWSExists</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">sheet</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sheet</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">title</span><span class="p">:</span>
+                <span class="n">boolWSExists</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        
+        <span class="k">return</span> <span class="n">boolWSExists</span></div>
+
+
+<div class="viewcode-block" id="ExcelWriter.recordSkippedFiles"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.ExcelWriter.ExcelWriter.recordSkippedFiles">[docs]</a>    <span class="k">def</span> <span class="nf">recordSkippedFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileName</span><span class="p">,</span> <span class="n">failureReason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Records details of CSV data files that have to be skipped</span>
+<span class="sd">       during batch processing because they do not conform</span>
+<span class="sd">       to a required format in a worksheet called &#39;Skipped files&#39;.</span>
+<span class="sd">       </span>
+<span class="sd">       Input Parameters</span>
+<span class="sd">       ----------------</span>
+<span class="sd">       fileName - Name of the skipped file.</span>
+<span class="sd">       failureReason - String containing the reason why the</span>
+<span class="sd">       file was skipped.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">thisWS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="p">[</span><span class="s2">&quot;Skipped files&quot;</span><span class="p">]</span>
+            <span class="c1"># get next empty row</span>
+            <span class="n">row_count</span> <span class="o">=</span> <span class="n">thisWS</span><span class="o">.</span><span class="n">max_row</span>
+            <span class="n">nextRow</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;A&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="n">fileName</span>
+            <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;B&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="n">failureReason</span>
+                    
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> 
+                    <span class="o">+</span> <span class="s1">&#39;.recordSkippedFiles.&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.recordSkippedFiles: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.recordSkippedFiles: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div>
+
+
+<div class="viewcode-block" id="ExcelWriter.recordParameterValues"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.ExcelWriter.ExcelWriter.recordParameterValues">[docs]</a>    <span class="k">def</span> <span class="nf">recordParameterValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileName</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">paramName</span><span class="p">,</span> 
+                              <span class="n">paramValue</span><span class="p">,</span> <span class="n">paramLower</span><span class="p">,</span> <span class="n">paramUpper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;During batch processing, records each optimum parameter </span>
+<span class="sd">        value (and associated information) resulting from curve </span>
+<span class="sd">        fitting in a row on a worksheet dedicated to that parameter. </span>
+<span class="sd">        Creates that worksheet when the parameter value from the</span>
+<span class="sd">        first data file being processed is available. </span>
+<span class="sd">        </span>
+<span class="sd">        Input Parameters</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        fileName - Name of the data file currently being processed.</span>
+<span class="sd">        modelName - Name of the model used for curve fitting.</span>
+<span class="sd">        paramName - Name of the parameter.</span>
+<span class="sd">        paramValue - Value of the parameter resulting from curve fitting.</span>
+<span class="sd">        paramLower, paramUpper - Lower and upper 95% confidence interval</span>
+<span class="sd">                of the paramValue. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">paramName</span> <span class="o">=</span> <span class="n">paramName</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">paramName</span> <span class="o">=</span> <span class="n">paramName</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+            <span class="n">paramName</span> <span class="o">=</span> <span class="n">paramName</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">paramName</span> <span class="o">=</span> <span class="n">paramName</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">31</span><span class="p">]</span> <span class="c1">#worksheet title max 31 chars </span>
+                
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isWorksheet</span><span class="p">(</span><span class="n">paramName</span><span class="p">):</span>
+                <span class="c1"># This parameter tab does not exist.</span>
+                <span class="c1"># Create it and add first parameter value data</span>
+                <span class="c1"># to the first row of the worksheet.</span>
+                <span class="n">thisWS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="o">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">paramName</span><span class="p">)</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;A1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;File&quot;</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Model&quot;</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;C1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Parameter&quot;</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;D1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Value&quot;</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;E1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Lower&quot;</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;F1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Upper&quot;</span>
+                
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;A2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fileName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;C2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">paramName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;D2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramValue</span><span class="p">)</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;E2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramLower</span><span class="p">)</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;F2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramUpper</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Worksheet already exists, so retrieve it</span>
+                <span class="n">thisWS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="p">[</span><span class="n">paramName</span><span class="p">]</span>
+                <span class="c1"># get next empty row</span>
+                <span class="n">row_count</span> <span class="o">=</span> <span class="n">thisWS</span><span class="o">.</span><span class="n">max_row</span>
+                <span class="n">nextRow</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;A&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="n">fileName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;B&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="n">modelName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;C&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="n">paramName</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;D&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramValue</span><span class="p">)</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;E&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramLower</span><span class="p">)</span>
+                <span class="n">thisWS</span><span class="p">[</span><span class="s1">&#39;F&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nextRow</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">paramUpper</span><span class="p">)</span>
+                        
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> 
+                    <span class="o">+</span> <span class="s1">&#39;.recordParameterValues when paramater = &#39;</span> <span class="o">+</span> <span class="n">paramName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.recordParameterValues when paramater = &#39;</span> 
+                  <span class="o">+</span> <span class="n">paramName</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.recordParameterValues when paramater = &#39;</span> 
+                         <span class="o">+</span> <span class="n">paramName</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div>
+
+
+<div class="viewcode-block" id="ExcelWriter.saveSpreadSheet"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.ExcelWriter.ExcelWriter.saveSpreadSheet">[docs]</a>    <span class="k">def</span> <span class="nf">saveSpreadSheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot; Saves the workbook as an Excel spreadsheet at fullFilePath&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> 
+                    <span class="o">+</span> <span class="s1">&#39;. saveSpreadSheet.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.saveSpreadSheet: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ExcelWriter.saveSpreadSheet: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div></div>
+            
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

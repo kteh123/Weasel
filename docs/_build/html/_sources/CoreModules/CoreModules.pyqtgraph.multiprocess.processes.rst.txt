@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.multiprocess.processes module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.multiprocess.processes
+   :members:
+   :undoc-members:
+   :show-inheritance:

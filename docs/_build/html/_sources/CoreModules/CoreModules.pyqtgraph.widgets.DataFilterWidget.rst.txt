@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.DataFilterWidget module
+=====================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.DataFilterWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

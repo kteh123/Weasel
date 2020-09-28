@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate\_pyside module
+==============================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:

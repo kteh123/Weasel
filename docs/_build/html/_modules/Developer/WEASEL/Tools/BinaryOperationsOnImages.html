@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer.WEASEL.Tools.BinaryOperationsOnImages &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>Developer.WEASEL.Tools.BinaryOperationsOnImages</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Developer.WEASEL.Tools.BinaryOperationsOnImages</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span> 
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span>  <span class="n">Qt</span><span class="p">,</span> <span class="n">pyqtSignal</span><span class="p">,</span> <span class="n">QObject</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QFileDialog</span><span class="p">,</span>                            
+        <span class="n">QMdiArea</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QSpinBox</span><span class="p">,</span>
+        <span class="n">QMdiSubWindow</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+        <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QStatusBar</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QAbstractSlider</span><span class="p">,</span> <span class="n">QHeaderView</span><span class="p">,</span>
+        <span class="n">QTreeWidgetItem</span><span class="p">,</span> <span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QCheckBox</span><span class="p">,</span> <span class="n">QLayout</span><span class="p">,</span> 
+        <span class="n">QProgressBar</span><span class="p">,</span> <span class="n">QComboBox</span><span class="p">,</span> <span class="n">QTableWidget</span><span class="p">,</span> <span class="n">QTableWidgetItem</span><span class="p">,</span> <span class="n">QFrame</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QCursor</span><span class="p">,</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QColor</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pydicom</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">iqr</span>
+<span class="kn">import</span> <span class="nn">CoreModules.pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.saveDICOM_Image</span> <span class="k">as</span> <span class="nn">saveDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.TreeView</span>  <span class="k">as</span> <span class="nn">treeView</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.InterfaceDICOMXMLFile</span> <span class="k">as</span> <span class="nn">interfaceDICOMXMLFile</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">listBinaryOperations</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;Select binary Operation&#39;</span><span class="p">,</span> <span class="s1">&#39;Add&#39;</span><span class="p">,</span> <span class="s1">&#39;Divide&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;Multiply&#39;</span><span class="p">,</span> <span class="s1">&#39;Subtract&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="getBinOperationFilePrefix"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.getBinOperationFilePrefix">[docs]</a><span class="k">def</span> <span class="nf">getBinOperationFilePrefix</span><span class="p">(</span><span class="n">binaryOperation</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Subtract&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;Sub&#39;</span>
+    <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Divide&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;Div&#39;</span>
+    <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Multiply&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
+    <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Add&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;Add&#39;</span>
+    <span class="k">return</span> <span class="n">prefix</span></div>
+
+
+<div class="viewcode-block" id="returnPixelArray"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.returnPixelArray">[docs]</a><span class="k">def</span> <span class="nf">returnPixelArray</span><span class="p">(</span><span class="n">imagePath1</span><span class="p">,</span> <span class="n">imagePath2</span><span class="p">,</span> <span class="n">binaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;returns the Image/Pixel array&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePath1</span><span class="p">):</span>
+            <span class="n">dataset1</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePath1</span><span class="p">)</span>
+            <span class="n">pixelArray1</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getPixelArray</span><span class="p">(</span><span class="n">dataset1</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePath2</span><span class="p">):</span>
+            <span class="n">dataset2</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePath2</span><span class="p">)</span>
+            <span class="n">pixelArray2</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getPixelArray</span><span class="p">(</span><span class="n">dataset2</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Add&#39;</span><span class="p">:</span>
+            <span class="n">pixelArray3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">,</span> <span class="n">pixelArray2</span><span class="p">)</span>
+           
+        <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Divide&#39;</span><span class="p">:</span>
+            <span class="c1">#If there is division by zero, then zero is returned</span>
+            <span class="n">pixelArray3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">,</span> <span class="n">pixelArray2</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">pixelArray2</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+           
+        <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Multiply&#39;</span><span class="p">:</span>
+            <span class="n">pixelArray3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">,</span> <span class="n">pixelArray2</span><span class="p">)</span>
+           
+        <span class="k">elif</span> <span class="n">binaryOperation</span> <span class="o">==</span> <span class="s1">&#39;Subtract&#39;</span><span class="p">:</span>
+            <span class="n">pixelArray3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">,</span> <span class="n">pixelArray2</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">pixelArray3</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+             <span class="k">return</span> <span class="n">pixelArray3</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pixelArray1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+       
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function binaryOperationDICOM_Image.returnPixelArray: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="isSeriesOnly"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.isSeriesOnly">[docs]</a><span class="k">def</span> <span class="nf">isSeriesOnly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="processImages"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.processImages">[docs]</a><span class="k">def</span> <span class="nf">processImages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Displays the sub window for performing binary operations</span>
+<span class="sd">        on 2 images&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BinaryOperationsOnImages.processImages called&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span> <span class="o">=</span> <span class="n">QMdiSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">CustomizeWindowHint</span>
+                  <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowCloseButtonHint</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimizeButtonHint</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">QGridLayout</span><span class="p">()</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+            <span class="n">pg</span><span class="o">.</span><span class="n">setConfigOptions</span><span class="p">(</span><span class="n">imageAxisOrder</span><span class="o">=</span><span class="s1">&#39;row-major&#39;</span><span class="p">)</span>
+
+            <span class="n">imageViewer1</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+            <span class="n">viewBox1</span> <span class="o">=</span> <span class="n">imageViewer1</span><span class="o">.</span><span class="n">addViewBox</span><span class="p">()</span>
+            <span class="n">viewBox1</span><span class="o">.</span><span class="n">setAspectLocked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img1</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageItem</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">viewBox1</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv1</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageView</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">viewBox1</span><span class="p">,</span> <span class="n">imageItem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">img1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv1</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">histogram</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv1</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">roiBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv1</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">menuBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+            <span class="n">imageViewer2</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+            <span class="n">viewBox2</span> <span class="o">=</span> <span class="n">imageViewer2</span><span class="o">.</span><span class="n">addViewBox</span><span class="p">()</span>
+            <span class="n">viewBox2</span><span class="o">.</span><span class="n">setAspectLocked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img2</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageItem</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">viewBox2</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv2</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageView</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">viewBox2</span><span class="p">,</span> <span class="n">imageItem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">img2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv2</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">histogram</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv2</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">roiBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv2</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">menuBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+            <span class="n">imageViewer3</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+            <span class="n">viewBox3</span> <span class="o">=</span> <span class="n">imageViewer3</span><span class="o">.</span><span class="n">addViewBox</span><span class="p">()</span>
+            <span class="n">viewBox3</span><span class="o">.</span><span class="n">setAspectLocked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img3</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageItem</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">viewBox3</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv3</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageView</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">viewBox3</span><span class="p">,</span> <span class="n">imageItem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">img3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv3</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">histogram</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv3</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">roiBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imv3</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">menuBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+            <span class="n">studyID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span> 
+            <span class="n">seriesID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing1</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Image Missing&lt;/h4&gt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing2</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Image Missing&lt;/h4&gt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing1</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing2</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Save&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">saveNewDICOMFileFromBinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+            <span class="n">studyID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span> 
+            <span class="n">seriesID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span>
+            <span class="n">imagePathList</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> 
+                                                               <span class="n">seriesID</span><span class="p">)</span> 
+            <span class="c1">#form a list of image file names without extensions</span>
+            <span class="n">imageNameList</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> 
+                             <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">imagePathList</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+                <span class="n">imageNameList</span><span class="p">,</span> <span class="n">imagePathList</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">displayImageForBinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">enableBinaryOperationsCombo</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">doBinaryOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">))</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">displayImageForBinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">enableBinaryOperationsCombo</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">doBinaryOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">doBinaryOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">imageNameList</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">imageNameList</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">listBinaryOperations</span><span class="p">)</span>
+
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imv1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imv2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imv3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;Binary_Operation&#39;</span><span class="p">)</span>
+            <span class="n">windowTitle</span> <span class="o">=</span> <span class="s1">&#39;Binary Operations&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">windowTitle</span><span class="p">)</span>
+            <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMDIAreaDimensions</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="n">height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">addSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subWindow</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="n">subWindow</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">msgBox</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>
+                <span class="n">msgBox</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Binary operations on a DICOM series&quot;</span><span class="p">)</span>
+                <span class="n">msgBox</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Select a series&quot;</span><span class="p">)</span>
+                <span class="n">msgBox</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in processImages: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in processImages: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="saveNewDICOMFileFromBinOp"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.saveNewDICOMFileFromBinOp">[docs]</a><span class="k">def</span> <span class="nf">saveNewDICOMFileFromBinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;TO DO&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BinaryOperationsOnImages.saveNewDICOMFileFromBinOp called&quot;</span><span class="p">)</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;_binOp&#39;</span>
+            <span class="n">imageName1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="n">imagePath1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">[</span><span class="n">imageName1</span><span class="p">]</span>
+            <span class="n">imageName2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="n">imagePath2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_Name_Path_Dict</span><span class="p">[</span><span class="n">imageName2</span><span class="p">]</span>
+            
+            <span class="n">binaryOperation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">getBinOperationFilePrefix</span><span class="p">(</span><span class="n">binaryOperation</span><span class="p">)</span>
+            
+            <span class="n">newImageFileName</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">imageName1</span> \
+                <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">imageName2</span> 
+            <span class="n">newImageFilePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">imagePath1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> \
+                <span class="n">newImageFileName</span> <span class="o">+</span> <span class="s1">&#39;.dcm&#39;</span>
+            <span class="c1">#print(newImageFilePath)</span>
+            <span class="c1">#Save pixel array to a file</span>
+            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomOutputResult</span><span class="p">(</span><span class="n">newImageFilePath</span><span class="p">,</span> <span class="n">imagePath1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">binaryOperation</span><span class="o">+</span><span class="n">suffix</span><span class="p">,</span> <span class="n">list_refs_path</span><span class="o">=</span><span class="p">[</span><span class="n">imagePath2</span><span class="p">])</span>
+            <span class="n">newSeriesID</span> <span class="o">=</span> <span class="n">interfaceDICOMXMLFile</span><span class="o">.</span><span class="n">insertNewImageInXMLFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                                                            <span class="n">newImageFilePath</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="c1">#print(newSeriesID)</span>
+            <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in saveNewDICOMFileFromBinOp: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in saveNewDICOMFileFromBinOp: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="doBinaryOperation"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.doBinaryOperation">[docs]</a><span class="k">def</span> <span class="nf">doBinaryOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imageDict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;TO DO&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#Get file path of image1</span>
+            <span class="n">imageName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList1</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">imageName</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">imagePath1</span> <span class="o">=</span> <span class="n">imageDict</span><span class="p">[</span><span class="n">imageName</span><span class="p">]</span>
+
+            <span class="c1">#Get file path of image2</span>
+            <span class="n">imageName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList2</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">imageName</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">imagePath2</span> <span class="o">=</span> <span class="n">imageDict</span><span class="p">[</span><span class="n">imageName</span><span class="p">]</span>
+
+            <span class="c1">#Get binary operation to be performed</span>
+            <span class="n">binOp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">binOp</span> <span class="o">!=</span> <span class="s1">&#39;Select binary Operation&#39;</span> \
+                <span class="ow">and</span> <span class="n">binOp</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span> <span class="o">=</span> <span class="n">returnPixelArray</span><span class="p">(</span><span class="n">imagePath1</span><span class="p">,</span> <span class="n">imagePath2</span><span class="p">,</span> <span class="n">binOp</span><span class="p">)</span>
+                <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                    <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">maximumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                    <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">img3</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binOpArray</span><span class="p">,</span> <span class="n">autoHistogramRange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="n">minimumValue</span><span class="p">,</span> <span class="n">maximumValue</span><span class="p">))</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in doBinaryOperation: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in doBinaryOperation: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="enableBinaryOperationsCombo"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.enableBinaryOperationsCombo">[docs]</a><span class="k">def</span> <span class="nf">enableBinaryOperationsCombo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;TO DO&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing1</span><span class="o">.</span><span class="n">isHidden</span><span class="p">()</span> <span class="ow">and</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblImageMissing2</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">binaryOpsList</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnSave</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="displayImageForBinOp"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.BinaryOperationsOnImages.displayImageForBinOp">[docs]</a><span class="k">def</span> <span class="nf">displayImageForBinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imageNumber</span><span class="p">,</span> <span class="n">imageDict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;TO DO&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">objImageMissingLabel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;lblImageMissing&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">imageNumber</span><span class="p">))</span>
+            <span class="n">objImage</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;img&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">imageNumber</span><span class="p">))</span>
+            <span class="n">objComboBox</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;imageList&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">imageNumber</span><span class="p">))</span>
+
+            <span class="c1">#get name of selected image</span>
+            <span class="n">imageName</span> <span class="o">=</span> <span class="n">objComboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="n">imagePath</span> <span class="o">=</span> <span class="n">imageDict</span><span class="p">[</span><span class="n">imageName</span><span class="p">]</span>
+            <span class="n">pixelArray</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">returnPixelArray</span><span class="p">(</span><span class="n">imagePath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pixelArray</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">objImageMissingLabel</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="n">objImage</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]))</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">objImageMissingLabel</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+                <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                    <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">maximumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                    <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">objImage</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">autoHistogramRange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="n">minimumValue</span><span class="p">,</span> <span class="n">maximumValue</span><span class="p">))</span>  
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in displayImageForBinOp: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in displayImageForBinOp: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

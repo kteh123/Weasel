@@ -1,0 +1,7 @@
+Weasel.Developer.WEASEL.Tools.T1MapMolliDICOM\_Image module
+===========================================================
+
+.. automodule:: Weasel.Developer.WEASEL.Tools.T1MapMolliDICOM_Image
+   :members:
+   :undoc-members:
+   :show-inheritance:

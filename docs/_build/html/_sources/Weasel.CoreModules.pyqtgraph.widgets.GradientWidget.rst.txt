@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.GradientWidget module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.GradientWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.exporters.CSVExporter module
+==================================================
+
+.. automodule:: CoreModules.pyqtgraph.exporters.CSVExporter
+   :members:
+   :undoc-members:
+   :show-inheritance:

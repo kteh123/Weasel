@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.GraphicsObject module
+=========================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.GraphicsObject
+   :members:
+   :undoc-members:
+   :show-inheritance:

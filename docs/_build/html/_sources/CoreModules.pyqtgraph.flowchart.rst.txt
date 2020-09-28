@@ -1,0 +1,124 @@
+CoreModules.pyqtgraph.flowchart
+===============================
+
+.. automodule:: CoreModules.pyqtgraph.flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.flowchart.library
+
+
+
+Flowchart
+---------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.Flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartCtrlTemplate\_pyqt
+---------------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartCtrlTemplate\_pyqt5
+----------------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartCtrlTemplate\_pyside
+-----------------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartGraphicsView
+---------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartTemplate\_pyqt
+-----------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartTemplate\_pyqt5
+------------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+FlowchartTemplate\_pyside
+-------------------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Node
+----
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.Node
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+NodeLibrary
+-----------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.NodeLibrary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Terminal
+--------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.Terminal
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+eq
+--
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.eq
+   :members:
+   :undoc-members:
+   :show-inheritance:

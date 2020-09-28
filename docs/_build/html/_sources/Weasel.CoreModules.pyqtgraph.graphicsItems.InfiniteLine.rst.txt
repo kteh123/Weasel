@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.InfiniteLine module
+==============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.InfiniteLine
+   :members:
+   :undoc-members:
+   :show-inheritance:

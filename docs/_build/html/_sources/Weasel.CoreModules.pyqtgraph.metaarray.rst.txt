@@ -1,0 +1,21 @@
+Weasel.CoreModules.pyqtgraph.metaarray package
+==============================================
+
+Submodules
+----------
+
+Weasel.CoreModules.pyqtgraph.metaarray.MetaArray module
+-------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.metaarray.MetaArray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.metaarray
+   :members:
+   :undoc-members:
+   :show-inheritance:

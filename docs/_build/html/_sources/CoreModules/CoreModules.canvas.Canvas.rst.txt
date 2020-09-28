@@ -1,0 +1,7 @@
+CoreModules.canvas.Canvas module
+================================
+
+.. automodule:: CoreModules.canvas.Canvas
+   :members:
+   :undoc-members:
+   :show-inheritance:

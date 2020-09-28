@@ -1,0 +1,7 @@
+Weasel.CoreModules.WEASEL.InterfaceDICOMXMLFile module
+======================================================
+
+.. automodule:: Weasel.CoreModules.WEASEL.InterfaceDICOMXMLFile
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.GraphicsWidgetAnchor module
+===============================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.GraphicsWidgetAnchor
+   :members:
+   :undoc-members:
+   :show-inheritance:

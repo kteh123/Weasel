@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView module
+===================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView
+   :members:
+   :undoc-members:
+   :show-inheritance:

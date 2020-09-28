@@ -1,0 +1,227 @@
+Weasel.CoreModules.pyqtgraph package
+====================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.GraphicsScene
+   Weasel.CoreModules.pyqtgraph.canvas
+   Weasel.CoreModules.pyqtgraph.console
+   Weasel.CoreModules.pyqtgraph.dockarea
+   Weasel.CoreModules.pyqtgraph.exporters
+   Weasel.CoreModules.pyqtgraph.flowchart
+   Weasel.CoreModules.pyqtgraph.graphicsItems
+   Weasel.CoreModules.pyqtgraph.imageview
+   Weasel.CoreModules.pyqtgraph.metaarray
+   Weasel.CoreModules.pyqtgraph.multiprocess
+   Weasel.CoreModules.pyqtgraph.opengl
+   Weasel.CoreModules.pyqtgraph.parametertree
+   Weasel.CoreModules.pyqtgraph.pixmaps
+   Weasel.CoreModules.pyqtgraph.util
+   Weasel.CoreModules.pyqtgraph.widgets
+
+Submodules
+----------
+
+Weasel.CoreModules.pyqtgraph.PlotData module
+--------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.PlotData
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.Point module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Point
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.Qt module
+--------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Qt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.SRTTransform module
+------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.SRTTransform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.SRTTransform3D module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.SRTTransform3D
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.SignalProxy module
+-----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.SignalProxy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.ThreadsafeTimer module
+---------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.ThreadsafeTimer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.Transform3D module
+-----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Transform3D
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.Vector module
+------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Vector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.WidgetGroup module
+-----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.WidgetGroup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.colormap module
+--------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.colormap
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.configfile module
+----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.configfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.debug module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.debug
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.exceptionHandling module
+-----------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.exceptionHandling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.frozenSupport module
+-------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.frozenSupport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.functions module
+---------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.functions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.graphicsWindows module
+---------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsWindows
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.numpy\_fix module
+----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.numpy_fix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.ordereddict module
+-----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.ordereddict
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.pgcollections module
+-------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.pgcollections
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.ptime module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.ptime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.python2\_3 module
+----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.python2_3
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.reload module
+------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.reload
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.units module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.units
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph
+   :members:
+   :undoc-members:
+   :show-inheritance:

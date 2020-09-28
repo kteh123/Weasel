@@ -1,0 +1,18 @@
+Developer.FERRET package
+========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Developer.FERRET.Ferret
+
+Module contents
+---------------
+
+.. automodule:: Developer.FERRET
+   :members:
+   :undoc-members:
+   :show-inheritance:

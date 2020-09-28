@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.ViewBox.tests.test\_ViewBox module
+=============================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ViewBox.tests.test_ViewBox
+   :members:
+   :undoc-members:
+   :show-inheritance:

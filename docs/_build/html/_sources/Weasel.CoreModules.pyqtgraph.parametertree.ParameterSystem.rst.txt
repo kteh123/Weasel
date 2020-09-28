@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.parametertree.ParameterSystem module
+=================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.parametertree.ParameterSystem
+   :members:
+   :undoc-members:
+   :show-inheritance:

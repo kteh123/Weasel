@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.LabelItem module
+====================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.LabelItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

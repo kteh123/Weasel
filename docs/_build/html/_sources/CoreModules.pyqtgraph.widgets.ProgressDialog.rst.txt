@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.ProgressDialog module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.ProgressDialog
+   :members:
+   :undoc-members:
+   :show-inheritance:

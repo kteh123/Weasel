@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.tests.test\_exit\_crash module
+===========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.tests.test_exit_crash
+   :members:
+   :undoc-members:
+   :show-inheritance:

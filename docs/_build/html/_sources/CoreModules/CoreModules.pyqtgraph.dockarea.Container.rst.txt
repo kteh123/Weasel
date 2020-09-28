@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.dockarea.Container module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.dockarea.Container
+   :members:
+   :undoc-members:
+   :show-inheritance:

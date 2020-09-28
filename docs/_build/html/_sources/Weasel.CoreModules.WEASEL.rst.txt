@@ -1,0 +1,173 @@
+Weasel.CoreModules.WEASEL package
+=================================
+
+Submodules
+----------
+
+Weasel.CoreModules.WEASEL.DisplayImageColour module
+---------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.DisplayImageColour
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.DisplayImageCommon module
+---------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.DisplayImageCommon
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.DisplayImageROI module
+------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.DisplayImageROI
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.InputDialog module
+--------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.InputDialog
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.InterfaceDICOMXMLFile module
+------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.InterfaceDICOMXMLFile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.LoadDICOM module
+------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.LoadDICOM
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.MenuToolBarCommon module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.MenuToolBarCommon
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.Menus module
+--------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.Menus
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.MessageWindow module
+----------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.MessageWindow
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.RegionsOfInterest\_DICOM module
+---------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.RegionsOfInterest_DICOM
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.ToolBar module
+----------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.ToolBar
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.TreeView module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.TreeView
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.UserImageColourSelection module
+---------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.UserImageColourSelection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.WriteXMLfromDICOM module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.WriteXMLfromDICOM
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.iBeatImport module
+--------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.iBeatImport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.readDICOM\_Image module
+-------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.readDICOM_Image
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.saveDICOM\_Image module
+-------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.saveDICOM_Image
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.styleSheet module
+-------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.styleSheet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.weaselToolsXMLReader module
+-----------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.weaselToolsXMLReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.WEASEL.weaselXMLReader module
+------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.WEASEL.weaselXMLReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.WEASEL
+   :members:
+   :undoc-members:
+   :show-inheritance:

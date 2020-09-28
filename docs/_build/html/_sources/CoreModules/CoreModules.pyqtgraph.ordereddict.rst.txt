@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.ordereddict module
+========================================
+
+.. automodule:: CoreModules.pyqtgraph.ordereddict
+   :members:
+   :undoc-members:
+   :show-inheritance:

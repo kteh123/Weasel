@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.FeedbackButton module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.FeedbackButton
+   :members:
+   :undoc-members:
+   :show-inheritance:

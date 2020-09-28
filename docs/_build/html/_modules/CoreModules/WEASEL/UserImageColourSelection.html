@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.UserImageColourSelection &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.UserImageColourSelection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.UserImageColourSelection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This class module provides the class variables and functions needed</span>
+<span class="sd">to store and retrieve the data associated with changing the colour table, </span>
+<span class="sd">intensity and contrast levels in individual images in a DICOM series of images.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UserSelection"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection">[docs]</a><span class="k">class</span> <span class="nc">UserSelection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">listImageLists</span><span class="p">):</span>
+        <span class="c1">#List of sublists, where each sublist represents an image</span>
+        <span class="c1">#in the DICOM series.</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span> <span class="o">=</span> <span class="n">listImageLists</span>
+        <span class="c1">#When this boolean is true the same colour table</span>
+        <span class="c1">#and intensity and contrast levels are applied</span>
+        <span class="c1">#to the whole DICOM series.</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_overRideSeriesSavedColourmapAndLevels</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1">#When this boolean is true, colour table name</span>
+        <span class="c1">#and intensity and contrast levels selected by the user are</span>
+        <span class="c1">#applied to individual images in the DICOM series. </span>
+        <span class="c1">#These user selected values are stored in listImageLists</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="UserSelection.getSeriesUpdateStatus"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.getSeriesUpdateStatus">[docs]</a>    <span class="k">def</span> <span class="nf">getSeriesUpdateStatus</span><span class="p">(</span><span class="n">this</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">this</span><span class="o">.</span><span class="n">_overRideSeriesSavedColourmapAndLevels</span></div>
+
+
+<div class="viewcode-block" id="UserSelection.setSeriesUpdateStatus"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.setSeriesUpdateStatus">[docs]</a>    <span class="k">def</span> <span class="nf">setSeriesUpdateStatus</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">boolValue</span><span class="p">):</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_overRideSeriesSavedColourmapAndLevels</span> <span class="o">=</span> <span class="n">boolValue</span></div>
+
+
+<div class="viewcode-block" id="UserSelection.getImageUpdateStatus"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.getImageUpdateStatus">[docs]</a>    <span class="k">def</span> <span class="nf">getImageUpdateStatus</span><span class="p">(</span><span class="n">this</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span></div>
+
+
+<div class="viewcode-block" id="UserSelection.setImageUpdateStatus"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.setImageUpdateStatus">[docs]</a>    <span class="k">def</span> <span class="nf">setImageUpdateStatus</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">boolValue</span><span class="p">):</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="n">boolValue</span></div>
+
+
+<div class="viewcode-block" id="UserSelection.clearUserSelection"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.clearUserSelection">[docs]</a>    <span class="k">def</span> <span class="nf">clearUserSelection</span><span class="p">(</span><span class="n">this</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets the colour table name,  intensity and contrast </span>
+<span class="sd">        levels to their default values.</span>
+<span class="sd">        Also, sets applyUserSelectionToAnImage to False to show that</span>
+<span class="sd">        the user has not selected a new colour table etc for one or</span>
+<span class="sd">        more images in the series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">:</span>
+            <span class="n">image</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+            <span class="n">image</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> </div>
+
+
+<div class="viewcode-block" id="UserSelection.updateUserSelection"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.updateUserSelection">[docs]</a>    <span class="k">def</span> <span class="nf">updateUserSelection</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">imageName</span><span class="p">,</span> <span class="n">colourTable</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">contrast</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the new colour table name,  intensity and contrast levels the user has</span>
+<span class="sd">        selected for the image called imageName in the list of lists</span>
+<span class="sd">        called listImageLists&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="kc">True</span> 
+            <span class="n">imageNumber</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">returnImageNumber</span><span class="p">(</span><span class="n">imageName</span><span class="p">)</span>
+             
+            <span class="c1">#Associate the levels with the image being viewed</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">colourTable</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">contrast</span>    
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in UserImageColourSelection.updateUserSelection: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in UserImageColourSelection.updateUserSelection: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div>
+
+
+<div class="viewcode-block" id="UserSelection.updateLevels"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.updateLevels">[docs]</a>    <span class="k">def</span> <span class="nf">updateLevels</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">imageName</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">contrast</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the new intensity and contrast levels the user has</span>
+<span class="sd">        selected for the image called imageName in the list of lists</span>
+<span class="sd">        called listImageLists&quot;&quot;&quot;</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="kc">True</span> 
+        <span class="n">imageNumber</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">returnImageNumber</span><span class="p">(</span><span class="n">imageName</span><span class="p">)</span>
+        <span class="c1">#Associate the levels with the image being viewed</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">contrast</span>       </div>
+
+
+<div class="viewcode-block" id="UserSelection.updateColourTable"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.updateColourTable">[docs]</a>    <span class="k">def</span> <span class="nf">updateColourTable</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">imageName</span><span class="p">,</span> <span class="n">colourTable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the name of the colour table belonging to an image&quot;&quot;&quot;</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">_applyUserSelectionToAnImage</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1">#print(&quot;in updateColourTable apply={}&quot;.format(this._applyUserSelectionToAnImage))</span>
+        <span class="n">imageNumber</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">returnImageNumber</span><span class="p">(</span><span class="n">imageName</span><span class="p">)</span>
+        <span class="c1">#print(&quot;in updateColourTable name={}, number={}&quot;.format(imageName,imageNumber))</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">colourTable</span></div>
+
+
+<div class="viewcode-block" id="UserSelection.returnImageNumber"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.returnImageNumber">[docs]</a>    <span class="k">def</span> <span class="nf">returnImageNumber</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">imageName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the ordinal number of the selected image in the list of lists,</span>
+<span class="sd">        userSelectionList, that stores the user&#39;s selected colour table, contrast level</span>
+<span class="sd">        and intensity level for each image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">imageNumber</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">imageName</span><span class="p">:</span>
+                    <span class="n">imageNumber</span> <span class="o">=</span> <span class="n">count</span>
+                    <span class="k">break</span>
+            <span class="k">return</span> <span class="n">imageNumber</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in UserImageColourSelection.returnImageNumber: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in UserImageColourSelection.returnImageNumber: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div>
+
+
+<div class="viewcode-block" id="UserSelection.returnUserSelection"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.UserImageColourSelection.UserSelection.returnUserSelection">[docs]</a>    <span class="k">def</span> <span class="nf">returnUserSelection</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">imageNumber</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the colour table name, intensity and contrast values </span>
+<span class="sd">        selected by the user for the image that has ordinal position </span>
+<span class="sd">        imageNumber in userSelectionList, a list of lists where </span>
+<span class="sd">        each sublist represents an image in the series being viewed.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">colourTable</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
+            <span class="n">intensity</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">contrast</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">listImageLists</span><span class="p">[</span><span class="n">imageNumber</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> 
+            <span class="k">return</span> <span class="n">colourTable</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">contrast</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageColour.UserSelection.returnUserSelection: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageColour.UserSelection.returnUserSelection: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> </div></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

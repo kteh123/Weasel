@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.console.Console module
+============================================
+
+.. automodule:: CoreModules.pyqtgraph.console.Console
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.TextItem module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.TextItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

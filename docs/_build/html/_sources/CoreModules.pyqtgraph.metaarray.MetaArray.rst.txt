@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.metaarray.MetaArray module
+================================================
+
+.. automodule:: CoreModules.pyqtgraph.metaarray.MetaArray
+   :members:
+   :undoc-members:
+   :show-inheritance:

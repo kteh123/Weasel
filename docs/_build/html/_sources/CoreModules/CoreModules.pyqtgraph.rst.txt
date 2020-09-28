@@ -1,0 +1,63 @@
+CoreModules.pyqtgraph package
+=============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.GraphicsScene
+   CoreModules.pyqtgraph.canvas
+   CoreModules.pyqtgraph.console
+   CoreModules.pyqtgraph.dockarea
+   CoreModules.pyqtgraph.exporters
+   CoreModules.pyqtgraph.flowchart
+   CoreModules.pyqtgraph.graphicsItems
+   CoreModules.pyqtgraph.imageview
+   CoreModules.pyqtgraph.metaarray
+   CoreModules.pyqtgraph.multiprocess
+   CoreModules.pyqtgraph.opengl
+   CoreModules.pyqtgraph.parametertree
+   CoreModules.pyqtgraph.pixmaps
+   CoreModules.pyqtgraph.util
+   CoreModules.pyqtgraph.widgets
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.PlotData
+   CoreModules.pyqtgraph.Point
+   CoreModules.pyqtgraph.Qt
+   CoreModules.pyqtgraph.SRTTransform
+   CoreModules.pyqtgraph.SRTTransform3D
+   CoreModules.pyqtgraph.SignalProxy
+   CoreModules.pyqtgraph.ThreadsafeTimer
+   CoreModules.pyqtgraph.Transform3D
+   CoreModules.pyqtgraph.Vector
+   CoreModules.pyqtgraph.WidgetGroup
+   CoreModules.pyqtgraph.colormap
+   CoreModules.pyqtgraph.configfile
+   CoreModules.pyqtgraph.debug
+   CoreModules.pyqtgraph.exceptionHandling
+   CoreModules.pyqtgraph.frozenSupport
+   CoreModules.pyqtgraph.functions
+   CoreModules.pyqtgraph.graphicsWindows
+   CoreModules.pyqtgraph.numpy_fix
+   CoreModules.pyqtgraph.ordereddict
+   CoreModules.pyqtgraph.pgcollections
+   CoreModules.pyqtgraph.ptime
+   CoreModules.pyqtgraph.python2_3
+   CoreModules.pyqtgraph.reload
+   CoreModules.pyqtgraph.units
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph
+   :members:
+   :undoc-members:
+   :show-inheritance:

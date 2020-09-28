@@ -1,0 +1,10 @@
+Weasel.docs namespace
+=====================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.docs.conf

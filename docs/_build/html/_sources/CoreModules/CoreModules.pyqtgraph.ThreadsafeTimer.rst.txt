@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.ThreadsafeTimer module
+============================================
+
+.. automodule:: CoreModules.pyqtgraph.ThreadsafeTimer
+   :members:
+   :undoc-members:
+   :show-inheritance:

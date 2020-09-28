@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.JoystickButton module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.JoystickButton
+   :members:
+   :undoc-members:
+   :show-inheritance:

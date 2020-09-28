@@ -1,0 +1,10 @@
+Weasel.CoreModules.pyqtgraph.util.tests namespace
+=================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.util.tests.test_lru_cache

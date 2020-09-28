@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.console.Console module
+===================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.console.Console
+   :members:
+   :undoc-members:
+   :show-inheritance:

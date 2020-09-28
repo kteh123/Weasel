@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.opengl.items.GLSurfacePlotItem module
+===========================================================
+
+.. automodule:: CoreModules.pyqtgraph.opengl.items.GLSurfacePlotItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

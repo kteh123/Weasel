@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate\_pyqt module
+=====================================================================
+
+.. automodule:: CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

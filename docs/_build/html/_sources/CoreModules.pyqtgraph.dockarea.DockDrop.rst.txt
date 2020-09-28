@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.dockarea.DockDrop module
+==============================================
+
+.. automodule:: CoreModules.pyqtgraph.dockarea.DockDrop
+   :members:
+   :undoc-members:
+   :show-inheritance:

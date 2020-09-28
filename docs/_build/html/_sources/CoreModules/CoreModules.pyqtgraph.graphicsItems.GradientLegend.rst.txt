@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.GradientLegend module
+=========================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.GradientLegend
+   :members:
+   :undoc-members:
+   :show-inheritance:

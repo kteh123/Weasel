@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.opengl.items.GLImageItem module
+=====================================================
+
+.. automodule:: CoreModules.pyqtgraph.opengl.items.GLImageItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

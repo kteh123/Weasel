@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.canvas.TransformGuiTemplate\_pyside module
+================================================================
+
+.. automodule:: CoreModules.pyqtgraph.canvas.TransformGuiTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:

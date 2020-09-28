@@ -1,0 +1,7 @@
+Weasel.CoreModules.WEASEL.iBeatImport module
+============================================
+
+.. automodule:: Weasel.CoreModules.WEASEL.iBeatImport
+   :members:
+   :undoc-members:
+   :show-inheritance:

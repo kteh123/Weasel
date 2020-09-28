@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.parametertree.SystemSolver module
+=======================================================
+
+.. automodule:: CoreModules.pyqtgraph.parametertree.SystemSolver
+   :members:
+   :undoc-members:
+   :show-inheritance:

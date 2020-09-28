@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.exporters.PrintExporter module
+====================================================
+
+.. automodule:: CoreModules.pyqtgraph.exporters.PrintExporter
+   :members:
+   :undoc-members:
+   :show-inheritance:

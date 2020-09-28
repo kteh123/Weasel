@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.console.CmdInput module
+====================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.console.CmdInput
+   :members:
+   :undoc-members:
+   :show-inheritance:

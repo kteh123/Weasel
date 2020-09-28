@@ -1,0 +1,7 @@
+Weasel.CoreModules.canvas.CanvasTemplate\_pyqt module
+=====================================================
+
+.. automodule:: Weasel.CoreModules.canvas.CanvasTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

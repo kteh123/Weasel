@@ -1,0 +1,10 @@
+Weasel.CoreModules.pyqtgraph.imageview.tests namespace
+======================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.imageview.tests.test_imageview

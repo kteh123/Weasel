@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer.WEASEL.Tools.T1MapMolliDICOM_Image &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>Developer.WEASEL.Tools.T1MapMolliDICOM_Image</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Developer.WEASEL.Tools.T1MapMolliDICOM_Image</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.saveDICOM_Image</span> <span class="k">as</span> <span class="nn">saveDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.TreeView</span>  <span class="k">as</span> <span class="nn">treeView</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.DisplayImageColour</span> <span class="k">as</span> <span class="nn">displayImageColour</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.MessageWindow</span>  <span class="k">as</span> <span class="nn">messageWindow</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.InterfaceDICOMXMLFile</span>  <span class="k">as</span> <span class="nn">interfaceDICOMXMLFile</span>
+<span class="kn">from</span> <span class="nn">Developer.WEASEL.ScientificLibrary.imagingTools</span> <span class="kn">import</span> <span class="n">formatArrayForAnalysis</span>
+<span class="kn">from</span> <span class="nn">Developer.WEASEL.ScientificLibrary.ukrinAlgorithms</span> <span class="kn">import</span> <span class="n">ukrinMaps</span>
+
+<span class="n">FILE_SUFFIX</span> <span class="o">=</span> <span class="s1">&#39;_T1Map&#39;</span>
+
+<div class="viewcode-block" id="isSeriesOnly"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.T1MapMolliDICOM_Image.isSeriesOnly">[docs]</a><span class="k">def</span> <span class="nf">isSeriesOnly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1">#This functionality only applies to a series of DICOM images</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="returnPixelArray"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.T1MapMolliDICOM_Image.returnPixelArray">[docs]</a><span class="k">def</span> <span class="nf">returnPixelArray</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="n">sliceList</span><span class="p">,</span> <span class="n">inversionList</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the T1 Map Array&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;PerFrameFunctionalGroupsSequence&#39;</span><span class="p">):</span> <span class="c1"># For Enhanced MRI, sliceList is a list of indices</span>
+                <span class="n">volumeArray</span><span class="p">,</span> <span class="n">sliceList</span><span class="p">,</span> <span class="n">numberSlices</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getMultiframeBySlices</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">sliceList</span><span class="o">=</span><span class="n">sliceList</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># For normal DICOM, slicelist is a list of slice locations in mm.</span>
+                <span class="n">volumeArray</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">returnSeriesPixelArray</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">)</span>
+                <span class="n">numberSlices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sliceList</span><span class="p">))</span>
+            <span class="n">pixelArray</span> <span class="o">=</span> <span class="n">formatArrayForAnalysis</span><span class="p">(</span><span class="n">volumeArray</span><span class="p">,</span> <span class="n">numberSlices</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="s1">&#39;4D&#39;</span><span class="p">,</span> <span class="n">transpose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">inversionArray</span> <span class="o">=</span> <span class="n">formatArrayForAnalysis</span><span class="p">(</span><span class="n">inversionList</span><span class="p">,</span> <span class="n">numberSlices</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="s1">&#39;2D&#39;</span><span class="p">)</span>
+            <span class="c1"># Algorithm</span>
+            <span class="c1"># The MATLAB code is designed to work with [x, y, TI] as input</span>
+            <span class="c1"># As of 1st June 2020, I&#39;m using the Python version of T1</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">))</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span> <span class="c1"># If it&#39;s 3D with different TIs per slice - Assumption in this specific case</span>
+                <span class="n">derivedImage</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">zSlice</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">tempImage</span> <span class="o">=</span> <span class="n">ukrinMaps</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">zSlice</span><span class="p">,</span> <span class="p">:]))</span><span class="o">.</span><span class="n">T1Map</span><span class="p">(</span><span class="n">inversionArray</span><span class="p">[:,</span> <span class="n">zSlice</span><span class="p">])</span> <span class="c1"># There&#39;s MATLAB version T1MapMolli</span>
+                    <span class="n">derivedImage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tempImage</span><span class="p">))</span>
+                <span class="n">derivedImage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">derivedImage</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">tempImage</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">derivedImage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">ukrinMaps</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span><span class="o">.</span><span class="n">T1Map</span><span class="p">(</span><span class="n">inversionArray</span><span class="p">))</span> <span class="c1"># There&#39;s MATLAB version T1MapMolli</span>
+            <span class="k">del</span> <span class="n">volumeArray</span><span class="p">,</span> <span class="n">pixelArray</span><span class="p">,</span> <span class="n">numberSlices</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">inversionArray</span>
+            <span class="k">return</span> <span class="n">derivedImage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function T1MapDICOM_Image.returnPixelArray: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="getParametersT1Map"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.T1MapMolliDICOM_Image.getParametersT1Map">[docs]</a><span class="k">def</span> <span class="nf">getParametersT1Map</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This method checks if the series in imagePathList meets the criteria to be processed and calculate T1 Map&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">magnitudePathList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">datasetList</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># even though it can be 1 file only, I&#39;m naming datasetList due to consistency</span>
+            <span class="c1"># Still need to change Echo Time to Inversion Time - need an example Enhanced MRI dataset</span>
+            <span class="c1">############################################################################</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">datasetList</span><span class="p">,</span> <span class="s1">&#39;PerFrameFunctionalGroupsSequence&#39;</span><span class="p">):</span>
+                <span class="n">inversionList</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">sliceList</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">numberTIs</span> <span class="o">=</span> <span class="n">datasetList</span><span class="p">[</span><span class="mh">0x20011014</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">originalSliceList</span><span class="p">,</span> <span class="n">numberSlices</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getMultiframeBySlices</span><span class="p">(</span><span class="n">datasetList</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasetList</span><span class="o">.</span><span class="n">PerFrameFunctionalGroupsSequence</span><span class="p">):</span>
+                    <span class="n">flagMagnitude</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">checkImageType</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+                    <span class="n">echo</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">MREchoSequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">EffectiveEchoTime</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">numberTIs</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">echo</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flagMagnitude</span> <span class="ow">and</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.*t2.*&quot;</span><span class="p">,</span> <span class="n">seriesID</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.*r2.*&quot;</span><span class="p">,</span> <span class="n">seriesID</span><span class="o">.</span><span class="n">lower</span><span class="p">())):</span>
+                        <span class="n">sliceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">originalSliceList</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+                        <span class="n">inversionList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sliceList</span> <span class="ow">and</span> <span class="n">inversionList</span><span class="p">:</span>
+                    <span class="n">inversionList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">inversionList</span><span class="p">)</span>
+                    <span class="n">magnitudePathList</span> <span class="o">=</span> <span class="n">imagePathList</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">imagePathList</span><span class="p">,</span> <span class="n">firstSliceList</span><span class="p">,</span> <span class="n">numberSlices</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">sortSequenceByTag</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="s2">&quot;SliceLocation&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">datasetList</span><span class="p">,</span> <span class="s1">&#39;InversionTime&#39;</span><span class="p">):</span>
+                    <span class="n">imagePathList</span><span class="p">,</span> <span class="n">inversionList</span><span class="p">,</span> <span class="n">numberTIs</span><span class="p">,</span> <span class="n">indicesSorted</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">sortSequenceByTag</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="s2">&quot;InversionTime&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span> <span class="c1"># Or elseif</span>
+                    <span class="n">imagePathList</span><span class="p">,</span> <span class="n">inversionList</span><span class="p">,</span> <span class="n">numberTIs</span><span class="p">,</span> <span class="n">indicesSorted</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">sortSequenceByTag</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="mh">0x20051572</span><span class="p">)</span>
+                <span class="c1"># After sorting, it needs to update the sliceList</span>
+                <span class="n">sliceList</span> <span class="o">=</span> <span class="p">[</span><span class="n">firstSliceList</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indicesSorted</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">)):</span>
+                    <span class="n">dataset</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+                    <span class="n">flagMagnitude</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">checkImageType</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+                    <span class="n">ti</span> <span class="o">=</span> <span class="n">inversionList</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">numberTIs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ti</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flagMagnitude</span> <span class="ow">and</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.*t1.*&quot;</span><span class="p">,</span> <span class="n">seriesID</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.*molli.*&quot;</span><span class="p">,</span> <span class="n">seriesID</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.*tfl.*&quot;</span><span class="p">,</span> <span class="n">seriesID</span><span class="o">.</span><span class="n">lower</span><span class="p">())):</span>
+                        <span class="n">magnitudePathList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">datasetList</span><span class="p">,</span> <span class="n">numberSlices</span><span class="p">,</span> <span class="n">numberTIs</span><span class="p">,</span> <span class="n">flagMagnitude</span>
+            <span class="k">return</span> <span class="n">magnitudePathList</span><span class="p">,</span> <span class="n">sliceList</span><span class="p">,</span> <span class="n">inversionList</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function T1MapDICOM_Image.getParametersT1Map: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="saveT1MapSeries"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.T1MapMolliDICOM_Image.saveT1MapSeries">[docs]</a><span class="k">def</span> <span class="nf">saveT1MapSeries</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main method called from WEASEL to calculate the T1 Map&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">studyID</span> <span class="o">=</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">selectedStudy</span>
+        <span class="n">seriesID</span> <span class="o">=</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">selectedSeries</span>
+        <span class="n">imagePathList</span> <span class="o">=</span> \
+            <span class="n">objWeasel</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span>
+
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;H4&gt;Extracting parameters to calculate T1 Map&lt;/H4&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Saving T1 Map&quot;</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarMaxValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">magnitudePathList</span><span class="p">,</span> <span class="n">sliceList</span><span class="p">,</span> <span class="n">inversionList</span> <span class="o">=</span> <span class="n">getParametersT1Map</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span>
+
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;H4&gt;Calculating the T1 Map&lt;/H4&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Saving T1 Map&quot;</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarMaxValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>   
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">magnitudePathList</span><span class="p">:</span>
+            <span class="n">T1Image</span> <span class="o">=</span> <span class="n">returnPixelArray</span><span class="p">(</span><span class="n">magnitudePathList</span><span class="p">,</span> <span class="n">sliceList</span><span class="p">,</span> <span class="n">inversionList</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="s2">&quot;NOT POSSIBLE TO CALCULATE T1 MAP IN THIS SERIES.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not possible to calculate T1 Map in the selected series.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">magnitudePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;PerFrameFunctionalGroupsSequence&#39;</span><span class="p">):</span>
+            <span class="c1"># If it&#39;s Enhanced MRI</span>
+            <span class="n">numImages</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">T1ImageList</span> <span class="o">=</span> <span class="p">[</span><span class="n">T1Image</span><span class="p">]</span>
+            <span class="n">T1ImageFilePath</span> <span class="o">=</span> <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">returnFilePath</span><span class="p">(</span><span class="n">magnitudePathList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">FILE_SUFFIX</span><span class="p">)</span>
+            <span class="n">T1ImagePathList</span> <span class="o">=</span> <span class="p">[</span><span class="n">T1ImageFilePath</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Iterate through list of images and save T1 for each image</span>
+            <span class="n">T1ImagePathList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">T1ImageList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">numImages</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">T1Image</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">T1Image</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numImages</span><span class="p">):</span>
+                <span class="n">T1ImageFilePath</span> <span class="o">=</span> <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">returnFilePath</span><span class="p">(</span><span class="n">magnitudePathList</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">FILE_SUFFIX</span><span class="p">)</span>
+                <span class="n">T1ImagePathList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T1ImageFilePath</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">numImages</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">T1ImageList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T1Image</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">T1ImageList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T1Image</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> 
+            <span class="s2">&quot;&lt;H4&gt;Saving </span><span class="si">{}</span><span class="s2"> DICOM files for the T1 Map calculated&lt;/H4&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numImages</span><span class="p">),</span>
+            <span class="s2">&quot;Saving T1 Map&quot;</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarMaxValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Save new DICOM series locally</span>
+        <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomNewSeries</span><span class="p">(</span>
+            <span class="n">T1ImagePathList</span><span class="p">,</span> <span class="n">imagePathList</span><span class="p">,</span> <span class="n">T1ImageList</span><span class="p">,</span> <span class="n">FILE_SUFFIX</span><span class="p">)</span>
+        <span class="n">newSeriesID</span> <span class="o">=</span> <span class="n">interfaceDICOMXMLFile</span><span class="o">.</span><span class="n">insertNewSeriesInXMLFile</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+                                                     <span class="n">magnitudePathList</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">T1ImagePathList</span><span class="p">)],</span>
+                                                        <span class="n">T1ImagePathList</span><span class="p">,</span> <span class="n">FILE_SUFFIX</span><span class="p">)</span>
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>                                                    
+        <span class="n">messageWindow</span><span class="o">.</span><span class="n">closeMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
+        <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayMultiImageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span><span class="n">T1ImagePathList</span><span class="p">,</span>
+                                             <span class="n">studyID</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">)</span>
+        <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in T1MapDICOM_Image.saveT1MapSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

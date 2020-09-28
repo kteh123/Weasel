@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.opengl.items.GLVolumeItem module
+=============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLVolumeItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

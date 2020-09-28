@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.parametertree.ParameterSystem module
+==========================================================
+
+.. automodule:: CoreModules.pyqtgraph.parametertree.ParameterSystem
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,24 @@
+CoreModules.pyqtgraph.exporters package
+=======================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.exporters.CSVExporter
+   CoreModules.pyqtgraph.exporters.Exporter
+   CoreModules.pyqtgraph.exporters.HDF5Exporter
+   CoreModules.pyqtgraph.exporters.ImageExporter
+   CoreModules.pyqtgraph.exporters.Matplotlib
+   CoreModules.pyqtgraph.exporters.PrintExporter
+   CoreModules.pyqtgraph.exporters.SVGExporter
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.exporters
+   :members:
+   :undoc-members:
+   :show-inheritance:

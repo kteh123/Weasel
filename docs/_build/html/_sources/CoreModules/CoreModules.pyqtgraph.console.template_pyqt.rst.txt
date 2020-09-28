@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.console.template\_pyqt module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.console.template_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,20 @@
+Developer.WEASEL.ScientificLibrary package
+==========================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Developer.WEASEL.ScientificLibrary.imagingTools
+   Developer.WEASEL.ScientificLibrary.tristanAlgorithms
+   Developer.WEASEL.ScientificLibrary.ukrinAlgorithms
+
+Module contents
+---------------
+
+.. automodule:: Developer.WEASEL.ScientificLibrary
+   :members:
+   :undoc-members:
+   :show-inheritance:

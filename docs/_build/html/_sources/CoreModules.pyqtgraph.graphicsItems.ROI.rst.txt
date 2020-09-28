@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.ROI module
+==============================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.ROI
+   :members:
+   :undoc-members:
+   :show-inheritance:

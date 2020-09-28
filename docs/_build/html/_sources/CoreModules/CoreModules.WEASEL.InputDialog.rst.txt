@@ -1,0 +1,7 @@
+CoreModules.WEASEL.InputDialog module
+=====================================
+
+.. automodule:: CoreModules.WEASEL.InputDialog
+   :members:
+   :undoc-members:
+   :show-inheritance:

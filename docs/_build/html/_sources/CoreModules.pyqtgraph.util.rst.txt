@@ -1,0 +1,61 @@
+CoreModules.pyqtgraph.util
+==========================
+
+.. automodule:: CoreModules.pyqtgraph.util
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.util.colorama
+
+
+
+cprint
+------
+
+.. automodule:: CoreModules.pyqtgraph.util.cprint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+garbage\_collector
+------------------
+
+.. automodule:: CoreModules.pyqtgraph.util.garbage_collector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+lru\_cache
+----------
+
+.. automodule:: CoreModules.pyqtgraph.util.lru_cache
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+mutex
+-----
+
+.. automodule:: CoreModules.pyqtgraph.util.mutex
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+pil\_fix
+--------
+
+.. automodule:: CoreModules.pyqtgraph.util.pil_fix
+   :members:
+   :undoc-members:
+   :show-inheritance:

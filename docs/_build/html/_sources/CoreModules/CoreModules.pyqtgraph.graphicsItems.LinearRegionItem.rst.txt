@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.LinearRegionItem module
+===========================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.LinearRegionItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

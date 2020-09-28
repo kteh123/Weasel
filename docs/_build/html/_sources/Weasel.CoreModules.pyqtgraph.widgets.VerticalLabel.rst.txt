@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.VerticalLabel module
+=========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.VerticalLabel
+   :members:
+   :undoc-members:
+   :show-inheritance:

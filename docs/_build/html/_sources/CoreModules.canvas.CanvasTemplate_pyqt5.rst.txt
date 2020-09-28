@@ -1,0 +1,7 @@
+CoreModules.canvas.CanvasTemplate\_pyqt5 module
+===============================================
+
+.. automodule:: CoreModules.canvas.CanvasTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:

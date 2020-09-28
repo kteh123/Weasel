@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.ComboBox module
+====================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.ComboBox
+   :members:
+   :undoc-members:
+   :show-inheritance:

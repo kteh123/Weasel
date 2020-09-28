@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.ROI module
+=====================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ROI
+   :members:
+   :undoc-members:
+   :show-inheritance:

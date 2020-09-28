@@ -1,0 +1,7 @@
+Weasel.CoreModules.FERRET.ferretXMLReader module
+================================================
+
+.. automodule:: Weasel.CoreModules.FERRET.ferretXMLReader
+   :members:
+   :undoc-members:
+   :show-inheritance:

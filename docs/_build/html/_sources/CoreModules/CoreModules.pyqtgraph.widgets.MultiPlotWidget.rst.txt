@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.MultiPlotWidget module
+====================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.MultiPlotWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

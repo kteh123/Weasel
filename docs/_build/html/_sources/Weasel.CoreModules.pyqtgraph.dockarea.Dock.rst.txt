@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.dockarea.Dock module
+=================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.dockarea.Dock
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,37 @@
+CoreModules.pyqtgraph.flowchart package
+=======================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.flowchart.library
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.flowchart.Flowchart
+   CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt
+   CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt5
+   CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyside
+   CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView
+   CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt
+   CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt5
+   CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyside
+   CoreModules.pyqtgraph.flowchart.Node
+   CoreModules.pyqtgraph.flowchart.NodeLibrary
+   CoreModules.pyqtgraph.flowchart.Terminal
+   CoreModules.pyqtgraph.flowchart.eq
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:

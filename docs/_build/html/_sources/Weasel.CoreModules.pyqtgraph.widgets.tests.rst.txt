@@ -1,0 +1,11 @@
+Weasel.CoreModules.pyqtgraph.widgets.tests namespace
+====================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.widgets.tests.test_combobox
+   Weasel.CoreModules.pyqtgraph.widgets.tests.test_tablewidget

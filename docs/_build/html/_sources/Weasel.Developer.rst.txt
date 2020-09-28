@@ -1,0 +1,19 @@
+Weasel.Developer package
+========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.Developer.FERRET
+   Weasel.Developer.WEASEL
+
+Module contents
+---------------
+
+.. automodule:: Weasel.Developer
+   :members:
+   :undoc-members:
+   :show-inheritance:

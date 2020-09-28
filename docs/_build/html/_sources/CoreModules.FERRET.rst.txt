@@ -1,0 +1,62 @@
+CoreModules.FERRET
+==================
+
+.. automodule:: CoreModules.FERRET
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+ExcelWriter
+-----------
+
+.. automodule:: CoreModules.FERRET.ExcelWriter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ExceptionHandling
+-----------------
+
+.. automodule:: CoreModules.FERRET.ExceptionHandling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+MathsTools
+----------
+
+.. automodule:: CoreModules.FERRET.MathsTools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ModelFunctionsHelper
+--------------------
+
+.. automodule:: CoreModules.FERRET.ModelFunctionsHelper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+PDFWriter
+---------
+
+.. automodule:: CoreModules.FERRET.PDFWriter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ferretXMLReader
+---------------
+
+.. automodule:: CoreModules.FERRET.ferretXMLReader
+   :members:
+   :undoc-members:
+   :show-inheritance:

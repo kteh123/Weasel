@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate\_pyqt5 module
+==========================================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:

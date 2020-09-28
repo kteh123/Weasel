@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.PlotData module
+============================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.PlotData
+   :members:
+   :undoc-members:
+   :show-inheritance:

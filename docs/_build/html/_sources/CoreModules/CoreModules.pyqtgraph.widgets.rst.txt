@@ -1,0 +1,45 @@
+CoreModules.pyqtgraph.widgets package
+=====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.widgets.BusyCursor
+   CoreModules.pyqtgraph.widgets.CheckTable
+   CoreModules.pyqtgraph.widgets.ColorButton
+   CoreModules.pyqtgraph.widgets.ColorMapWidget
+   CoreModules.pyqtgraph.widgets.ComboBox
+   CoreModules.pyqtgraph.widgets.DataFilterWidget
+   CoreModules.pyqtgraph.widgets.DataTreeWidget
+   CoreModules.pyqtgraph.widgets.FeedbackButton
+   CoreModules.pyqtgraph.widgets.FileDialog
+   CoreModules.pyqtgraph.widgets.GradientWidget
+   CoreModules.pyqtgraph.widgets.GraphicsLayoutWidget
+   CoreModules.pyqtgraph.widgets.GraphicsView
+   CoreModules.pyqtgraph.widgets.HistogramLUTWidget
+   CoreModules.pyqtgraph.widgets.JoystickButton
+   CoreModules.pyqtgraph.widgets.LayoutWidget
+   CoreModules.pyqtgraph.widgets.MatplotlibWidget
+   CoreModules.pyqtgraph.widgets.MultiPlotWidget
+   CoreModules.pyqtgraph.widgets.PathButton
+   CoreModules.pyqtgraph.widgets.PlotWidget
+   CoreModules.pyqtgraph.widgets.ProgressDialog
+   CoreModules.pyqtgraph.widgets.RawImageWidget
+   CoreModules.pyqtgraph.widgets.RemoteGraphicsView
+   CoreModules.pyqtgraph.widgets.ScatterPlotWidget
+   CoreModules.pyqtgraph.widgets.SpinBox
+   CoreModules.pyqtgraph.widgets.TableWidget
+   CoreModules.pyqtgraph.widgets.TreeWidget
+   CoreModules.pyqtgraph.widgets.ValueLabel
+   CoreModules.pyqtgraph.widgets.VerticalLabel
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.widgets
+   :members:
+   :undoc-members:
+   :show-inheritance:

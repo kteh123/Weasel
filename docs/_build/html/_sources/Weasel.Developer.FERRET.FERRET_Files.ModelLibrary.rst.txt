@@ -1,0 +1,11 @@
+Weasel.Developer.FERRET.FERRET\_Files.ModelLibrary namespace
+============================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.Developer.FERRET.FERRET_Files.ModelLibrary.ModelFunctions
+   Weasel.Developer.FERRET.FERRET_Files.ModelLibrary.Model_Function_Module_Template

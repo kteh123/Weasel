@@ -1,0 +1,7 @@
+Weasel.CoreModules.WEASEL.UserImageColourSelection module
+=========================================================
+
+.. automodule:: Weasel.CoreModules.WEASEL.UserImageColourSelection
+   :members:
+   :undoc-members:
+   :show-inheritance:

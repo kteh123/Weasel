@@ -1,0 +1,7 @@
+Developer.WEASEL.Tools.developerToolsModule module
+==================================================
+
+.. automodule:: Developer.WEASEL.Tools.developerToolsModule
+   :members:
+   :undoc-members:
+   :show-inheritance:

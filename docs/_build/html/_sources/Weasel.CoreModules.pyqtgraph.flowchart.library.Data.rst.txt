@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.flowchart.library.Data module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.library.Data
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,573 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.Menus &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.Menus</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.Menus</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span>  <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QMenu</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span>  <span class="n">QIcon</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.TreeView</span>  <span class="k">as</span> <span class="nn">treeView</span>
+<span class="kn">from</span> <span class="nn">CoreModules.WEASEL.weaselToolsXMLReader</span> <span class="kn">import</span> <span class="n">WeaselToolsXMLReader</span>
+<span class="kn">import</span> <span class="nn">Developer.WEASEL.Tools.copyDICOM_Image</span> <span class="k">as</span> <span class="nn">copyDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">Developer.WEASEL.Tools.BinaryOperationsOnImages</span> <span class="k">as</span> <span class="nn">binaryOperationsOnImages</span>
+<span class="kn">import</span> <span class="nn">Developer.WEASEL.Tools.ViewMetaData</span>  <span class="k">as</span> <span class="nn">viewMetaData</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.LoadDICOM</span>  <span class="k">as</span> <span class="nn">loadDICOMFile</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.DisplayImageColour</span>  <span class="k">as</span> <span class="nn">displayImageColour</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.DisplayImageCommon</span> <span class="k">as</span> <span class="nn">displayImageCommon</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.DisplayImageROI</span> <span class="k">as</span> <span class="nn">displayImageROI</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.MenuToolBarCommon</span> <span class="k">as</span> <span class="nn">menuToolBarCommon</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">FERRET_LOGO</span> <span class="o">=</span> <span class="s1">&#39;images</span><span class="se">\\</span><span class="s1">FERRET_LOGO.png&#39;</span>
+
+<div class="viewcode-block" id="NoTreeViewItemSelected"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.NoTreeViewItemSelected">[docs]</a><span class="k">class</span> <span class="nc">NoTreeViewItemSelected</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Raised when the name of the function corresponding </span>
+<span class="sd">   to a model is not returned from the XML configuration file.&quot;&quot;&quot;</span>
+   <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="setupMenus"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.setupMenus">[docs]</a><span class="k">def</span> <span class="nf">setupMenus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  
+    <span class="sd">&quot;&quot;&quot;Builds the menus in the menu bar of the MDI&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.setupMenus&quot;</span><span class="p">)</span>
+    <span class="n">mainMenu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fileMenu</span> <span class="o">=</span> <span class="n">mainMenu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;File&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span> <span class="o">=</span> <span class="n">mainMenu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Tools&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">helpMenu</span> <span class="o">=</span> <span class="n">mainMenu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Help&#39;</span><span class="p">)</span>
+
+    <span class="c1">#File Menu</span>
+    <span class="n">buildFileMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1">#Tools Menu</span>
+    <span class="n">buildToolsMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="buildFileMenu"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.buildFileMenu">[docs]</a><span class="k">def</span> <span class="nf">buildFileMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">loadDICOM</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;Load DICOM Images&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">loadDICOM</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+L&#39;</span><span class="p">)</span>
+        <span class="n">loadDICOM</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Load DICOM images from a scan folder&#39;</span><span class="p">)</span>
+        <span class="n">loadDICOM</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">loadDICOMFile</span><span class="o">.</span><span class="n">loadDICOM</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">loadDICOM</span><span class="p">)</span>
+
+        <span class="n">tileSubWindows</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;Tile Subwindows&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">tileSubWindows</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+T&#39;</span><span class="p">)</span>
+        <span class="n">tileSubWindows</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Returns subwindows to a tile pattern&#39;</span><span class="p">)</span>
+        <span class="n">tileSubWindows</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">tileAllSubWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">tileSubWindows</span><span class="p">)</span>
+        
+        <span class="n">closeAllImageWindowsButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Close &amp;All Image Windows&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">closeAllImageWindowsButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+A&#39;</span><span class="p">)</span>
+        <span class="n">closeAllImageWindowsButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Closes all image sub windows&#39;</span><span class="p">)</span>
+        <span class="n">closeAllImageWindowsButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">closeAllImageWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">closeAllImageWindowsButton</span><span class="p">)</span>
+        
+        <span class="n">closeAllSubWindowsButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;Close All Sub Windows&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">closeAllSubWindowsButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+X&#39;</span><span class="p">)</span>
+        <span class="n">closeAllSubWindowsButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Closes all sub windows&#39;</span><span class="p">)</span>
+        <span class="n">closeAllSubWindowsButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">displayImageCommon</span><span class="o">.</span><span class="n">closeAllSubWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">closeAllSubWindowsButton</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function Menus.buildFileMenu: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="closeAllImageWindows"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.closeAllImageWindows">[docs]</a><span class="k">def</span> <span class="nf">closeAllImageWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes all the sub windows in the MDI except for</span>
+<span class="sd">        the sub window displaying the DICOM file tree view&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus closeAllImageWindows called&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subWin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tree_view&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">subWin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">QApplication</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="tileAllSubWindows"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.tileAllSubWindows">[docs]</a><span class="k">def</span> <span class="nf">tileAllSubWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.tileAllSubWindow called&quot;</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMDIAreaDimensions</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">subWin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;tree_view&#39;</span><span class="p">:</span>
+            <span class="n">subWin</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Binary_Operation&#39;</span><span class="p">:</span>
+            <span class="n">subWin</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="n">height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;metaData_Window&#39;</span><span class="p">:</span>
+            <span class="n">subWin</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">width</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">0.6</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;image_viewer&#39;</span><span class="p">:</span>
+            <span class="n">subWin</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">width</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">0.3</span><span class="p">,</span><span class="n">height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span></div>
+        <span class="c1">#self.mdiArea.tileSubWindows()</span>
+
+
+<div class="viewcode-block" id="buildContextMenu"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.buildContextMenu">[docs]</a><span class="k">def</span> <span class="nf">buildContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">viewImageButton</span> <span class="o">=</span> <span class="n">returnViewAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">viewImageButton</span><span class="p">)</span>
+
+    <span class="n">viewImageROIButton</span> <span class="o">=</span> <span class="n">returnViewROIAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">viewImageROIButton</span><span class="p">)</span>
+
+    <span class="n">viewMetaDataButton</span> <span class="o">=</span>  <span class="n">returnViewMetaDataAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">viewMetaDataButton</span><span class="p">)</span>
+
+    <span class="c1">#copySeriesButton =  returnCopySeriesAction(self)</span>
+    <span class="c1">#context.addAction(copySeriesButton)</span>
+
+    <span class="c1">#deleteImageButton =  returnDeleteImageAction(self)</span>
+    <span class="c1">#context.addAction(deleteImageButton)</span>
+    <span class="c1">#binaryOperationsButton = returnBinaryOperationsAction(self)</span>
+    <span class="c1">#context.addAction(binaryOperationsButton)</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeView</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="returnViewAction"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.returnViewAction">[docs]</a><span class="k">def</span> <span class="nf">returnViewAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;View Image&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+V&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;View DICOM Image or series&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">viewImage</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">bothImagesAndSeries</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewImageButton</span></div>
+
+
+<div class="viewcode-block" id="returnViewROIAction"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.returnViewROIAction">[docs]</a><span class="k">def</span> <span class="nf">returnViewROIAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;View Image with &amp;ROI&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+R&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;View DICOM Image or series with the ROI tool&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">viewROIImage</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">bothImagesAndSeries</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span></div>
+
+
+<div class="viewcode-block" id="returnViewMetaDataAction"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.returnViewMetaDataAction">[docs]</a><span class="k">def</span> <span class="nf">returnViewMetaDataAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;View Metadata&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+M&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;View DICOM Image or series metadata&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">viewMetaData</span><span class="o">.</span><span class="n">viewMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">bothImagesAndSeries</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span></div>
+
+
+<div class="viewcode-block" id="returnDeleteImageAction"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.returnDeleteImageAction">[docs]</a><span class="k">def</span> <span class="nf">returnDeleteImageAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;Delete Series/Image&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+D&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Delete a DICOM Image or series&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">deleteImage</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">bothImagesAndSeries</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span></div>
+
+
+<div class="viewcode-block" id="returnCopySeriesAction"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.returnCopySeriesAction">[docs]</a><span class="k">def</span> <span class="nf">returnCopySeriesAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;&amp;Copy Series&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+C&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Copy a DICOM series&#39;</span><span class="p">)</span> 
+    <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">bothImagesAndSeries</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span><span class="n">copyDICOM_Image</span><span class="o">.</span><span class="n">copySeries</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span></div>
+
+
+<div class="viewcode-block" id="buildToolsMenu"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.buildToolsMenu">[docs]</a><span class="k">def</span> <span class="nf">buildToolsMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1">#delete later?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewAction</span> <span class="o">=</span> <span class="n">returnViewAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewAction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewAction</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span>  <span class="o">=</span> <span class="n">returnViewROIAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewImageROIButton</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span> <span class="o">=</span> <span class="n">returnViewMetaDataAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewMetaDataButton</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span> <span class="o">=</span> <span class="n">returnDeleteImageAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleteImageButton</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span> <span class="o">=</span>  <span class="n">returnCopySeriesAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copySeriesButton</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        
+        <span class="c1">#Add items to the Tools menu as defined in</span>
+        <span class="c1">#toolsMenu.xml</span>
+        <span class="n">addUserDefinedToolsMenuItems</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">FERRET_LOGO</span><span class="p">),</span> <span class="s1">&#39;&amp;FERRET&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s1">&#39;Ctrl+F&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Launches the FERRET application&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">menuToolBarCommon</span><span class="o">.</span><span class="n">displayFERRET</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">launchFerretButton</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function Menus.buildToolsMenu: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="addUserDefinedToolsMenuItems"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.addUserDefinedToolsMenuItems">[docs]</a><span class="k">def</span> <span class="nf">addUserDefinedToolsMenuItems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus addUserDefinedToolsMenuItems called.&quot;</span><span class="p">)</span>
+        <span class="n">objXMLToolsReader</span> <span class="o">=</span> <span class="n">WeaselToolsXMLReader</span><span class="p">()</span> 
+        <span class="n">tools</span> <span class="o">=</span> <span class="n">objXMLToolsReader</span><span class="o">.</span><span class="n">getTools</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
+            <span class="n">buildUserDefinedToolsMenuItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function Menus.addUserDefinedToolsMenuItem: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="buildUserDefinedToolsMenuItem"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.buildUserDefinedToolsMenuItem">[docs]</a><span class="k">def</span> <span class="nf">buildUserDefinedToolsMenuItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1">#create action button on the fly</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.buildUserDefinedToolsMenuItem called.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;shortcut&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;shortcut&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tooltip&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tooltip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">moduleName</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">function</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;processImages&quot;</span>
+
+        <span class="n">moduleFileName</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">moduleName</span><span class="o">+</span><span class="s2">&quot;.py&quot;</span><span class="p">)</span> 
+            <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span> <span class="k">if</span> <span class="n">moduleName</span><span class="o">+</span><span class="s2">&quot;.py&quot;</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">moduleName</span><span class="p">,</span> <span class="n">moduleFileName</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="n">objFunction</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">objFunction</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;isSeriesOnly&quot;</span><span class="p">):</span>
+            <span class="n">boolApplyBothImagesAndSeries</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;isSeriesOnly&quot;</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boolApplyBothImagesAndSeries</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">boolApplyBothImagesAndSeries</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menuItem</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_object</span><span class="p">,</span> <span class="n">exception_traceback</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+        <span class="c1">#filename = exception_traceback.tb_frame.f_code.co_filename</span>
+        <span class="n">line_number</span> <span class="o">=</span> <span class="n">exception_traceback</span><span class="o">.</span><span class="n">tb_lineno</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function Menus.buildUserDefinedToolsMenuItem at line number </span><span class="si">{}</span><span class="s1">: &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_number</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="viewImage"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.viewImage">[docs]</a><span class="k">def</span> <span class="nf">viewImage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a subwindow that displays a DICOM image. Either executed using the </span>
+<span class="sd">        &#39;View Image&#39; Menu item in the Tools menu or by double clicking the Image name </span>
+<span class="sd">        in the DICOM studies tree view.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.viewImage called&quot;</span><span class="p">)</span>
+            <span class="n">studyName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span> 
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span>
+            <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnImageSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayImageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isASeriesSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">imageList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+                <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayMultiImageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList</span><span class="p">,</span> <span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in Menus.viewImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in Menus.viewImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="viewROIImage"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.viewROIImage">[docs]</a><span class="k">def</span> <span class="nf">viewROIImage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a subwindow that displays a DICOM image with ROI creation functionality. </span>
+<span class="sd">    Executed using the &#39;View Image with ROI&#39; Menu item in the Tools menu.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.viewROIImage called&quot;</span><span class="p">)</span>
+        <span class="c1">#print(&#39;treeView.isAnItemSelected(self)={}&#39;.format(treeView.isAnItemSelected(self)))</span>
+        <span class="c1">#print(&#39;treeView.isAnImageSelected(self)={}&#39;.format(treeView.isAnImageSelected(self)))</span>
+        <span class="c1">#print(&#39;treeView.isASeriesSelected(self)={}&#39;.format(treeView.isASeriesSelected(self)))</span>
+        
+        <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnItemSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NoTreeViewItemSelected</span>
+
+        <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnImageSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">displayImageROI</span><span class="o">.</span><span class="n">displayImageROISubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isASeriesSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">studyName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span> 
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imageList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+            <span class="n">displayImageROI</span><span class="o">.</span><span class="n">displayMultiImageROISubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imageList</span><span class="p">,</span> <span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">NoTreeViewItemSelected</span><span class="p">:</span>
+            <span class="n">msgBox</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;View DICOM series or image with ROI&quot;</span><span class="p">)</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Select either a series or an image&quot;</span><span class="p">)</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in Menus.viewROIImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in Menus.viewROIImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="deleteImage"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.Menus.deleteImage">[docs]</a><span class="k">def</span> <span class="nf">deleteImage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method deletes an image or a series of images by </span>
+<span class="sd">        deleting the physical file(s) and then removing their entries</span>
+<span class="sd">        in the XML file.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Menus.deleteImage called&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnItemSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoTreeViewItemSelected</span>
+
+            <span class="n">studyName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span>
+            <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnImageSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">imageName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedImageName</span>
+                <span class="n">imagePath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedImagePath</span>
+                <span class="n">buttonReply</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                  <span class="s1">&#39;Delete DICOM image&#39;</span><span class="p">,</span> <span class="s2">&quot;You are about to delete image </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">imageName</span><span class="p">),</span> 
+                  <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">buttonReply</span> <span class="o">==</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">:</span>
+                    <span class="c1">#Delete physical file if it exists</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePath</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">imagePath</span><span class="p">)</span>
+                    <span class="c1">#If this image is displayed, close its subwindow</span>
+                    <span class="n">displayImageCommon</span><span class="o">.</span><span class="n">closeSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagePath</span><span class="p">)</span>
+                    <span class="c1">#Is this the last image in a series?</span>
+                    <span class="c1">#Get the series containing this image and count the images it contains</span>
+                    <span class="c1">#If it is the last image in a series then remove the</span>
+                    <span class="c1">#whole series from XML file</span>
+                    <span class="c1">#No it is not the last image in a series</span>
+                    <span class="c1">#so just remove the image from the XML file </span>
+                    <span class="n">images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImageList</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1">#only one image, so remove the series from the xml file</span>
+                        <span class="c1">#need to get study (parent) containing this series (child)</span>
+                        <span class="c1">#then remove child from parent</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">removeSeriesFromXMLFile</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1">#more than 1 image in the series, </span>
+                        <span class="c1">#so just remove the image from the xml file</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">removeOneImageFromSeries</span><span class="p">(</span>
+                            <span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">,</span> <span class="n">imagePath</span><span class="p">)</span>
+                    <span class="c1">#Update tree view with xml file modified above</span>
+                    <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isASeriesSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">buttonReply</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                  <span class="s1">&#39;Delete DICOM series&#39;</span><span class="p">,</span> <span class="s2">&quot;You are about to delete series </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">seriesName</span><span class="p">),</span> 
+                  <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">buttonReply</span> <span class="o">==</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">:</span>
+                    <span class="c1">#Delete each physical file in the series</span>
+                    <span class="c1">#Get a list of names of images in that series</span>
+                    <span class="n">imageList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> 
+                                                                   <span class="n">seriesName</span><span class="p">)</span> 
+                    <span class="c1">#Iterate through list of images and delete each image</span>
+                    <span class="k">for</span> <span class="n">imagePath</span> <span class="ow">in</span> <span class="n">imageList</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePath</span><span class="p">):</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">imagePath</span><span class="p">)</span>
+                    <span class="c1">#Remove the series from the XML file</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">removeSeriesFromXMLFile</span><span class="p">(</span><span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+                    <span class="n">displayImageCommon</span><span class="o">.</span><span class="n">closeSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seriesName</span><span class="p">)</span>
+                <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NoTreeViewItemSelected</span><span class="p">:</span>
+            <span class="n">msgBox</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Delete a DICOM series or image&quot;</span><span class="p">)</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Select either a series or an image&quot;</span><span class="p">)</span>
+            <span class="n">msgBox</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in Menus.deleteImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in Menus.deleteImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

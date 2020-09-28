@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.BusyCursor module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.BusyCursor
+   :members:
+   :undoc-members:
+   :show-inheritance:

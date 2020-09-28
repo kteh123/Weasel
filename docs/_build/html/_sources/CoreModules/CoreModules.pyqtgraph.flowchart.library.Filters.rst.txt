@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.flowchart.library.Filters module
+======================================================
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.library.Filters
+   :members:
+   :undoc-members:
+   :show-inheritance:

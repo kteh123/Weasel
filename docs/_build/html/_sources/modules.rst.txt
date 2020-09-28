@@ -1,0 +1,9 @@
+Weasel
+======
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules
+   Developer
+   Weasel

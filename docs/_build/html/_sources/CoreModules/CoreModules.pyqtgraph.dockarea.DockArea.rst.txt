@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.dockarea.DockArea module
+==============================================
+
+.. automodule:: CoreModules.pyqtgraph.dockarea.DockArea
+   :members:
+   :undoc-members:
+   :show-inheritance:

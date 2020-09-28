@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.flowchart.Flowchart module
+================================================
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.Flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:

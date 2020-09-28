@@ -1,0 +1,7 @@
+CoreModules.WEASEL.DisplayImageROI module
+=========================================
+
+.. automodule:: CoreModules.WEASEL.DisplayImageROI
+   :members:
+   :undoc-members:
+   :show-inheritance:

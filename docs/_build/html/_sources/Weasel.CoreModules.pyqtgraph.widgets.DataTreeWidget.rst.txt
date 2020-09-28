@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.DataTreeWidget module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.DataTreeWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

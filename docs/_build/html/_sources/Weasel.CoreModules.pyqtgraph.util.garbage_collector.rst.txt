@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.util.garbage\_collector module
+===========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.util.garbage_collector
+   :members:
+   :undoc-members:
+   :show-inheritance:

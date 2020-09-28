@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.iBeatImport &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.iBeatImport</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.iBeatImport</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pydicom</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1">#Also need to do pip install xlrd</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+
+
+<div class="viewcode-block" id="getScanInfo"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.iBeatImport.getScanInfo">[docs]</a><span class="k">def</span> <span class="nf">getScanInfo</span><span class="p">(</span><span class="n">dicomData</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">StudyDate</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+        <span class="n">studyName</span> <span class="o">=</span> <span class="s2">&quot;iBEAt_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">PatientName</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">Manufacturer</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">acquisitionTypeFlags</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">checkAcquisitionType</span><span class="p">(</span><span class="n">dicomData</span><span class="p">)</span>
+        <span class="n">imageTypeFlags</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">checkImageType</span><span class="p">(</span><span class="n">dicomData</span><span class="p">)</span>
+        <span class="n">seriesName</span> <span class="o">=</span> <span class="n">getSeriesNameFromTable</span><span class="p">(</span><span class="n">dicomData</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">acquisitionTypeFlags</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Water&#39;</span>
+        <span class="k">elif</span> <span class="n">acquisitionTypeFlags</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Fat&#39;</span>
+        <span class="k">elif</span> <span class="n">acquisitionTypeFlags</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_In-Phase&#39;</span>
+        <span class="k">elif</span> <span class="n">acquisitionTypeFlags</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Out-Phase&#39;</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Magnitude&#39;</span>
+        <span class="k">elif</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Phase&#39;</span>
+        <span class="k">elif</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Real&#39;</span>
+        <span class="k">elif</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_Imaginary&#39;</span>
+        <span class="k">elif</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+            <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">imageTypeFlags</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="n">seriesName</span> <span class="o">=</span> <span class="n">seriesName</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">SeriesNumber</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">studyName</span><span class="p">,</span> <span class="n">seriesName</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in iBeatImport.getScanInfo: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+        
+
+<div class="viewcode-block" id="getSeriesNameFromTable"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.iBeatImport.getSeriesNameFromTable">[docs]</a><span class="k">def</span> <span class="nf">getSeriesNameFromTable</span><span class="p">(</span><span class="n">dicomData</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parametersTable</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;iBEAT-Scan-Parameters-DTI-DCE.xlsx&#39;</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">InstitutionName</span><span class="p">))</span>
+        <span class="n">tagsList</span> <span class="o">=</span> <span class="n">parametersTable</span><span class="p">[</span><span class="s1">&#39;DICOM Tag&#39;</span><span class="p">]</span>
+        <span class="n">tagsFormated</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0x&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[(, )]&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagsList</span><span class="p">]</span>
+        <span class="n">datasetParametersList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># First, it gets all DICOM values from the file being analysed (only the tags in the excel table)</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagsFormated</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">datasetParametersList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">datasetParametersList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">))</span>
+
+        <span class="c1"># With the list of values from the DICOM file, we will now compare with the values in the table</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parametersTable</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">columnParametersList</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span> <span class="c1"># Maybe add a if/else</span>
+            <span class="n">comparisonList</span> <span class="o">=</span> <span class="p">[</span><span class="n">datasetParametersList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">columnParametersList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;nan&quot;</span> 
+                              <span class="k">else</span> <span class="s2">&quot;nan&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">))]</span>
+            <span class="n">booleanList</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;True&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">columnParametersList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">comparisonList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">or</span>
+                                      <span class="n">columnParametersList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">comparisonList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                                      <span class="k">else</span> <span class="s2">&quot;False&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">))]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;False&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">booleanList</span><span class="p">:</span>
+                <span class="n">sequenceName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">break</span>
+        
+        <span class="k">return</span> <span class="n">sequenceName</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># If sequenceName doesn&#39;t exist, then print Warning message</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sequenceName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">SeriesDescription</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">sequenceName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">SequenceName</span><span class="p">)</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">StudyDate</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;No match found in the parameters table... Using the default series name.&quot;</span>
+                      <span class="o">+</span> <span class="s2">&quot;Subject: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicomData</span><span class="o">.</span><span class="n">PatientName</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, Scan Date: &quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;, Series: &quot;</span> <span class="o">+</span> <span class="n">sequenceName</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sequenceName</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in iBeatImport.getSeriesNameFromTable: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

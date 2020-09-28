@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer.WEASEL.Tools.ToolsFunctions &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>Developer.WEASEL.Tools.ToolsFunctions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Developer.WEASEL.Tools.ToolsFunctions</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.saveDICOM_Image</span> <span class="k">as</span> <span class="nn">saveDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.TreeView</span>  <span class="k">as</span> <span class="nn">treeView</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.DisplayImageColour</span>  <span class="k">as</span> <span class="nn">displayImageColour</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.MessageWindow</span>  <span class="k">as</span> <span class="nn">messageWindow</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.InterfaceDICOMXMLFile</span>  <span class="k">as</span> <span class="nn">interfaceDICOMXMLFile</span>
+
+
+<span class="c1">#This function name must not be changed</span>
+<div class="viewcode-block" id="returnPixelArray"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.ToolsFunctions.returnPixelArray">[docs]</a><span class="k">def</span> <span class="nf">returnPixelArray</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies the algorithm in the function, func to</span>
+<span class="sd">   an image and returns the resulting PixelArray&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imagePath</span><span class="p">):</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">imagePath</span><span class="p">)</span>
+            <span class="n">pixelArray</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">returnPixelArray</span><span class="p">(</span><span class="n">imagePath</span><span class="p">)</span>
+            <span class="n">derivedImage</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">derivedImage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function #.returnPixelArray: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<span class="c1">#This function name must not be changed</span>
+<div class="viewcode-block" id="processImages"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.ToolsFunctions.processImages">[docs]</a><span class="k">def</span> <span class="nf">processImages</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">,</span> <span class="n">funcAlgorithm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a subwindow that displays either a DICOM image or series of DICOM images</span>
+<span class="sd">    processed using the algorithm in funcAlgorithm.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnImageSelected</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
+            <span class="n">imagePath</span> <span class="o">=</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">selectedImagePath</span>
+
+            <span class="n">pixelArray</span> <span class="o">=</span> <span class="n">returnPixelArray</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">funcAlgorithm</span><span class="p">)</span>
+            
+            <span class="n">derivedImageFileName</span> <span class="o">=</span> <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">returnFilePath</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span>
+           
+            <span class="c1"># Save the DICOM file in the new file path                                        </span>
+            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomOutputResult</span><span class="p">(</span><span class="n">derivedImageFileName</span><span class="p">,</span> <span class="n">imagePath</span><span class="p">,</span> <span class="n">pixelArray</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span><span class="c1">#, parametric_map=&quot;ADC&quot;)</span>
+            <span class="c1">#Record squared image in XML file</span>
+            <span class="n">seriesID</span> <span class="o">=</span> <span class="n">interfaceDICOMXMLFile</span><span class="o">.</span><span class="n">insertNewImageInXMLFile</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+                                         <span class="n">derivedImageFileName</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span>
+
+            <span class="c1">#Display the derived image in a subwindow</span>
+            <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayImageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">derivedImageFileName</span><span class="p">)</span>
+
+            <span class="c1">#Update tree view with xml file modified above</span>
+            <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isASeriesSelected</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
+            <span class="n">imagePathList</span><span class="p">,</span> <span class="n">studyID</span> <span class="o">=</span> <span class="n">returnImagePathList</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
+            <span class="n">setupMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">imagePathList</span><span class="p">))</span>
+
+            <span class="c1">#Iterate through list of images and apply the algorithm</span>
+            <span class="n">imageCounter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">derivedImagePathList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">derivedImageList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">imagePath</span> <span class="ow">in</span> <span class="n">imagePathList</span><span class="p">:</span>
+                <span class="n">derivedImagePath</span> <span class="o">=</span> <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">returnFilePath</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span>
+                <span class="n">derivedImage</span> <span class="o">=</span> <span class="n">returnPixelArray</span><span class="p">(</span><span class="n">imagePath</span><span class="p">,</span> <span class="n">funcAlgorithm</span><span class="p">)</span>
+                <span class="n">derivedImagePathList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">derivedImagePath</span><span class="p">)</span>
+                <span class="n">derivedImageList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">derivedImage</span><span class="p">)</span>
+                <span class="n">imageCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">imageCounter</span><span class="p">)</span>
+            
+            
+            <span class="c1"># Save new DICOM series locally</span>
+            <span class="n">showSavingResultsMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
+            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomNewSeries</span><span class="p">(</span><span class="n">derivedImagePathList</span><span class="p">,</span> <span class="n">imagePathList</span><span class="p">,</span> <span class="n">derivedImageList</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span><span class="c1">#, parametric_map=&quot;ADC&quot;)</span>
+            <span class="c1">#Insert new series into the DICOM XML file</span>
+            <span class="n">newSeriesID</span> <span class="o">=</span> <span class="n">interfaceDICOMXMLFile</span><span class="o">.</span><span class="n">insertNewSeriesInXMLFile</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+                            <span class="n">imagePathList</span><span class="p">,</span>
+                            <span class="n">derivedImagePathList</span><span class="p">,</span> <span class="n">fileSuffix</span><span class="p">)</span>
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">closeMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
+
+            <span class="c1">#Display series of images in a subwindow</span>
+            <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayMultiImageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+                <span class="n">derivedImagePathList</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">)</span>
+
+            <span class="c1">#Refresh the tree view so to include the new series</span>
+            <span class="n">treeView</span><span class="o">.</span><span class="n">refreshDICOMStudiesTreeView</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in #.processImages: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="returnImagePathList"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.ToolsFunctions.returnImagePathList">[docs]</a><span class="k">def</span> <span class="nf">returnImagePathList</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
+    <span class="n">studyID</span> <span class="o">=</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">selectedStudy</span>
+    <span class="n">seriesID</span> <span class="o">=</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">selectedSeries</span>
+    <span class="k">return</span> <span class="n">objWeasel</span><span class="o">.</span><span class="n">objXMLReader</span><span class="o">.</span><span class="n">getImagePathList</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">),</span> <span class="n">studyID</span></div>
+
+
+<div class="viewcode-block" id="setupMessageBox"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.ToolsFunctions.setupMessageBox">[docs]</a><span class="k">def</span> <span class="nf">setupMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">numImages</span><span class="p">):</span>
+    <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+              <span class="s2">&quot;&lt;H4&gt;Processing </span><span class="si">{}</span><span class="s2"> DICOM files&lt;/H4&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numImages</span><span class="p">),</span>
+              <span class="s2">&quot;Processing DICOM images&quot;</span><span class="p">)</span>
+    <span class="n">messageWindow</span><span class="o">.</span><span class="n">setMsgWindowProgBarMaxValue</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">numImages</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="showSavingResultsMessageBox"><a class="viewcode-back" href="../../../../Developer.WEASEL.Tools.html#Developer.WEASEL.Tools.ToolsFunctions.showSavingResultsMessageBox">[docs]</a><span class="k">def</span> <span class="nf">showSavingResultsMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
+    <span class="n">messageWindow</span><span class="o">.</span><span class="n">hideProgressBar</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
+    <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;H4&gt;Saving results into a new DICOM Series&lt;/H4&gt;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Processing DICOM images&quot;</span><span class="p">)</span></div>
+    
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

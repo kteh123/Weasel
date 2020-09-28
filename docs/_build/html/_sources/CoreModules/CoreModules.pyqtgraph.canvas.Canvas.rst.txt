@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.canvas.Canvas module
+==========================================
+
+.. automodule:: CoreModules.pyqtgraph.canvas.Canvas
+   :members:
+   :undoc-members:
+   :show-inheritance:

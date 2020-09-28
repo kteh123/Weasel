@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.RemoteGraphicsView module
+=======================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.RemoteGraphicsView
+   :members:
+   :undoc-members:
+   :show-inheritance:

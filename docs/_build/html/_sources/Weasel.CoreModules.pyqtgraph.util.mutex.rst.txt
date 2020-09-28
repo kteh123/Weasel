@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.util.mutex module
+==============================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.util.mutex
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,49 @@
+Weasel.CoreModules package
+==========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.FERRET
+   Weasel.CoreModules.SimpleITK
+   Weasel.CoreModules.WEASEL
+   Weasel.CoreModules.canvas
+   Weasel.CoreModules.pyqtgraph
+
+Submodules
+----------
+
+Weasel.CoreModules.DoubleSlider module
+--------------------------------------
+
+.. automodule:: Weasel.CoreModules.DoubleSlider
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.ParametricMapsDictionary module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.ParametricMapsDictionary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.styleSheet\_old module
+-----------------------------------------
+
+.. automodule:: Weasel.CoreModules.styleSheet_old
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules
+   :members:
+   :undoc-members:
+   :show-inheritance:

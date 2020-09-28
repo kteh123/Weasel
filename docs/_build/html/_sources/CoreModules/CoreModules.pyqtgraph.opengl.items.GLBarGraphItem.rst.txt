@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.opengl.items.GLBarGraphItem module
+========================================================
+
+.. automodule:: CoreModules.pyqtgraph.opengl.items.GLBarGraphItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

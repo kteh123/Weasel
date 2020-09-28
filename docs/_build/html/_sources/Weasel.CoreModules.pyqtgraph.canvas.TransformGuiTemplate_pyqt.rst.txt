@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.canvas.TransformGuiTemplate\_pyqt module
+=====================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.canvas.TransformGuiTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

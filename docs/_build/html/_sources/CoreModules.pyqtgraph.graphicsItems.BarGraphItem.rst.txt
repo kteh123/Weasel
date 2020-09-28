@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.BarGraphItem module
+=======================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.BarGraphItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

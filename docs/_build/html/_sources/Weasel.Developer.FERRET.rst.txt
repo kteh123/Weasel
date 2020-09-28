@@ -1,0 +1,21 @@
+Weasel.Developer.FERRET package
+===============================
+
+Submodules
+----------
+
+Weasel.Developer.FERRET.Ferret module
+-------------------------------------
+
+.. automodule:: Weasel.Developer.FERRET.Ferret
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.Developer.FERRET
+   :members:
+   :undoc-members:
+   :show-inheritance:

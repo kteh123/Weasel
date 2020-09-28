@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.util.tests.test\_lru\_cache module
+===============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.util.tests.test_lru_cache
+   :members:
+   :undoc-members:
+   :show-inheritance:

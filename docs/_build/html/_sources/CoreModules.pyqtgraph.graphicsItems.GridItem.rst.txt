@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.GridItem module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.GridItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

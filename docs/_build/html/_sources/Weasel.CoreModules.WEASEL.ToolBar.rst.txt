@@ -1,0 +1,7 @@
+Weasel.CoreModules.WEASEL.ToolBar module
+========================================
+
+.. automodule:: Weasel.CoreModules.WEASEL.ToolBar
+   :members:
+   :undoc-members:
+   :show-inheritance:

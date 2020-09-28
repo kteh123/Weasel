@@ -1,0 +1,246 @@
+CoreModules.pyqtgraph
+=====================
+
+.. automodule:: CoreModules.pyqtgraph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.GraphicsScene
+   CoreModules.pyqtgraph.canvas
+   CoreModules.pyqtgraph.console
+   CoreModules.pyqtgraph.dockarea
+   CoreModules.pyqtgraph.exporters
+   CoreModules.pyqtgraph.flowchart
+   CoreModules.pyqtgraph.graphicsItems
+   CoreModules.pyqtgraph.imageview
+   CoreModules.pyqtgraph.metaarray
+   CoreModules.pyqtgraph.multiprocess
+   CoreModules.pyqtgraph.opengl
+   CoreModules.pyqtgraph.parametertree
+   CoreModules.pyqtgraph.pixmaps
+   CoreModules.pyqtgraph.util
+   CoreModules.pyqtgraph.widgets
+
+
+
+PlotData
+--------
+
+.. automodule:: CoreModules.pyqtgraph.PlotData
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Point
+-----
+
+.. automodule:: CoreModules.pyqtgraph.Point
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Qt
+--
+
+.. automodule:: CoreModules.pyqtgraph.Qt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+SRTTransform
+------------
+
+.. automodule:: CoreModules.pyqtgraph.SRTTransform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+SRTTransform3D
+--------------
+
+.. automodule:: CoreModules.pyqtgraph.SRTTransform3D
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+SignalProxy
+-----------
+
+.. automodule:: CoreModules.pyqtgraph.SignalProxy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ThreadsafeTimer
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.ThreadsafeTimer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Transform3D
+-----------
+
+.. automodule:: CoreModules.pyqtgraph.Transform3D
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Vector
+------
+
+.. automodule:: CoreModules.pyqtgraph.Vector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+WidgetGroup
+-----------
+
+.. automodule:: CoreModules.pyqtgraph.WidgetGroup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+colormap
+--------
+
+.. automodule:: CoreModules.pyqtgraph.colormap
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+configfile
+----------
+
+.. automodule:: CoreModules.pyqtgraph.configfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+debug
+-----
+
+.. automodule:: CoreModules.pyqtgraph.debug
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+exceptionHandling
+-----------------
+
+.. automodule:: CoreModules.pyqtgraph.exceptionHandling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+frozenSupport
+-------------
+
+.. automodule:: CoreModules.pyqtgraph.frozenSupport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+functions
+---------
+
+.. automodule:: CoreModules.pyqtgraph.functions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+graphicsWindows
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsWindows
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+numpy\_fix
+----------
+
+.. automodule:: CoreModules.pyqtgraph.numpy_fix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ordereddict
+-----------
+
+.. automodule:: CoreModules.pyqtgraph.ordereddict
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+pgcollections
+-------------
+
+.. automodule:: CoreModules.pyqtgraph.pgcollections
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+ptime
+-----
+
+.. automodule:: CoreModules.pyqtgraph.ptime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+python2\_3
+----------
+
+.. automodule:: CoreModules.pyqtgraph.python2_3
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+reload
+------
+
+.. automodule:: CoreModules.pyqtgraph.reload
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+units
+-----
+
+.. automodule:: CoreModules.pyqtgraph.units
+   :members:
+   :undoc-members:
+   :show-inheritance:

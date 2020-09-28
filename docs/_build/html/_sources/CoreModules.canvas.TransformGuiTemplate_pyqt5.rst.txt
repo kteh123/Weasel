@@ -1,0 +1,7 @@
+CoreModules.canvas.TransformGuiTemplate\_pyqt5 module
+=====================================================
+
+.. automodule:: CoreModules.canvas.TransformGuiTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:

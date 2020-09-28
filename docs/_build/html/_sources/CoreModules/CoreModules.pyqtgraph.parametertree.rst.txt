@@ -1,0 +1,23 @@
+CoreModules.pyqtgraph.parametertree package
+===========================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.parametertree.Parameter
+   CoreModules.pyqtgraph.parametertree.ParameterItem
+   CoreModules.pyqtgraph.parametertree.ParameterSystem
+   CoreModules.pyqtgraph.parametertree.ParameterTree
+   CoreModules.pyqtgraph.parametertree.SystemSolver
+   CoreModules.pyqtgraph.parametertree.parameterTypes
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.parametertree
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsWindows module
+===================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsWindows
+   :members:
+   :undoc-members:
+   :show-inheritance:

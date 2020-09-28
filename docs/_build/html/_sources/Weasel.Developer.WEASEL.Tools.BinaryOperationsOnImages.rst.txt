@@ -1,0 +1,7 @@
+Weasel.Developer.WEASEL.Tools.BinaryOperationsOnImages module
+=============================================================
+
+.. automodule:: Weasel.Developer.WEASEL.Tools.BinaryOperationsOnImages
+   :members:
+   :undoc-members:
+   :show-inheritance:

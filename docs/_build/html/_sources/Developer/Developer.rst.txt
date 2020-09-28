@@ -1,0 +1,19 @@
+Developer package
+=================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Developer.FERRET
+   Developer.WEASEL
+
+Module contents
+---------------
+
+.. automodule:: Developer
+   :members:
+   :undoc-members:
+   :show-inheritance:

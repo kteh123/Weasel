@@ -1,0 +1,20 @@
+CoreModules.pyqtgraph.pixmaps package
+=====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.pixmaps.compile
+   CoreModules.pyqtgraph.pixmaps.pixmapData_2
+   CoreModules.pyqtgraph.pixmaps.pixmapData_3
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.pixmaps
+   :members:
+   :undoc-members:
+   :show-inheritance:

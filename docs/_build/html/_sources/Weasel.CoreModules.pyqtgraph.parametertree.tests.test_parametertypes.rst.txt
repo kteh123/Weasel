@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.parametertree.tests.test\_parametertypes module
+============================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.parametertree.tests.test_parametertypes
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.canvas.CanvasTemplate\_pyside module
+=================================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.canvas.CanvasTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:

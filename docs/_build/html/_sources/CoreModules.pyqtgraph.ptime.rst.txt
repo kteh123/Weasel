@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.ptime module
+==================================
+
+.. automodule:: CoreModules.pyqtgraph.ptime
+   :members:
+   :undoc-members:
+   :show-inheritance:

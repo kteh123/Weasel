@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate\_pyqt module
+==================================================================
+
+.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:

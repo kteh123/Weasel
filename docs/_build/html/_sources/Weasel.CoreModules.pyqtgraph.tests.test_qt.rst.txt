@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.tests.test\_qt module
+==================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.tests.test_qt
+   :members:
+   :undoc-members:
+   :show-inheritance:

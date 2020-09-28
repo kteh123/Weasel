@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.frozenSupport module
+=================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.frozenSupport
+   :members:
+   :undoc-members:
+   :show-inheritance:

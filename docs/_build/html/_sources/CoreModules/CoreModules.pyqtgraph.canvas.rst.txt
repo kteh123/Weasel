@@ -1,0 +1,26 @@
+CoreModules.pyqtgraph.canvas package
+====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.canvas.Canvas
+   CoreModules.pyqtgraph.canvas.CanvasItem
+   CoreModules.pyqtgraph.canvas.CanvasManager
+   CoreModules.pyqtgraph.canvas.CanvasTemplate_pyqt
+   CoreModules.pyqtgraph.canvas.CanvasTemplate_pyqt5
+   CoreModules.pyqtgraph.canvas.CanvasTemplate_pyside
+   CoreModules.pyqtgraph.canvas.TransformGuiTemplate_pyqt
+   CoreModules.pyqtgraph.canvas.TransformGuiTemplate_pyqt5
+   CoreModules.pyqtgraph.canvas.TransformGuiTemplate_pyside
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.canvas
+   :members:
+   :undoc-members:
+   :show-inheritance:

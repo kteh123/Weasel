@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.BusyCursor module
+======================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.BusyCursor
+   :members:
+   :undoc-members:
+   :show-inheritance:

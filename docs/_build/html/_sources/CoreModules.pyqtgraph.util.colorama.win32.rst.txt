@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.util.colorama.win32 module
+================================================
+
+.. automodule:: CoreModules.pyqtgraph.util.colorama.win32
+   :members:
+   :undoc-members:
+   :show-inheritance:

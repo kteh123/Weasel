@@ -1,0 +1,7 @@
+CoreModules.canvas.CanvasManager module
+=======================================
+
+.. automodule:: CoreModules.canvas.CanvasManager
+   :members:
+   :undoc-members:
+   :show-inheritance:

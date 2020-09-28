@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.SRTTransform module
+================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.SRTTransform
+   :members:
+   :undoc-members:
+   :show-inheritance:

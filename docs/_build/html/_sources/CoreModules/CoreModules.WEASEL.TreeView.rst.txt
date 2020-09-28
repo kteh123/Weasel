@@ -1,0 +1,7 @@
+CoreModules.WEASEL.TreeView module
+==================================
+
+.. automodule:: CoreModules.WEASEL.TreeView
+   :members:
+   :undoc-members:
+   :show-inheritance:

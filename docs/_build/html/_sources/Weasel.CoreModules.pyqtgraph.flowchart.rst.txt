@@ -1,0 +1,117 @@
+Weasel.CoreModules.pyqtgraph.flowchart package
+==============================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.flowchart.library
+
+Submodules
+----------
+
+Weasel.CoreModules.pyqtgraph.flowchart.Flowchart module
+-------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.Flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate\_pyqt module
+-------------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate\_pyqt5 module
+--------------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate\_pyside module
+---------------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView module
+-------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartGraphicsView
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyqt module
+---------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyqt5 module
+----------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyside module
+-----------------------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.Node module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.Node
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.NodeLibrary module
+---------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.NodeLibrary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.Terminal module
+------------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.Terminal
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.pyqtgraph.flowchart.eq module
+------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.eq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart
+   :members:
+   :undoc-members:
+   :show-inheritance:

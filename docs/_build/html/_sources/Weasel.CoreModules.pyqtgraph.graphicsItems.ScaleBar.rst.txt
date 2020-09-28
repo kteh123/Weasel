@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.ScaleBar module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ScaleBar
+   :members:
+   :undoc-members:
+   :show-inheritance:

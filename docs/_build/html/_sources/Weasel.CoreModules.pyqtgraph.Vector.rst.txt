@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.Vector module
+==========================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Vector
+   :members:
+   :undoc-members:
+   :show-inheritance:

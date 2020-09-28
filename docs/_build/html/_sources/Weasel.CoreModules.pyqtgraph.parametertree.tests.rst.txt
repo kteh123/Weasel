@@ -1,0 +1,10 @@
+Weasel.CoreModules.pyqtgraph.parametertree.tests namespace
+==========================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.parametertree.tests.test_parametertypes

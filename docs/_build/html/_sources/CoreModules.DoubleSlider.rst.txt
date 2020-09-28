@@ -1,0 +1,7 @@
+CoreModules.DoubleSlider module
+===============================
+
+.. automodule:: CoreModules.DoubleSlider
+   :members:
+   :undoc-members:
+   :show-inheritance:

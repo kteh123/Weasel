@@ -1,0 +1,89 @@
+CoreModules.canvas
+==================
+
+.. automodule:: CoreModules.canvas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+Canvas
+------
+
+.. automodule:: CoreModules.canvas.Canvas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+CanvasItem
+----------
+
+.. automodule:: CoreModules.canvas.CanvasItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+CanvasManager
+-------------
+
+.. automodule:: CoreModules.canvas.CanvasManager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+CanvasTemplate\_pyqt
+--------------------
+
+.. automodule:: CoreModules.canvas.CanvasTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+CanvasTemplate\_pyqt5
+---------------------
+
+.. automodule:: CoreModules.canvas.CanvasTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+CanvasTemplate\_pyside
+----------------------
+
+.. automodule:: CoreModules.canvas.CanvasTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+TransformGuiTemplate\_pyqt
+--------------------------
+
+.. automodule:: CoreModules.canvas.TransformGuiTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+TransformGuiTemplate\_pyqt5
+---------------------------
+
+.. automodule:: CoreModules.canvas.TransformGuiTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+TransformGuiTemplate\_pyside
+----------------------------
+
+.. automodule:: CoreModules.canvas.TransformGuiTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:

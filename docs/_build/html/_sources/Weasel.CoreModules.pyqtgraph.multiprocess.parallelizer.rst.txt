@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.multiprocess.parallelizer module
+=============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.multiprocess.parallelizer
+   :members:
+   :undoc-members:
+   :show-inheritance:

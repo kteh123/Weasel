@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.pixmaps.pixmapData\_3 module
+=========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.pixmaps.pixmapData_3
+   :members:
+   :undoc-members:
+   :show-inheritance:

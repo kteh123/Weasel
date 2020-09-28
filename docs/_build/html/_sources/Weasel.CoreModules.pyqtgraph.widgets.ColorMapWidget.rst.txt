@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.ColorMapWidget module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.ColorMapWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

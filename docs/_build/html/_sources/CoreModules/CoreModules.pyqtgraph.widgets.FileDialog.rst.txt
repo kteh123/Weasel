@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.FileDialog module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.FileDialog
+   :members:
+   :undoc-members:
+   :show-inheritance:

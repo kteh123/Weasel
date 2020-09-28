@@ -1,0 +1,27 @@
+CoreModules.pyqtgraph.opengl.items package
+==========================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.opengl.items.GLAxisItem
+   CoreModules.pyqtgraph.opengl.items.GLBarGraphItem
+   CoreModules.pyqtgraph.opengl.items.GLBoxItem
+   CoreModules.pyqtgraph.opengl.items.GLGridItem
+   CoreModules.pyqtgraph.opengl.items.GLImageItem
+   CoreModules.pyqtgraph.opengl.items.GLLinePlotItem
+   CoreModules.pyqtgraph.opengl.items.GLMeshItem
+   CoreModules.pyqtgraph.opengl.items.GLScatterPlotItem
+   CoreModules.pyqtgraph.opengl.items.GLSurfacePlotItem
+   CoreModules.pyqtgraph.opengl.items.GLVolumeItem
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.opengl.items
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.ErrorBarItem module
+=======================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.ErrorBarItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

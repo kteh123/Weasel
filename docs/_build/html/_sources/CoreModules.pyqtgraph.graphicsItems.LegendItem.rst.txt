@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.LegendItem module
+=====================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.LegendItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

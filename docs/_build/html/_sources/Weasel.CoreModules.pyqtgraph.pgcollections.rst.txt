@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.pgcollections module
+=================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.pgcollections
+   :members:
+   :undoc-members:
+   :show-inheritance:

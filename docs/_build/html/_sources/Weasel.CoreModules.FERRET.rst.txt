@@ -1,0 +1,61 @@
+Weasel.CoreModules.FERRET package
+=================================
+
+Submodules
+----------
+
+Weasel.CoreModules.FERRET.ExcelWriter module
+--------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.ExcelWriter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.FERRET.ExceptionHandling module
+--------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.ExceptionHandling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.FERRET.MathsTools module
+-------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.MathsTools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.FERRET.ModelFunctionsHelper module
+-----------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.ModelFunctionsHelper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.FERRET.PDFWriter module
+------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.PDFWriter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Weasel.CoreModules.FERRET.ferretXMLReader module
+------------------------------------------------
+
+.. automodule:: Weasel.CoreModules.FERRET.ferretXMLReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.FERRET
+   :members:
+   :undoc-members:
+   :show-inheritance:

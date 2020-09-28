@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.TreeWidget module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.TreeWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

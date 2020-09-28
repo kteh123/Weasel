@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.ScatterPlotWidget module
+======================================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.ScatterPlotWidget
+   :members:
+   :undoc-members:
+   :show-inheritance:

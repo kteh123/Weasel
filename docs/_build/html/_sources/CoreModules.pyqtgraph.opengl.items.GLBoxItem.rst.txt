@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.opengl.items.GLBoxItem module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.opengl.items.GLBoxItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

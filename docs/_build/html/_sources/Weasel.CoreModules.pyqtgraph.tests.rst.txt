@@ -1,0 +1,15 @@
+Weasel.CoreModules.pyqtgraph.tests namespace
+============================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.tests.test_exit_crash
+   Weasel.CoreModules.pyqtgraph.tests.test_functions
+   Weasel.CoreModules.pyqtgraph.tests.test_qt
+   Weasel.CoreModules.pyqtgraph.tests.test_ref_cycles
+   Weasel.CoreModules.pyqtgraph.tests.test_srttransform3d
+   Weasel.CoreModules.pyqtgraph.tests.test_stability

@@ -1,0 +1,21 @@
+CoreModules.pyqtgraph.graphicsItems.PlotItem package
+====================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.graphicsItems.PlotItem.PlotItem
+   CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt
+   CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5
+   CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyside
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

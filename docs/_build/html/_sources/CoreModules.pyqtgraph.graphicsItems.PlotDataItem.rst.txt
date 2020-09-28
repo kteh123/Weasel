@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.PlotDataItem module
+=======================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotDataItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

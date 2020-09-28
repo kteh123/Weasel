@@ -1,0 +1,11 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.tests namespace
+==========================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.graphicsItems.tests.test_GraphicsItem
+   Weasel.CoreModules.pyqtgraph.graphicsItems.tests.test_ScatterPlotItem

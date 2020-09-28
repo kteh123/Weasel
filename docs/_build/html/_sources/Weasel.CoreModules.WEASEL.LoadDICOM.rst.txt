@@ -1,0 +1,7 @@
+Weasel.CoreModules.WEASEL.LoadDICOM module
+==========================================
+
+.. automodule:: Weasel.CoreModules.WEASEL.LoadDICOM
+   :members:
+   :undoc-members:
+   :show-inheritance:

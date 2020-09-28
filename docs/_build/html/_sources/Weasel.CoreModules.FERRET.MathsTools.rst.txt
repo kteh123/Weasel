@@ -1,0 +1,7 @@
+Weasel.CoreModules.FERRET.MathsTools module
+===========================================
+
+.. automodule:: Weasel.CoreModules.FERRET.MathsTools
+   :members:
+   :undoc-members:
+   :show-inheritance:

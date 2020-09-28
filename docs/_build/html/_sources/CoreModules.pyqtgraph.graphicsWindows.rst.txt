@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsWindows module
+============================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsWindows
+   :members:
+   :undoc-members:
+   :show-inheritance:

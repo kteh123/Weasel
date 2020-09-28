@@ -1,0 +1,7 @@
+CoreModules.WEASEL.readDICOM\_Image module
+==========================================
+
+.. automodule:: CoreModules.WEASEL.readDICOM_Image
+   :members:
+   :undoc-members:
+   :show-inheritance:

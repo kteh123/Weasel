@@ -1,0 +1,7 @@
+Weasel.CoreModules.canvas.TransformGuiTemplate\_pyqt5 module
+============================================================
+
+.. automodule:: Weasel.CoreModules.canvas.TransformGuiTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:

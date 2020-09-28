@@ -1,0 +1,11 @@
+Weasel.CoreModules.pyqtgraph.exporters.tests namespace
+======================================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Weasel.CoreModules.pyqtgraph.exporters.tests.test_csv
+   Weasel.CoreModules.pyqtgraph.exporters.tests.test_svg

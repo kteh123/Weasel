@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.ordereddict module
+===============================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.ordereddict
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.UIGraphicsItem module
+=========================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.UIGraphicsItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

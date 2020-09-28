@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.widgets.RemoteGraphicsView module
+==============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.RemoteGraphicsView
+   :members:
+   :undoc-members:
+   :show-inheritance:

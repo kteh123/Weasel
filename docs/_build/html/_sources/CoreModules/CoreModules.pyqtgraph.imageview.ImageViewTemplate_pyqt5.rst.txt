@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.imageview.ImageViewTemplate\_pyqt5 module
+===============================================================
+
+.. automodule:: CoreModules.pyqtgraph.imageview.ImageViewTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:

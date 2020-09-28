@@ -1,0 +1,37 @@
+Developer.WEASEL.Tools package
+==============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Developer.WEASEL.Tools.B0MapDICOM_Image
+   Developer.WEASEL.Tools.BinaryOperationsOnImages
+   Developer.WEASEL.Tools.T1MapMolliDICOM_Image
+   Developer.WEASEL.Tools.T2StarMapDICOM_Image
+   Developer.WEASEL.Tools.ToolsFunctions
+   Developer.WEASEL.Tools.UKRIN_Developer
+   Developer.WEASEL.Tools.ViewMetaData
+   Developer.WEASEL.Tools.calculateMIP_Developer
+   Developer.WEASEL.Tools.copyDICOM_Image
+   Developer.WEASEL.Tools.developerToolsModule
+   Developer.WEASEL.Tools.editDICOM_Image_Developer
+   Developer.WEASEL.Tools.gaussianFilterDICOM_Image_Developer
+   Developer.WEASEL.Tools.invertDICOM_Image
+   Developer.WEASEL.Tools.invertDICOM_Image_Developer
+   Developer.WEASEL.Tools.mergeDICOM_Developer
+   Developer.WEASEL.Tools.squareDICOM_Image
+   Developer.WEASEL.Tools.squareDICOM_Image_Developer
+   Developer.WEASEL.Tools.thresholdDICOM_Image
+   Developer.WEASEL.Tools.thresholdDICOM_Image_Developer
+   Developer.WEASEL.Tools.toolsModuleTemplate
+
+Module contents
+---------------
+
+.. automodule:: Developer.WEASEL.Tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

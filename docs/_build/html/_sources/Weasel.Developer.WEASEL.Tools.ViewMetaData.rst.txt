@@ -1,0 +1,7 @@
+Weasel.Developer.WEASEL.Tools.ViewMetaData module
+=================================================
+
+.. automodule:: Weasel.Developer.WEASEL.Tools.ViewMetaData
+   :members:
+   :undoc-members:
+   :show-inheritance:

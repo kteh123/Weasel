@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.AxisItem module
+==========================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.AxisItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.Point module
+=========================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.Point
+   :members:
+   :undoc-members:
+   :show-inheritance:

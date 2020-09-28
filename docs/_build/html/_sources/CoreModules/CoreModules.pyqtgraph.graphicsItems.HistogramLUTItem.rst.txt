@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.graphicsItems.HistogramLUTItem module
+===========================================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.HistogramLUTItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

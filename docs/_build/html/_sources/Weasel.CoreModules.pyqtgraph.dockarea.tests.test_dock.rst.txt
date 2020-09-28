@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.dockarea.tests.test\_dock module
+=============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.dockarea.tests.test_dock
+   :members:
+   :undoc-members:
+   :show-inheritance:

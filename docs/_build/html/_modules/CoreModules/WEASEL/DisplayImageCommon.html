@@ -1,0 +1,526 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.DisplayImageCommon &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.DisplayImageCommon</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.DisplayImageCommon</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains helper functions used by functions in modules </span>
+<span class="sd">DisplayImageColour.py &amp; DisplayImageROI.py&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span> 
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span>  <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QFileDialog</span><span class="p">,</span>                            
+                            <span class="n">QMessageBox</span><span class="p">,</span> 
+                            <span class="n">QWidget</span><span class="p">,</span> 
+                            <span class="n">QGridLayout</span><span class="p">,</span> 
+                            <span class="n">QVBoxLayout</span><span class="p">,</span> 
+                            <span class="n">QMdiSubWindow</span><span class="p">,</span> 
+                            <span class="n">QGroupBox</span><span class="p">,</span> 
+                            <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+                            <span class="n">QPushButton</span><span class="p">,</span>  
+                            <span class="n">QLabel</span><span class="p">,</span>  
+                            <span class="n">QSlider</span><span class="p">,</span> 
+                            <span class="n">QCheckBox</span><span class="p">,</span>  
+                            <span class="n">QComboBox</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">import</span> <span class="nn">CoreModules.pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span> 
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">iqr</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="setPgColourMap"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.setPgColourMap">[docs]</a><span class="k">def</span> <span class="nf">setPgColourMap</span><span class="p">(</span><span class="n">colourTable</span><span class="p">,</span> <span class="n">imv</span><span class="p">,</span> <span class="n">cmbColours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lut</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function converts a matplotlib colour map into</span>
+<span class="sd">    a colour map that can be used by the pyqtGraph imageView widget.</span>
+<span class="sd">    </span>
+<span class="sd">    Input Parmeters</span>
+<span class="sd">    ***************</span>
+<span class="sd">        colourTable - name of the colour map</span>
+<span class="sd">        imv - name of the imageView widget</span>
+<span class="sd">        cmbColours - name of the dropdown lists of colour map names</span>
+<span class="sd">        lut - name of the look up table containing raw colour data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">colourTable</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">colourTable</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span>
+
+        <span class="k">if</span> <span class="n">cmbColours</span><span class="p">:</span>
+            <span class="n">displayColourTableInComboBox</span><span class="p">(</span><span class="n">cmbColours</span><span class="p">,</span> <span class="n">colourTable</span><span class="p">)</span>   
+        
+        <span class="k">if</span> <span class="n">colourTable</span> <span class="o">==</span> <span class="s1">&#39;custom&#39;</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">lut</span>
+        <span class="k">elif</span> <span class="n">colourTable</span> <span class="o">==</span> <span class="s1">&#39;gray&#39;</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmMap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">colourTable</span><span class="p">)</span>
+            <span class="n">colourClassName</span> <span class="o">=</span> <span class="n">cmMap</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">if</span> <span class="n">colourClassName</span> <span class="o">==</span> <span class="s1">&#39;ListedColormap&#39;</span><span class="p">:</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="n">cmMap</span><span class="o">.</span><span class="n">colors</span>
+            <span class="k">elif</span> <span class="n">colourClassName</span> <span class="o">==</span> <span class="s1">&#39;LinearSegmentedColormap&#39;</span><span class="p">:</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="n">cmMap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+          
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+        <span class="n">pgMap</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ColorMap</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+        <span class="n">imv</span><span class="o">.</span><span class="n">setColorMap</span><span class="p">(</span><span class="n">pgMap</span><span class="p">)</span>        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.setPgColourMap: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.setPgColourMap: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="displayColourTableInComboBox"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.displayColourTableInComboBox">[docs]</a><span class="k">def</span> <span class="nf">displayColourTableInComboBox</span><span class="p">(</span><span class="n">cmbColours</span><span class="p">,</span> <span class="n">colourTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function causes the combobox widget cmbColours to </span>
+<span class="sd">    display the name of the colour table stored in the string</span>
+<span class="sd">    variable colourTable. </span>
+
+<span class="sd">     Input Parmeters</span>
+<span class="sd">     ****************</span>
+<span class="sd">    cmbColours - name of the dropdown lists of colour map names</span>
+<span class="sd">    colourTable - String variable containing the name of a colour table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cmbColours</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">cmbColours</span><span class="o">.</span><span class="n">findText</span><span class="p">(</span><span class="n">colourTable</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cmbColours</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">cmbColours</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.displayColourTableInComboBox: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.displayColourTableInComboBox: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="setUpViewBoxForImage"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.setUpViewBoxForImage">[docs]</a><span class="k">def</span> <span class="nf">setUpViewBoxForImage</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">spinBoxIntensity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spinBoxContrast</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up the pyqtGraph imageView widget and associated colour levels histogram</span>
+<span class="sd">    for viewing a DICOM image.</span>
+
+<span class="sd">    Input Parameters</span>
+<span class="sd">    *****************</span>
+<span class="sd">    layout - PyQt5 QVBoxLayout vertical layout box</span>
+<span class="sd">    spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.</span>
+<span class="sd">    spinBoxContrast - name of the spinbox widget that displays/sets image contrast.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DisplayImageCommon.setUpViewBoxForImage called&quot;</span><span class="p">)</span>
+        <span class="c1">#imageViewer  = pyqtGraph Graphics Layout Used for laying out GraphicsWidgets in a grid</span>
+        <span class="n">imageViewer</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+        <span class="n">plotItem</span> <span class="o">=</span> <span class="n">imageViewer</span><span class="o">.</span><span class="n">addPlot</span><span class="p">()</span> 
+        <span class="n">plotItem</span><span class="o">.</span><span class="n">getViewBox</span><span class="p">()</span><span class="o">.</span><span class="n">setAspectLocked</span><span class="p">()</span> 
+        <span class="n">img</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageItem</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            
+        <span class="n">imv</span><span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageView</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">plotItem</span><span class="p">,</span> <span class="n">imageItem</span><span class="o">=</span><span class="n">img</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">spinBoxIntensity</span> <span class="ow">and</span> <span class="n">spinBoxContrast</span><span class="p">:</span>
+            <span class="n">histogramObject</span> <span class="o">=</span> <span class="n">imv</span><span class="o">.</span><span class="n">getHistogramWidget</span><span class="p">()</span><span class="o">.</span><span class="n">getHistogram</span><span class="p">()</span>
+            <span class="n">histogramObject</span><span class="o">.</span><span class="n">sigLevelsChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">getHistogramLevels</span><span class="p">(</span><span class="n">imv</span><span class="p">,</span> <span class="n">spinBoxIntensity</span><span class="p">,</span> <span class="n">spinBoxContrast</span><span class="p">))</span>
+        <span class="n">imv</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">roiBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="n">imv</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">menuBtn</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">imv</span><span class="p">)</span>
+ 
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">imv</span><span class="p">,</span> <span class="n">plotItem</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.setUpViewBoxForImag: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.setUpViewBoxForImag: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="getHistogramLevels"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.getHistogramLevels">[docs]</a><span class="k">def</span> <span class="nf">getHistogramLevels</span><span class="p">(</span><span class="n">imv</span><span class="p">,</span> <span class="n">spinBoxIntensity</span><span class="p">,</span> <span class="n">spinBoxContrast</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function determines contrast and intensity from the image</span>
+<span class="sd">        and set the contrast &amp; intensity spinboxes to these values.</span>
+
+<span class="sd">        Input Parameters</span>
+<span class="sd">        *****************</span>
+<span class="sd">        imv - pyqtGraph imageView widget</span>
+<span class="sd">        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.</span>
+<span class="sd">        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">minLevel</span><span class="p">,</span> <span class="n">maxLevel</span> <span class="o">=</span> <span class="n">imv</span><span class="o">.</span><span class="n">getLevels</span><span class="p">()</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">maxLevel</span> <span class="o">-</span> <span class="n">minLevel</span>
+        <span class="n">centre</span> <span class="o">=</span> <span class="n">minLevel</span> <span class="o">+</span> <span class="p">(</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">spinBoxIntensity</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">centre</span><span class="p">)</span>
+        <span class="n">spinBoxContrast</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">width</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="setUpImageViewerSubWindow"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.setUpImageViewerSubWindow">[docs]</a><span class="k">def</span> <span class="nf">setUpImageViewerSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function creates a subwindow with a vertical layout &amp;</span>
+<span class="sd">    a missing image label.</span>
+
+<span class="sd">    Input Parameters</span>
+<span class="sd">    ****************</span>
+<span class="sd">    self - an object reference to the WEASEL interface.</span>
+
+<span class="sd">    Output Parameters</span>
+<span class="sd">    *****************</span>
+<span class="sd">    layout - PyQt5 QVBoxLayout vertical layout box</span>
+<span class="sd">    lblImageMissing - Label displaying the text &#39;Missing Image&#39;. Hidden </span>
+<span class="sd">                        until WEASEL tries to display a missing image</span>
+<span class="sd">    subWindow - An QMdiSubWindow subwindow</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DisplayImageCommon.setUpImageViewerSubWindow called&quot;</span><span class="p">)</span>
+        <span class="n">pg</span><span class="o">.</span><span class="n">setConfigOptions</span><span class="p">(</span><span class="n">imageAxisOrder</span><span class="o">=</span><span class="s1">&#39;row-major&#39;</span><span class="p">)</span>
+        <span class="n">subWindow</span> <span class="o">=</span> <span class="n">QMdiSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">setObjectName</span> <span class="o">=</span> <span class="s1">&#39;image_viewer&#39;</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">CustomizeWindowHint</span> <span class="o">|</span> 
+                                      <span class="n">Qt</span><span class="o">.</span><span class="n">WindowCloseButtonHint</span> <span class="o">|</span> 
+                                      <span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimizeButtonHint</span><span class="p">)</span>
+        
+        
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMDIAreaDimensions</span><span class="p">()</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">0.6</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">addSubWindow</span><span class="p">(</span><span class="n">subWindow</span><span class="p">)</span>
+        
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        
+        <span class="n">lblImageMissing</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Image Missing&lt;/h4&gt;&quot;</span><span class="p">)</span>
+        <span class="n">lblImageMissing</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">lblImageMissing</span><span class="p">)</span>
+        <span class="n">subWindow</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">layout</span><span class="p">,</span> <span class="n">lblImageMissing</span><span class="p">,</span> <span class="n">subWindow</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.setUpImageViewerSubWindow: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.displayMultiImageSubWindow: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="getPixelValue"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.getPixelValue">[docs]</a><span class="k">def</span> <span class="nf">getPixelValue</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">imv</span><span class="p">,</span> <span class="n">pixelArray</span><span class="p">,</span> <span class="n">lblPixelValue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function checks that the mouse pointer is over the</span>
+<span class="sd">    image and when it is, it determines the value of the pixel</span>
+<span class="sd">    under the mouse pointer and displays this in the label</span>
+<span class="sd">    lblPixelValue.</span>
+
+<span class="sd">    Input parameters</span>
+<span class="sd">    ****************</span>
+<span class="sd">    pos - X,Y coordinates of the mouse pointer</span>
+<span class="sd">    imv - pyqtGraph imageView widget</span>
+<span class="sd">    pixelArray - pixel array to be displayed in imv</span>
+<span class="sd">    lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer</span>
+<span class="sd">                and the X,Y coordinates of the mouse pointer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1">#print (&quot;Image position: {}&quot;.format(pos))</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="n">imv</span><span class="o">.</span><span class="n">getView</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">container</span><span class="o">.</span><span class="n">sceneBoundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span> 
+            <span class="n">mousePoint</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">getViewBox</span><span class="p">()</span><span class="o">.</span><span class="n">mapSceneToView</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> 
+            <span class="n">x_i</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">mousePoint</span><span class="o">.</span><span class="n">x</span><span class="p">())</span>
+            <span class="n">y_i</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">mousePoint</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> 
+            <span class="n">z_i</span> <span class="o">=</span> <span class="n">imv</span><span class="o">.</span><span class="n">currentIndex</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">y_i</span> <span class="o">&lt;</span> <span class="n">pixelArray</span><span class="o">.</span><span class="n">shape</span> <span class="p">[</span> <span class="mi">1</span> <span class="p">]</span> \
+                <span class="ow">and</span> <span class="n">x_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x_i</span> <span class="o">&lt;</span> <span class="n">pixelArray</span><span class="o">.</span><span class="n">shape</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]:</span> 
+                <span class="n">lblPixelValue</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span>
+                    <span class="s2">&quot;&lt;h4&gt;Pixel Value = </span><span class="si">{}</span><span class="s2"> @ X: </span><span class="si">{}</span><span class="s2">, Y: </span><span class="si">{}</span><span class="s2">&lt;/h4&gt;&quot;</span>
+                <span class="o">.</span><span class="n">format</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">[</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">y_i</span> <span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">y_i</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">))</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">and</span> <span class="n">z_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">z_i</span> <span class="o">&lt;</span> <span class="n">pixelArray</span><span class="o">.</span><span class="n">shape</span> <span class="p">[</span> <span class="mi">2</span> <span class="p">]</span> \
+                <span class="ow">and</span> <span class="n">y_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">y_i</span> <span class="o">&lt;</span> <span class="n">pixelArray</span><span class="o">.</span><span class="n">shape</span> <span class="p">[</span> <span class="mi">1</span> <span class="p">]</span> \
+                <span class="ow">and</span> <span class="n">x_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x_i</span> <span class="o">&lt;</span> <span class="n">pixelArray</span><span class="o">.</span><span class="n">shape</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">]:</span> 
+                <span class="n">lblPixelValue</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span>
+                    <span class="s2">&quot;&lt;h4&gt;Pixel Value = </span><span class="si">{}</span><span class="s2"> @ X: </span><span class="si">{}</span><span class="s2">, Y: </span><span class="si">{}</span><span class="s2">, Z: </span><span class="si">{}</span><span class="s2">&lt;/h4&gt;&quot;</span>
+                <span class="o">.</span><span class="n">format</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">[</span> <span class="n">z_i</span><span class="p">,</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">x_i</span> <span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">z_i</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lblPixelValue</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Pixel Value:&lt;/h4&gt;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lblPixelValue</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Pixel Value:&lt;/h4&gt;&quot;</span><span class="p">)</span>
+                   
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.getPixelValue: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.getPixelValue: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="getDICOMFileData"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.getDICOMFileData">[docs]</a><span class="k">def</span> <span class="nf">getDICOMFileData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When a DICOM image is selected in the tree view, this function</span>
+<span class="sd">        returns its description in the form - study number: series number: image name</span>
+<span class="sd">        </span>
+<span class="sd">         Input Parameters</span>
+<span class="sd">        ****************</span>
+<span class="sd">            self - an object reference to the WEASEL interface.</span>
+
+
+<span class="sd">        Output Parameters</span>
+<span class="sd">        *****************</span>
+<span class="sd">        fullImageName - string containing the full description of a DICOM image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DisplayImageCommon.getDICOMFileData called.&quot;</span><span class="p">)</span>
+            <span class="n">selectedImage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeView</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">selectedImage</span><span class="p">:</span>
+                <span class="n">imageNode</span> <span class="o">=</span> <span class="n">selectedImage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">seriesNode</span>  <span class="o">=</span> <span class="n">imageNode</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                <span class="n">imageName</span> <span class="o">=</span> <span class="n">imageNode</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">series</span> <span class="o">=</span> <span class="n">seriesNode</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">studyNode</span> <span class="o">=</span> <span class="n">seriesNode</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                <span class="n">study</span> <span class="o">=</span> <span class="n">studyNode</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">fullImageName</span> <span class="o">=</span> <span class="n">study</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">series</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span>  <span class="o">+</span> <span class="n">imageName</span>
+                <span class="k">return</span> <span class="n">fullImageName</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.getDICOMFileData: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.getDICOMFileData: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="readLevelsFromDICOMImage"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.readLevelsFromDICOMImage">[docs]</a><span class="k">def</span> <span class="nf">readLevelsFromDICOMImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixelArray</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;Reads levels directly from the DICOM image</span>
+<span class="sd">        </span>
+<span class="sd">        Input Parmeters</span>
+<span class="sd">        ***************</span>
+<span class="sd">        self - an object reference to the WEASEL interface.</span>
+<span class="sd">        pixelArray - pixel array to be displayed</span>
+
+<span class="sd">        Output Parameters</span>
+<span class="sd">        *****************</span>
+<span class="sd">        centre - Image intensity</span>
+<span class="sd">        width - Image contrast</span>
+<span class="sd">        maximumValue - Maximum pixel value in the image</span>
+<span class="sd">        minimumValue - Minimum pixel value in the image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DisplayImageCommon.readLevelsFromDICOMImage called&quot;</span><span class="p">)</span>
+            <span class="c1">#set default values</span>
+            <span class="n">centre</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
+            <span class="n">width</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
+            <span class="n">maximumValue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  
+            <span class="n">minimumValue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedImagePath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dataset</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;WindowCenter&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;WindowWidth&#39;</span><span class="p">):</span>
+                <span class="n">slope</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;RescaleSlope&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">intercept</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;RescaleIntercept&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">centre</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">WindowCenter</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">+</span> <span class="n">intercept</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">WindowWidth</span> <span class="o">*</span> <span class="n">slope</span>
+                <span class="n">maximumValue</span> <span class="o">=</span> <span class="n">centre</span> <span class="o">+</span> <span class="n">width</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">centre</span> <span class="o">-</span> <span class="n">width</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">-</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">maximumValue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">)</span> <span class="o">+</span> <span class="n">iqr</span><span class="p">(</span><span class="n">pixelArray</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">centre</span> <span class="o">=</span> <span class="n">minimumValue</span> <span class="o">+</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">maximumValue</span><span class="p">)</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">minimumValue</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">maximumValue</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">minimumValue</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">centre</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">maximumValue</span><span class="p">,</span> <span class="n">minimumValue</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.readLevelsFromDICOMImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in DisplayImageCommon.readLevelsFromDICOMImage: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="closeSubWindow"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.closeSubWindow">[docs]</a><span class="k">def</span> <span class="nf">closeSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objectName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes a particular sub window in the MDI</span>
+<span class="sd">        </span>
+<span class="sd">        Input Parmeters</span>
+<span class="sd">        ***************</span>
+<span class="sd">        self - an object reference to the WEASEL interface.</span>
+<span class="sd">        objectName - object name of the subwindow to be closed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WEASEL closeSubWindow called for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">objectName</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">subWin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">subWin</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="n">objectName</span><span class="p">:</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+                <span class="n">subWin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+                <span class="k">break</span></div>
+
+
+<div class="viewcode-block" id="closeAllSubWindows"><a class="viewcode-back" href="../../../CoreModules.WEASEL.html#CoreModules.WEASEL.DisplayImageCommon.closeAllSubWindows">[docs]</a><span class="k">def</span> <span class="nf">closeAllSubWindows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes all the sub windows open in the MDI&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WEASEL closeAllSubWindows called&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiArea</span><span class="o">.</span><span class="n">closeAllSubWindows</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeView</span> <span class="o">=</span> <span class="kc">None</span>  </div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

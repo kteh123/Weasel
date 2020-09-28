@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.GraphicsItem module
+==============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.GraphicsItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

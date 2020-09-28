@@ -1,0 +1,21 @@
+Weasel.CoreModules.SimpleITK package
+====================================
+
+Submodules
+----------
+
+Weasel.CoreModules.SimpleITK.SimpleITK module
+---------------------------------------------
+
+.. automodule:: Weasel.CoreModules.SimpleITK.SimpleITK
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Weasel.CoreModules.SimpleITK
+   :members:
+   :undoc-members:
+   :show-inheritance:

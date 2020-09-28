@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.multiprocess.bootstrap module
+===================================================
+
+.. automodule:: CoreModules.pyqtgraph.multiprocess.bootstrap
+   :members:
+   :undoc-members:
+   :show-inheritance:

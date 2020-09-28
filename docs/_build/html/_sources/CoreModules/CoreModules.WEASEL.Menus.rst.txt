@@ -1,0 +1,7 @@
+CoreModules.WEASEL.Menus module
+===============================
+
+.. automodule:: CoreModules.WEASEL.Menus
+   :members:
+   :undoc-members:
+   :show-inheritance:

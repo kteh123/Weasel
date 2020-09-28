@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.widgets.CheckTable module
+===============================================
+
+.. automodule:: CoreModules.pyqtgraph.widgets.CheckTable
+   :members:
+   :undoc-members:
+   :show-inheritance:

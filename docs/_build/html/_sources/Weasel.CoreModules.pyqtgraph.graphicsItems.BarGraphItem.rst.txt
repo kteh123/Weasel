@@ -1,0 +1,7 @@
+Weasel.CoreModules.pyqtgraph.graphicsItems.BarGraphItem module
+==============================================================
+
+.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.BarGraphItem
+   :members:
+   :undoc-members:
+   :show-inheritance:

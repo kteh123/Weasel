@@ -1,0 +1,7 @@
+CoreModules.pyqtgraph.GraphicsScene.mouseEvents module
+======================================================
+
+.. automodule:: CoreModules.pyqtgraph.GraphicsScene.mouseEvents
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.FERRET.MathsTools &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Weasel</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.FERRET.MathsTools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.FERRET.MathsTools</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Library of mathematical functions.</span>
+<span class="sd">Created on Wed Mar 14 12:08:02 2018</span>
+
+<span class="sd">@author: Sirisha Tadimalla</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Import libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1">#Create logger</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">####################### Signal model helper functions ##################################</span>
+<div class="viewcode-block" id="spgr2d_func"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgr2d_func">[docs]</a><span class="k">def</span> <span class="nf">spgr2d_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">spgr_params</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Tools.spgr2d_func called&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r1</span><span class="p">,</span> <span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">R10</span><span class="p">,</span> <span class="n">S_baseline</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="n">spgr_params</span>
+        <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R10</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">r1</span><span class="o">*</span><span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">E0</span><span class="o">*</span><span class="n">E1</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">FA</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+        <span class="c1"># Derive the actual S0 from the baseline signal</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">E0</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">p0</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="n">p0</span>
+        <span class="n">p3</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">E0</span><span class="o">*</span><span class="n">E0</span>
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">p1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">p0</span><span class="o">*</span><span class="n">p2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">E0</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="n">p3</span><span class="p">)</span>
+        <span class="n">S0</span> <span class="o">=</span> <span class="n">S_baseline</span><span class="o">/</span><span class="n">sf</span>
+    
+        <span class="n">k0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+        <span class="n">k1</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">k0</span>
+        <span class="n">k2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="n">k0</span>
+        <span class="n">k3</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">E</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">S0</span><span class="o">*</span><span class="n">k1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">k0</span><span class="o">*</span><span class="n">k2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">E</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="n">k3</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="spgr2d_func_inv"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgr2d_func_inv">[docs]</a><span class="k">def</span> <span class="nf">spgr2d_func_inv</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">R10</span><span class="p">,</span> <span class="n">conc</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Tools.spgr2d_func_inv called&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">FA</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+        <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R10</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">r1</span><span class="o">*</span><span class="n">conc</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">E0</span><span class="o">*</span><span class="n">E1</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">p0</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="n">p0</span>
+        <span class="n">p3</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">E</span>
+        <span class="n">Srel</span> <span class="o">=</span> <span class="n">p1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">p0</span><span class="o">*</span><span class="n">p2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">E</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="n">p3</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">Srel</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func_inv has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func_inv has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func_inv has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr2d_func_inv has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="spgr3d_func"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgr3d_func">[docs]</a><span class="k">def</span> <span class="nf">spgr3d_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">R10</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+    <span class="c1">#logger.info(&quot;Tools.spgr3d_func called&quot;)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R10</span><span class="p">)</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">FA</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">S0</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">E1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E0</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">E0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E1</span><span class="p">))</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="spgr3d_func_inv"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgr3d_func_inv">[docs]</a><span class="k">def</span> <span class="nf">spgr3d_func_inv</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">R10t</span><span class="p">,</span> <span class="n">conc</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Tools.spgr3d_func_inv called&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">FA</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+        <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R10t</span><span class="p">)</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">r1</span><span class="o">*</span><span class="n">conc</span><span class="p">)</span><span class="o">*</span><span class="n">E0</span>
+        <span class="n">St_rel</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">E1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E0</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">E0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E1</span><span class="p">))</span>
+    
+        <span class="k">return</span><span class="p">(</span><span class="n">St_rel</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func_inv has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func_inv has runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func_inv has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.spgr3d_func_inv has error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span></div>
+
+<span class="c1">#####################################</span>
+<span class="c1"># Shifts array to the right by n elements </span>
+<span class="c1"># and inserts n zeros at the beginning of the array</span>
+
+<div class="viewcode-block" id="arr_shift"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.arr_shift">[docs]</a><span class="k">def</span> <span class="nf">arr_shift</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">A_shifted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">shift</span><span class="p">)</span>
+    <span class="n">A_new</span> <span class="o">=</span> <span class="n">A_shifted</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">A_new</span><span class="p">)</span></div>
+
+<span class="c1">#####################################</span>
+<span class="c1"># Performs convolution of (1/T)exp(-t/T) with a </span>
+    
+<div class="viewcode-block" id="expconv"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.expconv">[docs]</a><span class="k">def</span> <span class="nf">expconv</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">modelName</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Tools.expconv called for model: &quot;</span> <span class="o">+</span> <span class="n">modelName</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">T</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,))</span>
+        
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="n">T</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="n">x</span>
+        
+        <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">E0</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">E</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="n">E0</span>
+        
+        <span class="n">add</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">E0</span> <span class="o">+</span> <span class="n">da</span><span class="o">*</span><span class="n">E1</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">add</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="n">f</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.expconv called for model </span><span class="si">{}</span><span class="s1"> with runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.expconv called for model </span><span class="si">{}</span><span class="s1"> with runtime error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tools.expconv called for model </span><span class="si">{}</span><span class="s1"> with error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Tools.expconv called for model </span><span class="si">{}</span><span class="s1"> with error: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span></div>
+
+<span class="c1">#####################################</span>
+<span class="c1"># Performs deconvolution of C and ca_time where </span>
+<span class="c1"># ca_time = ca times dt</span>
+
+<div class="viewcode-block" id="deconvolve"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.deconvolve">[docs]</a><span class="k">def</span> <span class="nf">deconvolve</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">ca</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
+    <span class="c1"># Build matrix from given AIF</span>
+    <span class="n">ca_time</span> <span class="o">=</span> <span class="n">ca</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ca</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">ca</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">ca</span><span class="p">)):</span>
+        <span class="n">A</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr_shift</span><span class="p">(</span><span class="n">ca_time</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+    
+    <span class="c1"># SVD of A</span>
+    <span class="n">U</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">Vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1">#Inverse of A</span>
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="mf">0.01</span>
+    <span class="n">S</span><span class="p">[</span><span class="n">S</span><span class="o">&lt;</span><span class="n">cutoff</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">S</span><span class="p">)]</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">S</span><span class="o">!=</span><span class="mi">0</span>
+    <span class="n">S</span><span class="p">[</span><span class="n">nz</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">S</span><span class="p">[</span><span class="n">nz</span><span class="p">]</span>
+    
+    <span class="n">invA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Vt</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">S</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">U</span><span class="p">)))</span>
+    
+    <span class="c1"># Solution</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">invA</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> </div>
+   
+<span class="c1">#####################################</span>
+<span class="c1"># Performs discrete integration of ca  </span>
+<span class="c1"># time t</span>
+    
+<div class="viewcode-block" id="integrate"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.integrate">[docs]</a><span class="k">def</span> <span class="nf">integrate</span><span class="p">(</span><span class="n">ca</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ca</span><span class="p">))</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
+        <span class="n">f</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span><span class="o">*</span><span class="n">ca</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+<span class="c1">#####################################</span>
+<span class="c1"># Calculates the SPGR signal using given </span>
+<span class="c1"># flip angle (FA in degrees), repetition time (TR in seconds), </span>
+<span class="c1"># equilibrium signal (S0) and longitudinal</span>
+<span class="c1"># relaxation rate (R1 in Hz)</span>
+
+<div class="viewcode-block" id="spgress"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgress">[docs]</a><span class="k">def</span> <span class="nf">spgress</span><span class="p">(</span><span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">R1</span><span class="p">):</span>
+    
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R1</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">FA</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">FA</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">Mz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">S0</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E</span><span class="p">))</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">Mz</span><span class="p">)</span></div>
+
+<span class="c1">#####################################</span>
+<span class="c1"># Calculates the post-contrast longitudinal relaxation rate (R1) from the </span>
+<span class="c1"># dynamic SPGR signal S, given the flip angle (FA in degrees), </span>
+<span class="c1"># repetition time (TR in seconds), </span>
+<span class="c1"># equilibrium signal (S0), precontrast longitudinal</span>
+<span class="c1"># relaxation rate (R10 in Hz)</span>
+   
+<div class="viewcode-block" id="spgress_inv"><a class="viewcode-back" href="../../../CoreModules.FERRET.html#CoreModules.FERRET.MathsTools.spgress_inv">[docs]</a><span class="k">def</span> <span class="nf">spgress_inv</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">FA</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">R10</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">TR</span><span class="o">*</span><span class="n">R10</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">FA</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">Sn</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="o">/</span><span class="n">S0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">E</span><span class="p">)</span> <span class="c1"># normalised signal</span>
+    <span class="n">R1</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">Sn</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">Sn</span><span class="p">))</span><span class="o">/</span><span class="n">TR</span> <span class="c1"># Relaxation rate in 1/s</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">R1</span><span class="p">)</span></div>
+    
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Steve Shillitoe and Joao Sousa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+CoreModules.pyqtgraph.console package
+=====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CoreModules.pyqtgraph.console.CmdInput
+   CoreModules.pyqtgraph.console.Console
+   CoreModules.pyqtgraph.console.template_pyqt
+   CoreModules.pyqtgraph.console.template_pyqt5
+   CoreModules.pyqtgraph.console.template_pyside
+
+Module contents
+---------------
+
+.. automodule:: CoreModules.pyqtgraph.console
+   :members:
+   :undoc-members:
+   :show-inheritance:

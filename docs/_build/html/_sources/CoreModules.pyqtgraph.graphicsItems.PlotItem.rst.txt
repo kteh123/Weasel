@@ -1,0 +1,44 @@
+CoreModules.pyqtgraph.graphicsItems.PlotItem
+============================================
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+PlotItem
+--------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem.PlotItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+plotConfigTemplate\_pyqt
+------------------------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+plotConfigTemplate\_pyqt5
+-------------------------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+plotConfigTemplate\_pyside
+--------------------------
+
+.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyside
+   :members:
+   :undoc-members:
+   :show-inheritance:

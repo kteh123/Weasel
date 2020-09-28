@@ -1,0 +1,7 @@
+Weasel.Developer.WEASEL.Tools.calculateMIP\_Developer module
+============================================================
+
+.. automodule:: Weasel.Developer.WEASEL.Tools.calculateMIP_Developer
+   :members:
+   :undoc-members:
+   :show-inheritance:

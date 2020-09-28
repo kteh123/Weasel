@@ -1,0 +1,7 @@
+CoreModules.ParametricMapsDictionary module
+===========================================
+
+.. automodule:: CoreModules.ParametricMapsDictionary
+   :members:
+   :undoc-members:
+   :show-inheritance:
