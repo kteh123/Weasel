@@ -128,7 +128,7 @@ def build_dictionary(list_dicom):
             subject, study, sequence, series_number = get_study_series(file)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
-            xml_dict[subject][study].append(sequence + "_" + series_number)
+            xml_dict[subject][study].append(series_number + "_" + sequence)
         for subject in xml_dict:
             for study in xml_dict[subject]:
                 xml_dict[subject][study] = sorted(np.unique(xml_dict[subject][study]), key=series_sort)
@@ -178,7 +178,7 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             study_root = DICOM_XML_object.find(subject_search_string)
             study_search_string = "./*[@id='" + study + "']"
             series_root = study_root.find(study_search_string)
-            series_search_string = "./*[@id='"+ sequence + "_" + series_number + "']"
+            series_search_string = "./*[@id='"+ series_number + "_" + sequence + "']"
             image_root = series_root.find(series_search_string)
             image_element = ET.SubElement(image_root, 'image')
             label = ET.SubElement(image_element, 'label')
