@@ -1,4 +1,5 @@
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.TreeView as treeView
 import logging
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,7 @@ def insertNewImageInXMLFile(self, newImageFileName, suffix):
             logger.info("InterfaceDICOMXMLFile insertNewImageInXMLFile called")
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
+            #_, studyID, seriesID = treeView.getPathParentNode(self, newImageFileName)
             if self.selectedImagePath:
                 imagePath = self.selectedImagePath
             else:
@@ -30,7 +32,8 @@ def getNewSeriesName(self, studyID, dataset, suffix):
     series name.  A new series name is created by adding a suffix
     at the end of an existing series name. """
     try:
-        seriesID = dataset.SeriesDescription + "_" + str(dataset.SeriesNumber)
+        # Swapped SeriesNumber with SeriesDescription
+        seriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
         imageList = self.objXMLReader.getImageList(studyID, seriesID)
         if imageList:
             #A series of images already exists 
@@ -47,14 +50,14 @@ def getNewSeriesName(self, studyID, dataset, suffix):
         print('Error in InterfaceDICOMXMLFile.getNewSeriesName: ' + str(e))
             
 
-
 def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
     """Creates a new series to hold the series of New images"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSeriesInXMLFile called")
         #Get current study & series IDs
         studyID = self.selectedStudy 
-        seriesID = self.selectedSeries 
+        seriesID = self.selectedSeries
+        #_, studyID, seriesID = treeView.getPathParentNode(self, origImageList[0])
         #Get a new series ID
         dataset = readDICOM_Image.getDicomDataset(newImageList[0])
         newSeriesID = getNewSeriesName(self, studyID, dataset, suffix)
@@ -64,4 +67,41 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix):
         return  newSeriesID
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
-        logger.error('Error in InterfaceDICOMXMLFile.insertNewImageInXMLFile: ' + str(e))  
+        logger.error('Error in InterfaceDICOMXMLFile.insertNewImageInXMLFile: ' + str(e))
+
+
+def removeImageFromXMLFile(self, imageFileName):
+    """Removes an image from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeImageFromXMLFile called")
+        _, studyID, seriesID = treeView.getPathParentNode(self, imageFileName)
+        images = self.objXMLReader.getImageList(studyID, seriesID)
+        if len(images) == 1:
+            self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+        elif len(images) > 1:
+            self.objXMLReader.removeOneImageFromSeries(studyID, seriesID, imageFileName)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeImageFromXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeImageFromXMLFile: ' + str(e))
+
+
+def removeMultipleImagesFromXMLFile(self, origImageList):
+    """Removes a whole series from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeSeriesFromXMLFile called")
+        for image in origImageList:
+            removeImageFromXMLFile(self, image)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
+
+
+def removeSeriesFromXMLFile(self, origImageList):
+    """Removes a whole series from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeSeriesFromXMLFile called")
+        _, studyID, seriesID = treeView.getPathParentNode(self, origImageList[0])
+        self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))

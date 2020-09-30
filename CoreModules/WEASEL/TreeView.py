@@ -441,7 +441,7 @@ def onTreeViewItemClicked(self, item):
     logger.info("TreeView.onTreeViewItemClicked called")
     try:
         #test for returning dictionary of studyIDs:seriesIDs
-        print(returnSelectedSeries(self))
+        # print(returnSelectedSeries(self))
         if item:
             selectedText = item.text(0)
             if 'study' in selectedText.lower():
@@ -538,3 +538,31 @@ def returnSelectedImages(self):
     except Exception as e:
         print('Error in TreeView.returnSelectedImages: ' + str(e))
         logger.error('Error in TreeView.returnSelectedImages: ' + str(e))
+
+
+def getPathParentNode(self, inputPath):
+    """This function returns a list of subjectID, studyID an seriesID based on the given filepath."""
+    logger.info("TreeView.getPathParentNode called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                for k in range(seriesCount):
+                    series = study.child(k)
+                    imageCount = series.childCount()
+                    for n in range(imageCount):
+                        image = series.child(n)
+                        if image.text(3) == inputPath:
+                            subjectID = subject.text(0).replace('Subject -', '').strip()
+                            studyID = study.text(0).replace('Study -', '').strip()
+                            seriesID = series.text(0).replace('Series -', '').strip()
+                            return subjectID, studyID, seriesID
+
+    except Exception as e:
+        print('Error in TreeView.getPathParentNode: ' + str(e))
+        logger.error('Error in TreeView.getPathParentNode: ' + str(e))
