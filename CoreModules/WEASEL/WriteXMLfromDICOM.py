@@ -67,7 +67,8 @@ def series_sort(elem):
     This is a helper function that will be used in key argument of sorted()
     in order to sort the list of series by series number
     """
-    return int(elem.split("_")[-1])
+    # return int(elem.split("_")[-1]) # USE THIS IF %SeriesDescription_%SeriesNumber
+    return int(elem.split("_")[0])
 
 
 def get_scan_data(scan_directory):

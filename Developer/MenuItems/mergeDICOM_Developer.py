@@ -10,11 +10,11 @@ FILE_SUFFIX = '_Merged'
 
 def MergeSeries(objWeasel):
     imagePathList = tool.getImagePathList(objWeasel)
-    mergedSeries = tool.mergeDicomIntoOneSeries(imagePathList, series_description="Copied_Series", overwrite=False)
-    tool.updateXMLAndDisplayResult(objWeasel, imagePathList, mergedSeries, FILE_SUFFIX)
+    mergedSeries = tool.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Copied_Series", overwrite=False)
+    tool.displayImage(objWeasel, mergedSeries)
 
 
 def MergeSeriesNoCopy(objWeasel):
     imagePathList = tool.getImagePathList(objWeasel)
-    mergedSeries = tool.mergeDicomIntoOneSeries(imagePathList, series_description="Series", overwrite=True)
-    tool.updateXMLAndDisplayResult(objWeasel, imagePathList, mergedSeries, FILE_SUFFIX)
+    mergedSeries = tool.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=True)
+    tool.displayImage(objWeasel, mergedSeries)
