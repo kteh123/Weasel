@@ -22,6 +22,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules//FERRET//'))
 
 import CoreModules.WEASEL.styleSheet as styleSheet
 from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader
+from CoreModules.WEASEL.weaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.Menus  as menus
 import CoreModules.WEASEL.ToolBar  as toolBar
 
@@ -62,10 +63,15 @@ class Weasel(QMainWindow):
         self.currentImagePath = ''
         
          # XML reader object to process XML configuration file
+        self.objConfigXMLReader = WeaselConfigXMLReader()
+        menuXMLFile = self.objConfigXMLReader.getMenuFile()
+        self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
+        
+         # XML reader object to process XML DICOM data file
         self.objXMLReader = WeaselXMLReader() 
 
-        menus.setupMenus(self)
-        menus.buildContextMenu(self)
+        menus.setupMenus(self, menuXMLFile)
+        menus.buildContextMenu(self, menuXMLFile)
         toolBar.setupToolBar(self)
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")
@@ -73,6 +79,7 @@ class Weasel(QMainWindow):
 
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
+
 
 def main():
     app = QApplication(sys . argv )

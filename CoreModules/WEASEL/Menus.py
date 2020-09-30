@@ -6,15 +6,15 @@ import sys
 import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView  as treeView
-from CoreModules.WEASEL.weaselToolsXMLReader import WeaselToolsXMLReader
-import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
-import Developer.WEASEL.Tools.BinaryOperationsOnImages as binaryOperationsOnImages
-import Developer.WEASEL.Tools.ViewMetaData  as viewMetaData
+from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
+import Developer.MenuItems.copyDICOM_Image as copyDICOM_Image
+import Developer.MenuItems.BinaryOperationsOnImages as binaryOperationsOnImages
+import Developer.MenuItems.ViewMetaData  as viewMetaData
 
 
 import logging
@@ -28,13 +28,13 @@ class NoTreeViewItemSelected(Exception):
    pass
 
 
-def setupMenus(self):
+def setupMenus(self, menuXMLFile):
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
     self.listMenus = []
     mainMenu = self.menuBar()
-    objXMLToolsReader = WeaselToolsXMLReader() 
-    menus = objXMLToolsReader.getMenus()
+    objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+    menus = objXMLMenuReader.getMenus()
     for menu in menus:
         menuName = menu.attrib['name']
         self.topMenu = mainMenu.addMenu(menuName)
@@ -91,7 +91,7 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item):
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
-        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {}: '.format(line_number) + str(e))
+        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e))
 
 
 def closeAllImageWindows(self):
@@ -151,12 +151,12 @@ def displayContextMenu(self, pos):
     self.context.exec_(self.treeView.mapToGlobal(pos))
 
 
-def buildContextMenu(self):
+def buildContextMenu(self, menuXMLFile):
     logger.info("Menus.buildContextMenu called")
     try:
         self.context = QMenu(self)
-        objXMLToolsReader = WeaselToolsXMLReader() 
-        items = objXMLToolsReader.getContextMenuItems()
+        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        items = objXMLMenuReader.getContextMenuItems()
         for item in items:
             buildContextMenuItem(self.context, item, self)
     except Exception as e:

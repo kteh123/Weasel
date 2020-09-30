@@ -35,6 +35,7 @@ def loadDICOM(self):
         self.currentImagePath = ''
         #browse to DICOM folder and get DICOM folder name
         scan_directory = getScanDirectory(self)
+        #print(" scan_directory = ",  scan_directory)
         if scan_directory:
             #look inside DICOM folder for XML file with same name as DICOM folder
             if existsDICOMXMLFile(scan_directory):
@@ -70,11 +71,12 @@ def getScanDirectory(self):
         user to select the folder holding the DICOM files"""
         try:
             logger.info('LoadDICOM.getScanDirectory called.')
-            cwd = os.getcwd()
+            #cwd = os.getcwd()
+
             scan_directory = QFileDialog.getExistingDirectory(
                self,
                'Select the directory containing the scan', 
-               cwd, 
+               self.weaselDataFolder, 
                QFileDialog.ShowDirsOnly)
             return scan_directory
         except Exception as e:
