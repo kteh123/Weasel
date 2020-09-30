@@ -6,14 +6,13 @@
           <shortcut>Ctrl+L</shortcut>
           <tooltip>Load DICOM images from a scan folder</tooltip>
           <module>LoadDICOM</module>
-          <function>loadDICOM</function>
         </item>
         <item>
           <label>Tile Subwindows</label>
           <enabled>True</enabled>
           <shortcut>Ctrl+T</shortcut>
           <tooltip>Returns subwindows to a tile pattern</tooltip>
-          <module>Menus</module>
+          <module>SubWindowOperations</module>
           <function>tileAllSubWindows</function>
         </item>
         <item>
@@ -21,7 +20,7 @@
           <enabled>True</enabled>
           <shortcut>Ctrl+A</shortcut>
           <tooltip>Closes All Image Windows</tooltip>
-          <module>Menus</module>
+          <module>SubWindowOperations</module>
           <function>closeAllImageWindows</function>
         </item>
         <item>
@@ -38,16 +37,14 @@
           <label>View Image</label>
           <shortcut>Ctrl+V</shortcut>
           <tooltip>View DICOM Image or series</tooltip>
-          <module>Menus</module>
-          <function>viewImage</function>
+          <module>ViewImage</module>
           <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
         </item>
         <item>
           <label>View Image with ROI</label>
           <shortcut>Ctrl+R</shortcut>
           <tooltip>View DICOM Image or series with the ROI tool</tooltip>
-          <module>Menus</module>
-          <function>viewROIImage</function>
+          <module>ViewROIImage</module>
           <context_menu>yes</context_menu>
         </item>
         <item>
@@ -55,22 +52,19 @@
           <shortcut>Ctrl+M</shortcut>
           <tooltip>View DICOM Image or series metadata</tooltip>
           <module>ViewMetaData</module>
-          <function>viewMetadata</function>
           <context_menu>yes</context_menu>  
         </item>
         <item>
           <label>Delete Series/Image</label>
           <shortcut>Ctrl+D</shortcut>
           <tooltip>Delete a DICOM Image or series</tooltip>
-          <module>Menus</module>
-          <function>deleteImage</function>
+          <module>DeleteImage</module>
         </item>
         <item>
           <label>Copy Series/Image</label>
           <shortcut>Ctrl+C</shortcut>
           <tooltip>Copy a DICOM series</tooltip>
           <module>copyDICOM_Image</module>
-          <function>copySeries</function>
         </item>
         <item>
           <label>Binary Operations</label>

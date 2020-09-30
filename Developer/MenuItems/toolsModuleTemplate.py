@@ -11,5 +11,5 @@ FILE_SUFFIX = '_SomeSuffix'
 #***************************************************************************
 
 
-def processImages(objWeasel):
-    toolFunctions.processImages(objWeasel)
+def main(objWeasel):
+    toolFunctions.main(objWeasel)

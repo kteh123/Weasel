@@ -304,11 +304,17 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\calculateMIP_Developer.py" />
+    <Compile Include="Developer\MenuItems\DeleteImage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\MenuItems\developerToolsModule.py" />
     <Compile Include="Developer\MenuItems\editDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\gaussianFilterDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\mergeDICOM_Developer.py" />
     <Compile Include="Developer\MenuItems\squareDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\SubWindowOperations.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\MenuItems\thresholdDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\ToolsFunctions.py">
       <SubType>Code</SubType>
@@ -317,6 +323,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\UKRIN_Developer.py" />
+    <Compile Include="Developer\MenuItems\ViewImage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\MenuItems\ViewMetaData.py">
       <SubType>Code</SubType>
     </Compile>
@@ -330,6 +339,9 @@
     <Compile Include="Developer\MenuItems\T2StarMapDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
     <Compile Include="Developer\MenuItems\thresholdDICOM_Image.py" />
+    <Compile Include="Developer\MenuItems\ViewROIImage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\ScientificLibrary\imagingTools.py" />
     <Compile Include="Developer\ScientificLibrary\ukrinAlgorithms.py" />
     <Compile Include="Weasel.py" />

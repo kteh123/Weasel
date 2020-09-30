@@ -74,11 +74,11 @@ def isSeriesOnly(self):
     return True
 
 
-def processImages(self):
+def main(self):
         """Displays the sub window for performing binary operations
         on 2 images"""
         try:
-            logger.info("BinaryOperationsOnImages.processImages called")
+            logger.info("BinaryOperationsOnImages.main called")
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint
@@ -185,8 +185,8 @@ def processImages(self):
                 msgBox.setText("Select a series")
                 msgBox.exec()
         except Exception as e:
-            print('Error in processImages: ' + str(e))
-            logger.error('Error in processImages: ' + str(e))
+            print('Error in main: ' + str(e))
+            logger.error('Error in main: ' + str(e))
 
 
 def saveNewDICOMFileFromBinOp(self):

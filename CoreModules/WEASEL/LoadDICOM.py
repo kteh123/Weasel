@@ -19,7 +19,7 @@ import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 
 logger = logging.getLogger(__name__)
 
-def loadDICOM(self):
+def main(self):
     """This function is executed when the Load DICOM menu item is selected.
     It displays a folder dialog box.  After the user has selected the folder
     containing the DICOM file, an existing XML is searched for.  If one is 

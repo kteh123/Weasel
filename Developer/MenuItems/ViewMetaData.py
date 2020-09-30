@@ -14,7 +14,7 @@ import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import logging
 logger = logging.getLogger(__name__)
 
-def viewMetadata(self):
+def main(self):
     """Creates a subwindow that displays a DICOM image's metadata. """
     try:
         logger.info("ViewMetaData.viewMetadata called")

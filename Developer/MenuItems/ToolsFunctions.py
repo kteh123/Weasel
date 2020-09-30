@@ -26,7 +26,7 @@ def returnPixelArray(imagePath, func):
 
 
 #This function name must not be changed
-def processImages(objWeasel, fileSuffix, funcAlgorithm):
+def main(objWeasel, fileSuffix, funcAlgorithm):
     """Creates a subwindow that displays either a DICOM image or series of DICOM images
     processed using the algorithm in funcAlgorithm."""
     try:
@@ -82,7 +82,7 @@ def processImages(objWeasel, fileSuffix, funcAlgorithm):
             #Refresh the tree view so to include the new series
             treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
     except Exception as e:
-        print('Error in #.processImages: ' + str(e))
+        print('Error in #.main: ' + str(e))
 
 
 def returnImagePathList(objWeasel):

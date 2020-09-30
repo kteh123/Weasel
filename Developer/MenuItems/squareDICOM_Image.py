@@ -11,6 +11,6 @@ FILE_SUFFIX = '_Square'
 #***************************************************************************
 
 
-def processImages(objWeasel):
-    toolFunctions.processImages(objWeasel, FILE_SUFFIX, funcAlgorithm)
+def main(objWeasel):
+    toolFunctions.main(objWeasel, FILE_SUFFIX, funcAlgorithm)
 

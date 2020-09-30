@@ -7,5 +7,5 @@ from Developer.ScientificLibrary.imagingTools import invertAlgorithm as funcAlgo
 FILE_SUFFIX = '_Invert'
 #***************************************************************************
 
-def processImages(objWeasel):
-    toolFunctions.processImages(objWeasel, FILE_SUFFIX, funcAlgorithm)
+def main(objWeasel):
+    toolFunctions.main(objWeasel, FILE_SUFFIX, funcAlgorithm)

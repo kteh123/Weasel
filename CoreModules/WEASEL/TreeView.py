@@ -9,6 +9,7 @@ import logging
 import time
 from collections import defaultdict
 import CoreModules.WEASEL.Menus  as menus
+import Developer.MenuItems.ViewImage  as viewImage
 logger = logging.getLogger(__name__)
 
 
@@ -159,7 +160,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
-                self.treeView.itemDoubleClicked.connect(lambda: menus.viewImage(self))
+                self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
                 self.treeView.show()
                 

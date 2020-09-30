@@ -26,7 +26,7 @@ def returnCopiedFile(imagePath):
             print('Error in function copyDICOM_Image.returnPixelArray: ' + str(e))
 
 
-def copySeries(objWeasel):
+def main(objWeasel):
     """This method duplicates/copies all DICOM files of the selected Series."""
     try:
         studyID = objWeasel.selectedStudy 
