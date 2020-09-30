@@ -261,7 +261,10 @@
     <Compile Include="CoreModules\WEASEL\UserImageColourSelection.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CoreModules\WEASEL\weaselToolsXMLReader.py" />
+    <Compile Include="CoreModules\WEASEL\weaselConfigXMLReader.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CoreModules\WEASEL\weaselMenuXMLReader.py" />
     <Compile Include="CoreModules\WEASEL\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
@@ -331,6 +334,7 @@
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.xml" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\console\template.ui" />
@@ -355,6 +359,7 @@
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\WEASEL\ReadMe.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelConfiguration\Model_Library_Template.xml" />
+    <Content Include="Developer\FERRET\FERRET_Files\ModelConfiguration\MR_SignalRatLiverModels.xml" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel.png" />
@@ -362,7 +367,7 @@
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\FERRET\FERRET_README.md" />
-    <Content Include="Developer\WEASEL\Tools\Menus.xml" />
+    <Content Include="MenuFiles\Menus.xml" />
     <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver3__SI_TRISTAN Rat Model v2.0__Signals.csv" />
@@ -8109,6 +8114,7 @@
     <Folder Include="images\" />
     <Folder Include="CoreModules\SimpleITK\" />
     <Folder Include="Developer\WEASEL\ScientificLibrary\" />
+    <Folder Include="MenuFiles\" />
     <Folder Include="WeaselData\" />
     <Folder Include="WeaselData\003\" />
     <Folder Include="WeaselData\003\1030\" />

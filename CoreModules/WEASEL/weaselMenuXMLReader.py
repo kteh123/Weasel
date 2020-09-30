@@ -1,20 +1,22 @@
 import xml.etree.cElementTree as ET  
 import logging
+import os.path
 logger = logging.getLogger(__name__)
 
 
-class WeaselToolsXMLReader:
-    def __init__(self): 
+class WeaselMenuXMLReader:
+    def __init__(self, menuXMLFile): 
         try:
             self.hasXMLFileParsedOK = True
-            self.fullFilePath = "Developer//WEASEL//Tools//Menus.xml"
+            self.fullFilePath =  os.path.join("MenuFiles", menuXMLFile)
+            #self.fullFilePath = "MenuFiles\\" + menuXMLFile
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
 
         except Exception as e:
-            print('Error in WeaselToolsXMLReader.__init__: ' + str(e)) 
-            logger.error('Error in WeaselToolsXMLReader.__init__: ' + str(e))
+            print('Error in WeaselMenuXMLReader.__init__: ' + str(e)) 
+            logger.error('Error in WeaselMenuXMLReader.__init__: ' + str(e))
 
 
     def getMenus(self):
