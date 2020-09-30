@@ -7,14 +7,14 @@ import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
-import Developer.WEASEL.Tools.copyDICOM_Image as copyDICOM_Image
-import Developer.WEASEL.Tools.BinaryOperationsOnImages as binaryOperationsOnImages
-import Developer.WEASEL.Tools.ViewMetaData  as viewMetaData
 import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.DisplayImageROI as displayImageROI
 import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
+import Developer.MenuItems.copyDICOM_Image as copyDICOM_Image
+import Developer.MenuItems.BinaryOperationsOnImages as binaryOperationsOnImages
+import Developer.MenuItems.ViewMetaData  as viewMetaData
 
 
 import logging
@@ -91,7 +91,7 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item):
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
-        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {}: '.format(line_number) + str(e))
+        print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e))
 
 
 def closeAllImageWindows(self):
