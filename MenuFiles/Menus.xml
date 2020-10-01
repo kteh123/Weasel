@@ -86,46 +86,34 @@
           <separator>yes</separator>
         </item>
         <item>
-          <label>Square Developer (Pipeline2D)</label>
-          <shortcut>Ctrl+S+1</shortcut>
-          <tooltip>Square a DICOM Image or series</tooltip>
-          <module>squareDICOM_Image_Developer</module>
-          <function>processPipeline2D</function>
-        </item>
-        <item>
           <label>Square Developer (Pipeline3D/GroupWise)</label>
           <shortcut>Ctrl+S+3</shortcut>
           <tooltip>Square a DICOM Image or series</tooltip>
           <module>squareDICOM_Image_Developer</module>
-          <function>processPipeline3D</function>
         </item>
         <item>
           <label>Gaussian Filter Developer (GroupWise)</label>
           <shortcut>Ctrl+F+3</shortcut>
           <tooltip>gaussian</tooltip>
           <module>gaussianFilterDICOM_Image_Developer</module>
-          <function>GroupWise</function>
         </item>
         <item>
           <label>Edit DICOM Tag Developer</label>
           <shortcut>Ctrl+D</shortcut>
           <tooltip>Choose DICOM header and change the selected files</tooltip>
           <module>editDICOM_Image_Developer</module>
-          <function>editDICOM_Series</function>
         </item>
         <item>
           <label>Threshold Developer (SlicebySlice)</label>
           <shortcut>Ctrl+L</shortcut>
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image_Developer</module>
-          <function>SliceBySlice</function>
         </item>
         <item>
           <label>Merge Series (Developer)</label>
           <shortcut>Ctrl+M+E</shortcut>
           <tooltip>Merge selected images or series into 1 series</tooltip>
           <module>mergeDICOM_Developer</module>
-          <function>MergeSeries</function>
         </item>
   </menu>
   <menu name="UKRIN-MAPS">
@@ -134,21 +122,18 @@
           <shortcut>Ctrl+0</shortcut>
           <tooltip>Extracts the B0 Map from the series if applicable</tooltip>
           <module>B0MapDICOM_Image</module>
-          <function>saveB0MapSeries</function>
         </item>
         <item>
           <label>T2* Map Calculation</label>
           <shortcut>Ctrl+2</shortcut>
           <tooltip>Applies a T2* fitting to the series if applicable</tooltip>
           <module>T2StarMapDICOM_Image</module>
-          <function>saveT2StarMapSeries</function>
         </item>
         <item>
           <label>T1 Map Molli Calculation</label>
           <shortcut>Ctrl+1</shortcut>
           <tooltip>Applies a T1 Molli fitting to the series if applicable</tooltip>
           <module>T1MapMolliDICOM_Image</module>
-          <function>saveT1MapSeries</function>
         </item>
 		<item>
           <!--Inserts a separator, a horizontal line in the menu-->
@@ -160,7 +145,6 @@
           <tooltip>Choose which UKRIN-MAPS algorithm to run</tooltip>
           <applies_both_images_series>False</applies_both_images_series>
           <module>UKRIN_Developer</module>
-          <function>chooseAndRunAlgorithm</function>
         </item>
   </menu>
   <menu name="TRISTAN">
@@ -169,7 +153,6 @@
           <shortcut>Ctrl+M+I</shortcut>
           <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
           <module>calculateMIP_Developer</module>
-          <function>TimeMIP</function>
         </item>
         <item>
           <!--Inserts a separator, a horizontal line in the menu-->
