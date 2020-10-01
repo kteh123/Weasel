@@ -15,7 +15,7 @@ from PyQt5.QtGui import QCursor, QIcon, QColor
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 import CoreModules.WEASEL.MessageWindow  as messageWindow
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import Developer.MenuItems.CloseAllSubWindows as closeAllSubWindows
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,8 @@ def main(self):
     a new one from scratch.
     """
     try:
-        logger.info("LoadDICOM.loadDICOM called")
-        displayImageCommon.closeAllSubWindows(self)
+        logger.info("LoadDICOM.main called")
+        closeAllSubWindows.main(self)
         self.selectedStudy = ''
         self.selectedSeries = ''
         self.selectedImageName = ''
@@ -62,8 +62,8 @@ def main(self):
             treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
             QApplication.restoreOverrideCursor()
     except Exception as e:
-        print('Error in function LoadDICOM.loadDICOM: ' + str(e))
-        logger.error('Error in function LoadDICOM.loadDICOM: ' + str(e))
+        print('Error in function LoadDICOM.main: ' + str(e))
+        logger.error('Error in function LoadDICOM.main: ' + str(e))
 
 
 def getScanDirectory(self):

@@ -12,24 +12,21 @@
           <enabled>True</enabled>
           <shortcut>Ctrl+T</shortcut>
           <tooltip>Returns subwindows to a tile pattern</tooltip>
-          <module>SubWindowOperations</module>
-          <function>tileAllSubWindows</function>
+          <module>TileAllSubWindows</module>
         </item>
         <item>
           <label>Close All Image Windows</label>
           <enabled>True</enabled>
           <shortcut>Ctrl+A</shortcut>
           <tooltip>Closes All Image Windows</tooltip>
-          <module>SubWindowOperations</module>
-          <function>closeAllImageWindows</function>
+          <module>CloseAllImageWindows</module>
         </item>
         <item>
           <label>Close All Sub Windows</label>
           <enabled>True</enabled>
           <shortcut>Ctrl+X</shortcut>
           <tooltip>Close All Sub Windows</tooltip>
-          <module>DisplayImageCommon</module>
-          <function>closeAllSubWindows</function>
+          <module>CloseAllSubWindows</module>
         </item>
   </menu>
   <menu name="Tools">

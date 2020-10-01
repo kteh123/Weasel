@@ -318,10 +318,3 @@ def closeSubWindow(self, objectName):
                 subWin.close()
                 QApplication.processEvents()
                 break
-
-
-def closeAllSubWindows(self):
-        """Closes all the sub windows open in the MDI"""
-        logger.info("WEASEL closeAllSubWindows called")
-        self.mdiArea.closeAllSubWindows()
-        self.treeView = None  

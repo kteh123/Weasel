@@ -2,7 +2,7 @@ from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import QMdiSubWindow
 from PyQt5.QtGui import  QIcon
 from Developer.FERRET.Ferret import Ferret as ferret
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import Developer.MenuItems.CloseAllSubWindows as closeAllSubWindows
 import logging
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def displayFERRET(self):
         """
         try:
             logger.info("MenuToolBarCommon.displayFERRET called")
-            displayImageCommon.closeAllSubWindows(self)
+            closeAllSubWindows.main(self)
             self.subWindow = QMdiSubWindow(self)
             self.subWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.subWindow.setWindowFlags(Qt.CustomizeWindowHint | 

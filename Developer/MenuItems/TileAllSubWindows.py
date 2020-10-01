@@ -1,17 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-def closeAllImageWindows(self):
-        """Closes all the sub windows in the MDI except for
-        the sub window displaying the DICOM file tree view"""
-        logger.info("Menus closeAllImageWindows called")
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == 'tree_view':
-                continue
-            subWin.close()
-
-
-def tileAllSubWindows(self):
+def main(self):
     logger.info("Menus.tileAllSubWindow called")
     height, width = self.getMDIAreaDimensions()
     for subWin in self.mdiArea.subWindowList():

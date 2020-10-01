@@ -304,6 +304,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\calculateMIP_Developer.py" />
+    <Compile Include="Developer\MenuItems\CloseAllSubWindows.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\MenuItems\DeleteImage.py">
       <SubType>Code</SubType>
     </Compile>
@@ -312,10 +315,13 @@
     <Compile Include="Developer\MenuItems\gaussianFilterDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\mergeDICOM_Developer.py" />
     <Compile Include="Developer\MenuItems\squareDICOM_Image_Developer.py" />
-    <Compile Include="Developer\MenuItems\SubWindowOperations.py">
+    <Compile Include="Developer\MenuItems\CloseAllImageWindows.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\thresholdDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\TileAllSubWindows.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Developer\MenuItems\ToolsFunctions.py">
       <SubType>Code</SubType>
     </Compile>
