@@ -285,7 +285,7 @@
     <Compile Include="CoreModules\WEASEL\InterfaceDICOMXMLFile.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CoreModules\WEASEL\LoadDICOM.py">
+    <Compile Include="Developer\MenuItems\LoadDICOM.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\Menus.py">

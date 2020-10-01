@@ -7,11 +7,6 @@ import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView  as treeView
 from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
-import CoreModules.WEASEL.LoadDICOM  as loadDICOMFile
-import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
-import Developer.MenuItems.copyDICOM_Image as copyDICOM_Image
-import Developer.MenuItems.BinaryOperationsOnImages as binaryOperationsOnImages
-import Developer.MenuItems.ViewMetaData  as viewMetaData
 import logging
 logger = logging.getLogger(__name__)
 
