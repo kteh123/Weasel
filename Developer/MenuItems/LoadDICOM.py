@@ -19,6 +19,9 @@ import Developer.MenuItems.CloseAllSubWindows as closeAllSubWindows
 
 logger = logging.getLogger(__name__)
 
+def isEnabled(self):
+    return True
+
 def main(self):
     """This function is executed when the Load DICOM menu item is selected.
     It displays a folder dialog box.  After the user has selected the folder

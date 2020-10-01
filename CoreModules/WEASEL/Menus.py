@@ -42,11 +42,6 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item):
                 self.menuItem.setShortcut(item.find('shortcut').text)
             if item.find('tooltip') is not None:
                 self.menuItem.setToolTip(item.find('tooltip').text)
-            if item.find('enabled') is not None:
-                if item.find('enabled').text == 'True':
-                    self.menuItem.setEnabled(True)
-                else:
-                    self.menuItem.setEnabled(False)
 
             moduleName = item.find('module').text
 
@@ -69,6 +64,13 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item):
                 boolApplyBothImagesAndSeries = True
 
             self.menuItem.setData(boolApplyBothImagesAndSeries)
+
+            if hasattr(module, "isEnabled"):
+                self.menuItem.setEnabled(getattr(module, "isEnabled")(self))
+            else:
+                self.menuItem.setEnabled(False)
+
+            
             topMenu.addAction(self.menuItem)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()

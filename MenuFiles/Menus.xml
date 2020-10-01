@@ -2,28 +2,24 @@
   <menu name="File">
         <item>
           <label>Load DICOM Images</label>
-          <enabled>True</enabled><!--This menu item is enabled-->
           <shortcut>Ctrl+L</shortcut>
           <tooltip>Load DICOM images from a scan folder</tooltip>
           <module>LoadDICOM</module>
         </item>
         <item>
           <label>Tile Subwindows</label>
-          <enabled>True</enabled>
           <shortcut>Ctrl+T</shortcut>
           <tooltip>Returns subwindows to a tile pattern</tooltip>
           <module>TileAllSubWindows</module>
         </item>
         <item>
           <label>Close All Image Windows</label>
-          <enabled>True</enabled>
           <shortcut>Ctrl+A</shortcut>
           <tooltip>Closes All Image Windows</tooltip>
           <module>CloseAllImageWindows</module>
         </item>
         <item>
           <label>Close All Sub Windows</label>
-          <enabled>True</enabled>
           <shortcut>Ctrl+X</shortcut>
           <tooltip>Close All Sub Windows</tooltip>
           <module>CloseAllSubWindows</module>
