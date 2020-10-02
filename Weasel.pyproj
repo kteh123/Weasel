@@ -348,10 +348,10 @@
     <Compile Include="Developer\MenuItems\ViewROIImage.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\Packages\imagingTools.py" />
-    <Compile Include="Developer\Packages\tristanAlgorithms.py" />
-    <Compile Include="Developer\Packages\ukrinAlgorithms.py" />
-    <Compile Include="Developer\Packages\__init__.py" />
+    <Compile Include="Developer\SciPackages\imagingTools.py" />
+    <Compile Include="Developer\SciPackages\tristanAlgorithms.py" />
+    <Compile Include="Developer\SciPackages\ukrinAlgorithms.py" />
+    <Compile Include="Developer\SciPackages\__init__.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
@@ -8131,7 +8131,7 @@
     <Folder Include="Developer\FERRET\FERRET_Files\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />
     <Folder Include="Developer\MenuItems\" />
-    <Folder Include="Developer\Packages\" />
+    <Folder Include="Developer\SciPackages\" />
     <Folder Include="FerretData\" />
     <Folder Include="FerretData\MSD_PRE\" />
     <Folder Include="images\" />
