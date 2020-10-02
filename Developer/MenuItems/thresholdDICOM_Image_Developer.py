@@ -5,7 +5,7 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.Packages.imagingTools import thresholdPixelArray
+from Developer.SciPackages.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 #***************************************************************************
 

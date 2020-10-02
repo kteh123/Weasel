@@ -6,7 +6,7 @@ import Developer.MenuItems.ToolsFunctions  as toolFunctions
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.Packages.imagingTools import squareAlgorithm as funcAlgorithm
+from Developer.SciPackages.imagingTools import squareAlgorithm as funcAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 

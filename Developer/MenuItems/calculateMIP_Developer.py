@@ -7,8 +7,8 @@ import Developer.MenuItems.developerToolsModule as tool
 #containing your image processing algorithm. 
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image # Write a developer tool to deal with image sort
 import numpy as np
-from Developer.Packages.tristanAlgorithms import TRISTAN
-from Developer.Packages.imagingTools import formatArrayForAnalysis
+from Developer.SciPackages.tristanAlgorithms import TRISTAN
+from Developer.SciPackages.imagingTools import formatArrayForAnalysis
 FILE_SUFFIX = '_MIP'
 #***************************************************************************
 

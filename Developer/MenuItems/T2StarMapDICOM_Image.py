@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from Developer.Packages.imagingTools import formatArrayForAnalysis
-from Developer.Packages.ukrinAlgorithms import ukrinMaps
+from Developer.SciPackages.imagingTools import formatArrayForAnalysis
+from Developer.SciPackages.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T2StarMap'
 
