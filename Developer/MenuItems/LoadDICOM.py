@@ -45,7 +45,7 @@ def main(self):
                 #an XML file exists, so ask user if they wish to use it or create new one
                 buttonReply = QMessageBox.question(self, 
                     'Load DICOM images', 
-                    'An XML file exists for this DICOM folder. Would you like to use it?', 
+                    'This DICOM folder has already been processed. Would you like to reload it?', 
                         QMessageBox.Yes| QMessageBox.No, QMessageBox.Yes)
                 if buttonReply == QMessageBox.Yes:
                     XML_File_Path = scan_directory + '//' + os.path.basename(scan_directory) + '.xml'

@@ -30,25 +30,14 @@ def main(objWeasel):
     'Threshold Image' Menu item in the Tools menu."""
     try:
         paramDict = {"Lower Threshold":"integer, 10, 0, 1000", 
-                     "Upper Threshold":"float, 100, 0, 1000", 
-                     "Some String":"string, default value",
-                     "Drop down list": "dropdownlist, 1",
-                     "Second drop down list": "dropdownlist, 2",
-                     "List View": "listview"}  
-        #In "dropdownlist, 2" 2 is index of the item to display in the drop down list 
-        #for integer & float, the format is "type, default value, minimum value, maximum value" 
-
-        list1 = ["item1","default","item3"] #list to display in the first dropdown list 
-        list2 = ["item7","item8","default"] #list to display in the second dropdown list 
-        list3 = ["ferret", "weasel", "elephant", "tiger", "an animal with a long name"] #list to display in the second dropdown list 
-        listOfLists = [list1, list2, list3]
+                     "Upper Threshold":"integer, 100, 0, 1000"}   
+        #for integer & float, the format is "type, default value, minimum value, maximum value"
 
         helpMsg = "Lower threshold must be less than the upper threshold."
         warning = True
         while True:
-            inputDlg = inputDialog.ParameterInputDialog(paramDict,helpText=helpMsg, lists=listOfLists)
+            inputDlg = inputDialog.ParameterInputDialog(paramDict, helpText=helpMsg)
             listParams = inputDlg.returnListParameterValues()
-            print('list params =', listParams)
             if inputDlg.closeInputDialog():
                 #Cancel button has been clicked
                 break

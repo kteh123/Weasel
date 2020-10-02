@@ -32,7 +32,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
     try:
         if treeView.isAnImageSelected(objWeasel):
             imagePath = objWeasel.selectedImagePath
-
+            studyID = objWeasel.selectedStudy
             pixelArray = returnPixelArray(imagePath, funcAlgorithm)
             
             derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, fileSuffix)
@@ -44,7 +44,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
                                          derivedImageFileName, fileSuffix)
 
             #Display the derived image in a subwindow
-            displayImageColour.displayImageSubWindow(objWeasel, derivedImageFileName)
+            displayImageColour.displayImageSubWindow(objWeasel, studyID, seriesID, derivedImageFileName)
 
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)

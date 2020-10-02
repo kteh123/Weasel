@@ -343,7 +343,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         del dicomData, imageArray, imageScaled, imageArrayInt, enhancedArrayInt, tempArray
         return newDicom
     except Exception as e:
-        print('Error in function createNewSingleDicom: ' + str(e))
+        print('Error in function saveDICOM_Image.createNewSingleDicom: ' + str(e))
 
 
 def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
@@ -392,7 +392,7 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
             
         return dicomData   
     except Exception as e:
-        print('Error in function updateSingleDicom: ' + str(e))
+        print('Error in function saveDICOM_Image.updateSingleDicom: ' + str(e))
 
     
 def saveDicomToFile(dicomData, output_path=None):
@@ -413,4 +413,4 @@ def saveDicomToFile(dicomData, output_path=None):
         del dicomData
         return
     except Exception as e:
-        print('Error in function saveDicomToFile: ' + str(e))
+        print('Error in function saveDICOM_Image.saveDicomToFile: ' + str(e))

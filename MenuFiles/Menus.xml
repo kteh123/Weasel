@@ -27,14 +27,14 @@
   </menu>
   <menu name="Tools">
         <item>
-          <label>View Image</label>
+          <label>View Series/Image</label>
           <shortcut>Ctrl+V</shortcut>
           <tooltip>View DICOM Image or series</tooltip>
           <module>ViewImage</module>
           <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
         </item>
         <item>
-          <label>View Image with ROI</label>
+          <label>View Series/Image with ROI</label>
           <shortcut>Ctrl+R</shortcut>
           <tooltip>View DICOM Image or series with the ROI tool</tooltip>
           <module>ViewROIImage</module>
@@ -54,7 +54,7 @@
           <module>DeleteImage</module>
         </item>
         <item>
-          <label>Copy Series/Image</label>
+          <label>Copy Series</label>
           <shortcut>Ctrl+C</shortcut>
           <tooltip>Copy a DICOM series</tooltip>
           <module>copyDICOM_Image</module>
@@ -66,17 +66,18 @@
           <module>BinaryOperationsOnImages</module>
         </item>
         <item>
-          <label>Invert</label>
+          <label>Invert Series/Image</label>
+           <shortcut>Ctrl+I</shortcut>
           <module>invertDICOM_Image</module>
         </item>
         <item>
-          <label>Square</label>
+          <label>Square Series/Image</label>
           <shortcut>Ctrl+S</shortcut>
           <tooltip>Square a DICOM Image or series</tooltip>
           <module>squareDICOM_Image</module>
         </item>
 		<item>
-          <label>Threshold</label>
+          <label>Threshold Series/Image</label>
           <shortcut>Ctrl+T</shortcut>
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
