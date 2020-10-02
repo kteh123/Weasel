@@ -807,8 +807,9 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumVa
     try:
         axisOrder = pg.getConfigOption('imageAxisOrder') 
         if axisOrder =='row-major':
-            #rotate image 90 degree so as to match the screen image
-            pixelArray = scipy.ndimage.rotate(pixelArray, 270)
+            #Transpose the array so as to match the screen image 
+            # (a transpose is already applied when reading DICO image)
+            pixelArray = np.transpose(pixelArray)
         cmap = plt.get_cmap(colourTable)
         pos = plt.imshow(pixelArray,  cmap=cmap)
         plt.clim(int(minimumValue), int(maximumValue))
