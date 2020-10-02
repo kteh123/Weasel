@@ -348,8 +348,6 @@
     <Compile Include="Developer\MenuItems\ViewROIImage.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\ScientificLibrary\imagingTools.py" />
-    <Compile Include="Developer\ScientificLibrary\ukrinAlgorithms.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
@@ -388,6 +386,9 @@
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
     <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
     <Content Include="Developer\FERRET\FERRET_README.md" />
+    <Content Include="Developer\Packages\__pycache__\imagingTools.cpython-37.pyc" />
+    <Content Include="Developer\Packages\__pycache__\tristanAlgorithms.cpython-37.pyc" />
+    <Content Include="Developer\Packages\__pycache__\ukrinAlgorithms.cpython-37.pyc" />
     <Content Include="MenuFiles\Menus.xml" />
     <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
     <Content Include="FerretData\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />
@@ -8129,11 +8130,12 @@
     <Folder Include="Developer\FERRET\FERRET_Files\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />
     <Folder Include="Developer\MenuItems\" />
+    <Folder Include="Developer\Packages\" />
+    <Folder Include="Developer\Packages\__pycache__\" />
     <Folder Include="FerretData\" />
     <Folder Include="FerretData\MSD_PRE\" />
     <Folder Include="images\" />
     <Folder Include="CoreModules\SimpleITK\" />
-    <Folder Include="Developer\ScientificLibrary\" />
     <Folder Include="MenuFiles\" />
     <Folder Include="WeaselData\" />
     <Folder Include="WeaselData\003\" />
