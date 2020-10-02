@@ -1,7 +1,7 @@
 import Developer.MenuItems.developerToolsModule as tool
 import Developer.MenuItems.ViewMetaData as viewMetaData
 
-def editDICOM_Series(objWeasel):
+def main(objWeasel):
     inputDict = {"DICOM Tag":"string", "Value":"string"}
     helpMsg = 'The DICOM Tag can be inserted in string or hexadecimal format.\nExample:\n'\
               '(0010,0010) => type PatientName or 0x00100010'

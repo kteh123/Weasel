@@ -6,7 +6,7 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.ScientificLibrary.imagingTools import squareAlgorithm
+from Developer.Packages.imagingTools import squareAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 
@@ -28,7 +28,7 @@ def processPipeline2D(objWeasel):
         tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
 
 
-def processPipeline3D(objWeasel):
+def main(objWeasel):
         imagePathList = tool.getImagePathList(objWeasel)
         tool.showProcessingMessageBox(objWeasel)
         pixelArray = tool.getPixelArrayFromDICOM(imagePathList)

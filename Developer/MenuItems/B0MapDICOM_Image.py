@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from Developer.ScientificLibrary.imagingTools import formatArrayForAnalysis, unWrapPhase
-from Developer.ScientificLibrary.ukrinAlgorithms import ukrinMaps
+from Developer.Packages.imagingTools import formatArrayForAnalysis, unWrapPhase
+from Developer.Packages.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_B0Map'
 # THE ENHANCED MRI B0 STILL NEEDS MORE TESTING. I DON'T HAVE ANY CASE WITH 2 TEs IN ENHANCED MRI
@@ -121,7 +121,7 @@ def getParametersB0Map(imagePathList, seriesID):
         print('Error in function B0MapDICOM_Image.getParametersB0Map: ' + str(e))
 
 
-def saveB0MapSeries(objWeasel):
+def main(objWeasel):
     """Main method called from WEASEL to calculate the B0 Map"""
     try:
         studyID = objWeasel.selectedStudy

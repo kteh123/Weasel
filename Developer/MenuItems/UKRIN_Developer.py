@@ -11,7 +11,7 @@ import Developer.MenuItems.T2StarMapDICOM_Image as t2_star
 
 #***************************************************************************
 
-def chooseAndRunAlgorithm(objWeasel):
+def main(objWeasel):
     if tool.treeView.isASeriesSelected(objWeasel):
         # Setting Window Input window
         inputDict = {"Algorithm":"dropdownlist", "Dummy":"listview"}

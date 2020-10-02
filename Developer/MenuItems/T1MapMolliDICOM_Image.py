@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from Developer.ScientificLibrary.imagingTools import formatArrayForAnalysis
-from Developer.ScientificLibrary.ukrinAlgorithms import ukrinMaps
+from Developer.Packages.imagingTools import formatArrayForAnalysis
+from Developer.Packages.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T1Map'
 
@@ -93,7 +93,7 @@ def getParametersT1Map(imagePathList, seriesID):
         print('Error in function T1MapDICOM_Image.getParametersT1Map: ' + str(e))
 
 
-def saveT1MapSeries(objWeasel):
+def main(objWeasel):
     """Main method called from WEASEL to calculate the T1 Map"""
     try:
         studyID = objWeasel.selectedStudy

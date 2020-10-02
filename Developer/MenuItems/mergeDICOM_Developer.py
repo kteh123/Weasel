@@ -14,7 +14,7 @@ def MergeSeries(objWeasel):
     tool.displayImage(objWeasel, mergedSeries)
 
 
-def MergeSeriesNoCopy(objWeasel):
+def main(objWeasel):
     imagePathList = tool.getImagePathList(objWeasel)
     mergedSeries = tool.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=True)
     tool.displayImage(objWeasel, mergedSeries)

@@ -5,7 +5,7 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.ScientificLibrary.imagingTools import gaussianFilter
+from Developer.Packages.imagingTools import gaussianFilter
 FILE_SUFFIX = '_Gaussian'
 #***************************************************************************
 
@@ -14,7 +14,7 @@ def isSeriesOnly(self):
     return True
 
 
-def SliceBySlice(objWeasel):
+def main(objWeasel):
     if tool.treeView.isAnImageSelected(objWeasel):
         imagePath = tool.getImagePath(objWeasel)
         derivedImageFileName = tool.setNewFilePath(imagePath, FILE_SUFFIX)

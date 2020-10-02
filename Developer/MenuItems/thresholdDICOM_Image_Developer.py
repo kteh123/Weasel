@@ -5,11 +5,11 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.ScientificLibrary.imagingTools import thresholdPixelArray
+from Developer.Packages.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 #***************************************************************************
 
-def SliceBySlice(objWeasel):
+def main(objWeasel):
     if tool.treeView.isAnImageSelected(objWeasel):
         imagePath = tool.getImagePath(objWeasel)
         #derivedImageFileName = tool.setNewFilePath(imagePath, FILE_SUFFIX)

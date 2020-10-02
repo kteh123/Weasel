@@ -7,8 +7,8 @@ import Developer.MenuItems.developerToolsModule as tool
 #containing your image processing algorithm. 
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image # Write a developer tool to deal with image sort
 import numpy as np
-from Developer.ScientificLibrary.tristanAlgorithms import TRISTAN
-from Developer.ScientificLibrary.imagingTools import formatArrayForAnalysis
+from Developer.Packages.tristanAlgorithms import TRISTAN
+from Developer.Packages.imagingTools import formatArrayForAnalysis
 FILE_SUFFIX = '_MIP'
 #***************************************************************************
 
@@ -17,7 +17,7 @@ def isSeriesOnly(self):
     return True
 
 
-def TimeMIP(objWeasel):
+def main(objWeasel):
     if tool.treeView.isASeriesSelected(objWeasel):
         imagePathList = tool.getImagePathList(objWeasel)
 

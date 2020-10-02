@@ -7,8 +7,8 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-from Developer.ScientificLibrary.imagingTools import formatArrayForAnalysis
-from Developer.ScientificLibrary.ukrinAlgorithms import ukrinMaps
+from Developer.Packages.imagingTools import formatArrayForAnalysis
+from Developer.Packages.ukrinAlgorithms import ukrinMaps
 
 FILE_SUFFIX = '_T2StarMap'
 
@@ -83,7 +83,7 @@ def getParametersT2StarMap(imagePathList, seriesID):
         print('Error in function T2StarMapDICOM_Image.getParametersT2StarMap: ' + str(e))
 
 
-def saveT2StarMapSeries(objWeasel):
+def main(objWeasel):
     """Main method called from WEASEL to calculate the T2* Map"""
     try:
         studyID = objWeasel.selectedStudy
