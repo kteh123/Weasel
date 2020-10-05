@@ -84,7 +84,8 @@ def get_scan_data(scan_directory):
                 if ('DIRFILE' not in filename) and ('DICOMDIR' not in filename):
                     try:
                         dataset = pydicom.dcmread(os.path.join(dir_name, filename))
-                        if hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID'):
+                        if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
+                                any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])):
                             list_dicom.append(dataset)
                             list_paths.append(os.path.join(dir_name, filename))
                     except:

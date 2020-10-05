@@ -256,7 +256,7 @@ def writeNewPixelArray(self, pixelArray, inputPath, suffix):
                     inputPath = inputPath[:len(derivedImagePathList)]
 
         if numImages == 1:    
-            saveDICOM_Image.saveDicomOutputResult(derivedImagePathList[0], inputPath, derivedImageList, suffix)
+            saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], inputPath, derivedImageList, suffix)
             # Record derived image in XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
                             derivedImagePathList[0], suffix)
@@ -356,7 +356,7 @@ def saveNewDICOMAndDisplayResult(self, inputPath, derivedPath, derivedImage, suf
         if treeView.isAnImageSelected(self):
             showSavingResultsMessageBox(self, 1)
             # Save new DICOM file locally                                    
-            saveDICOM_Image.saveDicomOutputResult(derivedPath, inputPath, derivedImage, suffix)
+            saveDICOM_Image.saveNewSingleDicomImage(derivedPath, inputPath, derivedImage, suffix)
             messageWindow.closeMessageSubWindow(self)
             # Record derived image in XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
@@ -392,7 +392,7 @@ def overwriteDICOMAndDisplayResult(self, inputPath, derivedImage):
             showSavingResultsMessageBox(self, 1)
             # Overwrite image in DICOM file                                   
             # saveDICOM_Image.overwriteDicomFileTag(inputPath, "PixelData", derivedImage.tobytes())
-            saveDICOM_Image.saveDicomOutputResult(inputPath, inputPath, derivedImage, '')
+            saveDICOM_Image.saveNewSingleDicomImage(inputPath, inputPath, derivedImage, '')
             # Display image in a new subwindow
             displayImageColour.displayImageSubWindow(self, inputPath)
         elif treeView.isASeriesSelected(self):

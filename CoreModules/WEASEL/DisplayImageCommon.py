@@ -211,12 +211,12 @@ def getPixelValue(pos, imv, pixelArray, lblPixelValue):
                 lblPixelValue.setText(
                     "<h4>Pixel Value = {} @ X: {}, Y: {}</h4>"
                 .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
-            elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 2 ] \
-                and y_i > 0 and y_i < pixelArray.shape [ 1 ] \
-                and x_i > 0 and x_i < pixelArray.shape [ 0 ]: 
+            elif (len(np.shape(pixelArray)) == 3) and z_i > 0 and z_i < pixelArray.shape [ 0 ] \
+                and x_i > 0 and x_i < pixelArray.shape [ 1 ] \
+                and y_i > 0 and y_i < pixelArray.shape [ 2 ]:
                 lblPixelValue.setText(
                     "<h4>Pixel Value = {} @ X: {}, Y: {}, Z: {}</h4>"
-                .format (round(pixelArray[ z_i, y_i, x_i ], 3), x_i, y_i, z_i))
+                .format (round(pixelArray[ z_i, x_i, y_i ], 3), x_i, y_i, z_i))
             else:
                 lblPixelValue.setText("<h4>Pixel Value:</h4>")
         else:

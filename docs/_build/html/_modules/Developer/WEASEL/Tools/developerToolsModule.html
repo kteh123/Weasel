@@ -403,7 +403,7 @@
         <span class="k">if</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isAnImageSelected</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>
             <span class="n">showSavingResultsMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="c1"># Save new DICOM file locally                                    </span>
-            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomOutputResult</span><span class="p">(</span><span class="n">derivedPath</span><span class="p">,</span> <span class="n">inputPath</span><span class="p">,</span> <span class="n">derivedImage</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveNewSingleDicomImage</span><span class="p">(</span><span class="n">derivedPath</span><span class="p">,</span> <span class="n">inputPath</span><span class="p">,</span> <span class="n">derivedImage</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
             <span class="n">messageWindow</span><span class="o">.</span><span class="n">closeMessageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">)</span>
             <span class="c1"># Record derived image in XML file</span>
             <span class="n">newSeriesID</span> <span class="o">=</span> <span class="n">interfaceDICOMXMLFile</span><span class="o">.</span><span class="n">insertNewImageInXMLFile</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span>
@@ -439,7 +439,7 @@
             <span class="n">showSavingResultsMessageBox</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="c1"># Overwrite image in DICOM file                                   </span>
             <span class="c1"># saveDICOM_Image.overwriteDicomFileTag(inputPath, &quot;PixelData&quot;, derivedImage.tobytes())</span>
-            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveDicomOutputResult</span><span class="p">(</span><span class="n">inputPath</span><span class="p">,</span> <span class="n">inputPath</span><span class="p">,</span> <span class="n">derivedImage</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">saveDICOM_Image</span><span class="o">.</span><span class="n">saveNewSingleDicomImage</span><span class="p">(</span><span class="n">inputPath</span><span class="p">,</span> <span class="n">inputPath</span><span class="p">,</span> <span class="n">derivedImage</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="c1"># Display image in a new subwindow</span>
             <span class="n">displayImageColour</span><span class="o">.</span><span class="n">displayImageSubWindow</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">,</span> <span class="n">inputPath</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">treeView</span><span class="o">.</span><span class="n">isASeriesSelected</span><span class="p">(</span><span class="n">objWeasel</span><span class="p">):</span>

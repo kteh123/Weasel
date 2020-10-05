@@ -59,7 +59,7 @@ def main(objWeasel):
                 displayImageColour.displayImageSubWindow(objWeasel, studyID, 
                                                          seriesID, derivedImageFileName)
                 # Save the DICOM file in the new file path                                        
-                saveDICOM_Image.saveDicomOutputResult(derivedImageFileName, imagePath, 
+                saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, 
                                                       pixelArray, FILE_SUFFIX, parametric_map="SEG")
                 #Record squared image in XML file
                 newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,

@@ -208,7 +208,7 @@ def saveNewDICOMFileFromBinOp(self):
                 newImageFileName + '.dcm'
             #print(newImageFilePath)
             #Save pixel array to a file
-            saveDICOM_Image.saveDicomOutputResult(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
+            saveDICOM_Image.saveNewSingleDicomImage(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, 
                                                             newImageFilePath, suffix)
             #print(newSeriesID)
