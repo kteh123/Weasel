@@ -271,7 +271,22 @@ def writeNewPixelArray(self, pixelArray, inputPath, suffix):
     except Exception as e:
         print('Error in function #.writePixelArrayToDicom: ' + str(e))
 
-#def overwritePixelArray()
+    
+def overwritePixelArray(imageArray, imagePath):
+    try:
+        if isinstance(imagePath, list):
+            datasetList = readDICOM_Image.getSeriesDicomDataset(imagePath)
+            for index, dataset in enumerate(datasetList):
+                modifiedDataset = saveDICOM_Image.createNewPixelArray(imageArray, dataset)
+                saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=imagePath[index])
+        else:
+            dataset = readDICOM_Image.getDicomDataset(imagePath)
+            modifiedDataset = saveDICOM_Image.createNewPixelArray(imageArray, dataset)
+            saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=imagePath)
+        return
+    except Exception as e:
+        print('Error in saveDICOM_Image.overwritePixelArray: ' + str(e))
+
 
 def displayImage(self, inputPath):
     try:

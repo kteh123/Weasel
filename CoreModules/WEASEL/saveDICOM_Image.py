@@ -137,21 +137,75 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
         print('Error in saveDICOM_Image.overwriteDicomFileTag: ' + str(e))
 
 
-def overwritePixelArray(imagePath, imageArray):
+def createNewPixelArray(imageArray, dataset):
     try:
+        numberFrames = 1
+        enhancedArrayInt = []
         numDimensions = len(np.shape(imageArray))
-        if isinstance(imagePath, list):
-            datasetList = readDICOM_Image.getSeriesDicomDataset(imagePath)
-            for index, dataset in enumerate(datasetList):
-                #modifiedDataset = createNewPixelArray(dataset, imageArray)
-                saveDicomToFile(dataset, output_path=imagePath[index])
-        else:
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            #modifiedDataset = createNewPixelArray(dataset, imageArray)
-            saveDicomToFile(dataset, output_path=imagePath)
-        return
+        # If Enhanced MRI, then:
+        # For each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
+        if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            if numDimensions == 2:
+                dataset.NumberOfFrames = 1
+            else:
+                dataset.NumberOfFrames = np.shape(imageArray)[0]
+            del dataset.PerFrameFunctionalGroupsSequence[dataset.NumberOfFrames:]
+            numberFrames = dataset.NumberOfFrames
+        for index in range(numberFrames):
+            if len(np.shape(imageArray)) == 2:
+                tempArray = imageArray
+            else:
+                tempArray = np.squeeze(imageArray[index, ...])
+            dataset.PixelRepresentation = 0
+            target = (np.power(2, dataset.BitsAllocated) - 1) * np.ones(np.shape(tempArray))
+            maximum = np.ones(np.shape(tempArray)) * np.amax(tempArray)
+            minimum = np.ones(np.shape(tempArray)) * np.amin(tempArray)
+            imageScaled = target * (tempArray - minimum) / (maximum - minimum)
+            slope =  target / (maximum - minimum)
+            intercept = (- target * minimum)/ (maximum - minimum)
+            rescaleSlope = np.ones(np.shape(tempArray)) / slope
+            rescaleIntercept = - intercept / slope
+            if dataset.BitsAllocated == 8:
+                imageArrayInt = imageScaled.astype(np.uint8)
+            elif dataset.BitsAllocated == 16:
+                imageArrayInt = imageScaled.astype(np.uint16)
+            elif dataset.BitsAllocated == 32:
+                imageArrayInt = imageScaled.astype(np.uint32)
+            elif dataset.BitsAllocated == 64:
+                imageArrayInt = imageScaled.astype(np.uint64)
+            else:
+                imageArrayInt = imageScaled.astype(dataset.pixel_array.dtype)
+            dataset.add_new('0x00280106', 'US', int(np.amin(imageArrayInt)))
+            dataset.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
+            if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                # Rotate back to Original Position
+                enhancedArrayInt.append(np.transpose(imageArrayInt))
+                # Rescsale Slope and Intercept
+                dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
+                dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
+                # Set Window Center and Width
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = int(target.flatten()[0])
+            else:
+                # Rotate back to Original Position
+                imageArrayInt = np.transpose(imageArrayInt)
+                # Rescsale Slope and Intercept
+                dataset.RescaleSlope = rescaleSlope.flatten()[0]
+                dataset.RescaleIntercept = rescaleIntercept.flatten()[0]
+                # Set Window Center and Width
+                dataset.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
+                dataset.WindowWidth = int(target.flatten()[0])
+        if enhancedArrayInt:
+            imageArrayInt = np.array(enhancedArrayInt)
+        
+        # Set the shape/dimensions and PixelData
+        dataset.Rows = np.shape(imageArrayInt)[-2]
+        dataset.Columns = np.shape(imageArrayInt)[-1]
+        dataset.PixelData = imageArrayInt.tobytes()
+        del imageScaled, enhancedArrayInt, tempArray
+        return dataset
     except Exception as e:
-        print('Error in saveDICOM_Image.overwritePixelArray: ' + str(e))
+        print('Error in saveDICOM_Image.createNewPixelArray: ' + str(e))
 
 
 def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
@@ -247,100 +301,31 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
             param.editDicom(newDicom, imageArray, parametric_map)
             return newDicom
 
-        # New Pixel Array
-        numberFrames = 1
-        enhancedArrayInt = []
-        # If Enhanced MRI, then:
-        # For each frame, slope and intercept are M and B. For registration, I will have to add Image Position and Orientation
-        if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
-            if len(np.shape(imageArray)) == 2:
-                newDicom.NumberOfFrames = 1
-            else:
-                newDicom.NumberOfFrames = np.shape(imageArray)[0]
-            del newDicom.PerFrameFunctionalGroupsSequence[newDicom.NumberOfFrames:]
-            numberFrames = newDicom.NumberOfFrames
-        for index in range(numberFrames):
-            if len(np.shape(imageArray)) == 2:
-                tempArray = imageArray
-            else:
-                tempArray = np.squeeze(imageArray[index, ...])
-            # if int(np.amin(imageArray)) < 0:
-            # newDicom.PixelRepresentation = 1
-            # target = (np.power(2, newDicom.BitsAllocated) - 1) * (np.ones(np.shape(tempArray)))
-            # maximum = np.ones(np.shape(tempArray)) * np.amax(tempArray)
-            # minimum = np.ones(np.shape(tempArray)) * np.amin(tempArray)
-            # extra = target / (2 * np.ones(np.shape(tempArray)))
-            # imageScaled = target * (tempArray - minimum) / (maximum - minimum) - extra
-            # slope =  target / (maximum - minimum)
-            # intercept = (- target * minimum - extra * (maximum - minimum)) / (maximum - minimum)
-            # rescaleSlope = np.ones(np.shape(tempArray)) / slope
-            # rescaleIntercept = - intercept / slope
-            # if newDicom.BitsAllocated == 8:
-            #     imageArrayInt = imageScaled.astype(np.int8)
-            # elif newDicom.BitsAllocated == 16:
-            #     imageArrayInt = imageScaled.astype(np.int16)
-            # elif newDicom.BitsAllocated == 32:
-            #     imageArrayInt = imageScaled.astype(np.int32)
-            # elif newDicom.BitsAllocated == 64:
-            #     imageArrayInt = imageScaled.astype(np.int64)
-            # else:
-            #     imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
-            # newDicom.add_new('0x00280106', 'SS', int(np.amin(imageArrayInt)))
-            # newDicom.add_new('0x00280107', 'SS', int(np.amax(imageArrayInt)))
-            # else:
-            newDicom.PixelRepresentation = 0
-            target = (np.power(2, newDicom.BitsAllocated) - 1) * np.ones(np.shape(tempArray))
-            maximum = np.ones(np.shape(tempArray)) * np.amax(tempArray)
-            minimum = np.ones(np.shape(tempArray)) * np.amin(tempArray)
-            imageScaled = target * (tempArray - minimum) / (maximum - minimum)
-            slope =  target / (maximum - minimum)
-            intercept = (- target * minimum)/ (maximum - minimum)
-            rescaleSlope = np.ones(np.shape(tempArray)) / slope
-            rescaleIntercept = - intercept / slope
-            if newDicom.BitsAllocated == 8:
-                imageArrayInt = imageScaled.astype(np.uint8)
-            elif newDicom.BitsAllocated == 16:
-                imageArrayInt = imageScaled.astype(np.uint16)
-            elif newDicom.BitsAllocated == 32:
-                imageArrayInt = imageScaled.astype(np.uint32)
-            elif newDicom.BitsAllocated == 64:
-                imageArrayInt = imageScaled.astype(np.uint64)
-            else:
-                imageArrayInt = imageScaled.astype(dicomData.pixel_array.dtype)
-            newDicom.add_new('0x00280106', 'US', int(np.amin(imageArrayInt)))
-            newDicom.add_new('0x00280107', 'US', int(np.amax(imageArrayInt)))
-            if hasattr(dicomData, 'PerFrameFunctionalGroupsSequence'):
-                # Rotate back to Original Position
-                enhancedArrayInt.append(np.transpose(imageArrayInt))
-                # Rescsale Slope and Intercept
-                newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
-                newDicom.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
-                # Set Window Center and Width
-                newDicom.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
-                newDicom.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = int(target.flatten()[0])
-            else:
-                # Rotate back to Original Position
-                imageArrayInt = np.transpose(imageArrayInt)
-                # Rescsale Slope and Intercept
-                newDicom.RescaleSlope = rescaleSlope.flatten()[0]
-                newDicom.RescaleIntercept = rescaleIntercept.flatten()[0]
-                # Set Window Center and Width
-                newDicom.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
-                newDicom.WindowWidth = int(target.flatten()[0])
-        if enhancedArrayInt:
-            imageArrayInt = np.array(enhancedArrayInt)
-        
-        # Set the shape/dimensions and PixelData
-        newDicom.Rows = np.shape(imageArrayInt)[-2]
-        newDicom.Columns = np.shape(imageArrayInt)[-1]
-        newDicom.PixelData = imageArrayInt.tobytes()
+        newDicom = createNewPixelArray(imageArray, newDicom)    
 
         # Add colourmap here
-        if (colourmap is None) and hasattr(dicomData, 'RedPaletteColorLookupTableData'):
+        if (colourmap is None) and (newDicom.PhotometricInterpretation == 'PALETTE COLOR'):
             # This deletes the colourmap that came with the source/input DICOM
-            newDicom.ContentLabel = 'gray'
-            del (newDicom.RedPaletteColorLookupTableData, newDicom.GreenPaletteColorLookupTableData, newDicom.BluePaletteColorLookupTableData,
-                 newDicom.RedPaletteColorLookupTableDescriptor, newDicom.GreenPaletteColorLookupTableDescriptor, newDicom.BluePaletteColorLookupTableDescriptor)
+            # and hasattr(newDicom, 'RedPaletteColorLookupTableData')
+            stringType = 'US'
+            imageArrayInt = newDicom.pixel_array
+            minValue = int(np.amin(imageArrayInt))
+            numberOfValues = int(np.amax(imageArrayInt))
+            arrayForRGB = np.arange(0, numberOfValues)
+            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
+            totalBytes = dicomData.BitsAllocated
+            newDicom.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+            newDicom.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+            newDicom.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+            newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1) * value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+            newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1) * value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+            newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                2, totalBytes) - 1) * value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+            # newDicom.ContentLabel = 'gray'
+            # del (newDicom.RedPaletteColorLookupTableData, newDicom.GreenPaletteColorLookupTableData, newDicom.BluePaletteColorLookupTableData,
+                # newDicom.RedPaletteColorLookupTableDescriptor, newDicom.GreenPaletteColorLookupTableDescriptor, newDicom.BluePaletteColorLookupTableDescriptor)
         elif colourmap is not None:
             newDicom.PhotometricInterpretation = 'PALETTE COLOR'
             newDicom.RGBLUTTransferFunction = 'TABLE'
@@ -361,8 +346,9 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 2, totalBytes) - 1) * value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
             newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
                 2, totalBytes) - 1) * value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
+            del imageArrayInt
 
-        del dicomData, imageArray, imageScaled, imageArrayInt, enhancedArrayInt, tempArray
+        del dicomData, imageArray, # imageArrayInt, imageScaled, enhancedArrayInt, tempArray
         return newDicom
     except Exception as e:
         print('Error in function saveDICOM_Image.createNewSingleDicom: ' + str(e))

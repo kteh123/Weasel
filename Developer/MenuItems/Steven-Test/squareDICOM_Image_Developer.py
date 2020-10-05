@@ -8,6 +8,7 @@ import Developer.MenuItems.developerToolsModule as tool
 #containing your image processing algorith. 
 from Developer.SciPackages.imagingTools import squareAlgorithm
 FILE_SUFFIX = '_Square'
+import numpy as np
 #***************************************************************************
 
 def isSeriesOnly(self):
@@ -29,14 +30,14 @@ def processPipeline2D(objWeasel):
 
 
 def main(objWeasel):
-        imagePathList = tool.getImagePathList(objWeasel)
-        tool.showProcessingMessageBox(objWeasel)
-        pixelArray = tool.getPixelArrayFromDICOM(imagePathList)
-        derivedImage = tool.applyProcessInOneImage(squareAlgorithm, pixelArray)
-        #pixelArray = np.square(pixelArray)
+    imagePathList = tool.getImagePathList(objWeasel)
+    pixelArray = tool.getPixelArrayFromDICOM(imagePathList)
+    pixelArray = np.square(pixelArray)
+    resultingPath = tool.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    tool.displayImage(objWeasel, resultingPath)
 
-        #derivedImagePathList, derivedImageList = tool.prepareBulkSeriesSave(objWeasel, imagePathList, derivedImage, FILE_SUFFIX)
-        #tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
+    # Keeping the old version for now, just in case it's needed.
+    # derivedImage = tool.applyProcessInOneImage(squareAlgorithm, pixelArray)
+    # derivedImagePathList, derivedImageList = tool.prepareBulkSeriesSave(objWeasel, imagePathList, derivedImage, FILE_SUFFIX)
+    # tool.saveNewDICOMAndDisplayResult(objWeasel, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
         
-        resultingPath = tool.writeNewPixelArray(objWeasel, derivedImage, imagePathList, FILE_SUFFIX)
-        tool.displayImage(objWeasel, resultingPath)
