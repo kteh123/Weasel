@@ -8,7 +8,7 @@ import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
-from Developer.SciPackages.imagingTools import thresholdPixelArray
+from Developer.External.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 
 

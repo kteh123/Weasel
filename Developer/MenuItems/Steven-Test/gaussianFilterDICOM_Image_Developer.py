@@ -5,7 +5,7 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.SciPackages.imagingTools import gaussianFilter
+from Developer.External.imagingTools import gaussianFilter
 FILE_SUFFIX = '_Gaussian'
 #***************************************************************************
 

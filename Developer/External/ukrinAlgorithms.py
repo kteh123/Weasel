@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import concurrent.futures
 import copy
-from Developer.SciPackages.imagingTools import unWrapPhase, convertToPiRange
+from Developer.External.imagingTools import unWrapPhase, convertToPiRange
 
 class ukrinMaps():
     """Package containing algorithms that calculate parameter maps 
