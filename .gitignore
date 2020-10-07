@@ -341,7 +341,6 @@ ASALocalRun/
 healthchecksdb
 
 # Configuration XML file
-*.xml
 
 #The following are for Joao's Python Environments and VS Code
 venv-windows/

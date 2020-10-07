@@ -1,0 +1,10 @@
+<!-- Put this file in .gitignore-->
+<config>
+  <menu_file>Menus.xml</menu_file>
+  <weasel_data_folder>WeaselData</weasel_data_folder>
+</config>
+  
+
+  
+    
+  
