@@ -5,9 +5,9 @@ import Developer.MenuItems.developerToolsModule as tool
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-import Developer.MenuItems.B0MapDICOM_Image as b0
-import Developer.MenuItems.T1MapMolliDICOM_Image as t1
-import Developer.MenuItems.T2StarMapDICOM_Image as t2_star
+import Developer.MenuItems.UKRIN_MAPS.B0MapDICOM_Image as b0
+import Developer.MenuItems.UKRIN_MAPS.T1MapMolliDICOM_Image as t1
+import Developer.MenuItems.UKRIN_MAPS.T2StarMapDICOM_Image as t2_star
 
 #***************************************************************************
 

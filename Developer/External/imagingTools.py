@@ -30,7 +30,8 @@ def convertToPiRange(pixelArray):
 
 def invertAlgorithm(pixelArray, dataset):
     try:
-        return np.invert(pixelArray.astype(dataset.pixel_array.dtype))
+        totalBytes = dataset.BitsAllocated
+        return np.invert(pixelArray.astype('int' + str(totalBytes)))
     except Exception as e:
         print('Error in function imagingTools.invertAlgorithm: ' + str(e))
 
@@ -117,7 +118,7 @@ def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', t
         pixelArray = np.transpose(pixelArray)
 
     if invert == True:
-        pixelArray = invertPixelArray(pixelArray, dataset)
+        pixelArray = invertAlgorithm(pixelArray, dataset)
 
     del volumeArray, pixelSpacing
     return pixelArray

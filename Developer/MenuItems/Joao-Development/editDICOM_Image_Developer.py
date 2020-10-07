@@ -8,20 +8,21 @@ def main(objWeasel):
     paramList = tool.inputWindow(inputDict, title="Insert DICOM Tag element to change and its new value", helpText=helpMsg)
     tag = paramList[0]
     value = paramList[1]
-    tool.showProcessingMessageBox(objWeasel, msg="")
+    #tool.showProcessingMessageBox(objWeasel, msg="")
     imagePath = tool.getImagePathList(objWeasel)
     tool.editDICOMTag(imagePath, tag, value)
-    tool.messageWindow.closeMessageSubWindow(objWeasel)
-    viewMetaData.viewMetadata(objWeasel) # Put it in Developer Tool
+    #tool.messageWindow.closeMessageSubWindow(objWeasel)
+    viewMetaData.main(objWeasel) # Put it in Developer Tool
 
 
-def editDICOM_Image(objWeasel):
-    # tag = "ImageType"
-    # value = "[DERIVED, JOAO_TYPE]"
-    tag = "0x00100010" # (0010, 0010) or PatientName
-    value = "Anonymous"
-    tool.showProcessingMessageBox(objWeasel, msg="")
-    imagePath = tool.getImagePathList(objWeasel)
-    tool.editDICOMTag(imagePath, tag, value)
-    tool.messageWindow.closeMessageSubWindow(objWeasel)
-    viewMetaData.viewMetadata(objWeasel) # Put it in Developer Tool
+#Hard-coded values alternative
+#def editDICOM_Image(objWeasel):
+#    # tag = "ImageType"
+#    # value = "[DERIVED, JOAO_TYPE]"
+#    tag = "0x00100010" # (0010, 0010) or PatientName
+#    value = "Anonymous"
+#    #tool.showProcessingMessageBox(objWeasel, msg="")
+#    imagePath = tool.getImagePathList(objWeasel)
+#    tool.editDICOMTag(imagePath, tag, value)
+#    tool.messageWindow.closeMessageSubWindow(objWeasel)
+#    viewMetaData.main(objWeasel) # Put it in Developer Tool

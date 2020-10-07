@@ -42,13 +42,19 @@ def getCheckedSeriesIDs(self):
 
 def getAllCheckedImages(self):
     imagesDict = treeView.returnSelectedImages(self)
-    return list(itertools.chain(*NestedDictValues(imagesDict)))
+    pathsList = list(itertools.chain(*NestedDictValues(imagesDict)))
+    if len(pathsList) == 1:
+        pathsList = pathsList[0]
+    return pathsList
 
 
 def getImagePathList(self):
     studyID = self.selectedStudy
     seriesID = self.selectedSeries
-    return self.objXMLReader.getImagePathList(studyID, seriesID)
+    if len(self.objXMLReader.getImagePathList(studyID, seriesID)) == 1:
+        return self.objXMLReader.getImagePathList(studyID, seriesID)[0]
+    else:
+        return self.objXMLReader.getImagePathList(studyID, seriesID)
 
 
 def setNewFilePath(inputPath, suffix):
@@ -223,6 +229,21 @@ def getPixelArrayFromDICOM(inputPath):
         print('Error in function #.getPixelArrayFromDICOM: ' + str(e))
 
 
+def getDICOMobject(inputPath):
+    """Open the DICOM file(s) in pydicom object"""
+    try:
+        if isinstance(inputPath, str) and os.path.exists(inputPath):
+            dataset = readDICOM_Image.getDicomDataset(inputPath)
+            return dataset
+        elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+            dataset = readDICOM_Image.getSeriesDicomDataset(inputPath)
+            return dataset
+        else:
+            return None
+    except Exception as e:
+        print('Error in function #.getDICOMobject: ' + str(e))
+
+
 def writeNewPixelArray(self, pixelArray, inputPath, suffix):
     try:
         if isinstance(inputPath, str) and os.path.exists(inputPath):
@@ -256,12 +277,12 @@ def writeNewPixelArray(self, pixelArray, inputPath, suffix):
                     inputPath = inputPath[:len(derivedImagePathList)]
 
         if numImages == 1:    
-            saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], inputPath, derivedImageList, suffix)
+            saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], inputPath, derivedImageList[0], suffix, list_refs_path=[inputPath])
             # Record derived image in XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
                             derivedImagePathList[0], suffix)
         else:
-            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix)
+            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, list_refs_path=[inputPath])
             # Insert new series into the DICOM XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                             inputPath, derivedImagePathList, suffix)
@@ -285,7 +306,7 @@ def overwritePixelArray(imageArray, imagePath):
             saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=imagePath)
         return
     except Exception as e:
-        print('Error in saveDICOM_Image.overwritePixelArray: ' + str(e))
+        print('Error in #.overwritePixelArray: ' + str(e))
 
 
 def displayImage(self, inputPath):
@@ -339,6 +360,7 @@ def applyProcessIterativelyInSeries(self, inputPathList, suffix, func, *args, pr
 
 
 # Have to split the following into DICOM (saving features) and GUI (XML and Windows)
+# Will delete the lines below at a later stage (7th October 2020)
 # ===================================================================================================
 
 def prepareBulkSeriesSave(self, inputPathList, derivedImage, suffix):
@@ -444,60 +466,3 @@ def updateXMLAndDisplayResult(self, inputPath, derivedPath, suffix):
     except Exception as e:
         print('Error in function #.updateXMLAndDisplayResult: ' + str(e))
 
-
-####################################################################################
-FILE_SUFFIX = '_SomeSuffix'
-
-def pipelineImage(self, func, *args):
-    """Creates a subwindow that displays either a DICOM image or series of DICOM images
-    processed using the algorithm(s) in func."""
-    try:
-        if treeView.isAnImageSelected(self):
-            imagePath = getImagePath(self)
-            derivedImageFileName = setNewFilePath(imagePath, FILE_SUFFIX)
-            #####################
-            pixelArray = getPixelArrayFromDICOM(imagePath)
-            derivedImage = applyProcessInOneImage(pixelArray, func, *args)
-            #####################
-            saveNewDICOMAndDisplayResult(self, imagePath, derivedImageFileName, derivedImage, FILE_SUFFIX)
-
-        elif treeView.isASeriesSelected(self):
-            imagePathList = getImagePathList(self)
-            derivedImagePathList, derivedImageList = applyProcessIterativelyInSeries(self, imagePathList, FILE_SUFFIX, func, *args)        
-            saveNewDICOMAndDisplayResult(self, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX) 
-    except Exception as e:
-        print('Error in #.pipelineImage: ' + str(e))
-
-
-def pipelineImageAndSeries(self, func, *args):
-    """Creates a subwindow that displays a series of DICOM images
-    processed using the algorithm(s) in func."""
-    try:
-        imagePathList = getImagePathList(self)
-
-        showProcessingMessageBox(self)
-        # **************************************************************************************************
-        # Here is where I can make things different - getParameters
-        pixelArray = getPixelArrayFromDICOM(imagePathList)
-        derivedImage = applyProcessInOneImage(pixelArray, func, *args)
-		
-		# Get resulting array. Not tested yet, hence it's commented
-		# pixelArray = returnPixelArray(imagePathList, funcAlgorithm)
-		# Steve, in order to make it work you can use the line below for now
-		
-		# Suggestion for error management
-		# For eg., the script could "conclude" that the algorithm is not applicable
-
-		#if isinstance(pixelArray, str):
-            #messageWindow.displayMessageSubWindow(self, pixelArray)
-            #raise Exception(pixelArray)
-        # ***************************************************************************************************
-
-        derivedImagePathList, derivedImageList = prepareBulkSeriesSave(self, imagePathList, derivedImage, FILE_SUFFIX)
-
-        imagePathList = imagePathList[:len(derivedImagePathList)]
-        
-        saveNewDICOMAndDisplayResult(self, imagePathList, derivedImagePathList, derivedImageList, FILE_SUFFIX)
-
-    except Exception as e:
-        print('Error in #.pipelineImageAndSeries: ' + str(e))

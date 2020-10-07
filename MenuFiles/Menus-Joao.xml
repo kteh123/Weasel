@@ -138,12 +138,6 @@
   </menu>
   <menu name="Joao-Development">
         <item>
-          <label>Edit DICOM Tag Developer</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Choose DICOM header and change the selected files</tooltip>
-          <module>editDICOM_Image_Developer</module>
-        </item>
-        <item>
           <label>Threshold Developer (SlicebySlice)</label>
           <shortcut>Ctrl+L</shortcut>
           <tooltip>Threshold a DICOM Image or series</tooltip>
@@ -158,7 +152,7 @@
   </menu>
   <menu name="Steven-Test">
   		<item>
-          <label>Square Developer (Pipeline3D/GroupWise)</label>
+          <label>Square Developer (GroupWise)</label>
           <shortcut>Ctrl+S+3</shortcut>
           <tooltip>Square a DICOM Image or series</tooltip>
           <module>squareDICOM_Image_Developer</module>
@@ -169,7 +163,18 @@
           <tooltip>gaussian</tooltip>
           <module>gaussianFilterDICOM_Image_Developer</module>
         </item>
-
+		<item>
+          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
+          <shortcut>Ctrl+I+3</shortcut>
+          <tooltip>Invert a DICOM Image or series</tooltip>
+          <module>invertDICOM_Image_Developer</module>
+        </item>
+        <item>
+          <label>Edit DICOM Tag Developer</label>
+          <shortcut>Ctrl+D</shortcut>
+          <tooltip>Choose DICOM header and change the selected files</tooltip>
+          <module>editDICOM_Image_Developer</module>
+        </item>
   </menu>
 </menus>
   
