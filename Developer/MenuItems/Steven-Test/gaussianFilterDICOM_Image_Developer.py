@@ -1,10 +1,8 @@
-import Developer.MenuItems.developerToolsModule as tool
+from Developer.MenuItems.DeveloperTools import UserInterfaceTools as ui
+from Developer.MenuItems.DeveloperTools import PixelArrayDICOMTools as pixel
 #**************************************************************************
-#Added by third party developer to the template module. 
-#The function containing the image processing algorithm must be given the 
-#generic name, funcAlgorithm
-#uncomment and edit the following line of code to import the function 
-#containing your image processing algorith. 
+#Uncomment and edit the following line of code to import the function 
+#containing your image processing algorithm. 
 from Developer.External.imagingTools import gaussianFilter
 FILE_SUFFIX = '_Gaussian'
 #***************************************************************************
@@ -17,15 +15,15 @@ def isSeriesOnly(self):
 def main(objWeasel):
     # In this case, the user introduces the sigma value intended for the gaussian filter
     inputDict = {"Standard Deviation":"float"}
-    paramList = tool.inputWindow(inputDict, title="Input Parameters for the Gaussian Filter")
+    paramList = ui.inputWindow(inputDict, title="Input Parameters for the Gaussian Filter")
     standard_deviation_filter = paramList[0]
     # Get selected images
-    imagePathList = tool.getImagePathList(objWeasel)
+    imagePathList = ui.getAllSelectedImages(objWeasel)
     # Get PixelArray from the selected images
-    pixelArray = tool.getPixelArrayFromDICOM(imagePathList)
+    pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
     # Apply Gaussian Filter
     pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
     # Save resulting image to DICOM (and update XML)
-    outputhPath = tool.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
     # Display resulting image
-    tool.displayImage(objWeasel, outputhPath)
+    ui.displayImage(objWeasel, outputhPath)

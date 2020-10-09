@@ -1,20 +1,19 @@
-import Developer.MenuItems.developerToolsModule as tool
+from Developer.MenuItems.DeveloperTools import UserInterfaceTools as ui
+from Developer.MenuItems.DeveloperTools import PixelArrayDICOMTools as pixel
+from Developer.MenuItems.DeveloperTools import GenericDICOMTools as dicom
 #**************************************************************************
-#Added by third party developer to the template module. 
-#The function containing the image processing algorithm must be given the 
-#generic name, funcAlgorithm
-#uncomment and edit the following line of code to import the function 
+#Uncomment and edit the following line of code to import the function 
 #containing your image processing algorithm. 
 FILE_SUFFIX = '_Merged'
 #***************************************************************************
 
-def MergeSeries(objWeasel):
-    imagePathList = tool.getImagePathList(objWeasel)
-    mergedSeries = tool.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Copied_Series", overwrite=False)
-    tool.displayImage(objWeasel, mergedSeries)
+def MergeSeriesCopy(objWeasel):
+    imagePathList = ui.getAllSelectedImages(objWeasel)
+    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Copied_Series", overwrite=False)
+    ui.displayImage(objWeasel, mergedSeries)
 
 
 def main(objWeasel):
-    imagePathList = tool.getImagePathList(objWeasel)
-    mergedSeries = tool.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=True)
-    tool.displayImage(objWeasel, mergedSeries)
+    imagePathList = ui.getAllSelectedImages(objWeasel)
+    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=True)
+    ui.displayImage(objWeasel, mergedSeries)
