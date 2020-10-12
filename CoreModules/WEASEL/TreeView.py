@@ -260,6 +260,7 @@ def checkChildItems(item):
                 #parent checkboxe
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, item.checkState(0))
+                #childItem.setSelected(item.checkState(0))
                 item.treeWidget().blockSignals(False)
                 checkChildItems(childItem)
     except Exception as e:
@@ -281,8 +282,10 @@ def checkParentItems(item):
             item.treeWidget().blockSignals(True)
             if areAllChildrenChecked(item.parent()):
                 item.parent().setCheckState(0, Qt.Checked)
+                #item.parent().setSelected(True)
             else:
                 item.parent().setCheckState(0, Qt.Unchecked)
+                #item.parent().setSelected(False)
             item.treeWidget().blockSignals(False)
             checkParentItems(item.parent())
     except Exception as e:

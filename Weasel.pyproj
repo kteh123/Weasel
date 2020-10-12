@@ -268,6 +268,10 @@
     <Compile Include="CoreModules\WEASEL\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Developer\External\imagingTools.py" />
+    <Compile Include="Developer\External\tristanAlgorithms.py" />
+    <Compile Include="Developer\External\ukrinAlgorithms.py" />
+    <Compile Include="Developer\External\__init__.py" />
     <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\ModelFunctions.py" />
     <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="Developer\MenuItems\BinaryOperationsOnImages.py">
@@ -285,6 +289,11 @@
     <Compile Include="CoreModules\WEASEL\InterfaceDICOMXMLFile.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Developer\MenuItems\Joao-Development\editDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\Joao-Development\invertDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\Joao-Development\mergeDICOM_Developer.py" />
+    <Compile Include="Developer\MenuItems\Joao-Development\thresholdDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\Joao-Development\__init__.py" />
     <Compile Include="Developer\MenuItems\LoadDICOM.py">
       <SubType>Code</SubType>
     </Compile>
@@ -303,7 +312,6 @@
     <Compile Include="CoreModules\WEASEL\TreeView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\MenuItems\calculateMIP_Developer.py" />
     <Compile Include="Developer\MenuItems\CloseAllSubWindows.py">
       <SubType>Code</SubType>
     </Compile>
@@ -311,14 +319,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\developerToolsModule.py" />
-    <Compile Include="Developer\MenuItems\editDICOM_Image_Developer.py" />
-    <Compile Include="Developer\MenuItems\gaussianFilterDICOM_Image_Developer.py" />
-    <Compile Include="Developer\MenuItems\mergeDICOM_Developer.py" />
-    <Compile Include="Developer\MenuItems\squareDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\CloseAllImageWindows.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\MenuItems\thresholdDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\Steven-Test\gaussianFilterDICOM_Image_Developer.py" />
+    <Compile Include="Developer\MenuItems\Steven-Test\squareDICOM_Image_Developer.py" />
     <Compile Include="Developer\MenuItems\TileAllSubWindows.py">
       <SubType>Code</SubType>
     </Compile>
@@ -328,7 +333,11 @@
     <Compile Include="Developer\MenuItems\toolsModuleTemplate.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\MenuItems\UKRIN_Developer.py" />
+    <Compile Include="Developer\MenuItems\TRISTAN\calculateMIP_Developer.py" />
+    <Compile Include="Developer\MenuItems\UKRIN-MAPS\B0MapDICOM_Image.py" />
+    <Compile Include="Developer\MenuItems\UKRIN-MAPS\T1MapMolliDICOM_Image.py" />
+    <Compile Include="Developer\MenuItems\UKRIN-MAPS\T2StarMapDICOM_Image.py" />
+    <Compile Include="Developer\MenuItems\UKRIN-MAPS\UKRIN_Developer.py" />
     <Compile Include="Developer\MenuItems\ViewImage.py">
       <SubType>Code</SubType>
     </Compile>
@@ -336,22 +345,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\WriteXMLfromDICOM.py" />
-    <Compile Include="Developer\MenuItems\B0MapDICOM_Image.py" />
     <Compile Include="Developer\MenuItems\copyDICOM_Image.py" />
     <Compile Include="Developer\FERRET\Ferret.py" />
     <Compile Include="Developer\MenuItems\invertDICOM_Image.py" />
     <Compile Include="Developer\MenuItems\squareDICOM_Image.py" />
-    <Compile Include="Developer\MenuItems\T1MapMolliDICOM_Image.py" />
-    <Compile Include="Developer\MenuItems\T2StarMapDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
     <Compile Include="Developer\MenuItems\thresholdDICOM_Image.py" />
     <Compile Include="Developer\MenuItems\ViewROIImage.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\SciPackages\imagingTools.py" />
-    <Compile Include="Developer\SciPackages\tristanAlgorithms.py" />
-    <Compile Include="Developer\SciPackages\ukrinAlgorithms.py" />
-    <Compile Include="Developer\SciPackages\__init__.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
@@ -409,7 +411,6 @@
     <Content Include="images\logo-tristan.png" />
     <Content Include="images\TRISTAN LOGO.jpg" />
     <Content Include="images\uni-leeds-logo.jpg" />
-    <Content Include="license.txt" />
     <Content Include="requirements.txt" />
     <Content Include="WeaselData\003\003.xml" />
     <Content Include="WeaselData\003\1030\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-1030-14-1mn51ni.dcm" />
@@ -8082,7 +8083,6 @@
     <Content Include="WeaselData\Sample Data\IM_2047" />
     <Content Include="WeaselData\Sample Data\IM_2048" />
     <Content Include="WeaselData\Sample Data\Sample Data.xml" />
-    <Content Include="WEASEL_README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CoreModules\FERRET\" />
@@ -8124,6 +8124,7 @@
     <Folder Include="CoreModules\pyqtgraph\__pycache__\" />
     <Folder Include="Developer\" />
     <Folder Include="CoreModules\" />
+    <Folder Include="Developer\External\" />
     <Folder Include="Developer\FERRET\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelDiagrams\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelLibrary\" />
@@ -8131,7 +8132,10 @@
     <Folder Include="Developer\FERRET\FERRET_Files\" />
     <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />
     <Folder Include="Developer\MenuItems\" />
-    <Folder Include="Developer\SciPackages\" />
+    <Folder Include="Developer\MenuItems\Joao-Development\" />
+    <Folder Include="Developer\MenuItems\Steven-Test\" />
+    <Folder Include="Developer\MenuItems\TRISTAN\" />
+    <Folder Include="Developer\MenuItems\UKRIN-MAPS\" />
     <Folder Include="FerretData\" />
     <Folder Include="FerretData\MSD_PRE\" />
     <Folder Include="images\" />
