@@ -113,10 +113,11 @@ class UserInterfaceTools:
         messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
 
 
-    def incrementProgressBar(self, index=0):
+    def incrementProgressBar(self, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
         Updates the ProgressBar to the unit set in "index".
         """
+        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
         messageWindow.setMsgWindowProgBarValue(self, index)
     
     
@@ -142,6 +143,9 @@ class UserInterfaceTools:
         """
         try:
             inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
+            # Return None if the user hits the Cancel button
+            if inputDlg.closeInputDialog() == True:
+                return None
             listParams = inputDlg.returnListParameterValues()
             outputList = []
             # Sometimes the values parsed could be list or hexadecimals in strings

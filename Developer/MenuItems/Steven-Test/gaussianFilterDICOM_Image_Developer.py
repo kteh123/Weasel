@@ -16,14 +16,16 @@ def main(objWeasel):
     # In this case, the user introduces the sigma value intended for the gaussian filter
     inputDict = {"Standard Deviation":"float"}
     paramList = ui.inputWindow(inputDict, title="Input Parameters for the Gaussian Filter")
-    standard_deviation_filter = paramList[0]
-    # Get selected images
-    imagePathList = ui.getAllSelectedImages(objWeasel)
-    # Get PixelArray from the selected images
-    pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
-    # Apply Gaussian Filter
-    pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
-    # Save resulting image to DICOM (and update XML)
-    outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
-    # Display resulting image
-    ui.displayImage(objWeasel, outputhPath)
+    # If the user hits the OK button
+    if paramList is not None:
+        standard_deviation_filter = paramList[0]
+        # Get selected images
+        imagePathList = ui.getAllSelectedImages(objWeasel)
+        # Get PixelArray from the selected images
+        pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
+        # Apply Gaussian Filter
+        pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
+        # Save resulting image to DICOM (and update XML)
+        outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+        # Display resulting image
+        ui.displayImage(objWeasel, outputhPath)

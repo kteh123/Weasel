@@ -18,15 +18,16 @@ def isSeriesOnly(self):
 def main(objWeasel):
     imagePathList = ui.getAllSelectedImages(objWeasel)
     # Lower and upper threshold from the input window. 
-    # NO PARAMETER VALIDATION IS PERFORMED
+    # NO PARAMETER VALIDATION IS PERFORMED - Eg. LowThresh > HighThresh not possible
     inputDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
     info = "Insert a value between 0 and 100. Upper threshold must be greater than lower threshold"
     paramList = ui.inputWindow(inputDict, title="Input Parameters", helpText=info)
-    low_thresh = paramList[0]
-    high_thresh = paramList[1]
-    for imagePath in imagePathList:    
-        # Get the PixelArray from the selected DICOM
-        pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
-        pixelArray = thresholdPixelArray(pixelArray, low_thresh, high_thresh)
-        outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePath, FILE_SUFFIX)
-    ui.displayImage(objWeasel, outputPath)
+    if paramList is not None: 
+        low_thresh = paramList[0]
+        high_thresh = paramList[1]
+        for imagePath in imagePathList:    
+            # Get the PixelArray from the selected DICOM
+            pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
+            pixelArray = thresholdPixelArray(pixelArray, low_thresh, high_thresh)
+            outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePath, FILE_SUFFIX)
+        ui.displayImage(objWeasel, outputPath)

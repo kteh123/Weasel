@@ -8,13 +8,14 @@ def main(objWeasel):
     helpMsg = 'The DICOM Tag can be inserted in string or hexadecimal format.\nExample:\n'\
               '(0010,0010) => type PatientName or 0x00100010'
     paramList = ui.inputWindow(inputDict, title="Insert DICOM Tag element to change and its new value", helpText=helpMsg)
-    tag = paramList[0]
-    value = paramList[1]
-    ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
-    imagePath = ui.getAllSelectedImages(objWeasel)
-    dicom.editDICOMTag(imagePath, tag, value)
-    ui.closeMessageWindow(objWeasel)
-    viewMetaData.main(objWeasel) # Put it in Developer Tool
+    if paramList is not None: 
+        tag = paramList[0]
+        value = paramList[1]
+        imagePath = ui.getAllSelectedImages(objWeasel)
+        ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
+        dicom.editDICOMTag(imagePath, tag, value)
+        ui.closeMessageWindow(objWeasel)
+        viewMetaData.main(objWeasel) # Put it in Developer Tool
 
 
 #Hard-coded values alternative
