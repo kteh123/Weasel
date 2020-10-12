@@ -1,7 +1,7 @@
-from Developer.MenuItems.DeveloperTools import UserInterfaceTools as ui
-from Developer.MenuItems.DeveloperTools import PixelArrayDICOMTools as pixel
-from Developer.MenuItems.DeveloperTools import GenericDICOMTools as dicom
-import Developer.MenuItems.ViewMetaData as viewMetaData
+from Developer.DeveloperTools import UserInterfaceTools as ui
+from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
+from Developer.DeveloperTools import GenericDICOMTools as dicom
+#import Developer.MenuItems.ViewMetaData as viewMetaData
 
 def main(objWeasel):
     inputDict = {"DICOM Tag":"string", "Value":"string"}
@@ -15,7 +15,7 @@ def main(objWeasel):
         ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
         dicom.editDICOMTag(imagePath, tag, value)
         ui.closeMessageWindow(objWeasel)
-        viewMetaData.main(objWeasel) # Put it in Developer Tool
+        ui.displayMetadata(objWeasel, imagePath)
 
 
 #Hard-coded values alternative

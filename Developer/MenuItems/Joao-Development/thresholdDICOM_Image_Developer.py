@@ -1,5 +1,5 @@
-from Developer.MenuItems.DeveloperTools import UserInterfaceTools as ui
-from Developer.MenuItems.DeveloperTools import PixelArrayDICOMTools as pixel
+from Developer.DeveloperTools import UserInterfaceTools as ui
+from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
 #**************************************************************************
 #Added by third party developer to the template module. 
 #The function containing the image processing algorithm must be given the 

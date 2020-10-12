@@ -11,6 +11,7 @@ import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
+from Developer.MenuItems.ViewMetaData import displayMetaDataSubWindow
 
 
 def NestedDictValues(dictionary):
@@ -159,6 +160,22 @@ class UserInterfaceTools:
             print('Error in function #.inputWindow: ' + str(e))
 
 
+    def displayMetadata(self, inputPath):
+        """
+        Display the metadata in "inputPath" in the User Interface.
+        If "inputPath" is a list, then it displays the metadata of the first image.
+        """
+        try:
+            if isinstance(inputPath, str) and os.path.exists(inputPath):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
+                displayMetaDataSubWindow(self, "Metadata for image {}".format(inputPath), dataset)
+            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
+                displayMetaDataSubWindow(self, "Metadata for image {}".format(inputPath[0]), dataset)
+        except Exception as e:
+            print('Error in function #.displayImage: ' + str(e))
+
+
     def displayImage(self, inputPath):
         """
         Display the PixelArray in "inputPath" in the User Interface.
@@ -225,20 +242,12 @@ class GenericDICOMTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                inputDict = {"Confirmation":"string"}
-                paramList = UserInterfaceTools.inputWindow(inputDict, title="Are you sure you want to delete this image?", helpText="Type YES to delete selected images")
-                reply = paramList[0]
-                if reply=="YES":
-                    os.remove(inputPath)
-                    interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
+                os.remove(inputPath)
+                interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                inputDict = {"Confirmation":"string"}
-                paramList = UserInterfaceTools.inputWindow(inputDict, title="Are you sure you want to delete these images?", helpText="Type YES to delete selected images")
-                reply = paramList[0]
-                if reply=="YES":
-                    for path in inputPath:
-                        os.remove(path)
-                        interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
+                for path in inputPath:
+                    os.remove(path)
+                    interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
             treeView.refreshDICOMStudiesTreeView(self) 
         except Exception as e:
             print('Error in function #.deleteDICOM: ' + str(e))
