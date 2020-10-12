@@ -341,7 +341,6 @@ ASALocalRun/
 healthchecksdb
 
 # Configuration XML file
-config.xml
 
 #The following are for Joao's Python Environments and VS Code
 venv-windows/
@@ -360,7 +359,6 @@ venv-linux/
 /env
 /Weasel.exe
 /report.pdf
-Weasel-ROI-Joao.py
 /CoreModules/SimpleITK/*.pyd
 /CoreModules/SimpleITK/*.so
 *.ipynb

@@ -1,21 +1,37 @@
-import Developer.MenuItems.developerToolsModule as tool
+from Developer.MenuItems.DeveloperTools import UserInterfaceTools as ui
+from Developer.MenuItems.DeveloperTools import PixelArrayDICOMTools as pixel
 #**************************************************************************
-#Added by third party developer to the template module. 
-#The function containing the image processing algorithm must be given the 
-#generic name, funcAlgorithm
-from Developer.WEASEL.Packages.imagingTools import invertAlgorithm
-import numpy as np
+#Uncomment and edit the following line of code to import the function 
+#containing your image processing algorithm. 
+from Developer.External.imagingTools import invertAlgorithm
 FILE_SUFFIX = '_Invert'
 #***************************************************************************
 
+def isSeriesOnly(self):
+    #This functionality only applies to a series of DICOM images
+    return True
+
+# Slice-by-slice approach + overwrite original image
 def main(objWeasel):
-    # Slice-by-slice approach + overwrite original image
     # Get all images of the Selected Series
-    imagePathList = tool.getImagePathList(objWeasel)
-    for imagePath in imagePathList:
-        pixelArray = tool.getPixelArrayFromDICOM(imagePath)
-        pixelArray = invertAlgorithm(pixelArray, dtype=np.uint16)
+    imagePathList = ui.getAllSelectedImages(objWeasel)
+    if isinstance(imagePathList, str):
+        pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
+        dataset = pixel.getDICOMobject(imagePathList)
+        # Apply Invert
+        pixelArray = invertAlgorithm(pixelArray, dataset)
         # Need to set progress bars here
-        tool.overwritePixelArray(pixelArray, imagePath)
+        # Save resulting image to DICOM (and update XML)
+        pixel.overwritePixelArray(pixelArray, imagePathList)
+    else:
+        for imagePath in imagePathList:
+            # Get PixelArray from the corresponding slice
+            pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
+            dataset = pixel.getDICOMobject(imagePath)
+            # Apply Invert
+            pixelArray = invertAlgorithm(pixelArray, dataset)
+            # Need to set progress bars here
+            # Save resulting image to DICOM (and update XML)
+            pixel.overwritePixelArray(pixelArray, imagePath)
     # Display series
-    tool.displayImage(objWeasel, imagePathList)
+    ui.displayImage(objWeasel, imagePathList)

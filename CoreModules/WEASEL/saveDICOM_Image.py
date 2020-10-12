@@ -304,28 +304,25 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom = createNewPixelArray(imageArray, newDicom)    
 
         # Add colourmap here
-        if (colourmap is None) and (newDicom.PhotometricInterpretation == 'PALETTE COLOR'):
-            # This deletes the colourmap that came with the source/input DICOM
-            # and hasattr(newDicom, 'RedPaletteColorLookupTableData')
-            stringType = 'US'
-            imageArrayInt = newDicom.pixel_array
-            minValue = int(np.amin(imageArrayInt))
-            numberOfValues = int(np.amax(imageArrayInt))
-            arrayForRGB = np.arange(0, numberOfValues)
-            colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
-            totalBytes = dicomData.BitsAllocated
-            newDicom.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
-            newDicom.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
-            newDicom.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
-            newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1) * value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
-            newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1) * value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
-            newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
-                2, totalBytes) - 1) * value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
-            # newDicom.ContentLabel = 'gray'
-            # del (newDicom.RedPaletteColorLookupTableData, newDicom.GreenPaletteColorLookupTableData, newDicom.BluePaletteColorLookupTableData,
-                # newDicom.RedPaletteColorLookupTableDescriptor, newDicom.GreenPaletteColorLookupTableDescriptor, newDicom.BluePaletteColorLookupTableDescriptor)
+        if (colourmap is None) and hasattr(newDicom, 'PhotometricInterpretation'):
+            if newDicom.PhotometricInterpretation == 'PALETTE COLOR':
+                # This deletes the colourmap that came with the source/input DICOM
+                stringType = 'US'
+                imageArrayInt = newDicom.pixel_array
+                minValue = int(np.amin(imageArrayInt))
+                numberOfValues = int(np.amax(imageArrayInt))
+                arrayForRGB = np.arange(0, numberOfValues)
+                colorsList = cm.ScalarMappable(cmap=colourmap).to_rgba(np.array(arrayForRGB), bytes=False)
+                totalBytes = dicomData.BitsAllocated
+                newDicom.add_new('0x00281101', stringType, [numberOfValues, minValue, totalBytes])
+                newDicom.add_new('0x00281102', stringType, [numberOfValues, minValue, totalBytes])
+                newDicom.add_new('0x00281103', stringType, [numberOfValues, minValue, totalBytes])
+                newDicom.RedPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                    2, totalBytes) - 1) * value) for value in colorsList[:, 0].flatten()]).astype('uint'+str(totalBytes)))
+                newDicom.GreenPaletteColorLookupTableData = bytes(np.array([int((np.power(
+                    2, totalBytes) - 1) * value) for value in colorsList[:, 1].flatten()]).astype('uint'+str(totalBytes)))
+                newDicom.BluePaletteColorLookupTableData = bytes(np.array([int((np.power(
+                    2, totalBytes) - 1) * value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
         elif colourmap is not None:
             newDicom.PhotometricInterpretation = 'PALETTE COLOR'
             newDicom.RGBLUTTransferFunction = 'TABLE'
