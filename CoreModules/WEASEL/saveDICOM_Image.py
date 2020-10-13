@@ -216,9 +216,6 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom = copy.deepcopy(dicomData)
         imageArray = copy.deepcopy(imageArray)
 
-        # Generate Unique ID
-        newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
-
         # Series ID and UID
         if series_id is None:
             newDicom.SeriesNumber = int(str(dicomData.SeriesNumber) + str(random.randint(0, 999)))
@@ -228,6 +225,9 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
             newDicom.SeriesInstanceUID = pydicom.uid.generate_uid()
         else:
             newDicom.SeriesInstanceUID = series_uid
+        
+        # Generate Unique ID based on the Series ID
+        newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
 
         # Date and Time of Creation
         dt = datetime.datetime.now()

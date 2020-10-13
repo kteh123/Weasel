@@ -5,16 +5,41 @@ from skimage.transform import resize
 from skimage.restoration import unwrap_phase
 
 #INSERT A METHOD TO DEAL WITH MOSAIC PIXEL ARRAYS
-#INSERT MOSAIC IMAGE CONDITION HERE / OR AT IMAGINGTOOLS.PY
 
 def unWrapPhase(pixelArray):
-    # Wrapping of the phase image according to https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+    """
+    From an image wrapped to lie in the interval [-pi, pi],
+    this function recovers the original, unwrapped image.
+    Read references in
+    https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+
+    Parameters
+    ----------
+    pixelArray : np.ndarray
+        A 2D/3D array containing the phase image.
+
+    Returns
+    -------
+    np.ndarray with the phase of pixelArray unwrapped.
+    """
     wrappedPhase = np.angle(np.exp(2j * pixelArray))
     return unwrap_phase(wrappedPhase)
 
 
-
 def convertToPiRange(pixelArray):
+    """
+    Rescale the image values to the interval [-pi, pi].
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    radians_array : np.ndarray
+        An array containing with the same shape as pixel_array
+        scaled to the range [-pi, pi].
+    """
     if (np.amax(pixelArray) > 3.2) or (np.amin(pixelArray) < -3.2):
         # Scale the image to the interval [-pi, pi]. 
         # The value 3.2 was chosen instead of np.pi in order to give some margin 
@@ -66,8 +91,46 @@ def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
     thresholdedArray = pixelArray
     thresholdedArray[pixelArray < lower_value] = 0
     thresholdedArray[pixelArray > upper_value] = 0
-    thresholdedArray[thresholdedArray > 0] = 1
+    thresholdedArray[thresholdedArray != 0] = 1
     return thresholdedArray
+
+
+def resizeImage(pixelArray, factor=1, targetSize=None):
+    """
+    Resizes the given pixelArray, using target_size as the reference
+    of the resizing operation (if None, then there's no resizing).
+    This method applies a resizeFactor to the first 2 axes of the input array.
+    The remaining axes are left unchanged.
+    Example 1: (10, 10, 2) => (5, 5, 2) with resizeFactor = 0.5
+    Example 2: (10, 10, 10, 2) => (20, 20, 10, 2) with resizeFactor = 2
+
+    Parameters
+    ----------
+    pixelArray : np.ndarray
+
+    factor : boolean
+        Optional input argument. This is the resize factor defined by the user
+        and it is applied in the scipy.ndimage.zoom
+
+    targetSize : boolean
+        Optional input argument. By default, this script does not apply the
+        scipy wrap_around in the input image.
+
+    Returns
+    -------
+    resizedArray : np.ndarray where the size of the first 2 dimensions
+        is np.shape(pixelArray) * factor. The remaining dimensions (or axes)
+        will have a the same size as in pixelArray.
+    """
+    if targetSize is not None:
+        factor = targetSize / np.shape(pixelArray)[0]
+
+    resizeFactor = np.ones(len(np.shape(pixelArray)))
+    resizeFactor[0] = factor
+    resizeFactor[1] = factor
+    resizedArray = scipy.ndimage.zoom(pixelArray, resizeFactor)
+
+    return resizedArray
 
 
 def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
@@ -123,9 +186,24 @@ def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', t
     del volumeArray, pixelSpacing
     return pixelArray
 
-# I called numAttribute because it might be others than Slices - Here's a pseudo example
-#pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', transpose=True)
-#pixelArray_2 = formatArrayForAnalysis(pixelArray, numberEchoes, dataset, dimension='5D', transpose=False)
-#pixelArray_3 = formatArrayForAnalysis(pixelArray, numberBValues, dataset, dimension='6D', transpose=False, resize=3)
 
-# MAYBE A def formatArrayForSaving? THAT WOULD MAKE SENSE AND MAKE THINGS EASIER
+def imageStats(pixelArray):
+    """
+    This functions takes an image and calculates its mean, std, min and max.
+    It is used in the unit tests, but it can also be used for other
+    image processing tasks.
+
+    Parameters
+    ----------
+    pixelArray : np.ndarray
+
+    Returns
+    -------
+    list() with 4 values calculated from pixel_array:
+        [mean, standard deviation, minimum, maximum]
+    """
+    mean = np.nanmean(pixelArray)
+    std = np.nanstd(pixelArray)
+    minimum = np.nanmin(pixelArray)
+    maximum = np.nanmax(pixelArray)
+    return [mean, std, minimum, maximum]

@@ -173,7 +173,7 @@ class UserInterfaceTools:
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 displayMetaDataSubWindow(self, "Metadata for image {}".format(inputPath[0]), dataset)
         except Exception as e:
-            print('Error in function #.displayImage: ' + str(e))
+            print('Error in function #.displayMetadata: ' + str(e))
 
 
     def displayImage(self, inputPath):
@@ -305,8 +305,33 @@ class GenericDICOMTools:
         except Exception as e:
             print('Error in function #.editDICOMTag: ' + str(e))
 
-    #def generateUIDForDICOM():
-        #return 
+
+    @staticmethod
+    def generateUIDs(inputPath, seriesNumber=None):
+        """
+        This function generates and returns a SeriesUID and an InstanceUID.
+        The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
+        The InstanceUID is generated based on SeriesUID.
+        """
+        try:
+            if isinstance(inputPath, str) and os.path.exists(inputPath):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
+            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
+            studyUID = dataset.StudyInstanceUID
+            # See http://dicom.nema.org/dicom/2013/output/chtml/part05/chapter_B.html regarding UID creation rules
+            prefix = studyUID.split(".", maxsplit=7)
+            prefix = '.'.join(prefix[:6])
+            if seriesNumber is None:
+                seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
+            prefixSeries = prefix + "." + seriesNumber + "."   
+            prefixImage = prefix + "." + seriesNumber + "." + str(dataset.InstanceNumber) + "."
+            seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
+            imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
+            return [seriesUID, imageUID, seriesNumber]
+        except Exception as e:
+            print('Error in function #.generateUIDs: ' + str(e))
+
 
 class PixelArrayDICOMTools:
     
@@ -346,7 +371,7 @@ class PixelArrayDICOMTools:
             print('Error in function #.getDICOMobject: ' + str(e))
 
 
-    def writeNewPixelArray(self, pixelArray, inputPath, suffix):
+    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None):
         # OPTIONAL FLAGS OF SERIES / CREATE A GENERATE_UID FUNCTION
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
@@ -382,12 +407,12 @@ class PixelArrayDICOMTools:
                         inputPath = inputPath[:len(derivedImagePathList)]
 
             if numImages == 1:    
-                saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], inputPath, derivedImageList[0], suffix, list_refs_path=[inputPath])
+                saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], inputPath, derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, list_refs_path=[inputPath])
                 # Record derived image in XML file
                 newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
                                 derivedImagePathList[0], suffix)
             else:
-                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, list_refs_path=[inputPath])
+                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, list_refs_path=[inputPath])
                 # Insert new series into the DICOM XML file
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 inputPath, derivedImagePathList, suffix)

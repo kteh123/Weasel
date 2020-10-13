@@ -13,8 +13,7 @@ class ukrinMaps():
     See parameters of __init__ class
 
     """
-
-
+    
 
     def __init__(self, pixelArray):
         """Initialise a UKRIN-MAPS class instance.

@@ -30,7 +30,6 @@ def returnPixelArray(imagePathList, sliceList, echoList):
             # The echo values repeat, so this is to remove all values=0 and repetitions
             echoList = np.delete(np.unique(echoList), np.where(np.unique(echoList) == 0.0))
             pixelArray = formatArrayForAnalysis(volumeArray, numberSlices, dataset, dimension='4D', resize=3)
-            print(np.shape(pixelArray))
             # Algorithm 
             derivedImage = ukrinMaps(pixelArray).T2Star(echoList)
             del volumeArray, pixelArray, numberSlices, dataset, echoList
@@ -99,7 +98,7 @@ def main(objWeasel):
 
         magnitudePathList, sliceList, echoList = getParametersT2StarMap(imagePathList, seriesID)
 
-        messageWindow.displayMessageSubWindow(
+        messageWindow.displayMessageSubWindow(objWeasel,
             "<H4>Calculating the T2* Map</H4>",
             "Saving T2* Map")
         messageWindow.setMsgWindowProgBarMaxValue(objWeasel,4)   
@@ -138,7 +137,7 @@ def main(objWeasel):
 
         # Save new DICOM series locally
         saveDICOM_Image.saveDicomNewSeries(
-            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX, parametric_map="T2Star")
+            T2StarImagePathList, imagePathList, T2StarImageList, FILE_SUFFIX)
         newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                                                         magnitudePathList[:len(T2StarImagePathList)],
                                                         T2StarImagePathList, FILE_SUFFIX)
