@@ -26,9 +26,7 @@ def main(objWeasel):
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     low_thresh = paramList[0]
     high_thresh = paramList[1]
-    ids = dicom.generateUIDs(imagePathList)
-    seriesUID = ids[0]
-    seriesNumber = ids[2]
+    seriesNumber, seriesUID = dicom.generateSeriesIDs(imagePathList)
     if isinstance(imagePathList, str): imagePathList = [imagePathList] # Need to check Selecting/Checking and objWeasel
     for imagePath in imagePathList:
         # Get the PixelArray from the selected DICOM

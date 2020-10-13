@@ -199,31 +199,47 @@ class GenericDICOMTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                if series_id is None:
+                if (series_id is None) and (series_uid is None):
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath)
+                elif (series_id is not None) and (series_uid is None):
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath, seriesNumber=series_id)
+                elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
-                if series_uid is None:
-                    series_uid = pydicom.uid.generate_uid()
+                #if series_id is None:
+                #    series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
+                #if series_uid is None:
+                #    series_uid = pydicom.uid.generate_uid()
                 newDataset = readDICOM_Image.getDicomDataset(inputPath)
                 derivedPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
                 saveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
                 # The next lines perform an overwrite operation over the copied images
+                instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SOPInstanceUID", instance_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
                                              derivedPath, suffix)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                derivedPath = []
-                if series_id is None:
+                if (series_id is None) and (series_uid is None):
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath)
+                elif (series_id is not None) and (series_uid is None):
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath, seriesNumber=series_id)
+                elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
-                if series_uid is None:
-                    series_uid = pydicom.uid.generate_uid()
+                #if series_id is None:
+                #    series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
+                #if series_uid is None:
+                #    series_uid = pydicom.uid.generate_uid()
+                derivedPath = []
                 for path in inputPath:
                     newDataset = readDICOM_Image.getDicomDataset(path)
                     newFilePath = saveDICOM_Image.returnFilePath(path, suffix)
                     saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     derivedPath.append(newFilePath)
                     # The next lines perform an overwrite operation over the copied images
+                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
@@ -260,10 +276,16 @@ class GenericDICOMTools:
         """
         try:
             if os.path.exists(imagePathList[0]):
-                if series_id is None:
+                if (series_id is None) and (series_uid is None):
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(imagePathList)
+                elif (series_id is not None) and (series_uid is None):
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(imagePathList, seriesNumber=series_id)
+                elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
-                if series_uid is None:
-                    series_uid = pydicom.uid.generate_uid()
+                #if series_id is None:
+                #    series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
+                #if series_uid is None:
+                #    series_uid = pydicom.uid.generate_uid()
             newImagePathList = []
             if overwrite:
                 for path in imagePathList:
@@ -280,6 +302,8 @@ class GenericDICOMTools:
                     newFilePath = saveDICOM_Image.returnFilePath(path, suffix)
                     saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     # The next lines perform an overwrite operation over the copied images
+                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_description + suffix)
@@ -307,7 +331,7 @@ class GenericDICOMTools:
 
 
     @staticmethod
-    def generateUIDs(inputPath, seriesNumber=None):
+    def generateSeriesIDs(inputPath, seriesNumber=None):
         """
         This function generates and returns a SeriesUID and an InstanceUID.
         The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
@@ -318,19 +342,63 @@ class GenericDICOMTools:
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
-            studyUID = dataset.StudyInstanceUID
-            # See http://dicom.nema.org/dicom/2013/output/chtml/part05/chapter_B.html regarding UID creation rules
-            prefix = studyUID.split(".", maxsplit=7)
-            prefix = '.'.join(prefix[:6])
-            if seriesNumber is None:
-                seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
-            prefixSeries = prefix + "." + seriesNumber + "."   
-            prefixImage = prefix + "." + seriesNumber + "." + str(dataset.InstanceNumber) + "."
-            seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
-            imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
-            return [seriesUID, imageUID, seriesNumber]
+            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
+            seriesID = ids[0]
+            seriesUID = ids[1]
+            return seriesID, seriesUID
+
+            # studyUID = dataset.StudyInstanceUID
+            # # See http://dicom.nema.org/dicom/2013/output/chtml/part05/chapter_B.html regarding UID creation rules
+            # prefix = studyUID.split(".", maxsplit=7)
+            # prefix = '.'.join(prefix[:6])
+            # if seriesNumber is None:
+            #     seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
+            # prefixSeries = prefix + "." + seriesNumber + "."
+            # prefixImage = prefix + "." + seriesNumber + "." + str(dataset.InstanceNumber) + "."
+            # seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
+            # imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
+            # return [seriesNumber, seriesUID, imageUID]
         except Exception as e:
             print('Error in function #.generateUIDs: ' + str(e))
+
+
+    @staticmethod
+    def sortBySliceLocation(inputPath):
+        """
+        Sorts list of paths by SliceLocation and returns the sorted list of paths
+        and the list of slice locations per file path.
+        """
+        try:
+            imagePathListSorted, sliceListSorted, numberSlices, indecesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "SliceLocation")
+            return imagePathListSorted, sliceListSorted
+        except Exception as e:
+            print('Error in function #.sortBySliceLocation: ' + str(e))
+
+
+    @staticmethod
+    def sortByEchoTime(inputPath):
+        """
+        Sorts list of paths by EchoTime and returns the sorted list of paths
+        and the list of echo times per file path.
+        """
+        try:
+            imagePathListSorted, echoListSorted, numberEchoes, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "EchoTime")
+            return imagePathListSorted, echoListSorted
+        except Exception as e:
+            print('Error in function #.sortByEchoTime: ' + str(e))
+
+
+    @staticmethod
+    def sortByTimePoint(inputPath):
+        """
+        Sorts list of paths by AcquisitionNumber and returns the sorted list of paths
+        and the list of time points per file path.
+        """
+        try:
+            imagePathListSorted, timePointsListSorted, numberTimePoints, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "AcquisitionNumber")
+            return imagePathListSorted, timePointsListSorted
+        except Exception as e:
+            print('Error in function #.sortByEchoTime: ' + str(e))
 
 
 class PixelArrayDICOMTools:

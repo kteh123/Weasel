@@ -89,10 +89,19 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
     # Think of a way to choose a select a new FilePath or Folder
     try:
         if os.path.exists(imagePathList[0]):
-            if series_id is None:
+            # Series ID and UID
+            if (series_id is None) and (series_uid is None):
+                ids = generateUIDs(readDICOM_Image.getDicomDataset(imagePathList[0]))
+                series_id = ids[0]
+                series_uid = ids[1]
+            elif (series_id is not None) and (series_uid is None):
+                series_uid = generateUIDs(readDICOM_Image.getDicomDataset(imagePathList[0]), seriesNumber=series_id)[1]
+            elif (series_id is None) and (series_uid is not None):
                 series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
-            if series_uid is None:
-                series_uid = pydicom.uid.generate_uid()
+            #if series_id is None:
+                #series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
+            #if series_uid is None:
+                #series_uid = pydicom.uid.generate_uid()
 
             refs = None
             for index, newFilePath in enumerate(derivedImagePathList):
@@ -114,6 +123,29 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
     except Exception as e:
         print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))
  
+    
+def generateUIDs(dataset, seriesNumber=None):
+    """
+    This function generates and returns a SeriesUID and an InstanceUID.
+    It also returns SeriesNumber in the first index of the output list.
+    The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
+    The InstanceUID is generated based on SeriesUID.
+    """
+    try:      
+        studyUID = dataset.StudyInstanceUID
+        # See http://dicom.nema.org/dicom/2013/output/chtml/part05/chapter_B.html regarding UID creation rules
+        prefix = studyUID.split(".", maxsplit=7)
+        prefix = '.'.join(prefix[:6])
+        if seriesNumber is None:
+            seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
+        prefixSeries = prefix + "." + seriesNumber + "."
+        prefixImage = prefix + "." + seriesNumber + "." + str(dataset.InstanceNumber) + "."
+        seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
+        imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
+        return [seriesNumber, seriesUID, imageUID]
+    except Exception as e:
+        print('Error in function saveDICOM_Image.generateUIDs: ' + str(e))
+
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
     try:
@@ -217,17 +249,29 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         imageArray = copy.deepcopy(imageArray)
 
         # Series ID and UID
-        if series_id is None:
-            newDicom.SeriesNumber = int(str(dicomData.SeriesNumber) + str(random.randint(0, 999)))
-        else:
-            newDicom.SeriesNumber = series_id
-        if series_uid is None:
-            newDicom.SeriesInstanceUID = pydicom.uid.generate_uid()
-        else:
-            newDicom.SeriesInstanceUID = series_uid
+        if (series_id is None) and (series_uid is None):
+            ids = generateUIDs(dicomData)
+            series_id = ids[0]
+            series_uid = ids[1]
+        elif (series_id is not None) and (series_uid is None):
+            series_uid = generateUIDs(dicomData, seriesNumber=series_id)[1]
+        elif (series_id is None) and (series_uid is not None):
+            series_id = str(dicomData.SeriesNumber) + str(random.randint(0, 999))
+        newDicom.SeriesNumber = int(series_id)
+        newDicom.SeriesInstanceUID = series_uid
+
+        #if series_id is None:
+        #    newDicom.SeriesNumber = int(str(dicomData.SeriesNumber) + str(random.randint(0, 999)))
+        #else:
+        #    newDicom.SeriesNumber = series_id
+        #if series_uid is None:
+        #    newDicom.SeriesInstanceUID = pydicom.uid.generate_uid()
+        #else:
+        #    newDicom.SeriesInstanceUID = series_uid
         
         # Generate Unique ID based on the Series ID
-        newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
+        # newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
+        newDicom.SOPInstanceUID = generateUIDs(newDicom, seriesNumber=series_id)[2]
 
         # Date and Time of Creation
         dt = datetime.datetime.now()
@@ -345,7 +389,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 2, totalBytes) - 1) * value) for value in colorsList[:, 2].flatten()]).astype('uint'+str(totalBytes)))
             del imageArrayInt
 
-        del dicomData, imageArray, # imageArrayInt, imageScaled, enhancedArrayInt, tempArray
+        del dicomData, imageArray#, imageArrayInt, imageScaled, enhancedArrayInt, tempArray
         return newDicom
     except Exception as e:
         print('Error in function saveDICOM_Image.createNewSingleDicom: ' + str(e))
