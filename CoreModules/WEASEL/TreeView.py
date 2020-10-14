@@ -197,7 +197,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
             self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-
+            # Joao Sousa suggestion
+            # self.treeView.hide()
             numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
             initialiseProgressBar(self, numTreeViewItems)
 
@@ -209,6 +210,9 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #If no tree view items are now selected,
             #disable items in the Tools menu.
             toggleToolButtons(self)
+            # Joao Sousa suggestion
+            # self.treeView.show()
+            # collapseSeriesBranches(self.treeView.invisibleRootItem())
 
             #Now collapse all series branches so as to hide the images
             #except the new series branch that has been created

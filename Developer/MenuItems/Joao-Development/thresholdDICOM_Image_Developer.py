@@ -2,11 +2,6 @@ from Developer.DeveloperTools import UserInterfaceTools as ui
 from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
 from Developer.DeveloperTools import GenericDICOMTools as dicom
 #**************************************************************************
-#Added by third party developer to the template module. 
-#The function containing the image processing algorithm must be given the 
-#generic name, funcAlgorithm
-#uncomment and edit the following line of code to import the function 
-#containing your image processing algorith. 
 from Developer.External.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 #***************************************************************************

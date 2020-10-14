@@ -510,7 +510,10 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 spinBoxContrast.setValue(width)
                 blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, False)
                 blockHistogramSignals(imv, True)
-                imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
+                if len(np.shape(pixelArray)) < 3:
+                    imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
+                else:
+                    imv.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
                 blockHistogramSignals(imv, False)
         
                 #Add Colour Table or look up table To Image
