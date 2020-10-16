@@ -19,12 +19,14 @@ def main(objWeasel):
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     standard_deviation_filter = paramList[0]
     # Get selected images
-    imagePathList = ui.getAllSelectedImages(objWeasel)
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
     # Get PixelArray from the selected images
     pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
     # Apply Gaussian Filter
     pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
     # Save resulting image to DICOM (and update XML)
     outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    # Refresh the UI screen
+    ui.refreshWeasel(objWeasel)
     # Display resulting image
     ui.displayImage(objWeasel, outputhPath)

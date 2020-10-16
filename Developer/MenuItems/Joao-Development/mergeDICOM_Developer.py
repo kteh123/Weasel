@@ -8,12 +8,16 @@ FILE_SUFFIX = '_Merged'
 #***************************************************************************
 
 def MergeSeriesCopy(objWeasel):
-    imagePathList = ui.getAllSelectedImages(objWeasel)
-    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Copied_Series", overwrite=False)
+    # imagePathList = ui.getListOfAllSelectedImages(objWeasel)
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
+    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Copied_Series", overwrite=True)
+    ui.refreshWeasel(objWeasel)
     ui.displayImage(objWeasel, mergedSeries)
 
 
 def main(objWeasel):
-    imagePathList = ui.getAllSelectedImages(objWeasel)
-    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=True)
+    # imagePathList = ui.getListOfAllSelectedImages(objWeasel)
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
+    mergedSeries = dicom.mergeDicomIntoOneSeries(objWeasel, imagePathList, series_description="Series", overwrite=False)
+    ui.refreshWeasel(objWeasel)
     ui.displayImage(objWeasel, mergedSeries)

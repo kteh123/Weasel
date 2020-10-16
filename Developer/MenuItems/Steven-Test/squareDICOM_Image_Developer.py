@@ -15,9 +15,10 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    imagePathList = ui.getAllSelectedImages(objWeasel)
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
     pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
     pixelArray = np.square(pixelArray)
     resultingPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    ui.refreshWeasel(objWeasel)
     ui.displayImage(objWeasel, resultingPath)
         

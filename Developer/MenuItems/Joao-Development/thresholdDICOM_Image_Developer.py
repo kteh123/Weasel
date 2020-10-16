@@ -12,7 +12,7 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    imagePathList = ui.getAllSelectedImages(objWeasel)
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
     # Lower and upper threshold from the input window 
     inputDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
     info = "Insert a value between 0 and 100. Upper threshold must be greater than lower threshold"
@@ -22,10 +22,10 @@ def main(objWeasel):
     low_thresh = paramList[0]
     high_thresh = paramList[1]
     seriesNumber, seriesUID = dicom.generateSeriesIDs(imagePathList)
-    if isinstance(imagePathList, str): imagePathList = [imagePathList] # Need to check Selecting/Checking and objWeasel
     for imagePath in imagePathList:
         # Get the PixelArray from the selected DICOM
         pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
         pixelArray = thresholdPixelArray(pixelArray, low_thresh, high_thresh)
         outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePath, FILE_SUFFIX, series_id=seriesNumber, series_uid=seriesUID)
+    ui.refreshWeasel(objWeasel)
     ui.displayImage(objWeasel, outputPath)

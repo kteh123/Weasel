@@ -9,29 +9,22 @@ FILE_SUFFIX = '_Invert'
 
 def isSeriesOnly(self):
     #This functionality only applies to a series of DICOM images
-    return True
+    return False
 
 # Slice-by-slice approach + overwrite original image
 def main(objWeasel):
-    # Get all images of the Selected Series
-    imagePathList = ui.getAllSelectedImages(objWeasel)
-    if isinstance(imagePathList, str):
-        pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
-        dataset = pixel.getDICOMobject(imagePathList)
+    # Get all images in the Checkboxes
+    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
+    for imagePath in imagePathList:
+        # Get PixelArray from the corresponding slice
+        pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
+        dataset = pixel.getDICOMobject(imagePath)
         # Apply Invert
         pixelArray = invertAlgorithm(pixelArray, dataset)
         # Need to set progress bars here
         # Save resulting image to DICOM (and update XML)
-        pixel.overwritePixelArray(pixelArray, imagePathList)
-    else:
-        for imagePath in imagePathList:
-            # Get PixelArray from the corresponding slice
-            pixelArray = pixel.getPixelArrayFromDICOM(imagePath)
-            dataset = pixel.getDICOMobject(imagePath)
-            # Apply Invert
-            pixelArray = invertAlgorithm(pixelArray, dataset)
-            # Need to set progress bars here
-            # Save resulting image to DICOM (and update XML)
-            pixel.overwritePixelArray(pixelArray, imagePath)
+        pixel.overwritePixelArray(pixelArray, imagePath)
+    # Refresh the UI screen
+    ui.refreshWeasel(objWeasel)
     # Display series
     ui.displayImage(objWeasel, imagePathList)

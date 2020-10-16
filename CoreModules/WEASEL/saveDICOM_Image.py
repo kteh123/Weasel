@@ -98,10 +98,6 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                 series_uid = generateUIDs(readDICOM_Image.getDicomDataset(imagePathList[0]), seriesNumber=series_id)[1]
             elif (series_id is None) and (series_uid is not None):
                 series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
-            #if series_id is None:
-                #series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
-            #if series_uid is None:
-                #series_uid = pydicom.uid.generate_uid()
 
             refs = None
             for index, newFilePath in enumerate(derivedImagePathList):
@@ -139,7 +135,9 @@ def generateUIDs(dataset, seriesNumber=None):
         if seriesNumber is None:
             seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
         prefixSeries = prefix + "." + seriesNumber + "."
-        prefixImage = prefix + "." + seriesNumber + "." + str(dataset.InstanceNumber) + "."
+        imageNumber = str(dataset.InstanceNumber).lstrip("0")
+        if imageNumber == "": imageNumber = "999999" 
+        prefixImage = prefix + "." + seriesNumber + "." + imageNumber + "."
         seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
         imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
         return [seriesNumber, seriesUID, imageUID]
@@ -260,17 +258,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom.SeriesNumber = int(series_id)
         newDicom.SeriesInstanceUID = series_uid
 
-        #if series_id is None:
-        #    newDicom.SeriesNumber = int(str(dicomData.SeriesNumber) + str(random.randint(0, 999)))
-        #else:
-        #    newDicom.SeriesNumber = series_id
-        #if series_uid is None:
-        #    newDicom.SeriesInstanceUID = pydicom.uid.generate_uid()
-        #else:
-        #    newDicom.SeriesInstanceUID = series_uid
-        
         # Generate Unique ID based on the Series ID
-        # newDicom.SOPInstanceUID = pydicom.uid.generate_uid()
         newDicom.SOPInstanceUID = generateUIDs(newDicom, seriesNumber=series_id)[2]
 
         # Date and Time of Creation

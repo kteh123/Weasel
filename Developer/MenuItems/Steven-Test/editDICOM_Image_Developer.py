@@ -1,7 +1,6 @@
 from Developer.DeveloperTools import UserInterfaceTools as ui
 from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
 from Developer.DeveloperTools import GenericDICOMTools as dicom
-#import Developer.MenuItems.ViewMetaData as viewMetaData
 
 def main(objWeasel):
     inputDict = {"DICOM Tag":"string", "Value":"string"}
@@ -11,7 +10,7 @@ def main(objWeasel):
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     tag = paramList[0]
     value = paramList[1]
-    imagePath = ui.getAllSelectedImages(objWeasel)
+    imagePath = ui.getListOfAllCheckedImages(objWeasel)
     ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
     dicom.editDICOMTag(imagePath, tag, value)
     ui.closeMessageWindow(objWeasel)
@@ -19,7 +18,7 @@ def main(objWeasel):
 
 
 #Hard-coded values alternative
-#def editDICOM_Image(objWeasel):
+#def alternative(objWeasel):
 #    # tag = "ImageType"
 #    # value = "[DERIVED, JOAO_TYPE]"
 #    tag = "0x00100010" # (0010, 0010) or PatientName
