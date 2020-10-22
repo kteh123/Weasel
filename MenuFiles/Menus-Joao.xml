@@ -149,9 +149,13 @@
         </item>
         <item>
           <label>Merge Series (Developer)</label>
-          <shortcut>Ctrl+M+E</shortcut>
           <tooltip>Merge selected images or series into 1 series</tooltip>
           <module>mergeDICOM_Developer</module>
+        </item>
+		<item>
+          <label>Multiply Series (Developer)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_Developer</module>
         </item>
   </menu>
   <menu name="Steven-Test">

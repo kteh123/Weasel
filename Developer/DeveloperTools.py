@@ -56,19 +56,25 @@ class UserInterfaceTools:
         """
         return self.selectedImagePath
     
-
-    def getDictOfSelectedSeries(self):
+    
+    def getDictOfSelectedItems(self):
         """
-        Returns a dictionary with lists with the Series  of the items selected in the Treeview.
-        """
-        return treeView.returnSelectedSeries(self)
-
-
-    def getDictOfSelectedImages(self):
-        """
-        Returns a dictionary with lists with the Image Paths of the items selected in the Treeview.
+        Returns a dictionary of lists with the image paths of the items selected in the Treeview.
+        Each key of the dictionary is a tuple (subject, study, series)
         """
         return treeView.returnSelectedImages(self)
+
+
+    def getListOfSelectedSeries(self):
+        """
+        Returns a list with tuples (subject, study, series) of the items selected in the Treeview.
+        """
+        seriesList = treeView.returnSelectedSeries(self)
+        if seriesList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no series were selected in the Treeview.",
+                              title="No Series Selected")
+        return seriesList
 
 
     def getListOfAllSelectedImages(self):
@@ -79,21 +85,30 @@ class UserInterfaceTools:
         pathsList = list(itertools.chain(*NestedDictValues(imagesDict)))
         if len(pathsList) == 1:
             pathsList = pathsList[0]
+        if pathsList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no images were selected in the Treeview.",
+                              title="No Images Selected")
         return pathsList
 
-    
-    def getDictOfCheckedSeries(self):
-        """
-        Returns a dictionary with lists with the Series  of the items checked in the Treeview.
-        """
-        return treeView.returnCheckedSeries(self)
 
-    
-    def getDictOfCheckedImages(self):
+    def getDictOfCheckedItems(self):
         """
-        Returns a dictionary with lists with the Image Paths of the items checked in the Treeview.
+        Returns a dictionary of lists with the image paths of the items checked in the Treeview.
+        Each key of the dictionary is a tuple (subject, study, series)
         """
         return treeView.returnCheckedImages(self)
+    
+    def getListOfCheckedSeries(self):
+        """
+        Returns a list with tuples (subject, study, series) of the items checked in the Treeview.
+        """
+        seriesList = treeView.returnCheckedSeries(self)
+        if seriesList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no series were checked in the Treeview.",
+                              title="No Series Checked")
+        return seriesList
     
     
     def getListOfAllCheckedImages(self):
@@ -104,6 +119,10 @@ class UserInterfaceTools:
         pathsList = list(itertools.chain(*NestedDictValues(imagesDict)))
         if len(pathsList) == 1:
             pathsList = pathsList[0]
+        if pathsList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no images were checked in the Treeview.",
+                              title="No Images Checked")
         return pathsList
 
 
@@ -113,20 +132,6 @@ class UserInterfaceTools:
         Returns a list of strings with the paths of all images in (studyID, seriesID).
         """
         return self.objXMLReader.getImagePathList(studyID, seriesID)
-
-
-    @staticmethod
-    def getAllSelectedImages(self):
-        """
-        Returns a list of strings with the paths of all images selected in the Treeview.
-        It includes all images that belong to a selected series.
-        """
-        studyID = self.selectedStudy
-        seriesID = self.selectedSeries
-        if len(self.objXMLReader.getImagePathList(studyID, seriesID)) == 1:
-            return self.objXMLReader.getImagePathList(studyID, seriesID)[0]
-        else:
-            return self.objXMLReader.getImagePathList(studyID, seriesID)
 
     
     def showMessageWindow(self, msg="Please insert message in the function call", title="Message Window Title"):
@@ -141,25 +146,19 @@ class UserInterfaceTools:
         """
         Closes any message window present in the User Interface.
         """
+        messageWindow.hideProgressBar(self)
         messageWindow.closeMessageSubWindow(self)
 
 
-    def startProgressBar(self, maxNumber=1, msg="Total of {} iterations", title="Progress Bar"):
-        """
-        Starts and displays a progress bar with a number of units equal to "maxNumber".
-        Arguments "title" and "msg" are the title and message to be incorporated in the new window.
-        The 2 strings in the arguments are the input by default.
-        """
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(maxNumber), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-
-
-    def incrementProgressBar(self, index=0, msg="Iteration Number {}", title="Progress Bar"):
+    def progressBar(self, maxNumber=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
         Updates the ProgressBar to the unit set in "index".
         """
+        index += 1
         messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
+        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
         messageWindow.setMsgWindowProgBarValue(self, index)
+        return index
     
     
     @staticmethod

@@ -7,10 +7,6 @@ from Developer.External.imagingTools import invertAlgorithm
 FILE_SUFFIX = '_Invert'
 #***************************************************************************
 
-def isSeriesOnly(self):
-    #This functionality only applies to a series of DICOM images
-    return False
-
 # Slice-by-slice approach + overwrite original image
 def main(objWeasel):
     # Get all images in the Checkboxes

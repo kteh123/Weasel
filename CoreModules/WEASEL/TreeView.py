@@ -495,25 +495,23 @@ def returnSelectedSeries(self):
     try:
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
-        selectedSeriesDict = {}
+        selectedSeriesList = []
         for i in range(subjectCount):
             subject = root.child(i)
             subjectFlag = True if subject.isSelected() == True else False
             studyCount = subject.childCount()
             subjectID = subject.text(0).replace('Subject -', '').strip()
-            selectedSeriesDict[subjectID] = defaultdict(list)
             for j in range(studyCount):
                 study = subject.child(j)
                 studyFlag = True if (study.isSelected() == True or subjectFlag == True) else False
                 seriesCount = study.childCount()
                 studyID = study.text(0).replace('Study -', '').strip()
-                selectedSeriesDict[subjectID][studyID] = []
-                selectedSeriesDict[subjectID][studyID].append(series.text(0).replace('Series -', '').strip())
                 for n in range(seriesCount):
                     series = study.child(n)
                     if (series.isSelected() == True or studyFlag == True):
-                        selectedSeriesDict[subjectID][studyID].append(series.text(0).replace('Series -', '').strip())
-        return selectedSeriesDict
+                        seriesID = series.text(0).replace('Series -', '').strip()
+                        selectedSeriesList.append((subjectID, studyID, seriesID))
+        return selectedSeriesList
     except Exception as e:
         print('Error in TreeView.returnSelectedSeries: ' + str(e))
         logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
@@ -525,29 +523,26 @@ def returnSelectedImages(self):
     try:
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
-        selectedImagesDict = {}
+        selectedImagesDict = defaultdict(list)
         for i in range(subjectCount):
             subject = root.child(i)
             subjectFlag = True if subject.isSelected() == True else False
             studyCount = subject.childCount()
             subjectID = subject.text(0).replace('Subject -', '').strip()
-            selectedImagesDict[subjectID] = defaultdict(list)
             for j in range(studyCount):
                 study = subject.child(j)
                 studyFlag = True if (study.isSelected() == True or subjectFlag == True) else False
                 seriesCount = study.childCount()
                 studyID = study.text(0).replace('Study -', '').strip()
-                selectedImagesDict[subjectID][studyID] = defaultdict(list)
                 for k in range(seriesCount):
                     series = study.child(k)
                     seriesFlag = True if (series.isSelected() == True or studyFlag == True) else False
                     imageCount = series.childCount()
                     seriesID = series.text(0).replace('Series -', '').strip()
-                    selectedImagesDict[subjectID][studyID][seriesID] = []
                     for n in range(imageCount):
                         image = series.child(n)
                         if (image.isSelected() == True or seriesFlag == True):
-                            selectedImagesDict[subjectID][studyID][seriesID].append(image.text(3))
+                            selectedImagesDict[(subjectID, studyID, seriesID)].append(image.text(3))
         return selectedImagesDict
     except Exception as e:
         print('Error in TreeView.returnSelectedSeries: ' + str(e))
@@ -560,22 +555,21 @@ def returnCheckedSeries(self):
     try:
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
-        checkedSeriesDict = {}
+        checkedSeriesList = []
         for i in range(subjectCount):
             subject = root.child(i)
             studyCount = subject.childCount()
             subjectID = subject.text(0).replace('Subject -', '').strip()
-            checkedSeriesDict[subjectID] = defaultdict(list)
             for j in range(studyCount):
                 study = subject.child(j)
                 seriesCount = study.childCount()
                 studyID = study.text(0).replace('Study -', '').strip()
-                checkedSeriesDict[subjectID][studyID] = []
                 for n in range(seriesCount):
                     series = study.child(n)
                     if series.checkState(0) == Qt.Checked:
-                        checkedSeriesDict[subjectID][studyID].append(series.text(0).replace('Series -', '').strip())
-        return checkedSeriesDict
+                        seriesID = series.text(0).replace('Series -', '').strip()
+                        checkedSeriesList.append((subjectID, studyID, seriesID))
+        return checkedSeriesList
     except Exception as e:
         print('Error in TreeView.returnCheckedSeries: ' + str(e))
         logger.error('Error in TreeView.returnCheckedSeries: ' + str(e))
@@ -587,26 +581,23 @@ def returnCheckedImages(self):
     try:
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
-        checkedImagesDict = {}
+        checkedImagesDict = defaultdict(list)
         for i in range(subjectCount):
             subject = root.child(i)
             studyCount = subject.childCount()
             subjectID = subject.text(0).replace('Subject -', '').strip()
-            checkedImagesDict[subjectID] = defaultdict(list)
             for j in range(studyCount):
                 study = subject.child(j)
                 seriesCount = study.childCount()
                 studyID = study.text(0).replace('Study -', '').strip()
-                checkedImagesDict[subjectID][studyID] = defaultdict(list)
                 for k in range(seriesCount):
                     series = study.child(k)
                     imageCount = series.childCount()
                     seriesID = series.text(0).replace('Series -', '').strip()
-                    checkedImagesDict[subjectID][studyID][seriesID] = []
                     for n in range(imageCount):
                         image = series.child(n)
                         if image.checkState(0) == Qt.Checked:
-                            checkedImagesDict[subjectID][studyID][seriesID].append(image.text(3))
+                            checkedImagesDict[(subjectID, studyID, seriesID)].append(image.text(3))
         return checkedImagesDict
     except Exception as e:
         print('Error in TreeView.returnCheckedImages: ' + str(e))
