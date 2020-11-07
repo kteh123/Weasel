@@ -102,41 +102,8 @@
           <tooltip>Applies a T1 Molli fitting to the series if applicable</tooltip>
           <module>T1MapMolliDICOM_Image</module>
         </item>
-		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
-        </item>
-        <item>
-          <label>UKRIN-MAPS</label>
-          <shortcut>Ctrl+U</shortcut>
-          <tooltip>Choose which UKRIN-MAPS algorithm to run</tooltip>
-          <applies_both_images_series>False</applies_both_images_series>
-          <module>UKRIN_Developer</module>
-        </item>
   </menu>
-  <menu name="TRISTAN">
-        <item>
-          <label>MIP (Developer)</label>
-          <shortcut>Ctrl+M+I</shortcut>
-          <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
-          <module>calculateMIP_Developer</module>
-        </item>
-        <item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
-        </item>
-        <item>
-          <label>FERRET</label>
-          <!--Specifies location of an icon to display before the label-->
-          <icon>images\\FERRET_LOGO.png</icon>
-          <enabled>True</enabled>
-          <shortcut>Ctrl+F</shortcut>
-          <tooltip>Launches the FERRET application</tooltip>
-          <module>MenuToolBarCommon</module>
-          <function>displayFERRET</function>
-        </item>
-  </menu>
-  <menu name="Joao-Development">
+  <menu name="Plugins">
         <item>
           <label>Threshold Developer (Slice-by-slice)</label>
           <tooltip>Threshold a DICOM Image or series</tooltip>
@@ -157,18 +124,6 @@
           <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
           <module>multiplyDICOM_Series_Developer</module>
         </item>
-		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
-        </item>
-		<item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
-        </item>
-  </menu>
-  <menu name="Steven-Test">
   		<item>
           <label>Square Developer (GroupWise)</label>
           <tooltip>Square a DICOM Image or series</tooltip>

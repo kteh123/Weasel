@@ -25,8 +25,8 @@ def main(objWeasel):
     # Apply Gaussian Filter
     pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
     # Save resulting image to DICOM (and update XML)
-    outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX) #, series_name="GAUSSIAN-WEASEL")
     # Refresh the UI screen
     ui.refreshWeasel(objWeasel)
     # Display resulting image
-    ui.displayImage(objWeasel, outputhPath)
+    ui.displayImage(objWeasel, outputPath)

@@ -3,6 +3,7 @@ import numpy as np
 import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from pydicom.sequence import Sequence
+from pydicom.datadict import dictionary_VR
 import datetime
 import copy
 import random
@@ -31,6 +32,10 @@ def returnFilePath(imagePath, suffix, new_path=None):
                 try: os.mkdir(outputFolder)
                 except: pass
                 newFilePath = os.path.join(outputFolder, fileName + suffix + '.dcm')
+                counter = 1
+                if os.path.exists(newFilePath):
+                    newFilePath = os.path.join(outputFolder, fileName + suffix + '(' + str(counter) + ')' + '.dcm')
+                    counter += 1
             return newFilePath
 
         else:
@@ -39,7 +44,7 @@ def returnFilePath(imagePath, suffix, new_path=None):
         print('Error in function saveDICOM_Image.returnFilePath: ' + str(e))
 
 
-def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, image_number=None, parametric_map=None, colourmap=None, list_refs_path=None):
+def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, series_name=None, image_number=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
     try:
         if os.path.exists(imagePath):
@@ -50,7 +55,7 @@ def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_i
                     refs.append(readDICOM_Image.getDicomDataset(individualRef))
             else:
                 refs = None
-            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, comment=suffix, parametric_map=parametric_map, colourmap=colourmap, list_refs=refs)
+            newDataset = createNewSingleDicom(dataset, pixelArray, series_id=series_id, series_uid=series_uid, series_name=series_name, comment=suffix, parametric_map=parametric_map, colourmap=colourmap, list_refs=refs)
             if (image_number is not None) and (len(np.shape(pixelArray)) < 3):
                 newDataset.InstanceNumber = image_number
                 newDataset.ImageNumber = image_number
@@ -83,7 +88,7 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
         print('Error in saveDICOM_Image.updateSingleDicomImage: ' + str(e))
 
 
-def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, parametric_map=None, colourmap=None, list_refs_path=None):
+def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, series_name=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
     # Think of a way to choose a select a new FilePath or Folder
@@ -110,7 +115,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                         for individualRef in list_refs_path:
                             refs.append(individualRef[index])
 
-                saveNewSingleDicomImage(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, image_number=index,  parametric_map=parametric_map, 
+                saveNewSingleDicomImage(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, image_number=index, parametric_map=parametric_map, 
                                       colourmap=colourmap, list_refs_path=refs)
             del series_id, series_uid, refs
             return
@@ -151,16 +156,20 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
             datasetList = readDICOM_Image.getSeriesDicomDataset(imagePath)
             for index, dataset in enumerate(datasetList):
                 if isinstance(dicomTag, str):
-                    dataset.data_element(dicomTag).value = newValue
+                    try: dataset.data_element(dicomTag).value = newValue
+                    except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
                 else:
-                    dataset[hex(dicomTag)].value = newValue
+                    try: dataset[hex(dicomTag)].value = newValue
+                    except: dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
                 saveDicomToFile(dataset, output_path=imagePath[index])
         else:
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             if isinstance(dicomTag, str):
-                dataset.data_element(dicomTag).value = newValue
+                try: dataset.data_element(dicomTag).value = newValue
+                except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
             else:
-                dataset[hex(dicomTag)].value = newValue
+                try: dataset[hex(dicomTag)].value = newValue
+                except: dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
             saveDicomToFile(dataset, output_path=imagePath)
         return
     except Exception as e:
@@ -238,7 +247,7 @@ def createNewPixelArray(imageArray, dataset):
         print('Error in saveDICOM_Image.createNewPixelArray: ' + str(e))
 
 
-def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
+def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, series_name=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
     """
@@ -317,6 +326,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         # Comments
         if comment is not None:
             newDicom.ImageComments = comment
+            # Then assign new Series Name by default
             if len(dicomData.dir("SeriesDescription"))>0:
                 newDicom.SeriesDescription = dicomData.SeriesDescription + comment
             elif len(dicomData.dir("SequenceName"))>0 & len(dicomData.dir("PulseSequenceName"))==0:
@@ -326,7 +336,11 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
             elif len(dicomData.dir("ProtocolName"))>0:
                 newDicom.SeriesDescription = dicomData.ProtocolName + comment
             else:
-                newDicom.SeriesDescription = "NewSeries" + newDicom.SeriesNumber 
+                newDicom.SeriesDescription = "NewSeries" + newDicom.SeriesNumber
+                
+        # But if the user provides a Series Name
+        if series_name:
+            newDicom.SeriesDescription = series_name
 
         # Parametric Map
         if parametric_map is not None:

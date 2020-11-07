@@ -1,12 +1,12 @@
 import os
-from pyqtgraph.Qt import QtCore, QtGui
-import pydicom
-import xml.etree.ElementTree as ET
+import re
 import datetime
 import numpy as np
-import re
-from collections import defaultdict
+import pydicom
+import xml.etree.ElementTree as ET
 from xml.dom import minidom
+from collections import defaultdict
+from pyqtgraph.Qt import QtCore, QtGui
 import CoreModules.WEASEL.iBeatImport as iBeatImport
 
 
@@ -25,7 +25,7 @@ def select_path():
         return scan_directory
     except Exception as e:
         print('Error in WriteXMLfromDICOM.select_path: ' + str(e))
-        
+
 
 def get_files_info(scan_directory):
     """This method returns the number of files and subfolders in a folder. It doesn't mean that they are all DICOM.
@@ -71,25 +71,37 @@ def series_sort(elem):
     return int(elem.split("_")[0])
 
 
+def scan_tree(scan_directory):
+    """Recursively yield DirEntry objects for given directory."""
+    for entry in os.scandir(scan_directory):
+        if entry.is_dir(follow_symlinks=False):
+            yield from scan_tree(entry.path)
+        else:
+            yield entry
+
+
 def get_scan_data(scan_directory):
     """This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     """
     try:
-        list_dicom = list()
         list_paths = list()
-        for dir_name, _, file_list in os.walk(scan_directory):
-            file_list.sort(key=natural_keys)
-            for filename in file_list:
-                if ('DIRFILE' not in filename) and ('DICOMDIR' not in filename):
-                    try:
-                        dataset = pydicom.dcmread(os.path.join(dir_name, filename))
-                        if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
-                                any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])):
-                            list_dicom.append(dataset)
-                            list_paths.append(os.path.join(dir_name, filename))
-                    except:
-                        continue
+        list_dicom = list()
+        file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
+        file_list.sort(key=natural_keys)
+        for filepath in file_list:
+            try:
+                list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
+                             'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
+                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber']
+                dataset = pydicom.dcmread(filepath, force=True, specific_tags=list_tags)
+                if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
+                    any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
+                    and ('DIRFILE' not in filepath) and ('DICOMDIR' not in filepath)):
+                    list_paths.extend([filepath])
+                    list_dicom.extend([dataset])
+            except:
+                continue
         if len(list_dicom) == 0:
             raise FileNotFoundError(
                 'No DICOM files present in the selected folder')

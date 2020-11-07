@@ -60,9 +60,9 @@ def main(objWeasel):
                                                          seriesID, derivedImageFileName)
                 # Save the DICOM file in the new file path                                        
                 saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, 
-                                                      pixelArray, FILE_SUFFIX, parametric_map="SEG")
+                                                      pixelArray, FILE_SUFFIX)
                 #Record squared image in XML file
-                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel, imagePath,
                                                      derivedImageFileName, FILE_SUFFIX)
                 #Update tree view with xml file modified above
                 treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
@@ -91,7 +91,7 @@ def main(objWeasel):
                 messageWindow.setMsgWindowProgBarMaxValue(objWeasel,2)
                 messageWindow.setMsgWindowProgBarValue(objWeasel,1)
                 # Save new DICOM series locally
-                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX, parametric_map="SEG")
+                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                                                        imagePathList,
                                                        derivedImagePathList, FILE_SUFFIX)

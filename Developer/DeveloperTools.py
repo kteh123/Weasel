@@ -99,6 +99,7 @@ class UserInterfaceTools:
         """
         return treeView.returnCheckedImages(self)
     
+
     def getListOfCheckedSeries(self):
         """
         Returns a list with tuples (subject, study, series) of the items checked in the Treeview.
@@ -127,11 +128,29 @@ class UserInterfaceTools:
 
 
     @staticmethod 
-    def getImagesFromSeries(self, studyID, seriesID):
+    def getImagesFromSeries(self, studyID=None, seriesID=None):
         """
         Returns a list of strings with the paths of all images in (studyID, seriesID).
         """
+        if (studyID is None) or (seriesID is None):
+            studyID = UserInterfaceTools.getSelectedStudy(self)
+            seriesID = UserInterfaceTools.getSelectedSeries(self)
         return self.objXMLReader.getImagePathList(studyID, seriesID)
+
+
+    @staticmethod 
+    def getSeriesFromImages(self, inputPath):
+        """
+        Returns a list of strings with the paths of all images in (studyID, seriesID).
+        """
+        try:
+            if isinstance(inputPath, str) and os.path.exists(inputPath):
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
+            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
+            return seriesID
+        except Exception as e:
+            print('Error in function #.getSeriesFromImages: ' + str(e))
 
     
     def showMessageWindow(self, msg="Please insert message in the function call", title="Message Window Title"):
@@ -215,34 +234,48 @@ class UserInterfaceTools:
             print('Error in function #.displayMetadata: ' + str(e))
 
 
+    def displaySeries(self, seriesTuple):
+        try:
+            studyID = seriesTuple[1]
+            seriesID = seriesTuple[2]
+            inputPath = UserInterfaceTools.getImagesFromSeries(self, studyID, seriesID)
+            displayImageColour.displayMultiImageSubWindow(self, inputPath, studyID, seriesID)
+        except Exception as e:
+            print('Error in function #.displaySeries: ' + str(e))
+
+
     def displayImage(self, inputPath):
         """
         Display the PixelArray in "inputPath" in the User Interface.
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                _, studyID, seriesID = treeView.getPathParentNode(self, inputPath)
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
                 displayImageColour.displayImageSubWindow(self, studyID, seriesID, derivedImagePath=inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                _, studyID, seriesID = treeView.getPathParentNode(self, inputPath[0])
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
                 displayImageColour.displayMultiImageSubWindow(self, inputPath, studyID, seriesID)
+            return
         except Exception as e:
             print('Error in function #.displayImage: ' + str(e))
         
     
-    def refreshWeasel(self):
+    def refreshWeasel(self, newSeriesName=None):
         """
         Refresh the user interface screen.
         """
         try:
-            treeView.refreshDICOMStudiesTreeView(self)
+            if newSeriesName:
+                treeView.refreshDICOMStudiesTreeView(self, newSeriesName=newSeriesName)
+            else:
+                treeView.refreshDICOMStudiesTreeView(self)
         except Exception as e:
             print('Error in function #.refreshWeasel: ' + str(e))
 
 
 class GenericDICOMTools:
 
-    def copyDICOM(self, inputPath, series_id=None, series_uid=None, suffix="_Copy"):
+    def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, suffix="_Copy"):
         """
         Creates a DICOM copy of all files in "inputPath" (1 or more) into a new series.
         """
@@ -262,8 +295,11 @@ class GenericDICOMTools:
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SOPInstanceUID", instance_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
-                saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
-                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
+                if series_name:
+                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", series_name)
+                else:
+                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath,
                                              derivedPath, suffix)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if (series_id is None) and (series_uid is None):
@@ -283,10 +319,12 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                    if series_name:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)
+                    else:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 inputPath, derivedPath, suffix)
-            #treeView.refreshDICOMStudiesTreeView(self, newSeriesID) 
             return derivedPath
         except Exception as e:
             print('Error in function #.copyDICOM: ' + str(e))
@@ -305,12 +343,11 @@ class GenericDICOMTools:
                 for path in inputPath:
                     os.remove(path)
                     interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
-            #treeView.refreshDICOMStudiesTreeView(self) 
         except Exception as e:
             print('Error in function #.deleteDICOM: ' + str(e))
 
 
-    def mergeDicomIntoOneSeries(self, imagePathList, series_description="New Series", series_uid=None, series_id=None, suffix="_Merged", overwrite=False):
+    def mergeDicomIntoOneSeries(self, imagePathList, series_uid=None, series_id=None, series_name="New Series", suffix="_Merged", overwrite=False):
         """
         Merges all DICOM files in "imagePathList" into 1 series.
         It creates a copy if "overwrite=False" (default).
@@ -328,7 +365,7 @@ class GenericDICOMTools:
                 for path in imagePathList:
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
-                    saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_description + suffix)
+                    saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_name + suffix)
                 newImagePathList = imagePathList
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 imagePathList, newImagePathList, suffix)
@@ -343,12 +380,11 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_description + suffix)
+                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name + suffix)
                     newImagePathList.append(newFilePath)
                 # CAN WE UPDATE THE XML FILE WITHOUT THE SUFFIX AND IMAGE PATH LIST???
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 imagePathList, newImagePathList, suffix)
-            #treeView.refreshDICOMStudiesTreeView(self, newSeriesID)
             return newImagePathList
         except Exception as e:
             print('Error in #.mergeDicomIntoOneSeries: ' + str(e))
@@ -362,7 +398,11 @@ class GenericDICOMTools:
         """
         # CONSIDER THE CASES WHERE SERIES NUMBER, NAME AND UID ARE CHANGED - UPDATE XML
         try:
-            saveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
+            if isinstance(inputPath, str) and os.path.exists(inputPath):
+                saveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
+            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+                for path in inputPath:
+                    saveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
             print('Error in function #.editDICOMTag: ' + str(e))
 
@@ -468,7 +508,7 @@ class PixelArrayDICOMTools:
             print('Error in function #.getDICOMobject: ' + str(e))
 
 
-    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None):
+    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None):
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
@@ -503,17 +543,18 @@ class PixelArrayDICOMTools:
                         inputPath = inputPath[:len(derivedImagePathList)]
 
             if numImages == 1:
-                saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, list_refs_path=[(''.join(inputPath))])
+                saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
                 # Record derived image in XML file
-                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self,
-                                derivedImagePathList[0], suffix)
+                interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath, derivedImagePathList[0], suffix, newSeriesName=series_name)
+                # Can return the seriesTuple probably
             else:
-                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, list_refs_path=[inputPath])
+                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
                 # Insert new series into the DICOM XML file
-                newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
-                                inputPath, derivedImagePathList, suffix)
-            #treeView.refreshDICOMStudiesTreeView(self, newSeriesID)
-            return derivedImagePathList
+                # if series_id AND series_name not None
+                # DOES IT NEED TO RETURN THE NEW SERIES_ID?
+                interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
+                
+            return derivedImagePathList # ALSO RETURN TUPLE SERIES ID HERE??? 
 
         except Exception as e:
             print('Error in function #.writePixelArrayToDicom: ' + str(e))

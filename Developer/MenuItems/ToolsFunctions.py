@@ -40,7 +40,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
             # Save the DICOM file in the new file path                                        
             saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, pixelArray, fileSuffix)#, parametric_map="ADC")
             #Record squared image in XML file
-            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel,
+            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel, imagePath,
                                          derivedImageFileName, fileSuffix)
 
             #Display the derived image in a subwindow

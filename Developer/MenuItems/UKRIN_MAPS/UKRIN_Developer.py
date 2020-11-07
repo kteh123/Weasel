@@ -1,4 +1,5 @@
-import Developer.MenuItems.developerToolsModule as tool
+import Developer.DeveloperTools as tools
+from Developer.DeveloperTools import UserInterfaceTools as ui
 #**************************************************************************
 #Added by third party developer to the template module. 
 #The function containing the image processing algorithm must be given the 
@@ -12,17 +13,17 @@ import Developer.MenuItems.UKRIN_MAPS.T2StarMapDICOM_Image as t2_star
 #***************************************************************************
 
 def main(objWeasel):
-    if tool.treeView.isASeriesSelected(objWeasel):
+    if tools.treeView.isASeriesSelected(objWeasel):
         # Setting Window Input window
         inputDict = {"Algorithm":"dropdownlist", "Dummy":"listview"}
         scriptsList = ["B0", "T2*", "T1 Molli"]
         dummyList = ["Animals", "Plants", "Trees"]
         info = "Choose one of the options in the dropdown list"
-        paramList = tool.inputWindow(inputDict, title="UKRIN-MAPS Calculation", helpText=info, lists=[scriptsList, dummyList])
+        paramList = ui.inputWindow(inputDict, title="UKRIN-MAPS Calculation", helpText=info, lists=[scriptsList, dummyList])
         choice = paramList[0]
         if choice == "B0":
-            b0.saveB0MapSeries(objWeasel)
+            b0.main(objWeasel)
         if choice == "T2*":
-            t2_star.saveT2StarMapSeries(objWeasel)
+            t2_star.main(objWeasel)
         if choice == "T1 Molli":
-            t1.saveT1MapSeries(objWeasel)
+            t1.main(objWeasel)

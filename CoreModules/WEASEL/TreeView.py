@@ -211,6 +211,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #disable items in the Tools menu.
             toggleToolButtons(self)
             collapseSeriesBranches(self.treeView.invisibleRootItem())
+            collapseStudiesBranches(self.treeView.invisibleRootItem())
             # Joao Sousa suggestion
             self.treeView.show()
 
@@ -218,10 +219,34 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #except the new series branch that has been created
 
             # Joao commented on the 16/10/2020
-            # expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName)
+            expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName=newSeriesName)
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
+
+
+def collapseStudiesBranches(item):
+    """This function uses recursion to colapse all series branches
+    
+    Input Parameters
+    ****************
+    item  - A QTreeWidgetItem 
+    """
+    logger.info("TreeView.collapseStudiesBranches called")
+    try:
+        if item.childCount() > 0:
+            itemCount = item.childCount()
+            for n in range(itemCount):
+                childItem = item.child(n)
+                if 'study' in childItem.text(0).lower():
+                    item.treeWidget().blockSignals(True)
+                    childItem.setExpanded(False)
+                    item.treeWidget().blockSignals(False)
+                else:
+                    collapseStudiesBranches(childItem)
+    except Exception as e:
+            print('Error in TreeView.collapseStudiesBranches: ' + str(e))
+            logger.error('Error in TreeView.collapseStudiesBranches: ' + str(e))
 
 
 def collapseSeriesBranches(item):
@@ -270,8 +295,8 @@ def checkChildItems(item):
                 item.treeWidget().blockSignals(False)
                 checkChildItems(childItem)
     except Exception as e:
-            print('Error in TreeView.checkChildItems: ' + str(e))
-            logger.error('Error in TreeView.checkChildItems: ' + str(e))
+        print('Error in TreeView.checkChildItems: ' + str(e))
+        logger.error('Error in TreeView.checkChildItems: ' + str(e))
 
 
 def checkParentItems(item):
@@ -342,6 +367,7 @@ def expandTreeViewBranch(item, newSeriesName = ''):
                         seriesName = branchText.replace('series -', '').strip()
                         item.treeWidget().blockSignals(True)
                         if seriesName == newSeriesName.lower():
+                            item.setExpanded(True)
                             childItem.setExpanded(True)
                         else:
                             childItem.setExpanded(False)
@@ -489,9 +515,32 @@ def onTreeViewItemClicked(self, item):
             logger.error('Error in TreeView.onTreeViewItemClicked at line {}: '.format(line_number) + str(e))
 
 
+def returnSelectedStudies(self):
+    """This function generates and returns a list of selected studies."""
+    logger.info("TreeView.returnSelectedStudies called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        selectedStudiesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            subjectFlag = True if subject.isSelected() == True else False
+            studyCount = subject.childCount()
+            subjectID = subject.text(0).replace('Subject -', '').strip()
+            for j in range(studyCount):
+                study = subject.child(j)
+                if (study.isSelected() == True or subjectFlag == True):
+                    studyID = study.text(0).replace('Study -', '').strip()
+                    selectedStudiesList.append((subjectID, studyID))
+        return selectedStudiesList
+    except Exception as e:
+        print('Error in TreeView.returnSelectedStudies: ' + str(e))
+        logger.error('Error in TreeView.returnSelectedStudies: ' + str(e))
+
+
 def returnSelectedSeries(self):
     """This function generates and returns a list of selected series."""
-    logger.info("TreeView.returnCheckedSeries called")
+    logger.info("TreeView.returnSelectedSeries called")
     try:
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
@@ -549,6 +598,28 @@ def returnSelectedImages(self):
         logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
 
 
+def returnCheckedStudies(self):
+    """This function generates and returns a list of checked series."""
+    logger.info("TreeView.returnCheckedStudies called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedStudiesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            subjectID = subject.text(0).replace('Subject -', '').strip()
+            for j in range(studyCount):
+                study = subject.child(j)   
+                if study.checkState(0) == Qt.Checked:
+                    studyID = study.text(0).replace('Study -', '').strip()
+                    checkedStudiesList.append((subjectID, studyID))
+        return checkedStudiesList
+    except Exception as e:
+        print('Error in TreeView.returnCheckedStudies: ' + str(e))
+        logger.error('Error in TreeView.returnCheckedStudies: ' + str(e))
+
+
 def returnCheckedSeries(self):
     """This function generates and returns a list of checked series."""
     logger.info("TreeView.returnCheckedSeries called")
@@ -568,7 +639,7 @@ def returnCheckedSeries(self):
                     series = study.child(n)
                     if series.checkState(0) == Qt.Checked:
                         seriesID = series.text(0).replace('Series -', '').strip()
-                        checkedSeriesList.append((subjectID, studyID, seriesID))
+                        checkedSeriesList.append((subjectID, studyID, seriesID)) # just return series
         return checkedSeriesList
     except Exception as e:
         print('Error in TreeView.returnCheckedSeries: ' + str(e))
@@ -625,7 +696,7 @@ def getPathParentNode(self, inputPath):
                             subjectID = subject.text(0).replace('Subject -', '').strip()
                             studyID = study.text(0).replace('Study -', '').strip()
                             seriesID = series.text(0).replace('Series -', '').strip()
-                            return subjectID, studyID, seriesID
+                            return (subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in TreeView.getPathParentNode: ' + str(e))
         logger.error('Error in TreeView.getPathParentNode: ' + str(e))
