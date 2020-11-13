@@ -10,21 +10,9 @@ def main(objWeasel):
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     tag = paramList[0]
     value = paramList[1]
-    imagePath = ui.getListOfAllCheckedImages(objWeasel)
+    imageList = ui.getCheckedImages(objWeasel)
     ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
-    dicom.editDICOMTag(imagePath, tag, value)
+    for image in imageList:
+        image.Item(tag, value)
     ui.closeMessageWindow(objWeasel)
-    ui.displayMetadata(objWeasel, imagePath)
-
-
-#Hard-coded values alternative
-#def alternative(objWeasel):
-#    # tag = "ImageType"
-#    # value = "[DERIVED, JOAO_TYPE]"
-#    tag = "0x00100010" # (0010, 0010) or PatientName
-#    value = "Anonymous"
-#    ui.showMessageWindow(objWeasel, "Overwriting the DICOM files with the typed values", title="Edit DICOM")
-#    imagePath = ui.getAllSelectedImages(objWeasel)
-#    dicom.editDICOMTag(imagePath, tag, value)
-#    ui.closeMessageWindow(objWeasel)
-#    viewMetaData.main(objWeasel) # Put it in Developer Tool
+    imageList[0].DisplayMetadata(objWeasel)

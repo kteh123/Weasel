@@ -34,97 +34,124 @@ class UserInterfaceTools:
     message windows. 
     """
     @staticmethod 
-    def getSelectedStudy(self):
+    def getCurrentStudy(self):
         """
-        Returns the Study ID of the item selected in the Treeview.
+        Returns the Study ID of the latest item selected in the Treeview.
         """
         return self.selectedStudy
     
 
     @staticmethod 
-    def getSelectedSeries(self):
+    def getCurrentSeries(self):
         """
-        Returns the Series ID of the item selected in the Treeview.
+        Returns the Series ID of the latest item selected in the Treeview.
         """
         return self.selectedSeries
     
 
     @staticmethod 
-    def getSelectedImage(self):
+    def getCurrentImage(self):
         """
-        Returns a string with the path of the selected image.
+        Returns a string with the path of the latest selected image.
         """
         return self.selectedImagePath
-    
-    
-    def getDictOfSelectedItems(self):
-        """
-        Returns a dictionary of lists with the image paths of the items selected in the Treeview.
-        Each key of the dictionary is a tuple (subject, study, series)
-        """
-        return treeView.returnSelectedImages(self)
 
 
-    def getListOfSelectedSeries(self):
+    def getSelectedStudies(self):
         """
-        Returns a list with tuples (subject, study, series) of the items selected in the Treeview.
+        Returns a list with objects of class Study of the items selected in the Treeview.
         """
-        seriesList = treeView.returnSelectedSeries(self)
-        if seriesList == []:
+        studyList = []
+        studiesTreeViewList = treeView.returnSelectedStudies(self)
+        if studiesTreeViewList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no studies were selected in the Treeview.",
+                              title="No Studies Selected")
+        else:
+            for study in studiesTreeViewList:
+                studyList.append(Study.fromTreeView(self, study))
+        return studyList
+
+
+    def getSelectedSeries(self):
+        """
+        Returns a list with objects of class Series of the items selected in the Treeview.
+        """
+        seriesList = []
+        seriesTreeViewList = treeView.returnSelectedSeries(self)
+        if seriesTreeViewList == []:
             UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
                               " no series were selected in the Treeview.",
                               title="No Series Selected")
+        else:
+            for series in seriesTreeViewList:
+                seriesList.append(Series.fromTreeView(self, series))
         return seriesList
 
 
-    def getListOfAllSelectedImages(self):
+    def getSelectedImages(self):
         """
-        Returns a list of strings with the paths of all images selected in the Treeview.
+        Returns a list with objects of class Image of the items selected in the Treeview.
         """
-        imagesDict = treeView.returnSelectedImages(self)
-        pathsList = list(itertools.chain(*NestedDictValues(imagesDict)))
-        if len(pathsList) == 1:
-            pathsList = pathsList[0]
-        if pathsList == []:
+        imagesList = []
+        imagesTreeViewList = treeView.returnSelectedImages(self)
+        if imagesTreeViewList == []:
             UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
                               " no images were selected in the Treeview.",
                               title="No Images Selected")
-        return pathsList
-
-
-    def getDictOfCheckedItems(self):
-        """
-        Returns a dictionary of lists with the image paths of the items checked in the Treeview.
-        Each key of the dictionary is a tuple (subject, study, series)
-        """
-        return treeView.returnCheckedImages(self)
+        else:
+            for images in imagesTreeViewList:
+                imagesList.append(Image.fromTreeView(self, images))
+        return imagesList
     
 
-    def getListOfCheckedSeries(self):
+    def getCheckedStudies(self):
         """
-        Returns a list with tuples (subject, study, series) of the items checked in the Treeview.
+        Returns a list with objects of class Study of the items checked in the Treeview.
         """
-        seriesList = treeView.returnCheckedSeries(self)
-        if seriesList == []:
+        studyList = []
+        studiesTreeViewList = treeView.returnCheckedStudies(self)
+        if studiesTreeViewList == []:
+            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+                              " no studies were checked in the Treeview.",
+                              title="No Studies Checked")
+        else:
+            for study in studiesTreeViewList:
+                studyList.append(Study.fromTreeView(self, study))
+        return studyList
+    
+
+    def getCheckedSeries(self):
+        """
+        Returns a list with objects of class Series of the items checked in the Treeview.
+        """
+        seriesList = []
+        seriesTreeViewList = treeView.returnCheckedSeries(self)
+        if seriesTreeViewList == []:
             UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
                               title="No Series Checked")
+        else:
+            for series in seriesTreeViewList:
+                seriesList.append(Series.fromTreeView(self, series))
+
         return seriesList
     
-    
-    def getListOfAllCheckedImages(self):
+
+    def getCheckedImages(self):
         """
-        Returns a list of strings with the paths of all images checked in the Treeview.
+        Returns a list with objects of class Image of the items checked in the Treeview.
         """
-        imagesDict = treeView.returnCheckedImages(self)
-        pathsList = list(itertools.chain(*NestedDictValues(imagesDict)))
-        if len(pathsList) == 1:
-            pathsList = pathsList[0]
-        if pathsList == []:
+        imagesList = []
+        imagesTreeViewList = treeView.returnCheckedImages(self)
+        if imagesTreeViewList == []:
             UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
                               " no images were checked in the Treeview.",
                               title="No Images Checked")
-        return pathsList
+        else:
+            for images in imagesTreeViewList:
+                imagesList.append(Image.fromTreeView(self, images))
+        return imagesList
 
 
     @staticmethod 
@@ -133,8 +160,8 @@ class UserInterfaceTools:
         Returns a list of strings with the paths of all images in (studyID, seriesID).
         """
         if (studyID is None) or (seriesID is None):
-            studyID = UserInterfaceTools.getSelectedStudy(self)
-            seriesID = UserInterfaceTools.getSelectedSeries(self)
+            studyID = UserInterfaceTools.getCurrentStudy(self)
+            seriesID = UserInterfaceTools.getCurrentSeries(self)
         return self.objXMLReader.getImagePathList(studyID, seriesID)
 
 
@@ -579,3 +606,204 @@ class PixelArrayDICOMTools:
             return
         except Exception as e:
             print('Error in #.overwritePixelArray: ' + str(e))
+
+
+class Project:
+    def __init__(self, objWeasel):
+        root = objWeasel.treeView.invisibleRootItem()
+        children = []
+        for i in range(root.childCount()):
+            subjectItem = root.child(i)
+            children.append(Subject.fromTreeView(objWeasel, subjectItem))
+        self.children = children
+        self.numberChildren = len(self.children)
+
+
+class Subject:
+    def __init__(self, objWeasel, subjectID, children=None):
+        self.subjectID = subjectID
+        if children is None:
+            root = objWeasel.treeView.invisibleRootItem()
+            children = []
+            for i in range(root.childCount()):
+                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                    subjectItem = root.child(i)
+                    for j in range(subjectItem.childCount()):
+                        studyItem = subjectItem.child(j)
+                        children.append(Study.fromTreeView(objWeasel, studyItem))
+            self.children = children
+        else:
+            self.children = children
+        self.numberChildren = len(self.children)
+        
+    @classmethod
+    def fromTreeView(cls, objWeasel, subjectItem):
+        subjectID = subjectItem.text(0).replace('Subject -', '').strip()
+        children = []
+        for i in range(subjectItem.childCount()):
+            studyItem = subjectItem.child(i)
+            children.append(Study.fromTreeView(objWeasel, studyItem))
+        return cls(objWeasel, subjectID, children=children)
+
+
+class Study:
+    def __init__(self, objWeasel, subjectID, studyID, children=None):
+        self.subjectID = subjectID
+        self.studyID = studyID
+        if children is None:
+            root = objWeasel.treeView.invisibleRootItem()
+            children = []
+            for i in range(root.childCount()):
+                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                    subjectItem = root.child(i)
+                    for j in range(subjectItem.childCount()):
+                        if subjectItem.child(j).text(0) == 'Study -' + str(self.studyID):
+                            studyItem = subjectItem.child(j)
+                            for k in range(studyItem.childCount()):
+                                seriesItem = studyItem.child(k)
+                                children.append(Series.fromTreeView(objWeasel, seriesItem))
+            self.children = children
+        else:
+            self.children = children
+        self.numberChildren = len(self.children)
+        
+    @classmethod
+    def fromTreeView(cls, objWeasel, studyItem):
+        subjectID = studyItem.parent().text(0).replace('Subject -', '').strip()
+        studyID = studyItem.text(0).replace('Study -', '').strip()
+        children = []
+        for i in range(studyItem.childCount()):
+            seriesItem = studyItem.child(i)
+            children.append(Series.fromTreeView(objWeasel, seriesItem))
+        return cls(objWeasel, subjectID, studyID, children=children)
+
+    @property
+    def Dimensions(self):
+        return [np.shape(series.PixelArray) for series in self.children]
+
+
+class Series:
+    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths, children=None):
+        self.subjectID = subjectID
+        self.studyID = studyID
+        self.seriesID = seriesID
+        self.images = listPaths
+        if children is None:
+            root = objWeasel.treeView.invisibleRootItem()
+            children = []
+            for i in range(root.childCount()):
+                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                    subjectItem = root.child(i)
+                    for j in range(subjectItem.childCount()):
+                        if subjectItem.child(j).text(0) == 'Study -' + str(self.studyID):
+                            studyItem = subjectItem.child(j)
+                            for k in range(studyItem.childCount()):
+                                if studyItem.child(k).text(0) == 'Series -' + str(self.seriesID):
+                                    seriesItem = studyItem.child(k)
+                                    for n in range(seriesItem.childCount()):
+                                        imageItem = seriesItem.child(n)
+                                        children.append(Image.fromTreeView(objWeasel, imageItem))
+            self.children = children
+        else:
+            self.children = children
+        self.numberChildren = len(self.children)
+
+    @classmethod
+    def fromTreeView(cls, objWeasel, seriesItem):
+        subjectID = seriesItem.parent().parent().text(0).replace('Subject -', '').strip()
+        studyID = seriesItem.parent().text(0).replace('Study -', '').strip()
+        seriesID = seriesItem.text(0).replace('Series -', '').strip()
+        images = []
+        children = []
+        for i in range(seriesItem.childCount()):
+            imageItem = seriesItem.child(i)
+            images.append(imageItem.text(3))
+            children.append(Image.fromTreeView(objWeasel, imageItem))
+        return cls(objWeasel, subjectID, studyID, seriesID, images, children=children)
+    
+    def DisplayImage(self, objWeasel):
+        UserInterfaceTools.displayImage(objWeasel, self.images)
+
+    def DisplayMetadata(self, objWeasel):
+        UserInterfaceTools.displayMetadata(objWeasel, self.images)
+
+    @property
+    def PixelArray(self):
+        return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
+
+    @PixelArray.setter
+    def PixelArray(self, array):
+        self.PixelArray = array
+    
+    @property
+    def Dimensions(self):
+        return np.shape(self.PixelArray)
+
+    def Item(self, tagDescription, newValue=None):
+        if newValue:
+            GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
+        itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
+        return itemList
+
+    def Tag(self, tag, newValue=None):
+        hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
+        if newValue:
+            GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
+        itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
+        return itemList
+
+
+class Image:
+    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths, path):
+        self.subjectID = subjectID
+        self.studyID = studyID
+        self.seriesID = seriesID
+        self.images = listPaths
+        self.path = path
+
+    @classmethod
+    def fromTreeView(cls, objWeasel, imageItem):
+        subjectID = imageItem.parent().parent().parent().text(0).replace('Subject -', '').strip()
+        studyID = imageItem.parent().parent().text(0).replace('Study -', '').strip()
+        seriesID = imageItem.parent().text(0).replace('Series -', '').strip()
+        images = [imageItem.parent().child(i).text(3) for i in range(imageItem.parent().childCount())]
+        path = imageItem.text(3)
+        return cls(objWeasel, subjectID, studyID, seriesID, images, path)
+    
+    # Same for Series
+    #####################
+    def createNewSeries(self, ):
+    
+    def saveToDICOM(self, ):
+    ######################
+
+    def DisplayImage(self, objWeasel):
+        UserInterfaceTools.displayImage(objWeasel, self.path)
+
+    def DisplayMetadata(self, objWeasel):
+        UserInterfaceTools.displayMetadata(objWeasel, self.path)
+    
+    @property
+    def PixelArray(self):
+        return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+
+    @PixelArray.setter
+    def PixelArray(self, array):
+        self.PixelArray = array
+        
+    @property
+    def Dimensions(self):
+        return np.shape(self.PixelArray)
+
+    def Item(self, tagDescription, newValue=None):
+        if newValue:
+            GenericDICOMTools.editDICOMTag(self.path, tagDescription, newValue)
+        item= readDICOM_Image.getImageTagValue(self.path, tagDescription)
+        return item
+
+    def Tag(self, tag, newValue=None):
+        hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
+        if newValue:
+            GenericDICOMTools.editDICOMTag(self.path, literal_eval(hexTag), newValue)
+        item = readDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
+        return item

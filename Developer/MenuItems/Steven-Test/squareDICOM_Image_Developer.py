@@ -15,10 +15,13 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
-    pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
-    pixelArray = np.square(pixelArray)
-    resultingPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+    imageList = ui.getCheckedImages(objWeasel)
+    #newSeries =
+    for image in imageList:
+        pixelArray = image.PixelArray
+        pixelArray = np.square(pixelArray)
+        # Saving, which doesn't exist yet in the classes approach - Save into new Series
+        # resultingPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
     ui.refreshWeasel(objWeasel)
-    ui.displayImage(objWeasel, resultingPath)
+    #newSeries.DisplayImage(objWeasel)
         

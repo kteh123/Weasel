@@ -19,14 +19,19 @@ def main(objWeasel):
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     standard_deviation_filter = paramList[0]
     # Get selected images
-    imagePathList = ui.getListOfAllCheckedImages(objWeasel)
-    # Get PixelArray from the selected images
-    pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
-    # Apply Gaussian Filter
-    pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
-    # Save resulting image to DICOM (and update XML)
-    outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX) #, series_name="GAUSSIAN-WEASEL")
+    imageList = ui.getCheckedImages(objWeasel)
+    for image in imageList:
+        # Get PixelArray from the selected images
+        pixelArray = image.PixelArray
+        # Apply Gaussian Filter
+        pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
+        # Save as individual image into new Series
+
+    # Save resulting image to DICOM (and update XML) - which can't do in Classes mode yet
+    # outputPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX) #, series_name="GAUSSIAN-WEASEL")
+
     # Refresh the UI screen
     ui.refreshWeasel(objWeasel)
     # Display resulting image
-    ui.displayImage(objWeasel, outputPath)
+    # ui.displayImage(objWeasel, outputPath)
+    #imageList.displayImage(objWeasel)

@@ -82,6 +82,27 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
         print('Error in function readDICOM_Image.getMultiframeBySlices: ' + str(e))
 
 
+def getImageTagValue(imagePath, dicomTag):
+    """This method reads the DICOM file in imagePath and returns the value in the given DICOM tag
+        Output is : attribute
+    """
+    try:
+        if os.path.exists(imagePath):
+            dataset = getDicomDataset(imagePath)
+            if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                # This is not for Enhanced MRI. Only Classic DICOM
+                if isinstance(dicomTag, str):
+                    attribute = dataset.data_element(dicomTag).value
+                else:
+                    attribute = dataset[hex(dicomTag)].value
+                del dataset
+                return attribute
+        else:
+            return None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getImageTagValue: ' + str(e))
+
+
 def getSeriesTagValues(imagePathList, dicomTag):
     """This method reads the DICOM files in imagePathList and returns the list of values in the given DICOM tag
         Outputs are : attributeList, numAttribute
