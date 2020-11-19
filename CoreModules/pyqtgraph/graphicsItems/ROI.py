@@ -114,6 +114,7 @@ class ROI(GraphicsObject):
         #QObjectWorkaround.__init__(self)
         GraphicsObject.__init__(self, parent)
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
+
         pos = Point(pos)
         size = Point(size)
         self.aspectLocked = False

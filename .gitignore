@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+config.xml
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -379,3 +380,4 @@ venv-linux/
 /WeaselData/Sample Data/output_Invert
 /WeaselData/Sample Data/output_Square
 /WeaselData/Sample Data/output_Thresholded
+/CoreModules/pyqtgraph/graphicsItems/ImageItem_old.py

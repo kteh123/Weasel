@@ -26,6 +26,7 @@
     <Compile Include="CoreModules\FERRET\ExcelWriter.py" />
     <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
+    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
     <Compile Include="CoreModules\WEASEL\iBeatImport.py" />
     <Compile Include="CoreModules\FERRET\MathsTools.py" />
     <Compile Include="CoreModules\FERRET\ModelFunctionsHelper.py" />
@@ -105,7 +106,7 @@
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GraphItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GridItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\HistogramLUTItem.py" />
-    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
+    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItemWithDrawROI.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\InfiniteLine.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\IsocurveItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\ItemGroup.py" />
@@ -359,6 +360,7 @@
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="config.xml" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />

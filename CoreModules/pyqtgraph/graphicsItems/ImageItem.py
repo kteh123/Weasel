@@ -415,13 +415,6 @@ class ImageItem(GraphicsObject):
     #def mouseReleaseEvent(self, ev):
         #pass
 
-    def mouseDragEvent(self, ev):
-        if ev.button() != QtCore.Qt.LeftButton:
-            ev.ignore()
-            return
-        elif self.drawKernel is not None:
-            ev.accept()
-            self.drawAt(ev.pos(), ev)
 
     def mouseClickEvent(self, ev):
         if ev.button() == QtCore.Qt.RightButton:
@@ -451,7 +444,15 @@ class ImageItem(GraphicsObject):
             self.menu.remAct = remAct
         return self.menu
         
-        
+    def mouseDragEvent(self, ev):
+        if ev.button() != QtCore.Qt.LeftButton:
+            ev.ignore()
+            return
+        elif self.drawKernel is not None:
+            ev.accept()
+            self.drawAt(ev.pos(), ev)
+            
+
     def hoverEvent(self, ev):
         if not ev.isExit() and self.drawKernel is not None and ev.acceptDrags(QtCore.Qt.LeftButton):
             ev.acceptClicks(QtCore.Qt.LeftButton) ## we don't use the click, but we also don't want anyone else to use it.
