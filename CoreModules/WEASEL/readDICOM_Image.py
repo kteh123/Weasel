@@ -89,14 +89,13 @@ def getImageTagValue(imagePath, dicomTag):
     try:
         if os.path.exists(imagePath):
             dataset = getDicomDataset(imagePath)
-            if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-                # This is not for Enhanced MRI. Only Classic DICOM
-                if isinstance(dicomTag, str):
-                    attribute = dataset.data_element(dicomTag).value
-                else:
-                    attribute = dataset[hex(dicomTag)].value
-                del dataset
-                return attribute
+            # This is not for Enhanced MRI. Only Classic DICOM
+            if isinstance(dicomTag, str):
+                attribute = dataset.data_element(dicomTag).value
+            else:
+                attribute = dataset[hex(dicomTag)].value
+            del dataset
+            return attribute
         else:
             return None
     except Exception as e:
@@ -112,16 +111,14 @@ def getSeriesTagValues(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
-            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
-                # This is not for Enhanced MRI. Only Classic DICOM
-                if isinstance(dicomTag, str):
-                    attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
-                else:
-                    attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                numAttribute = len(np.unique(attributeList))
- 
-                del datasetList
-                return attributeList, numAttribute
+            # This is not for Enhanced MRI. Only Classic DICOM
+            if isinstance(dicomTag, str):
+                attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+            else:
+                attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+            numAttribute = len(np.unique(attributeList))    
+            del datasetList
+            return attributeList, numAttribute
         else:
             return None, None
     except Exception as e:

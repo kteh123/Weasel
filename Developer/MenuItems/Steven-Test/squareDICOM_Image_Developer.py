@@ -1,8 +1,6 @@
 from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
+from Developer.DeveloperTools import Series, Image
 #**************************************************************************
-#Uncomment and edit the following line of code to import the function 
-#containing your image processing algorithm.
 import numpy as np
 FILE_SUFFIX = "_Square"
 # Can be an external toolbox instead
@@ -15,13 +13,13 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    imageList = ui.getCheckedImages(objWeasel)
-    #newSeries =
-    for image in imageList:
-        pixelArray = image.PixelArray
+    seriesList = ui.getCheckedSeries(objWeasel)
+    for series in seriesList:
+        newSeries = Series.newSeriesFrom(series, suffix=FILE_SUFFIX)
+        pixelArray = series.PixelArray
         pixelArray = np.square(pixelArray)
-        # Saving, which doesn't exist yet in the classes approach - Save into new Series
-        # resultingPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
+        newSeries.write(pixelArray)
     ui.refreshWeasel(objWeasel)
-    #newSeries.DisplayImage(objWeasel)
+    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID) # Still need to solve this double-call
+    newSeries.DisplaySeries()
         

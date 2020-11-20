@@ -11,8 +11,9 @@ def main(objWeasel):
     tag = paramList[0]
     value = paramList[1]
     imageList = ui.getCheckedImages(objWeasel)
-    ui.showMessageWindow(objWeasel, msg="Overwriting the DICOM files with the typed values", title="Edit DICOM")
+    ui.showMessageWindow(objWeasel, msg="Overwriting the checked DICOM files with the typed values", title="Edit DICOM")
     for image in imageList:
         image.Item(tag, value)
     ui.closeMessageWindow(objWeasel)
-    imageList[0].DisplayMetadata(objWeasel)
+    imageList[0].DisplayMetadata()
+    # Or image.DisplayMetadata(objWeasel)
