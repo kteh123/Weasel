@@ -109,7 +109,6 @@
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GraphItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GridItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\HistogramLUTItem.py" />
-    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItemWithDrawROI.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\InfiniteLine.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\IsocurveItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\ItemGroup.py" />
