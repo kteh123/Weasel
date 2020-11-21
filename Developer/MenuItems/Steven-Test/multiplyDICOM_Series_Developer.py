@@ -8,7 +8,7 @@ def isSeriesOnly(self):
     return True
 
 
-def madddin(objWeasel):
+def main(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries(objWeasel)
     dimensions = seriesList[0].Dimensions
@@ -28,7 +28,7 @@ def madddin(objWeasel):
     newSeries.DisplaySeries()
 
 
-def main(objWeasel):
+def SliceBySlice(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries(objWeasel)
     dimensions = seriesList[0].Dimensions

@@ -138,28 +138,9 @@
   </menu>
   <menu name="Joao-Development">
         <item>
-          <label>Threshold Developer (Slice-by-slice)</label>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image_Developer</module>
-        </item>
-		<item>
-          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
-          <tooltip>Invert a DICOM Image or series</tooltip>
-          <module>invertDICOM_Image_Developer</module>
-        </item>
-        <item>
           <label>Merge Series (Developer)</label>
           <tooltip>Merge selected images or series into 1 series</tooltip>
           <module>mergeDICOM_Developer</module>
-        </item>
-		<item>
-          <label>Multiply Series (Developer)</label>
-          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
-          <module>multiplyDICOM_Series_Developer</module>
-        </item>
-		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
         </item>
 		<item>
           <label>Rename Series</label>
@@ -175,10 +156,29 @@
           <module>squareDICOM_Image_Developer</module>
         </item>
 		<item>
-          <label>Gaussian Filter Developer (GroupWise)</label>
+          <label>Gaussian Filter Developer (Slice-by-slice)</label>
           <shortcut>Ctrl+F+3</shortcut>
           <tooltip>gaussian</tooltip>
           <module>gaussianFilterDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Multiply Series</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_Developer</module>
+        </item>
+		<item>
+          <label>Threshold Developer (Slice-by-slice)</label>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
+          <tooltip>Invert a DICOM Image or series</tooltip>
+          <module>invertDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
         </item>
         <item>
           <label>Edit DICOM Tag Developer</label>
