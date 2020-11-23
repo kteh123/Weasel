@@ -22,7 +22,6 @@ else:
     from .ImageViewTemplate_pyqt import *
     
 from ..graphicsItems.ImageItem import *
-from ..graphicsItems.ImageItemWithDrawROI import *
 from ..graphicsItems.ROI import *
 from ..graphicsItems.LinearRegionItem import *
 from ..graphicsItems.InfiniteLine import *

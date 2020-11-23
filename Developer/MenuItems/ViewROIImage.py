@@ -1,4 +1,4 @@
-import CoreModules.WEASEL.DisplayImageROI as displayImageROI
+import CoreModules.WEASEL.DisplayImageDrawROI as displayImageROI
 import CoreModules.WEASEL.TreeView  as treeView
 import logging
 logger = logging.getLogger(__name__)

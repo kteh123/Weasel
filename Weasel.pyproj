@@ -26,6 +26,8 @@
     <Compile Include="CoreModules\FERRET\ExcelWriter.py" />
     <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
+    <Compile Include="CoreModules\freeHandROI\GraphicsItem.py" />
+    <Compile Include="CoreModules\freeHandROI\GraphicsView.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
     <Compile Include="CoreModules\WEASEL\DisplayImageDrawROI.py">
       <SubType>Code</SubType>
@@ -8086,6 +8088,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CoreModules\FERRET\" />
+    <Folder Include="CoreModules\freeHandROI\" />
     <Folder Include="CoreModules\WEASEL\" />
     <Folder Include="CoreModules\pyqtgraph\" />
     <Folder Include="CoreModules\pyqtgraph\canvas\" />
