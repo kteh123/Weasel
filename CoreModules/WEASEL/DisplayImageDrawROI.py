@@ -19,6 +19,7 @@ import scipy
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
+import CoreModules.WEASEL.styleSheet as styleSheet
 import CoreModules.pyqtgraph as pg 
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
@@ -27,6 +28,46 @@ import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 import logging
 logger = logging.getLogger(__name__)
+
+
+def setLevelsSpinBoxes(layout, graphicsView):
+    spinBoxIntensity = QDoubleSpinBox()
+    spinBoxContrast = QDoubleSpinBox()
+    
+    lblIntensity = QLabel("Centre (Intensity)")
+    lblContrast = QLabel("Width (Contrast)")
+    lblIntensity.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+    lblContrast.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+    
+    spinBoxIntensity.setMinimum(-100000.00)
+    spinBoxContrast.setMinimum(-100000.00)
+    spinBoxIntensity.setMaximum(1000000000.00)
+    spinBoxContrast.setMaximum(1000000000.00)
+    spinBoxIntensity.setWrapping(True)
+    spinBoxContrast.setWrapping(True)
+    gridLayoutLevels = QGridLayout()
+    gridLayoutLevels.addWidget(lblIntensity, 0,0)
+    gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
+    gridLayoutLevels.addWidget(lblContrast, 0,2)
+    gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
+    
+    spinBoxIntensity.valueChanged.connect(lambda:
+            graphicsView.graphicsItem.updateImageLevels(
+                spinBoxIntensity.value(), spinBoxContrast.value()))
+    spinBoxContrast.valueChanged.connect(lambda: 
+            graphicsView.graphicsItem.updateImageLevels(
+                spinBoxIntensity.value(), spinBoxContrast.value()))
+    
+    layout.addLayout(gridLayoutLevels) 
+    return spinBoxIntensity, spinBoxContrast
+    
+
+def setUpPixelDataLabels(layout):
+    pixelDataLabel = QLabel("Pixel data")
+    roiMeanLabel = QLabel("ROI Mean Value")
+    layout.addWidget(pixelDataLabel)
+    layout.addWidget(roiMeanLabel)
+    return pixelDataLabel, roiMeanLabel
 
 
 def displayImageROISubWindow(self, derivedImagePath=None):
@@ -56,53 +97,23 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             layout.addWidget(lblHiddenStudyID)
             layout.addWidget(lblHiddenImagePath)
 
-            coordsLabel = QLabel("Mouse Coords")
-            meanLabel = QLabel("ROI Mean Value")
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
-
             graphicsView = GraphicsView()
             if pixelArray is None:
                 lblImageMissing.show()
                 graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
                 graphicsView.setImage(pixelArray)
+            layout.addWidget(graphicsView)
+
+            pixelDataLabel, roiMeanLabel = setUpPixelDataLabels(layout)
 
             graphicsView.graphicsItem.sigMouseHovered.connect(
-                    lambda: displayImageDataUnderMouse(graphicsView, coordsLabel))
+            lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
             graphicsView.graphicsItem.sigMaskCreated.connect(lambda: print("Mask created"))
-        
-            lblIntensity = QLabel("Centre (Intensity)")
-            lblContrast = QLabel("Width (Contrast)")
-            lblIntensity.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            lblContrast.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            
-            spinBoxIntensity.setMinimum(-100000.00)
-            spinBoxContrast.setMinimum(-100000.00)
-            spinBoxIntensity.setMaximum(1000000000.00)
-            spinBoxContrast.setMaximum(1000000000.00)
-            spinBoxIntensity.setWrapping(True)
-            spinBoxContrast.setWrapping(True)
+
+            spinBoxIntensity, spinBoxContrast = setLevelsSpinBoxes(layout, graphicsView)
             spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
             spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
-            gridLayoutLevels = QGridLayout()
-            gridLayoutLevels.addWidget(lblIntensity, 0,0)
-            gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
-            gridLayoutLevels.addWidget(lblContrast, 0,2)
-            gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
-
-            spinBoxIntensity.valueChanged.connect(lambda:
-                    graphicsView.graphicsItem.updateImageLevels(
-                        spinBoxIntensity.value(), spinBoxContrast.value()))
-            spinBoxContrast.valueChanged.connect(lambda: 
-                    graphicsView.graphicsItem.updateImageLevels(
-                        spinBoxIntensity.value(), spinBoxContrast.value()))
-        
-            layout.addWidget(graphicsView)
-            layout.addLayout(gridLayoutLevels)
-            layout.addWidget(coordsLabel)
-            layout.addWidget(meanLabel)
-           
             setUpROITools(layout, graphicsView)
 
         except (IndexError, AttributeError):
@@ -148,42 +159,10 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
            
             imageSlider = QSlider(Qt.Horizontal)
 
-            coordsLabel = QLabel("Mouse Coords")
-            meanLabel = QLabel("ROI Mean Value")
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
-
             graphicsView = GraphicsView()
-
-            lblIntensity = QLabel("Centre (Intensity)")
-            lblContrast = QLabel("Width (Contrast)")
-            lblIntensity.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            lblContrast.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            
-            spinBoxIntensity.setMinimum(-100000.00)
-            spinBoxContrast.setMinimum(-100000.00)
-            spinBoxIntensity.setMaximum(1000000000.00)
-            spinBoxContrast.setMaximum(1000000000.00)
-            spinBoxIntensity.setWrapping(True)
-            spinBoxContrast.setWrapping(True)
-            gridLayoutLevels = QGridLayout()
-            gridLayoutLevels.addWidget(lblIntensity, 0,0)
-            gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
-            gridLayoutLevels.addWidget(lblContrast, 0,2)
-            gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
-
-            spinBoxIntensity.valueChanged.connect(lambda:
-                    graphicsView.graphicsItem.updateImageLevels(
-                        spinBoxIntensity.value(), spinBoxContrast.value()))
-            spinBoxContrast.valueChanged.connect(lambda: 
-                    graphicsView.graphicsItem.updateImageLevels(
-                        spinBoxIntensity.value(), spinBoxContrast.value()))
-        
             layout.addWidget(graphicsView)
-            layout.addLayout(gridLayoutLevels)
-            layout.addWidget(coordsLabel)
-            layout.addWidget(meanLabel)
-            
+            pixelDataLabel, roiMeanLabel = setUpPixelDataLabels(layout)
+            spinBoxIntensity, spinBoxContrast = setLevelsSpinBoxes(layout, graphicsView)
             setUpROITools(layout, graphicsView)
 
             imageSlider.setMinimum(1)
@@ -200,21 +179,15 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                   lambda: imageROISliderMoved(self, seriesName, 
                                                    imageList, 
                                                    imageSlider.value(),
-                                                   lblImageMissing, coordsLabel,
+                                                   lblImageMissing, pixelDataLabel,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
                                                    graphicsView, subWindow))
-            #imageSlider.valueChanged.connect(
-             #     lambda: updateROIMeanValue(getROIOject(viewBox), 
-             #                                  img.image, 
-             #                                  img, 
-             #                                  lblROIMeanValue))
-            #print('Num of images = {}'.format(len(imageList)))
-            #Display the first image in the viewer
+           
             imageROISliderMoved(self, seriesName, 
                                     imageList, 
                                     imageSlider.value(),
-                                    lblImageMissing, coordsLabel,
+                                    lblImageMissing, pixelDataLabel,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
                                     graphicsView, subWindow)
@@ -230,18 +203,18 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
 
 
-def displayImageDataUnderMouse(graphicsView, coordsLabel):
+def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
         xCoord = graphicsView.graphicsItem.xMouseCoord
         yCoord = graphicsView.graphicsItem.yMouseCoord
         pixelColour = graphicsView.graphicsItem.pixelColour
         pixelValue = graphicsView.graphicsItem.pixelValue
         str ="pixel value {}, pixel colour {} @ X = {}, Y = {}".format(pixelValue, pixelColour,
                                                                       xCoord, yCoord, )
-        coordsLabel.setText(str)
+        pixelDataLabel.setText(str)
 
 
 def imageROISliderMoved(self, seriesName, imageList, imageNumber,
-                        lblImageMissing, coordsLabel,
+                        lblImageMissing, pixelDataLabel,
                         spinBoxIntensity, spinBoxContrast,  
                         graphicsView, subWindow):
         """On the Multiple Image with ROI Display sub window, this
@@ -264,7 +237,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageNumber,
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
                     graphicsView.graphicsItem.sigMouseHovered.connect(
-                    lambda: displayImageDataUnderMouse(graphicsView, coordsLabel))
+                    lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
                     graphicsView.graphicsItem.sigMaskCreated.connect(lambda: print("Mask created"))
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
@@ -285,7 +258,9 @@ def setUpROITools(layout, graphicsView):
             btnDrawROI = QPushButton('Draw') 
             btnDrawROI.setToolTip('Allows the user to draw around a ROI')
             btnDrawROI.setCheckable(True)
-            btnDrawROI.clicked.connect(lambda checked: drawROI(checked, graphicsView))
+            btnDrawROI.clicked.connect(lambda checked: drawROI( checked, 
+                                                               graphicsView, 
+                                                               btnDrawROI))
 
             btnRemoveROI = QPushButton('Clear')
             btnRemoveROI.setToolTip('Clears the ROI from the image')
@@ -304,33 +279,12 @@ def setUpROITools(layout, graphicsView):
             logger.error('Error in setUpROITools: ' + str(e))
 
 
-def drawROI(checked, graphicsView):
+def drawROI(checked, graphicsView, btnDrawROI):
         if checked:
            graphicsView.graphicsItem.drawRoi = True
+           btnDrawROI.setStyleSheet("background-color: rgb(0,0,255); color: rgb(255,0,0);")
         else:
            graphicsView.graphicsItem.drawRoi = False
+           btnDrawROI.setStyleSheet(styleSheet.TRISTAN_GREY)
 
-
-def updateROIMeanValue(roi, pixelArray, imgItem, lbl):
-        try:
-            logger.info("DisplayImageROI.updateROIMeanValue called")
-            #As image's axis order is set to
-            #'row-major', then the axes are specified 
-            #in (y, x) order, axes=(1,0)
-            if roi is not None:
-                arrRegion = roi.getArrayRegion(pixelArray, imgItem, 
-                                axes=(1,0))
-                #, returnMappedCoords=True
-                #print('Mouse move')
-                #print(arrRegion)
-                #roiMean = round(np.mean(arrRegion[0]), 3)
-                roiMean = round(np.mean(arrRegion), 3)
-                lbl.setText("<h4>ROI Mean Value = {}</h4>".format(str(roiMean)))
-                if len(arrRegion[0]) <4:
-                    print(arrRegion[0])
-                    print ('Coords={}'.format(arrRegion[1]))
-
-        except Exception as e:
-            print('Error in DisplayImageROI.updateROIMeanValue: ' + str(e))
-            logger.error('Error in DisplayImageROI.updateROIMeanValue: ' + str(e)) 
 

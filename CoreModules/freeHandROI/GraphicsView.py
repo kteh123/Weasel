@@ -11,18 +11,12 @@ class GraphicsView(QGraphicsView):
         self.scene = QGraphicsScene(self)
         self._zoom = 0
         self.graphicsItem = None
-        
-        #self.myScale = 2
-        #self.graphicsItem.setScale(self.myScale)
-        self.fitInView()
-
         self.setScene(self.scene)
-        #self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
+        #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
 
     def setImage(self, pixelArray):
@@ -31,12 +25,10 @@ class GraphicsView(QGraphicsView):
                 self.graphicsItem = None
 
             self.graphicsItem = GraphicsItem(pixelArray)
+            self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.scene.addItem(self.graphicsItem)
         except Exception as e:
             print('Error in GraphicsView.setImage: ' + str(e))
-
-    def returnGraphicsItem(self):
-        return self.graphicsItem
 
 
     def wheelEvent(self, event):
@@ -49,12 +41,12 @@ class GraphicsView(QGraphicsView):
         if self._zoom > 0:
             self.scale(factor, factor)
         elif self._zoom == 0:
-            self.fitInView()
+            self.fitItemInView()
         else:
             self._zoom = 0
 
 
-    def fitInView(self, scale=True):
+    def fitItemInView(self, scale=True):
         if self.graphicsItem is not None:
             rect = QRectF(self.graphicsItem.pixMap.rect())
             if not rect.isNull():
