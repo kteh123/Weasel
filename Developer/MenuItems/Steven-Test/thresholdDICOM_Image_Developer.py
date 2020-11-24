@@ -32,7 +32,5 @@ def main(objWeasel):
         index_series += 1
     ui.closeMessageWindow(objWeasel)
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel)
-    # If I want to expand the tree, then I need to re-run the refresh in the following way
-    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID) # Still need to solve this double-call
+    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
     newSeries.DisplaySeries()

@@ -397,7 +397,6 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name + suffix)
                     newImagePathList.append(newFilePath)
-                # CAN WE UPDATE THE XML FILE WITHOUT THE SUFFIX AND IMAGE PATH LIST???
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 imagePathList, newImagePathList, suffix)
             return newImagePathList
@@ -561,15 +560,12 @@ class PixelArrayDICOMTools:
                 saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
                 # Record derived image in XML file
                 interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath, derivedImagePathList[0], suffix, newSeriesName=series_name)
-                # Can return the seriesTuple probably
             else:
                 saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
                 # Insert new series into the DICOM XML file
-                # if series_id AND series_name not None
-                # DOES IT NEED TO RETURN THE NEW SERIES_ID?
                 interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
                 
-            return derivedImagePathList # ALSO RETURN TUPLE SERIES ID HERE??? 
+            return derivedImagePathList
 
         except Exception as e:
             print('Error in function #.writePixelArrayToDicom: ' + str(e))
@@ -743,6 +739,14 @@ class Series:
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
             self.images = outputPath
 
+    @classmethod
+    def merge(cls, listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
+        outputSeries = cls.newSeriesFrom(listSeries[0], suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+        pathsList = [image for series in listSeries for image in series.images]
+        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
+        outputSeries.images = outputPathList
+        return outputSeries
+
     def DisplaySeries(self):
         UserInterfaceTools.displayImages(self.objWeasel, self.images)
 
@@ -843,6 +847,13 @@ class Image:
             self.path = outputPath[0]
             if series: series.add(self)
 
+    @classmethod
+    def merge(cls, listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
+        outputSeries = cls.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
+        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
+        outputSeries.images = outputPathList
+        return outputSeries
+    
     def DisplayImage(self):
         UserInterfaceTools.displayImages(self.objWeasel, self.path)
 

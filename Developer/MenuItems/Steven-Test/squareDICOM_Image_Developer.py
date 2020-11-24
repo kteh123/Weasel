@@ -19,7 +19,6 @@ def main(objWeasel):
         pixelArray = series.PixelArray
         pixelArray = np.square(pixelArray)
         newSeries.write(pixelArray)
-    ui.refreshWeasel(objWeasel)
     ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID) # Still need to solve this double-call
     newSeries.DisplaySeries()
         

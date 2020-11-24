@@ -23,8 +23,6 @@ def main(objWeasel):
     # Close the progress bar    
     ui.closeMessageWindow(objWeasel)
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel)
-    # If I want to expand the tree, then I need to re-run the refresh in the following way
-    ui.refreshWeasel(objWeasel, newSeriesName=imageList[-1].seriesID) # Still need to solve this double-call
+    ui.refreshWeasel(objWeasel, newSeriesName=imageList[-1].seriesID)
     # Display all checked images
     Image.DisplayImages(imageList)

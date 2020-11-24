@@ -16,19 +16,18 @@ def main(objWeasel):
     paramList = ui.inputWindow(inputDict, title="Input Parameters for the Gaussian Filter")
     if paramList is None: return # Exit function if the user hits the "Cancel" button
     standard_deviation_filter = paramList[0]
-    # Get selected images
-    imageList = ui.getCheckedImages(objWeasel)
-    newSeries = Image.newSeriesFrom(imageList, suffix=FILE_SUFFIX)
-    for image in imageList:
-        # Create new image based on the current image
-        newImage = Image.newImageFrom(image, series=newSeries)
-        # Get PixelArray from the selected images
-        pixelArray = image.PixelArray
-        # Apply Gaussian Filter
+    # Get checked series
+    seriesList = ui.getCheckedSeries(objWeasel)
+    for series in seriesList:
+        # Create a new Series for each Series checked
+        newSeries = Series.newSeriesFrom(series, suffix=FILE_SUFFIX, series_name="GaussianFiltered_"+str(series.seriesID))
+        # Get series' PixelArray
+        pixelArray = series.PixelArray
+        # Apply Gaussian filter
         pixelArray = gaussianFilter(pixelArray, standard_deviation_filter)
-        # Save as individual image into new Series
-        newImage.write(pixelArray, series=newSeries)
+        # Save resulting PixelArray into the new Series
+        newSeries.write(pixelArray)
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel)
+    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
     # Display resulting image
     newSeries.DisplaySeries() # Still need to solve this double-call

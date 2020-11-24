@@ -159,12 +159,23 @@
           <label>Gaussian Filter Developer (Slice-by-slice)</label>
           <shortcut>Ctrl+F+3</shortcut>
           <tooltip>gaussian</tooltip>
-          <module>gaussianFilterDICOM_Image_Developer</module>
+          <module>gaussianFilterDICOM_Image_Slice</module>
         </item>
 		<item>
-          <label>Multiply Series</label>
+          <label>Gaussian Filter Developer (GroupWise)</label>
+          <shortcut>Ctrl+F+3</shortcut>
+          <tooltip>gaussian</tooltip>
+          <module>gaussianFilterDICOM_Image_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (GroupWise)</label>
           <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
-          <module>multiplyDICOM_Series_Developer</module>
+          <module>multiplyDICOM_Series_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (Slice-by-slice)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_Slice</module>
         </item>
 		<item>
           <label>Threshold Developer (Slice-by-slice)</label>
