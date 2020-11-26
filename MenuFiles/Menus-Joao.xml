@@ -137,17 +137,6 @@
         </item>
   </menu>
   <menu name="Joao-Development">
-        <item>
-          <label>Merge Series (Developer)</label>
-          <tooltip>Merge selected images or series into 1 series</tooltip>
-          <module>mergeDICOM_Developer</module>
-        </item>
-		<item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
-        </item>
   </menu>
   <menu name="Steven-Test">
   		<item>
@@ -192,9 +181,20 @@
           <separator>yes</separator>
         </item>
         <item>
-          <label>Edit DICOM Tag Developer</label>
+          <label>Edit DICOM Tag</label>
           <tooltip>Choose DICOM header and change the selected files</tooltip>
           <module>editDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Merge Series</label>
+          <tooltip>Merge selected images or series into 1 series</tooltip>
+          <module>mergeDICOM_Developer</module>
+        </item>
+		<item>
+          <label>Rename Series</label>
+          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
+		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+          <module>renameSeries</module>
         </item>
   </menu>
 </menus>
