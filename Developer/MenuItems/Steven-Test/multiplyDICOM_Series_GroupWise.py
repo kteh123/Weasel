@@ -1,5 +1,5 @@
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import Series, Image
+from Developer.DeveloperTools import UserInterfaceTools
+#***************************************************************************
 import numpy as np
 FILE_SUFFIX = '_Multiplied'
 #***************************************************************************
@@ -10,20 +10,21 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
+    ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
-    seriesList = ui.getCheckedSeries(objWeasel)
+    seriesList = ui.getCheckedSeries()
     # If all dimensions are not the same then return error 
     if checkDimensionsMatch(seriesList) is None: return
 
     # Multiplication Loop
-    newSeries = Series.newSeriesFrom(seriesList[0], suffix=FILE_SUFFIX)
+    newSeries = seriesList[0].newSeriesFrom(suffix=FILE_SUFFIX)
     outputArray = seriesList[0].PixelArray
     for nextSeries in seriesList[1:]: # tupleSeries
         # Multiply inside the loop with the previous result
         outputArray *= nextSeries.PixelArray
     newSeries.write(outputArray)
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
+    ui.refreshWeasel(new_series_name=newSeries.seriesID)
     # Display series
     newSeries.DisplaySeries()
 

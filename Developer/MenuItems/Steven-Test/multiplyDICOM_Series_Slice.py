@@ -1,5 +1,5 @@
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import Series, Image
+from Developer.DeveloperTools import UserInterfaceTools
+#***************************************************************************
 import numpy as np
 FILE_SUFFIX = '_Multiplied'
 #***************************************************************************
@@ -10,12 +10,12 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
+    ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
-    seriesList = ui.getCheckedSeries(objWeasel)
+    seriesList = ui.getCheckedSeries()
     # If all dimensions are not the same then return error
     if checkDimensionsMatch(seriesList) is None: return
 
-    #newSeries = Series.newSeriesFrom(seriesList[0], suffix=FILE_SUFFIX)
     newSeries = seriesList[0].new(suffix=FILE_SUFFIX)
     nrOfImages = seriesList[0].numberChildren
     for i in range(nrOfImages):
@@ -25,7 +25,7 @@ def main(objWeasel):
         newImage = seriesList[0].children[i].new(series=newSeries)
         newImage.write(outputArray, series=newSeries)
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
+    ui.refreshWeasel(new_series_name=newSeries.seriesID)
     # Display series
     newSeries.DisplaySeries()
 

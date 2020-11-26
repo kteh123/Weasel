@@ -1,8 +1,5 @@
 import Developer.DeveloperTools as tools
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
-from Developer.DeveloperTools import GenericDICOMTools as dicom
-import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
+from Developer.DeveloperTools import UserInterfaceTools
 
 
 def isSeriesOnly(self):
@@ -10,9 +7,10 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
+    ui = UserInterfaceTools(objWeasel)
     if tools.treeView.isASeriesSelected(objWeasel):
-        seriesList = ui.getSelectedSeries(objWeasel)
-        series = seriesList[0]
+        seriesList = ui.getSelectedSeries()
+        series = seriesList[0] # Because the if conditional only gets the last series selected
         inputDict = {"New Series Name":"string"}
         paramList = ui.inputWindow(inputDict, title="Please type in the new series name")
         if paramList is None: return # Exit function if the user hits the "Cancel" button
@@ -20,6 +18,6 @@ def main(objWeasel):
         # Perform the change
         series.Item("SeriesDescription", name)
         # Change it in the TreeView
-        ui.refreshWeasel(objWeasel)
+        ui.refreshWeasel()
     else:
-        ui.showMessageWindow(objWeasel, msg="Please select a series to run this script", title="ERROR: Can't rename series")
+        ui.showMessageWindow(msg="Please select a series to run this script", title="ERROR: Can't rename series")

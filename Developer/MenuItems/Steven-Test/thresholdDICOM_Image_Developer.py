@@ -1,5 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import Series, Image
+from Developer.DeveloperTools import UserInterfaceTools
 #**************************************************************************
 from Developer.External.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
@@ -11,7 +10,8 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    seriesPathList = ui.getCheckedSeries(objWeasel)
+    ui = UserInterfaceTools(objWeasel)
+    seriesPathList = ui.getCheckedSeries()
     # Lower and upper threshold from the input window 
     inputDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
     info = "Insert a value between 0 and 100. Upper threshold must be greater than lower threshold"
@@ -21,16 +21,16 @@ def main(objWeasel):
     high_thresh = paramList[1]
     index_series = 1
     for series in seriesPathList:
-        newSeries = Series.newSeriesFrom(series, suffix=FILE_SUFFIX)
+        newSeries = series.new(suffix=FILE_SUFFIX)
         index_bar = 0
         for image in series.children:
-            newImage = Image.newImageFrom(image, series=newSeries)
-            index_bar = ui.progressBar(objWeasel, maxNumber=series.numberChildren, index=index_bar, msg="Thresholding and saving image {}", title="Threshold of series "+str(index_series))
+            newImage = image.new(series=newSeries)
+            index_bar = ui.progressBar(maxNumber=series.numberChildren, index=index_bar, msg="Thresholding and saving image {}", title="Threshold of series "+str(index_series))
             pixelArray = image.PixelArray
             pixelArray = thresholdPixelArray(pixelArray, low_thresh, high_thresh) # NOT WORKING WELL ON NEGATIVE IMAGES
             newImage.write(pixelArray, series=newSeries)
         index_series += 1
-    ui.closeMessageWindow(objWeasel)
+    ui.closeMessageWindow()
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
+    ui.refreshWeasel(new_series_name=newSeries.seriesID)
     newSeries.DisplaySeries()

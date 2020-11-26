@@ -1,5 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import Series, Image
+from Developer.DeveloperTools import UserInterfaceTools
 #**************************************************************************
 import numpy as np
 FILE_SUFFIX = "_Square"
@@ -13,12 +12,13 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    seriesList = ui.getCheckedSeries(objWeasel)
+    ui = UserInterfaceTools(objWeasel)
+    seriesList = ui.getCheckedSeries()
     for series in seriesList:
-        newSeries = Series.newSeriesFrom(series, suffix=FILE_SUFFIX)
+        newSeries = series.new(suffix=FILE_SUFFIX)
         pixelArray = series.PixelArray
         pixelArray = np.square(pixelArray)
         newSeries.write(pixelArray)
-    ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID) # Still need to solve this double-call
+    ui.refreshWeasel(new_series_name=newSeries.seriesID)
     newSeries.DisplaySeries()
         

@@ -1,5 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import Image
+from Developer.DeveloperTools import UserInterfaceTools, Image
 #**************************************************************************
 from Developer.External.imagingTools import invertAlgorithm
 FILE_SUFFIX = '_Invert'
@@ -7,8 +6,9 @@ FILE_SUFFIX = '_Invert'
 
 # Slice-by-slice approach + overwrite original image
 def main(objWeasel):
+    ui = UserInterfaceTools(objWeasel)
     # Get all images in the Checkboxes
-    imageList = ui.getCheckedImages(objWeasel)
+    imageList = ui.getCheckedImages()
     index_bar = 0
     for image in imageList:
         # Get PixelArray from the corresponding slice
@@ -17,12 +17,12 @@ def main(objWeasel):
         # Apply Invert
         pixelArray = invertAlgorithm(pixelArray, dataset)
         # Progress Bar
-        index_bar = ui.progressBar(objWeasel, maxNumber=len(imageList), index=index_bar, msg="Inverting and overwriting image {}", title="Invert checked series ")
+        index_bar = ui.progressBar(maxNumber=len(imageList), index=index_bar, msg="Inverting and overwriting image {}", title="Invert checked series ")
         # Overwrite - write() checks if file already exists so it writes new or overwrite
         image.write(pixelArray)
     # Close the progress bar    
-    ui.closeMessageWindow(objWeasel)
+    ui.closeMessageWindow()
     # Refresh the UI screen
-    ui.refreshWeasel(objWeasel, newSeriesName=imageList[-1].seriesID)
+    ui.refreshWeasel(new_series_name=imageList[-1].seriesID)
     # Display all checked images
     Image.DisplayImages(imageList)

@@ -21,28 +21,30 @@ class UserInterfaceTools:
     that allow the user to insert inputs and give an update of the pipeline steps through
     message windows. 
     """
-    @staticmethod 
+
+    def __init__(self, objWeasel):
+        self.objWeasel = objWeasel
+    
+
     def getCurrentStudy(self):
         """
         Returns the Study ID of the latest item selected in the Treeview.
         """
-        return self.selectedStudy
+        return self.objWeasel.selectedStudy
     
 
-    @staticmethod 
     def getCurrentSeries(self):
         """
         Returns the Series ID of the latest item selected in the Treeview.
         """
-        return self.selectedSeries
+        return self.objWeasel.selectedSeries
     
 
-    @staticmethod 
     def getCurrentImage(self):
         """
         Returns a string with the path of the latest selected image.
         """
-        return self.selectedImagePath
+        return self.objWeasel.selectedImagePath
 
 
     def getSelectedStudies(self):
@@ -50,14 +52,14 @@ class UserInterfaceTools:
         Returns a list with objects of class Study of the items selected in the Treeview.
         """
         studyList = []
-        studiesTreeViewList = treeView.returnSelectedStudies(self)
+        studiesTreeViewList = treeView.returnSelectedStudies(self.objWeasel)
         if studiesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were selected in the Treeview.",
                               title="No Studies Selected")
         else:
             for study in studiesTreeViewList:
-                studyList.append(Study.fromTreeView(self, study))
+                studyList.append(Study.fromTreeView(self.objWeasel, study))
         return studyList
 
 
@@ -66,14 +68,14 @@ class UserInterfaceTools:
         Returns a list with objects of class Series of the items selected in the Treeview.
         """
         seriesList = []
-        seriesTreeViewList = treeView.returnSelectedSeries(self)
+        seriesTreeViewList = treeView.returnSelectedSeries(self.objWeasel)
         if seriesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were selected in the Treeview.",
                               title="No Series Selected")
         else:
             for series in seriesTreeViewList:
-                seriesList.append(Series.fromTreeView(self, series))
+                seriesList.append(Series.fromTreeView(self.objWeasel, series))
         return seriesList
 
 
@@ -82,14 +84,14 @@ class UserInterfaceTools:
         Returns a list with objects of class Image of the items selected in the Treeview.
         """
         imagesList = []
-        imagesTreeViewList = treeView.returnSelectedImages(self)
+        imagesTreeViewList = treeView.returnSelectedImages(self.objWeasel)
         if imagesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were selected in the Treeview.",
                               title="No Images Selected")
         else:
             for images in imagesTreeViewList:
-                imagesList.append(Image.fromTreeView(self, images))
+                imagesList.append(Image.fromTreeView(self.objWeasel, images))
         return imagesList
     
 
@@ -98,14 +100,14 @@ class UserInterfaceTools:
         Returns a list with objects of class Study of the items checked in the Treeview.
         """
         studyList = []
-        studiesTreeViewList = treeView.returnCheckedStudies(self)
+        studiesTreeViewList = treeView.returnCheckedStudies(self.objWeasel)
         if studiesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were checked in the Treeview.",
                               title="No Studies Checked")
         else:
             for study in studiesTreeViewList:
-                studyList.append(Study.fromTreeView(self, study))
+                studyList.append(Study.fromTreeView(self.objWeasel, study))
         return studyList
     
 
@@ -114,14 +116,14 @@ class UserInterfaceTools:
         Returns a list with objects of class Series of the items checked in the Treeview.
         """
         seriesList = []
-        seriesTreeViewList = treeView.returnCheckedSeries(self)
+        seriesTreeViewList = treeView.returnCheckedSeries(self.objWeasel)
         if seriesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            UserInterfaceTools.showMessageWindow(self.objWeasel, msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
                               title="No Series Checked")
         else:
             for series in seriesTreeViewList:
-                seriesList.append(Series.fromTreeView(self, series))
+                seriesList.append(Series.fromTreeView(self.objWeasel, series))
 
         return seriesList
     
@@ -131,38 +133,36 @@ class UserInterfaceTools:
         Returns a list with objects of class Image of the items checked in the Treeview.
         """
         imagesList = []
-        imagesTreeViewList = treeView.returnCheckedImages(self)
+        imagesTreeViewList = treeView.returnCheckedImages(self.objWeasel)
         if imagesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were checked in the Treeview.",
                               title="No Images Checked")
         else:
             for images in imagesTreeViewList:
-                imagesList.append(Image.fromTreeView(self, images))
+                imagesList.append(Image.fromTreeView(self.objWeasel, images))
         return imagesList
 
 
-    @staticmethod 
     def getImagesFromSeries(self, studyID=None, seriesID=None):
         """
         Returns a list of strings with the paths of all images in (studyID, seriesID).
         """
         if (studyID is None) or (seriesID is None):
-            studyID = UserInterfaceTools.getCurrentStudy(self)
-            seriesID = UserInterfaceTools.getCurrentSeries(self)
-        return self.objXMLReader.getImagePathList(studyID, seriesID)
+            studyID = self.getCurrentStudy()
+            seriesID = self.getCurrentSeries()
+        return self.objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
 
 
-    @staticmethod 
     def getSeriesFromImages(self, inputPath):
         """
         Returns a list of strings with the paths of all images in (studyID, seriesID).
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
             return seriesID
         except Exception as e:
             print('Error in function #.getSeriesFromImages: ' + str(e))
@@ -173,15 +173,15 @@ class UserInterfaceTools:
         Displays a window in the User Interface with the title in "title" and
         with the message in "msg". The 2 strings in the arguments are the input by default.
         """
-        messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+        messageWindow.displayMessageSubWindow(self.objWeasel, "<H4>" + msg + "</H4>", title)
 
 
     def closeMessageWindow(self):
         """
         Closes any message window present in the User Interface.
         """
-        messageWindow.hideProgressBar(self)
-        messageWindow.closeMessageSubWindow(self)
+        messageWindow.hideProgressBar(self.objWeasel)
+        messageWindow.closeMessageSubWindow(self.objWeasel)
 
 
     def progressBar(self, maxNumber=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
@@ -189,9 +189,9 @@ class UserInterfaceTools:
         Updates the ProgressBar to the unit set in "index".
         """
         index += 1
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-        messageWindow.setMsgWindowProgBarValue(self, index)
+        messageWindow.displayMessageSubWindow(self.objWeasel, ("<H4>" + msg + "</H4>").format(index), title)
+        messageWindow.setMsgWindowProgBarMaxValue(self.objWeasel, maxNumber)
+        messageWindow.setMsgWindowProgBarValue(self.objWeasel, index)
         return index
     
     
@@ -241,22 +241,12 @@ class UserInterfaceTools:
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
-                displayMetaDataSubWindow(self, "Metadata for image {}".format(inputPath), dataset)
+                displayMetaDataSubWindow(self.objWeasel, "Metadata for image {}".format(inputPath), dataset)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
-                displayMetaDataSubWindow(self, "Metadata for image {}".format(inputPath[0]), dataset)
+                displayMetaDataSubWindow(self.objWeasel, "Metadata for image {}".format(inputPath[0]), dataset)
         except Exception as e:
             print('Error in function #.displayMetadata: ' + str(e))
-
-
-    def displaySeries(self, seriesTuple):
-        try:
-            studyID = seriesTuple[1]
-            seriesID = seriesTuple[2]
-            inputPath = UserInterfaceTools.getImagesFromSeries(self, studyID, seriesID)
-            displayImageColour.displayMultiImageSubWindow(self, inputPath, studyID, seriesID)
-        except Exception as e:
-            print('Error in function #.displaySeries: ' + str(e))
 
 
     def displayImages(self, inputPath):
@@ -265,25 +255,25 @@ class UserInterfaceTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
-                displayImageColour.displayImageSubWindow(self, studyID, seriesID, derivedImagePath=inputPath)
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath)
+                displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
-                displayImageColour.displayMultiImageSubWindow(self, inputPath, studyID, seriesID)
+                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
+                displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
             return
         except Exception as e:
             print('Error in function #.displayImages: ' + str(e))
         
     
-    def refreshWeasel(self, newSeriesName=None):
+    def refreshWeasel(self, new_series_name=None):
         """
         Refresh the user interface screen.
         """
         try:
-            if newSeriesName:
-                treeView.refreshDICOMStudiesTreeView(self, newSeriesName=newSeriesName)
+            if new_series_name:
+                treeView.refreshDICOMStudiesTreeView(self.objWeasel, newSeriesName=new_series_name)
             else:
-                treeView.refreshDICOMStudiesTreeView(self)
+                treeView.refreshDICOMStudiesTreeView(self.objWeasel)
         except Exception as e:
             print('Error in function #.refreshWeasel: ' + str(e))
 
@@ -707,8 +697,7 @@ class Series:
             children.append(Image.fromTreeView(objWeasel, imageItem))
         return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images, children=children)
     
-    @classmethod
-    def newSeriesFrom(cls, self, suffix=None, series_id=None, series_name=None, series_uid=None):
+    def new(self, suffix=None, series_id=None, series_name=None, series_uid=None):
         if series_id is None:
             series_id, _ = GenericDICOMTools.generateSeriesIDs(self.images)
         if series_name is None:
@@ -716,7 +705,7 @@ class Series:
         if series_uid is None:
             _, series_uid = GenericDICOMTools.generateSeriesIDs(self.images, seriesNumber=series_id)
         seriesID = str(series_id) + '_' + series_name
-        newSeries = cls(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
+        newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
         newSeries.referencePathsList = self.images
         return newSeries
 
@@ -735,19 +724,19 @@ class Series:
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
             self.images = outputPath
 
-    @classmethod
-    def merge(cls, listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
-        outputSeries = cls.newSeriesFrom(listSeries[0], suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+    @staticmethod
+    def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
+        outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
         pathsList = [image for series in listSeries for image in series.images]
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
         outputSeries.images = outputPathList
         return outputSeries
 
     def DisplaySeries(self):
-        UserInterfaceTools.displayImages(self.objWeasel, self.images)
+        UserInterfaceTools(self.objWeasel).displayImages(self.images)
 
     def DisplayMetadata(self):
-        UserInterfaceTools.displayMetadata(self.objWeasel, self.images)
+        UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
 
     @property
     def SeriesUID(self):
@@ -815,8 +804,8 @@ class Image:
         path = imageItem.text(3)
         return cls(objWeasel, subjectID, studyID, seriesID, path)
     
-    @classmethod
-    def newSeriesFrom(cls, listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None):
+    @staticmethod
+    def newSeriesFrom(listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None):
         pathsList = [image.path for image in listImages]
         if series_id is None:
             series_id, _ = GenericDICOMTools.generateSeriesIDs(pathsList)
@@ -829,12 +818,11 @@ class Image:
         newSeries.referencePathsList = pathsList
         return newSeries
 
-    @classmethod
-    def newImageFrom(cls, self, suffix='_Copy', series=None):
+    def new(self, suffix='_Copy', series=None):
         if series is None:
-            newImage = cls(self.objWeasel, self.subjectID, self.studyID, self.seriesID, '', suffix=suffix)
+            newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, '', suffix=suffix)
         else:
-            newImage = cls(series.objWeasel, series.subjectID, series.studyID, series.seriesID, '', suffix=suffix)
+            newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, '', suffix=suffix)
             newImage.parent = series
         newImage.referencePath = self.path
         return newImage
@@ -855,23 +843,23 @@ class Image:
             self.path = outputPath[0]
             if series: series.add(self)
 
-    @classmethod
-    def merge(cls, listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
-        outputSeries = cls.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
+    @staticmethod
+    def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
+        outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
         outputSeries.images = outputPathList
         return outputSeries
     
     def DisplayImage(self):
-        UserInterfaceTools.displayImages(self.objWeasel, self.path)
+        UserInterfaceTools(self.objWeasel).displayImages(self.path)
 
-    @classmethod
-    def DisplayImages(cls, listImages):
+    @staticmethod
+    def DisplayImages(listImages):
         pathsList = [image.path for image in listImages]
-        UserInterfaceTools.displayImages(listImages[0].objWeasel, pathsList)
+        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList)
 
     def DisplayMetadata(self):
-        UserInterfaceTools.displayMetadata(self.objWeasel, self.path)
+        UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
 
     @property
     def PixelArray(self):
