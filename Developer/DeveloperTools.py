@@ -480,10 +480,6 @@ class GenericDICOMTools:
             print('Error in function #.sortByEchoTime: ' + str(e))
         
 
-    # @staticmethod
-    # def sortByInversionTime(inputPath):
-
-
 class PixelArrayDICOMTools:
     
     @staticmethod
@@ -771,9 +767,21 @@ class Series:
     def Dimensions(self):
         return np.shape(self.PixelArray)
 
+    @property
+    def Rows(self):
+        return self.Item("Rows")
+
+    @property
+    def Columns(self):
+        return self.Item("Columns")
+
     def Item(self, tagDescription, newValue=None):
         if newValue:
             GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
+            if tagDescription == 'SeriesDescription':
+                interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
+            elif tagDescription == 'SeriesNumber':
+                interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
         itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
         return itemList
 
@@ -872,6 +880,14 @@ class Image:
     @property
     def Dimensions(self):
         return np.shape(self.PixelArray)
+
+    @property
+    def Rows(self):
+        return self.Item("Rows")
+
+    @property
+    def Columns(self):
+        return self.Item("Columns")
 
     def Item(self, tagDescription, newValue=None):
         if newValue:

@@ -1,5 +1,6 @@
 from Developer.DeveloperTools import UserInterfaceTools as ui
 from Developer.DeveloperTools import Series, Image
+import numpy as np
 FILE_SUFFIX = '_Multiplied'
 #***************************************************************************
 
@@ -11,27 +12,17 @@ def isSeriesOnly(self):
 def main(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries(objWeasel)
-    dimensions = seriesList[0].Dimensions
     # If all dimensions are not the same then return error
-    if checkDimensionsMatch(seriesList, dimensions) is None: return
-    ######## SLICE-BY-SLICE ########
-    # seriesNumber, seriesUID = dicom.generateSeriesIDs(imagePathList)
-    
-    #nr_of_images = SeriesList[0].numberChildren
-    #for i in range(nr_of_images):
-    #    outputArray = seriesList[0].children[i].PixelArray
-    #    for series in seriesList[1:]
-    #        outputArray *= series.children[i].PixelArray
-    #    newSeries.child[i].PixelArray(OutputArray)
+    if checkDimensionsMatch(seriesList) is None: return
 
-
-    newSeries = Series.newSeriesFrom(seriesList[0], suffix=FILE_SUFFIX)
+    #newSeries = Series.newSeriesFrom(seriesList[0], suffix=FILE_SUFFIX)
+    newSeries = seriesList[0].new(suffix=FILE_SUFFIX)
     nrOfImages = seriesList[0].numberChildren
     for i in range(nrOfImages):
-        newImage = Image.newImageFrom(seriesList[0].children[i], series=newSeries)
         outputArray = seriesList[0].children[i].PixelArray
         for series in seriesList[1:]:
             outputArray *= series.children[i].PixelArray
+        newImage = seriesList[0].children[i].new(series=newSeries)
         newImage.write(outputArray, series=newSeries)
     # Refresh the UI screen
     ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
@@ -39,8 +30,11 @@ def main(objWeasel):
     newSeries.DisplaySeries()
 
 
-def checkDimensionsMatch(seriesList, dimensions):
+def checkDimensionsMatch(seriesList):
+    dimensionsArray = []
     for series in seriesList:
-        if series.Dimensions != dimensions: # [(128,128), (256,256)] Try to be as close to DICOM as possible - Rows and Columns
-            return None
-    return True
+        dimensionsArray.append(series.Dimensions)
+    if len(np.unique(dimensionsArray, axis=0))==1:
+        return True
+    else:
+        return None

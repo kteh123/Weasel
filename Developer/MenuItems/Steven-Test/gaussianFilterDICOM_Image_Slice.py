@@ -19,10 +19,12 @@ def main(objWeasel):
     # Get checked images
     imageList = ui.getCheckedImages(objWeasel)
     # Create new Series where the resulting images will be saved
-    newSeries = Image.newSeriesFrom(imageList, suffix=FILE_SUFFIX)
+    #newSeries = Image.newSeriesFrom(imageList, suffix=FILE_SUFFIX)
+    newSeries = imageList[0].newSeriesFrom(suffix=FILE_SUFFIX)
     for image in imageList:
         # Create new image based on the current image
-        newImage = Image.newImageFrom(image, series=newSeries)
+        #newImage = Image.newImageFrom(image, series=newSeries)
+        newImage = image.new(series=newSeries)
         # Get PixelArray from the selected images
         pixelArray = image.PixelArray
         # Apply Gaussian Filter
@@ -32,4 +34,5 @@ def main(objWeasel):
     # Refresh the UI screen
     ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
     # Display resulting image
-    newSeries.DisplaySeries() # Still need to solve this double-call
+    newSeries.DisplaySeries()
+    

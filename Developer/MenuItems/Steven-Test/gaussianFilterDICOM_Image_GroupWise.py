@@ -20,7 +20,7 @@ def main(objWeasel):
     seriesList = ui.getCheckedSeries(objWeasel)
     for series in seriesList:
         # Create a new Series for each Series checked
-        newSeries = Series.newSeriesFrom(series, suffix=FILE_SUFFIX, series_name="GaussianFiltered_"+str(series.seriesID))
+        newSeries = series.new(series_name="GaussianFiltered_"+str(series.seriesID))
         # Get series' PixelArray
         pixelArray = series.PixelArray
         # Apply Gaussian filter
@@ -30,4 +30,4 @@ def main(objWeasel):
     # Refresh the UI screen
     ui.refreshWeasel(objWeasel, newSeriesName=newSeries.seriesID)
     # Display resulting image
-    newSeries.DisplaySeries() # Still need to solve this double-call
+    newSeries.DisplaySeries() 
