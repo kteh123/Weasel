@@ -261,6 +261,9 @@
     </Compile>
     <Compile Include="CoreModules\WEASEL\RegionsOfInterest_DICOM.py" />
     <Compile Include="CoreModules\WEASEL\readDICOM_Image.py" />
+    <Compile Include="CoreModules\WEASEL\ROI_Storage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\saveDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\styleSheet.py" />
     <Compile Include="CoreModules\WEASEL\UserImageColourSelection.py">

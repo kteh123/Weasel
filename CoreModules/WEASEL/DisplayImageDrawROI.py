@@ -1,4 +1,5 @@
 from PyQt5 import QtCore 
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QFileDialog,                            
                             QMessageBox, 
@@ -11,7 +12,8 @@ from PyQt5.QtWidgets import (QFileDialog,
                             QPushButton,  
                             QLabel,  
                             QSlider, 
-                            QCheckBox,  
+                            QCheckBox,
+                            QSpacerItem,
                             QComboBox)
 
 import os
@@ -26,11 +28,12 @@ import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
+from CoreModules.WEASEL.ROI_Storage import ROIs 
 import logging
 logger = logging.getLogger(__name__)
 
 
-def setLevelsSpinBoxes(layout, graphicsView):
+def setUpLevelsSpinBoxes(layout, graphicsView):
     spinBoxIntensity = QDoubleSpinBox()
     spinBoxContrast = QDoubleSpinBox()
     
@@ -45,7 +48,12 @@ def setLevelsSpinBoxes(layout, graphicsView):
     spinBoxContrast.setMaximum(1000000000.00)
     spinBoxIntensity.setWrapping(True)
     spinBoxContrast.setWrapping(True)
+
+    groupBoxLevels = QGroupBox('Image Levels')
     gridLayoutLevels = QGridLayout()
+    groupBoxLevels.setLayout(gridLayoutLevels)
+    layout.addWidget(groupBoxLevels)
+    
     gridLayoutLevels.addWidget(lblIntensity, 0,0)
     gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
     gridLayoutLevels.addWidget(lblContrast, 0,2)
@@ -62,12 +70,50 @@ def setLevelsSpinBoxes(layout, graphicsView):
     return spinBoxIntensity, spinBoxContrast
     
 
-def setUpPixelDataLabels(layout):
+def setUpPixelDataWidgets(layout, graphicsView, roiDicts):
     pixelDataLabel = QLabel("Pixel data")
     roiMeanLabel = QLabel("ROI Mean Value")
-    layout.addWidget(pixelDataLabel)
-    layout.addWidget(roiMeanLabel)
-    return pixelDataLabel, roiMeanLabel
+    lblCmbROIs =  QLabel("ROIs")
+    cmbROIs = QComboBox()
+    cmbROIs.currentIndexChanged.connect(
+        lambda: setRoiPathToBlue(roiDicts, cmbROIs.currentText(), graphicsView))
+    cmbROIs.toolTip = "Displays a list of ROIs created"
+    cmbROIs.setEditable(True)
+    cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
+    spacerItem = QSpacerItem(20, 20, 
+                             QtWidgets.QSizePolicy.Minimum, 
+                             QtWidgets.QSizePolicy.Expanding)
+
+
+    groupBoxImageData = QGroupBox('Image Data')
+    gridLayoutImageData = QGridLayout()
+    groupBoxImageData.setLayout(gridLayoutImageData)
+    layout.addWidget(groupBoxImageData)
+
+    gridLayoutImageData.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
+    gridLayoutImageData.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft)
+    gridLayoutImageData.addItem(spacerItem, 0,2, alignment=Qt.AlignLeft, )
+    gridLayoutImageData.addItem(spacerItem, 0,3, alignment=Qt.AlignLeft)
+    gridLayoutImageData.addWidget(pixelDataLabel, 1, 0, 1, 2)
+    gridLayoutImageData.addWidget(roiMeanLabel, 1, 2, 1, 2)
+    
+    return pixelDataLabel, roiMeanLabel, cmbROIs
+
+
+def setUpImageEventHandlers(graphicsView, pixelDataLabel, 
+                            roiMeanLabel, 
+                            roiDicts, cmbROIs):
+    graphicsView.graphicsItem.sigMouseHovered.connect(
+    lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
+
+    graphicsView.graphicsItem.sigMaskCreated.connect(
+        lambda: displayROIMeanAndStd(graphicsView, roiMeanLabel))
+
+    graphicsView.graphicsItem.sigMaskCreated.connect(
+        lambda:storeMaskData(graphicsView, roiDicts))
+
+    graphicsView.graphicsItem.sigMaskCreated.connect(
+        lambda:updateROIComboBox(roiDicts, cmbROIs))
 
 
 def displayImageROISubWindow(self, derivedImagePath=None):
@@ -98,6 +144,8 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             layout.addWidget(lblHiddenImagePath)
 
             graphicsView = GraphicsView()
+            roiDicts = ROIs()
+
             if pixelArray is None:
                 lblImageMissing.show()
                 graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
@@ -105,13 +153,14 @@ def displayImageROISubWindow(self, derivedImagePath=None):
                 graphicsView.setImage(pixelArray)
             layout.addWidget(graphicsView)
 
-            pixelDataLabel, roiMeanLabel = setUpPixelDataLabels(layout)
+            pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(layout, 
+                                                                          graphicsView,
+                                                                          roiDicts)
 
-            graphicsView.graphicsItem.sigMouseHovered.connect(
-            lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
-            graphicsView.graphicsItem.sigMaskCreated.connect(lambda: print("Mask created"))
+            setUpImageEventHandlers(graphicsView, pixelDataLabel, roiMeanLabel,
+                                    roiDicts, cmbROIs)
 
-            spinBoxIntensity, spinBoxContrast = setLevelsSpinBoxes(layout, graphicsView)
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView)
             spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
             spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
             setUpROITools(layout, graphicsView)
@@ -160,9 +209,12 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageSlider = QSlider(Qt.Horizontal)
 
             graphicsView = GraphicsView()
+            roiDicts = ROIs()
             layout.addWidget(graphicsView)
-            pixelDataLabel, roiMeanLabel = setUpPixelDataLabels(layout)
-            spinBoxIntensity, spinBoxContrast = setLevelsSpinBoxes(layout, graphicsView)
+            pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(layout, 
+                                                                          graphicsView,
+                                                                          roiDicts)
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView)
             setUpROITools(layout, graphicsView)
 
             imageSlider.setMinimum(1)
@@ -180,6 +232,8 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    imageList, 
                                                    imageSlider.value(),
                                                    lblImageMissing, pixelDataLabel,
+                                                   roiMeanLabel, cmbROIs, 
+                                                   roiDicts,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
                                                    graphicsView, subWindow))
@@ -187,7 +241,10 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageROISliderMoved(self, seriesName, 
                                     imageList, 
                                     imageSlider.value(),
-                                    lblImageMissing, pixelDataLabel,
+                                    lblImageMissing, 
+                                    pixelDataLabel, 
+                                    roiMeanLabel, cmbROIs,
+                                    roiDicts,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
                                     graphicsView, subWindow)
@@ -208,13 +265,45 @@ def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
         yCoord = graphicsView.graphicsItem.yMouseCoord
         pixelColour = graphicsView.graphicsItem.pixelColour
         pixelValue = graphicsView.graphicsItem.pixelValue
-        str ="pixel value {}, pixel colour {} @ X = {}, Y = {}".format(pixelValue, pixelColour,
-                                                                      xCoord, yCoord, )
+        str ="Pixel value {}, Pixel colour {} @ X = {}, Y = {}".format(pixelValue, pixelColour,
+                                                                      xCoord, yCoord)
         pixelDataLabel.setText(str)
 
 
+def displayROIMeanAndStd(graphicsView, roiMeanLabel):
+        mean, std = graphicsView.graphicsItem.getRoiMeanAndStd()
+        str ="ROI mean = {}, standard deviation = {}".format(mean, std)
+        roiMeanLabel.setText(str)
+        
+
+def storeMaskData(graphicsView, roiDicts):
+        pathCoords, mask = graphicsView.graphicsItem.getMaskData()
+        print (pathCoords)
+        roiDicts.addRegion(pathCoords, mask)
+
+
+def updateROIComboBox(roiDicts, cmbROIs):
+        listROIs = roiDicts.getListOfRegions()
+        cmbROIs.blockSignals(True)
+        cmbROIs.clear()
+        cmbROIs.addItems(listROIs)
+        cmbROIs.setCurrentIndex(cmbROIs.count() - 1)
+        cmbROIs.blockSignals(False)
+
+
+def setRoiPathToBlue(roiDicts, selectedRegionName, graphicsView):
+    #regionNames = roiDicts.keys()
+    for regionName in roiDicts.dictPathCoords:
+        listPathCoords = roiDicts.getPathCoords(regionName)
+        if selectedRegionName == regionName:
+            graphicsView.graphicsItem.setROIPathColour('blue', listPathCoords)
+        else:
+            graphicsView.graphicsItem.setROIPathColour('red', listPathCoords)
+       
+
 def imageROISliderMoved(self, seriesName, imageList, imageNumber,
-                        lblImageMissing, pixelDataLabel,
+                        lblImageMissing, pixelDataLabel, roiMeanLabel,
+                        cmbROIs, roiDicts,
                         spinBoxIntensity, spinBoxContrast,  
                         graphicsView, subWindow):
         """On the Multiple Image with ROI Display sub window, this
@@ -236,9 +325,8 @@ def imageROISliderMoved(self, seriesName, imageList, imageNumber,
                     graphicsView.setImage(pixelArray)
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
-                    graphicsView.graphicsItem.sigMouseHovered.connect(
-                    lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
-                    graphicsView.graphicsItem.sigMaskCreated.connect(lambda: print("Mask created"))
+                    setUpImageEventHandlers(graphicsView, pixelDataLabel, 
+                                            roiMeanLabel, roiDicts, cmbROIs)
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))

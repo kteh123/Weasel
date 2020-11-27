@@ -30,7 +30,9 @@ class GraphicsItem(QGraphicsObject):
         self.start_x = None
         self.start_y = None
         self.pathCoordsList = []
+        self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
+        self.listPathCoords = None
         self.mask = None
         self.drawRoi = False
         self.xMouseCoord  = None
@@ -48,9 +50,7 @@ class GraphicsItem(QGraphicsObject):
             self.pixMap = QPixmap.fromImage(self.qimage)
             #Need to reapply mask
             if self.mask is not None:
-                listCoords = self.getListRoiInnerPoints(self.mask)
-                self.fillFreeHandRoi(listCoords)
-                #This does not work
+                self.fillFreeHandRoi()
             self.update()
         except Exception as e:
             print('Error in GraphicsItem.updateImageLevels: ' + str(e))
@@ -138,9 +138,10 @@ class GraphicsItem(QGraphicsObject):
                     self.myPainter.end()
                     self.qimage =  self.pixMap.toImage()
                     self.update()
+                self.prevPathCoordsList = self.pathCoordsList
                 self.getMask(self.pathCoordsList)
-                listCoords = self.getListRoiInnerPoints(self.mask)
-                self.fillFreeHandRoi(listCoords)
+                self.listPathCoords = self.getListRoiInnerPoints(self.mask)
+                self.fillFreeHandRoi()
                 self.start_x = None 
                 self.start_y = None
                 self.last_x = None
@@ -148,8 +149,8 @@ class GraphicsItem(QGraphicsObject):
                 self.pathCoordsList = []
 
 
-    def fillFreeHandRoi(self, listCoords):
-        for coords in listCoords:
+    def fillFreeHandRoi(self):
+        for coords in self.listPathCoords:
             #x = coords[0]
             #y = coords[1]
             x = coords[1]
@@ -171,10 +172,34 @@ class GraphicsItem(QGraphicsObject):
             self.update()
 
 
+    def setROIPathColour(self, colour, listPathCoords):
+        if listPathCoords is not None:
+            for coords in listPathCoords:
+                x = coords[0]
+                y = coords[1]
+                pixelColour = self.qimage.pixel(x, y) 
+                pixelRGB =  QColor(pixelColour).getRgb()
+            
+                if colour == "red":
+                    value = qRgb(255, 0, 0)
+                elif colour == "blue":
+                    value = qRgb(0, 0, 255) 
+
+                self.qimage.setPixel(x, y, value)
+                #convert QImage to QPixmap to be able to update image
+                #with filled ROI
+                self.pixMap = QPixmap.fromImage(self.qimage)
+                self.update()
+
+
     def getRoiMeanAndStd(self):
         mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
         std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
         return mean, std
+
+
+    def getMaskData(self):
+        return self.prevPathCoordsList, self.mask
 
 
     def getListRoiInnerPoints(self, mask):
