@@ -137,6 +137,11 @@
         </item>
   </menu>
   <menu name="Joao-Development">
+    	<item>
+          <label>T2* Fitting</label>
+          <tooltip>Perform a T2* Fitting in the checked series</tooltip>
+          <module>T2Star_WEASEL</module>
+        </item>
   </menu>
   <menu name="Steven-Test">
   		<item>

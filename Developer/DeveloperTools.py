@@ -2,6 +2,7 @@ import os
 import numpy as np
 import random
 import pydicom
+import copy
 import itertools
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
@@ -714,6 +715,16 @@ class Series:
         self.children.append(Image)
         self.numberChildren = len(self.children)
 
+    def remove(self, allImages=False, Image=None):
+        if allImages == True:
+            self.images = []
+            self.children = []
+            self.numberChildren = 0
+        else:
+            self.images.remove(Image.path)
+            self.children.remove(Image)
+            self.numberChildren = len(self.children)
+
     def write(self, pixelArray):
         if self.images:
             PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
@@ -723,6 +734,11 @@ class Series:
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
             self.images = outputPath
+        
+    def sort(self, tagDescription):
+        if len(self.images) > 1:
+            imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
+            self.images = imagePathList
 
     @staticmethod
     def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
@@ -749,6 +765,18 @@ class Series:
         return self.seriesUID
 
     @property
+    def getMagnitude(self):
+        dicomList = self.PydicomList
+        modifiedSeries = copy.copy(self)
+        modifiedSeries.remove(allImages=True)
+        modifiedSeries.referencePathsList = self.images
+        for index in range(self.numberChildren):
+            flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            if flagMagnitude == True:
+                modifiedSeries.add(self.children[index])
+        return modifiedSeries
+
+    @property
     def PixelArray(self):
         return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
     
@@ -763,6 +791,21 @@ class Series:
     @property
     def Columns(self):
         return self.Item("Columns")
+    
+    @property
+    def EchoTimes(self):
+        echoList = []
+        if self.numberChildren > 1:
+            echoList = self.Item("EchoTime")
+            return echoList
+        elif self.numberChildren == 1:
+            # if Enhanced MRI
+            dataset = self.PydicomList[0]
+            for dataset in dataset.PerFrameFunctionalGroupsSequence:
+                echoList.append(dataset.MREchoSequence[0].EffectiveEchoTime)
+            return echoList
+        else:
+            return echoList
 
     def Item(self, tagDescription, newValue=None):
         if newValue:

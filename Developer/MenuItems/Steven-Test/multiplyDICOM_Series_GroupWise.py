@@ -17,7 +17,7 @@ def main(objWeasel):
     if checkDimensionsMatch(seriesList) is None: return
 
     # Multiplication Loop
-    newSeries = seriesList[0].newSeriesFrom(suffix=FILE_SUFFIX)
+    newSeries = seriesList[0].new(suffix=FILE_SUFFIX)
     outputArray = seriesList[0].PixelArray
     for nextSeries in seriesList[1:]: # tupleSeries
         # Multiply inside the loop with the previous result
