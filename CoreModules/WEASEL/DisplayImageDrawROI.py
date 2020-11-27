@@ -69,6 +69,67 @@ def setUpLevelsSpinBoxes(layout, graphicsView):
     layout.addLayout(gridLayoutLevels) 
     return spinBoxIntensity, spinBoxContrast
     
+#void comboBoxEditTextChanged( const QString& text ) 
+#{
+#    int index = someComboBox->findText(text);
+#    if(index != -1)
+#    {
+#      someComboBox->setCurrentIndex(index);
+#     }
+#    someComboBox->setItemText( someComboBox->currentIndex(), text );
+#}
+
+#from PyQt4.QtGui import * 
+#from PyQt4.QtCore import SIGNAL, Qt, QEvent
+
+
+#class MyComboBox(QComboBox):
+#    def __init__(self):
+#        QComboBox.__init__(self)
+
+#    def event(self, event):
+#        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Return:
+#            self.addItem(self.currentText())
+
+#        return QComboBox.event(self, event)
+
+#class Widget(QWidget): 
+#    def __init__(self, parent=None): 
+#        super(Widget, self).__init__(parent) 
+#        combo = MyComboBox() 
+#        combo.setEditable(True) 
+#        combo.addItems(['One', 'Two', 'Three'])
+#        lineedit = QLineEdit() 
+
+#        layout = QVBoxLayout() 
+#        layout.addWidget(combo) 
+#        layout.addWidget(lineedit) 
+#        self.setLayout(layout) 
+
+#app = QApplication([]) 
+#widget = Widget() 
+#widget.show() 
+#app.exec_()
+#The only issue with this is that it will allow adding duplicates to your combobox. I tried adding a self.findText(...) to the if statement b
+# creating a combo box widget 
+
+#new example
+#        self.combo_box = QComboBox(self) 
+  
+#        # setting geometry of combo box 
+#        self.combo_box.setGeometry(200, 150, 150, 30) 
+  
+#        # geek list 
+#        geek_list = ["Sayian", "Super Saiyan", "Super Sayian 2"] 
+  
+#        # adding list of items to combo box 
+#        self.combo_box.addItems(geek_list) 
+  
+#        # creating a line edit 
+#        edit = QLineEdit(self) 
+  
+#        # setting line edit 
+#        self.combo_box.setLineEdit(edit) 
 
 def setUpPixelDataWidgets(layout, graphicsView, roiDicts):
     pixelDataLabel = QLabel("Pixel data")
@@ -77,6 +138,7 @@ def setUpPixelDataWidgets(layout, graphicsView, roiDicts):
     cmbROIs = QComboBox()
     cmbROIs.currentIndexChanged.connect(
         lambda: setRoiPathToBlue(roiDicts, cmbROIs.currentText(), graphicsView))
+    cmbROIs.editTextChanged.connect( lambda newtext: print(newtext))
     cmbROIs.toolTip = "Displays a list of ROIs created"
     cmbROIs.setEditable(True)
     cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
@@ -278,7 +340,6 @@ def displayROIMeanAndStd(graphicsView, roiMeanLabel):
 
 def storeMaskData(graphicsView, roiDicts):
         pathCoords, mask = graphicsView.graphicsItem.getMaskData()
-        print (pathCoords)
         roiDicts.addRegion(pathCoords, mask)
 
 
@@ -292,7 +353,6 @@ def updateROIComboBox(roiDicts, cmbROIs):
 
 
 def setRoiPathToBlue(roiDicts, selectedRegionName, graphicsView):
-    #regionNames = roiDicts.keys()
     for regionName in roiDicts.dictPathCoords:
         listPathCoords = roiDicts.getPathCoords(regionName)
         if selectedRegionName == regionName:

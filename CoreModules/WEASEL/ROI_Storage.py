@@ -9,7 +9,6 @@ class ROIs():
         #get next ROI name
         self.regionNumber += 1
         regionName = "region" + str(self.regionNumber)
-        print(regionName)
         self.dictPathCoords[regionName] = pathCoords
         self.dictMasks[regionName] = mask
 

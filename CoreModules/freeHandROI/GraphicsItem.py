@@ -96,20 +96,9 @@ class GraphicsItem(QGraphicsObject):
                 self.start_x = int(self.last_x)
                 self.start_y = int(self.last_y)
                 return #  Ignore the first time.
-            self.myPainter = QPainter(self.pixMap)
-            myPen = self.myPainter.pen()
-            myPen.setWidth(1) # 1 pixel
-            myPen.setColor(QColor("#FF0000")) #red
-            self.myPainter.setPen(myPen)
-            #Draws a line from (x1 , y1 ) to (x2 , y2 ).
             xCoord = event.pos().x()
             yCoord = event.pos().y()
-            self.myPainter.drawLine(self.last_x, self.last_y, xCoord, yCoord)
-            self.myPainter.end() 
-            #The pixmap has changed (it was drawn on), so update it
-            #back to the original image
-            self.qimage =  self.pixMap.toImage()
-            self.update()
+            self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
 
             # Update the origin for next time.
             self.last_x = xCoord
@@ -128,16 +117,8 @@ class GraphicsItem(QGraphicsObject):
                     #free hand drawn ROI is not closed, so need to draw a
                     #straight line from the coordinates of its start to
                     #the coordinates of its last point
-                    self.myPainter = QPainter(self.pixMap)
-                    p = self.myPainter.pen()
-                    p.setWidth(1) #1 pixel
-                    p.setColor(QColor("#FF0000")) #red
-                    self.myPainter.setPen(p)
-                    #self.myPainter.setRenderHint(QPainter.Antialiasing)
-                    self.myPainter.drawLine(self.last_x, self.last_y, self.start_x, self.start_y)
-                    self.myPainter.end()
-                    self.qimage =  self.pixMap.toImage()
-                    self.update()
+                    self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
+                    
                 self.prevPathCoordsList = self.pathCoordsList
                 self.getMask(self.pathCoordsList)
                 self.listPathCoords = self.getListRoiInnerPoints(self.mask)
@@ -147,6 +128,21 @@ class GraphicsItem(QGraphicsObject):
                 self.last_x = None
                 self.last_y = None
                 self.pathCoordsList = []
+
+    def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
+        objPainter = QPainter(self.pixMap)
+        objPen = objPainter.pen()
+        objPen.setWidth(1) #1 pixel
+        if colour == 'red':
+            objPen.setColor(QColor("#FF0000")) #red
+        else:
+            objPen.setColor(QColor("#0000FF")) #blue
+        objPainter.setPen(objPen)
+        #self.objPainter.setRenderHint(QPainter.Antialiasing)
+        objPainter.drawLine(startX, startY, endX, endY)
+        objPainter.end()
+        self.qimage =  self.pixMap.toImage()
+        self.update()
 
 
     def fillFreeHandRoi(self):
@@ -190,6 +186,19 @@ class GraphicsItem(QGraphicsObject):
                 #with filled ROI
                 self.pixMap = QPixmap.fromImage(self.qimage)
                 self.update()
+
+                #Test if the ROI was not closed when drawn,
+                #so it was closed with a staight line.
+                lastIndex = len(listPathCoords)-1
+                startX = listPathCoords[0][0]
+                startY = listPathCoords[0][1]
+                endX = listPathCoords[lastIndex][0]
+                endY = listPathCoords[lastIndex][1]
+                if int(endX) != int(startX) and int(endY) != int(startY):
+                    #free hand drawn ROI is not closed, 
+                    #so draw a straight line between start and end points
+                    self.drawStraightLine(startX, startY, endX, endY, colour=colour)
+                    
 
 
     def getRoiMeanAndStd(self):
