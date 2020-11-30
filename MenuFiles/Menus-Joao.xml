@@ -142,6 +142,21 @@
           <tooltip>Perform a T2* Fitting in the checked series</tooltip>
           <module>T2Star_WEASEL</module>
         </item>
+		<item>
+          <label>B0 Map</label>
+          <tooltip>Calculate B0 Map in the checked series</tooltip>
+          <module>B0Map_WEASEL</module>
+        </item>
+		<item>
+          <label>T2 Map</label>
+          <tooltip>Calculate T2 Map in the checked series</tooltip>
+          <module>T2Map_WEASEL</module>
+        </item>
+		<item>
+          <label>T1 Map</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_WEASEL</module>
+        </item>
   </menu>
   <menu name="Steven-Test">
   		<item>

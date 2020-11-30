@@ -1,5 +1,5 @@
 from Developer.DeveloperTools import UserInterfaceTools
-from Developer.External.ukat.mapping.t2star import T2Star
+from Developer.External.ukat.mapping.t2 import T2
 import re
 #***************************************************************************
 import numpy as np
@@ -18,29 +18,26 @@ def main(objWeasel):
 
     for series in seriesList:
         seriesMagnitude = series.getMagnitude
-        if checkT2Star(seriesMagnitude):
+        if checkT2(seriesMagnitude):
             seriesMagnitude.sort("EchoTime")
             seriesMagnitude.sort("SliceLocation")
             te = np.unique(seriesMagnitude.EchoTimes)
             image = np.transpose(seriesMagnitude.PixelArray)
             reformatShape = (np.shape(image)[0], np.shape(image)[1], int(np.shape(image)[2]/len(te)), len(te))
             image = image.reshape(reformatShape)
-            # Initialise the loglin mapping object
-            mapper_loglin = T2Star(image, te, method='loglin')
-            # mapper_2p_exp = T2Star(image, te, method='2p_exp')
-            # Extract the T2* map from the object
-            t2star_loglin = mapper_loglin.t2star_map
+            mapper = T2(image, te)
+            t2Map =  mapper.t2_map
             newSeries = seriesMagnitude.new(suffix=FILE_SUFFIX)
-            newSeries.write(np.transpose(t2star_loglin))
+            newSeries.write(np.transpose(t2Map))
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series
             newSeries.DisplaySeries()
         else:
-            ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T2* Map', title='NOT POSSIBLE TO CALCULATE T2* MAP')
+            ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T2 Map', title='NOT POSSIBLE TO CALCULATE T2 MAP')
 
 
-def checkT2Star(series):
+def checkT2(series):
     numberEchoes = len(np.unique(series.EchoTimes))
     if (numberEchoes > 6) and (re.match(".*t2.*", series.seriesID.lower()) or re.match(".*r2.*", series.seriesID.lower())):
         return True

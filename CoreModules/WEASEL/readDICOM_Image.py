@@ -300,7 +300,7 @@ def checkImageType(dataset):
             if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
                 if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagMagnitude = True
-                elif set(['P', 'PHASE', 'B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                elif set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagPhase = True
                 elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagReal = True

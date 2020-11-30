@@ -765,15 +765,45 @@ class Series:
         return self.seriesUID
 
     @property
+    # Could think of an alternative for Image, such as "isMagnitude"
     def getMagnitude(self):
         dicomList = self.PydicomList
-        modifiedSeries = copy.copy(self)
+        #modifiedSeries = copy.copy(self)
+        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
         modifiedSeries.remove(allImages=True)
         modifiedSeries.referencePathsList = self.images
         for index in range(self.numberChildren):
             flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagMagnitude == True:
                 modifiedSeries.add(self.children[index])
+        return modifiedSeries
+
+    @property
+    def getPhase(self):
+        dicomList = self.PydicomList
+        #modifiedSeries = copy.copy(self)
+        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        modifiedSeries.remove(allImages=True)
+        modifiedSeries.referencePathsList = self.images
+        for index in range(self.numberChildren):
+            _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            if flagPhase == True:
+                modifiedSeries.add(self.children[index])
+        # If no phase images were detected, have a look at Real and Imaginary
+        if len(modifiedSeries.images) == 0:
+            realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+            imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+            for index in range(self.numberChildren):
+                _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
+                if flagReal:
+                    realSeries.add(self.children[index])
+                elif flagImaginary:
+                    imaginarySeries.add(self.children[index])
+            if len(realSeries.images) > 0 and len(imaginarySeries.images) > 0:
+                phaseImage =  np.arctan2(imaginarySeries.PixelArray, realSeries.PixelArray)
+                modifiedSeries.referencePathsList = realSeries.images
+                realSeries.write(phaseImage)
+                modifiedSeries = realSeries
         return modifiedSeries
 
     @property
