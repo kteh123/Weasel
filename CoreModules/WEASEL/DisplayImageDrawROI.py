@@ -64,88 +64,28 @@ def setUpLevelsSpinBoxes(layout, graphicsView):
                 spinBoxIntensity.value(), spinBoxContrast.value()))
     spinBoxContrast.valueChanged.connect(lambda: 
             graphicsView.graphicsItem.updateImageLevels(
-                spinBoxIntensity.value(), spinBoxContrast.value()))
-    
+                spinBoxIntensity.value(), spinBoxContrast.value()))  
     layout.addLayout(gridLayoutLevels) 
     return spinBoxIntensity, spinBoxContrast
     
-#void comboBoxEditTextChanged( const QString& text ) 
-#{
-#    int index = someComboBox->findText(text);
-#    if(index != -1)
-#    {
-#      someComboBox->setCurrentIndex(index);
-#     }
-#    someComboBox->setItemText( someComboBox->currentIndex(), text );
-#}
-
-#from PyQt4.QtGui import * 
-#from PyQt4.QtCore import SIGNAL, Qt, QEvent
-
-
-#class MyComboBox(QComboBox):
-#    def __init__(self):
-#        QComboBox.__init__(self)
-
-#    def event(self, event):
-#        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Return:
-#            self.addItem(self.currentText())
-
-#        return QComboBox.event(self, event)
-
-#class Widget(QWidget): 
-#    def __init__(self, parent=None): 
-#        super(Widget, self).__init__(parent) 
-#        combo = MyComboBox() 
-#        combo.setEditable(True) 
-#        combo.addItems(['One', 'Two', 'Three'])
-#        lineedit = QLineEdit() 
-
-#        layout = QVBoxLayout() 
-#        layout.addWidget(combo) 
-#        layout.addWidget(lineedit) 
-#        self.setLayout(layout) 
-
-#app = QApplication([]) 
-#widget = Widget() 
-#widget.show() 
-#app.exec_()
-#The only issue with this is that it will allow adding duplicates to your combobox. I tried adding a self.findText(...) to the if statement b
-# creating a combo box widget 
-
-#new example
-#        self.combo_box = QComboBox(self) 
-  
-#        # setting geometry of combo box 
-#        self.combo_box.setGeometry(200, 150, 150, 30) 
-  
-#        # geek list 
-#        geek_list = ["Sayian", "Super Saiyan", "Super Sayian 2"] 
-  
-#        # adding list of items to combo box 
-#        self.combo_box.addItems(geek_list) 
-  
-#        # creating a line edit 
-#        edit = QLineEdit(self) 
-  
-#        # setting line edit 
-#        self.combo_box.setLineEdit(edit) 
 
 def setUpPixelDataWidgets(layout, graphicsView, roiDicts):
     pixelDataLabel = QLabel("Pixel data")
     roiMeanLabel = QLabel("ROI Mean Value")
     lblCmbROIs =  QLabel("ROIs")
     cmbROIs = QComboBox()
+    cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
     cmbROIs.currentIndexChanged.connect(
         lambda: setRoiPathToBlue(roiDicts, cmbROIs.currentText(), graphicsView))
-    cmbROIs.editTextChanged.connect( lambda newtext: print(newtext))
+    cmbROIs.currentIndexChanged.connect(
+        lambda: roiDicts.setPreviousRegionName(cmbROIs.currentText()))
+    cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, roiDicts, text))
     cmbROIs.toolTip = "Displays a list of ROIs created"
     cmbROIs.setEditable(True)
     cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
     spacerItem = QSpacerItem(20, 20, 
                              QtWidgets.QSizePolicy.Minimum, 
                              QtWidgets.QSizePolicy.Expanding)
-
 
     groupBoxImageData = QGroupBox('Image Data')
     gridLayoutImageData = QGridLayout()
@@ -160,6 +100,18 @@ def setUpPixelDataWidgets(layout, graphicsView, roiDicts):
     gridLayoutImageData.addWidget(roiMeanLabel, 1, 2, 1, 2)
     
     return pixelDataLabel, roiMeanLabel, cmbROIs
+
+
+def roiNameChanged(cmbROIs, roiDicts, newText):
+    try:
+        index = cmbROIs.findText(newText);
+        currentIndex = cmbROIs.currentIndex()
+        if index == -1:
+            cmbROIs.setItemText(currentIndex, newText);
+            roiDicts.renameDictionaryKey(newText)
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e)) 
 
 
 def setUpImageEventHandlers(graphicsView, pixelDataLabel, 
