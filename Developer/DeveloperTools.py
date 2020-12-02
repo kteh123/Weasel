@@ -735,10 +735,13 @@ class Series:
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
             self.images = outputPath
         
-    def sort(self, tagDescription):
+    def sort(self, tagDescription, *argv):
         if len(self.images) > 1:
             imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
             self.images = imagePathList
+            for tag in argv:
+                imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tag)
+                self.images = imagePathList
 
     @staticmethod
     def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):

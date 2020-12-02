@@ -15,23 +15,21 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
-
     for series in seriesList:
         seriesMagnitude = series.getMagnitude
         if checkT2Star(seriesMagnitude):
-            seriesMagnitude.sort("EchoTime")
-            seriesMagnitude.sort("SliceLocation")
+            seriesMagnitude.sort("EchoTime", "SliceLocation")
             te = np.unique(seriesMagnitude.EchoTimes)
-            image = np.transpose(seriesMagnitude.PixelArray)
-            reformatShape = (np.shape(image)[0], np.shape(image)[1], int(np.shape(image)[2]/len(te)), len(te))
-            image = image.reshape(reformatShape)
+            pixelArray = np.transpose(seriesMagnitude.PixelArray) # (256, 256, 60)
+            reformatShape = (np.shape(pixelArray)[0], np.shape(pixelArray)[1], int(np.shape(pixelArray)[2]/len(te)), len(te))
+            pixelArray = pixelArray.reshape(reformatShape) # (256, 256, 5, 12)
             # Initialise the loglin mapping object
-            mapper_loglin = T2Star(image, te, method='loglin')
-            # mapper_2p_exp = T2Star(image, te, method='2p_exp')
+            mapper_loglin = T2Star(pixelArray, te, method='loglin')
+            # mapper_2p_exp = T2Star(pixelArray, te, method='2p_exp')
             # Extract the T2* map from the object
-            t2star_loglin = mapper_loglin.t2star_map
+            t2star_loglin = mapper_loglin.t2star_map  # (256, 256, 5)
             newSeries = seriesMagnitude.new(suffix=FILE_SUFFIX)
-            newSeries.write(np.transpose(t2star_loglin))
+            newSeries.write(np.transpose(t2star_loglin))  # (5, 256, 256)
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series

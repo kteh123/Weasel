@@ -15,19 +15,16 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
-
-    # STILL VERY DRAFT
-
     for series in seriesList:
         seriesMagnitude = series.getMagnitude
         if checkT1(seriesMagnitude):
             seriesMagnitude.sort("EchoTime")
             seriesMagnitude.sort("SliceLocation")
             te = np.unique(seriesMagnitude.EchoTimes)
-            image = np.transpose(seriesMagnitude.PixelArray)
-            reformatShape = (np.shape(image)[0], np.shape(image)[1], int(np.shape(image)[2]/len(te)), len(te))
-            image = image.reshape(reformatShape)
-            mapper = T2(image, te)
+            pixelArray = np.transpose(seriesMagnitude.PixelArray)
+            reformatShape = (np.shape(pixelArray)[0], np.shape(pixelArray)[1], int(np.shape(pixelArray)[2]/len(te)), len(te))
+            pixelArray = pixelArray.reshape(reformatShape)
+            mapper = T2(pixelArray, te)
             t2Map =  mapper.t2_map
             newSeries = seriesMagnitude.new(suffix=FILE_SUFFIX)
             newSeries.write(np.transpose(t2Map))
