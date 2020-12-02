@@ -6,7 +6,8 @@ import numpy as np
 from pyqtgraph import functions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
-
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
@@ -42,6 +43,7 @@ class GraphicsItem(QGraphicsObject):
 
     def updateImageLevels(self, intensity, contrast):
         try:
+            print("in updateImageLevels")
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
             imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
@@ -143,6 +145,21 @@ class GraphicsItem(QGraphicsObject):
         self.update()
 
 
+    def reloadImage(self):
+        self.qimage = None
+        self.pixMap = None
+        self.qimage = self.origQimage
+        self.pixMap = QPixmap.fromImage(self.qimage)
+        self.update()
+
+
+    def reloadMask(self, mask):
+        #redisplays the ROI represented by mask
+        self.listPathCoords = self.getListRoiInnerPoints(mask)
+        self.fillFreeHandRoi()
+        self.listPathCoords = []
+
+
     def fillFreeHandRoi(self):
         for coords in self.listPathCoords:
             #x = coords[0]
@@ -206,7 +223,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def getMaskData(self):
-        return self.prevPathCoordsList, self.mask
+        return self.mask
 
 
     def getListRoiInnerPoints(self, mask):
@@ -216,6 +233,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def getMask(self, roiLineCoords):
+            self.mask = None
             ny, nx = np.shape(self.pixelArray)
             #print("roiLineCoords ={}".format(roiLineCoords))
             # Create vertex coordinates for each grid cell...

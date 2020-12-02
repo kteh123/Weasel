@@ -5,16 +5,18 @@ class ROIs():
         self.prevRegionName = None
 
 
-    def addRegion(self, pathCoords, mask):
-        #get next ROI name
-        self.regionNumber += 1
-        regionName = "region" + str(self.regionNumber)
-        self.dictMasks[regionName] = mask
+    def addRegion(self, regionName,  mask):
+        if regionName in self.dictMasks:
+            #add to an existing ROI using boolean OR (|) to get the union
+            self.dictMasks[regionName] = self.dictMasks[regionName] | mask
+        else:
+            #a new ROI
+            self.dictMasks[regionName] = mask
+
 
     def getNextRegionName(self):
         self.regionNumber += 1
         return "region" + str(self.regionNumber)
-       
 
 
     def getListOfRegions(self):
@@ -26,7 +28,15 @@ class ROIs():
 
 
     def getMask(self, regionName):
-        return self.dictMasks[regionName]
+        if regionName in self.dictMasks: 
+            return self.dictMasks[regionName]
+        else:
+            return None
+
+
+    def deleteMask(self, regionName):
+        if regionName in self.dictMasks: 
+            del self.dictMasks[regionName]
 
 
     def renameDictionaryKey(self, newName):
@@ -36,8 +46,13 @@ class ROIs():
                 pass
             else:
                 oldName = newName[0 : len(newName)-1]
+            
+            if newName not in self.dictMasks:
+                self.dictMasks[newName] = self.dictMasks.pop(oldName)
+                return True
+            else:
+                return False
 
-            self.dictMasks[newName] = self.dictMasks.pop(oldName)
         except Exception as e:
             print('Error in ROI_Storage.renameDictionaryKey: ' + str(e))
            
