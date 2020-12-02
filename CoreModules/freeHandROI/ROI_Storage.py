@@ -1,8 +1,7 @@
 class ROIs():
     def __init__(self):
-        self.dictPathCoords = {}
         self.dictMasks = {}
-        self.regionNumber = 0
+        self.regionNumber = 1
         self.prevRegionName = None
 
 
@@ -10,8 +9,12 @@ class ROIs():
         #get next ROI name
         self.regionNumber += 1
         regionName = "region" + str(self.regionNumber)
-        self.dictPathCoords[regionName] = pathCoords
         self.dictMasks[regionName] = mask
+
+    def getNextRegionName(self):
+        self.regionNumber += 1
+        return "region" + str(self.regionNumber)
+       
 
 
     def getListOfRegions(self):
@@ -26,10 +29,6 @@ class ROIs():
         return self.dictMasks[regionName]
 
 
-    def getPathCoords(self, regionName):
-        return self.dictPathCoords[regionName]
-
-
     def renameDictionaryKey(self, newName):
         try:
             oldName = self.prevRegionName
@@ -38,7 +37,6 @@ class ROIs():
             else:
                 oldName = newName[0 : len(newName)-1]
 
-            self.dictPathCoords[newName] = self.dictPathCoords.pop(oldName)
             self.dictMasks[newName] = self.dictMasks.pop(oldName)
         except Exception as e:
             print('Error in ROI_Storage.renameDictionaryKey: ' + str(e))

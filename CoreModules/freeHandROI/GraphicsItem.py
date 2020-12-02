@@ -34,7 +34,6 @@ class GraphicsItem(QGraphicsObject):
         self.setAcceptHoverEvents(True)
         self.listPathCoords = None
         self.mask = None
-        self.drawRoi = False
         self.xMouseCoord  = None
         self.yMouseCoord  = None
         self.pixelColour = None
@@ -89,45 +88,44 @@ class GraphicsItem(QGraphicsObject):
 
 
     def mouseMoveEvent(self, event):
-        if self.drawRoi:
-            if self.last_x is None: # First event.
-                self.last_x = (event.pos()).x()
-                self.last_y = (event.pos()).y()
-                self.start_x = int(self.last_x)
-                self.start_y = int(self.last_y)
-                return #  Ignore the first time.
-            xCoord = event.pos().x()
-            yCoord = event.pos().y()
-            self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
+        if self.last_x is None: # First event.
+            self.last_x = (event.pos()).x()
+            self.last_y = (event.pos()).y()
+            self.start_x = int(self.last_x)
+            self.start_y = int(self.last_y)
+            return #  Ignore the first time.
+        xCoord = event.pos().x()
+        yCoord = event.pos().y()
+        self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
 
-            # Update the origin for next time.
-            self.last_x = xCoord
-            self.last_y = yCoord
-            self.pathCoordsList.append([self.last_x, self.last_y])
+        # Update the origin for next time.
+        self.last_x = xCoord
+        self.last_y = yCoord
+        self.pathCoordsList.append([self.last_x, self.last_y])
         
 
     def mouseReleaseEvent(self, event):
-        if self.drawRoi:
-            if  (self.last_x != None and self.start_x != None 
-                 and self.last_y != None and self.start_y != None):
-                if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
-                    #free hand drawn ROI is closed, so no further action needed
-                    pass
-                else:
-                    #free hand drawn ROI is not closed, so need to draw a
-                    #straight line from the coordinates of its start to
-                    #the coordinates of its last point
-                    self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
+        if  (self.last_x != None and self.start_x != None 
+                and self.last_y != None and self.start_y != None):
+            if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
+                #free hand drawn ROI is closed, so no further action needed
+                pass
+            else:
+                #free hand drawn ROI is not closed, so need to draw a
+                #straight line from the coordinates of its start to
+                #the coordinates of its last point
+                self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
                     
-                self.prevPathCoordsList = self.pathCoordsList
-                self.getMask(self.pathCoordsList)
-                self.listPathCoords = self.getListRoiInnerPoints(self.mask)
-                self.fillFreeHandRoi()
-                self.start_x = None 
-                self.start_y = None
-                self.last_x = None
-                self.last_y = None
-                self.pathCoordsList = []
+            self.prevPathCoordsList = self.pathCoordsList
+            self.getMask(self.pathCoordsList)
+            self.listPathCoords = self.getListRoiInnerPoints(self.mask)
+            self.fillFreeHandRoi()
+            self.start_x = None 
+            self.start_y = None
+            self.last_x = None
+            self.last_y = None
+            self.pathCoordsList = []
+
 
     def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
         objPainter = QPainter(self.pixMap)
