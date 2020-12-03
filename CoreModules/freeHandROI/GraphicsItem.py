@@ -41,17 +41,18 @@ class GraphicsItem(QGraphicsObject):
         self.pixelValue = None
 
 
-    def updateImageLevels(self, intensity, contrast):
+    def updateImageLevels(self, intensity, contrast, mask):
         try:
-            print("in updateImageLevels")
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
             imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
             self.qimage = fn.makeQImage(imgData, alpha)
             self.pixMap = QPixmap.fromImage(self.qimage)
+
             #Need to reapply mask
-            if self.mask is not None:
-                self.fillFreeHandRoi()
+            if mask is not None:
+                self.reloadMask(mask)
+
             self.update()
         except Exception as e:
             print('Error in GraphicsItem.updateImageLevels: ' + str(e))

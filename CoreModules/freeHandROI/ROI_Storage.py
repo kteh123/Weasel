@@ -12,7 +12,7 @@ class ROIs():
         else:
             #a new ROI
             self.dictMasks[regionName] = mask
-
+ 
 
     def getNextRegionName(self):
         self.regionNumber += 1
