@@ -33,7 +33,7 @@ class GraphicsItem(QGraphicsObject):
         self.pathCoordsList = []
         self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
-        self.listPathCoords = None
+        self.listROICoords = None
         self.mask = None
         self.xMouseCoord  = None
         self.yMouseCoord  = None
@@ -121,7 +121,7 @@ class GraphicsItem(QGraphicsObject):
                     
             self.prevPathCoordsList = self.pathCoordsList
             self.getMask(self.pathCoordsList)
-            self.listPathCoords = self.getListRoiInnerPoints(self.mask)
+            self.listROICoords = self.getListRoiInnerPoints(self.mask)
             self.fillFreeHandRoi()
             self.start_x = None 
             self.start_y = None
@@ -156,32 +156,33 @@ class GraphicsItem(QGraphicsObject):
 
     def reloadMask(self, mask):
         #redisplays the ROI represented by mask
-        self.listPathCoords = self.getListRoiInnerPoints(mask)
+        self.listROICoords = self.getListRoiInnerPoints(mask)
         self.fillFreeHandRoi()
-        self.listPathCoords = []
+        self.listROICoords = []
 
 
     def fillFreeHandRoi(self):
-        for coords in self.listPathCoords:
-            #x = coords[0]
-            #y = coords[1]
-            x = coords[1]
-            y = coords[0]
-            pixelColour = self.qimage.pixel(x, y) 
-            pixelRGB =  QColor(pixelColour).getRgb()
-            redVal = pixelRGB[0]
-            greenVal = pixelRGB[1]
-            blueVal = pixelRGB[2]
-            if greenVal == 255 and blueVal == 255:
-                #This pixel would be white if red channel set to 255
-                #so set the green and blue channels to zero
-                greenVal = blueVal = 0
-            value = qRgb(255, greenVal, blueVal)
-            self.qimage.setPixel(x, y, value)
-            #convert QImage to QPixmap to be able to update image
-            #with filled ROI
-            self.pixMap = QPixmap.fromImage(self.qimage)
-            self.update()
+        if self.listROICoords is not None:
+            for coords in self.listROICoords:
+                #x = coords[0]
+                #y = coords[1]
+                x = coords[1]
+                y = coords[0]
+                pixelColour = self.qimage.pixel(x, y) 
+                pixelRGB =  QColor(pixelColour).getRgb()
+                redVal = pixelRGB[0]
+                greenVal = pixelRGB[1]
+                blueVal = pixelRGB[2]
+                if greenVal == 255 and blueVal == 255:
+                    #This pixel would be white if red channel set to 255
+                    #so set the green and blue channels to zero
+                    greenVal = blueVal = 0
+                value = qRgb(255, greenVal, blueVal)
+                self.qimage.setPixel(x, y, value)
+                #convert QImage to QPixmap to be able to update image
+                #with filled ROI
+                self.pixMap = QPixmap.fromImage(self.qimage)
+                self.update()
 
 
     def setROIPathColour(self, colour, listPathCoords):
@@ -229,8 +230,11 @@ class GraphicsItem(QGraphicsObject):
 
     def getListRoiInnerPoints(self, mask):
         #result = np.nonzero(self.mask)
-        result = np.where(mask == True)
-        return list(zip(result[0], result[1]))
+        if mask is not None:
+            result = np.where(mask == True)
+            return list(zip(result[0], result[1]))
+        else:
+            return None
 
 
     def getMask(self, roiLineCoords):

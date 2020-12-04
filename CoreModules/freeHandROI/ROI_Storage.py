@@ -33,6 +33,11 @@ class ROIs():
         else:
             return None
 
+    def hasRegionGotMask(self, regionName):
+        if regionName in self.dictMasks: 
+            return True
+        else:
+            return False
 
     def deleteMask(self, regionName):
         if regionName in self.dictMasks: 
@@ -41,22 +46,21 @@ class ROIs():
 
     def renameDictionaryKey(self, newName):
         try:
-            oldName = self.prevRegionName
-            if oldName in self.dictMasks:
-                pass
-            else:
-                oldName = newName[0 : len(newName)-1]
-            
-            if newName not in self.dictMasks:
-                self.dictMasks[newName] = self.dictMasks.pop(oldName)
-                return True
-            else:
-                return False
+            if len(newName) > 0:
+                oldName = self.prevRegionName
+                if oldName in self.dictMasks:
+                    pass
+                else:
+                    oldName = newName[0 : len(newName)-1]
 
+                if oldName in self.dictMasks:
+                    if newName not in self.dictMasks:
+                        self.dictMasks[newName] = self.dictMasks.pop(oldName)
+                        return True
+                    else:
+                        return False
+        except KeyError:
+            print("Key error when oldName = {} & newName ={}".format(oldName, newName))
         except Exception as e:
             print('Error in ROI_Storage.renameDictionaryKey: ' + str(e))
            
-
-
-       # numpy.logical_or(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True[, signature, extobj]) = <ufunc 'logical_or'>¶
-#Compute the truth value of x1 OR x2 element-wise.

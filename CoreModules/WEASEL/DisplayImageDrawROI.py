@@ -76,10 +76,10 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs):
     roiMeanLabel = QLabel("ROI Mean Value")
     lblCmbROIs =  QLabel("ROIs")
     cmbROIs = QComboBox()
-    cmbROIs.addItems(["No ROI selected", "region1"])
+    cmbROIs.addItem("region1")
     cmbROIs.setCurrentIndex(1)
     btnDeleteROI = QPushButton("Delete ROI")
-    btnDeleteROI.clicked.connect(lambda: deleteROI(cmbROIs, dictROIs, graphicsView))
+    btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView))
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
     cmbROIs.currentIndexChanged.connect(
         lambda: reloadMask(self, dictROIs, cmbROIs.currentText(), graphicsView))
@@ -122,7 +122,13 @@ def roiNameChanged(cmbROIs, dictROIs, newText):
         currentIndex = cmbROIs.currentIndex()
         if index == -1:
             cmbROIs.setItemText(currentIndex, newText);
-            dictROIs.renameDictionaryKey(newText)
+            nameChangedOK = dictROIs.renameDictionaryKey(newText)
+            if nameChangedOK == False:
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("ROI Name Change")
+                msgBox.setText("This name is already in use")
+                msgBox.exec()
+                cmbROIs.setCurrentText(dictROIs.prevRegionName)
     except Exception as e:
             print('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e)) 
@@ -370,22 +376,35 @@ def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs):
 
 
 def newROI(cmbROIs, dictROIs, graphicsView):
-    cmbROIs.blockSignals(True)
-    cmbROIs.addItem(dictROIs.getNextRegionName())
-    cmbROIs.setCurrentIndex(cmbROIs.currentIndex() + 1)
-    cmbROIs.blockSignals(False)
-    graphicsView.graphicsItem.reloadImage()
+    if dictROIs.hasRegionGotMask(cmbROIs.currentText()):
+        cmbROIs.blockSignals(True)
+        cmbROIs.addItem(dictROIs.getNextRegionName())
+        cmbROIs.setCurrentIndex(cmbROIs.currentIndex() + 1)
+        cmbROIs.blockSignals(False)
+        graphicsView.graphicsItem.reloadImage()
+    else:
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle("Add new ROI")
+        msgBox.setText(
+            "You must add ROIs to the current region before creating a new one")
+        msgBox.exec()
        
 
-def deleteROI(cmbROIs, dictROIs, graphicsView):
+def deleteROI(self, cmbROIs, dictROIs, graphicsView):
+    dictROIs.deleteMask(cmbROIs.currentText())
     if cmbROIs.currentIndex() > 0:
-        dictROIs.deleteMask(cmbROIs.currentText())
         cmbROIs.blockSignals(True)
         cmbROIs.removeItem(cmbROIs.currentIndex())
         cmbROIs.blockSignals(False)
         graphicsView.graphicsItem.reloadImage()
         mask = dictROIs.getMask(cmbROIs.currentText())
         graphicsView.graphicsItem.reloadMask(mask)
+    elif cmbROIs.currentIndex() == 0:
+        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        graphicsView.setImage(pixelArray)
+    
+        
+
     
 
 def resetROI(self, cmbROIs, graphicsView):
