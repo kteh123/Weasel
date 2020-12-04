@@ -1,9 +1,10 @@
 from PyQt5.QtCore import (QRectF, Qt)
-from PyQt5 import QtCore
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject
 import numpy as np
 from pyqtgraph import functions as fn
+#import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys

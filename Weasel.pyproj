@@ -26,6 +26,9 @@
     <Compile Include="CoreModules\FERRET\ExcelWriter.py" />
     <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
+    <Compile Include="CoreModules\freeHandROI\helperFunctions.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\freeHandROI\GraphicsItem.py" />
     <Compile Include="CoreModules\freeHandROI\GraphicsView.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
