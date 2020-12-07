@@ -546,7 +546,7 @@ class PixelArrayDICOMTools:
             if numImages == 1:
                 saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
                 # Record derived image in XML file
-                interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath, derivedImagePathList[0], suffix, newSeriesName=series_name)
+                interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
             else:
                 saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
                 # Insert new series into the DICOM XML file
@@ -574,7 +574,6 @@ class PixelArrayDICOMTools:
                 dataset = readDICOM_Image.getDicomDataset(inputPath)
                 modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray, dataset)
                 saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath)
-            return
         except Exception as e:
             print('Error in #.overwritePixelArray: ' + str(e))
 
@@ -733,8 +732,19 @@ class Series:
             series_name = self.seriesID.split('_', 1)[1]
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
+            UserInterfaceTools(self.objWeasel).refreshWeasel()
             self.images = outputPath
-        
+
+    @staticmethod
+    def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
+        outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+        pathsList = [image for series in listSeries for image in series.images]
+        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
+        UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel()
+        outputSeries.images = outputPathList
+        outputSeries.referencePathsList = outputPathList
+        return outputSeries
+    
     def sort(self, tagDescription, *argv):
         if len(self.images) > 1:
             imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
@@ -742,14 +752,6 @@ class Series:
             for tag in argv:
                 imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tag)
                 self.images = imagePathList
-
-    @staticmethod
-    def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
-        outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
-        pathsList = [image for series in listSeries for image in series.images]
-        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        outputSeries.images = outputPathList
-        return outputSeries
 
     def DisplaySeries(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images)
@@ -771,37 +773,35 @@ class Series:
     # Could think of an alternative for Image, such as "isMagnitude"
     def getMagnitude(self):
         dicomList = self.PydicomList
-        #modifiedSeries = copy.copy(self)
-        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
         modifiedSeries.remove(allImages=True)
         modifiedSeries.referencePathsList = self.images
-        for index in range(self.numberChildren):
+        for index in range(len(self.images)):
             flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagMagnitude == True:
-                modifiedSeries.add(self.children[index])
+                modifiedSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         return modifiedSeries
 
     @property
     def getPhase(self):
         dicomList = self.PydicomList
-        #modifiedSeries = copy.copy(self)
-        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
         modifiedSeries.remove(allImages=True)
         modifiedSeries.referencePathsList = self.images
-        for index in range(self.numberChildren):
+        for index in range(len(self.images)):
             _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagPhase == True:
-                modifiedSeries.add(self.children[index])
+                modifiedSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         # If no phase images were detected, have a look at Real and Imaginary
         if len(modifiedSeries.images) == 0:
             realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
             imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
-            for index in range(self.numberChildren):
+            for index in range(len(self.images)):
                 _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
                 if flagReal:
-                    realSeries.add(self.children[index])
+                    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
                 elif flagImaginary:
-                    imaginarySeries.add(self.children[index])
+                    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
             if len(realSeries.images) > 0 and len(imaginarySeries.images) > 0:
                 phaseImage =  np.arctan2(imaginarySeries.PixelArray, realSeries.PixelArray)
                 modifiedSeries.referencePathsList = realSeries.images
@@ -824,42 +824,97 @@ class Series:
     @property
     def Columns(self):
         return self.Item("Columns")
+
+    @property
+    def NumberOfSlices(self):
+        numSlices = 0
+        if len(self.PydicomList) > 0:
+            dataset = self.PydicomList[0]
+        else:
+            dataset = []
+        if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            numSlices = int(dataset.NumberOfFrames)
+        else:
+            numSlices = len(np.unique(self.SliceLocations))
+        return numSlices
+
+    @property
+    def SliceLocations(self):
+        slices = []
+        if len(self.PydicomList) > 0:
+            dataset = self.PydicomList[0]
+        else:
+            dataset = []
+        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            slices = self.Item("SliceLocation")
+        return slices
     
     @property
     def EchoTimes(self):
         echoList = []
-        if self.numberChildren > 1:
-            echoList = self.Item("EchoTime")
-            return echoList
-        elif self.numberChildren == 1:
-            # if Enhanced MRI
+        if len(self.PydicomList) > 0:
             dataset = self.PydicomList[0]
-            for dataset in dataset.PerFrameFunctionalGroupsSequence:
-                echoList.append(dataset.MREchoSequence[0].EffectiveEchoTime)
-            return echoList
         else:
-            return echoList
+            dataset = []
+        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            echoList = self.Item("EchoTime")
+        else:
+            for dataset in self.PydicomList:
+                for field in dataset.PerFrameFunctionalGroupsSequence:
+                    echoList.append(field.MREchoSequence[0].EffectiveEchoTime)
+        return echoList
+
+    @property
+    def InversionTimes(self):
+        inversionList = []
+        if len(self.PydicomList) > 0:
+            dataset = self.PydicomList[0]
+        else:
+            dataset = []
+        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            if hasattr(dataset, 'InversionTime'):
+                inversionList = self.Item("InversionTime")
+            # INCLUDE ELIFS HERE
+            else:
+                try:
+                    inversionList = self.Item(0x20051572)
+                except:
+                    inversionList = []
+        else:
+            for dataset in self.PydicomList:
+                for field in dataset.PerFrameFunctionalGroupsSequence:
+                    inversionList.append(field.MREchoSequence[0].EffectiveInversionTime) # InversionTime
+        return inversionList
 
     def Item(self, tagDescription, newValue=None):
-        if newValue:
-            GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
-            if tagDescription == 'SeriesDescription':
-                interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
-            elif tagDescription == 'SeriesNumber':
-                interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
-        itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
+        if self.images:
+            if newValue:
+                GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
+                if tagDescription == 'SeriesDescription':
+                    interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
+                elif tagDescription == 'SeriesNumber':
+                    interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
+            itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
+        else:
+            itemList = []
         return itemList
 
     def Tag(self, tag, newValue=None):
         hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
-        if newValue:
-            GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
-        itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
+        if self.images:
+            if newValue:
+                GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
+            itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
+        else:
+            itemList = []
         return itemList
     
     @property
     def PydicomList(self):
-        return PixelArrayDICOMTools.getDICOMobject(self.images)
+        if self.images:
+            return PixelArrayDICOMTools.getDICOMobject(self.images)
+        else:
+            return []
 
 
 class Image:
@@ -916,6 +971,7 @@ class Image:
                 series_name = series.seriesID.split('_', 1)[1]
                 series_uid = series.seriesUID
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+            UserInterfaceTools(self.objWeasel).refreshWeasel()
             self.path = outputPath[0]
             if series: series.add(self)
 
@@ -923,6 +979,7 @@ class Image:
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
         outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
+        UserInterfaceTools(listImages[0].objWeasel).refreshWeasel()
         outputSeries.images = outputPathList
         return outputSeries
     
@@ -954,18 +1011,27 @@ class Image:
         return self.Item("Columns")
 
     def Item(self, tagDescription, newValue=None):
-        if newValue:
-            GenericDICOMTools.editDICOMTag(self.path, tagDescription, newValue)
-        item = readDICOM_Image.getImageTagValue(self.path, tagDescription)
+        if self.path:
+            if newValue:
+                GenericDICOMTools.editDICOMTag(self.path, tagDescription, newValue)
+            item = readDICOM_Image.getImageTagValue(self.path, tagDescription)
+        else:
+            item = []
         return item
 
     def Tag(self, tag, newValue=None):
         hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
-        if newValue:
-            GenericDICOMTools.editDICOMTag(self.path, literal_eval(hexTag), newValue)
-        item = readDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
+        if self.path:
+            if newValue:
+                GenericDICOMTools.editDICOMTag(self.path, literal_eval(hexTag), newValue)
+            item = readDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
+        else:
+            item = []
         return item
 
     @property
     def PydicomObject(self):
-        return PixelArrayDICOMTools.getDICOMobject(self.path)
+        if self.path:
+            return PixelArrayDICOMTools.getDICOMobject(self.path)
+        else:
+            return []

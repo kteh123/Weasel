@@ -1,9 +1,10 @@
-from Developer.DeveloperTools import UserInterfaceTools
-from Developer.External.ukat.mapping.t2 import T2
+from Developer.DeveloperTools import UserInterfaceTools, Series
+from Developer.External.ukat.mapping.t1 import T1, magnitude_correct
+from Developer.External.ukat.utils.tools import convert_to_pi_range
 import re
 #***************************************************************************
 import numpy as np
-FILE_SUFFIX = '_T2Star'
+FILE_SUFFIX = '_T1Map'
 #***************************************************************************
 
 def isSeriesOnly(self):
@@ -15,30 +16,42 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
+    # List of series that will be used for T1 Map calculation
+    seriesListTI = []
     for series in seriesList:
-        seriesMagnitude = series.getMagnitude
-        if checkT1(seriesMagnitude):
-            seriesMagnitude.sort("EchoTime")
-            seriesMagnitude.sort("SliceLocation")
-            te = np.unique(seriesMagnitude.EchoTimes)
-            pixelArray = np.transpose(seriesMagnitude.PixelArray)
-            reformatShape = (np.shape(pixelArray)[0], np.shape(pixelArray)[1], int(np.shape(pixelArray)[2]/len(te)), len(te))
-            pixelArray = pixelArray.reshape(reformatShape)
-            mapper = T2(pixelArray, te)
-            t2Map =  mapper.t2_map
-            newSeries = seriesMagnitude.new(suffix=FILE_SUFFIX)
-            newSeries.write(np.transpose(t2Map))
-            # Refresh the UI screen
-            ui.refreshWeasel(new_series_name=newSeries.seriesID)
-            # Display series
-            newSeries.DisplaySeries()
+        # First, collect all series that belong to T1 calculation. This is because 1 series <=> 1 image/TI
+        if checkT1(series):
+            seriesListTI.append(series)
+    if seriesListTI:
+        mergedSeries = Series.merge(seriesListTI, series_name='All_TIs', overwrite=False)
+        mergedSeries.sort("SliceLocation", "InversionTime")
+        ########################################################
+        magnitudeSeries = mergedSeries.getMagnitude
+        # CONSIDER REFORMAT_SHAPE - 4D such as (256, 256, 5, 10) for eg.
+        ti = magnitudeSeries.InversionTimes
+        magnitude = magnitudeSeries.PixelArray
+        phaseSeries = mergedSeries.getPhase
+        if phaseSeries.images:
+            phase = convert_to_pi_range(phaseSeries.PixelArray)
+            complex_data = magnitude * (np.cos(phase) + 1j * np.sin(phase)) # convert magnitude and phase into complex data
+            magnitude_corrected = magnitude_correct(complex_data)
+            inputArray = magnitude_corrected
         else:
-            ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T1 Map', title='NOT POSSIBLE TO CALCULATE T1 MAP')
+            inputArray = magnitude
+        mapper = T1(np.transpose(inputArray), ti, multithread=True, parameters=2)
+        pixelArray = mapper.t1_map
+        ########################################################
+        outputSeries = mergedSeries.new(series_name="T1Map_UKRIN", suffix=FILE_SUFFIX)
+        outputSeries.write(np.transpose(pixelArray))
+        # Display series
+        outputSeries.DisplaySeries()
+    else:
+        ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T1 Map', title='NOT POSSIBLE TO CALCULATE T1 MAP')
 
 
 def checkT1(series):
-    numberEchoes = len(np.unique(series.EchoTimes))
-    if (numberEchoes > 6) and (re.match(".*t2.*", series.seriesID.lower()) or re.match(".*r2.*", series.seriesID.lower())):
+    numberTIs = len(np.unique(series.InversionTimes))
+    if (numberTIs > 0) and (re.match(".*t1.*", series.seriesID.lower()) or re.match(".*molli.*", series.seriesID.lower()) or re.match(".*tfl.*", series.seriesID.lower()) or re.match(".*ir.*", series.seriesID.lower())):
         return True
     else:
         return None

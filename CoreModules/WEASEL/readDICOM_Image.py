@@ -297,6 +297,7 @@ def checkImageType(dataset):
         flagMap = False
         mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            # dataset = dataset.PerFrameFunctionalGroupsSequence[0]
             if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
                 if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagMagnitude = True
