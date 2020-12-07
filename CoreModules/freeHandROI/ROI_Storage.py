@@ -1,8 +1,11 @@
+__version__ = '1.0'
+__author__ = 'Steve Shillitoe'
+
 class ROIs():
     def __init__(self):
         self.dictMasks = {}
         self.regionNumber = 1
-        self.prevRegionName = None
+        self.prevRegionName = "region1"
 
 
     def addRegion(self, regionName,  mask):
@@ -16,7 +19,9 @@ class ROIs():
 
     def getNextRegionName(self):
         self.regionNumber += 1
-        return "region" + str(self.regionNumber)
+        nextRegionName = "region" + str(self.regionNumber)
+        self.prevRegionName = nextRegionName
+        return nextRegionName
 
 
     def getListOfRegions(self):
@@ -46,15 +51,17 @@ class ROIs():
 
     def renameDictionaryKey(self, newName):
         try:
+            print("self.prevRegionName={}".format(self.prevRegionName))
             if len(newName) > 0:
                 oldName = self.prevRegionName
                 if oldName in self.dictMasks:
                     pass
                 else:
                     oldName = newName[0 : len(newName)-1]
-
+                print("before POP newName={}, oldName={}".format(newName, oldName))
                 if oldName in self.dictMasks:
                     if newName not in self.dictMasks:
+                        print("POP newName={}, oldName={}".format(newName, oldName))
                         self.dictMasks[newName] = self.dictMasks.pop(oldName)
                         return True
                     else:
@@ -63,4 +70,9 @@ class ROIs():
             print("Key error when oldName = {} & newName ={}".format(oldName, newName))
         except Exception as e:
             print('Error in ROI_Storage.renameDictionaryKey: ' + str(e))
-           
+       
+
+    def printContentsDictMasks(self):
+        print("Contents of self.dictMasks")
+        for key, value in self.dictMasks.items():
+            print(key, ' : ', value)

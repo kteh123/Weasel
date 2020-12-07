@@ -420,11 +420,18 @@ def reloadMask(self, dictROIs, regionName, graphicsView,
 
 def roiNameChanged(cmbROIs, dictROIs, newText):
     try:
-        index = cmbROIs.findText(newText);
         currentIndex = cmbROIs.currentIndex()
+        #Prevent spaces in new ROI name
+        if ' ' in newText:
+            newText = newText.replace(" ", "")
+            print("newText={}".format(newText))
+            cmbROIs.setItemText(currentIndex, newText)
+            cmbROIs.setCurrentText(newText)
+        index = cmbROIs.findText(newText);
         if index == -1:
             cmbROIs.setItemText(currentIndex, newText);
             nameChangedOK = dictROIs.renameDictionaryKey(newText)
+            #dictROIs.printContentsDictMasks()
             if nameChangedOK == False:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle("ROI Name Change")

@@ -3,12 +3,15 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject
 import numpy as np
-from pyqtgraph import functions as fn
-#import CoreModules.freeHandROI.helperFunctions as fn
+import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-np.set_printoptions(threshold=sys.maxsize)
+#np.set_printoptions(threshold=sys.maxsize)
+
+__version__ = '1.0'
+__author__ = 'Steve Shillitoe'
+
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem

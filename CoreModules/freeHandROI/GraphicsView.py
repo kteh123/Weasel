@@ -1,9 +1,9 @@
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
-
-
 from .GraphicsItem import GraphicsItem
 
+__version__ = '1.0'
+__author__ = 'Steve Shillitoe'
 
 class GraphicsView(QGraphicsView):
     def __init__(self):
