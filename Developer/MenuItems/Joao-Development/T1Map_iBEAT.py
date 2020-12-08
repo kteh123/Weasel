@@ -21,7 +21,6 @@ def main(objWeasel):
     if checkT1(series):
         seriesMagnitude = series.getMagnitude
         try:
-            print("HERE?")
             seriesMagnitude.sort("InversionTime")
         except:
             seriesMagnitude.sort(0x20051572)
@@ -42,6 +41,8 @@ def main(objWeasel):
         ########################################################
         outputSeries = series.new(series_name="T1Map_iBEAT", suffix=FILE_SUFFIX)
         outputSeries.write(outputArray)
+        # Refresh Weasel
+        ui.refreshWeasel(new_series_name=outputSeries.seriesID)
         # Display series
         outputSeries.DisplaySeries()
     else:

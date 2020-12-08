@@ -17,9 +17,10 @@ def main(objWeasel):
     seriesList = ui.getCheckedSeries()
     for series in seriesList:
         seriesPhase = series.getPhase
+        seriesReal = series.getReal
+        seriesImaginary = series.getImaginary
         if checkB0(seriesPhase):
-            seriesPhase.sort("SliceLocation")
-            seriesPhase.sort("EchoTime")
+            seriesPhase.sort("SliceLocation", "EchoTime")
             te = np.unique(seriesPhase.EchoTimes)
             pixelArray = seriesPhase.PixelArray # (32, 256, 256)
             reformatShape = (len(te), int(np.shape(pixelArray)[0]/len(te)), np.shape(pixelArray)[1], np.shape(pixelArray)[2])
@@ -28,6 +29,22 @@ def main(objWeasel):
             mapper_B0 = B0(phase, te, unwrap=True)
             b0map = mapper_B0.b0_map # (256, 256, 16)
             newSeries = seriesPhase.new(suffix=FILE_SUFFIX)
+            newSeries.write(np.transpose(b0map)) # (16, 256, 256)
+            # Refresh the UI screen
+            ui.refreshWeasel(new_series_name=newSeries.seriesID)
+            # Display series
+            newSeries.DisplaySeries()
+        if checkB0(seriesReal) and checkB0(seriesImaginary):
+            seriesReal.sort("SliceLocation", "EchoTime")
+            seriesImaginary.sort("SliceLocation", "EchoTime")
+            te = np.unique(seriesReal.EchoTimes)
+            pixelArray = np.arctan2(seriesImaginary.PixelArray, seriesReal.PixelArray) # (32, 256, 256)
+            reformatShape = (len(te), int(np.shape(pixelArray)[0]/len(te)), np.shape(pixelArray)[1], np.shape(pixelArray)[2])
+            phase = np.transpose(pixelArray.reshape(reformatShape)) # (2, 16, 256, 256) => (256, 256, 16, 2) after the np.transpose
+            # Initialise B0 mapping object
+            mapper_B0 = B0(phase, te, unwrap=True)
+            b0map = mapper_B0.b0_map # (256, 256, 16)
+            newSeries = seriesReal.new(suffix=FILE_SUFFIX)
             newSeries.write(np.transpose(b0map)) # (16, 256, 256)
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)

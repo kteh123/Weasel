@@ -43,6 +43,8 @@ def main(objWeasel):
         ########################################################
         outputSeries = mergedSeries.new(series_name="T1Map_UKRIN", suffix=FILE_SUFFIX)
         outputSeries.write(np.transpose(pixelArray))
+        # Refresh Weasel
+        ui.refreshWeasel(new_series_name=outputSeries.seriesID)
         # Display series
         outputSeries.DisplaySeries()
     else:

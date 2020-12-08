@@ -732,7 +732,7 @@ class Series:
             series_name = self.seriesID.split('_', 1)[1]
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
-            UserInterfaceTools(self.objWeasel).refreshWeasel()
+            #UserInterfaceTools(self.objWeasel).refreshWeasel(new_series_name=self.seriesID)
             self.images = outputPath
 
     @staticmethod
@@ -740,7 +740,7 @@ class Series:
         outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
         pathsList = [image for series in listSeries for image in series.images]
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel()
+        UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel(new_series_name=listSeries[0].seriesID)
         outputSeries.images = outputPathList
         outputSeries.referencePathsList = outputPathList
         return outputSeries
@@ -773,41 +773,60 @@ class Series:
     # Could think of an alternative for Image, such as "isMagnitude"
     def getMagnitude(self):
         dicomList = self.PydicomList
-        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        modifiedSeries.remove(allImages=True)
-        modifiedSeries.referencePathsList = self.images
+        magnitudeSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+        magnitudeSeries.remove(allImages=True)
+        magnitudeSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagMagnitude == True:
-                modifiedSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return modifiedSeries
+                magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+        return magnitudeSeries
 
     @property
     def getPhase(self):
         dicomList = self.PydicomList
-        modifiedSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        modifiedSeries.remove(allImages=True)
-        modifiedSeries.referencePathsList = self.images
+        phaseSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+        realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        phaseSeries.remove(allImages=True)
+        phaseSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagPhase == True:
-                modifiedSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         # If no phase images were detected, have a look at Real and Imaginary
-        if len(modifiedSeries.images) == 0:
-            realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
-            imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
+        if len(phaseSeries.images) == 0:
             for index in range(len(self.images)):
                 _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
                 if flagReal:
                     realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
                 elif flagImaginary:
                     imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-            if len(realSeries.images) > 0 and len(imaginarySeries.images) > 0:
-                phaseImage =  np.arctan2(imaginarySeries.PixelArray, realSeries.PixelArray)
-                modifiedSeries.referencePathsList = realSeries.images
-                realSeries.write(phaseImage)
-                modifiedSeries = realSeries
-        return modifiedSeries
+        return phaseSeries#, realSeries, imaginarySeries
+
+    @property
+    def getReal(self):
+        dicomList = self.PydicomList
+        realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+        realSeries.remove(allImages=True)
+        realSeries.referencePathsList = self.images
+        for index in range(len(self.images)):
+            _, _, flagReal, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            if flagReal:
+                realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+        return realSeries 
+
+    @property
+    def getImaginary(self):
+        dicomList = self.PydicomList
+        imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+        imaginarySeries.remove(allImages=True)
+        imaginarySeries.referencePathsList = self.images
+        for index in range(len(self.images)):
+            _, _, _, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
+            if flagImaginary:
+                imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+        return imaginarySeries 
 
     @property
     def PixelArray(self):
@@ -971,7 +990,7 @@ class Image:
                 series_name = series.seriesID.split('_', 1)[1]
                 series_uid = series.seriesUID
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
-            UserInterfaceTools(self.objWeasel).refreshWeasel()
+            #UserInterfaceTools(self.objWeasel).refreshWeasel(new_series_name=self.seriesID)
             self.path = outputPath[0]
             if series: series.add(self)
 
@@ -979,7 +998,7 @@ class Image:
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
         outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        UserInterfaceTools(listImages[0].objWeasel).refreshWeasel()
+        UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
         outputSeries.images = outputPathList
         return outputSeries
     
