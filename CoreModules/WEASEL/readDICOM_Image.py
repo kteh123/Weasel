@@ -82,6 +82,26 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
         print('Error in function readDICOM_Image.getMultiframeBySlices: ' + str(e))
 
 
+def getImageTagValue(imagePath, dicomTag):
+    """This method reads the DICOM file in imagePath and returns the value in the given DICOM tag
+        Output is : attribute
+    """
+    try:
+        if os.path.exists(imagePath):
+            dataset = getDicomDataset(imagePath)
+            # This is not for Enhanced MRI. Only Classic DICOM
+            if isinstance(dicomTag, str):
+                attribute = dataset.data_element(dicomTag).value
+            else:
+                attribute = dataset[hex(dicomTag)].value
+            del dataset
+            return attribute
+        else:
+            return None
+    except Exception as e:
+        print('Error in function readDICOM_Image.getImageTagValue: ' + str(e))
+
+
 def getSeriesTagValues(imagePathList, dicomTag):
     """This method reads the DICOM files in imagePathList and returns the list of values in the given DICOM tag
         Outputs are : attributeList, numAttribute
@@ -91,16 +111,20 @@ def getSeriesTagValues(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
-            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
-                # This is not for Enhanced MRI. Only Classic DICOM
-                if isinstance(dicomTag, str):
+            # This is not for Enhanced MRI. Only Classic DICOM
+            if isinstance(dicomTag, str):
+                try:
                     attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
-                else:
+                except:
+                    return None, None
+            else:
+                try:
                     attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                numAttribute = len(np.unique(attributeList))
- 
-                del datasetList
-                return attributeList, numAttribute
+                except:
+                    return None, None
+            numAttribute = len(np.unique(attributeList))
+            del datasetList
+            return attributeList, numAttribute
         else:
             return None, None
     except Exception as e:
@@ -279,10 +303,11 @@ def checkImageType(dataset):
         flagMap = False
         mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+            # dataset = dataset.PerFrameFunctionalGroupsSequence[0]
             if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
                 if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagMagnitude = True
-                elif set(['P', 'PHASE', 'B0', 'FIELD_MAP']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
+                elif set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagPhase = True
                 elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
                     flagReal = True

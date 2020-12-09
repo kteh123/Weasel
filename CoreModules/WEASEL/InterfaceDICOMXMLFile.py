@@ -113,13 +113,13 @@ def removeSeriesFromXMLFile(self, origImageList):
         logger.error('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
     
 
-def renameSeriesinXMLFile(self, imageList, newName):
+def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
     """Removes a whole series from the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile renameSeriesinXMLFile called")
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageList[0])
-        #seriesNumber = seriesID.split("_", 1)[0] # MAYBE THIS SHOULD COME FROM THE DICOM TAG?
-        seriesNumber = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesNumber)
+        seriesNumber = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesNumber) if series_id is None else str(series_id)
+        newName = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesDescription) if series_name is None else str(series_name)
         xmlSeriesName = seriesNumber + "_" + newName
         self.objXMLReader.renameSeriesinXMLFile(studyID, seriesID, xmlSeriesName)
     except Exception as e:
