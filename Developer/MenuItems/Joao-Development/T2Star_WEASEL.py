@@ -16,7 +16,7 @@ def main(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
     for series in seriesList:
-        seriesMagnitude = series.getMagnitude
+        seriesMagnitude = series.Magnitude
         if checkT2Star(seriesMagnitude):
             seriesMagnitude.sort("EchoTime", "SliceLocation")
             te = np.unique(seriesMagnitude.EchoTimes)
@@ -40,7 +40,7 @@ def main(objWeasel):
 
 def checkT2Star(series):
     numberEchoes = len(np.unique(series.EchoTimes))
-    if (numberEchoes > 6) and (re.match(".*t2.*", series.seriesID.lower()) or re.match(".*r2.*", series.seriesID.lower())):
+    if (numberEchoes > 6) and (re.search(r't2', series.seriesID, re.IGNORECASE) or re.search(r'r2', series.seriesID, re.IGNORECASE)):
         return True
     else:
         return None

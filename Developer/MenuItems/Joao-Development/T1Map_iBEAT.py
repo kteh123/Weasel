@@ -19,7 +19,7 @@ def main(objWeasel):
     # Get the series in the Checkboxes
     series = ui.getCheckedSeries()[0]
     if checkT1(series):
-        seriesMagnitude = series.getMagnitude
+        seriesMagnitude = series.Magnitude
         try:
             seriesMagnitude.sort("InversionTime")
         except:
@@ -31,7 +31,7 @@ def main(objWeasel):
         pixelArray = np.transpose(seriesMagnitude.PixelArray) # (256, 256, 50) or (256, 256, 10)
         reformatShape = (np.shape(pixelArray)[0], np.shape(pixelArray)[1], numSlices, int(np.shape(pixelArray)[2]/numSlices))
         pixelArray = pixelArray.reshape(reformatShape) # (256, 256, 5, 10) or (256, 256, 1, 10)
-        ##################################################
+        #######################################################
         outputArray = []
         for zSlice in range(np.shape(pixelArray)[2]):
             tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1Map(ti[:, zSlice]) # There's MATLAB version T1MapMolli

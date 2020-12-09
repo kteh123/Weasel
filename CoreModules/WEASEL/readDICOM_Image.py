@@ -113,10 +113,16 @@ def getSeriesTagValues(imagePathList, dicomTag):
             datasetList = getSeriesDicomDataset(imagePathList)
             # This is not for Enhanced MRI. Only Classic DICOM
             if isinstance(dicomTag, str):
-                attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                try:
+                    attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                except:
+                    return None, None
             else:
-                attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-            numAttribute = len(np.unique(attributeList))    
+                try:
+                    attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                except:
+                    return None, None
+            numAttribute = len(np.unique(attributeList))
             del datasetList
             return attributeList, numAttribute
         else:

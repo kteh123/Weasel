@@ -16,9 +16,9 @@ def main(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
     for series in seriesList:
-        seriesPhase = series.getPhase
-        seriesReal = series.getReal
-        seriesImaginary = series.getImaginary
+        seriesPhase = series.Phase
+        seriesReal = series.Real
+        seriesImaginary = series.Imaginary
         if checkB0(seriesPhase):
             seriesPhase.sort("SliceLocation", "EchoTime")
             te = np.unique(seriesPhase.EchoTimes)
@@ -56,7 +56,7 @@ def main(objWeasel):
 
 def checkB0(series):
     numberEchoes = len(np.unique(series.EchoTimes))
-    if (numberEchoes >= 2) and (re.match(".*b0.*", series.seriesID.lower())):
+    if (numberEchoes >= 2) and re.search(r'b0', series.seriesID, re.IGNORECASE):
         return True
     else:
         return None

@@ -683,6 +683,11 @@ class Series:
         self.seriesUID = self.SeriesUID if seriesUID is None else seriesUID
         self.suffix = '' if suffix is None else suffix
         self.referencePathsList = []
+        # This is to potentially deal with Enhanced MRI
+        if self.PydicomList:
+            self.indices = np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence)) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
+        else:
+            self.indices = []
 
     @classmethod
     def fromTreeView(cls, objWeasel, seriesItem):
@@ -732,7 +737,6 @@ class Series:
             series_name = self.seriesID.split('_', 1)[1]
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
-            #UserInterfaceTools(self.objWeasel).refreshWeasel(new_series_name=self.seriesID)
             self.images = outputPath
 
     @staticmethod
@@ -770,8 +774,7 @@ class Series:
         return self.seriesUID
 
     @property
-    # Could think of an alternative for Image, such as "isMagnitude"
-    def getMagnitude(self):
+    def Magnitude(self):
         dicomList = self.PydicomList
         magnitudeSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
         magnitudeSeries.remove(allImages=True)
@@ -783,29 +786,19 @@ class Series:
         return magnitudeSeries
 
     @property
-    def getPhase(self):
+    def Phase(self):
         dicomList = self.PydicomList
         phaseSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
-        imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID)
         phaseSeries.remove(allImages=True)
         phaseSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
             if flagPhase == True:
                 phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        # If no phase images were detected, have a look at Real and Imaginary
-        if len(phaseSeries.images) == 0:
-            for index in range(len(self.images)):
-                _, _, flagReal, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
-                if flagReal:
-                    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-                elif flagImaginary:
-                    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return phaseSeries#, realSeries, imaginarySeries
+        return phaseSeries
 
     @property
-    def getReal(self):
+    def Real(self):
         dicomList = self.PydicomList
         realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
         realSeries.remove(allImages=True)
@@ -817,7 +810,7 @@ class Series:
         return realSeries 
 
     @property
-    def getImaginary(self):
+    def Imaginary(self):
         dicomList = self.PydicomList
         imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
         imaginarySeries.remove(allImages=True)
@@ -866,6 +859,8 @@ class Series:
             dataset = []
         if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             slices = self.Item("SliceLocation")
+        else:
+            slices = self.indices
         return slices
     
     @property
@@ -990,7 +985,6 @@ class Image:
                 series_name = series.seriesID.split('_', 1)[1]
                 series_uid = series.seriesUID
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
-            #UserInterfaceTools(self.objWeasel).refreshWeasel(new_series_name=self.seriesID)
             self.path = outputPath[0]
             if series: series.add(self)
 

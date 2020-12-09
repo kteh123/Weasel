@@ -16,7 +16,7 @@ def main(objWeasel):
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
     for series in seriesList:
-        seriesMagnitude = series.getMagnitude
+        seriesMagnitude = series.Magnitude
         if checkT2(seriesMagnitude):
             seriesMagnitude.sort("EchoTime")
             seriesMagnitude.sort("SliceLocation")

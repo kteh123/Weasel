@@ -15,7 +15,7 @@ def isSeriesOnly(self):
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
-    seriesList = ui.getCheckedSeries()
+    seriesList = ui.getCheckedSeries() # getSelectedStudy()
     # List of series that will be used for T1 Map calculation
     seriesListTI = []
     for series in seriesList:
@@ -25,12 +25,11 @@ def main(objWeasel):
     if seriesListTI:
         mergedSeries = Series.merge(seriesListTI, series_name='All_TIs', overwrite=False)
         mergedSeries.sort("SliceLocation", "InversionTime")
-        ########################################################
-        magnitudeSeries = mergedSeries.getMagnitude
+        magnitudeSeries = mergedSeries.Magnitude
         # CONSIDER REFORMAT_SHAPE - 4D such as (256, 256, 5, 10) for eg.
         ti = magnitudeSeries.InversionTimes
         magnitude = magnitudeSeries.PixelArray
-        phaseSeries = mergedSeries.getPhase
+        phaseSeries = mergedSeries.Phase
         if phaseSeries.images:
             phase = convert_to_pi_range(phaseSeries.PixelArray)
             complex_data = magnitude * (np.cos(phase) + 1j * np.sin(phase)) # convert magnitude and phase into complex data
@@ -40,7 +39,6 @@ def main(objWeasel):
             inputArray = magnitude
         mapper = T1(np.transpose(inputArray), ti, multithread=True, parameters=2)
         pixelArray = mapper.t1_map
-        ########################################################
         outputSeries = mergedSeries.new(series_name="T1Map_UKRIN", suffix=FILE_SUFFIX)
         outputSeries.write(np.transpose(pixelArray))
         # Refresh Weasel
@@ -53,7 +51,8 @@ def main(objWeasel):
 
 def checkT1(series):
     numberTIs = len(np.unique(series.InversionTimes))
-    if (numberTIs > 0) and (re.match(".*t1.*", series.seriesID.lower()) or re.match(".*molli.*", series.seriesID.lower()) or re.match(".*tfl.*", series.seriesID.lower()) or re.match(".*ir.*", series.seriesID.lower())):
+    if (numberTIs > 0) and (re.search(r'molli', series.seriesID, re.IGNORECASE) or
+        re.search(r'tfl', series.seriesID, re.IGNORECASE) or re.search(r'ir', series.seriesID, re.IGNORECASE)):
         return True
     else:
         return None

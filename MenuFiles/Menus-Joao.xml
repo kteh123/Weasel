@@ -158,6 +158,11 @@
           <module>T1Map_WEASEL</module>
         </item>
 		<item>
+          <label>T1 Map Study Level</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_Study_WEASEL</module>
+        </item>
+		<item>
           <label>T1 Map iBEAT</label>
           <tooltip>Calculate T1 Map in the checked series</tooltip>
           <module>T1Map_iBEAT</module>
