@@ -10,7 +10,6 @@ import time
 from collections import defaultdict
 import CoreModules.WEASEL.Menus  as menus
 import Developer.MenuItems.ViewImage  as viewImage
-#from Developer.DeveloperTools import Subject, Study, Series, Image
 logger = logging.getLogger(__name__)
 
 
