@@ -26,6 +26,15 @@
     <Compile Include="CoreModules\FERRET\ExcelWriter.py" />
     <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
     <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
+    <Compile Include="CoreModules\freeHandROI\helperFunctions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CoreModules\freeHandROI\GraphicsItem.py" />
+    <Compile Include="CoreModules\freeHandROI\GraphicsView.py" />
+    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
+    <Compile Include="CoreModules\WEASEL\DisplayImageDrawROI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\iBeatImport.py" />
     <Compile Include="CoreModules\FERRET\MathsTools.py" />
     <Compile Include="CoreModules\FERRET\ModelFunctionsHelper.py" />
@@ -105,7 +114,6 @@
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GraphItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\GridItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\HistogramLUTItem.py" />
-    <Compile Include="CoreModules\pyqtgraph\graphicsItems\ImageItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\InfiniteLine.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\IsocurveItem.py" />
     <Compile Include="CoreModules\pyqtgraph\graphicsItems\ItemGroup.py" />
@@ -256,6 +264,9 @@
     </Compile>
     <Compile Include="CoreModules\WEASEL\RegionsOfInterest_DICOM.py" />
     <Compile Include="CoreModules\WEASEL\readDICOM_Image.py" />
+    <Compile Include="CoreModules\freeHandROI\ROI_Storage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\WEASEL\saveDICOM_Image.py" />
     <Compile Include="CoreModules\WEASEL\styleSheet.py" />
     <Compile Include="CoreModules\WEASEL\UserImageColourSelection.py">
@@ -318,7 +329,6 @@
     <Compile Include="Developer\MenuItems\DeleteImage.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\MenuItems\developerToolsModule.py" />
     <Compile Include="Developer\MenuItems\CloseAllImageWindows.py">
       <SubType>Code</SubType>
     </Compile>
@@ -328,9 +338,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\ToolsFunctions.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Developer\MenuItems\toolsModuleTemplate.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Developer\MenuItems\TRISTAN\calculateMIP_Developer.py" />
@@ -359,6 +366,7 @@
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="config.xml" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />
@@ -8086,6 +8094,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CoreModules\FERRET\" />
+    <Folder Include="CoreModules\freeHandROI\" />
     <Folder Include="CoreModules\WEASEL\" />
     <Folder Include="CoreModules\pyqtgraph\" />
     <Folder Include="CoreModules\pyqtgraph\canvas\" />

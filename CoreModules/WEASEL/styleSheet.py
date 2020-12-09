@@ -21,6 +21,7 @@ TRISTAN_GREY = """
                                    
                 QPushButton:pressed {background-color: rgb(112, 112, 112);}
 
+
                 QComboBox {
                     margin: 0.25em;
                     border: 1px solid gray;

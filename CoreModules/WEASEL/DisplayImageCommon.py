@@ -106,6 +106,7 @@ def setUpViewBoxForImage(layout, spinBoxIntensity = None, spinBoxContrast = None
         img = pg.ImageItem(border='w')
             
         imv= pg.ImageView(view=plotItem, imageItem=img)
+        #imv= pg.ImageView()  #this works too
         if spinBoxIntensity and spinBoxContrast:
             histogramObject = imv.getHistogramWidget().getHistogram()
             histogramObject.sigLevelsChanged.connect(lambda: getHistogramLevels(imv, spinBoxIntensity, spinBoxContrast))
