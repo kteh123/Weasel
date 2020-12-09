@@ -352,7 +352,7 @@ def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, pixelDataLabel,
 
             btnSaveROI = QPushButton('Save')
             btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-            #btnSaveROI.clicked.connect(lambda: self.resetROI(viewBox))
+            #btnSaveROI.clicked.connect(lambda: saveRIO()))
 
             gridLayoutROI.addWidget(btnNewROI,0,0)
             gridLayoutROI.addWidget(btnResetROI,0,1)
@@ -408,6 +408,10 @@ def resetROI(self, cmbROIs, dictROIs, graphicsView,
     reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, roiMeanLabel, self) 
     pixelDataLabel.clear() 
     roiMeanLabel.clear()
+
+
+def saveROI():
+    pass
    
 
 def reloadMask(self, dictROIs, regionName, graphicsView,

@@ -43,6 +43,7 @@ class GraphicsItem(QGraphicsObject):
         self.yMouseCoord  = None
         self.pixelColour = None
         self.pixelValue = None
+        self.mouseMoved = False
 
 
     def updateImageLevels(self, intensity, contrast, mask):
@@ -95,43 +96,100 @@ class GraphicsItem(QGraphicsObject):
 
 
     def mouseMoveEvent(self, event):
-        if self.last_x is None: # First event.
-            self.last_x = (event.pos()).x()
-            self.last_y = (event.pos()).y()
-            self.start_x = int(self.last_x)
-            self.start_y = int(self.last_y)
-            return #  Ignore the first time.
-        xCoord = event.pos().x()
-        yCoord = event.pos().y()
-        self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
+        buttons = event.buttons()
+        if (buttons & Qt.LeftButton):
+            #Only draw if left button pressed
+            if self.last_x is None: # First event.
+                self.last_x = (event.pos()).x()
+                self.last_y = (event.pos()).y()
+                self.start_x = int(self.last_x)
+                self.start_y = int(self.last_y)
+                return #  Ignore the first time.
+            xCoord = event.pos().x()
+            yCoord = event.pos().y()
+            self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
 
-        # Update the origin for next time.
-        self.last_x = xCoord
-        self.last_y = yCoord
-        self.pathCoordsList.append([self.last_x, self.last_y])
+            # Update the origin for next time.
+            self.last_x = xCoord
+            self.last_y = yCoord
+            self.pathCoordsList.append([self.last_x, self.last_y])
+            self.mouseMoved = True
         
 
     def mouseReleaseEvent(self, event):
-        if  (self.last_x != None and self.start_x != None 
-                and self.last_y != None and self.start_y != None):
-            if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
-                #free hand drawn ROI is closed, so no further action needed
-                pass
-            else:
-                #free hand drawn ROI is not closed, so need to draw a
-                #straight line from the coordinates of its start to
-                #the coordinates of its last point
-                self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
+        #buttons = event.buttons()
+        #if (buttons & Qt.LeftButton):
+            #Only draw if left button pressed
+            if self.mouseMoved:
+                if  (self.last_x != None and self.start_x != None 
+                        and self.last_y != None and self.start_y != None):
+                    if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
+                        #free hand drawn ROI is closed, so no further action needed
+                        pass
+                    else:
+                        #free hand drawn ROI is not closed, so need to draw a
+                        #straight line from the coordinates of its start to
+                        #the coordinates of its last point
+                        self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
                     
-            self.prevPathCoordsList = self.pathCoordsList
-            self.getMask(self.pathCoordsList)
-            self.listROICoords = self.getListRoiInnerPoints(self.mask)
-            self.fillFreeHandRoi()
-            self.start_x = None 
-            self.start_y = None
-            self.last_x = None
-            self.last_y = None
-            self.pathCoordsList = []
+                    self.prevPathCoordsList = self.pathCoordsList
+                    self.createMask(self.pathCoordsList)
+                    self.listROICoords = self.getListRoiInnerPoints(self.mask)
+                    self.fillFreeHandRoi()
+                    self.start_x = None 
+                    self.start_y = None
+                    self.last_x = None
+                    self.last_y = None
+                    self.pathCoordsList = []
+                    self.mouseMoved = False
+            else:
+                #The mouse was not moved, so a pixel was clicked on
+                xCoord = int(event.pos().x())
+                yCoord = int(event.pos().y())
+                if self.mask is not None:
+                    if self.mask[xCoord, yCoord]:
+                        #erase mask at this pixel and set pixel back to original value
+                        self.resetPixel(xCoord, yCoord)
+                    else:
+                        self.setPixelToRed(xCoord, yCoord)
+                else:
+                    #first create a boolean mask with all values False
+                    self.createBlankMask()
+                    self.setPixelToRed(xCoord, yCoord)
+                #reverse pixel value
+                self.mask[xCoord, yCoord] = not self.mask[xCoord, yCoord]
+                self.sigMaskCreated.emit()
+    
+
+    def resetPixel(self, x, y):
+        pixelColour = self.origQimage.pixel(x, y) 
+        pixelRGB =  QColor(pixelColour).getRgb()
+        redVal = pixelRGB[0]
+        greenVal = pixelRGB[1]
+        blueVal = pixelRGB[2]
+        value = qRgb(redVal, greenVal, blueVal)
+        self.qimage.setPixel(x, y, value)
+        #convert QImage to QPixmap to be able to update image
+        self.pixMap = QPixmap.fromImage(self.qimage)
+        self.update()
+   
+    
+    def setPixelToRed(self, x, y):
+        pixelColour = self.qimage.pixel(x, y) 
+        pixelRGB =  QColor(pixelColour).getRgb()
+        redVal = pixelRGB[0]
+        greenVal = pixelRGB[1]
+        blueVal = pixelRGB[2]
+        if greenVal == 255 and blueVal == 255:
+            #This pixel would be white if red channel set to 255
+            #so set the green and blue channels to zero
+            greenVal = blueVal = 0
+        value = qRgb(255, greenVal, blueVal)
+        self.qimage.setPixel(x, y, value)
+        #convert QImage to QPixmap to be able to update image
+        #with filled ROI
+        self.pixMap = QPixmap.fromImage(self.qimage)
+        self.update()
 
 
     def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
@@ -172,21 +230,7 @@ class GraphicsItem(QGraphicsObject):
                 #y = coords[1]
                 x = coords[1]
                 y = coords[0]
-                pixelColour = self.qimage.pixel(x, y) 
-                pixelRGB =  QColor(pixelColour).getRgb()
-                redVal = pixelRGB[0]
-                greenVal = pixelRGB[1]
-                blueVal = pixelRGB[2]
-                if greenVal == 255 and blueVal == 255:
-                    #This pixel would be white if red channel set to 255
-                    #so set the green and blue channels to zero
-                    greenVal = blueVal = 0
-                value = qRgb(255, greenVal, blueVal)
-                self.qimage.setPixel(x, y, value)
-                #convert QImage to QPixmap to be able to update image
-                #with filled ROI
-                self.pixMap = QPixmap.fromImage(self.qimage)
-                self.update()
+                self.setPixelToRed(x, y)
 
 
     def setROIPathColour(self, colour, listPathCoords):
@@ -241,7 +285,12 @@ class GraphicsItem(QGraphicsObject):
             return None
 
 
-    def getMask(self, roiLineCoords):
+    def createBlankMask(self):
+        ny, nx = np.shape(self.pixelArray)
+        self.mask = np.full((nx, ny), False, dtype=bool)
+
+
+    def createMask(self, roiLineCoords):
             self.mask = None
             ny, nx = np.shape(self.pixelArray)
             #print("roiLineCoords ={}".format(roiLineCoords))
