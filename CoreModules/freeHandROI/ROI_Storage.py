@@ -2,13 +2,14 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 class ROIs():
-    def __init__(self):
+    def __init__(self, NumImages = 1):
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
+        self.listOfLists = [[] for _ in range(NumImages)]
 
 
-    def addRegion(self, regionName,  mask):
+    def addRegion(self, regionName, mask, imageNumber = 0):
         if regionName in self.dictMasks:
             #add to an existing ROI using boolean OR (|) to get the union
             self.dictMasks[regionName] = self.dictMasks[regionName] | mask
