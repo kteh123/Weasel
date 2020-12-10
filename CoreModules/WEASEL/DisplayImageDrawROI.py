@@ -26,6 +26,7 @@ import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import logging
@@ -352,7 +353,7 @@ def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, pixelDataLabel,
 
             btnSaveROI = QPushButton('Save')
             btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-            #btnSaveROI.clicked.connect(lambda: saveRIO()))
+            btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
 
             gridLayoutROI.addWidget(btnNewROI,0,0)
             gridLayoutROI.addWidget(btnResetROI,0,1)
@@ -410,8 +411,29 @@ def resetROI(self, cmbROIs, dictROIs, graphicsView,
     roiMeanLabel.clear()
 
 
-def saveROI():
-    pass
+def saveROI(self, regionName, dictROIs):
+    # Save all ROIs
+    for label, mask in dictROIs.dictMasks.items():
+        mask = np.transpose(np.array(mask, dtype=np.int))
+        suffix = str("_ROI_"+ label)
+        inputPath = self.selectedImagePath
+        outputPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
+        saveDICOM_Image.saveDicomNewSeries([outputPath], [inputPath], [mask], suffix) #, parametric_map="ROI") # Have to include an optional flag to insert label
+        interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, [inputPath], [outputPath], suffix)
+
+    # CONSIDER INSERTING A SHORT LOOP HERE TO FORCE dataset.ContentLabel = regionName (DICOM Operation)
+    # CONSIDER ALSO THE parametric_map OPTIONAL FLAG
+
+    # Save Current ROI
+    #mask = np.transpose(np.array(mask, dtype=np.int))
+    #suffix = str("_ROI_"+ regionName)
+    #inputPath = self.selectedImagePath
+    #outputPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
+    #saveDICOM_Image.saveDicomNewSeries([outputPath], [inputPath], [mask], suffix) # parametric_map="ROI") # Have to include an optional flag to insert dictROIs.label
+    #interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, [inputPath], [outputPath], suffix)
+
+
+    treeView.refreshDICOMStudiesTreeView(self)
    
 
 def reloadMask(self, dictROIs, regionName, graphicsView,
