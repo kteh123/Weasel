@@ -244,7 +244,7 @@ class WeaselXMLReader:
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
-                labelNewImage.text = str(index).zfill(6)
+                labelNewImage.text = str(index + 1).zfill(6)
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = imageNewName
                 timeNewImage = ET.SubElement(newImage, 'time')

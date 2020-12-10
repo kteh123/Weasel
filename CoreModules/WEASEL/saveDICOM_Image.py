@@ -403,6 +403,13 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
     """
     try:
         #and (colourmap != 'gray') removed from If statement below, so as to save gray colour tables
+        if (colourmap == 'gray') and hasattr(dicomData, 'RedPaletteColorLookupTableData'):
+            dicomData.PhotometricInterpretation = 'MONOCHROME2'
+            dicomData.ContentLabel = ''
+            del (dicomData.RGBLUTTransferFunction, dicomData.RedPaletteColorLookupTableData,
+                dicomData.GreenPaletteColorLookupTableData, dicomData.BluePaletteColorLookupTableData,
+                dicomData.RedPaletteColorLookupTableDescriptor, dicomData.GreenPaletteColorLookupTableDescriptor,
+                dicomData.BluePaletteColorLookupTableDescriptor)
         if ((colourmap is not None)  and (colourmap != 'custom') 
             and (colourmap != 'default') and isinstance(colourmap, str)):
             dicomData.PhotometricInterpretation = 'PALETTE COLOR'

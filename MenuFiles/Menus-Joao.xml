@@ -137,35 +137,35 @@
         </item>
   </menu>
   <menu name="Joao-Development">
-        <item>
-          <label>Threshold Developer (Slice-by-slice)</label>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image_Developer</module>
+    	<item>
+          <label>T2* Fitting</label>
+          <tooltip>Perform a T2* Fitting in the checked series</tooltip>
+          <module>T2Star_WEASEL</module>
         </item>
 		<item>
-          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
-          <tooltip>Invert a DICOM Image or series</tooltip>
-          <module>invertDICOM_Image_Developer</module>
-        </item>
-        <item>
-          <label>Merge Series (Developer)</label>
-          <tooltip>Merge selected images or series into 1 series</tooltip>
-          <module>mergeDICOM_Developer</module>
+          <label>B0 Map</label>
+          <tooltip>Calculate B0 Map in the checked series</tooltip>
+          <module>B0Map_WEASEL</module>
         </item>
 		<item>
-          <label>Multiply Series (Developer)</label>
-          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
-          <module>multiplyDICOM_Series_Developer</module>
+          <label>T2 Map</label>
+          <tooltip>Calculate T2 Map in the checked series</tooltip>
+          <module>T2Map_WEASEL</module>
         </item>
 		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
+          <label>T1 Map</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_WEASEL</module>
         </item>
 		<item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
+          <label>T1 Map Study Level</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_Study_WEASEL</module>
+        </item>
+		<item>
+          <label>T1 Map iBEAT</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_iBEAT</module>
         </item>
   </menu>
   <menu name="Steven-Test">
@@ -175,15 +175,56 @@
           <module>squareDICOM_Image_Developer</module>
         </item>
 		<item>
+          <label>Gaussian Filter Developer (Slice-by-slice)</label>
+          <shortcut>Ctrl+F+3</shortcut>
+          <tooltip>gaussian</tooltip>
+          <module>gaussianFilterDICOM_Image_Slice</module>
+        </item>
+		<item>
           <label>Gaussian Filter Developer (GroupWise)</label>
           <shortcut>Ctrl+F+3</shortcut>
           <tooltip>gaussian</tooltip>
-          <module>gaussianFilterDICOM_Image_Developer</module>
+          <module>gaussianFilterDICOM_Image_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (GroupWise)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (Slice-by-slice)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_Slice</module>
+        </item>
+		<item>
+          <label>Threshold Developer (Slice-by-slice)</label>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
+          <tooltip>Invert a DICOM Image or series</tooltip>
+          <module>invertDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
         </item>
         <item>
-          <label>Edit DICOM Tag Developer</label>
+          <label>Edit DICOM Tag</label>
           <tooltip>Choose DICOM header and change the selected files</tooltip>
           <module>editDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Merge Series</label>
+          <tooltip>Merge selected images or series into 1 series</tooltip>
+          <module>mergeDICOM_Developer</module>
+        </item>
+		<item>
+          <label>Rename Series</label>
+          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
+		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+          <module>renameSeries</module>
         </item>
   </menu>
 </menus>
