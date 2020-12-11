@@ -18,8 +18,9 @@ class GraphicsItem(QGraphicsObject):
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal()
     sigMaskCreated = QtCore.Signal()
+    sigMaskEdited = QtCore.Signal()
 
-    def __init__(self, pixelArray, mask = None): 
+    def __init__(self, pixelArray, roi): 
         super(GraphicsItem, self).__init__()
         self.pixelArray = pixelArray 
         minValue, maxValue = self.__quickMinMax(self.pixelArray)
@@ -28,9 +29,9 @@ class GraphicsItem(QGraphicsObject):
         imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
         self.origQimage = fn.makeQImage(imgData, alpha)
         self.qimage = fn.makeQImage(imgData, alpha)
-        if mask is not None:
-            #add mask to pixel map
-            self.addROItoImage(mask)
+        if roi is not None:
+            #add roi to pixel map
+            self.addROItoImage(roi)
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.width = float(self.pixMap.width()) 
         self.height = float(self.pixMap.height())
@@ -49,7 +50,7 @@ class GraphicsItem(QGraphicsObject):
         self.mouseMoved = False
 
 
-    def updateImageLevels(self, intensity, contrast, mask):
+    def updateImageLevels(self, intensity, contrast, roi):
         try:
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
@@ -58,8 +59,8 @@ class GraphicsItem(QGraphicsObject):
             self.pixMap = QPixmap.fromImage(self.qimage)
 
             #Need to reapply mask
-            if mask is not None:
-                self.reloadMask(mask)
+            if roi is not None and roi.any():
+                self.reloadMask(roi)
 
             self.update()
         except Exception as e:
@@ -150,18 +151,25 @@ class GraphicsItem(QGraphicsObject):
                 xCoord = int(event.pos().x())
                 yCoord = int(event.pos().y())
                 if self.mask is not None:
-                    if self.mask[xCoord, yCoord]:
-                        #erase mask at this pixel and set pixel back to original value
+                    if self.mask[yCoord, xCoord]:
+                        #erase mask at this pixel 
+                        #and set pixel back to original value
                         self.resetPixel(xCoord, yCoord)
+                        #self.mask[xCoord, yCoord] = False
+                        self.mask[yCoord, xCoord] = False
+                        self.sigMaskEdited.emit()
                     else:
+                        #added to the mask
                         self.setPixelToRed(xCoord, yCoord)
+                        #self.mask[xCoord, yCoord] = True
+                        self.mask[yCoord, xCoord] = True
+                        self.sigMaskCreated.emit()
                 else:
                     #first create a boolean mask with all values False
                     self.createBlankMask()
                     self.setPixelToRed(xCoord, yCoord)
-                #reverse pixel value
-                self.mask[yCoord, xCoord] = not self.mask[yCoord, xCoord]
-                self.sigMaskCreated.emit()
+                    self.mask[yCoord, xCoord] = True
+                    self.sigMaskCreated.emit()
     
 
     def resetPixel(self, x, y):
@@ -236,15 +244,15 @@ class GraphicsItem(QGraphicsObject):
                 self.setPixelToRed(x, y)
 
 
-    def addROItoImage(self, mask):
-        listROICoords = self.getListRoiInnerPoints(mask)
+    def addROItoImage(self, roi):
+        listROICoords = self.getListRoiInnerPoints(roi)
         if listROICoords is not None:
             for coords in listROICoords:
-                x = coords[0]
-                y = coords[1]
-                #x = coords[1]
-                #y = coords[0]
-                print("({}, {})".format(x, y))
+                #x = coords[0]
+                #y = coords[1]
+                x = coords[1]
+                y = coords[0]
+                #print("({}, {})".format(x, y))
                 pixelColour = self.qimage.pixel(x, y) 
                 pixelRGB =  QColor(pixelColour).getRgb()
                 redVal = pixelRGB[0]
@@ -301,10 +309,9 @@ class GraphicsItem(QGraphicsObject):
         return self.mask
 
 
-    def getListRoiInnerPoints(self, mask):
-        #result = np.nonzero(self.mask)
-        if mask is not None:
-            result = np.where(mask == True)
+    def getListRoiInnerPoints(self, roi):
+        if roi is not None:
+            result = np.where(roi == True)
             return list(zip(result[0], result[1]))
         else:
             return None

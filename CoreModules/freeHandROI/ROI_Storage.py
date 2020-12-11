@@ -36,6 +36,18 @@ class ROIs():
             print('Error in ROI_Storage.addRegion: ' + str(e))
 
 
+    def replaceMask(self, regionName, mask, imageNumber = 1):
+        try:
+            if regionName in self.dictMasks:
+                imageMaskList = self.dictMasks[regionName]
+                imageMaskList[imageNumber - 1] = mask
+                #imageMaskList[imageNumber - 1] =  np.logical_and(mask, imageMaskList[imageNumber - 1])
+                self.dictMasks[regionName] = imageMaskList
+
+        except Exception as e:
+            print('Error in ROI_Storage.replaceMask: ' + str(e))
+
+
     def createBlankMask(self, mask):
         ny, nx = np.shape(mask)
         blankMask = np.full((nx, ny), False, dtype=bool)
@@ -60,7 +72,11 @@ class ROIs():
     def getMask(self, regionName, imageNumber):
         try:
             if regionName in self.dictMasks: 
-                return self.dictMasks[regionName][imageNumber - 1]
+                mask = self.dictMasks[regionName][imageNumber - 1]
+                if mask.any():
+                    return mask
+                else:
+                    return None
             else:
                 return None
         except Exception as e:

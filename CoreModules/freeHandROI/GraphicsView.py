@@ -23,6 +23,7 @@ class GraphicsView(QGraphicsView):
         try:
             if self.graphicsItem is not None:
                 self.graphicsItem = None
+                self.scene.clear()
 
             self.graphicsItem = GraphicsItem(pixelArray, mask)
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 

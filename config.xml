@@ -1,6 +1,6 @@
 <!-- Put this file in .gitignore-->
 <config>
-  <menu_file>Menus-Joao.xml</menu_file>
+  <menu_file>Menus.xml</menu_file>
   <weasel_data_folder>\Weasel\WeaselData\SampleData</weasel_data_folder>
 </config>
   
