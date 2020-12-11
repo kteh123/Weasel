@@ -19,12 +19,12 @@ class GraphicsView(QGraphicsView):
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
 
-    def setImage(self, pixelArray):
+    def setImage(self, pixelArray, mask = None):
         try:
             if self.graphicsItem is not None:
                 self.graphicsItem = None
 
-            self.graphicsItem = GraphicsItem(pixelArray)
+            self.graphicsItem = GraphicsItem(pixelArray, mask)
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.scene.addItem(self.graphicsItem)
         except Exception as e:

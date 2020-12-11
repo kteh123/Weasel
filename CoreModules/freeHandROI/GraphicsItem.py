@@ -19,7 +19,7 @@ class GraphicsItem(QGraphicsObject):
     sigMouseHovered = QtCore.Signal()
     sigMaskCreated = QtCore.Signal()
 
-    def __init__(self, pixelArray): 
+    def __init__(self, pixelArray, mask = None): 
         super(GraphicsItem, self).__init__()
         self.pixelArray = pixelArray 
         minValue, maxValue = self.__quickMinMax(self.pixelArray)
@@ -28,6 +28,9 @@ class GraphicsItem(QGraphicsObject):
         imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
         self.origQimage = fn.makeQImage(imgData, alpha)
         self.qimage = fn.makeQImage(imgData, alpha)
+        if mask is not None:
+            #add mask to pixel map
+            self.addROItoImage(mask)
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.width = float(self.pixMap.width()) 
         self.height = float(self.pixMap.height())
@@ -157,7 +160,7 @@ class GraphicsItem(QGraphicsObject):
                     self.createBlankMask()
                     self.setPixelToRed(xCoord, yCoord)
                 #reverse pixel value
-                self.mask[xCoord, yCoord] = not self.mask[xCoord, yCoord]
+                self.mask[yCoord, xCoord] = not self.mask[yCoord, xCoord]
                 self.sigMaskCreated.emit()
     
 
@@ -231,6 +234,28 @@ class GraphicsItem(QGraphicsObject):
                 x = coords[1]
                 y = coords[0]
                 self.setPixelToRed(x, y)
+
+
+    def addROItoImage(self, mask):
+        listROICoords = self.getListRoiInnerPoints(mask)
+        if listROICoords is not None:
+            for coords in listROICoords:
+                x = coords[0]
+                y = coords[1]
+                #x = coords[1]
+                #y = coords[0]
+                print("({}, {})".format(x, y))
+                pixelColour = self.qimage.pixel(x, y) 
+                pixelRGB =  QColor(pixelColour).getRgb()
+                redVal = pixelRGB[0]
+                greenVal = pixelRGB[1]
+                blueVal = pixelRGB[2]
+                if greenVal == 255 and blueVal == 255:
+                    #This pixel would be white if red channel set to 255
+                    #so set the green and blue channels to zero
+                    greenVal = blueVal = 0
+                value = qRgb(255, greenVal, blueVal)
+                self.qimage.setPixel(x, y, value)
 
 
     def setROIPathColour(self, colour, listPathCoords):

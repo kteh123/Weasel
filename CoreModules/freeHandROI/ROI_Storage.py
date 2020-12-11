@@ -1,3 +1,5 @@
+import numpy as np
+
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
@@ -6,17 +8,39 @@ class ROIs():
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
-        self.listOfLists = [[] for _ in range(NumImages)]
+        self.NumOfImages = NumImages
+        #self.imageMaskList = [[] for _ in range(NumImages)]
 
 
-    def addRegion(self, regionName, mask, imageNumber = 0):
-        if regionName in self.dictMasks:
-            #add to an existing ROI using boolean OR (|) to get the union
-            self.dictMasks[regionName] = self.dictMasks[regionName] | mask
-        else:
-            #a new ROI
-            self.dictMasks[regionName] = mask
- 
+    def addRegion(self, regionName, mask, imageNumber = 1):
+        try:
+            if regionName in self.dictMasks:
+                imageMaskList = self.dictMasks[regionName]
+                if imageMaskList[imageNumber - 1] is None:
+                    #empty list
+                    imageMaskList[imageNumber - 1] = mask
+                else:
+                    #already contains a mask, so add to an existing ROI 
+                    #using boolean OR (|) to get the union 
+                    imageMaskList[imageNumber - 1] = imageMaskList[imageNumber - 1]  | mask
+                self.dictMasks[regionName] = imageMaskList
+                #self.dictMasks[regionName] = self.dictMasks[regionName] | mask
+            else:
+                #a new ROI
+                #Make a copy of the list of image mask lists
+                imageMaskList = self.createBlankMask(mask)
+                #Add the current mask to the correct list in the list of lists
+                imageMaskList[imageNumber - 1] = mask
+                self.dictMasks[regionName] = imageMaskList
+        except Exception as e:
+            print('Error in ROI_Storage.addRegion: ' + str(e))
+
+
+    def createBlankMask(self, mask):
+        ny, nx = np.shape(mask)
+        blankMask = np.full((nx, ny), False, dtype=bool)
+        return [blankMask for _ in range(self.NumOfImages)]
+
 
     def getNextRegionName(self):
         self.regionNumber += 1
@@ -33,17 +57,22 @@ class ROIs():
         self.prevRegionName = regionName
 
 
-    def getMask(self, regionName):
-        if regionName in self.dictMasks: 
-            return self.dictMasks[regionName]
-        else:
-            return None
+    def getMask(self, regionName, imageNumber):
+        try:
+            if regionName in self.dictMasks: 
+                return self.dictMasks[regionName][imageNumber - 1]
+            else:
+                return None
+        except Exception as e:
+            print('Error in ROI_Storage.getMask: ' + str(e))
+
 
     def hasRegionGotMask(self, regionName):
         if regionName in self.dictMasks: 
             return True
         else:
             return False
+
 
     def deleteMask(self, regionName):
         if regionName in self.dictMasks: 
@@ -75,5 +104,10 @@ class ROIs():
 
     def printContentsDictMasks(self):
         print("Contents of self.dictMasks")
+        numMasks = 0
         for key, value in self.dictMasks.items():
-            print(key, ' : ', value)
+            for item in value:
+                if item.any():
+                    numMasks +=1
+
+            print(key, ' : ', numMasks)
