@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QFileDialog,
                             QWidget, 
                             QGridLayout, 
                             QVBoxLayout, 
+                            QHBoxLayout, 
                             QMdiSubWindow, 
                             QGroupBox, 
                             QDoubleSpinBox,
@@ -31,6 +32,52 @@ from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import logging
 logger = logging.getLogger(__name__)
+
+def setUpGraphicsViewSubWindow(self):
+    """
+    This function creates a subwindow with a vertical layout &
+    a missing image label.
+
+    Input Parameters
+    ****************
+    self - an object reference to the WEASEL interface.
+
+    Output Parameters
+    *****************
+    layout - PyQt5 QVBoxLayout vertical layout box
+    lblImageMissing - Label displaying the text 'Missing Image'. Hidden 
+                        until WEASEL tries to display a missing image
+    subWindow - An QMdiSubWindow subwindow
+    """
+    try:
+        logger.info("setUpGraphicsViewSubWindow called")
+        subWindow = QMdiSubWindow(self)
+        subWindow.setObjectName = 'image_viewer'
+        subWindow.setAttribute(Qt.WA_DeleteOnClose)
+        subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                      Qt.WindowCloseButtonHint | 
+                                      Qt.WindowMinimizeButtonHint)
+        
+        
+        height, width = self.getMDIAreaDimensions()
+        subWindow.setGeometry(0,0,width*0.6,height)
+        self.mdiArea.addSubWindow(subWindow)
+        
+        layout = QVBoxLayout()
+        widget = QWidget()
+        widget.setLayout(layout)
+        subWindow.setWidget(widget)
+        
+        lblImageMissing = QLabel("<h4>Image Missing</h4>")
+        lblImageMissing.hide()
+        layout.addWidget(lblImageMissing)
+        hbox = QHBoxLayout()
+        layout.addLayout(hbox)
+        subWindow.show()
+        return hbox, layout, lblImageMissing, subWindow
+    except Exception as e:
+            print('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
+            logger.error('Error in DisplayImageDrawRIO.displayMultiImageSubWindow: ' + str(e))
 
 
 def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs, imageNumber = 1):
@@ -133,6 +180,27 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
     graphicsView.graphicsItem.sigMaskEdited.connect(
         lambda:storeMaskData(graphicsView, cmbROIs.currentText(), dictROIs, imageNumber))
 
+
+def setUpGraphicsView(hbox):
+    graphicsView = GraphicsView()
+    hbox.addWidget(graphicsView)
+
+    zoomSlider = QSlider(Qt.Vertical)
+    zoomSlider.setMinimum(1)
+    zoomSlider.setMaximum(10)
+    zoomSlider.setSingleStep(1)
+    zoomSlider.setTickPosition(QSlider.TicksBothSides)
+    zoomSlider.setTickInterval(1)
+    #zoomSlider.valueChanged.connect(functionName)
+
+    groupBoxZoom = QGroupBox('Zoom')
+    layoutZoom = QHBoxLayout()
+    groupBoxZoom.setLayout(layoutZoom)
+    layoutZoom.addWidget(zoomSlider)
+    hbox.addWidget(groupBoxZoom)
+    return graphicsView
+
+
 def displayImageROISubWindow(self, derivedImagePath=None):
         """
         Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
@@ -141,20 +209,19 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             logger.info("DisplayImageROI displayImageROISubWindow called")
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         
-            layout, lblImageMissing, subWindow = \
-                displayImageCommon.setUpImageViewerSubWindow(self)
+            hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
-            graphicsView = GraphicsView()
             dictROIs = ROIs()
+
+            graphicsView = setUpGraphicsView(hbox)
 
             if pixelArray is None:
                 lblImageMissing.show()
                 graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
                 graphicsView.setImage(pixelArray)
-            layout.addWidget(graphicsView)
 
             pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
@@ -189,8 +256,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageROI.displayMultiImageROISubWindow called")
-            layout, lblImageMissing, subWindow = \
-                displayImageCommon.setUpImageViewerSubWindow(self)
+            hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
             
             imageSlider = QSlider(Qt.Horizontal)
             imageSlider.setMinimum(1)
@@ -202,10 +268,10 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
-
-            graphicsView = GraphicsView()
+           
             dictROIs = ROIs(NumImages=len(imageList))
-            layout.addWidget(graphicsView)
+
+            graphicsView = setUpGraphicsView(hbox)
             
             pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
@@ -285,6 +351,7 @@ def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageNumber=1):
 def storeMaskData(graphicsView, regionName, dictROIs, imageNumber = 1):
         mask = graphicsView.graphicsItem.getMaskData()
         dictROIs.addRegion(regionName, mask, imageNumber)
+
 
 def replaceMask(graphicsView, regionName, dictROIs, imageNumber = 1):
         mask = graphicsView.graphicsItem.getMaskData()
