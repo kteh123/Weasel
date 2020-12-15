@@ -1,6 +1,6 @@
 from PyQt5 import QtCore 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import  Qt
+from PyQt5.QtCore import (Qt, pyqtSignal)
 from PyQt5.QtWidgets import (QFileDialog,                            
                             QMessageBox, 
                             QWidget, 
@@ -32,6 +32,29 @@ from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import logging
 logger = logging.getLogger(__name__)
+
+#Subclassing QSlider so that the direction (Forward, Backward) of 
+#slider travel is returned to the calling function
+class Slider(QSlider):
+    Nothing, Forward, Backward = 0, 1, -1
+    directionChanged = pyqtSignal(int)
+    def __init__(self, parent=None):
+        QSlider.__init__(self, parent)
+        self._direction = Slider.Nothing
+        self.last = self.value()/self.maximum()
+        self.valueChanged.connect(self.onValueChanged)
+
+    def onValueChanged(self, value):
+        current = value/self.maximum()
+        direction = Slider.Forward if self.last < current else Slider.Backward
+        if self._direction != direction:
+            self.directionChanged.emit(direction)
+            self._direction = direction
+        self.last = current
+
+    def direction(self):
+        return self._direction
+
 
 def setUpGraphicsViewSubWindow(self):
     """
@@ -182,16 +205,16 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
 
 
 def setUpGraphicsView(hbox):
-    graphicsView = GraphicsView()
+    zoomSlider = Slider(Qt.Vertical)
+    graphicsView = GraphicsView(zoomSlider)
     hbox.addWidget(graphicsView)
 
-    zoomSlider = QSlider(Qt.Vertical)
     zoomSlider.setMinimum(1)
-    zoomSlider.setMaximum(10)
+    zoomSlider.setMaximum(20)
     zoomSlider.setSingleStep(1)
     zoomSlider.setTickPosition(QSlider.TicksBothSides)
     zoomSlider.setTickInterval(1)
-    #zoomSlider.valueChanged.connect(functionName)
+    zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
 
     groupBoxZoom = QGroupBox('Zoom')
     layoutZoom = QHBoxLayout()
@@ -503,18 +526,6 @@ def saveROI(self, regionName, dictROIs):
         #interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, [inputPath], [outputPath], suffix)
     #treeView.refreshDICOMStudiesTreeView(self)
    
-
-#def reloadMask(self, dictROIs, regionName, graphicsView,
-#              pixelDataLabel, roiMeanLabel, cmbROIs, imageNumber):
-#    reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-#                              roiMeanLabel, imageNumber, self) 
-#    print("reloadMask - regionName={} imageNumber={}".format(regionName, imageNumber))
-#    mask = dictROIs.getMask(cmbROIs.currentText(), imageNumber)
-#    graphicsView.setImage(pixelArray, mask)
-    #mask = dictROIs.getMask(regionName, imageNumber)
-   # if mask is not None:
-     #  graphicsView.graphicsItem.reloadMask(mask)
-
 
 def roiNameChanged(cmbROIs, dictROIs, newText):
     try:

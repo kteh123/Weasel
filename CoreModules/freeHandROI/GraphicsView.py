@@ -6,10 +6,11 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 class GraphicsView(QGraphicsView):
-    def __init__(self):
+    def __init__(self, zoomSlider):
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
+        self.zoomSlider = zoomSlider
         self.graphicsItem = None
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -32,19 +33,36 @@ class GraphicsView(QGraphicsView):
             print('Error in GraphicsView.setImage: ' + str(e))
 
 
-    def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
+    def zoomImage(self, zoomValue):
+        if zoomValue > 0:
             factor = 1.25
             self._zoom += 1
+            increment = 1
         else:
             factor = 0.8
             self._zoom -= 1
+            increment = -1
         if self._zoom > 0:
             self.scale(factor, factor)
         elif self._zoom == 0:
             self.fitItemInView()
+            increment = 0
         else:
             self._zoom = 0
+            increment = 0
+
+        return increment
+
+
+    def wheelEvent(self, event):
+        increment = self.zoomImage(event.angleDelta().y())
+        if increment == 0:
+            self.zoomSlider.setValue(0)
+        else:
+            if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
+                self.zoomSlider.setValue(self.zoomSlider.value() + increment)
+            elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
+                self.zoomSlider.setValue(self.zoomSlider.value() + increment)
 
 
     def fitItemInView(self, scale=True):
