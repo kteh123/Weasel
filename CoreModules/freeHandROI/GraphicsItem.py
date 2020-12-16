@@ -121,9 +121,8 @@ class GraphicsItem(QGraphicsObject):
         
 
     def mouseReleaseEvent(self, event):
-        #buttons = event.buttons()
-        #if (buttons & Qt.LeftButton):
-            #Only draw if left button pressed
+        button = event.button()
+        if (button == Qt.LeftButton):
             if self.mouseMoved:
                 if  (self.last_x != None and self.start_x != None 
                         and self.last_y != None and self.start_y != None):

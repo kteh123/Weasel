@@ -28,7 +28,7 @@ class ROIs():
             else:
                 #a new ROI
                 #Make a copy of the list of image mask lists
-                imageMaskList = self.createBlankMask(mask)
+                imageMaskList = self.createListOfBlankMasks(mask)
                 #Add the current mask to the correct list in the list of lists
                 imageMaskList[imageNumber - 1] = mask
                 self.dictMasks[regionName] = imageMaskList
@@ -40,15 +40,15 @@ class ROIs():
         try:
             if regionName in self.dictMasks:
                 imageMaskList = self.dictMasks[regionName]
-                imageMaskList[imageNumber - 1] = mask
-                #imageMaskList[imageNumber - 1] =  np.logical_and(mask, imageMaskList[imageNumber - 1])
+                #imageMaskList[imageNumber - 1] = mask
+                imageMaskList[imageNumber - 1] =  mask & imageMaskList[imageNumber - 1]
                 self.dictMasks[regionName] = imageMaskList
 
         except Exception as e:
             print('Error in ROI_Storage.replaceMask: ' + str(e))
 
 
-    def createBlankMask(self, mask):
+    def createListOfBlankMasks(self, mask):
         ny, nx = np.shape(mask)
         blankMask = np.full((nx, ny), False, dtype=bool)
         return [blankMask for _ in range(self.NumOfImages)]
