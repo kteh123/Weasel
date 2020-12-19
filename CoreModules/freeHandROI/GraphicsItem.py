@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (QRectF, Qt)
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, qRgb)
-from PyQt5.QtWidgets import  QGraphicsObject
+from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
+from PyQt5.QtWidgets import  QGraphicsObject, QApplication
 import numpy as np
 import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
@@ -12,6 +12,7 @@ import sys
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pen_icon.png'
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
@@ -103,6 +104,12 @@ class GraphicsItem(QGraphicsObject):
         buttons = event.buttons()
         if (buttons & Qt.LeftButton):
             #Only draw if left button pressed
+            pm = QPixmap(PEN_CURSOR)
+            #bm = pm.createMaskFromColor(QColor(255, 255, 255), Qt.MaskOutColor)
+            cursor = QCursor(pm)
+            QApplication.setOverrideCursor(cursor) #QCursor(Qt.ArrowCursor))
+            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            # self.setCursor(Qt.ArrowCursor)
             if self.last_x is None: # First event.
                 self.last_x = (event.pos()).x()
                 self.last_y = (event.pos()).y()
@@ -118,9 +125,13 @@ class GraphicsItem(QGraphicsObject):
             self.last_y = yCoord
             self.pathCoordsList.append([self.last_x, self.last_y])
             self.mouseMoved = True
-        
+            #QApplication.restoreOverrideCursor()
+            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))#
+
 
     def mouseReleaseEvent(self, event):
+        #QApplication.restoreOverrideCursor()
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         button = event.button()
         if (button == Qt.LeftButton):
             if self.mouseMoved:
@@ -340,3 +351,9 @@ class GraphicsItem(QGraphicsObject):
 
     def mousePressEvent(self, event):
         pass
+
+#pm = QtGui.QPixmap(FERRET_LOGO)
+#bm = pm.createMaskFromColor(whatEverColor, Qt.MaskOutColor)
+#pm.setAlphaChannel(bm)
+#cursor = QtGui.QCursor(pm)
+#self.setCursor(cursor)
