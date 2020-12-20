@@ -12,7 +12,9 @@ import sys
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pen_icon.png'
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
+ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
+
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
@@ -102,14 +104,11 @@ class GraphicsItem(QGraphicsObject):
 
     def mouseMoveEvent(self, event):
         buttons = event.buttons()
-        if (buttons & Qt.LeftButton):
+        if (buttons == Qt.LeftButton):
             #Only draw if left button pressed
             pm = QPixmap(PEN_CURSOR)
-            #bm = pm.createMaskFromColor(QColor(255, 255, 255), Qt.MaskOutColor)
-            cursor = QCursor(pm)
-            QApplication.setOverrideCursor(cursor) #QCursor(Qt.ArrowCursor))
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-            # self.setCursor(Qt.ArrowCursor)
+            cursor = QCursor(pm, -1, -1)
+            self.setCursor(cursor)
             if self.last_x is None: # First event.
                 self.last_x = (event.pos()).x()
                 self.last_y = (event.pos()).y()
@@ -119,19 +118,19 @@ class GraphicsItem(QGraphicsObject):
             xCoord = event.pos().x()
             yCoord = event.pos().y()
             self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
-
             # Update the origin for next time.
             self.last_x = xCoord
             self.last_y = yCoord
             self.pathCoordsList.append([self.last_x, self.last_y])
             self.mouseMoved = True
-            #QApplication.restoreOverrideCursor()
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))#
+        elif (buttons == Qt.RightButton):
+            pm = QPixmap(ERASOR_CURSOR)
+            cursor = QCursor(pm, -1, -1)
+            self.setCursor(cursor)
 
 
     def mouseReleaseEvent(self, event):
-        #QApplication.restoreOverrideCursor()
-        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        self.setCursor(QCursor(Qt.ArrowCursor))
         button = event.button()
         if (button == Qt.LeftButton):
             if self.mouseMoved:
@@ -160,6 +159,9 @@ class GraphicsItem(QGraphicsObject):
                 #The mouse was not moved, so a pixel was clicked on
                 xCoord = int(event.pos().x())
                 yCoord = int(event.pos().y())
+                pm = QPixmap(PEN_CURSOR)
+                cursor = QCursor(pm, -1, -1)
+                self.setCursor(cursor)
                 if self.mask is not None:
                     if self.mask[yCoord, xCoord]:
                         #erase mask at this pixel 
@@ -180,7 +182,8 @@ class GraphicsItem(QGraphicsObject):
                     self.setPixelToRed(xCoord, yCoord)
                     self.mask[yCoord, xCoord] = True
                     self.sigMaskCreated.emit()
-    
+                self.setCursor(QCursor(Qt.ArrowCursor))
+
 
     def resetPixel(self, x, y):
         pixelColour = self.origQimage.pixel(x, y) 
