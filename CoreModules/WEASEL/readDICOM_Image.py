@@ -3,6 +3,7 @@ import struct
 import numpy as np
 import pydicom
 from scipy.spatial.transform import Rotation
+from CoreModules.WEASEL.Affine import Affine
 
 
 def returnPixelArray(imagePath):
@@ -111,20 +112,51 @@ def getSeriesTagValues(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
-            # This is not for Enhanced MRI. Only Classic DICOM
-            if isinstance(dicomTag, str):
-                try:
-                    attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
-                except:
-                    return None, None
+            if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
+                # Classic DICOM
+                if isinstance(dicomTag, str):
+                    try:
+                        attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                    except:
+                        return None, None
+                else:
+                    try:
+                        attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                    except:
+                        return None, None
+                numAttribute = len(np.unique(attributeList))
+                del datasetList
+                return attributeList, numAttribute
             else:
-                try:
-                    attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                except:
+                # Enhanced MRI
+                dataset = datasetList[0]
+                attributeList = []
+                fields = dicomTag.split('.')
+                if len(fields) == 1:
+                    if isinstance(dicomTag, str):
+                        try:
+                            attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                        except:
+                            return None, None
+                    else:
+                        try:
+                            attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                        except:
+                            return None, None
+                elif fields[0] == "PerFrameFunctionalGroupsSequence":
+                    remaining_fields = ""
+                    for field in fields[1:-1]:
+                        remaining_fields += "." + str(field) + "[0]"
+                    remaining_fields += "." + fields[-1]
+                    for singleSlice in dataset.PerFrameFunctionalGroupsSequence:
+                        pyDicom_command_string = "singleSlice" + remaining_fields
+                        attributeList.append(eval(pyDicom_command_string))
+                else:
+                    # These seem to be the only options for now
                     return None, None
-            numAttribute = len(np.unique(attributeList))
-            del datasetList
-            return attributeList, numAttribute
+                numAttribute = len(np.unique(attributeList))
+                del dataset, datasetList, fields
+                return attributeList, numAttribute
         else:
             return None, None
     except Exception as e:
@@ -139,21 +171,23 @@ def sortSequenceByTag(imagePathList, dicomTag):
     """
     try:
         if os.path.exists(imagePathList[0]):
+            attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
+            attributeListUnique = np.unique(attributeList) # sorted(np.unique(attributeList))
+            indicesSorted = list()
+            for i in range(numAttribute):
+                indices = [index for index, value in enumerate(attributeList) if value == attributeListUnique[i]]
+                indicesSorted.extend(indices)
+            # If/Else regarding Multi-Frame DICOM
             dataset = getDicomDataset(imagePathList[0])
             if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-                # This is not for Enhanced MRI. Only Classic DICOM
-                attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
-                attributeListUnique = sorted(np.unique(attributeList))
-                indicesSorted = list()
-                for i in range(numAttribute):
-                    indices = [index for index, value in enumerate(attributeList) if value == attributeListUnique[i]]
-                    indicesSorted.extend(indices)
                 sortedSequencePath = [imagePathList[index] for index in indicesSorted]
-                attributeListSorted = [attributeList[index] for index in indicesSorted]
-                del dataset, attributeList, attributeListUnique
-                return sortedSequencePath, attributeListSorted, numAttribute, indicesSorted
+            else:
+                sortedSequencePath = imagePathList
+            attributeListSorted = [attributeList[index] for index in indicesSorted]
+            del dataset, attributeList, attributeListUnique
+            return sortedSequencePath, attributeListSorted, numAttribute, indicesSorted
         else:
-            return None, None, None
+            return None, None, None, None
     except Exception as e:
         print('Error in function readDICOM_Image.sortSequenceByTag: ' + str(e))
 
@@ -256,6 +290,21 @@ def getAffineArray(dataset):
         print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
 
 
+def mapMaskToImage(mask, affineArray, pixelArray):
+    # Consider replacing "affineArray, pixelArray" with dataset
+    try:
+        affineOriginal = Affine(affineArray)
+        rotation = np.linalg.inv(affineOriginal)
+        outputMask = np.zeros(np.shape(pixelArray))
+        for index, value in np.ndenumerate(mask):
+            if value == 1:
+                newCoord = rotation.index2coord(index)
+                outputMask[newCoord] = 1
+        return outputMask
+    except Exception as e:
+        print('Error in function readDICOM_Image.mapMaskToImage: ' + str(e))
+
+
 def getColourmap(imagePath):
     """This method reads the DICOM file in imagePath and returns the colourmap if there's any"""
     try:
@@ -296,37 +345,52 @@ def getColourmap(imagePath):
 def checkImageType(dataset):
     """This method reads the DICOM Dataset object/class and returns if it is a Magnitude, Phase, Real or Imaginary image or None"""
     try:
-        flagMagnitude = False
-        flagPhase = False
-        flagReal = False
-        flagImaginary = False
-        flagMap = False
         mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-            # dataset = dataset.PerFrameFunctionalGroupsSequence[0]
-            if hasattr(dataset.MRImageFrameTypeSequence[0], 'FrameType'):
-                if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagMagnitude = True
-                elif set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagPhase = True
-                elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagReal = True
-                elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagImaginary = True
-                elif set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)):
-                    flagMap = list(set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].FrameType)))[0]
-            elif hasattr(dataset.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
-                if set(['M', 'MAGNITUDE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagMagnitude = True
-                elif set(['P', 'PHASE']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagPhase = True
-                elif set(['R', 'REAL']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagReal = True
-                elif set(['I', 'IMAGINARY']).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagImaginary = True
-                elif set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)):
-                    flagMap = list(set(mapsList).intersection(set(dataset.MRImageFrameTypeSequence[0].ComplexImageComponent)))[0]
+            flagMagnitude = []
+            flagPhase = []
+            flagReal = []
+            flagImaginary = []
+            flagMap = []
+            for index, singleSlice in enumerate(dataset.PerFrameFunctionalGroupsSequence):
+                if hasattr(singleSlice.MRImageFrameTypeSequence[0], 'FrameType'):
+                    if set(['M', 'MAGNITUDE']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)):
+                        flagMagnitude.append(index)
+                        continue
+                    elif set(['P', 'PHASE']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)):
+                        flagPhase.append(index)
+                        continue
+                    elif set(['R', 'REAL']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)):
+                        flagReal.append(index)
+                        continue
+                    elif set(['I', 'IMAGINARY']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)):
+                        flagImaginary.append(index)
+                        continue
+                    elif set(mapsList).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)):
+                        flagMap.append(list(set(mapsList).intersection(set(singleSlice.MRImageFrameTypeSequence[0].FrameType)))[0])
+                        continue
+                if hasattr(singleSlice.MRImageFrameTypeSequence[0], 'ComplexImageComponent'):
+                    if set(['M', 'MAGNITUDE']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        flagMagnitude.append(index)
+                        continue
+                    elif set(['P', 'PHASE']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        flagPhase.append(index)
+                        continue
+                    elif set(['R', 'REAL']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        flagReal.append(index)
+                        continue
+                    elif set(['I', 'IMAGINARY']).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        flagImaginary.append(index)
+                        continue
+                    elif set(mapsList).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)):
+                        flagMap.append(list(set(mapsList).intersection(set(singleSlice.MRImageFrameTypeSequence[0].ComplexImageComponent)))[0])
+                        continue
         else:
+            flagMagnitude = False
+            flagPhase = False
+            flagReal = False
+            flagImaginary = False
+            flagMap = False
             try: private_ge = dataset[0x0043102f]
             except: private_ge = None
             if private_ge is not None: #MAG = 0; PHASE = 1; REAL = 2; IMAG = 3; # RawDataType_ImageType in GE - '0x0043102f'

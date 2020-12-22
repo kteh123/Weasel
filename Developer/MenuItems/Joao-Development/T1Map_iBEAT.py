@@ -36,7 +36,7 @@ def main(objWeasel):
         for zSlice in range(np.shape(pixelArray)[2]):
             tempImage = ukrinMaps(np.squeeze(pixelArray[:, :, zSlice, :])).T1Map(ti[:, zSlice]) # There's MATLAB version T1MapMolli
             outputArray.append(np.transpose(tempImage))
-        outputArray = np.array(outputArray)
+        outputArray = np.squeeze(np.array(outputArray))
         del tempImage
         ########################################################
         outputSeries = series.new(series_name="T1Map_iBEAT", suffix=FILE_SUFFIX)

@@ -95,6 +95,7 @@ class ParametricClass(object):
         # Insert a Label Dictionary that comes from PyQtGraph - roi_labels
         segment_numbers = np.unique(pixelArray)
         segment_dictionary = dict(list(enumerate(segment_numbers)))
+        # newDicom.ImageComments = comment
         if segment_dictionary[0] == 0:
             segment_dictionary[0] = 'Background'
         for key in segment_dictionary:
