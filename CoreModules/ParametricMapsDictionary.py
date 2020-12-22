@@ -75,38 +75,36 @@ class ParametricClass(object):
         dicom.BitsStored = 8
         dicom.HighBit = 7
         dicom.SmallestImagePixelValue = 0
-        #dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
+        dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
         dicom.PixelRepresentation = 0
         dicom.SamplesPerPixel = 1
-        dicom.WindowCenter = 128
-        dicom.WindowWidth = 128
+        dicom.WindowCenter = 0.5
+        dicom.WindowWidth = 1.1
         dicom.LossyImageCompression = '00'
-        pixelArray = imageArray.astype(np.uint8)
-        #dicom.PixelData = pixelArray.tobytes()
+        pixelArray = imageArray.astype(np.uint8) # Should we multiply by 255?
+        dicom.PixelData = pixelArray.tobytes()
 
         dicom.Modality = 'SEG'
         dicom.SegmentationType = 'FRACTIONAL'
-        #dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
+        dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
         dicom.SegmentationFractionalType = 'OCCUPANCY'
-        #dicom.ContentLabel = 'SEGMENTATION'
-        dicom.ContentDescription = 'Image segmentation'
+        dicom.ContentDescription = dicom.ImageComments.split('_')[2] # 'Image segmentation'
 
         # Segment Labels
-        # Insert a Label Dictionary that comes from PyQtGraph - roi_labels
         segment_numbers = np.unique(pixelArray)
         segment_dictionary = dict(list(enumerate(segment_numbers)))
-        # newDicom.ImageComments = comment
-        if segment_dictionary[0] == 0:
-            segment_dictionary[0] = 'Background'
+        segment_label = dicom.ImageComments.split('_')[2]
+        segment_dictionary[0] = 'Background'
+        segment_dictionary[1] = segment_label
         for key in segment_dictionary:
-            dicom.SegmentSequence = [Dataset(), Dataset(), Dataset(), Dataset(), Dataset(), Dataset()]
-            dicom.SegmentSequence[0].SegmentAlgorithmType = 'MANUAL'
-            dicom.SegmentSequence[1].SegmentNumber = key
-            dicom.SegmentSequence[2].SegmentDescription = str(segment_dictionary[key])
-            dicom.SegmentSequence[3].SegmentLabel = "Label " + str(dicom.SegmentSequence[1].SegmentNumber) + " = " + str(dicom.SegmentSequence[2].SegmentDescription)
-            dicom.SegmentSequence[4].SegmentAlgorithmName = "Weasel"
-            anatomyString = dicom.BodyPartExamined
-            saveAnatomicalInfo(anatomyString, dicom.SegmentSequence[5])
+           dicom.SegmentSequence = [Dataset(), Dataset(), Dataset(), Dataset(), Dataset(), Dataset()]
+           dicom.SegmentSequence[0].SegmentAlgorithmType = 'MANUAL'
+           dicom.SegmentSequence[1].SegmentNumber = key
+           dicom.SegmentSequence[2].SegmentDescription = str(segment_dictionary[key])
+           dicom.SegmentSequence[3].SegmentLabel = str(segment_dictionary[key])
+           dicom.SegmentSequence[4].SegmentAlgorithmName = "Weasel"
+           anatomyString = dicom.BodyPartExamined
+           saveAnatomicalInfo(anatomyString, dicom.SegmentSequence[5])
 
         return
 
