@@ -251,7 +251,7 @@ def getDICOMFileData(self):
                 series = seriesNode.text(0)
                 studyNode = seriesNode.parent()
                 study = studyNode.text(0)
-                fullImageName = study + ': ' + series + ': '  + imageName
+                fullImageName = study + ': ' + series + ': '  + imageName 
                 return fullImageName
             else:
                 return ''

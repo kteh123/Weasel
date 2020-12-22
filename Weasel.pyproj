@@ -368,6 +368,9 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include="config.xml" />
+    <Content Include="CoreModules\freeHandROI\cursors\erasor.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\Magnifying_Glass.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\pencil.png" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\console\template.ui" />
@@ -8095,6 +8098,7 @@
   <ItemGroup>
     <Folder Include="CoreModules\FERRET\" />
     <Folder Include="CoreModules\freeHandROI\" />
+    <Folder Include="CoreModules\freeHandROI\cursors\" />
     <Folder Include="CoreModules\WEASEL\" />
     <Folder Include="CoreModules\pyqtgraph\" />
     <Folder Include="CoreModules\pyqtgraph\canvas\" />

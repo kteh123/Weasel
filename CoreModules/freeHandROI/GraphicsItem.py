@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (QRectF, Qt)
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, qRgb)
-from PyQt5.QtWidgets import  QGraphicsObject
+from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
+from PyQt5.QtWidgets import  QGraphicsObject, QApplication
 import numpy as np
 import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
@@ -11,6 +11,9 @@ import sys
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
+
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
+ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
 
 
 class GraphicsItem(QGraphicsObject):
@@ -101,8 +104,11 @@ class GraphicsItem(QGraphicsObject):
 
     def mouseMoveEvent(self, event):
         buttons = event.buttons()
-        if (buttons & Qt.LeftButton):
+        if (buttons == Qt.LeftButton):
             #Only draw if left button pressed
+            pm = QPixmap(PEN_CURSOR)
+            cursor = QCursor(pm, -1, -1)
+            self.setCursor(cursor)
             if self.last_x is None: # First event.
                 self.last_x = (event.pos()).x()
                 self.last_y = (event.pos()).y()
@@ -112,18 +118,21 @@ class GraphicsItem(QGraphicsObject):
             xCoord = event.pos().x()
             yCoord = event.pos().y()
             self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
-
             # Update the origin for next time.
             self.last_x = xCoord
             self.last_y = yCoord
             self.pathCoordsList.append([self.last_x, self.last_y])
             self.mouseMoved = True
-        
+        elif (buttons == Qt.RightButton):
+            pm = QPixmap(ERASOR_CURSOR)
+            cursor = QCursor(pm, -1, -1)
+            self.setCursor(cursor)
+
 
     def mouseReleaseEvent(self, event):
-        #buttons = event.buttons()
-        #if (buttons & Qt.LeftButton):
-            #Only draw if left button pressed
+        self.setCursor(QCursor(Qt.ArrowCursor))
+        button = event.button()
+        if (button == Qt.LeftButton):
             if self.mouseMoved:
                 if  (self.last_x != None and self.start_x != None 
                         and self.last_y != None and self.start_y != None):
@@ -150,6 +159,9 @@ class GraphicsItem(QGraphicsObject):
                 #The mouse was not moved, so a pixel was clicked on
                 xCoord = int(event.pos().x())
                 yCoord = int(event.pos().y())
+                pm = QPixmap(PEN_CURSOR)
+                cursor = QCursor(pm, -1, -1)
+                self.setCursor(cursor)
                 if self.mask is not None:
                     if self.mask[yCoord, xCoord]:
                         #erase mask at this pixel 
@@ -170,7 +182,8 @@ class GraphicsItem(QGraphicsObject):
                     self.setPixelToRed(xCoord, yCoord)
                     self.mask[yCoord, xCoord] = True
                     self.sigMaskCreated.emit()
-    
+                self.setCursor(QCursor(Qt.ArrowCursor))
+
 
     def resetPixel(self, x, y):
         pixelColour = self.origQimage.pixel(x, y) 
@@ -341,3 +354,9 @@ class GraphicsItem(QGraphicsObject):
 
     def mousePressEvent(self, event):
         pass
+
+#pm = QtGui.QPixmap(FERRET_LOGO)
+#bm = pm.createMaskFromColor(whatEverColor, Qt.MaskOutColor)
+#pm.setAlphaChannel(bm)
+#cursor = QtGui.QCursor(pm)
+#self.setCursor(cursor)
