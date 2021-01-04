@@ -184,7 +184,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnErase.setCheckable(True)
     #btnErase.toggle()
     btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
-    btnErase.clicked.connect(lambda:eraseImage(btnErase, graphicsView))
+    btnErase.clicked.connect(lambda checked: eraseImage(btnErase, checked, graphicsView))
 
 
     btnDraw = QPushButton()
@@ -192,7 +192,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnDraw.setCheckable(True)
     #btnDraw.toggle()
     btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
-    btnDraw.clicked.connect(lambda:drawImage(btnDraw, graphicsView))
+    btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, checked, graphicsView))
 
     btnZoom = QPushButton()
     btnZoom.setToolTip("Zoom in/Zomm out of the image")
@@ -200,7 +200,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     #btnZoom.setChecked(False)
     #btnZoom.toggle()
     btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
-    btnZoom.clicked.connect(lambda:zoomImage(btnZoom, graphicsView)) 
+    btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, checked, graphicsView)) 
 
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
@@ -244,43 +244,55 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     return pixelDataLabel, roiMeanLabel, cmbROIs
 
 
-def zoomImage(btn, graphicsView):
-    if btn.isChecked():
+def zoomImage(btn, checked, graphicsView):
+    if checked:
         pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
         graphicsView.zoomEnabled = True
         graphicsView.graphicsItem.drawEnabled = False
         graphicsView.graphicsItem.eraseEnabled = False
+        btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         graphicsView.zoomEnabled = False
+        btn.setStyleSheet(
+         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+         )
 
 
-def drawImage(btn, graphicsView):
-    if btn.isChecked():
+def drawImage(btn, checked, graphicsView):
+    if checked:
         pm = QPixmap(PEN_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.drawEnabled = True
         graphicsView.zoomEnabled = False
         graphicsView.graphicsItem.eraseEnabled = False
+        btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         graphicsView.graphicsItem.drawEnabled = False
+        btn.setStyleSheet(
+         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+         )
 
 
-def eraseImage(btn, graphicsView):
-    if btn.isChecked():
+def eraseImage(btn, checked, graphicsView):
+    if checked:
         pm = QPixmap(ERASOR_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.eraseEnabled = True
         graphicsView.zoomEnabled = False
         graphicsView.graphicsItem.drawEnabled = False
+        btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         graphicsView.graphicsItem.eraseEnabled = False
+        btn.setStyleSheet(
+         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+         )
 
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
