@@ -18,7 +18,10 @@ def main(objWeasel):
     for series in seriesList:
         seriesMagnitude = series.Magnitude
         if checkT2Star(seriesMagnitude):
-            seriesMagnitude.sort("EchoTime", "SliceLocation")
+            if seriesMagnitude.Multiframe:
+                seriesMagnitude.sort("PerFrameFunctionalGroupsSequence.MREchoSequence.EffectiveEchoTime", "PerFrameFunctionalGroupsSequence.FrameContentSequence.InStackPositionNumber")
+            else:
+                seriesMagnitude.sort("EchoTime", "SliceLocation")
             te = np.unique(seriesMagnitude.EchoTimes)
             pixelArray = np.transpose(seriesMagnitude.PixelArray) # (256, 256, 60)
             reformatShape = (np.shape(pixelArray)[0], np.shape(pixelArray)[1], int(np.shape(pixelArray)[2]/len(te)), len(te))

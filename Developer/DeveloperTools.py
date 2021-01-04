@@ -544,6 +544,8 @@ class PixelArrayDICOMTools:
                         inputPath = inputPath[:len(derivedImagePathList)]
 
             if numImages == 1:
+                if isinstance(inputPath, list):
+                    inputPath = inputPath[0]
                 saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
                 # Record derived image in XML file
                 interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
@@ -683,9 +685,9 @@ class Series:
         self.seriesUID = self.SeriesUID if seriesUID is None else seriesUID
         self.suffix = '' if suffix is None else suffix
         self.referencePathsList = []
-        # This is to potentially deal with Enhanced MRI
-        if self.PydicomList:
-            self.indices = np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence)) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
+        # This is to deal with Enhanced MRI
+        if self.PydicomList and len(self.images) == 1:
+            self.indices = list(np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence))) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
         else:
             self.indices = []
 
@@ -750,12 +752,15 @@ class Series:
         return outputSeries
     
     def sort(self, tagDescription, *argv):
-        if len(self.images) > 1:
-            imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
+        if self.Item(tagDescription) or self.Tag(tagDescription):
+            imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
             self.images = imagePathList
-            for tag in argv:
-                imagePathList, _, _, _ = readDICOM_Image.sortSequenceByTag(self.images, tag)
+            if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
+        for tag in argv:
+            if self.Item(tag) or self.Tag(tag):
+                imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tag)
                 self.images = imagePathList
+                if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
     def DisplaySeries(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images)
@@ -781,7 +786,11 @@ class Series:
         magnitudeSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
-            if flagMagnitude == True:
+            if isinstance(flagMagnitude, list) and flagMagnitude:
+                if len(flagMagnitude) > 1 and len(self.images) == 1:
+                    magnitudeSeries.indices = flagMagnitude
+                magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            elif flagMagnitude == True:
                 magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         return magnitudeSeries
 
@@ -793,7 +802,11 @@ class Series:
         phaseSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
-            if flagPhase == True:
+            if isinstance(flagPhase, list) and flagPhase:
+                if len(flagPhase) > 1 and len(self.images) == 1:
+                    phaseSeries.indices = flagPhase
+                phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            elif flagPhase == True:
                 phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         return phaseSeries
 
@@ -805,7 +818,11 @@ class Series:
         realSeries.referencePathsList = self.images
         for index in range(len(self.images)):
             _, _, flagReal, _, _ = readDICOM_Image.checkImageType(dicomList[index])
-            if flagReal:
+            if isinstance(flagReal, list) and flagReal:
+                if len(flagReal) > 1 and len(self.images) == 1:
+                    realSeries.indices = flagReal
+                realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            elif flagReal:
                 realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         return realSeries 
 
@@ -817,13 +834,24 @@ class Series:
         imaginarySeries.referencePathsList = self.images
         for index in range(len(self.images)):
             _, _, _, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
-            if flagImaginary:
+            if isinstance(flagImaginary, list) and flagImaginary:
+                if len(flagImaginary) > 1 and len(self.images) == 1:
+                    imaginarySeries.indices = flagImaginary
+                imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            elif flagImaginary:
                 imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
         return imaginarySeries 
 
     @property
     def PixelArray(self):
-        return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
+        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
+        if self.Multiframe:    
+            tempArray = []
+            for index in self.indices:
+                tempArray.append(pixelArray[index, ...])
+            pixelArray = np.array(tempArray)
+            del tempArray
+        return pixelArray
     
     @property
     def Dimensions(self):
@@ -840,12 +868,8 @@ class Series:
     @property
     def NumberOfSlices(self):
         numSlices = 0
-        if len(self.PydicomList) > 0:
-            dataset = self.PydicomList[0]
-        else:
-            dataset = []
-        if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-            numSlices = int(dataset.NumberOfFrames)
+        if self.Multiframe:
+            numSlices = int(self.Item("NumberOfFrames"))
         else:
             numSlices = len(np.unique(self.SliceLocations))
         return numSlices
@@ -853,51 +877,43 @@ class Series:
     @property
     def SliceLocations(self):
         slices = []
-        if len(self.PydicomList) > 0:
-            dataset = self.PydicomList[0]
+        if self.Multiframe:
+            #slices = self.indices
+            slices = self.Item("PerFrameFunctionalGroupsSequence.FrameContentSequence.InStackPositionNumber")
         else:
-            dataset = []
-        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             slices = self.Item("SliceLocation")
-        else:
-            slices = self.indices
         return slices
     
     @property
     def EchoTimes(self):
         echoList = []
-        if len(self.PydicomList) > 0:
-            dataset = self.PydicomList[0]
-        else:
-            dataset = []
-        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+        #if not self.Multiframe:
+            #echoList = self.Item("EchoTime")
+        #else:
+            #for dataset in self.PydicomList:
+                #for index in self.indices:
+                    #echoList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveEchoTime)
+        if self.Item("PerFrameFunctionalGroupsSequence.MREchoSequence.EffectiveEchoTime"):
+            echoList = self.Item("PerFrameFunctionalGroupsSequence.MREchoSequence.EffectiveEchoTime")
+        elif self.Item("EchoTime"):
             echoList = self.Item("EchoTime")
-        else:
-            for dataset in self.PydicomList:
-                for field in dataset.PerFrameFunctionalGroupsSequence:
-                    echoList.append(field.MREchoSequence[0].EffectiveEchoTime)
         return echoList
 
     @property
     def InversionTimes(self):
         inversionList = []
-        if len(self.PydicomList) > 0:
-            dataset = self.PydicomList[0]
+        #if not self.Multiframe:
+        if self.Item("InversionTime"):
+            inversionList = self.Item("InversionTime")
+        elif self.Item(0x20051572):
+            inversionList = self.Item(0x20051572)
         else:
-            dataset = []
-        if not hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-            if hasattr(dataset, 'InversionTime'):
-                inversionList = self.Item("InversionTime")
-            # INCLUDE ELIFS HERE
-            else:
-                try:
-                    inversionList = self.Item(0x20051572)
-                except:
-                    inversionList = []
-        else:
-            for dataset in self.PydicomList:
-                for field in dataset.PerFrameFunctionalGroupsSequence:
-                    inversionList.append(field.MREchoSequence[0].EffectiveInversionTime) # InversionTime
+            inversionList = []
+        #else:
+            #inversionList = self.Item("InversionTime")
+            #for dataset in self.PydicomList:
+                #for index in self.indices:
+                    #inversionList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveInversionTime) # InversionTime
         return inversionList
 
     def Item(self, tagDescription, newValue=None):
@@ -909,16 +925,28 @@ class Series:
                 elif tagDescription == 'SeriesNumber':
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
             itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
+            if self.Multiframe: 
+                tempList = [itemList[index] for index in self.indices]
+                itemList = tempList
+                del tempList
         else:
             itemList = []
         return itemList
 
     def Tag(self, tag, newValue=None):
-        hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
+        try:
+            hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
+        except:
+            # Print message about how to provide tag
+            return []
         if self.images:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
             itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
+            if self.Multiframe: 
+                tempList = [itemList[index] for index in self.indices]
+                itemList = tempList
+                del tempList
         else:
             itemList = []
         return itemList
@@ -929,6 +957,13 @@ class Series:
             return PixelArrayDICOMTools.getDICOMobject(self.images)
         else:
             return []
+    
+    @property
+    def Multiframe(self):
+        if self.indices:
+            return True
+        else:
+            return False
 
 
 class Image:

@@ -34,7 +34,7 @@ def main(objWeasel):
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series
             newSeries.DisplaySeries()
-        if checkB0(seriesReal) and checkB0(seriesImaginary):
+        elif checkB0(seriesReal) and checkB0(seriesImaginary):
             seriesReal.sort("SliceLocation", "EchoTime")
             seriesImaginary.sort("SliceLocation", "EchoTime")
             te = np.unique(seriesReal.EchoTimes)

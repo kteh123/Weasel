@@ -623,27 +623,36 @@ def resetROI(self, cmbROIs, dictROIs, graphicsView,
 
 def saveROI(self, regionName, dictROIs):
     # Save Current ROI
-    mask = dictROIs.dictMasks[regionName] # Will return a boolean mask
-    mask = np.transpose(np.array(mask, dtype=np.int)) # Convert boolean to 0s and 1s
+    maskList = dictROIs.dictMasks[regionName] # Will return a list of boolean masks
+    maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
     suffix = str("_ROI_"+ regionName)
-    inputPath = self.selectedImagePath
-    outputPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
-    saveDICOM_Image.saveDicomNewSeries([outputPath], [inputPath], [mask], suffix) # parametric_map="ROI") # Have to include an optional flag to insert dictROIs.label
-    interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, [inputPath], [outputPath], suffix)
-    treeView.refreshDICOMStudiesTreeView(self)
-    # CONSIDER INSERTING A SHORT LOOP HERE TO FORCE dataset.ContentLabel = regionName (DICOM Operation)
-    # CONSIDER ALSO THE parametric_map OPTIONAL FLAG
+    if len(maskList) > 1:
+        inputPath = self.imageList
+    else:
+        inputPath = [self.selectedImagePath]
+    outputPath = []
+    for image in inputPath:
+        outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
+    saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
+    seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
+    treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+    QMessageBox.information(self, "Export ROIs", "Image Saved")
 
     # Save all ROIs
     #for label, mask in dictROIs.dictMasks.items():
-        #mask = np.transpose(np.array(mask, dtype=np.int))
-        #suffix = str("_ROI_"+ label)
-        #inputPath = self.selectedImagePath
-        #outputPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
-        #saveDICOM_Image.saveDicomNewSeries([outputPath], [inputPath], [mask], suffix) #, parametric_map="ROI") # Have to include an optional flag to insert label
-        #interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, [inputPath], [outputPath], suffix)
-    #treeView.refreshDICOMStudiesTreeView(self)
-   
+
+    # Test Affine
+    #inputPath1 = ['C:\\Users\\md1jgra\\Desktop\\Joao-3-scanners-2019\\test-affine\\1.2.840.113619.6.408.218238138221875479893414809240658168986-15-1-test.dcm']
+    #outputPath = ['C:\\Users\\md1jgra\\Desktop\\Joao-3-scanners-2019\\test-affine\\1.2.840.113619.6.408.218238138221875479893414809240658168986-15-1-test-mask.dcm']
+    #newMask = []
+    #for index, file in enumerate(inputPath1):
+    #    dataset = readDICOM_Image.getDicomDataset(file)
+    #    dataset_original = readDICOM_Image.getDicomDataset(inputPath[index])
+    #    newMask.append(readDICOM_Image.mapMaskToImage(maskList[index], dataset, dataset_original))
+    #saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath1, newMask, suffix, parametric_map="SEG")
+    #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath1, outputPath, suffix)
+    #treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+
 
 def roiNameChanged(cmbROIs, dictROIs, newText):
     try:
