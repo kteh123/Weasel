@@ -1,7 +1,9 @@
 from PyQt5 import QtCore 
 from PyQt5 import QtWidgets
+from PyQt5.QtGui import QPixmap, QIcon, QCursor
 from PyQt5.QtCore import (Qt, pyqtSignal)
-from PyQt5.QtWidgets import (QFileDialog,                            
+from PyQt5.QtWidgets import (QApplication,
+                            QFileDialog,                            
                             QMessageBox, 
                             QWidget, 
                             QGridLayout, 
@@ -32,6 +34,10 @@ from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import logging
 logger = logging.getLogger(__name__)
+
+MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
+ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
 
 #Subclassing QSlider so that the direction (Forward, Backward) of 
 #slider travel is returned to the calling function
@@ -157,9 +163,45 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     cmbROIs = QComboBox()
     cmbROIs.addItem("region1")
     cmbROIs.setCurrentIndex(0)
-    btnDeleteROI = QPushButton("Delete ROI")
+    btnDeleteROI = QPushButton("Delete")
     btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
                                                    roiMeanLabel, imageSlider))
+    btnNewROI = QPushButton('New') 
+    btnNewROI.setToolTip('Allows the user to create a new ROI')
+    btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
+
+    btnResetROI = QPushButton('Reset')
+    btnResetROI.setToolTip('Clears the ROI from the image')
+    btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
+                                                pixelDataLabel, roiMeanLabel, imageSlider))
+
+    btnSaveROI = QPushButton('Save')
+    btnSaveROI.setToolTip('Saves the ROI in DICOM format')
+    btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
+
+    btnErase = QPushButton()
+    btnErase.setToolTip("Erase the ROI")
+    btnErase.setCheckable(True)
+    #btnErase.toggle()
+    btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
+    btnErase.clicked.connect(lambda:eraseImage(btnErase, graphicsView))
+
+
+    btnDraw = QPushButton()
+    btnDraw.setToolTip("Draw an ROI")
+    btnDraw.setCheckable(True)
+    #btnDraw.toggle()
+    btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+    btnDraw.clicked.connect(lambda:drawImage(btnDraw, graphicsView))
+
+    btnZoom = QPushButton()
+    btnZoom.setToolTip("Zoom in/Zomm out of the image")
+    btnZoom.setCheckable(True)
+    #btnZoom.setChecked(False)
+    #btnZoom.toggle()
+    btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+    btnZoom.clicked.connect(lambda:zoomImage(btnZoom, graphicsView)) 
+
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
     cmbROIs.currentIndexChanged.connect(
@@ -177,18 +219,68 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
                              QtWidgets.QSizePolicy.Minimum, 
                              QtWidgets.QSizePolicy.Expanding)
 
-    groupBoxImageData = QGroupBox('Image Data')
-    gridLayoutImageData = QGridLayout()
-    groupBoxImageData.setLayout(gridLayoutImageData)
+    groupBoxImageData = QGroupBox('ROI')
+    gridLayoutROI = QGridLayout()
+    gridLayoutImageData =  QGridLayout()
+    groupBoxImageData.setLayout(gridLayoutROI)
     layout.addWidget(groupBoxImageData)
 
-    gridLayoutImageData.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
-    gridLayoutImageData.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft)
-    gridLayoutImageData.addWidget(btnDeleteROI, 0,2, alignment=Qt.AlignLeft, )
-    gridLayoutImageData.addItem(spacerItem, 0,3, alignment=Qt.AlignLeft)
-    gridLayoutImageData.addWidget(pixelDataLabel, 1, 0, 1, 2)
-    gridLayoutImageData.addWidget(roiMeanLabel, 1, 2, 1, 2)
+    #First row
+    gridLayoutROI.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
+    gridLayoutROI.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft,)
+    gridLayoutROI.addWidget(btnDeleteROI, 0,2, alignment=Qt.AlignLeft, )
+    gridLayoutROI.addWidget(btnNewROI, 0,3, alignment=Qt.AlignLeft,)
+    gridLayoutROI.addWidget(btnSaveROI, 0,4, alignment=Qt.AlignLeft,)
+    gridLayoutROI.addWidget(btnResetROI, 0, 5, alignment=Qt.AlignLeft,)
+    #Second row
+    gridLayoutROI.addItem(spacerItem, 1, 0)
+    gridLayoutROI.addItem(spacerItem, 1, 1)
+    gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
+    gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
+    gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
+    #Third row
+    gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
+    gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
     return pixelDataLabel, roiMeanLabel, cmbROIs
+
+
+def zoomImage(btn, graphicsView):
+    if btn.isChecked():
+        pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
+        cursor = QCursor(pm, -1, -1)
+        QApplication.setOverrideCursor(cursor)
+        graphicsView.zoomEnabled = True
+        graphicsView.graphicsItem.drawEnabled = False
+        graphicsView.graphicsItem.eraseEnabled = False
+    else:
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        graphicsView.zoomEnabled = False
+
+
+def drawImage(btn, graphicsView):
+    if btn.isChecked():
+        pm = QPixmap(PEN_CURSOR)
+        cursor = QCursor(pm, -1, -1)
+        QApplication.setOverrideCursor(cursor)
+        graphicsView.graphicsItem.drawEnabled = True
+        graphicsView.zoomEnabled = False
+        graphicsView.graphicsItem.eraseEnabled = False
+    else:
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        graphicsView.graphicsItem.drawEnabled = False
+
+
+def eraseImage(btn, graphicsView):
+    if btn.isChecked():
+        pm = QPixmap(ERASOR_CURSOR)
+        cursor = QCursor(pm, -1, -1)
+        QApplication.setOverrideCursor(cursor)
+        graphicsView.graphicsItem.eraseEnabled = True
+        graphicsView.zoomEnabled = False
+        graphicsView.graphicsItem.drawEnabled = False
+    else:
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        graphicsView.graphicsItem.eraseEnabled = False
 
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
@@ -261,8 +353,8 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs)
             spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
             spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
-            setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
-                          pixelDataLabel, roiMeanLabel)
+            #setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
+             #             pixelDataLabel, roiMeanLabel)
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -310,8 +402,8 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                                      dictROIs,
                                                                      imageSlider)
 
-            setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
-                          pixelDataLabel, roiMeanLabel, imageSlider)
+            #setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
+             #             pixelDataLabel, roiMeanLabel, imageSlider)
 
             layout.addWidget(imageSlider)
 
