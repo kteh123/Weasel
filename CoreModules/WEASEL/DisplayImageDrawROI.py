@@ -195,7 +195,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, checked, graphicsView))
 
     btnZoom = QPushButton()
-    btnZoom.setToolTip("Zoom in/Zomm out of the image")
+    btnZoom.setToolTip("Zoom in/Zoom out of the image")
     btnZoom.setCheckable(True)
     #btnZoom.setChecked(False)
     #btnZoom.toggle()
@@ -264,7 +264,7 @@ def zoomImage(btn, checked, graphicsView):
 def drawImage(btn, checked, graphicsView):
     if checked:
         pm = QPixmap(PEN_CURSOR)
-        cursor = QCursor(pm, -1, -1)
+        cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.drawEnabled = True
         graphicsView.zoomEnabled = False
@@ -281,7 +281,7 @@ def drawImage(btn, checked, graphicsView):
 def eraseImage(btn, checked, graphicsView):
     if checked:
         pm = QPixmap(ERASOR_CURSOR)
-        cursor = QCursor(pm, -1, -1)
+        cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.eraseEnabled = True
         graphicsView.zoomEnabled = False
