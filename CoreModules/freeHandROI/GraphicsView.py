@@ -7,6 +7,8 @@ __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
+ZOOM_IN = 1
+ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
     def __init__(self, zoomSlider):
@@ -18,6 +20,7 @@ class GraphicsView(QGraphicsView):
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.zoomEnabled = False
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -33,6 +36,8 @@ class GraphicsView(QGraphicsView):
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.reapplyZoom()
             self.scene.addItem(self.graphicsItem)
+            self.graphicsItem.sigZoomIn.connect(lambda: self.zoomImage(ZOOM_IN))
+            self.graphicsItem.sigZoomOut.connect(lambda: self.zoomImage(ZOOM_OUT))
         except Exception as e:
             print('Error in GraphicsView.setImage: ' + str(e))
 
@@ -45,41 +50,38 @@ class GraphicsView(QGraphicsView):
             
 
     def zoomImage(self, zoomValue):
-        if zoomValue > 0:
-            factor = 1.25
-            self._zoom += 1
-            #print("+self._zoom={}".format(self._zoom))
-            increment = 1
-        else:
-            factor = 0.8
-            self._zoom -= 1
-            increment = -1
-            #print("-self._zoom={}".format(self._zoom))
-        if self._zoom > 0:
-            self.scale(factor, factor)
-        elif self._zoom == 0:
-            self.fitItemInView()
-            increment = 0
-        else:
-            self._zoom = 0
-            increment = 0
-
-        return increment
+        if self.zoomEnabled:
+            if zoomValue > 0:
+                factor = 1.25
+                self._zoom += 1
+                #print("+self._zoom={}".format(self._zoom))
+                increment = 1
+            else:
+                factor = 0.8
+                self._zoom -= 1
+                increment = -1
+                #print("-self._zoom={}".format(self._zoom))
+            if self._zoom > 0:
+                self.scale(factor, factor)
+            elif self._zoom == 0:
+                self.fitItemInView()
+                increment = 0
+            else:
+                self._zoom = 0
+                increment = 0
+            return increment
 
 
     def wheelEvent(self, event):
-        pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
-        cursor = QCursor(pm, -1, -1)
-        self.setCursor(cursor)
-        increment = self.zoomImage(event.angleDelta().y())
-        if increment == 0:
-            self.zoomSlider.setValue(0)
-        else:
-            if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
-                self.zoomSlider.setValue(self.zoomSlider.value() + increment)
-            elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
-                self.zoomSlider.setValue(self.zoomSlider.value() + increment)
-        self.setCursor(QCursor(Qt.ArrowCursor))
+        if self.zoomEnabled:
+            increment = self.zoomImage(event.angleDelta().y())
+            if increment == 0:
+                self.zoomSlider.setValue(0)
+            else:
+                if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
+                    self.zoomSlider.setValue(self.zoomSlider.value() + increment)
+                elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
+                    self.zoomSlider.setValue(self.zoomSlider.value() + increment)
 
 
     def fitItemInView(self, scale=True):
@@ -95,3 +97,9 @@ class GraphicsView(QGraphicsView):
                                 viewrect.height() / scenerect.height())
                 self.scale(factor, factor)
                 self._zoom = 0
+
+
+   ## def mousePressEvent(self, event):
+   #     button = event.button()
+   #     if (button == Qt.LeftButton):
+   #        print("GraphicsView Left button")
