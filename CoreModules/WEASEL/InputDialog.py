@@ -88,7 +88,7 @@ class ParameterInputDialog(QDialog):
                 self.layout.addRow(self.helpTextLbl)
             self.listWidget = []
             listCounter = 0
-            for  key in paramDict:
+            for key in paramDict:
                 #paramType = paramDict[key].lower()
                 paramType, value1, value2, value3 = self.getParamData(paramDict[key].lower())
                 if paramType not in ("integer", "float", "string", "dropdownlist", "listview"):
@@ -114,6 +114,7 @@ class ParameterInputDialog(QDialog):
                         self.input.setValue(float(value1))
                 elif paramType == "string":
                     self.input = QLineEdit()
+                    if key=="Password": self.input.setEchoMode(QLineEdit.Password)
                     if value1:
                         self.input.setText(value1)
                     else:

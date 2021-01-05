@@ -4,6 +4,7 @@ import random
 import pydicom
 import copy
 import itertools
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
@@ -177,6 +178,15 @@ class UserInterfaceTools:
         messageWindow.displayMessageSubWindow(self.objWeasel, "<H4>" + msg + "</H4>", title)
 
 
+    def showInformationWindow(self, title="Message Window Title", msg="Please insert message in the function call"):
+        """
+        Displays an information window in the User Interface with the title in "title" and
+        with the message in "msg". The 2 strings in the arguments are the input by default.
+        The user has to click "OK" in order to continue using the interface.
+        """
+        QMessageBox.information(self.objWeasel, title, msg)
+
+
     def closeMessageWindow(self):
         """
         Closes any message window present in the User Interface.
@@ -195,7 +205,14 @@ class UserInterfaceTools:
         messageWindow.setMsgWindowProgBarValue(self.objWeasel, index)
         return index
     
-    
+
+    def selectFolder(self, title="Select the directory"):
+        """Displays an open folder dialog window to allow the
+        user to select afolder """
+        scan_directory = QFileDialog.getExistingDirectory(self.objWeasel, title, self.objWeasel.weaselDataFolder, QFileDialog.ShowDirsOnly)
+        return scan_directory
+
+
     @staticmethod
     def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
         """
