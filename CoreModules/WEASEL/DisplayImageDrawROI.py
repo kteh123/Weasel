@@ -179,28 +179,32 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnSaveROI.setToolTip('Saves the ROI in DICOM format')
     btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
 
+    buttonList = []
+
     btnErase = QPushButton()
+    buttonList.append(btnErase)
     btnErase.setToolTip("Erase the ROI")
     btnErase.setCheckable(True)
-    #btnErase.toggle()
     btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
-    btnErase.clicked.connect(lambda checked: eraseImage(btnErase, checked, graphicsView))
-
 
     btnDraw = QPushButton()
+    buttonList.append(btnDraw)
     btnDraw.setToolTip("Draw an ROI")
     btnDraw.setCheckable(True)
-    #btnDraw.toggle()
     btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
-    btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, checked, graphicsView))
 
     btnZoom = QPushButton()
+    buttonList.append(btnZoom)
     btnZoom.setToolTip("Zoom in/Zoom out of the image")
     btnZoom.setCheckable(True)
-    #btnZoom.setChecked(False)
-    #btnZoom.toggle()
     btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
-    btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, checked, graphicsView)) 
+
+    btnErase.clicked.connect(lambda checked: eraseImage(btnErase, 
+                                                        checked, graphicsView, buttonList))
+    btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, 
+                                                      checked, graphicsView, buttonList))
+    btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
+                                                      checked, graphicsView, buttonList)) 
 
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
@@ -212,7 +216,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
         lambda: dictROIs.setPreviousRegionName(cmbROIs.currentText()))
 
     cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, dictROIs, text))
-    cmbROIs.toolTip = "Displays a list of ROIs created"
+    cmbROIs.setToolTip("Displays a list of ROIs created")
     cmbROIs.setEditable(True)
     cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
     spacerItem = QSpacerItem(20, 20, 
@@ -244,8 +248,17 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     return pixelDataLabel, roiMeanLabel, cmbROIs
 
 
-def zoomImage(btn, checked, graphicsView):
+def setButtonsToDefaultStyle(buttonList):
+    for button in buttonList:
+        button.setStyleSheet(
+         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+         )
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+
+
+def zoomImage(btn, checked, graphicsView, buttonList):
     if checked:
+        setButtonsToDefaultStyle(buttonList)
         pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
@@ -261,8 +274,9 @@ def zoomImage(btn, checked, graphicsView):
          )
 
 
-def drawImage(btn, checked, graphicsView):
+def drawImage(btn, checked, graphicsView, buttonList):
     if checked:
+        setButtonsToDefaultStyle(buttonList)
         pm = QPixmap(PEN_CURSOR)
         cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
@@ -278,8 +292,9 @@ def drawImage(btn, checked, graphicsView):
          )
 
 
-def eraseImage(btn, checked, graphicsView):
+def eraseImage(btn, checked, graphicsView, buttonList):
     if checked:
+        setButtonsToDefaultStyle(buttonList)
         pm = QPixmap(ERASOR_CURSOR)
         cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
@@ -315,10 +330,11 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
 
 def setUpGraphicsView(hbox):
     zoomSlider = Slider(Qt.Vertical)
-    graphicsView = GraphicsView(zoomSlider)
+    zoomLabel = QLabel("<H4>100%</H4>")
+    graphicsView = GraphicsView(zoomSlider, zoomLabel)
     hbox.addWidget(graphicsView)
 
-    zoomSlider.setMinimum(1)
+    zoomSlider.setMinimum(0)
     zoomSlider.setMaximum(20)
     zoomSlider.setSingleStep(1)
     zoomSlider.setTickPosition(QSlider.TicksBothSides)
@@ -326,9 +342,10 @@ def setUpGraphicsView(hbox):
     zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
 
     groupBoxZoom = QGroupBox('Zoom')
-    layoutZoom = QHBoxLayout()
+    layoutZoom = QVBoxLayout()
     groupBoxZoom.setLayout(layoutZoom)
     layoutZoom.addWidget(zoomSlider)
+    layoutZoom.addWidget(zoomLabel)
     hbox.addWidget(groupBoxZoom)
     return graphicsView
 

@@ -214,12 +214,13 @@ MODEL_DIAGRAM_FOLDER = 'Developer\\FERRET\\FERRET_Files\\ModelDiagrams\\'
 
 #Create and configure the logger
 #First delete the previous log file if there is one
-LOG_FILE_NAME = "WEASEL.log"
+LOG_FILE_NAME = "Activity_Log_File.log"
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 logging.basicConfig(filename=LOG_FILE_NAME, 
                     level=logging.INFO, 
                     format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
+
 
 class NavigationToolbar(NavigationToolbar):
     """

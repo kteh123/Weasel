@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (QRectF, Qt)
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
-from PyQt5.QtWidgets import  QGraphicsObject, QApplication
+from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
 import numpy as np
 import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
@@ -80,6 +80,15 @@ class GraphicsItem(QGraphicsObject):
 
     def boundingRect(self):  
         return QRectF(0,0,self.width, self.height)
+
+
+    def contextMenuEvent(self, event):
+        #display pop-up context menu when the right mouse button is pressed
+        menu = QMenu()
+        testAction = QAction('Test', None)
+        #testAction.triggered.connect(self.print_out)
+        menu.addAction(testAction)
+        menu.exec_(event.screenPos())
 
 
     def __quickMinMax(self, data):
@@ -183,6 +192,18 @@ class GraphicsItem(QGraphicsObject):
                         self.setPixelToRed(xCoord, yCoord)
                         self.mask[yCoord, xCoord] = True
                         self.sigMaskCreated.emit()
+            
+            if self.eraseEnabled:
+                if not self.mouseMoved:
+                    #The mouse was not moved, so a pixel was clicked on
+                    xCoord = int(event.pos().x())
+                    yCoord = int(event.pos().y())
+                    #erase mask at this pixel 
+                    #and set pixel back to original value
+                    self.resetPixel(xCoord, yCoord)
+                    #self.mask[xCoord, yCoord] = False
+                    self.mask[yCoord, xCoord] = False
+                    self.sigMaskEdited.emit()
 
 
     def resetPixel(self, x, y):
@@ -358,7 +379,7 @@ class GraphicsItem(QGraphicsObject):
           self.sigZoomIn.emit()
         elif (button == Qt.RightButton): 
           self.sigZoomOut.emit()
-        #pass
+       
         
 
 #pm = QtGui.QPixmap(FERRET_LOGO)

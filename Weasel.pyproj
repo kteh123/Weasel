@@ -367,6 +367,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <Content Include="Activity_Log_File.log" />
     <Content Include="config.xml" />
     <Content Include="CoreModules\freeHandROI\cursors\erasor.png" />
     <Content Include="CoreModules\freeHandROI\cursors\magnifying_glass.png" />

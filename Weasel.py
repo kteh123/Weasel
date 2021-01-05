@@ -33,7 +33,7 @@ __author__ = 'Steve Shillitoe'
 
 #Create and configure the logger
 #First delete the previous log file if there is one
-LOG_FILE_NAME = "WEASEL1.log"
+LOG_FILE_NAME = "Activity_Log.log"
 if os.path.exists(LOG_FILE_NAME):
     os.remove(LOG_FILE_NAME) 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"

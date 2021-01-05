@@ -11,11 +11,12 @@ ZOOM_IN = 1
 ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
-    def __init__(self, zoomSlider):
+    def __init__(self, zoomSlider, zoomLabel):
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
         self.zoomSlider = zoomSlider
+        self.zoomLabel = zoomLabel
         self.graphicsItem = None
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -69,19 +70,30 @@ class GraphicsView(QGraphicsView):
             else:
                 self._zoom = 0
                 increment = 0
-            return increment
+            self.updateZoomSlider(increment)
+
+
+    def updateZoomSlider(self, increment):
+        #print("updateZoomSlider increment={}".format(increment))
+        self.zoomSlider.blockSignals(True)
+        if increment == 0:
+            self.zoomSlider.setValue(0)
+            self.zoomLabel.setText("<H4>100%</H4>")
+        else:
+            newValue = self.zoomSlider.value() + increment
+            newZoomValue = 100 + (newValue * 25)
+            self.zoomLabel.setText("<H4>" + str(newZoomValue) + "%</H4>")
+            if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
+                self.zoomSlider.setValue(newValue)
+            elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
+                self.zoomSlider.setValue(newValue)
+        self.zoomSlider.blockSignals(False)
 
 
     def wheelEvent(self, event):
         if self.zoomEnabled:
-            increment = self.zoomImage(event.angleDelta().y())
-            if increment == 0:
-                self.zoomSlider.setValue(0)
-            else:
-                if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
-                    self.zoomSlider.setValue(self.zoomSlider.value() + increment)
-                elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
-                    self.zoomSlider.setValue(self.zoomSlider.value() + increment)
+            self.zoomImage(event.angleDelta().y())
+            #self.updateZoomSlider(increment)
 
 
     def fitItemInView(self, scale=True):
