@@ -199,12 +199,22 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnZoom.setCheckable(True)
     btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
+    btnPan = QPushButton("Drag")
+    buttonList.append(btnPan)
+    btnPan.setToolTip("pan the image")
+    btnPan.setCheckable(True)
+    #btnPan.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+
+
     btnErase.clicked.connect(lambda checked: eraseImage(btnErase, 
                                                         checked, graphicsView, buttonList))
     btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, 
                                                       checked, graphicsView, buttonList))
     btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
-                                                      checked, graphicsView, buttonList)) 
+                                                      checked, graphicsView, buttonList))
+    
+    btnPan.clicked.connect(lambda checked: panImage(btnPan, 
+                                                      checked, graphicsView, buttonList))
 
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
@@ -242,6 +252,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
     gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
     gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
+    #gridLayoutROI.addWidget(btnPan, 1, 5, alignment=Qt.AlignLeft,)
     #Third row
     gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
     gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
@@ -262,17 +273,36 @@ def zoomImage(btn, checked, graphicsView, buttonList):
         pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
-        graphicsView.zoomEnabled = True
+        graphicsView.setZoomEnabled(True)
         graphicsView.graphicsItem.drawEnabled = False
         graphicsView.graphicsItem.eraseEnabled = False
         btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-        graphicsView.zoomEnabled = False
+        graphicsView.setZoomEnabled(False)
         btn.setStyleSheet(
          "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
          )
 
+
+#def panImage(btn, checked, graphicsView, buttonList):
+#    if checked:
+#        setButtonsToDefaultStyle(buttonList)
+#       #pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
+#       # cursor = QCursor(pm, -1, -1)
+#       # QApplication.setOverrideCursor(cursor)
+#        graphicsView.toggleDragMode()
+#        graphicsView.setZoomEnabled(False)
+#        graphicsView.graphicsItem.drawEnabled = False
+#        graphicsView.graphicsItem.eraseEnabled = False
+#        btn.setStyleSheet("background-color: red")
+#    else:
+#        graphicsView.toggleDragMode()
+#        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+#        graphicsView.setZoomEnabled(False)
+#        btn.setStyleSheet(
+#         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+#         )
 
 def drawImage(btn, checked, graphicsView, buttonList):
     if checked:
@@ -281,7 +311,7 @@ def drawImage(btn, checked, graphicsView, buttonList):
         cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.drawEnabled = True
-        graphicsView.zoomEnabled = False
+        graphicsView.setZoomEnabled(False)
         graphicsView.graphicsItem.eraseEnabled = False
         btn.setStyleSheet("background-color: red")
     else:
@@ -299,7 +329,7 @@ def eraseImage(btn, checked, graphicsView, buttonList):
         cursor = QCursor(pm, hotX=0, hotY=30)
         QApplication.setOverrideCursor(cursor)
         graphicsView.graphicsItem.eraseEnabled = True
-        graphicsView.zoomEnabled = False
+        graphicsView.setZoomEnabled(False)
         graphicsView.graphicsItem.drawEnabled = False
         btn.setStyleSheet("background-color: red")
     else:
