@@ -29,6 +29,7 @@ import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
@@ -713,12 +714,17 @@ def saveROI(self, regionName, dictROIs):
         inputPath = self.imageList
     else:
         inputPath = [self.selectedImagePath]
+    # Saving Progress message
+    messageWindow.displayMessageSubWindow(self,
+        "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
+        "Processing DICOM images")
     outputPath = []
     for image in inputPath:
         outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
     saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
     seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
     treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+    messageWindow.closeMessageSubWindow(self)
     QMessageBox.information(self, "Export ROIs", "Image Saved")
 
     # Save all ROIs

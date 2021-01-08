@@ -74,12 +74,16 @@ class ParametricClass(object):
         dicom.BitsAllocated = 8 # According to Federov DICOM Standard this should be 1-bit
         dicom.BitsStored = 8
         dicom.HighBit = 7
-        dicom.SmallestImagePixelValue = 0
-        dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
+        #dicom.SmallestImagePixelValue = 0
+        #dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
+        dicom.add_new('0x00280106', 'US', 0)
+        dicom.add_new('0x00280107', 'US', int(np.amax(imageArray)))
         dicom.PixelRepresentation = 0
         dicom.SamplesPerPixel = 1
-        dicom.WindowCenter = 0.5
-        dicom.WindowWidth = 1.1
+        #dicom.WindowCenter = 0.5
+        #dicom.WindowWidth = 1.1
+        dicom.add_new('0x00281050', 'DS', 0.5) # WindowCenter
+        dicom.add_new('0x00281051', 'DS', 1.1) # WindowWidth
         dicom.LossyImageCompression = '00'
         pixelArray = imageArray.astype(np.uint8) # Should we multiply by 255?
         dicom.PixelData = pixelArray.tobytes()

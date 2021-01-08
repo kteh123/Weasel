@@ -286,16 +286,16 @@ def readLevelsFromDICOMImage(self, pixelArray):
             if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
                 slope = float(getattr(dataset, 'RescaleSlope', 1))
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))
-                centre = dataset.WindowCenter * slope + intercept
-                width = dataset.WindowWidth * slope
+                centre = dataset.WindowCenter # * slope + intercept
+                width = dataset.WindowWidth # * slope
                 maximumValue = centre + width/2
                 minimumValue = centre - width/2
             elif dataset and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
                 slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
                 intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
-                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter * slope + intercept
-                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth * slope
+                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
+                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
                 maximumValue = centre + width/2
                 minimumValue = centre - width/2 
             else:
