@@ -361,6 +361,7 @@
     <Compile Include="Developer\MenuItems\ViewROIImage.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="setup.py" />
     <Compile Include="Weasel.py" />
     <Compile Include="CoreModules\SimpleITK\__init__.py" />
     <Compile Include="CoreModules\SimpleITK\_SimpleITK.py" />

@@ -8,13 +8,15 @@ from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
 #np.set_printoptions(threshold=sys.maxsize)
+import logging
+logger = logging.getLogger(__name__)
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
 ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
-
+MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
@@ -34,9 +36,11 @@ class GraphicsItem(QGraphicsObject):
         imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
         self.origQimage = fn.makeQImage(imgData, alpha)
         self.qimage = fn.makeQImage(imgData, alpha)
+        self.mask = None
         if roi is not None:
             #add roi to pixel map
             self.addROItoImage(roi)
+            self.mask = roi
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.width = float(self.pixMap.width()) 
         self.height = float(self.pixMap.height())
@@ -47,7 +51,6 @@ class GraphicsItem(QGraphicsObject):
         self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
         self.listROICoords = None
-        self.mask = None
         self.xMouseCoord  = None
         self.yMouseCoord  = None
         self.pixelColour = None
@@ -55,7 +58,8 @@ class GraphicsItem(QGraphicsObject):
         self.mouseMoved = False
         self.drawEnabled = False
         self.eraseEnabled = False
-        
+        self.zoomEnabled = False
+
 
     def updateImageLevels(self, intensity, contrast, roi):
         try:
@@ -83,19 +87,6 @@ class GraphicsItem(QGraphicsObject):
         return QRectF(0,0,self.width, self.height)
 
 
-    #def contextMenuEvent(self, event):
-    #    #display pop-up context menu when the right mouse button is pressed
-    #    #as long as zoom is not enabled
-    #    if not self.zoomEnabledOnGraphicView:
-    #        menu = QMenu()
-    #        zoomIn = QAction('Zoom In', None)
-    #        zoomOut = QAction('Zoom Out', None)
-    #        #zoomIn.triggered.connect(self.print_out)
-    #        menu.addAction(zoomIn)
-    #        menu.addAction(zoomOut)
-    #        menu.exec_(event.screenPos())
-
-
     def __quickMinMax(self, data):
         """
         Estimate the min/max values of *data* by subsampling.
@@ -108,10 +99,27 @@ class GraphicsItem(QGraphicsObject):
         return nanmin(data), nanmax(data)
 
 
+    def hoverEnterEvent(self, event):
+        if self.drawEnabled:
+            pm = QPixmap(PEN_CURSOR)
+            cursor = QCursor(pm, hotX=0, hotY=30)
+            QApplication.setOverrideCursor(cursor)
+        if self.eraseEnabled:
+            pm = QPixmap(ERASOR_CURSOR)
+            cursor = QCursor(pm, hotX=0, hotY=30)
+            QApplication.setOverrideCursor(cursor)
+        if self.zoomEnabled:
+            pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
+            cursor = QCursor(pm, hotX=0, hotY=30)
+            QApplication.setOverrideCursor(cursor)
+
+
+    def hoverLeaveEvent(self, event):
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+
+
     def hoverMoveEvent(self, event):
-        #print("hoverMoveEvent out")
         if self.isUnderMouse():
-            #print("hoverMoveEvent in")
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
             self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
@@ -142,10 +150,11 @@ class GraphicsItem(QGraphicsObject):
             if self.eraseEnabled:
                 #erase mask at this pixel 
                 #and set pixel back to original value
-                self.resetPixel(xCoord, yCoord)
-                #self.mask[xCoord, yCoord] = False
-                self.mask[yCoord, xCoord] = False
-                self.sigMaskEdited.emit()
+                if self.mask is not None:
+                    self.resetPixel(xCoord, yCoord)
+                    #self.mask[xCoord, yCoord] = False
+                    self.mask[yCoord, xCoord] = False
+                    self.sigMaskEdited.emit()
 
         #elif (buttons == Qt.RightButton):
 
@@ -199,16 +208,17 @@ class GraphicsItem(QGraphicsObject):
                         self.sigMaskCreated.emit()
             
             if self.eraseEnabled:
-                if not self.mouseMoved:
-                    #The mouse was not moved, so a pixel was clicked on
-                    xCoord = int(event.pos().x())
-                    yCoord = int(event.pos().y())
-                    #erase mask at this pixel 
-                    #and set pixel back to original value
-                    self.resetPixel(xCoord, yCoord)
-                    #self.mask[xCoord, yCoord] = False
-                    self.mask[yCoord, xCoord] = False
-                    self.sigMaskEdited.emit()
+                if self.mask is not None:
+                    if not self.mouseMoved:
+                        #The mouse was not moved, so a pixel was clicked on
+                        xCoord = int(event.pos().x())
+                        yCoord = int(event.pos().y())
+                        #erase mask at this pixel 
+                        #and set pixel back to original value
+                        self.resetPixel(xCoord, yCoord)
+                        #self.mask[xCoord, yCoord] = False
+                        self.mask[yCoord, xCoord] = False
+                        self.sigMaskEdited.emit()
 
 
     def resetPixel(self, x, y):

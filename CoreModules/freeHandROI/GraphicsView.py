@@ -8,11 +8,12 @@ from .GraphicsItem import GraphicsItem
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
+
 PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
 ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
 ZOOM_IN = 1
 ZOOM_OUT = -1
+
 
 class GraphicsView(QGraphicsView):
     sigContextMenuDisplayed = QtCore.Signal()
@@ -65,6 +66,7 @@ class GraphicsView(QGraphicsView):
 
     def setZoomEnabled(self, boolValue):
         self.zoomEnabled = boolValue
+        self.graphicsItem.zoomEnabled = boolValue
 
 
     def setImage(self, pixelArray, mask = None):
@@ -164,26 +166,20 @@ class GraphicsView(QGraphicsView):
 
     def drawROI(self):
         if not self.graphicsItem.drawEnabled:
-            pm = QPixmap(PEN_CURSOR)
-            cursor = QCursor(pm, hotX=0, hotY=30)
-            QApplication.setOverrideCursor(cursor)
             self.graphicsItem.drawEnabled = True
             self.setZoomEnabled(False)
             self.graphicsItem.eraseEnabled = False
         else:
             self.graphicsItem.drawEnabled = False
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
 
     def eraseROI(self):
         if not self.graphicsItem.eraseEnabled:
-            pm = QPixmap(ERASOR_CURSOR)
-            cursor = QCursor(pm, hotX=0, hotY=30)
-            QApplication.setOverrideCursor(cursor)
             self.graphicsItem.drawEnabled = False
             self.setZoomEnabled(False)
             self.graphicsItem.eraseEnabled = True
         else:
             self.graphicsItem.eraseEnabled = False
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
        

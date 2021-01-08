@@ -79,7 +79,7 @@ def setUpGraphicsViewSubWindow(self):
     subWindow - An QMdiSubWindow subwindow
     """
     try:
-        logger.info("setUpGraphicsViewSubWindow called")
+        logger.info("DisplayImageDrawRIO.setUpGraphicsViewSubWindow called")
         subWindow = QMdiSubWindow(self)
         subWindow.setObjectName = 'image_viewer'
         subWindow.setAttribute(Qt.WA_DeleteOnClose)
@@ -110,6 +110,7 @@ def setUpGraphicsViewSubWindow(self):
 
 
 def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs, imageSlider = None):
+    logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
     spinBoxIntensity = QDoubleSpinBox()
     spinBoxContrast = QDoubleSpinBox()
     
@@ -144,6 +145,7 @@ def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs, imageSlider = 
     
 
 def updateImageLevels(graphicsView, intensity, contrast, dictROIs, cmbROIs, imageSlider = None):
+    logger.info("DisplayImageDrawROI.updateImageLevels called.")
     try:
         if imageSlider:
             imageNumber = imageSlider.value()
@@ -157,123 +159,132 @@ def updateImageLevels(graphicsView, intensity, contrast, dictROIs, cmbROIs, imag
 
 
 def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None):
-    buttonList = []
-    pixelDataLabel = QLabel("Pixel data")
-    roiMeanLabel = QLabel("ROI Mean Value")
-    lblCmbROIs =  QLabel("ROIs")
-    cmbROIs = QComboBox()
-    cmbROIs.addItem("region1")
-    cmbROIs.setCurrentIndex(0)
-    btnDeleteROI = QPushButton("Delete")
+    try:
+        logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
+        buttonList = []
+        pixelDataLabel = QLabel("Pixel data")
+        roiMeanLabel = QLabel("ROI Mean Value")
+        lblCmbROIs =  QLabel("ROIs")
+        cmbROIs = QComboBox()
+        cmbROIs.addItem("region1")
+        cmbROIs.setCurrentIndex(0)
+        btnDeleteROI = QPushButton("Delete")
    
-    btnNewROI = QPushButton('New') 
-    btnNewROI.setToolTip('Allows the user to create a new ROI')
-    btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
+        btnNewROI = QPushButton('New') 
+        btnNewROI.setToolTip('Allows the user to create a new ROI')
+        btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
 
-    btnResetROI = QPushButton('Reset')
-    btnResetROI.setToolTip('Clears the ROI from the image')
-    btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
-                                                pixelDataLabel, roiMeanLabel, imageSlider))
+        btnResetROI = QPushButton('Reset')
+        btnResetROI.setToolTip('Clears the ROI from the image')
+        btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
+                                                    pixelDataLabel, roiMeanLabel, imageSlider))
 
-    btnSaveROI = QPushButton('Save')
-    btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-    btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
+        btnSaveROI = QPushButton('Save')
+        btnSaveROI.setToolTip('Saves the ROI in DICOM format')
+        btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
 
-    btnErase = QPushButton()
-    buttonList.append(btnErase)
-    btnErase.setToolTip("Erase the ROI")
-    btnErase.setCheckable(True)
-    btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
+        btnErase = QPushButton()
+        buttonList.append(btnErase)
+        btnErase.setToolTip("Erase the ROI")
+        btnErase.setCheckable(True)
+        btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
 
-    btnDraw = QPushButton()
-    buttonList.append(btnDraw)
-    btnDraw.setToolTip("Draw an ROI")
-    btnDraw.setCheckable(True)
-    btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+        btnDraw = QPushButton()
+        buttonList.append(btnDraw)
+        btnDraw.setToolTip("Draw an ROI")
+        btnDraw.setCheckable(True)
+        btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
 
-    btnZoom = QPushButton()
-    buttonList.append(btnZoom)
-    btnZoom.setToolTip("Zoom in/Zoom out of the image")
-    btnZoom.setCheckable(True)
-    btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+        btnZoom = QPushButton()
+        buttonList.append(btnZoom)
+        btnZoom.setToolTip("Zoom in/Zoom out of the image")
+        btnZoom.setCheckable(True)
+        btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
-    btnPan = QPushButton("Drag")
-    buttonList.append(btnPan)
-    btnPan.setToolTip("pan the image")
-    btnPan.setCheckable(True)
-    #btnPan.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+        btnPan = QPushButton("Drag")
+        buttonList.append(btnPan)
+        btnPan.setToolTip("pan the image")
+        btnPan.setCheckable(True)
+        #btnPan.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
-    btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                                                   roiMeanLabel, buttonList, imageSlider))
+        btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+                                                       roiMeanLabel, buttonList, imageSlider))
 
-    btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
-                                                        checked, graphicsView, buttonList))
-    btnDraw.clicked.connect(lambda checked: drawROI(btnDraw, 
-                                                      checked, graphicsView, buttonList))
-    btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
-                                                      checked, graphicsView, buttonList))
+        btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
+                                                            checked, graphicsView, buttonList))
+        btnDraw.clicked.connect(lambda checked: drawROI(btnDraw, 
+                                                          checked, graphicsView, buttonList))
+        btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
+                                                          checked, graphicsView, buttonList))
     
-    btnPan.clicked.connect(lambda checked: panImage(btnPan, 
-                                                      checked, graphicsView, buttonList))
+        btnPan.clicked.connect(lambda checked: panImage(btnPan, 
+                                                          checked, graphicsView, buttonList))
 
-    cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
+        cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
-    cmbROIs.currentIndexChanged.connect(
-        lambda: reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, imageSlider))
+        cmbROIs.currentIndexChanged.connect(
+            lambda: reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+                                  roiMeanLabel, self, buttonList, imageSlider))
 
-    cmbROIs.currentIndexChanged.connect(
-        lambda: dictROIs.setPreviousRegionName(cmbROIs.currentText()))
+        cmbROIs.currentIndexChanged.connect(
+            lambda: dictROIs.setPreviousRegionName(cmbROIs.currentText()))
 
-    cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, dictROIs, text))
-    cmbROIs.setToolTip("Displays a list of ROIs created")
-    cmbROIs.setEditable(True)
-    cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
-    spacerItem = QSpacerItem(20, 20, 
-                             QtWidgets.QSizePolicy.Minimum, 
-                             QtWidgets.QSizePolicy.Expanding)
+        cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, dictROIs, text))
+        cmbROIs.setToolTip("Displays a list of ROIs created")
+        cmbROIs.setEditable(True)
+        cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
+        spacerItem = QSpacerItem(20, 20, 
+                                 QtWidgets.QSizePolicy.Minimum, 
+                                 QtWidgets.QSizePolicy.Expanding)
 
-    groupBoxImageData = QGroupBox('ROI')
-    gridLayoutROI = QGridLayout()
-    gridLayoutImageData =  QGridLayout()
-    groupBoxImageData.setLayout(gridLayoutROI)
-    layout.addWidget(groupBoxImageData)
+        groupBoxImageData = QGroupBox('ROI')
+        gridLayoutROI = QGridLayout()
+        gridLayoutImageData =  QGridLayout()
+        groupBoxImageData.setLayout(gridLayoutROI)
+        layout.addWidget(groupBoxImageData)
 
-    #First row
-    gridLayoutROI.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
-    gridLayoutROI.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft,)
-    gridLayoutROI.addWidget(btnDeleteROI, 0,2, alignment=Qt.AlignLeft, )
-    gridLayoutROI.addWidget(btnNewROI, 0,3, alignment=Qt.AlignLeft,)
-    gridLayoutROI.addWidget(btnSaveROI, 0,4, alignment=Qt.AlignLeft,)
-    gridLayoutROI.addWidget(btnResetROI, 0, 5, alignment=Qt.AlignLeft,)
-    #Second row
-    gridLayoutROI.addItem(spacerItem, 1, 0)
-    gridLayoutROI.addItem(spacerItem, 1, 1)
-    gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
-    gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
-    gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
-    #gridLayoutROI.addWidget(btnPan, 1, 5, alignment=Qt.AlignLeft,)
-    #Third row
-    gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
-    gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
-    return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList
+        #First row
+        gridLayoutROI.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
+        gridLayoutROI.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnDeleteROI, 0,2, alignment=Qt.AlignLeft, )
+        gridLayoutROI.addWidget(btnNewROI, 0,3, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnSaveROI, 0,4, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnResetROI, 0, 5, alignment=Qt.AlignLeft,)
+        #Second row
+        gridLayoutROI.addItem(spacerItem, 1, 0)
+        gridLayoutROI.addItem(spacerItem, 1, 1)
+        gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
+        #gridLayoutROI.addWidget(btnPan, 1, 5, alignment=Qt.AlignLeft,)
+        #Third row
+        gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
+        gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
+
+        return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
 
 
 def setButtonsToDefaultStyle(buttonList):
-    QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-    for button in buttonList:
-        button.setStyleSheet(
-         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-         )
-        
+    try:
+        logger.info("DisplayImageDrawROI.setButtonsToDefaultStyle called.")
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        if buttonList:
+            for button in buttonList:
+                button.setStyleSheet(
+                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setButtonsToDefaultStyle: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setButtonsToDefaultStyle: ' + str(e))  
 
 
 def zoomImage(btn, checked, graphicsView, buttonList):
+    logger.info("DisplayImageDrawROI.zoomImage called.")
     if checked:
         setButtonsToDefaultStyle(buttonList)
-        pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
-        cursor = QCursor(pm, -1, -1)
-        QApplication.setOverrideCursor(cursor)
         graphicsView.setZoomEnabled(True)
         graphicsView.graphicsItem.drawEnabled = False
         graphicsView.graphicsItem.eraseEnabled = False
@@ -306,6 +317,7 @@ def zoomImage(btn, checked, graphicsView, buttonList):
 #         )
 
 def drawROI(btn, checked, graphicsView, buttonList):
+    logger.info("DisplayImageDrawROI.drawROI called.")
     if checked:
         setButtonsToDefaultStyle(buttonList)
         graphicsView.drawROI()
@@ -319,6 +331,7 @@ def drawROI(btn, checked, graphicsView, buttonList):
 
 
 def eraseROI(btn, checked, graphicsView, buttonList):
+    logger.info("DisplayImageDrawROI.eraseROI called.")
     if checked:
         setButtonsToDefaultStyle(buttonList)
         graphicsView.eraseROI()
@@ -333,6 +346,7 @@ def eraseROI(btn, checked, graphicsView, buttonList):
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
                             roiMeanLabel, dictROIs, cmbROIs, buttonList, imageSlider=None):
+    logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
     lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
 
@@ -352,25 +366,30 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
 
 
 def setUpGraphicsView(hbox):
-    zoomSlider = Slider(Qt.Vertical)
-    zoomLabel = QLabel("<H4>100%</H4>")
-    graphicsView = GraphicsView(zoomSlider, zoomLabel)
-    hbox.addWidget(graphicsView)
+    try:
+        logger.info("DisplayImageDrawROI.setUpGraphicsView called.")
+        zoomSlider = Slider(Qt.Vertical)
+        zoomLabel = QLabel("<H4>100%</H4>")
+        graphicsView = GraphicsView(zoomSlider, zoomLabel)
+        hbox.addWidget(graphicsView)
 
-    zoomSlider.setMinimum(0)
-    zoomSlider.setMaximum(20)
-    zoomSlider.setSingleStep(1)
-    zoomSlider.setTickPosition(QSlider.TicksBothSides)
-    zoomSlider.setTickInterval(1)
-    zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
+        zoomSlider.setMinimum(0)
+        zoomSlider.setMaximum(20)
+        zoomSlider.setSingleStep(1)
+        zoomSlider.setTickPosition(QSlider.TicksBothSides)
+        zoomSlider.setTickInterval(1)
+        zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
 
-    groupBoxZoom = QGroupBox('Zoom')
-    layoutZoom = QVBoxLayout()
-    groupBoxZoom.setLayout(layoutZoom)
-    layoutZoom.addWidget(zoomSlider)
-    layoutZoom.addWidget(zoomLabel)
-    hbox.addWidget(groupBoxZoom)
-    return graphicsView
+        groupBoxZoom = QGroupBox('Zoom')
+        layoutZoom = QVBoxLayout()
+        groupBoxZoom.setLayout(layoutZoom)
+        layoutZoom.addWidget(zoomSlider)
+        layoutZoom.addWidget(zoomLabel)
+        hbox.addWidget(groupBoxZoom)
+        return graphicsView
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setUpGraphicsView: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
 
 
 def displayImageROISubWindow(self, derivedImagePath=None):
@@ -494,6 +513,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
 
 
 def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
+        logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
         xCoord = graphicsView.graphicsItem.xMouseCoord
         yCoord = graphicsView.graphicsItem.yMouseCoord
         pixelColour = graphicsView.graphicsItem.pixelColour
@@ -504,12 +524,14 @@ def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
 
 
 def getRoiMeanAndStd(mask, pixelArray):
+    logger.info("DisplayImageDrawROI.getRoiMeanAndStd called")
     mean = round(np.mean(np.extract(mask, pixelArray)), 3)
     std = round(np.std(np.extract(mask, pixelArray)), 3)
     return mean, std
 
 
 def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider=None):
+        logger.info("DisplayImageDrawROI.displayROIMeanAndStd called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
@@ -526,6 +548,7 @@ def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider=None
         
 
 def storeMaskData(graphicsView, regionName, dictROIs, imageSlider=None):
+        logger.info("DisplayImageDrawROI.storeMaskData called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
@@ -535,6 +558,7 @@ def storeMaskData(graphicsView, regionName, dictROIs, imageSlider=None):
 
 
 def replaceMask(graphicsView, regionName, dictROIs, imageSlider=None):
+        logger.info("DisplayImageDrawROI.replaceMask called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
@@ -584,36 +608,37 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
             print('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
             logger.error('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
 
+#redundant function
+#def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, pixelDataLabel, roiMeanLabel, imageSlider=None):
+#        try:
+#            groupBoxROI = QGroupBox('ROI')
+#            gridLayoutROI = QGridLayout()
+#            groupBoxROI.setLayout(gridLayoutROI)
+#            layout.addWidget(groupBoxROI)
 
-def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, pixelDataLabel, roiMeanLabel, imageSlider=None):
-        try:
-            groupBoxROI = QGroupBox('ROI')
-            gridLayoutROI = QGridLayout()
-            groupBoxROI.setLayout(gridLayoutROI)
-            layout.addWidget(groupBoxROI)
+#            btnNewROI = QPushButton('New') 
+#            btnNewROI.setToolTip('Allows the user to create a new ROI')
+#            btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
 
-            btnNewROI = QPushButton('New') 
-            btnNewROI.setToolTip('Allows the user to create a new ROI')
-            btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
+#            btnResetROI = QPushButton('Reset')
+#            btnResetROI.setToolTip('Clears the ROI from the image')
+#            btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
+#                                                        pixelDataLabel, roiMeanLabel, imageSlider))
 
-            btnResetROI = QPushButton('Reset')
-            btnResetROI.setToolTip('Clears the ROI from the image')
-            btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
-                                                        pixelDataLabel, roiMeanLabel, imageSlider))
+#            btnSaveROI = QPushButton('Save')
+#            btnSaveROI.setToolTip('Saves the ROI in DICOM format')
+#            btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
 
-            btnSaveROI = QPushButton('Save')
-            btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-            btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
-
-            gridLayoutROI.addWidget(btnNewROI,0,0)
-            gridLayoutROI.addWidget(btnResetROI,0,1)
-            gridLayoutROI.addWidget(btnSaveROI,0,2)
-        except Exception as e:
-            print('Error in setUpROITools: ' + str(e))
-            logger.error('Error in setUpROITools: ' + str(e))
+#            gridLayoutROI.addWidget(btnNewROI,0,0)
+#            gridLayoutROI.addWidget(btnResetROI,0,1)
+#            gridLayoutROI.addWidget(btnSaveROI,0,2)
+#        except Exception as e:
+#            print('Error in setUpROITools: ' + str(e))
+#            logger.error('Error in setUpROITools: ' + str(e))
 
 
 def newROI(cmbROIs, dictROIs, graphicsView):
+    logger.info("DisplayImageDrawROI.newROI called")
     if dictROIs.hasRegionGotMask(cmbROIs.currentText()):
         cmbROIs.blockSignals(True)
         cmbROIs.addItem(dictROIs.getNextRegionName())
@@ -630,6 +655,7 @@ def newROI(cmbROIs, dictROIs, graphicsView):
 
 def reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider=None ):
+    logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
     if imageSlider:
         imageNumber = imageSlider.value()
     else:
@@ -644,6 +670,7 @@ def reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel,
 
 def deleteROI(self, cmbROIs, dictROIs, graphicsView, 
               pixelDataLabel, roiMeanLabel, buttonList, imageSlider=None):
+    logger.info("DisplayImageDrawROI.deleteROI called")
     dictROIs.deleteMask(cmbROIs.currentText())
     reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider) 
@@ -668,6 +695,7 @@ def deleteROI(self, cmbROIs, dictROIs, graphicsView,
 
 def resetROI(self, cmbROIs, dictROIs, graphicsView,  
              pixelDataLabel, roiMeanLabel, imageSlider):
+    logger.info("DisplayImageDrawROI.resetROI called")
     dictROIs.deleteMask(cmbROIs.currentText())
     reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, imageSlider) 
@@ -677,6 +705,7 @@ def resetROI(self, cmbROIs, dictROIs, graphicsView,
 
 def saveROI(self, regionName, dictROIs):
     # Save Current ROI
+    logger.info("DisplayImageDrawROI.saveROI called")
     maskList = dictROIs.dictMasks[regionName] # Will return a list of boolean masks
     maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
     suffix = str("_ROI_"+ regionName)
@@ -710,6 +739,7 @@ def saveROI(self, regionName, dictROIs):
 
 def roiNameChanged(cmbROIs, dictROIs, newText):
     try:
+        logger.info("DisplayImageDrawROI.roiNameChanged called")
         currentIndex = cmbROIs.currentIndex()
         #Prevent spaces in new ROI name
         if ' ' in newText:

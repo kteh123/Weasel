@@ -1,4 +1,6 @@
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -13,6 +15,7 @@ class ROIs():
 
 
     def addRegion(self, regionName, mask, imageNumber = 1):
+        logger.info("RIO_Storage.addRegion called")
         try:
             if regionName in self.dictMasks:
                 imageMaskList = self.dictMasks[regionName]
@@ -37,6 +40,7 @@ class ROIs():
 
 
     def replaceMask(self, regionName, mask, imageNumber = 1):
+        logger.info("RIO_Storage.replaceMask called")
         try:
             if regionName in self.dictMasks:
                 imageMaskList = self.dictMasks[regionName]
@@ -49,12 +53,14 @@ class ROIs():
 
 
     def createListOfBlankMasks(self, mask):
+        logger.info("RIO_Storage.createListOfBlankMasks called")
         ny, nx = np.shape(mask)
         blankMask = np.full((nx, ny), False, dtype=bool)
         return [blankMask for _ in range(self.NumOfImages)]
 
 
     def getNextRegionName(self):
+        logger.info("RIO_Storage.getNextRegionName called")
         self.regionNumber += 1
         nextRegionName = "region" + str(self.regionNumber)
         self.prevRegionName = nextRegionName
@@ -62,14 +68,17 @@ class ROIs():
 
 
     def getListOfRegions(self):
+        logger.info("RIO_Storage.getListOfRegions called")
         return list(self.dictMasks)
 
 
     def setPreviousRegionName(self, regionName):
+        logger.info("RIO_Storage.setPreviousRegionName called")
         self.prevRegionName = regionName
 
 
     def getMask(self, regionName, imageNumber):
+        logger.info("RIO_Storage.getMask called")
         try:
             if regionName in self.dictMasks: 
                 mask = self.dictMasks[regionName][imageNumber - 1]
@@ -84,6 +93,7 @@ class ROIs():
 
 
     def hasRegionGotMask(self, regionName):
+        logger.info("RIO_Storage.hasRegionGotMask called")
         if regionName in self.dictMasks: 
             return True
         else:
@@ -91,23 +101,25 @@ class ROIs():
 
 
     def deleteMask(self, regionName):
+        logger.info("RIO_Storage.deleteMask called")
         if regionName in self.dictMasks: 
             del self.dictMasks[regionName]
 
 
     def renameDictionaryKey(self, newName):
+        logger.info("RIO_Storage.renameDictionaryKey called")
         try:
-            print("self.prevRegionName={}".format(self.prevRegionName))
+            #print("self.prevRegionName={}".format(self.prevRegionName))
             if len(newName) > 0:
                 oldName = self.prevRegionName
                 if oldName in self.dictMasks:
                     pass
                 else:
                     oldName = newName[0 : len(newName)-1]
-                print("before POP newName={}, oldName={}".format(newName, oldName))
+                #print("before POP newName={}, oldName={}".format(newName, oldName))
                 if oldName in self.dictMasks:
                     if newName not in self.dictMasks:
-                        print("POP newName={}, oldName={}".format(newName, oldName))
+                        #print("POP newName={}, oldName={}".format(newName, oldName))
                         self.dictMasks[newName] = self.dictMasks.pop(oldName)
                         return True
                     else:
