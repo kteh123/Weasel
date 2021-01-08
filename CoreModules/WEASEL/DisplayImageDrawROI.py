@@ -158,6 +158,7 @@ def updateImageLevels(graphicsView, intensity, contrast, dictROIs, cmbROIs, imag
 
 
 def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None):
+    buttonList = []
     pixelDataLabel = QLabel("Pixel data")
     roiMeanLabel = QLabel("ROI Mean Value")
     lblCmbROIs =  QLabel("ROIs")
@@ -165,8 +166,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     cmbROIs.addItem("region1")
     cmbROIs.setCurrentIndex(0)
     btnDeleteROI = QPushButton("Delete")
-    btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                                                   roiMeanLabel, imageSlider))
+   
     btnNewROI = QPushButton('New') 
     btnNewROI.setToolTip('Allows the user to create a new ROI')
     btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
@@ -179,8 +179,6 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnSaveROI = QPushButton('Save')
     btnSaveROI.setToolTip('Saves the ROI in DICOM format')
     btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
-
-    buttonList = []
 
     btnErase = QPushButton()
     buttonList.append(btnErase)
@@ -200,12 +198,24 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     btnZoom.setCheckable(True)
     btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
-    btnErase.clicked.connect(lambda checked: eraseImage(btnErase, 
+    btnPan = QPushButton("Drag")
+    buttonList.append(btnPan)
+    btnPan.setToolTip("pan the image")
+    btnPan.setCheckable(True)
+    #btnPan.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+
+    btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+                                                   roiMeanLabel, buttonList, imageSlider))
+
+    btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
                                                         checked, graphicsView, buttonList))
-    btnDraw.clicked.connect(lambda checked: drawImage(btnDraw, 
+    btnDraw.clicked.connect(lambda checked: drawROI(btnDraw, 
                                                       checked, graphicsView, buttonList))
     btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
-                                                      checked, graphicsView, buttonList)) 
+                                                      checked, graphicsView, buttonList))
+    
+    btnPan.clicked.connect(lambda checked: panImage(btnPan, 
+                                                      checked, graphicsView, buttonList))
 
     cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
@@ -243,18 +253,20 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
     gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
     gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
     gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
+    #gridLayoutROI.addWidget(btnPan, 1, 5, alignment=Qt.AlignLeft,)
     #Third row
     gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
     gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
-    return pixelDataLabel, roiMeanLabel, cmbROIs
+    return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList
 
 
 def setButtonsToDefaultStyle(buttonList):
+    QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
     for button in buttonList:
         button.setStyleSheet(
          "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
          )
-        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        
 
 
 def zoomImage(btn, checked, graphicsView, buttonList):
@@ -263,27 +275,41 @@ def zoomImage(btn, checked, graphicsView, buttonList):
         pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
         cursor = QCursor(pm, -1, -1)
         QApplication.setOverrideCursor(cursor)
-        graphicsView.zoomEnabled = True
+        graphicsView.setZoomEnabled(True)
         graphicsView.graphicsItem.drawEnabled = False
         graphicsView.graphicsItem.eraseEnabled = False
         btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-        graphicsView.zoomEnabled = False
+        graphicsView.setZoomEnabled(False)
         btn.setStyleSheet(
          "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
          )
 
 
-def drawImage(btn, checked, graphicsView, buttonList):
+#def panImage(btn, checked, graphicsView, buttonList):
+#    if checked:
+#        setButtonsToDefaultStyle(buttonList)
+#       #pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
+#       # cursor = QCursor(pm, -1, -1)
+#       # QApplication.setOverrideCursor(cursor)
+#        graphicsView.toggleDragMode()
+#        graphicsView.setZoomEnabled(False)
+#        graphicsView.graphicsItem.drawEnabled = False
+#        graphicsView.graphicsItem.eraseEnabled = False
+#        btn.setStyleSheet("background-color: red")
+#    else:
+#        graphicsView.toggleDragMode()
+#        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+#        graphicsView.setZoomEnabled(False)
+#        btn.setStyleSheet(
+#         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+#         )
+
+def drawROI(btn, checked, graphicsView, buttonList):
     if checked:
         setButtonsToDefaultStyle(buttonList)
-        pm = QPixmap(PEN_CURSOR)
-        cursor = QCursor(pm, hotX=0, hotY=30)
-        QApplication.setOverrideCursor(cursor)
-        graphicsView.graphicsItem.drawEnabled = True
-        graphicsView.zoomEnabled = False
-        graphicsView.graphicsItem.eraseEnabled = False
+        graphicsView.drawROI()
         btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
@@ -293,15 +319,10 @@ def drawImage(btn, checked, graphicsView, buttonList):
          )
 
 
-def eraseImage(btn, checked, graphicsView, buttonList):
+def eraseROI(btn, checked, graphicsView, buttonList):
     if checked:
         setButtonsToDefaultStyle(buttonList)
-        pm = QPixmap(ERASOR_CURSOR)
-        cursor = QCursor(pm, hotX=0, hotY=30)
-        QApplication.setOverrideCursor(cursor)
-        graphicsView.graphicsItem.eraseEnabled = True
-        graphicsView.zoomEnabled = False
-        graphicsView.graphicsItem.drawEnabled = False
+        graphicsView.eraseROI()
         btn.setStyleSheet("background-color: red")
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
@@ -312,7 +333,7 @@ def eraseImage(btn, checked, graphicsView, buttonList):
 
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                            roiMeanLabel, dictROIs, cmbROIs, imageSlider=None):
+                            roiMeanLabel, dictROIs, cmbROIs, buttonList, imageSlider=None):
     graphicsView.graphicsItem.sigMouseHovered.connect(
     lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
 
@@ -327,6 +348,8 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
 
     graphicsView.graphicsItem.sigMaskEdited.connect(
         lambda:storeMaskData(graphicsView, cmbROIs.currentText(), dictROIs, imageSlider))
+
+    graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
 
 def setUpGraphicsView(hbox):
@@ -373,12 +396,12 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             else:
                 graphicsView.setImage(pixelArray)
 
-            pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(self, layout, 
+            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
                                                                           dictROIs)
 
             setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-                                    dictROIs, cmbROIs)
+                                    dictROIs, cmbROIs, buttonList)
 
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs)
             spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
@@ -423,7 +446,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
 
             graphicsView = setUpGraphicsView(hbox)
             
-            pixelDataLabel, roiMeanLabel, cmbROIs = setUpPixelDataWidgets(self, layout, 
+            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
                                                                           dictROIs, imageSlider)
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
@@ -446,7 +469,8 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    dictROIs,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
-                                                   graphicsView, subWindow))
+                                                   graphicsView, subWindow,
+                                                   buttonList))
            
             imageROISliderMoved(self, seriesName, 
                                     imageList, 
@@ -457,7 +481,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     dictROIs,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
-                                    graphicsView, subWindow)
+                                    graphicsView, subWindow, buttonList)
             
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -524,7 +548,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                         lblImageMissing, pixelDataLabel, roiMeanLabel,
                         cmbROIs, dictROIs,
                         spinBoxIntensity, spinBoxContrast,  
-                        graphicsView, subWindow):
+                        graphicsView, subWindow, buttonList):
         """On the Multiple Image with ROI Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
@@ -542,7 +566,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     imv.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
                     reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, imageSlider) 
+                              roiMeanLabel, self, buttonList, imageSlider) 
  
                     spinBoxIntensity.blockSignals(True)
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
@@ -551,7 +575,8 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
                     spinBoxContrast.blockSignals(False)
                     setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                                            roiMeanLabel, dictROIs, cmbROIs, imageSlider)
+                                            roiMeanLabel, dictROIs, cmbROIs, buttonList,
+                                         imageSlider)
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
@@ -605,7 +630,7 @@ def newROI(cmbROIs, dictROIs, graphicsView):
 
 
 def reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, imageSlider=None ):
+                              roiMeanLabel, self, buttonList, imageSlider=None ):
     if imageSlider:
         imageNumber = imageSlider.value()
     else:
@@ -615,14 +640,14 @@ def reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel,
     mask = dictROIs.getMask(cmbROIs.currentText(), imageNumber)
     graphicsView.setImage(pixelArray, mask)
     setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-                                dictROIs, cmbROIs, imageSlider)
+                                dictROIs, cmbROIs, buttonList, imageSlider)
     
 
 def deleteROI(self, cmbROIs, dictROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, imageSlider=None):
+              pixelDataLabel, roiMeanLabel, buttonList, imageSlider=None):
     dictROIs.deleteMask(cmbROIs.currentText())
     reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, imageSlider) 
+                              roiMeanLabel, self, buttonList, imageSlider) 
     displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider)
     if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1:
         cmbROIs.clear()

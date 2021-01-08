@@ -55,6 +55,7 @@ class GraphicsItem(QGraphicsObject):
         self.mouseMoved = False
         self.drawEnabled = False
         self.eraseEnabled = False
+        
 
     def updateImageLevels(self, intensity, contrast, roi):
         try:
@@ -82,13 +83,17 @@ class GraphicsItem(QGraphicsObject):
         return QRectF(0,0,self.width, self.height)
 
 
-    def contextMenuEvent(self, event):
-        #display pop-up context menu when the right mouse button is pressed
-        menu = QMenu()
-        testAction = QAction('Test', None)
-        #testAction.triggered.connect(self.print_out)
-        menu.addAction(testAction)
-        menu.exec_(event.screenPos())
+    #def contextMenuEvent(self, event):
+    #    #display pop-up context menu when the right mouse button is pressed
+    #    #as long as zoom is not enabled
+    #    if not self.zoomEnabledOnGraphicView:
+    #        menu = QMenu()
+    #        zoomIn = QAction('Zoom In', None)
+    #        zoomOut = QAction('Zoom Out', None)
+    #        #zoomIn.triggered.connect(self.print_out)
+    #        menu.addAction(zoomIn)
+    #        menu.addAction(zoomOut)
+    #        menu.exec_(event.screenPos())
 
 
     def __quickMinMax(self, data):

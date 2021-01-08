@@ -1,4 +1,5 @@
 from PyQt5.QtCore import  Qt
+from PyQt5 import QtCore 
 from PyQt5.QtWidgets import (QAction, QApplication, QMessageBox, QMenu)
 from PyQt5.QtGui import  QIcon
 import os
