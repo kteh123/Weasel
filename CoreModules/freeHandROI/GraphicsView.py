@@ -1,16 +1,22 @@
 from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QMenu, QAction
-from PyQt5.QtGui import (QPixmap, QCursor)
+from PyQt5 import QtCore 
+from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, 
+                            QAction, QActionGroup, QApplication)
+from PyQt5.QtGui import QPixmap, QCursor, QIcon
 from .GraphicsItem import GraphicsItem
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
 MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
+ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
 ZOOM_IN = 1
 ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
+    sigContextMenuDisplayed = QtCore.Signal()
+
     def __init__(self, zoomSlider, zoomLabel):
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
@@ -33,13 +39,27 @@ class GraphicsView(QGraphicsView):
         #display pop-up context menu when the right mouse button is pressed
         #as long as zoom is not enabled
         if not self.zoomEnabled:
+            self.sigContextMenuDisplayed.emit()
             menu = QMenu()
             zoomIn = QAction('Zoom In', None)
             zoomOut = QAction('Zoom Out', None)
             zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
             zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
+
+            drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
+            drawROI.setToolTip("Draw an ROI")
+            drawROI.triggered.connect(lambda: self.drawROI())
+
+            eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
+            eraseROI.setToolTip("Erase the ROI")
+            eraseROI.triggered.connect(lambda: self.eraseROI())
+            
             menu.addAction(zoomIn)
             menu.addAction(zoomOut)
+            menu.addSeparator()
+            menu.addAction(drawROI)
+            menu.addAction(eraseROI)
+
             menu.exec_(event.globalPos())  
 
 
@@ -140,3 +160,30 @@ class GraphicsView(QGraphicsView):
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             self.setDragMode(QGraphicsView.ScrollHandDrag)
+
+
+    def drawROI(self):
+        if not self.graphicsItem.drawEnabled:
+            pm = QPixmap(PEN_CURSOR)
+            cursor = QCursor(pm, hotX=0, hotY=30)
+            QApplication.setOverrideCursor(cursor)
+            self.graphicsItem.drawEnabled = True
+            self.setZoomEnabled(False)
+            self.graphicsItem.eraseEnabled = False
+        else:
+            self.graphicsItem.drawEnabled = False
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+
+
+    def eraseROI(self):
+        if not self.graphicsItem.eraseEnabled:
+            pm = QPixmap(ERASOR_CURSOR)
+            cursor = QCursor(pm, hotX=0, hotY=30)
+            QApplication.setOverrideCursor(cursor)
+            self.graphicsItem.drawEnabled = False
+            self.setZoomEnabled(False)
+            self.graphicsItem.eraseEnabled = True
+        else:
+            self.graphicsItem.eraseEnabled = False
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+       
