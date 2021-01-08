@@ -1,8 +1,10 @@
 <h2 align="center"><img src="images/uni-sheffield-logo.png" height="128"></h2>
-# Weasel
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)]
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Software](https://img.shields.io/badge/Software-DICOM%20Viewer-red)
 ![Status](https://img.shields.io/badge/Status-Prototype-orange)
+
+# Weasel
+
 Prototype DICOM image viewer.  
 To use, open the File Menu and select the 'View DICOM Studies' option. Browse to a folder containing DICOM image files and an XML file 
 describing their study/series/image structure. Select this XML file to build a tree view visual representation of this structure. 
