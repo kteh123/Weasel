@@ -2,7 +2,7 @@ from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import QMdiSubWindow
 from PyQt5.QtGui import  QIcon
 from Developer.FERRET.Ferret import Ferret as ferret
-import Developer.MenuItems.CloseAllSubWindows as closeAllSubWindows
+import MenuItems.CloseAllSubWindows as closeAllSubWindows
 import logging
 logger = logging.getLogger(__name__)
 

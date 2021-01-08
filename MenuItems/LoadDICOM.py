@@ -15,7 +15,7 @@ from PyQt5.QtGui import QCursor, QIcon, QColor
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 import CoreModules.WEASEL.MessageWindow  as messageWindow
-import Developer.MenuItems.CloseAllSubWindows as closeAllSubWindows
+import MenuItems.CloseAllSubWindows as closeAllSubWindows
 
 logger = logging.getLogger(__name__)
 

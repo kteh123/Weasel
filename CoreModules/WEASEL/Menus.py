@@ -50,7 +50,8 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item):
                 function = item.find('function').text
             else:
                 function = "main"
-
+                
+            #Walk the directory structure until the modules defined the menu XML are found
             moduleFileName = [os.path.join(dirpath, moduleName+".py") 
                 for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
             spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
