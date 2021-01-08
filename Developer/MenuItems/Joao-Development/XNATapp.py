@@ -6,6 +6,8 @@ import warnings
 import requests
 from Developer.DeveloperTools import UserInterfaceTools
 
+def isEnabled(self):
+    return True
 
 def download(objWeasel):
     # Insert Try/Except
@@ -33,6 +35,7 @@ def download(objWeasel):
                     downloadFolder = selectXNATPathDownload(objWeasel)
                     ui.showInformationWindow("XNAT Download", "The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.")
                     dataset.download_dir(downloadFolder)
+                    ui.showInformationWindow("XNAT Download", "Download completed!")
                 else:
                     xnatExperiments = [experiment.label for experiment in session.projects[projectName[0]].subjects[subjectName[0]].experiments.values()]
                     xnatExperiments.insert(0, "All")
@@ -45,6 +48,7 @@ def download(objWeasel):
                             downloadFolder = selectXNATPathDownload(objWeasel)
                             ui.showInformationWindow("XNAT Download", "The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.")
                             dataset.download_dir(downloadFolder)
+                            ui.showInformationWindow("XNAT Download", "Download completed!")
                         else:
                             xnatScans = [scan.series_description for scan in session.projects[projectName[0]].subjects[subjectName[0]].experiments[experimentName[0]].scans.values()]
                             xnatScans.insert(0, "All")
@@ -57,11 +61,13 @@ def download(objWeasel):
                                     downloadFolder = selectXNATPathDownload(objWeasel)
                                     ui.showInformationWindow("XNAT Download", "The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.")
                                     dataset.download_dir(downloadFolder)
+                                    ui.showInformationWindow("XNAT Download", "Download completed!")
                                 else:
                                     dataset = session.projects[projectName[0]].subjects[subjectName[0]].experiments[experimentName[0]].scans[scanName[0]]
                                     downloadFolder = selectXNATPathDownload(objWeasel)
                                     ui.showInformationWindow("XNAT Download", "The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.") 
                                     dataset.download_dir(downloadFolder)
+                                    ui.showInformationWindow("XNAT Download", "Download completed!")
     # Delete Login Details
     del loginDetails, url, username, password
     session.disconnect()
@@ -96,6 +102,7 @@ def upload(objWeasel):
                         session.services.import_(uploadZipFile, overwrite='none', project=session.projects[projectName[0]].id, content_type='application/zip')
                     except:
                         warnings.warn('The zip file being uploaded contains files already present in the selected image session and the upload assistant cannot overwrite or give the option to not overwrite. \n The selected file or folder was pre-archived in the selected XNAT project. \n Please login to the portal and review and/or archive the images.')
+                    ui.showInformationWindow("XNAT Upload", "Upload completed!")
                 else:
                     xnatExperiments = [experiment.label for experiment in session.projects[projectName[0]].subjects[subjectName[0]].experiments.values()]
                     xnatExperiments.insert(0, "Upload at Subject Level")
@@ -111,6 +118,7 @@ def upload(objWeasel):
                                 session.services.import_(uploadZipFile, overwrite='none', project=session.projects[projectName[0]].id, subject=session.projects[projectName[0]].subjects[subjectName[0]].id, content_type='application/zip')
                             except:
                                 warnings.warn('The zip file being uploaded contains files already present in the selected image session and the upload assistant cannot overwrite or give the option to not overwrite. \n The selected file or folder was pre-archived in the selected XNAT project. \n Please login to the portal and review and/or archive the images.')
+                            ui.showInformationWindow("XNAT Upload", "Upload completed!")
                         else:
                             uploadPaths = selectXNATPathUpload(objWeasel)
                             uploadZipFile = zipFiles(uploadPaths)
@@ -119,11 +127,13 @@ def upload(objWeasel):
                                 session.services.import_(uploadZipFile, overwrite='none', project=session.projects[projectName[0]].id, subject=session.projects[projectName[0]].subjects[subjectName[0]].id, experiment=session.projects[projectName[0]].subjects[subjectName[0]].experiments[experimentName[0]].id, content_type='application/zip')
                             except:
                                 warnings.warn('The zip file being uploaded contains files already present in the selected image session and the upload assistant cannot overwrite or give the option to not overwrite. \n The selected file or folder was pre-archived in the selected XNAT project. \n Please login to the portal and review and/or archive the images.')
-                            
+                            ui.showInformationWindow("XNAT Upload", "Upload completed!")
     # Curl Command
     headers = {"Content-Type": "application/json", "Accept": "*/*"}
-    curl_url = url + "/xapi/viewer/projects/" + session.projects[projectName[0]].id + "/experiments/*"
-    response = requests.post(curl_url, headers=headers, auth=(username, password))
+    # Update the project's indices
+    for individual_experiment in session.projects[projectName[0]].experiments:
+        curl_url = url + "/xapi/viewer/projects/" + session.projects[projectName[0]].id + "/experiments/" + individual_experiment
+        response = requests.post(curl_url, headers=headers, auth=(username, password))
     # Delete Login Details
     del loginDetails, url, username, password
     # Delete ZIP File

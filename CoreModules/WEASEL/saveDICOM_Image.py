@@ -223,8 +223,8 @@ def createNewPixelArray(imageArray, dataset):
                 dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
                 dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
                 # Set Window Center and Width
-                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
-                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = int(target.flatten()[0])
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = (np.amax(tempArray) + np.amin(tempArray)) / 2 # (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = np.amax(tempArray) - np.amin(tempArray) # int(target.flatten()[0])
             else:
                 # Rotate back to Original Position
                 imageArrayInt = np.transpose(imageArrayInt)
@@ -232,8 +232,12 @@ def createNewPixelArray(imageArray, dataset):
                 dataset.RescaleSlope = rescaleSlope.flatten()[0]
                 dataset.RescaleIntercept = rescaleIntercept.flatten()[0]
                 # Set Window Center and Width
-                dataset.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
-                dataset.WindowWidth = int(target.flatten()[0])
+                center = (np.amax(tempArray) + np.amin(tempArray)) / 2
+                width = np.amax(tempArray) - np.amin(tempArray)
+                dataset.add_new('0x00281050', 'DS', center)
+                dataset.add_new('0x00281051', 'DS', width)
+                # dataset.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
+                # dataset.WindowWidth = int(target.flatten()[0])
         if enhancedArrayInt:
             imageArrayInt = np.array(enhancedArrayInt)
         
@@ -438,15 +442,15 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
                 for index in range(len(dicomData.PerFrameFunctionalGroupsSequence)):
                     slope = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleSlope', 1))
                     intercept = float(getattr(dicomData.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0], 'RescaleIntercept', 0))
-                    center = (levels[0] - intercept) / slope
-                    width = levels[1] / slope
+                    center = levels[0] # (levels[0] - intercept) / slope
+                    width = levels[1] # / slope
                     dicomData.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = center
                     dicomData.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = width
             else:
                 slope = float(getattr(dicomData, 'RescaleSlope', 1))
                 intercept = float(getattr(dicomData, 'RescaleIntercept', 0))
-                center = (levels[0] - intercept) / slope
-                width = levels[1] / slope
+                center = levels[0] # (levels[0] - intercept) / slope
+                width = levels[1] # / slope
                 dicomData.add_new('0x00281050', 'DS', center)
                 dicomData.add_new('0x00281051', 'DS', width)
             
