@@ -72,7 +72,7 @@ class Weasel(QMainWindow):
 
         menus.setupMenus(self, menuXMLFile)
         menus.buildContextMenu(self, menuXMLFile)
-        toolBar.setupToolBar(self)
+        #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")
   

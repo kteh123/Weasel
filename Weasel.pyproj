@@ -23,9 +23,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CoreModules\FERRET\ExcelWriter.py" />
-    <Compile Include="CoreModules\FERRET\ExceptionHandling.py" />
-    <Compile Include="CoreModules\FERRET\ferretXMLReader.py" />
     <Compile Include="CoreModules\freeHandROI\helperFunctions.py">
       <SubType>Code</SubType>
     </Compile>
@@ -37,9 +34,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\WEASEL\iBeatImport.py" />
-    <Compile Include="CoreModules\FERRET\MathsTools.py" />
-    <Compile Include="CoreModules\FERRET\ModelFunctionsHelper.py" />
-    <Compile Include="CoreModules\FERRET\PDFWriter.py" />
     <Compile Include="CoreModules\pyqtgraph\canvas\Canvas.py" />
     <Compile Include="CoreModules\pyqtgraph\canvas\CanvasItem.py" />
     <Compile Include="CoreModules\pyqtgraph\canvas\CanvasManager.py" />
@@ -285,8 +279,6 @@
     <Compile Include="Developer\External\tristanAlgorithms.py" />
     <Compile Include="Developer\External\ukrinAlgorithms.py" />
     <Compile Include="Developer\External\__init__.py" />
-    <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\ModelFunctions.py" />
-    <Compile Include="Developer\FERRET\FERRET_Files\ModelLibrary\Model_Function_Module_Template.py" />
     <Compile Include="MenuItems\BinaryOperationsOnImages.py">
       <SubType>Code</SubType>
     </Compile>
@@ -357,7 +349,6 @@
     </Compile>
     <Compile Include="CoreModules\WEASEL\WriteXMLfromDICOM.py" />
     <Compile Include="MenuItems\copyDICOM_Image.py" />
-    <Compile Include="Developer\FERRET\Ferret.py" />
     <Compile Include="MenuItems\invertDICOM_Image.py" />
     <Compile Include="MenuItems\squareDICOM_Image.py" />
     <Compile Include="CoreModules\SimpleITK\SimpleITK.py" />
@@ -400,15 +391,6 @@
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\winterm.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\WEASEL\ReadMe.txt" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelConfiguration\Model_Library_Template.xml" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelConfiguration\MR_SignalRatLiverModels.xml" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\DualInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowDualInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel.png" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelDiagrams\HighFlowSingleInletTwoCompartmentGadoxetateModel_fixedve.png" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\README.txt" />
-    <Content Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\ModelFunctions.cpython-37.pyc" />
-    <Content Include="Developer\FERRET\FERRET_README.md" />
     <Content Include="MenuItems\Joao-Development\__pycache__\B0Map_WEASEL.cpython-37.pyc" />
     <Content Include="MenuItems\Joao-Development\__pycache__\invertDICOM_Image_Developer.cpython-37.pyc" />
     <Content Include="MenuItems\Joao-Development\__pycache__\mergeDICOM_Developer.cpython-37.pyc" />
@@ -423,24 +405,6 @@
     <Content Include="MenuItems\UKRIN_MAPS\__pycache__\T2StarMapDICOM_Image.cpython-37.pyc" />
     <Content Include="MenuItems\UKRIN_MAPS\__pycache__\UKRIN_Developer.cpython-37.pyc" />
     <Content Include="MenuFiles\Menus.xml" />
-    <Content Include="FerretData\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Liver3__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Liver4__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Liver5__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Liver6__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver1__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver2__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver3__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver4__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver5__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\MSD_PRE\Liver6__SI_TRISTAN Rat Model v2.0__Signals.csv" />
-    <Content Include="FerretData\Sample_Data.csv" />
-    <Content Include="images\FERRET_ICON.ico" />
-    <Content Include="images\FERRET_LOGO.png" />
-    <Content Include="images\logo-tristan.png" />
-    <Content Include="images\TRISTAN LOGO.jpg" />
-    <Content Include="images\uni-leeds-logo.jpg" />
     <Content Include="requirements.txt" />
     <Content Include="WeaselData\003\003.xml" />
     <Content Include="WeaselData\003\1030\DICOM\1.2.840.113619.6.408.218238138221875479893414809240658168986-1030-14-1mn51ni.dcm" />
@@ -8115,7 +8079,6 @@
     <Content Include="WeaselData\Sample Data\Sample Data.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CoreModules\FERRET\" />
     <Folder Include="CoreModules\freeHandROI\" />
     <Folder Include="CoreModules\freeHandROI\cursors\" />
     <Folder Include="CoreModules\WEASEL\" />
@@ -8157,12 +8120,6 @@
     <Folder Include="Developer\" />
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\External\" />
-    <Folder Include="Developer\FERRET\" />
-    <Folder Include="Developer\FERRET\FERRET_Files\ModelDiagrams\" />
-    <Folder Include="Developer\FERRET\FERRET_Files\ModelLibrary\" />
-    <Folder Include="Developer\FERRET\FERRET_Files\ModelLibrary\__pycache__\" />
-    <Folder Include="Developer\FERRET\FERRET_Files\" />
-    <Folder Include="Developer\FERRET\FERRET_Files\ModelConfiguration\" />
     <Folder Include="MenuItems\" />
     <Folder Include="MenuItems\Joao-Development\" />
     <Folder Include="MenuItems\Joao-Development\__pycache__\" />
@@ -8170,9 +8127,6 @@
     <Folder Include="MenuItems\TRISTAN\" />
     <Folder Include="MenuItems\UKRIN_MAPS\" />
     <Folder Include="MenuItems\UKRIN_MAPS\__pycache__\" />
-    <Folder Include="FerretData\" />
-    <Folder Include="FerretData\MSD_PRE\" />
-    <Folder Include="images\" />
     <Folder Include="CoreModules\SimpleITK\" />
     <Folder Include="MenuFiles\" />
     <Folder Include="WeaselData\" />

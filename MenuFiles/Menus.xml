@@ -159,18 +159,18 @@
           <!--Inserts a separator, a horizontal line in the menu-->
           <separator>yes</separator>
         </item>
-        <item>
-          <label>FERRET</label>
-          <!--Specifies location of an icon to display before the label-->
-          <icon>images\\FERRET_LOGO.png</icon>
-          <enabled>True</enabled>
-          <shortcut>Ctrl+F</shortcut>
-          <tooltip>Launches the FERRET application</tooltip>
-          <module>MenuToolBarCommon</module>
-          <function>displayFERRET</function>
-        </item>
   </menu>
 </menus>
-  
-    
-  
+
+<!--  Ferret Removed from Weasel
+<item>
+  <label>FERRET</label>
+  <icon>images\\FERRET_LOGO.png</icon>
+  <enabled>True</enabled>
+  <shortcut>Ctrl+F</shortcut>
+  <tooltip>Launches the FERRET application</tooltip>
+  <module>MenuToolBarCommon</module>
+  <function>displayFERRET</function>
+</item>
+-->
+

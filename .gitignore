@@ -357,6 +357,7 @@ venv-linux/
 /env/Lib/site-packages
 /FERRET data
 /WEASEL Data
+/WEASELData
 /env
 /Weasel.exe
 /report.pdf
