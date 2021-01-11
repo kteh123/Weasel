@@ -100,10 +100,11 @@ class ROIs():
             return False
 
 
-    def deleteMask(self, regionName):
+    def deleteMask(self, regionName=None):
         logger.info("RIO_Storage.deleteMask called")
-        if regionName in self.dictMasks: 
-            del self.dictMasks[regionName]
+        if regionName:
+            if regionName in self.dictMasks: 
+                del self.dictMasks[regionName]
 
 
     def renameDictionaryKey(self, newName):

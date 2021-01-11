@@ -110,7 +110,7 @@ def setUpGraphicsViewSubWindow(self):
             logger.error('Error in DisplayImageDrawRIO.displayMultiImageSubWindow: ' + str(e))
 
 
-def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs, imageSlider = None):
+def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
     spinBoxIntensity = QDoubleSpinBox()
     spinBoxContrast = QDoubleSpinBox()
@@ -138,28 +138,28 @@ def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs, imageSlider = 
     gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
     
     spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(graphicsView,
-                spinBoxIntensity.value(), spinBoxContrast.value(), dictROIs, cmbROIs, imageSlider))
+                spinBoxIntensity.value(), spinBoxContrast.value(),  cmbROIs, imageSlider))
     spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(graphicsView,
-                spinBoxIntensity.value(), spinBoxContrast.value(), dictROIs, cmbROIs, imageSlider))  
+                spinBoxIntensity.value(), spinBoxContrast.value(), cmbROIs, imageSlider))  
     layout.addLayout(gridLayoutLevels) 
     return spinBoxIntensity, spinBoxContrast
     
 
-def updateImageLevels(graphicsView, intensity, contrast, dictROIs, cmbROIs, imageSlider = None):
+def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = None):
     logger.info("DisplayImageDrawROI.updateImageLevels called.")
     try:
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
             imageNumber = 1
-        mask = dictROIs.getMask(cmbROIs.currentText(), imageNumber)
+        mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
     except Exception as e:
             print('Error in DisplayImageROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
             logger.error('Error in DisplayImageROI.updateImageLevels: ' + str(e))
 
 
-def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None):
+def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
     try:
         logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
         buttonList = []
@@ -169,20 +169,23 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
         cmbROIs = QComboBox()
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0)
+        graphicsView.roiCombo = cmbROIs
+
         btnDeleteROI = QPushButton("Delete")
-   
+        btnDeleteROI.setToolTip('Delete the current ROI')
+        btnDeleteROI.clicked.connect(graphicsView.deleteROI())
+ 
         btnNewROI = QPushButton('New') 
-        btnNewROI.setToolTip('Allows the user to create a new ROI')
-        btnNewROI.clicked.connect(lambda: newROI(cmbROIs, dictROIs, graphicsView))
+        btnNewROI.setToolTip('Create a new ROI')
+        btnNewROI.clicked.connect(graphicsView.newROI())
 
         btnResetROI = QPushButton('Reset')
         btnResetROI.setToolTip('Clears the ROI from the image')
-        btnResetROI.clicked.connect(lambda: resetROI(self, cmbROIs, dictROIs, graphicsView,
-                                                    pixelDataLabel, roiMeanLabel, imageSlider))
+        btnResetROI.clicked.connect(graphicsView.resetROI())
 
         btnSaveROI = QPushButton('Save')
         btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-        btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), dictROIs))
+        btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), graphicsView))
 
         btnErase = QPushButton()
         buttonList.append(btnErase)
@@ -202,14 +205,9 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
         btnZoom.setCheckable(True)
         btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
-        btnPan = QPushButton("Drag")
-        buttonList.append(btnPan)
-        btnPan.setToolTip("pan the image")
-        btnPan.setCheckable(True)
-        #btnPan.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
-        btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                                                       roiMeanLabel, buttonList, imageSlider))
+        #btnDeleteROI.clicked.connect(lambda: deleteROI(self, cmbROIs, graphicsView, pixelDataLabel, 
+         #                                              roiMeanLabel, buttonList, imageSlider))
 
         btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
                                                             checked, graphicsView, buttonList))
@@ -218,19 +216,17 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
         btnZoom.clicked.connect(lambda checked: zoomImage(btnZoom, 
                                                           checked, graphicsView, buttonList))
     
-        btnPan.clicked.connect(lambda checked: panImage(btnPan, 
-                                                          checked, graphicsView, buttonList))
 
         cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
         cmbROIs.currentIndexChanged.connect(
-            lambda: reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+            lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                                   roiMeanLabel, self, buttonList, imageSlider))
 
-        cmbROIs.currentIndexChanged.connect(
-            lambda: dictROIs.setPreviousRegionName(cmbROIs.currentText()))
+       # cmbROIs.currentIndexChanged.connect(
+         #   lambda: dictROIs.setPreviousRegionName(cmbROIs.currentText()))
 
-        cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, dictROIs, text))
+        cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, graphicsView, text))
         cmbROIs.setToolTip("Displays a list of ROIs created")
         cmbROIs.setEditable(True)
         cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
@@ -264,8 +260,8 @@ def setUpPixelDataWidgets(self, layout, graphicsView, dictROIs, imageSlider=None
 
         return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList
     except Exception as e:
-            print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
-            logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
+           print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
+           logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
 
 
 def setButtonsToDefaultStyle(buttonList):
@@ -346,24 +342,30 @@ def eraseROI(btn, checked, graphicsView, buttonList):
 
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                            roiMeanLabel, dictROIs, cmbROIs, buttonList, imageSlider=None):
+                            roiMeanLabel, cmbROIs, buttonList, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
     lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
-        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), dictROIs, imageSlider))
+        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
-        lambda: displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider))
+        lambda: displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider))
 
     graphicsView.graphicsItem.sigMaskEdited.connect(
-        lambda:replaceMask(graphicsView, cmbROIs.currentText(), dictROIs, imageSlider))
+        lambda:replaceMask(graphicsView, cmbROIs.currentText(), imageSlider))
 
     graphicsView.graphicsItem.sigMaskEdited.connect(
-        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), dictROIs, imageSlider))
+        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
     graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
+
+    graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
+                              roiMeanLabel, self, buttonList, imageSlider ))
+
+    graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
+              pixelDataLabel, roiMeanLabel, buttonList, imageSlider))
 
 
 def setUpGraphicsView(hbox):
@@ -405,7 +407,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
-            dictROIs = ROIs()
+            #dictROIs = ROIs()
 
             graphicsView = setUpGraphicsView(hbox)
 
@@ -416,13 +418,12 @@ def displayImageROISubWindow(self, derivedImagePath=None):
                 graphicsView.setImage(pixelArray)
 
             pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
-                                                                          graphicsView,
-                                                                          dictROIs)
+                                                                          graphicsView)
 
             setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-                                    dictROIs, cmbROIs, buttonList)
+                                    cmbROIs, buttonList)
 
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, dictROIs)
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs)
             spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
             spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
             #setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
@@ -460,18 +461,16 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
-           
-            dictROIs = ROIs(NumImages=len(imageList))
 
             graphicsView = setUpGraphicsView(hbox)
+            graphicsView.dictROIs = ROIs(NumImages=len(imageList))
             
             pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
-                                                                          dictROIs, imageSlider)
+                                                                           imageSlider)
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
                                                                      graphicsView, 
                                                                      cmbROIs, 
-                                                                     dictROIs,
                                                                      imageSlider)
 
             #setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, 
@@ -485,7 +484,6 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    imageSlider,
                                                    lblImageMissing, pixelDataLabel,
                                                    roiMeanLabel, cmbROIs, 
-                                                   dictROIs,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
                                                    graphicsView, subWindow,
@@ -497,7 +495,6 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     lblImageMissing, 
                                     pixelDataLabel, 
                                     roiMeanLabel, cmbROIs,
-                                    dictROIs,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
                                     graphicsView, subWindow, buttonList)
@@ -531,7 +528,7 @@ def getRoiMeanAndStd(mask, pixelArray):
     return mean, std
 
 
-def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider=None):
+def displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider=None):
         logger.info("DisplayImageDrawROI.displayROIMeanAndStd called")
         if imageSlider:
             imageNumber = imageSlider.value()
@@ -539,7 +536,7 @@ def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider=None
             imageNumber = 1
         pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         regionName = cmbROIs.currentText()
-        mask = dictROIs.getMask(regionName, imageNumber)
+        mask = graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = getRoiMeanAndStd(mask, pixelArray)
             str ="ROI mean = {}, standard deviation = {}".format(mean, std)
@@ -548,29 +545,29 @@ def displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider=None
         roiMeanLabel.setText(str)
         
 
-def storeMaskData(graphicsView, regionName, dictROIs, imageSlider=None):
+def storeMaskData(graphicsView, regionName, imageSlider=None):
         logger.info("DisplayImageDrawROI.storeMaskData called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
             imageNumber = 1
         mask = graphicsView.graphicsItem.getMaskData()
-        dictROIs.addRegion(regionName, mask, imageNumber)
+        graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
 
 
-def replaceMask(graphicsView, regionName, dictROIs, imageSlider=None):
+def replaceMask(graphicsView, regionName, imageSlider=None):
         logger.info("DisplayImageDrawROI.replaceMask called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
             imageNumber = 1
         mask = graphicsView.graphicsItem.getMaskData()
-        dictROIs.replaceMask(regionName, mask, imageNumber)
+        graphicsView.dictROIs.replaceMask(regionName, mask, imageNumber)
         
 
 def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                         lblImageMissing, pixelDataLabel, roiMeanLabel,
-                        cmbROIs, dictROIs,
+                        cmbROIs,
                         spinBoxIntensity, spinBoxContrast,  
                         graphicsView, subWindow, buttonList):
         """On the Multiple Image with ROI Display sub window, this
@@ -589,7 +586,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     lblImageMissing.show()
                     imv.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+                    reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider) 
  
                     spinBoxIntensity.blockSignals(True)
@@ -599,7 +596,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
                     spinBoxContrast.blockSignals(False)
                     setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                                            roiMeanLabel, dictROIs, cmbROIs, buttonList,
+                                            roiMeanLabel, cmbROIs, buttonList,
                                          imageSlider)
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
@@ -637,46 +634,42 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
 #            print('Error in setUpROITools: ' + str(e))
 #            logger.error('Error in setUpROITools: ' + str(e))
 
-
-def newROI(cmbROIs, dictROIs, graphicsView):
-    logger.info("DisplayImageDrawROI.newROI called")
-    if dictROIs.hasRegionGotMask(cmbROIs.currentText()):
-        cmbROIs.blockSignals(True)
-        cmbROIs.addItem(dictROIs.getNextRegionName())
-        cmbROIs.setCurrentIndex(cmbROIs.count() - 1)
-        cmbROIs.blockSignals(False)
-        graphicsView.graphicsItem.reloadImage()
-    else:
-        msgBox = QMessageBox()
-        msgBox.setWindowTitle("Add new ROI")
-        msgBox.setText(
-            "You must add ROIs to the current region before creating a new one")
-        msgBox.exec()
+#maybe delete later
+#def newROI(graphicsView):
+#    logger.info("DisplayImageDrawROI.newROI called")
+#    graphicsView.newROI()
 
 
-def reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider=None ):
-    logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
-    if imageSlider:
-        imageNumber = imageSlider.value()
-    else:
-        imageNumber = 1
+    try:
+        graphicsView.dictROIs.setPreviousRegionName(cmbROIs.currentText())
+        logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
+        if imageSlider:
+            imageNumber = imageSlider.value()
+        else:
+            imageNumber = 1
 
-    pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-    mask = dictROIs.getMask(cmbROIs.currentText(), imageNumber)
-    graphicsView.setImage(pixelArray, mask)
-    setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-                                dictROIs, cmbROIs, buttonList, imageSlider)
+        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
+        graphicsView.setImage(pixelArray, mask)
+        pixelDataLabel.clear() 
+        roiMeanLabel.clear()
+        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
+                                     cmbROIs, buttonList, imageSlider)
+    except Exception as e:
+           print('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
+           logger.error('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
     
 
-def deleteROI(self, cmbROIs, dictROIs, graphicsView, 
+def deleteROITidyUp(self, cmbROIs, graphicsView, 
               pixelDataLabel, roiMeanLabel, buttonList, imageSlider=None):
-    logger.info("DisplayImageDrawROI.deleteROI called")
-    dictROIs.deleteMask(cmbROIs.currentText())
-    reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
+    logger.info("DisplayImageDrawROI.deleteROITidyUp called")
+    
+    reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider) 
-    displayROIMeanAndStd(self, roiMeanLabel, dictROIs, cmbROIs, imageSlider)
-    if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1:
+    displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider)
+    if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1: 
         cmbROIs.clear()
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0) 
@@ -690,42 +683,46 @@ def deleteROI(self, cmbROIs, dictROIs, graphicsView,
         cmbROIs.blockSignals(True)
         cmbROIs.removeItem(cmbROIs.currentIndex())
         cmbROIs.blockSignals(False)
-        mask = dictROIs.getMask(cmbROIs.currentText(), imageNumber)
+        mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.graphicsItem.reloadMask(mask)
   
+#delete later
+#def resetROI(self, cmbROIs, dictROIs, graphicsView,  
+#             pixelDataLabel, roiMeanLabel, imageSlider):
+#    logger.info("DisplayImageDrawROI.resetROI called")
+#    dictROIs.deleteMask(cmbROIs.currentText())
+#    reloadImageInNewImageItem(cmbROIs,  graphicsView, pixelDataLabel, 
+#                              roiMeanLabel, self, imageSlider) 
+#    pixelDataLabel.clear() 
+#    roiMeanLabel.clear()
 
-def resetROI(self, cmbROIs, dictROIs, graphicsView,  
-             pixelDataLabel, roiMeanLabel, imageSlider):
-    logger.info("DisplayImageDrawROI.resetROI called")
-    dictROIs.deleteMask(cmbROIs.currentText())
-    reloadImageInNewImageItem(cmbROIs, dictROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, imageSlider) 
-    pixelDataLabel.clear() 
-    roiMeanLabel.clear()
 
-
-def saveROI(self, regionName, dictROIs):
-    # Save Current ROI
-    logger.info("DisplayImageDrawROI.saveROI called")
-    maskList = dictROIs.dictMasks[regionName] # Will return a list of boolean masks
-    maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
-    suffix = str("_ROI_"+ regionName)
-    if len(maskList) > 1:
-        inputPath = self.imageList
-    else:
-        inputPath = [self.selectedImagePath]
-    # Saving Progress message
-    messageWindow.displayMessageSubWindow(self,
-        "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
-        "Processing DICOM images")
-    outputPath = []
-    for image in inputPath:
-        outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
-    saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
-    seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-    treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
-    messageWindow.closeMessageSubWindow(self)
-    QMessageBox.information(self, "Export ROIs", "Image Saved")
+def saveROI(self, regionName, graphicView):
+    try:
+        # Save Current ROI
+        logger.info("DisplayImageDrawROI.saveROI called")
+        maskList = graphicView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
+        maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
+        suffix = str("_ROI_"+ regionName)
+        if len(maskList) > 1:
+            inputPath = self.imageList
+        else:
+            inputPath = [self.selectedImagePath]
+        # Saving Progress message
+        messageWindow.displayMessageSubWindow(self,
+            "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
+            "Processing DICOM images")
+        outputPath = []
+        for image in inputPath:
+            outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
+        saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
+        seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
+        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+        messageWindow.closeMessageSubWindow(self)
+        QMessageBox.information(self, "Export ROIs", "Image Saved")
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.saveROI: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.saveROI: ' + str(e)) 
 
     # Save all ROIs
     #for label, mask in dictROIs.dictMasks.items():
@@ -743,7 +740,7 @@ def saveROI(self, regionName, dictROIs):
     #treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
 
 
-def roiNameChanged(cmbROIs, dictROIs, newText):
+def roiNameChanged(cmbROIs, graphicsView, newText):
     try:
         logger.info("DisplayImageDrawROI.roiNameChanged called")
         currentIndex = cmbROIs.currentIndex()
@@ -756,14 +753,14 @@ def roiNameChanged(cmbROIs, dictROIs, newText):
         index = cmbROIs.findText(newText);
         if index == -1:
             cmbROIs.setItemText(currentIndex, newText);
-            nameChangedOK = dictROIs.renameDictionaryKey(newText)
+            nameChangedOK = graphicsView.dictROIs.renameDictionaryKey(newText)
             #dictROIs.printContentsDictMasks()
             if nameChangedOK == False:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle("ROI Name Change")
                 msgBox.setText("This name is already in use")
                 msgBox.exec()
-                cmbROIs.setCurrentText(dictROIs.prevRegionName)
+                cmbROIs.setCurrentText(graphicsView.dictROIs.prevRegionName)
     except Exception as e:
             print('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e)) 

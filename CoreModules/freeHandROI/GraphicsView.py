@@ -1,9 +1,12 @@
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5 import QtCore 
-from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, 
+from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
                             QAction, QActionGroup, QApplication)
 from PyQt5.QtGui import QPixmap, QCursor, QIcon
 from .GraphicsItem import GraphicsItem
+from .ROI_Storage import ROIs 
+import logging
+logger = logging.getLogger(__name__)
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
@@ -17,6 +20,9 @@ ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
     sigContextMenuDisplayed = QtCore.Signal()
+    sigReloadImage =  QtCore.Signal()
+    sigROIDeleted = QtCore.Signal()
+
 
     def __init__(self, zoomSlider, zoomLabel):
         super(GraphicsView, self).__init__()
@@ -29,39 +35,18 @@ class GraphicsView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.zoomEnabled = False
+        self.roiCombo = None
+        self.dictROIs = ROIs()
+        self.menu = QMenu()
         #Following commented out to display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
-    
-    def contextMenuEvent(self, event):
-        #display pop-up context menu when the right mouse button is pressed
-        #as long as zoom is not enabled
-        if not self.zoomEnabled:
-            self.sigContextMenuDisplayed.emit()
-            menu = QMenu()
-            zoomIn = QAction('Zoom In', None)
-            zoomOut = QAction('Zoom Out', None)
-            zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
-            zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-
-            drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
-            drawROI.setToolTip("Draw an ROI")
-            drawROI.triggered.connect(lambda: self.drawROI())
-
-            eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
-            eraseROI.setToolTip("Erase the ROI")
-            eraseROI.triggered.connect(lambda: self.eraseROI())
-            
-            menu.addAction(zoomIn)
-            menu.addAction(zoomOut)
-            menu.addSeparator()
-            menu.addAction(drawROI)
-            menu.addAction(eraseROI)
-
-            menu.exec_(event.globalPos())  
+    def loadROI(self, regionName):
+        self.roiCombo.setCurrentText(regionName) 
+        self.sigReloadImage.emit()
 
 
     def setZoomEnabled(self, boolValue):
@@ -164,6 +149,59 @@ class GraphicsView(QGraphicsView):
             self.setDragMode(QGraphicsView.ScrollHandDrag)
 
 
+    def contextMenuEvent(self, event):
+        #display pop-up context menu when the right mouse button is pressed
+        #as long as zoom is not enabled
+        if not self.zoomEnabled:
+            self.menu.clear()
+            self.sigContextMenuDisplayed.emit()
+            zoomIn = QAction('Zoom In', None)
+            zoomOut = QAction('Zoom Out', None)
+            zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
+            zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
+
+            drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
+            drawROI.setToolTip("Draw an ROI")
+            drawROI.triggered.connect(self.drawROI)
+
+            eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
+            eraseROI.setToolTip("Erase the ROI")
+            eraseROI.triggered.connect(self.eraseROI)
+
+            newROI  = QAction('New ROI', None)
+            newROI.setToolTip("Create a new ROI")
+            newROI.triggered.connect(self.newROI)
+
+            resetROI  = QAction('Reset ROI', None)
+            resetROI.setToolTip("remove drawn ROI from the image")
+            resetROI.triggered.connect(self.resetROI)
+
+            deleteROI  = QAction('Delete ROI', None)
+            deleteROI.setToolTip("Delete drawn ROI from the image")
+            deleteROI.triggered.connect(self.deleteROI)
+            
+            self.menu.addAction(zoomIn)
+            self.menu.addAction(zoomOut)
+            self.menu.addSeparator()
+            self.menu.addAction(drawROI)
+            self.menu.addAction(eraseROI)
+            self.menu.addSeparator()
+            self.menu.addAction(newROI)
+            self.menu.addAction(resetROI)
+            self.menu.addAction(deleteROI)
+            self.menu.addSeparator()
+            self.addRegionsToContextMenu()
+            self.menu.exec_(event.globalPos())  
+
+
+    def addRegionsToContextMenu(self):
+        regions = self.dictROIs.getListOfRegions()
+        for region in regions:
+            regionAction = QAction(region)
+            regionAction.triggered.connect(self.loadROI(region))
+            self.menu.addAction(regionAction)
+
+
     def drawROI(self):
         if not self.graphicsItem.drawEnabled:
             self.graphicsItem.drawEnabled = True
@@ -171,7 +209,6 @@ class GraphicsView(QGraphicsView):
             self.graphicsItem.eraseEnabled = False
         else:
             self.graphicsItem.drawEnabled = False
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
 
     def eraseROI(self):
@@ -181,5 +218,45 @@ class GraphicsView(QGraphicsView):
             self.graphicsItem.eraseEnabled = True
         else:
             self.graphicsItem.eraseEnabled = False
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
        
+
+    def newROI(self):
+        try:
+            logger.info("GraphicsView.newROI called")
+            if self.dictROIs.hasRegionGotMask(self.roiCombo.currentText()):
+                self.roiCombo.blockSignals(True)
+                newRegion = self.dictROIs.getNextRegionName()
+                self.roiCombo.addItem(newRegion)
+                self.roiCombo.setCurrentIndex(self.roiCombo.count() - 1)
+                self.roiCombo.blockSignals(False)
+                self.graphicsItem.reloadImage()
+            else:
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Add new ROI")
+                msgBox.setText(
+                    "You must add ROIs to the current region before creating a new one")
+                msgBox.exec()
+        except Exception as e:
+            print('Error in GraphicsView.newROI: ' + str(e))
+
+
+    def resetROI(self):
+        try:
+            logger.info("GraphicsView.resetROI called")
+            self.dictROIs.deleteMask(self.roiCombo.currentText())
+            self.sigReloadImage.emit()
+        except Exception as e:
+            print('Error in GraphicsView.resetROI: ' + str(e))
+
+    def deleteROI(self):
+        try:
+            logger.info("GraphicsView.deleteROI called")
+            regionName = self.roiCombo.currentText()
+            self.dictROIs.deleteMask(regionName)
+            for item in self.menu.actions():
+                if item.text() == regionName:
+                    self.menu.removeAction(item)
+                    break
+            self.sigROIDeleted.emit()
+        except Exception as e:
+            print('Error in GraphicsView.deleteROI: ' + str(e))
