@@ -243,17 +243,16 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         #First row
         gridLayoutROI.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
         gridLayoutROI.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnDeleteROI, 0,2, alignment=Qt.AlignLeft, )
-        gridLayoutROI.addWidget(btnNewROI, 0,3, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnSaveROI, 0,4, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnResetROI, 0, 5, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnNewROI, 0,2, alignment=Qt.AlignLeft, )
+        gridLayoutROI.addWidget(btnResetROI, 0,3, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnDeleteROI, 0,4, alignment=Qt.AlignLeft,)
+        gridLayoutROI.addWidget(btnSaveROI, 0, 5, alignment=Qt.AlignLeft,)
         #Second row
         gridLayoutROI.addItem(spacerItem, 1, 0)
         gridLayoutROI.addItem(spacerItem, 1, 1)
         gridLayoutROI.addWidget(btnDraw, 1, 2, alignment=Qt.AlignLeft,)
         gridLayoutROI.addWidget(btnErase, 1,3, alignment=Qt.AlignLeft,)
         gridLayoutROI.addWidget(btnZoom, 1, 4, alignment=Qt.AlignLeft,)
-        #gridLayoutROI.addWidget(btnPan, 1, 5, alignment=Qt.AlignLeft,)
         #Third row
         gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
         gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)

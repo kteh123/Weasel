@@ -391,6 +391,8 @@
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\winterm.cpython-37.pyc" />
     <Content Include="CoreModules\pyqtgraph\util\colorama\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="CoreModules\WEASEL\ReadMe.txt" />
+    <Content Include="images\uni-sheffield-logo.png" />
+    <Content Include="images\XNAT-LOGO.png" />
     <Content Include="MenuItems\Joao-Development\__pycache__\B0Map_WEASEL.cpython-37.pyc" />
     <Content Include="MenuItems\Joao-Development\__pycache__\invertDICOM_Image_Developer.cpython-37.pyc" />
     <Content Include="MenuItems\Joao-Development\__pycache__\mergeDICOM_Developer.cpython-37.pyc" />
@@ -8120,6 +8122,7 @@
     <Folder Include="Developer\" />
     <Folder Include="CoreModules\" />
     <Folder Include="Developer\External\" />
+    <Folder Include="images\" />
     <Folder Include="MenuItems\" />
     <Folder Include="MenuItems\Joao-Development\" />
     <Folder Include="MenuItems\Joao-Development\__pycache__\" />

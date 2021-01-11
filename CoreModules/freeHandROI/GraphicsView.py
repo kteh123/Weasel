@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtCore import QRectF, Qt,  QCoreApplication
 from PyQt5 import QtCore 
 from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
                             QAction, QActionGroup, QApplication)
@@ -173,7 +173,7 @@ class GraphicsView(QGraphicsView):
             newROI.triggered.connect(self.newROI)
 
             resetROI  = QAction('Reset ROI', None)
-            resetROI.setToolTip("remove drawn ROI from the image")
+            resetROI.setToolTip("Clear drawn ROI from the image")
             resetROI.triggered.connect(self.resetROI)
 
             deleteROI  = QAction('Delete ROI', None)
@@ -189,17 +189,22 @@ class GraphicsView(QGraphicsView):
             self.menu.addAction(newROI)
             self.menu.addAction(resetROI)
             self.menu.addAction(deleteROI)
-            self.menu.addSeparator()
-            self.addRegionsToContextMenu()
+            #self.menu.addSeparator()
+            #roiMenu = self.menu.addMenu("ROIs")
+            #.addRegionsToContextMenu(roiMenu)
             self.menu.exec_(event.globalPos())  
 
 
-    def addRegionsToContextMenu(self):
-        regions = self.dictROIs.getListOfRegions()
-        for region in regions:
-            regionAction = QAction(region)
-            regionAction.triggered.connect(self.loadROI(region))
-            self.menu.addAction(regionAction)
+    def addRegionsToContextMenu(self, roiMenu):
+        try:
+            regions = self.dictROIs.getListOfRegions()
+            for region in regions:
+                regionAction = QAction(str(region), None)
+                function = self.loadROI(str(region))
+                regionAction.triggered.connect(lambda:function)
+                roiMenu.addAction(regionAction)
+        except Exception as e:
+            print('Error in GraphicsView.addRegionsToContextMenu: ' + str(e))
 
 
     def drawROI(self):
