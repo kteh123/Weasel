@@ -155,8 +155,8 @@ def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = 
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
     except Exception as e:
-            print('Error in DisplayImageROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
-            logger.error('Error in DisplayImageROI.updateImageLevels: ' + str(e))
+            print('Error in DisplayImageDrawROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
+            logger.error('Error in DisplayImageDrawROI.updateImageLevels: ' + str(e))
 
 
 def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
@@ -173,15 +173,15 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
 
         btnDeleteROI = QPushButton("Delete")
         btnDeleteROI.setToolTip('Delete the current ROI')
-        btnDeleteROI.clicked.connect(graphicsView.deleteROI())
- 
+        btnDeleteROI.clicked.connect(graphicsView.deleteROI)
+        
         btnNewROI = QPushButton('New') 
         btnNewROI.setToolTip('Create a new ROI')
-        btnNewROI.clicked.connect(graphicsView.newROI())
+        btnNewROI.clicked.connect(graphicsView.newROI)
 
         btnResetROI = QPushButton('Reset')
         btnResetROI.setToolTip('Clears the ROI from the image')
-        btnResetROI.clicked.connect(graphicsView.resetROI())
+        btnResetROI.clicked.connect(graphicsView.resetROI)
 
         btnSaveROI = QPushButton('Save')
         btnSaveROI.setToolTip('Saves the ROI in DICOM format')
@@ -400,7 +400,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
         """
         try:
-            logger.info("DisplayImageROI displayImageROISubWindow called")
+            logger.info("DisplayImageDrawROI displayImageROISubWindow called")
             pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         
             hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
@@ -436,8 +436,8 @@ def displayImageROISubWindow(self, derivedImagePath=None):
                 msgBox.setText("Select either a series or an image")
                 msgBox.exec()
         except Exception as e:
-            print('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e))
-            logger.error('Error in DisplayImageROI.displayImageROISubWindow: ' + str(e)) 
+            print('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e)) 
 
 
 def displayMultiImageROISubWindow(self, imageList, studyName, 
@@ -448,7 +448,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
         The user may create an ROI on the series of images.
         """
         try:
-            logger.info("DisplayImageROI.displayMultiImageROISubWindow called")
+            logger.info("DisplayImageDrawROI.displayMultiImageROISubWindow called")
             hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
             
             imageSlider = QSlider(Qt.Horizontal)
@@ -603,8 +603,8 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                          + os.path.basename(self.selectedImagePath))
                # print("imageSliderMoved after={}".format(self.selectedImagePath))
         except Exception as e:
-            print('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
-            logger.error('Error in DisplayImageROI.imageROISliderMoved: ' + str(e))
+            print('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
 
 #redundant function
 #def setUpROITools(self, layout, graphicsView, cmbROIs, dictROIs, pixelDataLabel, roiMeanLabel, imageSlider=None):

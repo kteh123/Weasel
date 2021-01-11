@@ -101,10 +101,14 @@ class ROIs():
 
 
     def deleteMask(self, regionName=None):
-        logger.info("RIO_Storage.deleteMask called")
-        if regionName:
-            if regionName in self.dictMasks: 
-                del self.dictMasks[regionName]
+        try:
+            logger.info("RIO_Storage.deleteMask called")
+            if regionName:
+                if regionName in self.dictMasks: 
+                    del self.dictMasks[regionName]
+        except Exception as e:
+           print('Error in ROI_Storage.deleteMask: ' + str(e))
+           logger.error('Error in ROI_Storage.deleteMask: ' + str(e))  
 
 
     def renameDictionaryKey(self, newName):

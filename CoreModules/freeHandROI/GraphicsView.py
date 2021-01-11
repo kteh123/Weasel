@@ -248,15 +248,18 @@ class GraphicsView(QGraphicsView):
         except Exception as e:
             print('Error in GraphicsView.resetROI: ' + str(e))
 
+
     def deleteROI(self):
         try:
             logger.info("GraphicsView.deleteROI called")
-            regionName = self.roiCombo.currentText()
-            self.dictROIs.deleteMask(regionName)
-            for item in self.menu.actions():
-                if item.text() == regionName:
-                    self.menu.removeAction(item)
-                    break
-            self.sigROIDeleted.emit()
+            if self.roiCombo is not None:
+                regionName = self.roiCombo.currentText()
+                if regionName:
+                    self.dictROIs.deleteMask(regionName)
+                    for item in self.menu.actions():
+                        if item.text() == regionName:
+                            self.menu.removeAction(item)
+                            break
+                    self.sigROIDeleted.emit()
         except Exception as e:
             print('Error in GraphicsView.deleteROI: ' + str(e))
