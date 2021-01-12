@@ -358,8 +358,7 @@ venv-linux/
 /FERRET data
 /WEASEL Data
 /WEASELData
-/env
-/env/Lib/site-packages
+
 /Weasel.exe
 /report.pdf
 /CoreModules/SimpleITK/*.pyd
