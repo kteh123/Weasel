@@ -13,7 +13,7 @@ config.xml
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
+gitignore
 # Build results
 *.pyc
 [Dd]ebug/
@@ -357,8 +357,9 @@ venv-linux/
 
 /FERRET data
 /WEASEL Data
-/WEASELData
 
+/env
+/env/Lib/site-packages
 /Weasel.exe
 /report.pdf
 /CoreModules/SimpleITK/*.pyd

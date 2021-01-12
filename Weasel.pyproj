@@ -3154,7 +3154,6 @@
     <Content Include="env\Scripts\python.exe" />
     <Content Include="env\Scripts\pythonw.exe" />
     <Content Include="env\Scripts\pyuic5.exe" />
-    <Content Include="env\TextFile1.txt" />
     <Content Include="images\uni-sheffield-logo.png" />
     <Content Include="images\XNAT-LOGO.png" />
     <Content Include="MenuItems\Joao-Development\__pycache__\B0Map_WEASEL.cpython-37.pyc" />
@@ -10843,6 +10842,7 @@
     <Content Include="WeaselData\Sample Data\IM_2047" />
     <Content Include="WeaselData\Sample Data\IM_2048" />
     <Content Include="WeaselData\Sample Data\Sample Data.xml" />
+    <Content Include="WeaselData\TextFile1.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CoreModules\freeHandROI\" />
