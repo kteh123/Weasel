@@ -44,6 +44,7 @@ class GraphicsView(QGraphicsView):
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
+
     def loadROI(self, regionName):
         self.roiCombo.setCurrentText(regionName) 
         self.sigReloadImage.emit()
@@ -196,6 +197,7 @@ class GraphicsView(QGraphicsView):
 
 
     def addRegionsToContextMenu(self, roiMenu):
+        #This does not currently work, 12.01.2021
         try:
             regions = self.dictROIs.getListOfRegions()
             for region in regions:
