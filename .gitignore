@@ -10,10 +10,12 @@
 *.userosscache
 *.sln.docstates
 config.xml
-
+/WEASELData
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-gitignore
+.gitignore
+Weasel.pyproj
+Weasel.sln
 # Build results
 *.pyc
 [Dd]ebug/
