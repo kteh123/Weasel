@@ -192,12 +192,14 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         btnSaveROI.clicked.connect(lambda: loadROIs(graphicsView))
 
         btnErase = QPushButton()
+        graphicsView.eraseButton = btnErase
         buttonList.append(btnErase)
         btnErase.setToolTip("Erase the ROI")
         btnErase.setCheckable(True)
         btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
 
         btnDraw = QPushButton()
+        graphicsView.drawButton = btnDraw
         buttonList.append(btnDraw)
         btnDraw.setToolTip("Draw an ROI")
         btnDraw.setCheckable(True)
@@ -290,27 +292,6 @@ def zoomImage(btn, checked, graphicsView, buttonList):
         btn.setStyleSheet(
          "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
          )
-
-
-#def panImage(btn, checked, graphicsView, buttonList):
-#    if checked:
-#        setButtonsToDefaultStyle(buttonList)
-#       #pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
-#       # cursor = QCursor(pm, -1, -1)
-#       # QApplication.setOverrideCursor(cursor)
-#        graphicsView.toggleDragMode()
-#        graphicsView.setZoomEnabled(False)
-#        graphicsView.graphicsItem.drawEnabled = False
-#        graphicsView.graphicsItem.eraseEnabled = False
-#        btn.setStyleSheet("background-color: red")
-#    else:
-#        graphicsView.toggleDragMode()
-#        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-#        graphicsView.setZoomEnabled(False)
-#        btn.setStyleSheet(
-#         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-#         )
-
 def drawROI(btn, checked, graphicsView, buttonList):
     logger.info("DisplayImageDrawROI.drawROI called.")
     if checked:
@@ -575,7 +556,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
 
                 if pixelArray is None:
                     lblImageMissing.show()
-                    imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+                    graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
                     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider) 
