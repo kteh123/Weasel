@@ -354,11 +354,12 @@ venv-linux/
 /Sample Data/joao-3-scanners
 /Sample Data/TRISTAN_DNE001_Scan1
 /temp
-/env/Lib/site-packages
+
 /FERRET data
 /WEASEL Data
 /WEASELData
 /env
+/env/Lib/site-packages
 /Weasel.exe
 /report.pdf
 /CoreModules/SimpleITK/*.pyd
