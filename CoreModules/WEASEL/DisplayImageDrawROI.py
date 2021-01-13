@@ -39,6 +39,11 @@ logger = logging.getLogger(__name__)
 MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
 PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
 ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
+DELETE_ICON = 'CoreModules\\freeHandROI\\cursors\\delete_icon.png'
+NEW_ICON = 'CoreModules\\freeHandROI\\cursors\\new_icon.png'
+RESET_ICON = 'CoreModules\\freeHandROI\\cursors\\reset_icon.png'
+SAVE_ICON = 'CoreModules\\freeHandROI\\cursors\\save_icon.png'
+LOAD_ICON = 'CoreModules\\freeHandROI\\cursors\\load_icon.png'
 
 #Subclassing QSlider so that the direction (Forward, Backward) of 
 #slider travel is returned to the calling function
@@ -171,45 +176,50 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         cmbROIs.setCurrentIndex(0)
         graphicsView.roiCombo = cmbROIs
 
-        btnDeleteROI = QPushButton("Delete")
+        btnDeleteROI = QPushButton() 
         btnDeleteROI.setToolTip('Delete the current ROI')
         btnDeleteROI.clicked.connect(graphicsView.deleteROI)
+        btnDeleteROI.setIcon(QIcon(DELETE_ICON))
         
-        btnNewROI = QPushButton('New') 
-        btnNewROI.setToolTip('Create a new ROI')
+        btnNewROI = QPushButton() 
+        btnNewROI.setToolTip('Add a new ROI')
         btnNewROI.clicked.connect(graphicsView.newROI)
+        btnNewROI.setIcon(QIcon(NEW_ICON))
 
-        btnResetROI = QPushButton('Reset')
+        btnResetROI = QPushButton()
         btnResetROI.setToolTip('Clears the ROI from the image')
         btnResetROI.clicked.connect(graphicsView.resetROI)
+        btnResetROI.setIcon(QIcon(RESET_ICON))
 
-        btnSaveROI = QPushButton('Save')
+        btnSaveROI = QPushButton()
         btnSaveROI.setToolTip('Saves the ROI in DICOM format')
         btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), graphicsView))
+        btnSaveROI.setIcon(QIcon(SAVE_ICON))
 
-        btnLoad = QPushButton('Load')
-        btnSaveROI.setToolTip('Loads existing ROIs')
-        btnSaveROI.clicked.connect(lambda: loadROIs(graphicsView))
+        btnLoad = QPushButton()
+        btnLoad.setToolTip('Loads existing ROIs')
+        btnLoad.clicked.connect(lambda: loadROI(graphicsView))
+        btnLoad.setIcon(QIcon(LOAD_ICON))
 
         btnErase = QPushButton()
         graphicsView.eraseButton = btnErase
         buttonList.append(btnErase)
         btnErase.setToolTip("Erase the ROI")
         btnErase.setCheckable(True)
-        btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
+        btnErase.setIcon(QIcon(ERASOR_CURSOR))
 
         btnDraw = QPushButton()
         graphicsView.drawButton = btnDraw
         buttonList.append(btnDraw)
         btnDraw.setToolTip("Draw an ROI")
         btnDraw.setCheckable(True)
-        btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+        btnDraw.setIcon(QIcon(PEN_CURSOR))
 
         btnZoom = QPushButton()
         buttonList.append(btnZoom)
         btnZoom.setToolTip("Zoom in/Zoom out of the image")
         btnZoom.setCheckable(True)
-        btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
+        btnZoom.setIcon(QIcon(MAGNIFYING_GLASS_CURSOR))
 
 
         btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
@@ -627,7 +637,7 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
         graphicsView.graphicsItem.reloadMask(mask)
  
         
-def loadROI(self, regionName, graphicView):
+def loadROI(graphicView):
     try:
         logger.info("DisplayImageDrawROI.loadROI called")
         #some guidance notes. But bear in mind that these ideas may not survive

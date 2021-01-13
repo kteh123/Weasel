@@ -1570,9 +1570,14 @@
     <Content Include=".gitignore" />
     <Content Include="Activity_Log.log" />
     <Content Include="config.xml" />
+    <Content Include="CoreModules\freeHandROI\cursors\delete_icon.png" />
     <Content Include="CoreModules\freeHandROI\cursors\erasor.png" />
     <Content Include="CoreModules\freeHandROI\cursors\magnifying_glass.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\new_icon.png" />
     <Content Include="CoreModules\freeHandROI\cursors\pencil.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\load_icon.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\reset_icon.png" />
+    <Content Include="CoreModules\freeHandROI\cursors\save_icon.png" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\console\template.ui" />

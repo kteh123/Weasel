@@ -14,6 +14,9 @@ __author__ = 'Steve Shillitoe'
 
 PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
 ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
+DELETE_ICON = 'CoreModules\\freeHandROI\\cursors\\delete_icon.png'
+NEW_ICON = 'CoreModules\\freeHandROI\\cursors\\new_icon.png'
+RESET_ICON = 'CoreModules\\freeHandROI\\cursors\\reset_icon.png'
 ZOOM_IN = 1
 ZOOM_OUT = -1
 
@@ -174,15 +177,15 @@ class GraphicsView(QGraphicsView):
             eraseROI.setToolTip("Erase the ROI")
             eraseROI.triggered.connect(self.eraseROI)
 
-            newROI  = QAction('New ROI', None)
+            newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
             newROI.setToolTip("Create a new ROI")
             newROI.triggered.connect(self.newROI)
 
-            resetROI  = QAction('Reset ROI', None)
+            resetROI  = QAction(QIcon(RESET_ICON),'Reset ROI', None)
             resetROI.setToolTip("Clear drawn ROI from the image")
             resetROI.triggered.connect(self.resetROI)
 
-            deleteROI  = QAction('Delete ROI', None)
+            deleteROI  = QAction(QIcon(DELETE_ICON), 'Delete ROI', None)
             deleteROI.setToolTip("Delete drawn ROI from the image")
             deleteROI.triggered.connect(self.deleteROI)
             
