@@ -663,9 +663,18 @@ def loadROI(self, cmbROIs, graphicsView):
             # Assuming an ROI series is selected
             seriesID = listParams[0]
             imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            maskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+            #maskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+            maskList = []
+            originalMaskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
             regionList = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0]
             # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
+
+            # Affine re-adjustment
+            # It takes longer to load with this, so we could do an if/else involving Affine
+            for index, dicomFile in enumerate(imagePathList):
+                dataset = readDICOM_Image.getDicomDataset(dicomFile)
+                dataset_original = readDICOM_Image.getDicomDataset(self.imageList[index])
+                maskList.append(readDICOM_Image.mapMaskToImage(originalMaskList[index], dataset, dataset_original))
 
             # First populate the ROI_Storage data structure in a loop
             for imageNumber in range(len(regionList)):
@@ -701,14 +710,21 @@ def saveROI(self, regionName, graphicsView):
         # Saving Progress message
         messageWindow.displayMessageSubWindow(self,
             "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
-            "Processing DICOM images")
-        outputPath = []
-        for image in inputPath:
-            outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
-        saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
-        seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+            "Export ROIs")
+        messageWindow.setMsgWindowProgBarMaxValue(self, len(inputPath))
+        #outputPath = []
+        #for image in inputPath:
+        for index, path in enumerate(inputPath):
+            messageWindow.setMsgWindowProgBarValue(self, index)
+            #outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
+            outputPath = saveDICOM_Image.returnFilePath(path, suffix)
+            saveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, parametric_map="SEG")
+            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, path, outputPath, suffix)
+        #saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
+        #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
+        messageWindow.setMsgWindowProgBarValue(self, len(inputPath))
         messageWindow.closeMessageSubWindow(self)
+        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
         QMessageBox.information(self, "Export ROIs", "Image Saved")
     except Exception as e:
             print('Error in DisplayImageDrawROI.saveROI: ' + str(e))
