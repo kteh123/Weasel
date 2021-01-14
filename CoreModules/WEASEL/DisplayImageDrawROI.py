@@ -643,8 +643,7 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
 def loadROI(self, cmbROIs, graphicsView):
     try:
         logger.info("DisplayImageDrawROI.loadROI called")
-        # Some guidance notes. But bear in mind that these ideas may not survive
-        # Their first meeting with reality!
+        # Some guidance notes. 
         # I am assuming the workflow is as follows
         #   1. The user first loads a series of DICOM images
         #   2. Then the user loads the series of ROIs that are superimposed upon the images
