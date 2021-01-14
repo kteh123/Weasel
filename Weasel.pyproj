@@ -15130,6 +15130,7 @@
     <Content Include="WeaselData\SampleData\output_Copy\output_Copy\output_Copy\IM_2048_Copy_Copy_Copy.dcm" />
     <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0001_ROI_region1%281%29.dcm" />
     <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0001_ROI_region1.dcm" />
+    <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0002" />
     <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0002_ROI_region1%281%29.dcm" />
     <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0002_ROI_region1.dcm" />
     <Content Include="WeaselData\SampleData\output_ROI_region1\IM_0003_ROI_region1%281%29.dcm" />

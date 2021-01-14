@@ -173,6 +173,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         roiMeanLabel = QLabel("ROI Mean Value")
         lblCmbROIs =  QLabel("ROIs")
         cmbROIs = QComboBox()
+        cmbROIs.setDuplicatesEnabled(False)
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0)
         graphicsView.roiCombo = cmbROIs
@@ -559,12 +560,13 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
         try:
             logger.info("DisplayImageDrawROI.imageROISliderMoved called")
             imageNumber = imageSlider.value()
+
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-
+                setButtonsToDefaultStyle(buttonList)
                 if pixelArray is None:
                     lblImageMissing.show()
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
@@ -654,7 +656,8 @@ def loadROI(self, cmbROIs, graphicsView):
         helpMsg = "Select a Series with ROI"
         studyID = self.selectedStudy
         study = self.objXMLReader.getStudy(studyID)
-        listSeries = [series.attrib['id'] for series in study]
+        #Build a list of saved ROI series
+        listSeries = [series.attrib['id']  for series in study if 'ROI' in series.attrib['id']]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()
         if inputDlg.closeInputDialog() == False: 
@@ -671,6 +674,8 @@ def loadROI(self, cmbROIs, graphicsView):
 
             # Second populate the dropdown list of region names
             cmbROIs.blockSignals(True)
+            #remove previous contents of ROI dropdown list
+            cmbROIs.clear()  
             cmbROIs.addItems(graphicsView.dictROIs.getListOfRegions())
             cmbROIs.blockSignals(False)
 
