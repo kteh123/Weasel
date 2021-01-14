@@ -1,4 +1,4 @@
-<h2 align="center"><img src="images/uni-sheffield-logo.png" height="128"></h2>
+<h2 align="center"><img src="docs/images/uni-sheffield-logo.png" height="128"></h2>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Software](https://img.shields.io/badge/Software-DICOM%20Viewer-green)

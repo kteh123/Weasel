@@ -121,20 +121,6 @@
           <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
           <module>calculateMIP_Developer</module>
         </item>
-        <item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
-        </item>
-        <item>
-          <label>FERRET</label>
-          <!--Specifies location of an icon to display before the label-->
-          <icon>images\\FERRET_LOGO.png</icon>
-          <enabled>True</enabled>
-          <shortcut>Ctrl+F</shortcut>
-          <tooltip>Launches the FERRET application</tooltip>
-          <module>MenuToolBarCommon</module>
-          <function>displayFERRET</function>
-        </item>
   </menu>
   <menu name="Joao-Development">
     	<item>
@@ -231,7 +217,7 @@
     	<item>
           <label>Download</label>
           <tooltip>Download images from XNAT</tooltip>
-		  <icon>images\\XNAT-LOGO.png</icon>
+		  <icon>docs\\images\\XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>download</function>
         </item>
@@ -242,7 +228,7 @@
 		<item>
           <label>Upload</label>
           <tooltip>Upload images from XNAT</tooltip>
-		  <icon>images\\XNAT-LOGO.png</icon>
+		  <icon>docs\\images\\XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>upload</function>
         </item>
