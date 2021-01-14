@@ -669,7 +669,7 @@ def loadROI(self, cmbROIs, graphicsView):
 
             # First populate the ROI_Storage data structure in a loop
             for imageNumber in range(len(regionList)):
-                graphicsView.dictROIs.addRegion(regionList[imageNumber], np.array(maskList[imageNumber], dtype=bool), imageNumber)
+                graphicsView.dictROIs.addRegion(regionList[imageNumber], np.array(maskList[imageNumber], dtype=bool), imageNumber + 1)
 
             # Second populate the dropdown list of region names
             cmbROIs.blockSignals(True)
