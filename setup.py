@@ -1,6 +1,9 @@
 import os
 from sys import platform
 from setuptools import setup, find_packages, Command
+import logging
+logger = logging.getLogger(__name__)
+logger.info("setup.py called")
 
 # Use README.md as the long description
 with open('README.md', encoding='utf-8') as f:
