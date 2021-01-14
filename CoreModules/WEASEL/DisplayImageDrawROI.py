@@ -30,6 +30,7 @@ import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
+import CoreModules.WEASEL.InputDialog as inputDialog
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
@@ -198,7 +199,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
 
         btnLoad = QPushButton()
         btnLoad.setToolTip('Loads existing ROIs')
-        btnLoad.clicked.connect(lambda: loadROI(graphicsView))
+        btnLoad.clicked.connect(lambda: loadROI(self, cmbROIs, graphicsView))
         btnLoad.setIcon(QIcon(LOAD_ICON))
 
         btnErase = QPushButton()
@@ -637,40 +638,56 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
         graphicsView.graphicsItem.reloadMask(mask)
  
         
-def loadROI(graphicView):
+def loadROI(self, cmbROIs, graphicsView):
     try:
         logger.info("DisplayImageDrawROI.loadROI called")
-        #some guidance notes. But bear in mind that these ideas may not survive
-        #their first meeting with reality!
-        #I am assuming the workflow is as follows
+        # Some guidance notes. But bear in mind that these ideas may not survive
+        # Their first meeting with reality!
+        # I am assuming the workflow is as follows
         #   1. The user first loads a series of DICOM images
         #   2. Then the user loads the series of ROIs that are superimposed upon the images
 
-        #First populate the ROI_Storage data structure in a loop
-        #get regionName, mask for that region & image number
-        #graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
-        #repeat
+        # Prompt Windows to select Series
+        # paramDict = {"Series":"listview"}
+        # listview window doesn't adjust automatically
+        paramDict = {"Series":"dropdownlist"}
+        helpMsg = "Select a Series with ROI"
+        studyID = self.selectedStudy
+        study = self.objXMLReader.getStudy(studyID)
+        listSeries = [series.attrib['id'] for series in study]
+        inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
+        listParams = inputDlg.returnListParameterValues()
+        if inputDlg.closeInputDialog() == False: 
+            # Assuming an ROI series is selected
+            seriesID = listParams[0]
+            imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
+            maskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+            regionList = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0]
+            # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
 
-        #Second populate the dropdown list of region names
-        #cmbROIs.blockSignals(True)
-        #cmbROIs.addItems(graphicsView.dictROIs.getListOfRegions())
-        #cmbROIs.blockSignals(False)
+            # First populate the ROI_Storage data structure in a loop
+            for imageNumber in range(len(regionList)):
+                graphicsView.dictROIs.addRegion(regionList[imageNumber], np.array(maskList[imageNumber], dtype=bool), imageNumber)
 
-        #redisplay the current image to show the mask
-        #mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
-        #graphicsView.graphicsItem.reloadMask(mask)
+            # Second populate the dropdown list of region names
+            cmbROIs.blockSignals(True)
+            cmbROIs.addItems(graphicsView.dictROIs.getListOfRegions())
+            cmbROIs.blockSignals(False)
 
+            # Redisplay the current image to show the mask
+            mask = graphicsView.dictROIs.getMask(regionList[imageNumber], 1)
+            graphicsView.graphicsItem.reloadMask(mask)
         
     except Exception as e:
             print('Error in DisplayImageDrawROI.loadROI: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.loadROI: ' + str(e)) 
 
 
-def saveROI(self, regionName, graphicView):
+def saveROI(self, regionName, graphicsView):
     try:
         # Save Current ROI
         logger.info("DisplayImageDrawROI.saveROI called")
-        maskList = graphicView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
+        maskList = graphicsView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
         maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
         suffix = str("_ROI_"+ regionName)
         if len(maskList) > 1:
