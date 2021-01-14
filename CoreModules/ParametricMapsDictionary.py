@@ -85,7 +85,7 @@ class ParametricClass(object):
         dicom.add_new('0x00281050', 'DS', 0.5) # WindowCenter
         dicom.add_new('0x00281051', 'DS', 1.1) # WindowWidth
         dicom.LossyImageCompression = '00'
-        pixelArray = imageArray.astype(np.uint8) # Should we multiply by 255?
+        pixelArray = np.transpose(imageArray.astype(np.uint8)) # Should we multiply by 255?
         dicom.PixelData = pixelArray.tobytes()
 
         dicom.Modality = 'SEG'
