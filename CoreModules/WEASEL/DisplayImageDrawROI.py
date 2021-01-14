@@ -571,6 +571,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     lblImageMissing.show()
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
+                    graphicsView.graphicsItem.turnOfDrawEraseAndZoom()
                     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, imageSlider) 
  

@@ -29,6 +29,7 @@ class GraphicsItem(QGraphicsObject):
 
     def __init__(self, pixelArray, roi): 
         super(GraphicsItem, self).__init__()
+        logger.info("GraphicsItem initialised")
         self.pixelArray = pixelArray 
         minValue, maxValue = self.__quickMinMax(self.pixelArray)
         self.contrast = maxValue - minValue
@@ -61,8 +62,15 @@ class GraphicsItem(QGraphicsObject):
         self.zoomEnabled = False
 
 
+    def turnOfDrawEraseAndZoom(self):
+        self.drawEnabled = False
+        self.eraseEnabled = False
+        self.zoomEnabled = False
+
+
     def updateImageLevels(self, intensity, contrast, roi):
         try:
+            logger.info("GraphicsItem.updateImageLevels called")
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
             imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
@@ -79,11 +87,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def paint(self, painter, option, widget):
+        logger.info("GraphicsItem.paint called")
         painter.setOpacity(1)
         painter.drawPixmap(0,0, self.width, self.height, self.pixMap)
         
 
-    def boundingRect(self):  
+    def boundingRect(self): 
+        logger.info("GraphicsItem.boundingRect called")
         return QRectF(0,0,self.width, self.height)
 
 
@@ -222,6 +232,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def resetPixel(self, x, y):
+        logger.info("GraphicsItem.resetPixel called")
         pixelColour = self.origQimage.pixel(x, y) 
         pixelRGB =  QColor(pixelColour).getRgb()
         redVal = pixelRGB[0]
@@ -235,6 +246,7 @@ class GraphicsItem(QGraphicsObject):
    
     
     def setPixelToRed(self, x, y):
+        logger.info("GraphicsItem.setPixelToRed called")
         pixelColour = self.qimage.pixel(x, y) 
         pixelRGB =  QColor(pixelColour).getRgb()
         redVal = pixelRGB[0]
@@ -253,6 +265,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
+        logger.info("GraphicsItem.drawStraightLine called")
         objPainter = QPainter(self.pixMap)
         objPen = objPainter.pen()
         objPen.setWidth(1) #1 pixel
@@ -269,14 +282,17 @@ class GraphicsItem(QGraphicsObject):
 
 
     def reloadImage(self):
+        logger.info("GraphicsItem.reloadImage called")
         self.qimage = None
         self.pixMap = None
+        self.turnOfDrawEraseZoom()
         self.qimage = self.origQimage
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.update()
 
 
     def reloadMask(self, mask):
+        logger.info("GraphicsItem.reloadMask called")
         #redisplays the ROI represented by mask
         self.listROICoords = self.getListRoiInnerPoints(mask)
         self.fillFreeHandRoi()
@@ -284,6 +300,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def fillFreeHandRoi(self):
+        logger.info("GraphicsItem.fillFreeHandRoi called")
         if self.listROICoords is not None:
             for coords in self.listROICoords:
                 #x = coords[0]
@@ -294,6 +311,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def addROItoImage(self, roi):
+        logger.info("GraphicsItem.addROItoImage called")
         listROICoords = self.getListRoiInnerPoints(roi)
         if listROICoords is not None:
             for coords in listROICoords:
@@ -316,6 +334,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def setROIPathColour(self, colour, listPathCoords):
+        logger.info("GraphicsItem.setROIPathColour called")
         if listPathCoords is not None:
             for coords in listPathCoords:
                 x = coords[0]
@@ -349,16 +368,19 @@ class GraphicsItem(QGraphicsObject):
 
 
     def getRoiMeanAndStd(self):
+        logger.info("GraphicsItem.getRoiMeanAndStd called")
         mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
         std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
         return mean, std
 
 
     def getMaskData(self):
+        logger.info("GraphicsItem.getMaskData called")
         return self.mask
 
 
     def getListRoiInnerPoints(self, roi):
+        logger.info("GraphicsItem.getListRoiInnerPoints called")
         if roi is not None:
             result = np.where(roi == True)
             return list(zip(result[0], result[1]))
@@ -367,11 +389,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def createBlankMask(self):
+        logger.info("GraphicsItem.createBlankMask called")
         ny, nx = np.shape(self.pixelArray)
         self.mask = np.full((nx, ny), False, dtype=bool)
 
 
     def createMask(self, roiLineCoords):
+            logger.info("GraphicsItem.createMask called")
             self.mask = None
             ny, nx = np.shape(self.pixelArray)
             #print("roiLineCoords ={}".format(roiLineCoords))
@@ -394,11 +418,3 @@ class GraphicsItem(QGraphicsObject):
           self.sigZoomIn.emit()
         elif (button == Qt.RightButton): 
           self.sigZoomOut.emit()
-       
-        
-
-#pm = QtGui.QPixmap(FERRET_LOGO)
-#bm = pm.createMaskFromColor(whatEverColor, Qt.MaskOutColor)
-#pm.setAlphaChannel(bm)
-#cursor = QtGui.QCursor(pm)
-#self.setCursor(cursor)
