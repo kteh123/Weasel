@@ -11,7 +11,7 @@ class ROIs():
         self.regionNumber = 1
         self.prevRegionName = "region1"
         self.NumOfImages = NumImages
-        #self.imageMaskList = [[] for _ in range(NumImages)]
+        logger.info("RIO_Storage object created")
 
 
     def addRegion(self, regionName, mask, imageNumber = 1):
@@ -53,23 +53,32 @@ class ROIs():
 
 
     def createListOfBlankMasks(self, mask):
-        logger.info("RIO_Storage.createListOfBlankMasks called")
-        ny, nx = np.shape(mask)
-        blankMask = np.full((nx, ny), False, dtype=bool)
-        return [blankMask for _ in range(self.NumOfImages)]
+        try:
+            logger.info("RIO_Storage.createListOfBlankMasks called")
+            ny, nx = np.shape(mask)
+            blankMask = np.full((nx, ny), False, dtype=bool)
+            return [blankMask for _ in range(self.NumOfImages)]
+        except Exception as e:
+            print('Error in ROI_Storage.createListOfBlankMasks: ' + str(e))
 
 
     def getNextRegionName(self):
-        logger.info("RIO_Storage.getNextRegionName called")
-        self.regionNumber += 1
-        nextRegionName = "region" + str(self.regionNumber)
-        self.prevRegionName = nextRegionName
-        return nextRegionName
+        try:
+            logger.info("RIO_Storage.getNextRegionName called")
+            self.regionNumber += 1
+            nextRegionName = "region" + str(self.regionNumber)
+            self.prevRegionName = nextRegionName
+            return nextRegionName
+        except Exception as e:
+                print('Error in ROI_Storage.getNextRegionName: ' + str(e))
 
 
     def getListOfRegions(self):
-        logger.info("RIO_Storage.getListOfRegions called")
-        return list(self.dictMasks)
+        try:
+            logger.info("RIO_Storage.getListOfRegions called")
+            return list(self.dictMasks)
+        except Exception as e:
+                print('Error in ROI_Storage.getListOfRegions: ' + str(e))
 
 
     def setPreviousRegionName(self, regionName):
@@ -93,12 +102,14 @@ class ROIs():
 
 
     def hasRegionGotMask(self, regionName):
-        logger.info("RIO_Storage.hasRegionGotMask called")
-        if regionName in self.dictMasks: 
-            return True
-        else:
-            return False
-
+        try:
+            logger.info("RIO_Storage.hasRegionGotMask called")
+            if regionName in self.dictMasks: 
+                return True
+            else:
+                return False
+        except Exception as e:
+                print('Error in ROI_Storage.hasRegionGotMask: ' + str(e))
 
     def deleteMask(self, regionName=None):
         try:
