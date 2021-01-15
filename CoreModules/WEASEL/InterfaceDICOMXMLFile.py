@@ -70,10 +70,10 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
         self.objXMLReader.insertNewSeriesInXML(origImageList, 
                     newImageList, studyID, newSeriesID, seriesID, suffix)
         self.statusBar.showMessage('New series created: - ' + newSeriesID)
-        return  newSeriesID
+        return newSeriesID
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
-        logger.error('Error in InterfaceDICOMXMLFile.insertNewImageInXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
 
 
 def removeImageFromXMLFile(self, imageFileName):

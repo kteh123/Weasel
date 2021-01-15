@@ -313,7 +313,7 @@ def mapMaskToImage(mask, dataset, datasetOriginal):
                     outputMask[newCoord] = 1
                 except:
                     continue
-        return np.transpose(outputMask) # This transpose is controversial, will need more examples to make sure I can do this
+        return outputMask # This transpose is controversial, will need more examples to make sure I can do this
     except Exception as e:
         print('Error in function readDICOM_Image.mapMaskToImage: ' + str(e))
 
