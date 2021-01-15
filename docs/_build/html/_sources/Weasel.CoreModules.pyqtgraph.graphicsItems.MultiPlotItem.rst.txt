@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.MultiPlotItem module
-===============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.MultiPlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

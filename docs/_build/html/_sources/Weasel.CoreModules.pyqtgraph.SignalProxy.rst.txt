@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.SignalProxy module
-===============================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.SignalProxy
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.WEASEL.saveDICOM\_Image module
-=================================================
-
-.. automodule:: Weasel.CoreModules.WEASEL.saveDICOM_Image
-   :members:
-   :undoc-members:
-   :show-inheritance:

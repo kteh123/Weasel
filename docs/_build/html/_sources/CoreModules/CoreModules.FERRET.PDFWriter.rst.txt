@@ -1,7 +1,0 @@
-CoreModules.FERRET.PDFWriter module
-===================================
-
-.. automodule:: CoreModules.FERRET.PDFWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:

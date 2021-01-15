@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.GradientEditorItem module
-=============================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.GradientEditorItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

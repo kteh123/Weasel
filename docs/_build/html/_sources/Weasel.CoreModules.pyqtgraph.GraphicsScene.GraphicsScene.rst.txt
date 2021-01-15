@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.GraphicsScene.GraphicsScene module
-===============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.GraphicsScene.GraphicsScene
-   :members:
-   :undoc-members:
-   :show-inheritance:

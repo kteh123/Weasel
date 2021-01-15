@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.imageview.tests.test\_imageview module
-===================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.imageview.tests.test_imageview
-   :members:
-   :undoc-members:
-   :show-inheritance:

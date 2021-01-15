@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.LayoutWidget module
-========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.LayoutWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

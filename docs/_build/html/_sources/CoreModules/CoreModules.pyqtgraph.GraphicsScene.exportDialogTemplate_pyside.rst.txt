@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate\_pyside module
-=======================================================================
-
-.. automodule:: CoreModules.pyqtgraph.GraphicsScene.exportDialogTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

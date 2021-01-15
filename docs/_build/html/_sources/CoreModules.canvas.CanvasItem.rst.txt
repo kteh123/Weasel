@@ -1,7 +1,0 @@
-CoreModules.canvas.CanvasItem module
-====================================
-
-.. automodule:: CoreModules.canvas.CanvasItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

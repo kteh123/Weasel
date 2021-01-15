@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.exporters.HDF5Exporter module
-===================================================
-
-.. automodule:: CoreModules.pyqtgraph.exporters.HDF5Exporter
-   :members:
-   :undoc-members:
-   :show-inheritance:

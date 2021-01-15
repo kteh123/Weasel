@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.items.GLAxisItem module
-===========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLAxisItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

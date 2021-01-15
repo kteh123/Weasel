@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.ScientificLibrary.ukrinAlgorithms module
-================================================================
-
-.. automodule:: Weasel.Developer.WEASEL.ScientificLibrary.ukrinAlgorithms
-   :members:
-   :undoc-members:
-   :show-inheritance:

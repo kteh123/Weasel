@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.Tools.T2StarMapDICOM\_Image module
-==========================================================
-
-.. automodule:: Weasel.Developer.WEASEL.Tools.T2StarMapDICOM_Image
-   :members:
-   :undoc-members:
-   :show-inheritance:

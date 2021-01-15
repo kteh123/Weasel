@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.MultiPlotItem module
-========================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.MultiPlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.console.template\_pyside module
-============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.console.template_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

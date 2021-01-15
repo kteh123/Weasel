@@ -1,7 +1,0 @@
-CoreModules.FERRET.ferretXMLReader module
-=========================================
-
-.. automodule:: CoreModules.FERRET.ferretXMLReader
-   :members:
-   :undoc-members:
-   :show-inheritance:

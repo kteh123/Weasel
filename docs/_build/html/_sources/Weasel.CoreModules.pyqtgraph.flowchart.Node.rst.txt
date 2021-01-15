@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.flowchart.Node module
-==================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.Node
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.items.GLBarGraphItem module
-===============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLBarGraphItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

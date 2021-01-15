@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.frozenSupport module
-==========================================
-
-.. automodule:: CoreModules.pyqtgraph.frozenSupport
-   :members:
-   :undoc-members:
-   :show-inheritance:

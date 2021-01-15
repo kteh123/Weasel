@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.glInfo module
-=================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.glInfo
-   :members:
-   :undoc-members:
-   :show-inheritance:

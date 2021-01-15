@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.items.GLSurfacePlotItem module
-==================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLSurfacePlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

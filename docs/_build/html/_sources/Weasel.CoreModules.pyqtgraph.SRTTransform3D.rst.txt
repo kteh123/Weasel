@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.SRTTransform3D module
-==================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.SRTTransform3D
-   :members:
-   :undoc-members:
-   :show-inheritance:

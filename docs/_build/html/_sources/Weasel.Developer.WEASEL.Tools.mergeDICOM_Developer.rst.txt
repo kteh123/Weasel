@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.Tools.mergeDICOM\_Developer module
-==========================================================
-
-.. automodule:: Weasel.Developer.WEASEL.Tools.mergeDICOM_Developer
-   :members:
-   :undoc-members:
-   :show-inheritance:

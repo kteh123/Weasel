@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.pgcollections module
-==========================================
-
-.. automodule:: CoreModules.pyqtgraph.pgcollections
-   :members:
-   :undoc-members:
-   :show-inheritance:

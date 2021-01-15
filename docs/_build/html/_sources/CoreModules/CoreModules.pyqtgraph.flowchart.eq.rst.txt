@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.eq module
-=========================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.eq
-   :members:
-   :undoc-members:
-   :show-inheritance:

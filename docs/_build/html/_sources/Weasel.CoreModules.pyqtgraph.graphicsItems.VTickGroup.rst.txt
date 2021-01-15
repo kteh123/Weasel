@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.VTickGroup module
-============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.VTickGroup
-   :members:
-   :undoc-members:
-   :show-inheritance:

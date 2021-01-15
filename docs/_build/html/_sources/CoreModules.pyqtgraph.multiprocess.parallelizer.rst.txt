@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.multiprocess.parallelizer module
-======================================================
-
-.. automodule:: CoreModules.pyqtgraph.multiprocess.parallelizer
-   :members:
-   :undoc-members:
-   :show-inheritance:

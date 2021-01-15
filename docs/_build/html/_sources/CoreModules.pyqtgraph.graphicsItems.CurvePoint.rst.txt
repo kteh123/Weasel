@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.CurvePoint module
-=====================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.CurvePoint
-   :members:
-   :undoc-members:
-   :show-inheritance:

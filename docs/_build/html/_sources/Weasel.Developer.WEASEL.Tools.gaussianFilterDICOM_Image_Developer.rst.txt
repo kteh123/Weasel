@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.Tools.gaussianFilterDICOM\_Image\_Developer module
-==========================================================================
-
-.. automodule:: Weasel.Developer.WEASEL.Tools.gaussianFilterDICOM_Image_Developer
-   :members:
-   :undoc-members:
-   :show-inheritance:

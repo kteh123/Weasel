@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.TableWidget module
-=======================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.TableWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.Qt module
-======================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.Qt
-   :members:
-   :undoc-members:
-   :show-inheritance:

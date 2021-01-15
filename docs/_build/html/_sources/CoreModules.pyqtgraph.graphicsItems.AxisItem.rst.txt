@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.AxisItem module
-===================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.AxisItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

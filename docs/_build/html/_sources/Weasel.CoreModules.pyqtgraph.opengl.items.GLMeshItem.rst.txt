@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.items.GLMeshItem module
-===========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLMeshItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.metaarray.MetaArray module
-=======================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.metaarray.MetaArray
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.canvas.CanvasTemplate\_pyqt module
-===============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.canvas.CanvasTemplate_pyqt
-   :members:
-   :undoc-members:
-   :show-inheritance:

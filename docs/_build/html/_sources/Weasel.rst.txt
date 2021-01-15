@@ -1,7 +1,0 @@
-Weasel
-======
-
-.. automodule:: Weasel
-   :members:
-   :undoc-members:
-   :show-inheritance:

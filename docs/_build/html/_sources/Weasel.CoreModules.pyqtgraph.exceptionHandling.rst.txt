@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.exceptionHandling module
-=====================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.exceptionHandling
-   :members:
-   :undoc-members:
-   :show-inheritance:

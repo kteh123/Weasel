@@ -1,7 +1,0 @@
-Developer.WEASEL.Tools.thresholdDICOM\_Image\_Developer module
-==============================================================
-
-.. automodule:: Developer.WEASEL.Tools.thresholdDICOM_Image_Developer
-   :members:
-   :undoc-members:
-   :show-inheritance:

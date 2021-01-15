@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.util.lru\_cache module
-============================================
-
-.. automodule:: CoreModules.pyqtgraph.util.lru_cache
-   :members:
-   :undoc-members:
-   :show-inheritance:

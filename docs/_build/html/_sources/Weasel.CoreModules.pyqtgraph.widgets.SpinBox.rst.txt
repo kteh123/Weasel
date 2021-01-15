@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.SpinBox module
-===================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.SpinBox
-   :members:
-   :undoc-members:
-   :show-inheritance:

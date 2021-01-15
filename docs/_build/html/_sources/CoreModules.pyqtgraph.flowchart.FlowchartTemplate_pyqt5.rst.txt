@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyqt5 module
-===============================================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt5
-   :members:
-   :undoc-members:
-   :show-inheritance:

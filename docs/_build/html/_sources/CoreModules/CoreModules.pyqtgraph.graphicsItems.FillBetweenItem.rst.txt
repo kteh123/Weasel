@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.FillBetweenItem module
-==========================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.FillBetweenItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

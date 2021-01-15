@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.Point module
-==================================
-
-.. automodule:: CoreModules.pyqtgraph.Point
-   :members:
-   :undoc-members:
-   :show-inheritance:

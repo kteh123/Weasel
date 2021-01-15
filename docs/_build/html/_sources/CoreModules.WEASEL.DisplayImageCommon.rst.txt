@@ -1,7 +1,0 @@
-CoreModules.WEASEL.DisplayImageCommon module
-============================================
-
-.. automodule:: CoreModules.WEASEL.DisplayImageCommon
-   :members:
-   :undoc-members:
-   :show-inheritance:

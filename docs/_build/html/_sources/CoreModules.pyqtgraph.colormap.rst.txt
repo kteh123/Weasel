@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.colormap module
-=====================================
-
-.. automodule:: CoreModules.pyqtgraph.colormap
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.numpy\_fix module
-=======================================
-
-.. automodule:: CoreModules.pyqtgraph.numpy_fix
-   :members:
-   :undoc-members:
-   :show-inheritance:

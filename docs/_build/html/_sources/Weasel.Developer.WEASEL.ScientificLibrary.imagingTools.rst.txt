@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.ScientificLibrary.imagingTools module
-=============================================================
-
-.. automodule:: Weasel.Developer.WEASEL.ScientificLibrary.imagingTools
-   :members:
-   :undoc-members:
-   :show-inheritance:

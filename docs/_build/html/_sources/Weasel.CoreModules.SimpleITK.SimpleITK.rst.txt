@@ -1,7 +1,0 @@
-Weasel.CoreModules.SimpleITK.SimpleITK module
-=============================================
-
-.. automodule:: Weasel.CoreModules.SimpleITK.SimpleITK
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.WEASEL.weaselXMLReader module
-================================================
-
-.. automodule:: Weasel.CoreModules.WEASEL.weaselXMLReader
-   :members:
-   :undoc-members:
-   :show-inheritance:

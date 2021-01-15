@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.opengl.MeshData module
-============================================
-
-.. automodule:: CoreModules.pyqtgraph.opengl.MeshData
-   :members:
-   :undoc-members:
-   :show-inheritance:

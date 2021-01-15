@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.library.Operators module
-========================================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.library.Operators
-   :members:
-   :undoc-members:
-   :show-inheritance:

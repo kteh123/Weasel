@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.ComboBox module
-=============================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.ComboBox
-   :members:
-   :undoc-members:
-   :show-inheritance:

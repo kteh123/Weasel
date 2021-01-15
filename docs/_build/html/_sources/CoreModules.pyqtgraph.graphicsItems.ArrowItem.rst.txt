@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ArrowItem module
-====================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ArrowItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

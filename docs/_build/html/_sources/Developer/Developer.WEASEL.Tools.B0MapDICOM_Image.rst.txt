@@ -1,7 +1,0 @@
-Developer.WEASEL.Tools.B0MapDICOM\_Image module
-===============================================
-
-.. automodule:: Developer.WEASEL.Tools.B0MapDICOM_Image
-   :members:
-   :undoc-members:
-   :show-inheritance:

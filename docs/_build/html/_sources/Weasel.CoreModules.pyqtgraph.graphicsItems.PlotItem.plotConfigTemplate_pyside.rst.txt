@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate\_pyside module
-=====================================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

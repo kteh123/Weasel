@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.GraphicsView module
-=================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.GraphicsView
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.InfiniteLine module
-=======================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.InfiniteLine
-   :members:
-   :undoc-members:
-   :show-inheritance:

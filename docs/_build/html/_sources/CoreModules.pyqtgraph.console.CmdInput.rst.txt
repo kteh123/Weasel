@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.console.CmdInput module
-=============================================
-
-.. automodule:: CoreModules.pyqtgraph.console.CmdInput
-   :members:
-   :undoc-members:
-   :show-inheritance:

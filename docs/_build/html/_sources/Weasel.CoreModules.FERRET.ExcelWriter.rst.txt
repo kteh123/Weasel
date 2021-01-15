@@ -1,7 +1,0 @@
-Weasel.CoreModules.FERRET.ExcelWriter module
-============================================
-
-.. automodule:: Weasel.CoreModules.FERRET.ExcelWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:

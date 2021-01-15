@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.MatplotlibWidget module
-=====================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.MatplotlibWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

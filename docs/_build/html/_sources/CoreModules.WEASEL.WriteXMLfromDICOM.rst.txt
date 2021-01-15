@@ -1,7 +1,0 @@
-CoreModules.WEASEL.WriteXMLfromDICOM module
-===========================================
-
-.. automodule:: CoreModules.WEASEL.WriteXMLfromDICOM
-   :members:
-   :undoc-members:
-   :show-inheritance:

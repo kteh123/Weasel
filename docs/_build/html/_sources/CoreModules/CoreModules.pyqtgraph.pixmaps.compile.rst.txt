@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.pixmaps.compile module
-============================================
-
-.. automodule:: CoreModules.pyqtgraph.pixmaps.compile
-   :members:
-   :undoc-members:
-   :show-inheritance:

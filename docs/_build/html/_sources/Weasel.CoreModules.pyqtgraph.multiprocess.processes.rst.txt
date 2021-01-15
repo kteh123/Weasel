@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.multiprocess.processes module
-==========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.multiprocess.processes
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.MatplotlibWidget module
-============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.MatplotlibWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

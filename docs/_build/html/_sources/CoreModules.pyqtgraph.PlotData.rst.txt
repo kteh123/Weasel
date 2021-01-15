@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.PlotData module
-=====================================
-
-.. automodule:: CoreModules.pyqtgraph.PlotData
-   :members:
-   :undoc-members:
-   :show-inheritance:

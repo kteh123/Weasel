@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.opengl.items.GLAxisItem module
-====================================================
-
-.. automodule:: CoreModules.pyqtgraph.opengl.items.GLAxisItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

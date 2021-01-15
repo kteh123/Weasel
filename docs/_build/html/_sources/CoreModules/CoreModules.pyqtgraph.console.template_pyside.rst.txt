@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.console.template\_pyside module
-=====================================================
-
-.. automodule:: CoreModules.pyqtgraph.console.template_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.units module
-==================================
-
-.. automodule:: CoreModules.pyqtgraph.units
-   :members:
-   :undoc-members:
-   :show-inheritance:

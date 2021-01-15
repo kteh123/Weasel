@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.WidgetGroup module
-========================================
-
-.. automodule:: CoreModules.pyqtgraph.WidgetGroup
-   :members:
-   :undoc-members:
-   :show-inheritance:

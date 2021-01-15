@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.canvas.CanvasTemplate\_pyqt module
-========================================================
-
-.. automodule:: CoreModules.pyqtgraph.canvas.CanvasTemplate_pyqt
-   :members:
-   :undoc-members:
-   :show-inheritance:

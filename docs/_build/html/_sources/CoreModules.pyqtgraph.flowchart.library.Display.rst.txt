@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.library.Display module
-======================================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.library.Display
-   :members:
-   :undoc-members:
-   :show-inheritance:

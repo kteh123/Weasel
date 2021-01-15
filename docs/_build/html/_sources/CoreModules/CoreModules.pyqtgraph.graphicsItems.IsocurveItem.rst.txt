@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.IsocurveItem module
-=======================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.IsocurveItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

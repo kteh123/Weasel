@@ -1,7 +1,0 @@
-CoreModules.styleSheet\_old module
-==================================
-
-.. automodule:: CoreModules.styleSheet_old
-   :members:
-   :undoc-members:
-   :show-inheritance:

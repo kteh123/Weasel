@@ -1,7 +1,0 @@
-CoreModules.FERRET.ExcelWriter module
-=====================================
-
-.. automodule:: CoreModules.FERRET.ExcelWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:

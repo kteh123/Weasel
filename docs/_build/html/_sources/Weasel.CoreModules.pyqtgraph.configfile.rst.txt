@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.configfile module
-==============================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.configfile
-   :members:
-   :undoc-members:
-   :show-inheritance:

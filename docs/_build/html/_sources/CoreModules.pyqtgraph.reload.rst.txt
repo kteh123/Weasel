@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.reload module
-===================================
-
-.. automodule:: CoreModules.pyqtgraph.reload
-   :members:
-   :undoc-members:
-   :show-inheritance:

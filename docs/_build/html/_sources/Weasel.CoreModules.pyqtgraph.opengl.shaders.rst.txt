@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.shaders module
-==================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.shaders
-   :members:
-   :undoc-members:
-   :show-inheritance:

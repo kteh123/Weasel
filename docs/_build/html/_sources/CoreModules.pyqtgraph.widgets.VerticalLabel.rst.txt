@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.VerticalLabel module
-==================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.VerticalLabel
-   :members:
-   :undoc-members:
-   :show-inheritance:

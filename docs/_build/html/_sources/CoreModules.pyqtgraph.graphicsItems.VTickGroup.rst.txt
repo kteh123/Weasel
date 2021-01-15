@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.VTickGroup module
-=====================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.VTickGroup
-   :members:
-   :undoc-members:
-   :show-inheritance:

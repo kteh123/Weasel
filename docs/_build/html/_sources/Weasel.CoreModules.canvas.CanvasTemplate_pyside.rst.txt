@@ -1,7 +1,0 @@
-Weasel.CoreModules.canvas.CanvasTemplate\_pyside module
-=======================================================
-
-.. automodule:: Weasel.CoreModules.canvas.CanvasTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

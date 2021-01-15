@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.FeedbackButton module
-===================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.FeedbackButton
-   :members:
-   :undoc-members:
-   :show-inheritance:

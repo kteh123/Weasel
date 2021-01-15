@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.exporters.Matplotlib module
-=================================================
-
-.. automodule:: CoreModules.pyqtgraph.exporters.Matplotlib
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.CurvePoint module
-============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.CurvePoint
-   :members:
-   :undoc-members:
-   :show-inheritance:

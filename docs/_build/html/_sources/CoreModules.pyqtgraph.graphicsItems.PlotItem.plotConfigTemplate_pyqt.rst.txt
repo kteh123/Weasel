@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate\_pyqt module
-============================================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt
-   :members:
-   :undoc-members:
-   :show-inheritance:

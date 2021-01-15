@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.ButtonItem module
-============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ButtonItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.opengl.items.GLVolumeItem module
-======================================================
-
-.. automodule:: CoreModules.pyqtgraph.opengl.items.GLVolumeItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

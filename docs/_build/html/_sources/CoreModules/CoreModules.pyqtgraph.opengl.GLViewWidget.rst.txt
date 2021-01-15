@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.opengl.GLViewWidget module
-================================================
-
-.. automodule:: CoreModules.pyqtgraph.opengl.GLViewWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

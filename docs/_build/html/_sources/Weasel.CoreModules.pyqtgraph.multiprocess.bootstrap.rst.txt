@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.multiprocess.bootstrap module
-==========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.multiprocess.bootstrap
-   :members:
-   :undoc-members:
-   :show-inheritance:
