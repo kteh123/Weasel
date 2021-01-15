@@ -1,16 +1,19 @@
-.. Weasel documentation master file, created by
-   sphinx-quickstart on Wed Sep 23 11:49:38 2020.
+.. WEASEL documentation master file, created by
+   sphinx-quickstart on Fri Jan 15 21:18:39 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Weasel's documentation!
+Welcome to WEASEL's documentation!
 ==================================
-	
+
 .. toctree::
-   :maxdepth: 10
+   :maxdepth: 4
    :caption: Contents:
 
-   modules
+   CoreModules
+   Developer
+   MenuItems
+
 
 Indices and tables
 ==================

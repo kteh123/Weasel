@@ -28,6 +28,8 @@ Module contents
 
 {%- if submodules %}
 {% if separatemodules %}
+Submodules
+----------
 {{ toctree(submodules) }}
 {% else %}
 {%- for submodule in submodules %}
@@ -45,5 +47,8 @@ Module contents
 {% endif %}
 
 {%- if subpackages %}
+Subpackages
+-----------
+
 {{ toctree(subpackages) }}
 {% endif %}
