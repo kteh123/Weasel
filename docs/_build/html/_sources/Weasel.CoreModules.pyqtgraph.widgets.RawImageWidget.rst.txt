@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.RawImageWidget module
-==========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.RawImageWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

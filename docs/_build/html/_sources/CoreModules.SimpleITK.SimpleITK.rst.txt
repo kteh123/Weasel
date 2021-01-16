@@ -1,7 +1,0 @@
-CoreModules.SimpleITK.SimpleITK module
-======================================
-
-.. automodule:: CoreModules.SimpleITK.SimpleITK
-   :members:
-   :undoc-members:
-   :show-inheritance:

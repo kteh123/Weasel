@@ -1,7 +1,0 @@
-Weasel.CoreModules.ParametricMapsDictionary module
-==================================================
-
-.. automodule:: Weasel.CoreModules.ParametricMapsDictionary
-   :members:
-   :undoc-members:
-   :show-inheritance:

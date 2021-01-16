@@ -1,7 +1,0 @@
-CoreModules.FERRET.MathsTools module
-====================================
-
-.. automodule:: CoreModules.FERRET.MathsTools
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ScaleBar module
-===================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ScaleBar
-   :members:
-   :undoc-members:
-   :show-inheritance:

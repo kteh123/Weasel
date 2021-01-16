@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.util.pil\_fix module
-=================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.util.pil_fix
-   :members:
-   :undoc-members:
-   :show-inheritance:

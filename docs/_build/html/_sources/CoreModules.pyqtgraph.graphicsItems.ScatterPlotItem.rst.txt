@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ScatterPlotItem module
-==========================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ScatterPlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

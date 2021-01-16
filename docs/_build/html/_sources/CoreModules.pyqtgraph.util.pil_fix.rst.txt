@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.util.pil\_fix module
-==========================================
-
-.. automodule:: CoreModules.pyqtgraph.util.pil_fix
-   :members:
-   :undoc-members:
-   :show-inheritance:

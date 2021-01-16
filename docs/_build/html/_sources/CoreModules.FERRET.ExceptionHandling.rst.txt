@@ -1,7 +1,0 @@
-CoreModules.FERRET.ExceptionHandling module
-===========================================
-
-.. automodule:: CoreModules.FERRET.ExceptionHandling
-   :members:
-   :undoc-members:
-   :show-inheritance:

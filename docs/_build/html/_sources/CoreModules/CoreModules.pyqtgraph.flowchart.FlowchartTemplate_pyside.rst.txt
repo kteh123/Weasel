@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyside module
-================================================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

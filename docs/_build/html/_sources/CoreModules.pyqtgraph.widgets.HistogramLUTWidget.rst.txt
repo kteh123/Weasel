@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.HistogramLUTWidget module
-=======================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.HistogramLUTWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.canvas.CanvasManager module
-==============================================
-
-.. automodule:: Weasel.CoreModules.canvas.CanvasManager
-   :members:
-   :undoc-members:
-   :show-inheritance:

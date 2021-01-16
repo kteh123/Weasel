@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.util.mutex module
-=======================================
-
-.. automodule:: CoreModules.pyqtgraph.util.mutex
-   :members:
-   :undoc-members:
-   :show-inheritance:

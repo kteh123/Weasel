@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.ScatterPlotItem module
-=================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.ScatterPlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.GraphicsWidgetAnchor module
-======================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.GraphicsWidgetAnchor
-   :members:
-   :undoc-members:
-   :show-inheritance:

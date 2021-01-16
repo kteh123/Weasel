@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.pixmaps.compile module
-===================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.pixmaps.compile
-   :members:
-   :undoc-members:
-   :show-inheritance:

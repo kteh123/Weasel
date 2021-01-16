@@ -1,7 +1,0 @@
-CoreModules.WEASEL.MessageWindow module
-=======================================
-
-.. automodule:: CoreModules.WEASEL.MessageWindow
-   :members:
-   :undoc-members:
-   :show-inheritance:

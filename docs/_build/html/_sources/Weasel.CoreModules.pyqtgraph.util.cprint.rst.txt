@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.util.cprint module
-===============================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.util.cprint
-   :members:
-   :undoc-members:
-   :show-inheritance:

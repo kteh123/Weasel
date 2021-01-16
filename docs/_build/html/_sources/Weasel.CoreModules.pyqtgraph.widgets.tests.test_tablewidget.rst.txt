@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.tests.test\_tablewidget module
-===================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.tests.test_tablewidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

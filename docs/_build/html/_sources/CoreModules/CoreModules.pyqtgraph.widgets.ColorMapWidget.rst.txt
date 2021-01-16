@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.ColorMapWidget module
-===================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.ColorMapWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

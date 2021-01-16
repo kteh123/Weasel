@@ -1,7 +1,0 @@
-Weasel.Developer.FERRET.Ferret module
-=====================================
-
-.. automodule:: Weasel.Developer.FERRET.Ferret
-   :members:
-   :undoc-members:
-   :show-inheritance:

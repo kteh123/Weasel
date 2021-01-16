@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.FillBetweenItem module
-=================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.FillBetweenItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

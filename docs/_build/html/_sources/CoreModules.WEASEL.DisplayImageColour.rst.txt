@@ -1,7 +1,0 @@
-CoreModules.WEASEL.DisplayImageColour module
-============================================
-
-.. automodule:: CoreModules.WEASEL.DisplayImageColour
-   :members:
-   :undoc-members:
-   :show-inheritance:

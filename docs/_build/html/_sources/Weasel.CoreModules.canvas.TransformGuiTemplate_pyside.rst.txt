@@ -1,7 +1,0 @@
-Weasel.CoreModules.canvas.TransformGuiTemplate\_pyside module
-=============================================================
-
-.. automodule:: Weasel.CoreModules.canvas.TransformGuiTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

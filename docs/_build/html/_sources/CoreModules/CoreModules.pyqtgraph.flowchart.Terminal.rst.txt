@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.flowchart.Terminal module
-===============================================
-
-.. automodule:: CoreModules.pyqtgraph.flowchart.Terminal
-   :members:
-   :undoc-members:
-   :show-inheritance:

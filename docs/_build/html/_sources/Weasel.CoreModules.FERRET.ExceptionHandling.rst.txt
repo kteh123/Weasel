@@ -1,7 +1,0 @@
-Weasel.CoreModules.FERRET.ExceptionHandling module
-==================================================
-
-.. automodule:: Weasel.CoreModules.FERRET.ExceptionHandling
-   :members:
-   :undoc-members:
-   :show-inheritance:

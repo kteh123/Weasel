@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.SRTTransform module
-=========================================
-
-.. automodule:: CoreModules.pyqtgraph.SRTTransform
-   :members:
-   :undoc-members:
-   :show-inheritance:

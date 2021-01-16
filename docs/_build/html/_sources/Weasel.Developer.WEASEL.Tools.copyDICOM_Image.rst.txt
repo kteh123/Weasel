@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.Tools.copyDICOM\_Image module
-=====================================================
-
-.. automodule:: Weasel.Developer.WEASEL.Tools.copyDICOM_Image
-   :members:
-   :undoc-members:
-   :show-inheritance:

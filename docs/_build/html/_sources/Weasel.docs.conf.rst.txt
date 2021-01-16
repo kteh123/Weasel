@@ -1,7 +1,0 @@
-Weasel.docs.conf module
-=======================
-
-.. automodule:: Weasel.docs.conf
-   :members:
-   :undoc-members:
-   :show-inheritance:

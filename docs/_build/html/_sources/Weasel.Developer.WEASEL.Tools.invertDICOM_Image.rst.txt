@@ -1,7 +1,0 @@
-Weasel.Developer.WEASEL.Tools.invertDICOM\_Image module
-=======================================================
-
-.. automodule:: Weasel.Developer.WEASEL.Tools.invertDICOM_Image
-   :members:
-   :undoc-members:
-   :show-inheritance:

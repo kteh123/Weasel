@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.parametertree.parameterTypes module
-=========================================================
-
-.. automodule:: CoreModules.pyqtgraph.parametertree.parameterTypes
-   :members:
-   :undoc-members:
-   :show-inheritance:

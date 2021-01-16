@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.GraphicsLayoutWidget module
-=========================================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.GraphicsLayoutWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

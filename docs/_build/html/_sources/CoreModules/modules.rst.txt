@@ -1,7 +1,0 @@
-CoreModules
-===========
-
-.. toctree::
-   :maxdepth: 4
-
-   CoreModules

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.exporters.SVGExporter module
-=========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.exporters.SVGExporter
-   :members:
-   :undoc-members:
-   :show-inheritance:

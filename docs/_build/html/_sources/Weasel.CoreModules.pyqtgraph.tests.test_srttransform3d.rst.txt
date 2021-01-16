@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.tests.test\_srttransform3d module
-==============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.tests.test_srttransform3d
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.GraphicsScene.GraphicsScene module
-========================================================
-
-.. automodule:: CoreModules.pyqtgraph.GraphicsScene.GraphicsScene
-   :members:
-   :undoc-members:
-   :show-inheritance:

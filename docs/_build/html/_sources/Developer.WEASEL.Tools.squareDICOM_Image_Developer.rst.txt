@@ -1,7 +1,0 @@
-Developer.WEASEL.Tools.squareDICOM\_Image\_Developer module
-===========================================================
-
-.. automodule:: Developer.WEASEL.Tools.squareDICOM_Image_Developer
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Developer.FERRET.Ferret module
-==============================
-
-.. automodule:: Developer.FERRET.Ferret
-   :members:
-   :undoc-members:
-   :show-inheritance:

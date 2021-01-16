@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.python2\_3 module
-=======================================
-
-.. automodule:: CoreModules.pyqtgraph.python2_3
-   :members:
-   :undoc-members:
-   :show-inheritance:

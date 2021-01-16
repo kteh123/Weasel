@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ViewBox.ViewBoxMenu module
-==============================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ViewBox.ViewBoxMenu
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.Vector module
-===================================
-
-.. automodule:: CoreModules.pyqtgraph.Vector
-   :members:
-   :undoc-members:
-   :show-inheritance:

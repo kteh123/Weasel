@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.graphicsItems.LabelItem module
-===========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.graphicsItems.LabelItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

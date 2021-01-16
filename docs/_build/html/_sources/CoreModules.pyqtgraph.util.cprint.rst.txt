@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.util.cprint module
-========================================
-
-.. automodule:: CoreModules.pyqtgraph.util.cprint
-   :members:
-   :undoc-members:
-   :show-inheritance:

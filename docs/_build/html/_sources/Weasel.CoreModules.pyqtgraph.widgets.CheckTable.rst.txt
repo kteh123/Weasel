@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.CheckTable module
-======================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.CheckTable
-   :members:
-   :undoc-members:
-   :show-inheritance:

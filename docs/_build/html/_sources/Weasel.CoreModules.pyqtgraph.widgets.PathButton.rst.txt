@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.PathButton module
-======================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.PathButton
-   :members:
-   :undoc-members:
-   :show-inheritance:

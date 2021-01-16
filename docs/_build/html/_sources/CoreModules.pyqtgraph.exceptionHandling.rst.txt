@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.exceptionHandling module
-==============================================
-
-.. automodule:: CoreModules.pyqtgraph.exceptionHandling
-   :members:
-   :undoc-members:
-   :show-inheritance:

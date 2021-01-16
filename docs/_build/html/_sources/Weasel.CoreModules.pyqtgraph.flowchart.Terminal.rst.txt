@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.flowchart.Terminal module
-======================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.Terminal
-   :members:
-   :undoc-members:
-   :show-inheritance:

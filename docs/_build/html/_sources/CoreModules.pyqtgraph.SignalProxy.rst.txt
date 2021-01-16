@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.SignalProxy module
-========================================
-
-.. automodule:: CoreModules.pyqtgraph.SignalProxy
-   :members:
-   :undoc-members:
-   :show-inheritance:

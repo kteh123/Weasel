@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.items.GLLinePlotItem module
-===============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.items.GLLinePlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.exporters.PrintExporter module
-===========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.exporters.PrintExporter
-   :members:
-   :undoc-members:
-   :show-inheritance:

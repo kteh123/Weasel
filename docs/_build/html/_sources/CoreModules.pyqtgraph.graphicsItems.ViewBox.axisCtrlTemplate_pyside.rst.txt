@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate\_pyside module
-===========================================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyside
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.opengl.items.GLScatterPlotItem module
-===========================================================
-
-.. automodule:: CoreModules.pyqtgraph.opengl.items.GLScatterPlotItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

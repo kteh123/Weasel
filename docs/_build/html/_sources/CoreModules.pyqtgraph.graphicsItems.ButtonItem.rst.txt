@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.ButtonItem module
-=====================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.ButtonItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

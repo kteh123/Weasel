@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate\_pyqt5 module
-==========================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartCtrlTemplate_pyqt5
-   :members:
-   :undoc-members:
-   :show-inheritance:

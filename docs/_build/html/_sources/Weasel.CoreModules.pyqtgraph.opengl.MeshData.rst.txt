@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.opengl.MeshData module
-===================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.opengl.MeshData
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate\_pyqt module
-=====================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.flowchart.FlowchartTemplate_pyqt
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.ValueLabel module
-===============================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.ValueLabel
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.parametertree.SystemSolver module
-==============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.parametertree.SystemSolver
-   :members:
-   :undoc-members:
-   :show-inheritance:

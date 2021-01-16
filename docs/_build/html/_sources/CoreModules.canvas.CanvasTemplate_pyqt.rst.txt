@@ -1,7 +1,0 @@
-CoreModules.canvas.CanvasTemplate\_pyqt module
-==============================================
-
-.. automodule:: CoreModules.canvas.CanvasTemplate_pyqt
-   :members:
-   :undoc-members:
-   :show-inheritance:

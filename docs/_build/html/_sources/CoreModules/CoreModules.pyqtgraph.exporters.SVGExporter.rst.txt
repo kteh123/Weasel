@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.exporters.SVGExporter module
-==================================================
-
-.. automodule:: CoreModules.pyqtgraph.exporters.SVGExporter
-   :members:
-   :undoc-members:
-   :show-inheritance:

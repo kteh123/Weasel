@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.tests.test\_ref\_cycles module
-===========================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.tests.test_ref_cycles
-   :members:
-   :undoc-members:
-   :show-inheritance:

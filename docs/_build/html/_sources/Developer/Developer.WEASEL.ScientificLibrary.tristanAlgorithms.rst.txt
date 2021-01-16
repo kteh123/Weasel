@@ -1,7 +1,0 @@
-Developer.WEASEL.ScientificLibrary.tristanAlgorithms module
-===========================================================
-
-.. automodule:: Developer.WEASEL.ScientificLibrary.tristanAlgorithms
-   :members:
-   :undoc-members:
-   :show-inheritance:

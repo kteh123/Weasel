@@ -1,7 +1,0 @@
-CoreModules.FERRET.ModelFunctionsHelper module
-==============================================
-
-.. automodule:: CoreModules.FERRET.ModelFunctionsHelper
-   :members:
-   :undoc-members:
-   :show-inheritance:

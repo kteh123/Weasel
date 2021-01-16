@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.widgets.HistogramLUTWidget module
-==============================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.widgets.HistogramLUTWidget
-   :members:
-   :undoc-members:
-   :show-inheritance:

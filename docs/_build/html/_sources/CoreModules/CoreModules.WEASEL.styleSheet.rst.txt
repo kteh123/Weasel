@@ -1,7 +1,0 @@
-CoreModules.WEASEL.styleSheet module
-====================================
-
-.. automodule:: CoreModules.WEASEL.styleSheet
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.graphicsItems.PlotCurveItem module
-========================================================
-
-.. automodule:: CoreModules.pyqtgraph.graphicsItems.PlotCurveItem
-   :members:
-   :undoc-members:
-   :show-inheritance:

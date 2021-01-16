@@ -1,7 +1,0 @@
-Weasel.CoreModules.pyqtgraph.imageview.ImageViewTemplate\_pyqt5 module
-======================================================================
-
-.. automodule:: Weasel.CoreModules.pyqtgraph.imageview.ImageViewTemplate_pyqt5
-   :members:
-   :undoc-members:
-   :show-inheritance:

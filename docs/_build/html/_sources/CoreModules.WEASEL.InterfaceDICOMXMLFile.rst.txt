@@ -1,7 +1,0 @@
-CoreModules.WEASEL.InterfaceDICOMXMLFile module
-===============================================
-
-.. automodule:: CoreModules.WEASEL.InterfaceDICOMXMLFile
-   :members:
-   :undoc-members:
-   :show-inheritance:

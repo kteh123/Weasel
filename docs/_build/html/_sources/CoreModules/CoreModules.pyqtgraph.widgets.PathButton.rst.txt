@@ -1,7 +1,0 @@
-CoreModules.pyqtgraph.widgets.PathButton module
-===============================================
-
-.. automodule:: CoreModules.pyqtgraph.widgets.PathButton
-   :members:
-   :undoc-members:
-   :show-inheritance:
