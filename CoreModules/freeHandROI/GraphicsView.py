@@ -27,7 +27,7 @@ class GraphicsView(QGraphicsView):
     sigROIDeleted = QtCore.Signal()
 
 
-    def __init__(self, zoomSlider, zoomLabel):
+    def __init__(self,zoomSlider, zoomLabel): # 
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
@@ -51,6 +51,17 @@ class GraphicsView(QGraphicsView):
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
+
+    
+    def __del__(self): 
+        self.zoomSlider = None
+        self.zoomLabel = None
+        self.roiCombo = None
+        self.dictROIs = None
+        self.menu = None
+        self.drawButton = None
+        self.eraseButton = None
+        print('Destructor called, GraphicsView deleted.') 
 
 
     def loadROI(self, regionName):
@@ -114,6 +125,7 @@ class GraphicsView(QGraphicsView):
 
 
     def updateZoomSlider(self, increment):
+        pass
         #print("updateZoomSlider increment={}".format(increment))
         self.zoomSlider.blockSignals(True)
         if increment == 0:
