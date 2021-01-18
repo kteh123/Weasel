@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.DisplayImageColour &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CoreModules.WEASEL.DisplayImageCommon" href="CoreModules.WEASEL.DisplayImageCommon.html" />
+    <link rel="prev" title="CoreModules.WEASEL.Affine" href="CoreModules.WEASEL.Affine.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="CoreModules.html">CoreModules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.DoubleSlider.html">CoreModules.DoubleSlider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.ParametricMapsDictionary.html">CoreModules.ParametricMapsDictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.styleSheet_old.html">CoreModules.styleSheet_old</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CoreModules.WEASEL.html">CoreModules.WEASEL</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Affine.html">CoreModules.WEASEL.Affine</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CoreModules.WEASEL.DisplayImageColour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageCommon.html">CoreModules.WEASEL.DisplayImageCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageDrawROI.html">CoreModules.WEASEL.DisplayImageDrawROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageROI.html">CoreModules.WEASEL.DisplayImageROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InputDialog.html">CoreModules.WEASEL.InputDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InterfaceDICOMXMLFile.html">CoreModules.WEASEL.InterfaceDICOMXMLFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MenuToolBarCommon.html">CoreModules.WEASEL.MenuToolBarCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Menus.html">CoreModules.WEASEL.Menus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MessageWindow.html">CoreModules.WEASEL.MessageWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.RegionsOfInterest_DICOM.html">CoreModules.WEASEL.RegionsOfInterest_DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.ToolBar.html">CoreModules.WEASEL.ToolBar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.TreeView.html">CoreModules.WEASEL.TreeView</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.UserImageColourSelection.html">CoreModules.WEASEL.UserImageColourSelection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.WriteXMLfromDICOM.html">CoreModules.WEASEL.WriteXMLfromDICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.iBeatImport.html">CoreModules.WEASEL.iBeatImport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.readDICOM_Image.html">CoreModules.WEASEL.readDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.saveDICOM_Image.html">CoreModules.WEASEL.saveDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.styleSheet.html">CoreModules.WEASEL.styleSheet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselConfigXMLReader.html">CoreModules.WEASEL.weaselConfigXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselMenuXMLReader.html">CoreModules.WEASEL.weaselMenuXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselXMLReader.html">CoreModules.WEASEL.weaselXMLReader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.canvas.html">CoreModules.canvas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="CoreModules.html">CoreModules</a> &raquo;</li>
+        
+          <li><a href="CoreModules.WEASEL.html">CoreModules.WEASEL</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.DisplayImageColour</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com///blob/CoreModules.WEASEL.DisplayImageColour.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-CoreModules.WEASEL.DisplayImageColour">
+<span id="coremodules-weasel-displayimagecolour"></span><h1>CoreModules.WEASEL.DisplayImageColour<a class="headerlink" href="#module-CoreModules.WEASEL.DisplayImageColour" title="Permalink to this headline">¶</a></h1>
+<p>This module contains functions for the display of a single DICOM image
+or a series of DICOM images in an MDI subwindow that includes functionality
+for the selecting and applying a colour table to the image/image series and
+adjusting the contrast and intensity of the image/image series.
+It is possible to update the DICOM image/image series with the new
+colour table, contrast &amp; intensity values.</p>
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.applyColourTableToSeries">
+<code class="sig-name descname">applyColourTableToSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">applySeriesCheckBox</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#applyColourTableToSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.applyColourTableToSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function applies a user selected colour map to the current image.
+If the Apply checkbox is checked then the new colour map is also applied to
+the whole series of DICOM images by setting a boolean flag to True.</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+imv - pyqtGraph imageView widget
+cmbColours - A dropdown list of colour table names based on the QComboBox class
+seriesName - string variable containing the name of</p>
+<blockquote>
+<div><p>DICOM series of images to be displayed</p>
+</div></blockquote>
+<p>applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.blockHistogramSignals">
+<code class="sig-name descname">blockHistogramSignals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">imgView</span></em>, <em class="sig-param"><span class="n">block</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#blockHistogramSignals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.blockHistogramSignals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles (off/on) blocking the signals from the histogram associated
+with image view imgView.
+Input Parmeters
+<strong>***********</strong></p>
+<blockquote>
+<div><p>imgView - name of the imageView widget associated with the histogram
+block - boolean taking values True/False</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.blockLevelsSpinBoxSignals">
+<code class="sig-name descname">blockLevelsSpinBoxSignals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em>, <em class="sig-param"><span class="n">block</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#blockLevelsSpinBoxSignals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.blockLevelsSpinBoxSignals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles (off/on) blocking the signals from the spinboxes associated
+with input of intensity and contrast values.
+Input Parmeters
+<strong>***********</strong></p>
+<blockquote>
+<div><p>spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+block - boolean taking values True/False</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.clearUserSelection">
+<code class="sig-name descname">clearUserSelection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">imageSlider</span></em>, <em class="sig-param"><span class="n">seriesName</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#clearUserSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.clearUserSelection" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function removes the user selected colour tables, contrast &amp; intensity values from
+the list of image lists that hold these values.  They are reset to the default values of
+‘default’ for the colour table and -1 for the contrast &amp; intensity values</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+imageSlider - name of the slider widget used to scroll through the images.
+seriesName - string variable containing the name of DICOM series of images to be displayed</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.deleteImageInMultiImageViewer">
+<code class="sig-name descname">deleteImageInMultiImageViewer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">currentImagePath</span></em>, <em class="sig-param"><span class="n">studyName</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">lastSliderPosition</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#deleteImageInMultiImageViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.deleteImageInMultiImageViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the Delete button is clicked on the multi image viewer,
+this function deletes the physical image, removes the
+reference to it in the XML file and removes it from the image viewer.</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+currentImagePath - file path to the image being viewed.
+studyName - string variable containing name of the DICOMstudy</p>
+<blockquote>
+<div><p>containing the DICOM series of images to be displayed</p>
+</div></blockquote>
+<dl class="simple">
+<dt>seriesName - string variable containing the name of DICOM series</dt><dd><p>of images to be displayed</p>
+</dd>
+<dt>lastSliderPosition - integer variable holding the value of the</dt><dd><p>slider when the delete button is clicked; i.e., the
+number of the image being deleted.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.displayImageSubWindow">
+<code class="sig-name descname">displayImageSubWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">studyName</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">derivedImagePath</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#displayImageSubWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.displayImageSubWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a subwindow that displays a single DICOM image.</p>
+<p>self - an object reference to the WEASEL interface.
+studyName - string variable containing name of the DICOMstudy</p>
+<blockquote>
+<div><p>containing the DICOM series of images to be displayed</p>
+</div></blockquote>
+<p>seriesName - string variable containing the name of DICOM series of images to be displayed
+derivedImagePath - optional parameter containing the path to a</p>
+<blockquote>
+<div><p>new image created by an operation on an existing image.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.displayMultiImageSubWindow">
+<code class="sig-name descname">displayMultiImageSubWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">imageList</span></em>, <em class="sig-param"><span class="n">studyName</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">sliderPosition</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#displayMultiImageSubWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.displayMultiImageSubWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a subwindow that displays all the DICOM images in a series.
+A slider allows the user to scroll through the images.  A delete
+button allows the user to delete the image they are viewing.</p>
+<p>The user can either update the whole series with a new colour table
+and contrast &amp; intensity values  or they can update individual
+images in the series with a new colour table
+and contrast &amp; intensity values.</p>
+<p>self - an object reference to the WEASEL interface.
+imageList - list of image file paths of the images in the series to be displayed
+studyName - string variable containing name of the DICOMstudy</p>
+<blockquote>
+<div><p>containing the DICOM series of images to be displayed</p>
+</div></blockquote>
+<p>seriesName - string variable containing the name of DICOM series of images to be displayed
+sliderPosition - optional integer value denoting position of the slider widget that scrolls</p>
+<blockquote>
+<div><p>through the images in imageList.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.displayPixelArray">
+<code class="sig-name descname">displayPixelArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">pixelArray</span></em>, <em class="sig-param"><span class="n">currentImageNumber</span></em>, <em class="sig-param"><span class="n">lblImageMissing</span></em>, <em class="sig-param"><span class="n">lblPixelValue</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">colourTable</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">lut</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multiImage</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">deleteButton</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#displayPixelArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.displayPixelArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the an image’s pixel array in a pyqtGraph imageView widget
+&amp; sets its colour table, contrast and intensity levels.
+Also, sets the contrast and intensity in the associated histogram.</p>
+<p>self - an object reference to the WEASEL interface.
+pixelArray - pixel array to be displayed in imv
+currentImageNumber - ordinal number of the image to be displayed</p>
+<blockquote>
+<div><p>in the list of images forming the series.</p>
+</div></blockquote>
+<p>lblImageMissing - Label widget that displays the text ‘Missing Image’
+lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer</p>
+<blockquote>
+<div><p>and the X,Y coordinates of the mouse pointer.</p>
+</div></blockquote>
+<p>spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+imv - pyqtGraph imageView widget
+colourTable - String variable containing the name of a colour table
+cmbColours - Name of the dropdown list of colour table names
+seriesName - string variable containing the name of DICOM series</p>
+<blockquote>
+<div><p>of images to be displayed</p>
+</div></blockquote>
+<p>lut - array holding a lookup table of colours. A custom colour map
+multiImage - optional boolean variable, default False,</p>
+<blockquote>
+<div><p>set to True if a series of DICOM images is being viewed.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>deleteButton - name of the button widget, which when</dt><dd><p>clicked causes an image to be deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.exportImage">
+<code class="sig-name descname">exportImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#exportImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.exportImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function executed when the Export button is clicked.
+It exports the DICOM image and its colour table to a png graphics file.
+It launches a file dialog, so that the user can select the file path to
+the png file in which the exported file will be stored. It also collects
+the name of the image colour table and the image levels.</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+imv - pyqtGraph imageView widget
+cmbColours - A dropdown list of colour table names based on the QComboBox class</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.exportImageViaMatplotlib">
+<code class="sig-name descname">exportImageViaMatplotlib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">pixelArray</span></em>, <em class="sig-param"><span class="n">fileName</span></em>, <em class="sig-param"><span class="n">colourTable</span></em>, <em class="sig-param"><span class="n">minimumValue</span></em>, <em class="sig-param"><span class="n">maximumValue</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#exportImageViaMatplotlib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.exportImageViaMatplotlib" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses matplotlib.pyplot to save the DICOM image being viewed
+and its colour table in a png file with the path+filename in fileName.</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+pixelArray - pixel array to be exported as a png file
+fileName - file path to the png file in which the exported file will be stored.
+colourTable - String variable containing the name of a colour table
+maximumValue - Maximum pixel value in the image
+minimumValue - Minimum pixel value in the image</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.imageSliderMoved">
+<code class="sig-name descname">imageSliderMoved</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">imageList</span></em>, <em class="sig-param"><span class="n">imageNumber</span></em>, <em class="sig-param"><span class="n">lblImageMissing</span></em>, <em class="sig-param"><span class="n">lblPixelValue</span></em>, <em class="sig-param"><span class="n">btnDeleteDICOMFile</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em>, <em class="sig-param"><span class="n">subWindow</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#imageSliderMoved"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.imageSliderMoved" title="Permalink to this definition">¶</a></dt>
+<dd><p>On the Multiple Image Display sub window, this
+function is called when the image slider is moved.
+It causes the next image in imageList to be displayed</p>
+<p>self - object reference to the WEASEL GUI
+seriesName - string variable containing the name of DICOM series of images to be displayed
+lblImageMissing - Label widget that displays the text ‘Missing Image’
+lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer</p>
+<blockquote>
+<div><p>and the X,Y coordinates of the mouse pointer.</p>
+</div></blockquote>
+<p>imv - pyqtGraph imageView widget
+imageList - list of image file paths of the images in the series to be displayed
+spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+cmbColours - A dropdown list of colour table names based on the QComboBox class
+subWindow - object reference to the subwindow hosting the slider control</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.returnUserSelectedLevels">
+<code class="sig-name descname">returnUserSelectedLevels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">centre</span></em>, <em class="sig-param"><span class="n">width</span></em>, <em class="sig-param"><span class="n">currentImageNumber</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#returnUserSelectedLevels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.returnUserSelectedLevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the user has selected new image levels that must override the
+levels saved in the DICOM series/image, this function returns those selected levels</p>
+<p>seriesName - string variable containing the name of DICOM series of images to be displayed
+centre - Image intensity
+width - Image contrast
+currentImageNumber - The ordinal number of the image being viewed in the image list</p>
+<p>success - boolean, set to true if level values are successfully retrieved
+maximumValue - Maximum pixel value in the image
+minimumValue - Minimum pixel value in the image</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.setUpColourTools">
+<code class="sig-name descname">setUpColourTools</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">layout</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">singleImageSelected</span></em>, <em class="sig-param"><span class="n">lblHiddenImagePath</span></em>, <em class="sig-param"><span class="n">lblHiddenSeriesName</span></em>, <em class="sig-param"><span class="n">lblHiddenStudyName</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em>, <em class="sig-param"><span class="n">imageSlider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#setUpColourTools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.setUpColourTools" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Generates widgets for the display of a
+dropdown list containing colour tables
+and spin boxes for setting image contrast and intensity.</p>
+<p>self - an object reference to the WEASEL interface.
+layout - a QVBoxLayout widget that lines up widgets vertically.</p>
+<blockquote>
+<div><p>The parent layout on the subwindow.</p>
+</div></blockquote>
+<p>imv - pyqtGraph imageView widget
+singleImageSelected - boolean variable, set to True if a</p>
+<blockquote>
+<div><p>single image is being viewed. Otherwise set to False</p>
+</div></blockquote>
+<dl class="simple">
+<dt>lblHiddenImagePath - name of the hidden label widget whose text</dt><dd><p>contains the path to an image file.</p>
+</dd>
+<dt>lblHiddenSeriesName - name of the hidden label widget whose text</dt><dd><p>contains the name of the DICOM series whose images are
+being viewed.</p>
+</dd>
+<dt>lblHiddenStudyName - name of the hidden label widget whose text</dt><dd><p>contains the name of the DICOM study containing the series
+whose images are  being viewed.</p>
+</dd>
+</dl>
+<p>spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+imageSlider - name of the slider widget used to scroll through the images.</p>
+</div></blockquote>
+<blockquote>
+<div><p>cmbColours - A dropdown list of colour table names based on the QComboBox class</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.updateDICOM">
+<code class="sig-name descname">updateDICOM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">lblHiddenSeriesName</span></em>, <em class="sig-param"><span class="n">lblHiddenStudyName</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#updateDICOM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.updateDICOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is executed when the Update button
+is clicked and it coordinates the calling of the functions,
+updateWholeDicomSeries &amp; updateDicomSeriesImageByImage.</p>
+<p>self - an object reference to the WEASEL interface.
+lblHiddenSeriesName - name of the hidden label widget whose text</p>
+<blockquote>
+<div><p>contains the name of the DICOM series whose images are
+being viewed.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>lblHiddenStudyName - name of the hidden label widget whose text</dt><dd><p>contains the name of the DICOM study containing the series
+whose images are  being viewed.</p>
+</dd>
+</dl>
+<p>cmbColours - A dropdown list of colour table names based on the QComboBox class
+spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.updateDicomSeriesImageByImage">
+<code class="sig-name descname">updateDicomSeriesImageByImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">studyName</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#updateDicomSeriesImageByImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.updateDicomSeriesImageByImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates one or more images in a DICOM series each with potentially
+a different table and set of levels</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+seriesName - string variable containing the name of DICOM series
+of images to be updated
+studyName - string variable containing name of the DICOMstudy</p>
+<blockquote>
+<div><p>containing the DICOM series of images to updated</p>
+</div></blockquote>
+<p>colourTable - String variable containing the name of a colour table
+lut - array holding a lookup table of colours. A custom colour map</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.updateImageLevels">
+<code class="sig-name descname">updateImageLevels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">imv</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#updateImageLevels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.updateImageLevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the contrast and intensity values are adjusted using the spinboxes,
+this function sets the corresponding values in the image being viewed.</p>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+imv - pyqtGraph imageView widget
+spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.updateImageUserSelection">
+<code class="sig-name descname">updateImageUserSelection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">applySeriesCheckBox</span></em>, <em class="sig-param"><span class="n">cmbColours</span></em>, <em class="sig-param"><span class="n">spinBoxIntensity</span></em>, <em class="sig-param"><span class="n">spinBoxContrast</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">firstImagePath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#updateImageUserSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.updateImageUserSelection" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the colour table &amp; levels associated with an image are changed, their values
+are associated with that image in the list of lists userSelectionList, where each sublist
+represents an image thus:</p>
+<blockquote>
+<div><p>[0] - Image name (used as key to search the list of lists)
+[1] - colour table name
+[2] - intensity level
+[3] - contrast level</p>
+</div></blockquote>
+<p>userSelectionList is initialised with default values in the function displayMultiImageSubWindow</p>
+<p>self - an object reference to the WEASEL interface.
+applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
+cmbColours - A dropdown list of colour table names based on the QComboBox class
+spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+seriesName - string variable containing the name of DICOM series of images to be displayed
+firstImagePath - string variable containing the file path to the first image in the DICOM series</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.DisplayImageColour.updateWholeDicomSeries">
+<code class="sig-name descname">updateWholeDicomSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">seriesName</span></em>, <em class="sig-param"><span class="n">studyName</span></em>, <em class="sig-param"><span class="n">colourTable</span></em>, <em class="sig-param"><span class="n">levels</span></em>, <em class="sig-param"><span class="n">lut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/DisplayImageColour.html#updateWholeDicomSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.DisplayImageColour.updateWholeDicomSeries" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Updates every image in a DICOM series with one colour table and</dt><dd><blockquote>
+<div><p>one set of levels</p>
+</div></blockquote>
+<blockquote>
+<div><p>self - an object reference to the WEASEL interface.
+seriesName - string variable containing the name of DICOM series of images to be updated
+studyName - string variable containing name of the DICOMstudy</p>
+<blockquote>
+<div><p>containing the DICOM series of images to be updated</p>
+</div></blockquote>
+<p>colourTable - String variable containing the name of a colour table
+levels  - 2 item list containing the image contrast and intensity values as integers,</p>
+<blockquote>
+<div><p>[contrast, intensity]</p>
+</div></blockquote>
+<p>lut - array holding a lookup table of colours. A custom colour map</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CoreModules.WEASEL.DisplayImageCommon.html" class="btn btn-neutral float-right" title="CoreModules.WEASEL.DisplayImageCommon" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CoreModules.WEASEL.Affine.html" class="btn btn-neutral float-left" title="CoreModules.WEASEL.Affine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

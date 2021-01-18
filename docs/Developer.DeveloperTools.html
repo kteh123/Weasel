@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer.DeveloperTools &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="MenuItems" href="MenuItems.html" />
+    <link rel="prev" title="Developer" href="Developer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="CoreModules.html">CoreModules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Developer.html">Developer</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Developer.DeveloperTools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="Developer.html">Developer</a> &raquo;</li>
+        
+      <li>Developer.DeveloperTools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com///blob/Developer.DeveloperTools.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-Developer.DeveloperTools">
+<span id="developer-developertools"></span><h1>Developer.DeveloperTools<a class="headerlink" href="#module-Developer.DeveloperTools" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="Developer.DeveloperTools.GenericDICOMTools">
+<em class="property">class </em><code class="sig-name descname">GenericDICOMTools</code><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.copyDICOM">
+<code class="sig-name descname">copyDICOM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Copy'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.copyDICOM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.copyDICOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a DICOM copy of all files in “inputPath” (1 or more) into a new series.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.deleteDICOM">
+<code class="sig-name descname">deleteDICOM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.deleteDICOM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.deleteDICOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>A window is prompted asking the user if it wishes to delete all images in “inputPath”.
+It performs the file removal upon affirmative answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.editDICOMTag">
+<em class="property">static </em><code class="sig-name descname">editDICOMTag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em>, <em class="sig-param"><span class="n">dicomTag</span></em>, <em class="sig-param"><span class="n">newValue</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.editDICOMTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.editDICOMTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites all “dicomTag” of the DICOM files in “inputPath”
+with “newValue”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.generateSeriesIDs">
+<em class="property">static </em><code class="sig-name descname">generateSeriesIDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em>, <em class="sig-param"><span class="n">seriesNumber</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.generateSeriesIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.generateSeriesIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a SeriesUID and an InstanceUID.
+The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
+The InstanceUID is generated based on SeriesUID.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.mergeDicomIntoOneSeries">
+<code class="sig-name descname">mergeDicomIntoOneSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">imagePathList</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">'New Series'</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Merged'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.mergeDicomIntoOneSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.mergeDicomIntoOneSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges all DICOM files in “imagePathList” into 1 series.
+It creates a copy if “overwrite=False” (default).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.sortByEchoTime">
+<em class="property">static </em><code class="sig-name descname">sortByEchoTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.sortByEchoTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.sortByEchoTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts list of paths by EchoTime and returns the sorted list of paths
+and the list of echo times per file path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.sortBySliceLocation">
+<em class="property">static </em><code class="sig-name descname">sortBySliceLocation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.sortBySliceLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.sortBySliceLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts list of paths by SliceLocation and returns the sorted list of paths
+and the list of slice locations per file path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.GenericDICOMTools.sortByTimePoint">
+<em class="property">static </em><code class="sig-name descname">sortByTimePoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#GenericDICOMTools.sortByTimePoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.GenericDICOMTools.sortByTimePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts list of paths by AcquisitionNumber and returns the sorted list of paths
+and the list of time points per file path.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.Image">
+<em class="property">class </em><code class="sig-name descname">Image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">subjectID</span></em>, <em class="sig-param"><span class="n">studyID</span></em>, <em class="sig-param"><span class="n">seriesID</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.Columns">
+<em class="property">property </em><code class="sig-name descname">Columns</code><a class="headerlink" href="#Developer.DeveloperTools.Image.Columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.Dimensions">
+<em class="property">property </em><code class="sig-name descname">Dimensions</code><a class="headerlink" href="#Developer.DeveloperTools.Image.Dimensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.DisplayImage">
+<code class="sig-name descname">DisplayImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.DisplayImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.DisplayImage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.DisplayImages">
+<em class="property">static </em><code class="sig-name descname">DisplayImages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listImages</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.DisplayImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.DisplayImages" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.DisplayMetadata">
+<code class="sig-name descname">DisplayMetadata</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.DisplayMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.DisplayMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.Item">
+<code class="sig-name descname">Item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tagDescription</span></em>, <em class="sig-param"><span class="n">newValue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.Item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.Item" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.PixelArray">
+<em class="property">property </em><code class="sig-name descname">PixelArray</code><a class="headerlink" href="#Developer.DeveloperTools.Image.PixelArray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.PydicomObject">
+<em class="property">property </em><code class="sig-name descname">PydicomObject</code><a class="headerlink" href="#Developer.DeveloperTools.Image.PydicomObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.Rows">
+<em class="property">property </em><code class="sig-name descname">Rows</code><a class="headerlink" href="#Developer.DeveloperTools.Image.Rows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.Tag">
+<code class="sig-name descname">Tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em>, <em class="sig-param"><span class="n">newValue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.Tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.fromTreeView">
+<em class="property">classmethod </em><code class="sig-name descname">fromTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">imageItem</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.fromTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.fromTreeView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.merge">
+<em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listImages</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">'NewSeries'</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Merged'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.merge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.new">
+<code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Copy'</span></em>, <em class="sig-param"><span class="n">series</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.new" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.newSeriesFrom">
+<em class="property">static </em><code class="sig-name descname">newSeriesFrom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listImages</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Copy'</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.newSeriesFrom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.newSeriesFrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Image.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pixelArray</span></em>, <em class="sig-param"><span class="n">series</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Image.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Image.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.PixelArrayDICOMTools">
+<em class="property">class </em><code class="sig-name descname">PixelArrayDICOMTools</code><a class="reference internal" href="_modules/Developer/DeveloperTools.html#PixelArrayDICOMTools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.PixelArrayDICOMTools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.PixelArrayDICOMTools.getDICOMobject">
+<em class="property">static </em><code class="sig-name descname">getDICOMobject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#PixelArrayDICOMTools.getDICOMobject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.PixelArrayDICOMTools.getDICOMobject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the DICOM object (or list of DICOM objects) of the file(s) in “inputPath”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.PixelArrayDICOMTools.getPixelArrayFromDICOM">
+<em class="property">static </em><code class="sig-name descname">getPixelArrayFromDICOM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#PixelArrayDICOMTools.getPixelArrayFromDICOM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.PixelArrayDICOMTools.getPixelArrayFromDICOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the PixelArray of the DICOM file(s) in “inputPath”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.PixelArrayDICOMTools.overwritePixelArray">
+<em class="property">static </em><code class="sig-name descname">overwritePixelArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pixelArray</span></em>, <em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#PixelArrayDICOMTools.overwritePixelArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.PixelArrayDICOMTools.overwritePixelArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the DICOM files in the “pixelArray” into new DICOM files with a new series, based
+on the “inputPath” and on the “suffix”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.PixelArrayDICOMTools.writeNewPixelArray">
+<code class="sig-name descname">writeNewPixelArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pixelArray</span></em>, <em class="sig-param"><span class="n">inputPath</span></em>, <em class="sig-param"><span class="n">suffix</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#PixelArrayDICOMTools.writeNewPixelArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.PixelArrayDICOMTools.writeNewPixelArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the “pixelArray” into new DICOM files with a new series, based
+on the “inputPath” and on the “suffix”.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.Project">
+<em class="property">class </em><code class="sig-name descname">Project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.Series">
+<em class="property">class </em><code class="sig-name descname">Series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">subjectID</span></em>, <em class="sig-param"><span class="n">studyID</span></em>, <em class="sig-param"><span class="n">seriesID</span></em>, <em class="sig-param"><span class="n">listPaths</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">children</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">seriesUID</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Columns">
+<em class="property">property </em><code class="sig-name descname">Columns</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Dimensions">
+<em class="property">property </em><code class="sig-name descname">Dimensions</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Dimensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.DisplayMetadata">
+<code class="sig-name descname">DisplayMetadata</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.DisplayMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.DisplayMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.DisplaySeries">
+<code class="sig-name descname">DisplaySeries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.DisplaySeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.DisplaySeries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.EchoTimes">
+<em class="property">property </em><code class="sig-name descname">EchoTimes</code><a class="headerlink" href="#Developer.DeveloperTools.Series.EchoTimes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Imaginary">
+<em class="property">property </em><code class="sig-name descname">Imaginary</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Imaginary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.InversionTimes">
+<em class="property">property </em><code class="sig-name descname">InversionTimes</code><a class="headerlink" href="#Developer.DeveloperTools.Series.InversionTimes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Item">
+<code class="sig-name descname">Item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tagDescription</span></em>, <em class="sig-param"><span class="n">newValue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.Item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.Item" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Magnitude">
+<em class="property">property </em><code class="sig-name descname">Magnitude</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Magnitude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Multiframe">
+<em class="property">property </em><code class="sig-name descname">Multiframe</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Multiframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.NumberOfSlices">
+<em class="property">property </em><code class="sig-name descname">NumberOfSlices</code><a class="headerlink" href="#Developer.DeveloperTools.Series.NumberOfSlices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Phase">
+<em class="property">property </em><code class="sig-name descname">Phase</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.PixelArray">
+<em class="property">property </em><code class="sig-name descname">PixelArray</code><a class="headerlink" href="#Developer.DeveloperTools.Series.PixelArray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.PydicomList">
+<em class="property">property </em><code class="sig-name descname">PydicomList</code><a class="headerlink" href="#Developer.DeveloperTools.Series.PydicomList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Real">
+<em class="property">property </em><code class="sig-name descname">Real</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Real" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Rows">
+<em class="property">property </em><code class="sig-name descname">Rows</code><a class="headerlink" href="#Developer.DeveloperTools.Series.Rows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.SeriesUID">
+<em class="property">property </em><code class="sig-name descname">SeriesUID</code><a class="headerlink" href="#Developer.DeveloperTools.Series.SeriesUID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.SliceLocations">
+<em class="property">property </em><code class="sig-name descname">SliceLocations</code><a class="headerlink" href="#Developer.DeveloperTools.Series.SliceLocations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.Tag">
+<code class="sig-name descname">Tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em>, <em class="sig-param"><span class="n">newValue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.Tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Image</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.fromTreeView">
+<em class="property">classmethod </em><code class="sig-name descname">fromTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">seriesItem</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.fromTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.fromTreeView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.merge">
+<em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listSeries</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">'NewSeries'</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'_Merged'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.merge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.new">
+<code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series_uid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.new" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">allImages</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Image</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tagDescription</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">argv</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.sort" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Series.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pixelArray</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Series.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Series.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.Study">
+<em class="property">class </em><code class="sig-name descname">Study</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">subjectID</span></em>, <em class="sig-param"><span class="n">studyID</span></em>, <em class="sig-param"><span class="n">children</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Study"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Study" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Study.Dimensions">
+<em class="property">property </em><code class="sig-name descname">Dimensions</code><a class="headerlink" href="#Developer.DeveloperTools.Study.Dimensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Study.fromTreeView">
+<em class="property">classmethod </em><code class="sig-name descname">fromTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">studyItem</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Study.fromTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Study.fromTreeView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.Subject">
+<em class="property">class </em><code class="sig-name descname">Subject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">subjectID</span></em>, <em class="sig-param"><span class="n">children</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.Subject.fromTreeView">
+<em class="property">classmethod </em><code class="sig-name descname">fromTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em>, <em class="sig-param"><span class="n">subjectItem</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#Subject.fromTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.Subject.fromTreeView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="Developer.DeveloperTools.UserInterfaceTools">
+<em class="property">class </em><code class="sig-name descname">UserInterfaceTools</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objWeasel</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains functions that read the items selected in the User Interface
+and return variables that are used in processing pipelines. It also contains functions
+that allow the user to insert inputs and give an update of the pipeline steps through
+message windows.</p>
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.closeMessageWindow">
+<code class="sig-name descname">closeMessageWindow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.closeMessageWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.closeMessageWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes any message window present in the User Interface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.displayImages">
+<code class="sig-name descname">displayImages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.displayImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.displayImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the PixelArray in “inputPath” in the User Interface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.displayMetadata">
+<code class="sig-name descname">displayMetadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.displayMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.displayMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the metadata in “inputPath” in the User Interface.
+If “inputPath” is a list, then it displays the metadata of the first image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCheckedImages">
+<code class="sig-name descname">getCheckedImages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCheckedImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCheckedImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Image of the items checked in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCheckedSeries">
+<code class="sig-name descname">getCheckedSeries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCheckedSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCheckedSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Series of the items checked in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCheckedStudies">
+<code class="sig-name descname">getCheckedStudies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCheckedStudies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCheckedStudies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Study of the items checked in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCurrentImage">
+<code class="sig-name descname">getCurrentImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCurrentImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCurrentImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string with the path of the latest selected image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCurrentSeries">
+<code class="sig-name descname">getCurrentSeries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCurrentSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCurrentSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Series ID of the latest item selected in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getCurrentStudy">
+<code class="sig-name descname">getCurrentStudy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getCurrentStudy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getCurrentStudy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Study ID of the latest item selected in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getImagesFromSeries">
+<code class="sig-name descname">getImagesFromSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">studyID</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">seriesID</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getImagesFromSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getImagesFromSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of strings with the paths of all images in (studyID, seriesID).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getSelectedImages">
+<code class="sig-name descname">getSelectedImages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getSelectedImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getSelectedImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Image of the items selected in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getSelectedSeries">
+<code class="sig-name descname">getSelectedSeries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getSelectedSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getSelectedSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Series of the items selected in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getSelectedStudies">
+<code class="sig-name descname">getSelectedStudies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getSelectedStudies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getSelectedStudies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with objects of class Study of the items selected in the Treeview.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.getSeriesFromImages">
+<code class="sig-name descname">getSeriesFromImages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.getSeriesFromImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.getSeriesFromImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of strings with the paths of all images in (studyID, seriesID).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.inputWindow">
+<em class="property">static </em><code class="sig-name descname">inputWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paramDict</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Input Parameters'</span></em>, <em class="sig-param"><span class="n">helpText</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">lists</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.inputWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.inputWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a window and prompts the user to insert inputs. The input variables
+and respective types are defined in “paramDict”. See below for examples.
+Variable “title” is the title of the window and “helpText” is the text
+displayed inside the window. It should be used to give important notes or
+tips regarding the input process.</p>
+<dl class="simple">
+<dt>Eg. of paramDict:</dt><dd><p>paramDict = {“Tag”:”string”, “Value”:”string”}
+The variable types are int, float and string.
+The user may add extra validation of the parameters. Read the file
+thresholdDICOM_Image.py as it contains a good example of validation.</p>
+</dd>
+<dt>Other eg. of paramDict:</dt><dd><p>inputDict = {“Algorithm”:”dropdownlist”, “Nature”:”listview”}
+algorithmList = [“B0”, “T2*”, “T1 Molli”]
+natureList = [“Animals”, “Plants”, “Trees”]
+inputWindow(paramDict, …, lists=[algorithmList, natureList])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.progressBar">
+<code class="sig-name descname">progressBar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maxNumber</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">'Iteration Number {}'</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Progress Bar'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.progressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.progressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the ProgressBar to the unit set in “index”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.refreshWeasel">
+<code class="sig-name descname">refreshWeasel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_series_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.refreshWeasel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.refreshWeasel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the user interface screen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.selectFolder">
+<code class="sig-name descname">selectFolder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Select the directory'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.selectFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.selectFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays an open folder dialog window to allow the
+user to select afolder</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.showInformationWindow">
+<code class="sig-name descname">showInformationWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Message Window Title'</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">'Please insert message in the function call'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.showInformationWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.showInformationWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays an information window in the User Interface with the title in “title” and
+with the message in “msg”. The 2 strings in the arguments are the input by default.
+The user has to click “OK” in order to continue using the interface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Developer.DeveloperTools.UserInterfaceTools.showMessageWindow">
+<code class="sig-name descname">showMessageWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">'Please insert message in the function call'</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Message Window Title'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Developer/DeveloperTools.html#UserInterfaceTools.showMessageWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Developer.DeveloperTools.UserInterfaceTools.showMessageWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays a window in the User Interface with the title in “title” and
+with the message in “msg”. The 2 strings in the arguments are the input by default.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="MenuItems.html" class="btn btn-neutral float-right" title="MenuItems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Developer.html" class="btn btn-neutral float-left" title="Developer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.TreeView &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CoreModules.WEASEL.UserImageColourSelection" href="CoreModules.WEASEL.UserImageColourSelection.html" />
+    <link rel="prev" title="CoreModules.WEASEL.ToolBar" href="CoreModules.WEASEL.ToolBar.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="CoreModules.html">CoreModules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.DoubleSlider.html">CoreModules.DoubleSlider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.ParametricMapsDictionary.html">CoreModules.ParametricMapsDictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.styleSheet_old.html">CoreModules.styleSheet_old</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CoreModules.WEASEL.html">CoreModules.WEASEL</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Affine.html">CoreModules.WEASEL.Affine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageColour.html">CoreModules.WEASEL.DisplayImageColour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageCommon.html">CoreModules.WEASEL.DisplayImageCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageDrawROI.html">CoreModules.WEASEL.DisplayImageDrawROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageROI.html">CoreModules.WEASEL.DisplayImageROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InputDialog.html">CoreModules.WEASEL.InputDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InterfaceDICOMXMLFile.html">CoreModules.WEASEL.InterfaceDICOMXMLFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MenuToolBarCommon.html">CoreModules.WEASEL.MenuToolBarCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Menus.html">CoreModules.WEASEL.Menus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MessageWindow.html">CoreModules.WEASEL.MessageWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.RegionsOfInterest_DICOM.html">CoreModules.WEASEL.RegionsOfInterest_DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.ToolBar.html">CoreModules.WEASEL.ToolBar</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CoreModules.WEASEL.TreeView</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.UserImageColourSelection.html">CoreModules.WEASEL.UserImageColourSelection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.WriteXMLfromDICOM.html">CoreModules.WEASEL.WriteXMLfromDICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.iBeatImport.html">CoreModules.WEASEL.iBeatImport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.readDICOM_Image.html">CoreModules.WEASEL.readDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.saveDICOM_Image.html">CoreModules.WEASEL.saveDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.styleSheet.html">CoreModules.WEASEL.styleSheet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselConfigXMLReader.html">CoreModules.WEASEL.weaselConfigXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselMenuXMLReader.html">CoreModules.WEASEL.weaselMenuXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselXMLReader.html">CoreModules.WEASEL.weaselXMLReader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.canvas.html">CoreModules.canvas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="CoreModules.html">CoreModules</a> &raquo;</li>
+        
+          <li><a href="CoreModules.WEASEL.html">CoreModules.WEASEL</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.TreeView</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com///blob/CoreModules.WEASEL.TreeView.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-CoreModules.WEASEL.TreeView">
+<span id="coremodules-weasel-treeview"></span><h1>CoreModules.WEASEL.TreeView<a class="headerlink" href="#module-CoreModules.WEASEL.TreeView" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.areAllChildrenChecked">
+<code class="sig-name descname">areAllChildrenChecked</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#areAllChildrenChecked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.areAllChildrenChecked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is all the children of a QTreeWidgetItem are checked
+otherwise returns False</p>
+<p>item  - A QTreeWidgetItem whose checkbox state has just changed</p>
+<p>True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.buildTreeView">
+<code class="sig-name descname">buildTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#buildTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.buildTreeView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.checkChildItems">
+<code class="sig-name descname">checkChildItems</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#checkChildItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.checkChildItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses recursion to set the state of child checkboxes to
+match that of their parent.</p>
+<p>item  - A QTreeWidgetItem whose checkbox state has just changed</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.checkParentItems">
+<code class="sig-name descname">checkParentItems</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#checkParentItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.checkParentItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses recursion to set the state of Parent checkboxes to
+match collective state of their children.</p>
+<p>item  - A QTreeWidgetItem whose checkbox state has just changed</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.closeProgressBar">
+<code class="sig-name descname">closeProgressBar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#closeProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.closeProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.collapseSeriesBranches">
+<code class="sig-name descname">collapseSeriesBranches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#collapseSeriesBranches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.collapseSeriesBranches" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses recursion to colapse all series branches</p>
+<p>item  - A QTreeWidgetItem</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.collapseStudiesBranches">
+<code class="sig-name descname">collapseStudiesBranches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#collapseStudiesBranches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.collapseStudiesBranches" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses recursion to colapse all series branches</p>
+<p>item  - A QTreeWidgetItem</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.createImageLeaf">
+<code class="sig-name descname">createImageLeaf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">image</span></em>, <em class="sig-param"><span class="n">seriesBranch</span></em>, <em class="sig-param"><span class="n">treeWidgetItemCounter</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#createImageLeaf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.createImageLeaf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.createTreeBranch">
+<code class="sig-name descname">createTreeBranch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">branchName</span></em>, <em class="sig-param"><span class="n">branch</span></em>, <em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">treeWidgetItemCounter</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#createTreeBranch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.createTreeBranch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.expandTreeViewBranch">
+<code class="sig-name descname">expandTreeViewBranch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="n">newSeriesName</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#expandTreeViewBranch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.expandTreeViewBranch" title="Permalink to this definition">¶</a></dt>
+<dd><p>TO DO</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.getPathParentNode">
+<code class="sig-name descname">getPathParentNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">inputPath</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#getPathParentNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.getPathParentNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a list of subjectID, studyID an seriesID based on the given filepath.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.initialiseProgressBar">
+<code class="sig-name descname">initialiseProgressBar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">numTreeViewItems</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#initialiseProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.initialiseProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.isASeriesSelected">
+<code class="sig-name descname">isASeriesSelected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#isASeriesSelected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.isASeriesSelected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is a series is selected in the DICOM
+tree view, else returns False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.isAStudySelected">
+<code class="sig-name descname">isAStudySelected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#isAStudySelected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.isAStudySelected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is a study is selected in the DICOM
+tree view, else returns False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.isAnImageSelected">
+<code class="sig-name descname">isAnImageSelected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#isAnImageSelected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.isAnImageSelected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is a single image is selected in the DICOM
+tree view, else returns False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.isAnItemSelected">
+<code class="sig-name descname">isAnItemSelected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#isAnItemSelected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.isAnItemSelected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is an item is selected DICOM
+tree view, else returns False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.makeDICOMStudiesTreeView">
+<code class="sig-name descname">makeDICOMStudiesTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">XML_File_Path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#makeDICOMStudiesTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.makeDICOMStudiesTreeView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses an XML file that describes a DICOM file structure to build a
+tree view showing a visual representation of that file structure.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.onTreeViewItemClicked">
+<code class="sig-name descname">onTreeViewItemClicked</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#onTreeViewItemClicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.onTreeViewItemClicked" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a DICOM study treeview item is clicked, this function
+populates the relevant class variables that store the following
+DICOM image data: study ID, Series ID, Image name, image file path</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.refreshDICOMStudiesTreeView">
+<code class="sig-name descname">refreshDICOMStudiesTreeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">newSeriesName</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#refreshDICOMStudiesTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.refreshDICOMStudiesTreeView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses an XML file that describes a DICOM file structure to build a
+tree view showing a visual representation of that file structure.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.resizeTreeViewColumns">
+<code class="sig-name descname">resizeTreeViewColumns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#resizeTreeViewColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.resizeTreeViewColumns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnCheckedImages">
+<code class="sig-name descname">returnCheckedImages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnCheckedImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnCheckedImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of checked images.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnCheckedSeries">
+<code class="sig-name descname">returnCheckedSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnCheckedSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnCheckedSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of checked series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnCheckedStudies">
+<code class="sig-name descname">returnCheckedStudies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnCheckedStudies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnCheckedStudies" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of checked series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnSelectedImages">
+<code class="sig-name descname">returnSelectedImages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnSelectedImages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnSelectedImages" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of selected images.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnSelectedSeries">
+<code class="sig-name descname">returnSelectedSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnSelectedSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnSelectedSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of selected series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.returnSelectedStudies">
+<code class="sig-name descname">returnSelectedStudies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#returnSelectedStudies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.returnSelectedStudies" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates and returns a list of selected studies.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.setupLoadingLabel">
+<code class="sig-name descname">setupLoadingLabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">lblLoading</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#setupLoadingLabel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.setupLoadingLabel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.TreeView.toggleToolButtons">
+<code class="sig-name descname">toggleToolButtons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/TreeView.html#toggleToolButtons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.TreeView.toggleToolButtons" title="Permalink to this definition">¶</a></dt>
+<dd><p>TO DO</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CoreModules.WEASEL.UserImageColourSelection.html" class="btn btn-neutral float-right" title="CoreModules.WEASEL.UserImageColourSelection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CoreModules.WEASEL.ToolBar.html" class="btn btn-neutral float-left" title="CoreModules.WEASEL.ToolBar" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

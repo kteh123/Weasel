@@ -1,0 +1,538 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.weaselXMLReader &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../CoreModules.html">CoreModules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.weaselXMLReader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CoreModules.WEASEL.weaselXMLReader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">xml.etree.cElementTree</span> <span class="k">as</span> <span class="nn">ET</span>  
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.readDICOM_Image</span> <span class="k">as</span> <span class="nn">readDICOM_Image</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WeaselXMLReader"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader">[docs]</a><span class="k">class</span> <span class="nc">WeaselXMLReader</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hasXMLFileParsedOK</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="kc">None</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span> 
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39; Created XML Reader Object&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.__init__: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            
+
+<div class="viewcode-block" id="WeaselXMLReader.parseXMLFile"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.parseXMLFile">[docs]</a>    <span class="k">def</span> <span class="nf">parseXMLFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fullFilePath</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;Loads and parses the XML configuration file at fullFilePath.</span>
+<span class="sd">       After successful parsing, the XML tree and its root node</span>
+<span class="sd">      is stored in memory.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hasXMLFileParsedOK</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span> <span class="o">=</span> <span class="n">fullFilePath</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fullFilePath</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+            <span class="c1"># Uncomment to test XML file loaded OK</span>
+            <span class="c1">#print(ET.tostring(self.root, encoding=&#39;utf8&#39;).decode(&#39;utf8&#39;))</span>
+           
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;In module &#39;</span> <span class="o">+</span> <span class="vm">__name__</span> 
+                    <span class="o">+</span> <span class="s1">&#39;WeaselXMLReader.parseConfigFile &#39;</span> <span class="o">+</span> <span class="n">fullFilePath</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">ET</span><span class="o">.</span><span class="n">ParseError</span> <span class="k">as</span> <span class="n">et</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WeaselXMLReader.parseConfigFile error: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">et</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;WeaselXMLReader.parseConfigFile error: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">et</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hasXMLFileParsedOK</span> <span class="o">=</span> <span class="kc">False</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.parseConfigFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.parseConfigFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">hasXMLFileParsedOK</span> <span class="o">=</span> <span class="kc">False</span></div>
+    
+
+<div class="viewcode-block" id="WeaselXMLReader.getXMLRoot"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getXMLRoot">[docs]</a>    <span class="k">def</span> <span class="nf">getXMLRoot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getStudies"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getStudies">[docs]</a>    <span class="k">def</span> <span class="nf">getStudies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject/study&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WeaselXMLReader.getSubjects"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getSubjects">[docs]</a>    <span class="k">def</span> <span class="nf">getSubjects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getImageList"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getImageList">[docs]</a>    <span class="k">def</span> <span class="nf">getImageList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]/image&#39;</span>        
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageList: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageList: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getSeries"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getSeries">[docs]</a>    <span class="k">def</span> <span class="nf">getSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                    <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getSeries_: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.saveXMLFile"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.saveXMLFile">[docs]</a>    <span class="k">def</span> <span class="nf">saveXMLFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filePath</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.saveXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.saveXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getStudy"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getStudy">[docs]</a>    <span class="k">def</span> <span class="nf">getStudy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getStudy: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getStudy: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getSeriesOfSpecifiedType"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getSeriesOfSpecifiedType">[docs]</a>    <span class="k">def</span> <span class="nf">getSeriesOfSpecifiedType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+             <span class="s1">&#39;]/series[@parentID=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> \
+             <span class="s1">&#39;[@typeID=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;]&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getSeriesOfSpecifiedType_: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getSeriesOfSpecifiedType_: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getImagePathList"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getImagePathList">[docs]</a>    <span class="k">def</span> <span class="nf">getImagePathList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]/image&#39;</span>
+            <span class="c1">#print(xPath)</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span>
+            <span class="n">imageList</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">imageList</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in weaselXMLReader.getImagePathList: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in weaselXMLReader.getImagePathList: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="WeaselXMLReader.getNumberItemsInTreeView"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getNumberItemsInTreeView">[docs]</a>    <span class="k">def</span> <span class="nf">getNumberItemsInTreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Counts the number of elements in the DICOM XML file to</span>
+<span class="sd">        determine the number of items forming the tree view&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;weaselXMLReader.getNumberItemsInTreeView called&quot;</span><span class="p">)</span>
+            <span class="n">numSubjects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject&#39;</span><span class="p">))</span>
+            <span class="n">numStudies</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject/study&#39;</span><span class="p">))</span>
+            <span class="n">numSeries</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject/study/series&#39;</span><span class="p">))</span>
+            <span class="n">numImages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;./subject/study/series/image&#39;</span><span class="p">))</span>
+            <span class="n">numItems</span> <span class="o">=</span> <span class="n">numSubjects</span> <span class="o">+</span> <span class="n">numStudies</span> <span class="o">+</span> <span class="n">numSeries</span> <span class="o">+</span> <span class="n">numImages</span>
+            <span class="k">return</span> <span class="n">numSubjects</span><span class="p">,</span> <span class="n">numStudies</span><span class="p">,</span> <span class="n">numSeries</span><span class="p">,</span> <span class="n">numImages</span><span class="p">,</span> <span class="n">numItems</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function weaselXMLReader.getNumberItemsInTreeView: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in weaselXMLReader.getNumberItemsInTreeView: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getNumberImagesInSeries"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getNumberImagesInSeries">[docs]</a>    <span class="k">def</span> <span class="nf">getNumberImagesInSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                        <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="o">+</span> \
+                        <span class="s1">&#39;/image&#39;</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getNumberImagesInSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getNumberImagesInSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.removeOneImageFromSeries"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.removeOneImageFromSeries">[docs]</a>    <span class="k">def</span> <span class="nf">removeOneImageFromSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">imagePath</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#Get the series (parent) containing this image (child)</span>
+            <span class="c1">#then remove child from parent</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSeries</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">imagePath</span><span class="p">:</span>
+                    <span class="n">series</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.removeOneImageFromSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.removeOneImageFromSeries: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.removeSeriesFromXMLFile"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.removeSeriesFromXMLFile">[docs]</a>    <span class="k">def</span> <span class="nf">removeSeriesFromXMLFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a whole series from the DICOM XML file&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;weaseXMLReader.removeSeriesFromXMLFile called&quot;</span><span class="p">)</span>
+            <span class="n">study</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStudy</span><span class="p">(</span><span class="n">studyID</span><span class="p">)</span>
+            <span class="c1">#print(&#39;XML = {}&#39;.format(ET.tostring(study)))</span>
+            <span class="k">for</span> <span class="n">series</span> <span class="ow">in</span> <span class="n">study</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">seriesID</span><span class="p">:</span>
+                    <span class="n">study</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in weaseXMLReader.removeSeriesFromXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in weaseXMLReader.removeSeriesFromXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getImageLabel"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getImageLabel">[docs]</a>    <span class="k">def</span> <span class="nf">getImageLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">imageName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">imageName</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;000000&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                        <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="o">+</span> \
+                        <span class="s1">&#39;/image[name=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">imageName</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;]/label&#39;</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageLabel: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageLabel: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.getImageTime"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getImageTime">[docs]</a>    <span class="k">def</span> <span class="nf">getImageTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">imageName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">imageName</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                        <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="o">+</span> \
+                        <span class="s1">&#39;/image[name=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">imageName</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;]/time&#39;</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageTime: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageTime: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="WeaselXMLReader.getImageDate"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.getImageDate">[docs]</a>    <span class="k">def</span> <span class="nf">getImageDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">imageName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">imageName</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xPath</span> <span class="o">=</span> <span class="s1">&#39;./subject/study[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">studyID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> \
+                    <span class="s1">&#39;]/series[@id=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">seriesID</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="o">+</span> \
+                    <span class="s1">&#39;/image[name=&#39;</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span> <span class="n">imageName</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;]/date&#39;</span>
+            
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">xPath</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                 
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageDate: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.getImageDate: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.insertNewSeriesInXML"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.insertNewSeriesInXML">[docs]</a>    <span class="k">def</span> <span class="nf">insertNewSeriesInXML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origImageList</span><span class="p">,</span> <span class="n">newImageList</span><span class="p">,</span>
+                     <span class="n">studyID</span><span class="p">,</span> <span class="n">newSeriesID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">currentStudy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStudy</span><span class="p">(</span><span class="n">studyID</span><span class="p">)</span>
+            <span class="n">newAttributes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">newSeriesID</span><span class="p">,</span> 
+                                <span class="s1">&#39;parentID&#39;</span><span class="p">:</span><span class="n">seriesID</span><span class="p">,</span>
+                                <span class="s1">&#39;typeID&#39;</span><span class="p">:</span><span class="n">suffix</span><span class="p">}</span>
+                   
+            <span class="c1">#Add new series to study to hold new images</span>
+            <span class="n">newSeries</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">currentStudy</span><span class="p">,</span> <span class="s1">&#39;series&#39;</span><span class="p">,</span> <span class="n">newAttributes</span><span class="p">)</span>           
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Comment</span><span class="p">(</span><span class="s1">&#39;This series holds a whole series of new images&#39;</span><span class="p">)</span>
+            <span class="n">newSeries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+            <span class="c1">#Get image date &amp; time from original image</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">imageNewName</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">newImageList</span><span class="p">):</span> <span class="c1">#origImageList</span>
+                <span class="c1">#imageLabel = self.getImageLabel(studyID, seriesID, imageName)</span>
+                <span class="n">imageTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getImageTime</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span><span class="c1"># , imageName)</span>
+                <span class="n">imageDate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getImageDate</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span><span class="c1">#, imageName)</span>
+                <span class="n">newImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newSeries</span><span class="p">,</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+                <span class="c1">#Add child nodes of the image element</span>
+                <span class="n">labelNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span>
+                <span class="n">labelNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+                <span class="n">nameNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+                <span class="n">nameNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageNewName</span>
+                <span class="n">timeNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">)</span>
+                <span class="n">timeNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageTime</span>
+                <span class="n">dateNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span>
+                <span class="n">dateNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageDate</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.insertNewSeriesInXML: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.insertNewSeriesInXML: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.insertNewImageInXML"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.insertNewImageInXML">[docs]</a>    <span class="k">def</span> <span class="nf">insertNewImageInXML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imageName</span><span class="p">,</span>
+                   <span class="n">newImageFileName</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">newSeriesName</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1">#First determine if a series with parentID=seriesID exists</span>
+        <span class="c1">#and typeID=suffix</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSeriesOfSpecifiedType</span><span class="p">(</span>
+                <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="c1">#Get image label, date &amp; time</span>
+            <span class="n">imageLabel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getImageLabel</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">imageName</span><span class="p">)</span>
+            <span class="n">imageTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getImageTime</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span><span class="c1">#, imageName)</span>
+            <span class="n">imageDate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getImageDate</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span><span class="c1">#, imageName)</span>
+            <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1">#Need to create a new series to hold this new image</span>
+                <span class="n">dataset</span> <span class="o">=</span> <span class="n">readDICOM_Image</span><span class="o">.</span><span class="n">getDicomDataset</span><span class="p">(</span><span class="n">newImageFileName</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">newSeriesName</span><span class="p">:</span>
+                    <span class="n">newSeriesID</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SeriesNumber</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">newSeriesName</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">newSeriesID</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SeriesNumber</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dataset</span><span class="o">.</span><span class="n">SeriesDescription</span>
+                <span class="c1">#Get study branch</span>
+                <span class="n">currentStudy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStudy</span><span class="p">(</span><span class="n">studyID</span><span class="p">)</span>
+                <span class="n">newAttributes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">newSeriesID</span><span class="p">,</span> 
+                                    <span class="s1">&#39;parentID&#39;</span><span class="p">:</span><span class="n">seriesID</span><span class="p">,</span> 
+                                    <span class="s1">&#39;typeID&#39;</span><span class="p">:</span><span class="n">suffix</span><span class="p">}</span>
+                   
+                <span class="c1">#Add new series to study to hold new images</span>
+                <span class="n">newSeries</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">currentStudy</span><span class="p">,</span> <span class="s1">&#39;series&#39;</span><span class="p">,</span> <span class="n">newAttributes</span><span class="p">)</span>
+                    
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Comment</span><span class="p">(</span><span class="s1">&#39;This series holds new images&#39;</span><span class="p">)</span>
+                <span class="n">newSeries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+                    
+                <span class="c1">#print(&quot;image time {}, date {}&quot;.format(imageTime, imageDate))</span>
+                <span class="c1">#Now add image element</span>
+                <span class="n">newImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newSeries</span><span class="p">,</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+                <span class="c1">#Add child nodes of the image element</span>
+                <span class="n">labelNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span>
+                <span class="n">labelNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageLabel</span>
+                <span class="n">nameNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+                <span class="n">nameNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">newImageFileName</span>
+                <span class="n">timeNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">)</span>
+                <span class="n">timeNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageTime</span>
+                <span class="n">dateNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span>
+                <span class="n">dateNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageDate</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">newSeriesID</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#A series already exists to hold new images from</span>
+                <span class="c1">#the current parent series</span>
+                <span class="n">newImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+                <span class="c1">#Add child nodes of the image element</span>
+                <span class="n">labelNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span>
+                <span class="n">labelNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageLabel</span>
+                <span class="n">nameNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+                <span class="n">nameNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">newImageFileName</span>
+                <span class="n">timeNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">)</span>
+                <span class="n">timeNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageTime</span>
+                <span class="n">dateNewImage</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">newImage</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span>
+                <span class="n">dateNewImage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">imageDate</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">series</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.insertNewImageInXML: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.insertNewImageInXML: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WeaselXMLReader.renameSeriesinXMLFile"><a class="viewcode-back" href="../../../CoreModules.WEASEL.weaselXMLReader.html#CoreModules.WEASEL.weaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile">[docs]</a>    <span class="k">def</span> <span class="nf">renameSeriesinXMLFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">xmlSeriesName</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSeries</span><span class="p">(</span><span class="n">studyID</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">)</span>
+            <span class="n">series</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmlSeriesName</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullFilePath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.renameSeriesinXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> 
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in WeaselXMLReader.renameSeriesinXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.WriteXMLfromDICOM &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CoreModules.WEASEL.iBeatImport" href="CoreModules.WEASEL.iBeatImport.html" />
+    <link rel="prev" title="CoreModules.WEASEL.UserImageColourSelection" href="CoreModules.WEASEL.UserImageColourSelection.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="CoreModules.html">CoreModules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.DoubleSlider.html">CoreModules.DoubleSlider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.ParametricMapsDictionary.html">CoreModules.ParametricMapsDictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.styleSheet_old.html">CoreModules.styleSheet_old</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CoreModules.WEASEL.html">CoreModules.WEASEL</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Affine.html">CoreModules.WEASEL.Affine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageColour.html">CoreModules.WEASEL.DisplayImageColour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageCommon.html">CoreModules.WEASEL.DisplayImageCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageDrawROI.html">CoreModules.WEASEL.DisplayImageDrawROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageROI.html">CoreModules.WEASEL.DisplayImageROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InputDialog.html">CoreModules.WEASEL.InputDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InterfaceDICOMXMLFile.html">CoreModules.WEASEL.InterfaceDICOMXMLFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MenuToolBarCommon.html">CoreModules.WEASEL.MenuToolBarCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Menus.html">CoreModules.WEASEL.Menus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MessageWindow.html">CoreModules.WEASEL.MessageWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.RegionsOfInterest_DICOM.html">CoreModules.WEASEL.RegionsOfInterest_DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.ToolBar.html">CoreModules.WEASEL.ToolBar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.TreeView.html">CoreModules.WEASEL.TreeView</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.UserImageColourSelection.html">CoreModules.WEASEL.UserImageColourSelection</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CoreModules.WEASEL.WriteXMLfromDICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.iBeatImport.html">CoreModules.WEASEL.iBeatImport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.readDICOM_Image.html">CoreModules.WEASEL.readDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.saveDICOM_Image.html">CoreModules.WEASEL.saveDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.styleSheet.html">CoreModules.WEASEL.styleSheet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselConfigXMLReader.html">CoreModules.WEASEL.weaselConfigXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselMenuXMLReader.html">CoreModules.WEASEL.weaselMenuXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselXMLReader.html">CoreModules.WEASEL.weaselXMLReader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.canvas.html">CoreModules.canvas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="CoreModules.html">CoreModules</a> &raquo;</li>
+        
+          <li><a href="CoreModules.WEASEL.html">CoreModules.WEASEL</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.WriteXMLfromDICOM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com///blob/CoreModules.WEASEL.WriteXMLfromDICOM.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-CoreModules.WEASEL.WriteXMLfromDICOM">
+<span id="coremodules-weasel-writexmlfromdicom"></span><h1>CoreModules.WEASEL.WriteXMLfromDICOM<a class="headerlink" href="#module-CoreModules.WEASEL.WriteXMLfromDICOM" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.atof">
+<code class="sig-name descname">atof</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#atof"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.atof" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is auxiliary for the natural sorting of the paths names</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.build_dictionary">
+<code class="sig-name descname">build_dictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_dicom</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#build_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.build_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.create_XML_file">
+<code class="sig-name descname">create_XML_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DICOM_XML_object</span></em>, <em class="sig-param"><span class="n">scan_directory</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#create_XML_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.create_XML_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a new XML file with the based on the structure of the selected DICOM folder</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.get_files_info">
+<code class="sig-name descname">get_files_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scan_directory</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#get_files_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.get_files_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the number of files and subfolders in a folder. It doesn’t mean that they are all DICOM.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.get_scan_data">
+<code class="sig-name descname">get_scan_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scan_directory</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#get_scan_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.get_scan_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method opens all DICOM files in the provided path recursively and saves
+each file individually as a variable into a list/array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.get_studies_series_iBEAT">
+<code class="sig-name descname">get_studies_series_iBEAT</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_dicom</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#get_studies_series_iBEAT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.get_studies_series_iBEAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.get_study_series">
+<code class="sig-name descname">get_study_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dicom</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#get_study_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.get_study_series" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.main">
+<code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.natural_keys">
+<code class="sig-name descname">natural_keys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#natural_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.natural_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>alist.sort(key=natural_keys) sorts in human order
+<a class="reference external" href="http://nedbatchelder.com/blog/200712/human_sorting.html">http://nedbatchelder.com/blog/200712/human_sorting.html</a>
+(See Toothy’s implementation in the comments)
+float regex comes from <a class="reference external" href="https://stackoverflow.com/a/12643073/190597">https://stackoverflow.com/a/12643073/190597</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.open_dicom_to_xml">
+<code class="sig-name descname">open_dicom_to_xml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xml_dict</span></em>, <em class="sig-param"><span class="n">list_dicom</span></em>, <em class="sig-param"><span class="n">list_paths</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#open_dicom_to_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.open_dicom_to_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method opens all DICOM files in the given list and saves
+information from each file individually to an XML tree/structure.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.open_dicom_to_xml_iBEAT">
+<code class="sig-name descname">open_dicom_to_xml_iBEAT</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xml_dict</span></em>, <em class="sig-param"><span class="n">list_dicom</span></em>, <em class="sig-param"><span class="n">list_paths</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#open_dicom_to_xml_iBEAT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.open_dicom_to_xml_iBEAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method opens all DICOM files in the given list and saves
+information from each file individually to an XML tree/structure.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.scan_tree">
+<code class="sig-name descname">scan_tree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scan_directory</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#scan_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.scan_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively yield DirEntry objects for given directory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.select_path">
+<code class="sig-name descname">select_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#select_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.select_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method opens a Dialog Box that allows the user to choose the folder containing the MRI scan.
+The path to the folder is what is returned in this method.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CoreModules.WEASEL.WriteXMLfromDICOM.series_sort">
+<code class="sig-name descname">series_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">elem</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CoreModules/WEASEL/WriteXMLfromDICOM.html#series_sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CoreModules.WEASEL.WriteXMLfromDICOM.series_sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a helper function that will be used in key argument of sorted()
+in order to sort the list of series by series number</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CoreModules.WEASEL.iBeatImport.html" class="btn btn-neutral float-right" title="CoreModules.WEASEL.iBeatImport" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CoreModules.WEASEL.UserImageColourSelection.html" class="btn btn-neutral float-left" title="CoreModules.WEASEL.UserImageColourSelection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

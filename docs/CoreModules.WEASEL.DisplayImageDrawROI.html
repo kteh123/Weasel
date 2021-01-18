@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CoreModules.WEASEL.DisplayImageDrawROI &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CoreModules.WEASEL.DisplayImageROI" href="CoreModules.WEASEL.DisplayImageROI.html" />
+    <link rel="prev" title="CoreModules.WEASEL.DisplayImageCommon" href="CoreModules.WEASEL.DisplayImageCommon.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="CoreModules.html">CoreModules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.DoubleSlider.html">CoreModules.DoubleSlider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.ParametricMapsDictionary.html">CoreModules.ParametricMapsDictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.styleSheet_old.html">CoreModules.styleSheet_old</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CoreModules.WEASEL.html">CoreModules.WEASEL</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Affine.html">CoreModules.WEASEL.Affine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageColour.html">CoreModules.WEASEL.DisplayImageColour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageCommon.html">CoreModules.WEASEL.DisplayImageCommon</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CoreModules.WEASEL.DisplayImageDrawROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.DisplayImageROI.html">CoreModules.WEASEL.DisplayImageROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InputDialog.html">CoreModules.WEASEL.InputDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.InterfaceDICOMXMLFile.html">CoreModules.WEASEL.InterfaceDICOMXMLFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MenuToolBarCommon.html">CoreModules.WEASEL.MenuToolBarCommon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.Menus.html">CoreModules.WEASEL.Menus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.MessageWindow.html">CoreModules.WEASEL.MessageWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.RegionsOfInterest_DICOM.html">CoreModules.WEASEL.RegionsOfInterest_DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.ToolBar.html">CoreModules.WEASEL.ToolBar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.TreeView.html">CoreModules.WEASEL.TreeView</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.UserImageColourSelection.html">CoreModules.WEASEL.UserImageColourSelection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.WriteXMLfromDICOM.html">CoreModules.WEASEL.WriteXMLfromDICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.iBeatImport.html">CoreModules.WEASEL.iBeatImport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.readDICOM_Image.html">CoreModules.WEASEL.readDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.saveDICOM_Image.html">CoreModules.WEASEL.saveDICOM_Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.styleSheet.html">CoreModules.WEASEL.styleSheet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselConfigXMLReader.html">CoreModules.WEASEL.weaselConfigXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselMenuXMLReader.html">CoreModules.WEASEL.weaselMenuXMLReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CoreModules.WEASEL.weaselXMLReader.html">CoreModules.WEASEL.weaselXMLReader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CoreModules.canvas.html">CoreModules.canvas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="CoreModules.html">CoreModules</a> &raquo;</li>
+        
+          <li><a href="CoreModules.WEASEL.html">CoreModules.WEASEL</a> &raquo;</li>
+        
+      <li>CoreModules.WEASEL.DisplayImageDrawROI</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com///blob/CoreModules.WEASEL.DisplayImageDrawROI.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="coremodules-weasel-displayimagedrawroi">
+<h1>CoreModules.WEASEL.DisplayImageDrawROI<a class="headerlink" href="#coremodules-weasel-displayimagedrawroi" title="Permalink to this headline">¶</a></h1>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CoreModules.WEASEL.DisplayImageROI.html" class="btn btn-neutral float-right" title="CoreModules.WEASEL.DisplayImageROI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CoreModules.WEASEL.DisplayImageCommon.html" class="btn btn-neutral float-left" title="CoreModules.WEASEL.DisplayImageCommon" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -13,13 +13,14 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('_ext'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Weasel'
-copyright = '2020, Steve Shillitoe and Joao Sousa'
-author = 'Steve Shillitoe and Joao Sousa'
+copyright = '2021, Steve Shillitoe, Joao Sousa and Steven Sourbron'
+author = 'Steve Shillitoe, Joao Sousa and Steven Sourbron'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'
@@ -39,7 +40,10 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.githubpages']
               
 # ghissue config
-# github_project_url = "https://github.com/dipy/dipy"
+github_url = "https://github.com/QIB-Sheffield/WEASEL"
+github_project_url = "https://github.com/QIB-Sheffield/WEASEL"
+edit_on_github_project = 'QIB-Sheffield/WEASEL'
+edit_on_github_branch = 'master'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -47,7 +51,10 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'pyqtgraph']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# The master toctree document.
+master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -69,3 +76,13 @@ pygments_style = 'sphinx'
 # If false, no module index is generated.
 # Setting to false fixes double module listing under header
 html_use_modindex = False
+
+html_favicon = '../images/uni-sheffield-logo-16.ico'
+# html_logo = None
+html_show_sourcelink = False
+html_context = {
+"author": "Steve Shillitoe, Joao Sousa and Steven Sourbron",
+"display_github": True, # Add 'Edit on Github' link instead of 'View page source'
+"last_updated": True,
+"commit": False,
+}

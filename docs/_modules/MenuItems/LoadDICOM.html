@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MenuItems.LoadDICOM &mdash; Weasel 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/uni-sheffield-logo-16.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Weasel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../CoreModules.html">CoreModules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Developer.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MenuItems.html">MenuItems</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Weasel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>MenuItems.LoadDICOM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for MenuItems.LoadDICOM</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span> 
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span>  <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QFileDialog</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> 
+                             <span class="n">QMdiSubWindow</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QProgressBar</span><span class="p">,</span> 
+    <span class="n">QMdiArea</span><span class="p">,</span>  <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QSpinBox</span><span class="p">,</span>
+         <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+        <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QStatusBar</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QAbstractSlider</span><span class="p">,</span> <span class="n">QHeaderView</span><span class="p">,</span>
+        <span class="n">QTreeWidgetItem</span><span class="p">,</span> <span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QCheckBox</span><span class="p">,</span> <span class="n">QLayout</span><span class="p">,</span> 
+         <span class="n">QComboBox</span><span class="p">,</span> <span class="n">QTableWidget</span><span class="p">,</span> <span class="n">QTableWidgetItem</span><span class="p">,</span> <span class="n">QFrame</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QCursor</span><span class="p">,</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QColor</span>
+
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.TreeView</span>  <span class="k">as</span> <span class="nn">treeView</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.WriteXMLfromDICOM</span> <span class="k">as</span> <span class="nn">WriteXMLfromDICOM</span>
+<span class="kn">import</span> <span class="nn">CoreModules.WEASEL.MessageWindow</span>  <span class="k">as</span> <span class="nn">messageWindow</span>
+<span class="kn">import</span> <span class="nn">MenuItems.CloseAllSubWindows</span> <span class="k">as</span> <span class="nn">closeAllSubWindows</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="isEnabled"><a class="viewcode-back" href="../../MenuItems.LoadDICOM.html#MenuItems.LoadDICOM.isEnabled">[docs]</a><span class="k">def</span> <span class="nf">isEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../MenuItems.LoadDICOM.html#MenuItems.LoadDICOM.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function is executed when the Load DICOM menu item is selected.</span>
+<span class="sd">    It displays a folder dialog box.  After the user has selected the folder</span>
+<span class="sd">    containing the DICOM file, an existing XML is searched for.  If one is </span>
+<span class="sd">    found then the user is given the option of using it, rather than build</span>
+<span class="sd">    a new one from scratch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LoadDICOM.main called&quot;</span><span class="p">)</span>
+        <span class="n">closeAllSubWindows</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedStudy</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedSeries</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedImageName</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentImagePath</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1">#browse to DICOM folder and get DICOM folder name</span>
+        <span class="n">scan_directory</span> <span class="o">=</span> <span class="n">getScanDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1">#print(&quot; scan_directory = &quot;,  scan_directory)</span>
+        <span class="k">if</span> <span class="n">scan_directory</span><span class="p">:</span>
+            <span class="c1">#look inside DICOM folder for XML file with same name as DICOM folder</span>
+            <span class="k">if</span> <span class="n">existsDICOMXMLFile</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">):</span>
+                <span class="c1">#an XML file exists, so ask user if they wish to use it or create new one</span>
+                <span class="n">buttonReply</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                    <span class="s1">&#39;Load DICOM images&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;This DICOM folder has already been processed. Would you like to load it?&#39;</span><span class="p">,</span> 
+                        <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span><span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">buttonReply</span> <span class="o">==</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span><span class="p">:</span>
+                    <span class="n">XML_File_Path</span> <span class="o">=</span> <span class="n">scan_directory</span> <span class="o">+</span> <span class="s1">&#39;//&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.xml&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#the user wishes to create a new xml file,</span>
+                    <span class="c1">#thus overwriting the old one</span>
+                    <span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">QCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">))</span>
+                    <span class="n">XML_File_Path</span> <span class="o">=</span> <span class="n">makeDICOM_XML_File</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">)</span>
+                    <span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#if there is no XML file, create one</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">QCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">))</span>
+                <span class="n">XML_File_Path</span> <span class="o">=</span> <span class="n">makeDICOM_XML_File</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">)</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span>
+
+            <span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">QCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">))</span>
+            <span class="n">treeView</span><span class="o">.</span><span class="n">makeDICOMStudiesTreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">XML_File_Path</span><span class="p">)</span>
+            <span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.main: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.main: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="getScanDirectory"><a class="viewcode-back" href="../../MenuItems.LoadDICOM.html#MenuItems.LoadDICOM.getScanDirectory">[docs]</a><span class="k">def</span> <span class="nf">getScanDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Displays an open folder dialog window to allow the</span>
+<span class="sd">        user to select the folder holding the DICOM files&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;LoadDICOM.getScanDirectory called.&#39;</span><span class="p">)</span>
+            <span class="c1">#cwd = os.getcwd()</span>
+
+            <span class="n">scan_directory</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span>
+               <span class="bp">self</span><span class="p">,</span>
+               <span class="s1">&#39;Select the directory containing the scan&#39;</span><span class="p">,</span> 
+               <span class="bp">self</span><span class="o">.</span><span class="n">weaselDataFolder</span><span class="p">,</span> 
+               <span class="n">QFileDialog</span><span class="o">.</span><span class="n">ShowDirsOnly</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">scan_directory</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.getScanDirectory: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="existsDICOMXMLFile"><a class="viewcode-back" href="../../MenuItems.LoadDICOM.html#MenuItems.LoadDICOM.existsDICOMXMLFile">[docs]</a><span class="k">def</span> <span class="nf">existsDICOMXMLFile</span><span class="p">(</span><span class="n">scanDirectory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function returns True if an XML file of scan images already</span>
+<span class="sd">    exists in the scan directory.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LoadDICOM.existsDICOMXMLFile called&quot;</span><span class="p">)</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">scanDirectory</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> \
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">scanDirectory</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.xml&quot;</span><span class="p">:</span>
+                            <span class="n">flag</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+        <span class="k">return</span> <span class="n">flag</span>                   
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.existsDICOMXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.existsDICOMXMLFile: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="makeDICOM_XML_File"><a class="viewcode-back" href="../../MenuItems.LoadDICOM.html#MenuItems.LoadDICOM.makeDICOM_XML_File">[docs]</a><span class="k">def</span> <span class="nf">makeDICOM_XML_File</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates an XML file that describes the contents of the scan folder,</span>
+<span class="sd">    scan_directory.  Returns the full file path of the resulting XML file,</span>
+<span class="sd">    which takes it&#39;s name from the scan folder.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LoadDICOM.makeDICOM_XML_File called.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scan_directory</span><span class="p">:</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">numFiles</span><span class="p">,</span> <span class="n">numFolders</span> <span class="o">=</span> <span class="n">WriteXMLfromDICOM</span><span class="o">.</span><span class="n">get_files_info</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">numFolders</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; folder.&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; folder and </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numFolders</span><span class="p">)</span> \
+                    <span class="o">+</span> <span class="s1">&#39;subdirectory(s)&#39;</span>
+
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;Collecting </span><span class="si">{}</span><span class="s2"> files from the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numFiles</span><span class="p">,</span> <span class="n">folder</span><span class="p">))</span>
+            <span class="n">scans</span><span class="p">,</span> <span class="n">paths</span> <span class="o">=</span> <span class="n">WriteXMLfromDICOM</span><span class="o">.</span><span class="n">get_scan_data</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span>
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;&lt;H4&gt;Reading data from each DICOM file&lt;/H4&gt;&quot;</span><span class="p">)</span>
+            <span class="n">dictionary</span> <span class="o">=</span> <span class="n">WriteXMLfromDICOM</span><span class="o">.</span><span class="n">build_dictionary</span><span class="p">(</span><span class="n">scans</span><span class="p">)</span>
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;&lt;H4&gt;Writing DICOM data to an XML file&lt;/H4&gt;&quot;</span><span class="p">)</span>
+            <span class="n">xml</span> <span class="o">=</span> <span class="n">WriteXMLfromDICOM</span><span class="o">.</span><span class="n">open_dicom_to_xml</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">scans</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
+            <span class="n">messageWindow</span><span class="o">.</span><span class="n">displayMessageSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;&lt;H4&gt;Saving XML file&lt;/H4&gt;&quot;</span><span class="p">)</span>
+            <span class="n">fullFilePath</span> <span class="o">=</span> <span class="n">WriteXMLfromDICOM</span><span class="o">.</span><span class="n">create_XML_file</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msgSubWindow</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">end_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">xmlCreationTime</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;XML file creation time = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmlCreationTime</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LoadDICOM.makeDICOM_XML_File returns </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fullFilePath</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">fullFilePath</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.makeDICOM_XML_File: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error in function LoadDICOM.makeDICOM_XML_File: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Steve Shillitoe, Joao Sousa and Steven Sourbron
+      <span class="lastupdated">
+        Last updated on True.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
