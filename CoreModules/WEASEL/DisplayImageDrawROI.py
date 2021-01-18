@@ -34,6 +34,8 @@ import CoreModules.WEASEL.InputDialog as inputDialog
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
+import gc
+gc.collect()
 import logging
 logger = logging.getLogger(__name__)
 
@@ -115,6 +117,14 @@ def setUpGraphicsViewSubWindow(self):
             print('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
             logger.error('Error in DisplayImageDrawRIO.displayMultiImageSubWindow: ' + str(e))
 
+
+def closeEvent(event):
+    try:
+        logger.info("DisplayImageDrawROI.closeEvent called")
+        event.ignore()
+    except Exception as e:
+        print('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
+        logger.error('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
 
 def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
@@ -409,12 +419,12 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView)
 
-            setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-                                    cmbROIs, buttonList)
+            #setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
+            #                        cmbROIs, buttonList)
 
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs)
-            spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
-            spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
+            #spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs)
+            #spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
+            #spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
 
         except (IndexError, AttributeError):
                 subWindow.close()
