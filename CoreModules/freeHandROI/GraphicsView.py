@@ -25,6 +25,7 @@ class GraphicsView(QGraphicsView):
     sigContextMenuDisplayed = QtCore.Signal()
     sigReloadImage =  QtCore.Signal()
     sigROIDeleted = QtCore.Signal()
+    sigSetDrawButtonRed = QtCore.Signal(bool)
 
 
     def __init__(self,zoomSlider, zoomLabel): # 
@@ -183,7 +184,7 @@ class GraphicsView(QGraphicsView):
 
             drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
             drawROI.setToolTip("Draw an ROI")
-            drawROI.triggered.connect(self.drawROI)
+            drawROI.triggered.connect(lambda: self.drawROI(True))
 
             eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
             eraseROI.setToolTip("Erase the ROI")
@@ -229,20 +230,17 @@ class GraphicsView(QGraphicsView):
             print('Error in GraphicsView.addRegionsToContextMenu: ' + str(e))
 
 
-    def drawROI(self):
+    def drawROI(self, fromContextMenu = False):
         if not self.graphicsItem.drawEnabled:
-            self.drawButton.setStyleSheet("background-color: red")
-            self.eraseButton.setStyleSheet(
-             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-             )
+            if fromContextMenu:
+                self.sigSetDrawButtonRed.emit(True)
             self.graphicsItem.drawEnabled = True
             self.setZoomEnabled(False)
             self.graphicsItem.eraseEnabled = False
         else:
             self.graphicsItem.drawEnabled = False
-            self.drawButton.setStyleSheet(
-             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-             )
+            if fromContextMenu:
+                self.sigSetDrawButtonRed.emit(False)
 
 
     def eraseROI(self):

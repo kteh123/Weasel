@@ -246,7 +246,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
 
         cmbROIs.currentIndexChanged.connect(
             lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                                  roiMeanLabel, self, buttonList, imageSlider))
+                                  roiMeanLabel, self, buttonList, btnDraw, btnErase, imageSlider))
 
         cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, graphicsView, text))
         cmbROIs.setToolTip("Displays a list of ROIs created")
@@ -280,11 +280,22 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
         gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
 
-        return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList
+        return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase
     except Exception as e:
            print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
            logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
 
+
+def setDrawButtonColour(setRed, btnDraw, btnErase):
+    if setRed:
+           btnDraw.setStyleSheet("background-color: red")
+           btnErase.setStyleSheet(
+            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+             )
+    else:
+           btnDraw.setStyleSheet(
+             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+             )
 
 def setButtonsToDefaultStyle(buttonList):
     try:
@@ -314,6 +325,7 @@ def zoomImage(btn, checked, graphicsView, buttonList):
         btn.setStyleSheet(
          "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
          )
+
 def drawROI(btn, checked, graphicsView, buttonList):
     logger.info("DisplayImageDrawROI.drawROI called.")
     if checked:
@@ -342,7 +354,7 @@ def eraseROI(btn, checked, graphicsView, buttonList):
          )
 
 
-def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnErase,
                             roiMeanLabel, cmbROIs, buttonList, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
@@ -363,11 +375,12 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel,
     graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
     graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, imageSlider ))
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase, imageSlider ))
 
     graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, imageSlider))
+              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, imageSlider))
 
+    graphicsView.sigSetDrawButtonRed.connect( lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
 
 def setUpGraphicsView(hbox):
     try:
@@ -462,7 +475,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             graphicsView = setUpGraphicsView(hbox)
             graphicsView.dictROIs = ROIs(NumImages=len(imageList))
             
-            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
+            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase = setUpPixelDataWidgets(self, layout, 
                                                                           graphicsView,
                                                                            imageSlider)
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
@@ -477,7 +490,8 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    imageList, 
                                                    imageSlider,
                                                    lblImageMissing, pixelDataLabel,
-                                                   roiMeanLabel, cmbROIs, 
+                                                   roiMeanLabel, cmbROIs,
+                                                   btnDraw, btnErase,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
                                                    graphicsView, subWindow,
@@ -489,6 +503,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     lblImageMissing, 
                                     pixelDataLabel, 
                                     roiMeanLabel, cmbROIs,
+                                    btnDraw, btnErase,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
                                     graphicsView, subWindow, buttonList)
@@ -561,7 +576,7 @@ def replaceMask(graphicsView, regionName, imageSlider=None):
 
 def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                         lblImageMissing, pixelDataLabel, roiMeanLabel,
-                        cmbROIs,
+                        cmbROIs,  btnDraw, btnErase,
                         spinBoxIntensity, spinBoxContrast,  
                         graphicsView, subWindow, buttonList):
         """On the Multiple Image with ROI Display sub window, this
@@ -582,7 +597,8 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
                     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, imageSlider) 
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase,
+                              imageSlider) 
                     spinBoxIntensity.blockSignals(True)
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
                     spinBoxIntensity.blockSignals(False)
@@ -590,6 +606,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
                     spinBoxContrast.blockSignals(False)
                     setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+                                            btnDraw, btnErase,
                                             roiMeanLabel, cmbROIs, buttonList,
                                          imageSlider)
 
@@ -602,7 +619,9 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
 
 
 def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, imageSlider=None ):
+                              roiMeanLabel, self, buttonList, 
+                              btnDraw, btnErase,
+                              imageSlider=None ):
     try:
         logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
         graphicsView.dictROIs.setPreviousRegionName(cmbROIs.currentText())
@@ -617,7 +636,8 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel,
         graphicsView.setImage(pixelArray, mask)
         pixelDataLabel.clear() 
         roiMeanLabel.clear()
-        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
+        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+                                btnDraw, btnErase, roiMeanLabel,
                                      cmbROIs, buttonList, imageSlider)
     except Exception as e:
            print('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
@@ -625,11 +645,13 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel,
     
 
 def deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, imageSlider=None):
+              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase,
+              imageSlider=None):
     logger.info("DisplayImageDrawROI.deleteROITidyUp called")
     
     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, imageSlider) 
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase,
+                              imageSlider) 
     displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider)
     if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1: 
         cmbROIs.clear()
