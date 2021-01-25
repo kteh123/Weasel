@@ -26,6 +26,7 @@ class GraphicsView(QGraphicsView):
     sigReloadImage =  QtCore.Signal()
     sigROIDeleted = QtCore.Signal()
     sigSetDrawButtonRed = QtCore.Signal(bool)
+    sigSetEraseButtonRed = QtCore.Signal(bool)
 
 
     def __init__(self,zoomSlider, zoomLabel): # 
@@ -42,11 +43,6 @@ class GraphicsView(QGraphicsView):
         self.roiCombo = None
         self.dictROIs = ROIs()
         self.menu = QMenu()
-        self.drawButton = None
-        self.eraseButton = None
-        #self.newButton = None
-        #self.resetButton = None
-        #self.deleteButton = None
         #Following commented out to display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -54,15 +50,15 @@ class GraphicsView(QGraphicsView):
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
     
-    def __del__(self): 
-        self.zoomSlider = None
-        self.zoomLabel = None
-        self.roiCombo = None
-        self.dictROIs = None
-        self.menu = None
-        self.drawButton = None
-        self.eraseButton = None
-        print('Destructor called, GraphicsView deleted.') 
+    #def __del__(self): 
+    #    self.zoomSlider = None
+    #    self.zoomLabel = None
+    #    self.roiCombo = None
+    #    self.dictROIs = None
+    #    self.menu = None
+    #    self.drawButton = None
+    #    self.eraseButton = None
+    #    print('Destructor called, GraphicsView deleted.') 
 
 
     def loadROI(self, regionName):
@@ -188,7 +184,7 @@ class GraphicsView(QGraphicsView):
 
             eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
             eraseROI.setToolTip("Erase the ROI")
-            eraseROI.triggered.connect(self.eraseROI)
+            eraseROI.triggered.connect(lambda: self.eraseROI(True))
 
             newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
             newROI.setToolTip("Create a new ROI")
@@ -243,33 +239,37 @@ class GraphicsView(QGraphicsView):
                 self.sigSetDrawButtonRed.emit(False)
 
 
-    def eraseROI(self):
+    def eraseROI(self, fromContextMenu = False):
         if not self.graphicsItem.eraseEnabled:
-            self.eraseButton.setStyleSheet("background-color: red")
-            self.drawButton.setStyleSheet(
-             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-             )
+            if fromContextMenu:
+                self.sigSetEraseButtonRed.emit(True)
+            #self.eraseButton.setStyleSheet("background-color: red")
+            #self.drawButton.setStyleSheet(
+            # "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+            # )
             self.graphicsItem.drawEnabled = False
             self.setZoomEnabled(False)
             self.graphicsItem.eraseEnabled = True
         else:
             self.graphicsItem.eraseEnabled = False
-            self.eraseButton.setStyleSheet(
-             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-             )
+            if fromContextMenu:
+                self.sigSetEraseButtonRed.emit(False)
+            #self.eraseButton.setStyleSheet(
+            # "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+            # )
        
-    def resetDrawAndEraseButtonsToDefaultStyle(self):
-        self.eraseButton.setStyleSheet(
-             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-             )
-        self.drawButton.setStyleSheet(
-            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-            )
+    #def resetDrawAndEraseButtonsToDefaultStyle(self):
+    #    self.eraseButton.setStyleSheet(
+    #         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+    #         )
+    #    self.drawButton.setStyleSheet(
+    #        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+    #        )
 
     def newROI(self):
         try:
             logger.info("GraphicsView.newROI called")
-            self.resetDrawAndEraseButtonsToDefaultStyle()
+            #self.resetDrawAndEraseButtonsToDefaultStyle()
             if self.dictROIs.hasRegionGotMask(self.roiCombo.currentText()):
                 self.roiCombo.blockSignals(True)
                 newRegion = self.dictROIs.getNextRegionName()
@@ -289,7 +289,7 @@ class GraphicsView(QGraphicsView):
 
     def resetROI(self):
         try:
-            self.resetDrawAndEraseButtonsToDefaultStyle()
+            #self.resetDrawAndEraseButtonsToDefaultStyle()
             logger.info("GraphicsView.resetROI called")
             self.dictROIs.deleteMask(self.roiCombo.currentText())
             self.sigReloadImage.emit()
@@ -299,7 +299,7 @@ class GraphicsView(QGraphicsView):
 
     def deleteROI(self):
         try:
-            self.resetDrawAndEraseButtonsToDefaultStyle()
+            #self.resetDrawAndEraseButtonsToDefaultStyle()
             logger.info("GraphicsView.deleteROI called")
             if self.roiCombo is not None:
                 regionName = self.roiCombo.currentText()

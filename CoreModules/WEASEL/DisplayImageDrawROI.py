@@ -214,14 +214,12 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         btnLoad.setIcon(QIcon(LOAD_ICON))
 
         btnErase = QPushButton()
-        graphicsView.eraseButton = btnErase
         buttonList.append(btnErase)
         btnErase.setToolTip("Erase the ROI")
         btnErase.setCheckable(True)
         btnErase.setIcon(QIcon(ERASOR_CURSOR))
 
         btnDraw = QPushButton()
-        graphicsView.drawButton = btnDraw
         buttonList.append(btnDraw)
         btnDraw.setToolTip("Draw an ROI")
         btnDraw.setCheckable(True)
@@ -284,6 +282,18 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
     except Exception as e:
            print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
            logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
+
+
+def setEraseButtonColour(setRed, btnDraw, btnErase):
+    if setRed:
+           btnErase.setStyleSheet("background-color: red")
+           btnDraw.setStyleSheet(
+            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+             )
+    else:
+           btnErase.setStyleSheet(
+             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+             )
 
 
 def setDrawButtonColour(setRed, btnDraw, btnErase):
@@ -381,6 +391,9 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
               pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, imageSlider))
 
     graphicsView.sigSetDrawButtonRed.connect( lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
+
+    graphicsView.sigSetEraseButtonRed.connect( lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
+
 
 def setUpGraphicsView(hbox):
     try:
