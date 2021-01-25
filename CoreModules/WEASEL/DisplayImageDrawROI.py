@@ -126,6 +126,7 @@ def closeEvent(event):
         print('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
         logger.error('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
 
+
 def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
     spinBoxIntensity = QDoubleSpinBox()
@@ -390,9 +391,11 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
     graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
               pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, imageSlider))
 
-    graphicsView.sigSetDrawButtonRed.connect( lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
+    graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
 
-    graphicsView.sigSetEraseButtonRed.connect( lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
+    graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
+
+    graphicsView.sigROIChanged.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
 
 def setUpGraphicsView(hbox):
