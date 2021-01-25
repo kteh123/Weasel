@@ -28,6 +28,7 @@ class GraphicsView(QGraphicsView):
     sigSetDrawButtonRed = QtCore.Signal(bool)
     sigSetEraseButtonRed = QtCore.Signal(bool)
     sigROIChanged = QtCore.Signal()
+    sigNewROI = QtCore.Signal(str)
 
 
     def __init__(self,zoomSlider, zoomLabel): # 
@@ -41,7 +42,7 @@ class GraphicsView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.zoomEnabled = False
-        self.roiCombo = None
+        self.currentROIName = None
         self.dictROIs = ROIs()
         self.menu = QMenu()
         #Following commented out to display vertical and
@@ -49,22 +50,6 @@ class GraphicsView(QGraphicsView):
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
-
-    
-    #def __del__(self): 
-    #    self.zoomSlider = None
-    #    self.zoomLabel = None
-    #    self.roiCombo = None
-    #    self.dictROIs = None
-    #    self.menu = None
-    #    self.drawButton = None
-    #    self.eraseButton = None
-    #    print('Destructor called, GraphicsView deleted.') 
-
-
-    def loadROI(self, regionName):
-        self.roiCombo.setCurrentText(regionName) 
-        self.sigReloadImage.emit()
 
 
     def setZoomEnabled(self, boolValue):
@@ -208,25 +193,9 @@ class GraphicsView(QGraphicsView):
             self.menu.addAction(newROI)
             self.menu.addAction(resetROI)
             self.menu.addAction(deleteROI)
-            #self.menu.addSeparator()
-            #roiMenu = self.menu.addMenu("ROIs")
-            #.addRegionsToContextMenu(roiMenu)
             self.menu.exec_(event.globalPos())  
 
-
-    def addRegionsToContextMenu(self, roiMenu):
-        #This does not currently work, 12.01.2021
-        try:
-            regions = self.dictROIs.getListOfRegions()
-            for region in regions:
-                regionAction = QAction(str(region), None)
-                function = self.loadROI(str(region))
-                regionAction.triggered.connect(lambda:function)
-                roiMenu.addAction(regionAction)
-        except Exception as e:
-            print('Error in GraphicsView.addRegionsToContextMenu: ' + str(e))
-
-
+    
     def drawROI(self, fromContextMenu = False):
         if not self.graphicsItem.drawEnabled:
             if fromContextMenu:
@@ -257,12 +226,9 @@ class GraphicsView(QGraphicsView):
         try:
             logger.info("GraphicsView.newROI called")
             self.sigROIChanged.emit()
-            if self.dictROIs.hasRegionGotMask(self.roiCombo.currentText()):
-                self.roiCombo.blockSignals(True)
+            if self.dictROIs.hasRegionGotMask(self.currentROIName):
                 newRegion = self.dictROIs.getNextRegionName()
-                self.roiCombo.addItem(newRegion)
-                self.roiCombo.setCurrentIndex(self.roiCombo.count() - 1)
-                self.roiCombo.blockSignals(False)
+                self.sigNewROI.emit(newRegion)
                 self.graphicsItem.reloadImage()
             else:
                 msgBox = QMessageBox()
@@ -278,7 +244,7 @@ class GraphicsView(QGraphicsView):
         try:
             self.sigROIChanged.emit()
             logger.info("GraphicsView.resetROI called")
-            self.dictROIs.deleteMask(self.roiCombo.currentText())
+            self.dictROIs.deleteMask(self.currentROIName)
             self.sigReloadImage.emit()
         except Exception as e:
             print('Error in GraphicsView.resetROI: ' + str(e))
@@ -288,14 +254,7 @@ class GraphicsView(QGraphicsView):
         try:
             self.sigROIChanged.emit()
             logger.info("GraphicsView.deleteROI called")
-            if self.roiCombo is not None:
-                regionName = self.roiCombo.currentText()
-                if regionName:
-                    self.dictROIs.deleteMask(regionName)
-                    for item in self.menu.actions():
-                        if item.text() == regionName:
-                            self.menu.removeAction(item)
-                            break
-                    self.sigROIDeleted.emit()
+            self.dictROIs.deleteMask(self.currentROIName)
+            self.sigROIDeleted.emit()
         except Exception as e:
             print('Error in GraphicsView.deleteROI: ' + str(e))

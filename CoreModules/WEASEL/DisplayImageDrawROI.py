@@ -127,6 +127,20 @@ def closeEvent(event):
         logger.error('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
 
 
+def addNewROItoDropDownList(newRegion, roiCombo):
+    logger.info("DisplayImageDrawROI.addNewROItoDropDownList called.")
+    noDuplicate = True
+    for count in range(roiCombo.count()):
+         if roiCombo.itemText(count) == newRegion:
+             noDuplicate = False
+             break
+    if noDuplicate:
+        roiCombo.blockSignals(True)
+        roiCombo.addItem(newRegion)
+        roiCombo.setCurrentIndex(roiCombo.count() - 1)
+        roiCombo.blockSignals(False)
+
+
 def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
     spinBoxIntensity = QDoubleSpinBox()
@@ -187,7 +201,6 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         cmbROIs.setDuplicatesEnabled(False)
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0)
-        graphicsView.roiCombo = cmbROIs
 
         btnDeleteROI = QPushButton() 
         btnDeleteROI.setToolTip('Delete the current ROI')
@@ -396,7 +409,14 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
     graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
 
     graphicsView.sigROIChanged.connect(lambda:setButtonsToDefaultStyle(buttonList))
+    graphicsView.sigROIChanged.connect(lambda:updateROIName(graphicsView, cmbROIs))
+    graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName, cmbROIs))
+    
 
+def updateROIName(graphicsView, cmbROIs):
+    logger.info("DisplayImageDrawROI.updateROIName called.")
+    graphicsView.currentROIName = cmbROIs.currentText()
+    
 
 def setUpGraphicsView(hbox):
     try:
