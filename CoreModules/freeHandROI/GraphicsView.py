@@ -29,14 +29,15 @@ class GraphicsView(QGraphicsView):
     sigSetEraseButtonRed = QtCore.Signal(bool)
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
+    sigUpdateZoom = QtCore.Signal(int)
 
 
-    def __init__(self,zoomSlider, zoomLabel): # 
+    def __init__(self): 
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
-        self.zoomSlider = zoomSlider
-        self.zoomLabel = zoomLabel
+        #self.zoomSlider = zoomSlider
+        #self.zoomLabel = zoomLabel
         self.graphicsItem = None
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -104,25 +105,7 @@ class GraphicsView(QGraphicsView):
         else:
             self._zoom = 0
             increment = 0
-        self.updateZoomSlider(increment)
-
-
-    def updateZoomSlider(self, increment):
-        pass
-        #print("updateZoomSlider increment={}".format(increment))
-        self.zoomSlider.blockSignals(True)
-        if increment == 0:
-            self.zoomSlider.setValue(0)
-            self.zoomLabel.setText("<H4>100%</H4>")
-        else:
-            newValue = self.zoomSlider.value() + increment
-            newZoomValue = 100 + (newValue * 25)
-            self.zoomLabel.setText("<H4>" + str(newZoomValue) + "%</H4>")
-            if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
-                self.zoomSlider.setValue(newValue)
-            elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
-                self.zoomSlider.setValue(newValue)
-        self.zoomSlider.blockSignals(False)
+        self.sigUpdateZoom.emit(increment)
 
 
     def wheelEvent(self, event):

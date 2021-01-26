@@ -159,7 +159,6 @@ def setUpImageViewerSubWindow(self):
         pg.setConfigOptions(imageAxisOrder='row-major')
         subWindow = QMdiSubWindow(self)
         subWindow.setObjectName = 'image_viewer'
-        subWindow.setAttribute(Qt.WA_DeleteOnClose)
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
                                       Qt.WindowMinimizeButtonHint)
