@@ -296,24 +296,22 @@ def mapMaskToImage(mask, dataset, datasetOriginal):
         # Dataset or list of paths? This will require a bit more work when the time to write the load mask comes
         affineOriginal = Affine(getAffineArray(datasetOriginal))
         affineArray = Affine(getAffineArray(dataset))
-        invertedAffine = np.linalg.inv(affineArray)
-        pixelArray = getPixelArray(dataset)
-        outputMask = np.zeros(np.shape(pixelArray))
+        invertedAffine = np.linalg.inv(affineOriginal)
+        listIndeces = []
         for index, value in np.ndenumerate(mask):
             if value == 1:
                 if len(index) == 2: 
                     temp_index = index + (1,)
                 else:
                     temp_index = index
-                rwd = affineOriginal.index2coord(temp_index)
+                rwd = affineArray.index2coord(temp_index)
                 newCoord = tuple(invertedAffine.index2coord(rwd).astype(int))
+                if (len(index) == 2) and (newCoord[-1] == 0):
+                    listIndeces.append((newCoord[1], newCoord[0]))
+                elif len(index) == 3:
+                    listIndeces.append((newCoord[-1], newCoord[1], newCoord[0]))
                 del temp_index
-                if len(index) == 2: newCoord = newCoord[:-1]
-                try:
-                    outputMask[newCoord] = 1
-                except:
-                    continue
-        return outputMask # This transpose is controversial, will need more examples to make sure I can do this
+        return listIndeces
     except Exception as e:
         print('Error in function readDICOM_Image.mapMaskToImage: ' + str(e))
 
