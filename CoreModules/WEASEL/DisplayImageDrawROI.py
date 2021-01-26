@@ -721,30 +721,38 @@ def loadROI(self, cmbROIs, graphicsView):
         helpMsg = "Select a Series with ROI"
         studyID = self.selectedStudy
         study = self.objXMLReader.getStudy(studyID)
-        #Build a list of saved ROI series
-        listSeries = [series.attrib['id']  for series in study if 'ROI' in series.attrib['id']]
+        listSeries = [series.attrib['id'] for series in study if 'ROI' in series.attrib['id']]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()
         if inputDlg.closeInputDialog() == False: 
-            # Assuming an ROI series is selected
             seriesID = listParams[0]
             imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            #maskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
             maskList = []
-            originalMaskList = readDICOM_Image.returnSeriesPixelArray(imagePathList)
-            regionList = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0]
             # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
+            if hasattr(readDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
+                region = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
+            else:
+                region = "new_region_number"
 
             # Affine re-adjustment
             # It takes longer to load with this, so we could do an if/else involving Affine
-            for index, dicomFile in enumerate(imagePathList):
-                dataset = readDICOM_Image.getDicomDataset(dicomFile)
-                dataset_original = readDICOM_Image.getDicomDataset(self.imageList[index])
-                maskList.append(readDICOM_Image.mapMaskToImage(originalMaskList[index], dataset, dataset_original))
+            for dicomFile in self.imageList:
+                dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
+                tempArray = np.zeros(np.shape(readDICOM_Image.getPixelArray(dataset_original)))
+                for maskFile in imagePathList:
+                    dataset = readDICOM_Image.getDicomDataset(maskFile)
+                    maskArray = readDICOM_Image.getPixelArray(dataset)
+                    maskArray[maskArray != 0] = 1
+                    affineResults = readDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
+                    for coordinates in affineResults:
+                        tempArray[coordinates] = 1
+                    #tempArray = np.add(tempArray, np.transpose(affineResults))
+                #np.where(tempArray > 1, tempArray, 1)
+                maskList.append(tempArray)
 
             # First populate the ROI_Storage data structure in a loop
-            for imageNumber in range(len(regionList)):
-                graphicsView.dictROIs.addRegion(regionList[imageNumber], np.array(maskList[imageNumber], dtype=bool), imageNumber + 1)
+            for imageNumber in range(len(maskList)):
+                graphicsView.dictROIs.addRegion(region, np.array(maskList[imageNumber]).astype(bool), imageNumber + 1)
 
             # Second populate the dropdown list of region names
             cmbROIs.blockSignals(True)
@@ -754,7 +762,7 @@ def loadROI(self, cmbROIs, graphicsView):
             cmbROIs.blockSignals(False)
 
             # Redisplay the current image to show the mask
-            mask = graphicsView.dictROIs.getMask(regionList[imageNumber], 1)
+            mask = graphicsView.dictROIs.getMask(region, 1)
             graphicsView.graphicsItem.reloadMask(mask)
         
     except Exception as e:
@@ -778,19 +786,22 @@ def saveROI(self, regionName, graphicsView):
             "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
             "Export ROIs")
         messageWindow.setMsgWindowProgBarMaxValue(self, len(inputPath))
+        ids = saveDICOM_Image.generateUIDs(readDICOM_Image.getDicomDataset(inputPath[0]))
+        seriesID = ids[0]
+        seriesUID = ids[1]
         #outputPath = []
         #for image in inputPath:
         for index, path in enumerate(inputPath):
-            messageWindow.setMsgWindowProgBarValue(self, index)
             #outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
+            messageWindow.setMsgWindowProgBarValue(self, index)
             outputPath = saveDICOM_Image.returnFilePath(path, suffix)
-            saveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, parametric_map="SEG")
-            seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, path, outputPath, suffix)
+            saveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
+            treeSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, path, outputPath, suffix)
         #saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
         #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
         messageWindow.setMsgWindowProgBarValue(self, len(inputPath))
         messageWindow.closeMessageSubWindow(self)
-        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
+        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=treeSeriesID)
         QMessageBox.information(self, "Export ROIs", "Image Saved")
     except Exception as e:
             print('Error in DisplayImageDrawROI.saveROI: ' + str(e))

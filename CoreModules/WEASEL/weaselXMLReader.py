@@ -96,10 +96,11 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getStudy: ' + str(e))
 
 
-    def getSeriesOfSpecifiedType(self, studyID, seriesID, suffix):
+    def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
         try:
             xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
-             ']/series[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
+             ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
+             '[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
              '[@typeID=' + chr(34) + suffix + chr(34) +']'
             return self.root.find(xPath)
         except Exception as e:
@@ -263,19 +264,19 @@ class WeaselXMLReader:
         #First determine if a series with parentID=seriesID exists
         #and typeID=suffix
         try:
+            dataset = readDICOM_Image.getDicomDataset(newImageFileName)
+            if newSeriesName:
+                newSeriesID = str(dataset.SeriesNumber) + "_" + newSeriesName
+            else:
+                newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
             series = self.getSeriesOfSpecifiedType(
-                studyID, seriesID, suffix)
+                studyID, seriesID, newSeriesID, suffix)
             #Get image label, date & time
             imageLabel = self.getImageLabel(studyID, seriesID, imageName)
             imageTime = self.getImageTime(studyID, seriesID)#, imageName)
             imageDate = self.getImageDate(studyID, seriesID)#, imageName)
             if series is None:
                 #Need to create a new series to hold this new image
-                dataset = readDICOM_Image.getDicomDataset(newImageFileName)
-                if newSeriesName:
-                    newSeriesID = str(dataset.SeriesNumber) + "_" + newSeriesName
-                else:
-                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
                 #Get study branch
                 currentStudy = self.getStudy(studyID)
                 newAttributes = {'id':newSeriesID, 
