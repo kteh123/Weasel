@@ -1,4 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools, Series, Image
+from CoreModules.DeveloperTools import UserInterfaceTools, Series, Image
 #**************************************************************************
 #Uncomment and edit the following line of code to import the function 
 #containing your image processing algorithm. 

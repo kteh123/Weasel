@@ -1,9 +1,9 @@
-from Developer.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import UserInterfaceTools
 #**************************************************************************
 import numpy as np
 FILE_SUFFIX = "_Square"
 # Can be an external toolbox instead
-# from Developer.External.imagingTools import squareAlgorithm
+# from CoreModules.imagingTools import squareAlgorithm
 #***************************************************************************
 
 def isSeriesOnly(self):

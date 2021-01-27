@@ -1,4 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import UserInterfaceTools
 #***************************************************************************
 import numpy as np
 FILE_SUFFIX = '_Multiplied'

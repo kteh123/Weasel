@@ -1,6 +1,6 @@
-from Developer.DeveloperTools import UserInterfaceTools, Image
+from CoreModules.DeveloperTools import UserInterfaceTools, Image
 #**************************************************************************
-from Developer.External.imagingTools import invertAlgorithm
+from CoreModules.imagingTools import invertAlgorithm
 FILE_SUFFIX = '_Invert'
 #***************************************************************************
 

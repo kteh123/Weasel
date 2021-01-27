@@ -1,6 +1,6 @@
-from Developer.DeveloperTools import UserInterfaceTools, Series
-from Developer.External.ukat.mapping.t1 import T1, magnitude_correct
-from Developer.External.ukat.utils.tools import convert_to_pi_range
+from CoreModules.DeveloperTools import UserInterfaceTools, Series
+from External.ukat.mapping.t1 import T1, magnitude_correct
+from External.ukat.utils.tools import convert_to_pi_range
 import re
 #***************************************************************************
 import numpy as np

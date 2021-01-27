@@ -1,6 +1,6 @@
-from Developer.DeveloperTools import UserInterfaceTools, Image
+from CoreModules.DeveloperTools import UserInterfaceTools, Image
 #**************************************************************************
-from Developer.External.imagingTools import gaussianFilter
+from CoreModules.imagingTools import gaussianFilter
 FILE_SUFFIX = '_Gaussian'
 #***************************************************************************
 

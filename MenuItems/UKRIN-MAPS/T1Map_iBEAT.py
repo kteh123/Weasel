@@ -1,7 +1,7 @@
-from Developer.DeveloperTools import UserInterfaceTools, Series
-from Developer.External.ukat.mapping.t1 import T1, magnitude_correct
-from Developer.External.imagingTools import formatArrayForAnalysis
-from Developer.External.ukrinAlgorithms import ukrinMaps
+from CoreModules.DeveloperTools import UserInterfaceTools, Series
+from External.ukat.mapping.t1 import T1, magnitude_correct
+from CoreModules.imagingTools import formatArrayForAnalysis
+from External.ukrinAlgorithms import ukrinMaps
 # 
 import re
 #***************************************************************************

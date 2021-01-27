@@ -4,7 +4,7 @@ import datetime
 import zipfile
 import warnings
 import requests
-from Developer.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import UserInterfaceTools
 
 def isEnabled(self):
     return True

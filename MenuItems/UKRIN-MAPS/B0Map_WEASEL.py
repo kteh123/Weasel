@@ -1,5 +1,5 @@
-from Developer.DeveloperTools import UserInterfaceTools
-from Developer.External.ukat.mapping.b0 import B0
+from CoreModules.DeveloperTools import UserInterfaceTools
+from External.ukat.mapping.b0 import B0
 import re
 #***************************************************************************
 import numpy as np

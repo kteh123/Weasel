@@ -6,7 +6,7 @@ import MenuItems.ToolsFunctions  as toolFunctions
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from Developer.External.imagingTools import squareAlgorithm as funcAlgorithm
+from CoreModules.imagingTools import squareAlgorithm as funcAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 

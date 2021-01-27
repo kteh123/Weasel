@@ -1,6 +1,6 @@
-from Developer.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import UserInterfaceTools
 #**************************************************************************
-from Developer.External.imagingTools import thresholdPixelArray
+from CoreModules.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 #***************************************************************************
 

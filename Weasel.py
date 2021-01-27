@@ -18,7 +18,7 @@ sys.path.append(os.path.join(sys.path[0],
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules//WEASEL//'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules//FERRET//'))
-
+sys.path.append(os.path.join(sys.path[0],'External'))
 
 import CoreModules.WEASEL.styleSheet as styleSheet
 from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader

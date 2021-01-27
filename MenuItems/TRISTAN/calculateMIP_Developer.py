@@ -1,12 +1,12 @@
-import Developer.DeveloperTools as tools
-from Developer.DeveloperTools import UserInterfaceTools as ui
-from Developer.DeveloperTools import PixelArrayDICOMTools as pixel
-from Developer.DeveloperTools import GenericDICOMTools as dicom
+import CoreModules.DeveloperTools as tools
+from CoreModules.DeveloperTools import UserInterfaceTools as ui
+from CoreModules.DeveloperTools import PixelArrayDICOMTools as pixel
+from CoreModules.DeveloperTools import GenericDICOMTools as dicom
 #**************************************************************************
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image # Write a developer tool to deal with image sort
 import numpy as np
-from Developer.External.tristanAlgorithms import TRISTAN
-from Developer.External.imagingTools import formatArrayForAnalysis
+from External.tristanAlgorithms import TRISTAN
+from CoreModules.imagingTools import formatArrayForAnalysis
 FILE_SUFFIX = '_MIP'
 #***************************************************************************
 

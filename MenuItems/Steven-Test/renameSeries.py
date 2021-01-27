@@ -1,5 +1,5 @@
-import Developer.DeveloperTools as tools
-from Developer.DeveloperTools import UserInterfaceTools
+import CoreModules.DeveloperTools as tools
+from CoreModules.DeveloperTools import UserInterfaceTools
 
 
 def isSeriesOnly(self):

@@ -1,5 +1,5 @@
-from Developer.DeveloperTools import UserInterfaceTools
-from Developer.External.ukat.mapping.t2 import T2
+from CoreModules.DeveloperTools import UserInterfaceTools
+from External.ukat.mapping.t2 import T2
 import re
 #***************************************************************************
 import numpy as np

@@ -1,5 +1,5 @@
-from Developer.DeveloperTools import UserInterfaceTools
-from Developer.External.ukat.mapping.t2star import T2Star
+from CoreModules.DeveloperTools import UserInterfaceTools
+from External.ukat.mapping.t2star import T2Star
 import re
 #***************************************************************************
 import numpy as np

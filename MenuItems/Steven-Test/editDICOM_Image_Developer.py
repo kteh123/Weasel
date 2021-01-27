@@ -1,4 +1,4 @@
-from Developer.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import UserInterfaceTools
 
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
