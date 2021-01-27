@@ -23,12 +23,14 @@ def download(objWeasel):
         projectWindow = {"Project":"dropdownlist"}
         projectInfo = "URL: " + url + "<p>Select the Project to download the images from</p>"
         projectName = ui.inputWindow(projectWindow, title="XNAT Download", helpText=projectInfo, lists=[xnatProjects])
+        if projectName is None: return
         if projectName:
             xnatSubjects = [subject.label for subject in session.projects[projectName[0]].subjects.values()]
             xnatSubjects.insert(0, "All")
             subjectWindow = {"Subject":"dropdownlist"}
             subjectInfo = "URL: " + url + "<p>Project: " + projectName[0] + "</p><p>Select the Subject to download the images from</p>"
             subjectName = ui.inputWindow(subjectWindow, title="XNAT Download", helpText=subjectInfo, lists=[xnatSubjects])
+            if subjectName is None: return
             if subjectName:
                 if subjectName[0] == "All":
                     dataset = session.projects[projectName[0]]
@@ -42,6 +44,7 @@ def download(objWeasel):
                     experimentWindow = {"Experiment":"dropdownlist"}
                     experimentInfo = "URL: " + url + "<p>Project: " + projectName[0] + "</p><p>Subject: " + subjectName[0] + "</p><p>Select the Experiment to download the images from</p>"
                     experimentName = ui.inputWindow(experimentWindow, title="XNAT Download", helpText=experimentInfo, lists=[xnatExperiments])
+                    if experimentName is None: return
                     if experimentName:
                         if experimentName[0] == "All":
                             dataset = session.projects[projectName[0]].subjects[subjectName[0]]
@@ -71,6 +74,7 @@ def download(objWeasel):
     # Delete Login Details
     del loginDetails, url, username, password
     session.disconnect()
+    return
 
 
 def upload(objWeasel):
