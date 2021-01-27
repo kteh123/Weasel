@@ -62,7 +62,7 @@ class GraphicsItem(QGraphicsObject):
         self.zoomEnabled = False
 
 
-    def turnOfDrawEraseAndZoom(self):
+    def turnOffDrawEraseAndZoom(self):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False

@@ -34,8 +34,8 @@ import CoreModules.WEASEL.InputDialog as inputDialog
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
-import gc
-gc.collect()
+#import gc
+#gc.collect()
 import logging
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,6 @@ def setUpGraphicsViewSubWindow(self):
         logger.info("DisplayImageDrawRIO.setUpGraphicsViewSubWindow called")
         subWindow = QMdiSubWindow(self)
         subWindow.setObjectName = 'image_viewer'
-        subWindow.setAttribute(Qt.WA_DeleteOnClose)
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
                                       Qt.WindowMinimizeButtonHint)
@@ -115,7 +114,7 @@ def setUpGraphicsViewSubWindow(self):
         return hbox, layout, lblImageMissing, subWindow
     except Exception as e:
             print('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
-            logger.error('Error in DisplayImageDrawRIO.displayMultiImageSubWindow: ' + str(e))
+            logger.error('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
 
 
 def closeEvent(event):
@@ -190,7 +189,7 @@ def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = 
             logger.error('Error in DisplayImageDrawROI.updateImageLevels: ' + str(e))
 
 
-def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
+def setUpPixelDataWidgets(self, layout, graphicsView, zoomSlider, zoomLabel, imageSlider=None):
     try:
         logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
         buttonList = []
@@ -205,45 +204,45 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         btnDeleteROI = QPushButton() 
         btnDeleteROI.setToolTip('Delete the current ROI')
         btnDeleteROI.clicked.connect(graphicsView.deleteROI)
-        btnDeleteROI.setIcon(QIcon(DELETE_ICON))
+        btnDeleteROI.setIcon(QIcon(QPixmap(DELETE_ICON)))
         
         btnNewROI = QPushButton() 
         btnNewROI.setToolTip('Add a new ROI')
         btnNewROI.clicked.connect(graphicsView.newROI)
-        btnNewROI.setIcon(QIcon(NEW_ICON))
+        btnNewROI.setIcon(QIcon(QPixmap(NEW_ICON)))
 
         btnResetROI = QPushButton()
         btnResetROI.setToolTip('Clears the ROI from the image')
         btnResetROI.clicked.connect(graphicsView.resetROI)
-        btnResetROI.setIcon(QIcon(RESET_ICON))
+        btnResetROI.setIcon(QIcon(QPixmap(RESET_ICON)))
 
         btnSaveROI = QPushButton()
         btnSaveROI.setToolTip('Saves the ROI in DICOM format')
         btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), graphicsView))
-        btnSaveROI.setIcon(QIcon(SAVE_ICON))
+        btnSaveROI.setIcon(QIcon(QPixmap(SAVE_ICON)))
 
         btnLoad = QPushButton()
         btnLoad.setToolTip('Loads existing ROIs')
         btnLoad.clicked.connect(lambda: loadROI(self, cmbROIs, graphicsView))
-        btnLoad.setIcon(QIcon(LOAD_ICON))
+        btnLoad.setIcon(QIcon(QPixmap(LOAD_ICON)))
 
         btnErase = QPushButton()
         buttonList.append(btnErase)
         btnErase.setToolTip("Erase the ROI")
         btnErase.setCheckable(True)
-        btnErase.setIcon(QIcon(ERASOR_CURSOR))
+        btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
 
         btnDraw = QPushButton()
         buttonList.append(btnDraw)
         btnDraw.setToolTip("Draw an ROI")
         btnDraw.setCheckable(True)
-        btnDraw.setIcon(QIcon(PEN_CURSOR))
+        btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
 
         btnZoom = QPushButton()
         buttonList.append(btnZoom)
         btnZoom.setToolTip("Zoom in/Zoom out of the image")
         btnZoom.setCheckable(True)
-        btnZoom.setIcon(QIcon(MAGNIFYING_GLASS_CURSOR))
+        btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
 
         btnErase.clicked.connect(lambda checked: eraseROI(btnErase, 
@@ -258,7 +257,8 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
 
         cmbROIs.currentIndexChanged.connect(
             lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                                  roiMeanLabel, self, buttonList, btnDraw, btnErase, imageSlider))
+                                  roiMeanLabel, self, buttonList, btnDraw, btnErase, 
+                                  zoomSlider, zoomLabel, imageSlider))
 
         cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, graphicsView, text))
         cmbROIs.setToolTip("Displays a list of ROIs created")
@@ -291,7 +291,6 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
         #Third row
         gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
         gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
-
         return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase
     except Exception as e:
            print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
@@ -299,6 +298,7 @@ def setUpPixelDataWidgets(self, layout, graphicsView, imageSlider=None):
 
 
 def setEraseButtonColour(setRed, btnDraw, btnErase):
+    logger.info("DisplayImageDrawRIO.setEraseButtonColour called")
     if setRed:
            btnErase.setStyleSheet("background-color: red")
            btnDraw.setStyleSheet(
@@ -311,6 +311,7 @@ def setEraseButtonColour(setRed, btnDraw, btnErase):
 
 
 def setDrawButtonColour(setRed, btnDraw, btnErase):
+    logger.info("DisplayImageDrawRIO.setDrawButtonColour called")
     if setRed:
            btnDraw.setStyleSheet("background-color: red")
            btnErase.setStyleSheet(
@@ -322,6 +323,7 @@ def setDrawButtonColour(setRed, btnDraw, btnErase):
              )
 
 def setButtonsToDefaultStyle(buttonList):
+    logger.info("DisplayImageDrawRIO.setButtonsToDefaultStyle called")
     try:
         logger.info("DisplayImageDrawROI.setButtonsToDefaultStyle called.")
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
@@ -379,7 +381,7 @@ def eraseROI(btn, checked, graphicsView, buttonList):
 
 
 def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnErase,
-                            roiMeanLabel, cmbROIs, buttonList, imageSlider=None):
+                            roiMeanLabel, cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
     lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
@@ -399,10 +401,12 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
     graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
     graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase, imageSlider ))
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider, 
+                              zoomLabel, imageSlider ))
 
     graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, imageSlider))
+              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase,  
+              zoomSlider, zoomLabel, imageSlider))
 
     graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
 
@@ -411,7 +415,8 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
     graphicsView.sigROIChanged.connect(lambda:setButtonsToDefaultStyle(buttonList))
     graphicsView.sigROIChanged.connect(lambda:updateROIName(graphicsView, cmbROIs))
     graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName, cmbROIs))
-    
+    graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(zoomSlider, zoomLabel, increment))
+
 
 def updateROIName(graphicsView, cmbROIs):
     logger.info("DisplayImageDrawROI.updateROIName called.")
@@ -423,7 +428,7 @@ def setUpGraphicsView(hbox):
         logger.info("DisplayImageDrawROI.setUpGraphicsView called.")
         zoomSlider = Slider(Qt.Vertical)
         zoomLabel = QLabel("<H4>100%</H4>")
-        graphicsView = GraphicsView(zoomSlider, zoomLabel)
+        graphicsView = GraphicsView()
         hbox.addWidget(graphicsView)
 
         zoomSlider.setMinimum(0)
@@ -439,7 +444,7 @@ def setUpGraphicsView(hbox):
         layoutZoom.addWidget(zoomSlider)
         layoutZoom.addWidget(zoomLabel)
         hbox.addWidget(groupBoxZoom)
-        return graphicsView
+        return graphicsView, zoomSlider, zoomLabel
     except Exception as e:
             print('Error in DisplayImageDrawROI.setUpGraphicsView: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
@@ -457,7 +462,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             windowTitle = displayImageCommon.getDICOMFileData(self)
             subWindow.setWindowTitle(windowTitle)
 
-            graphicsView = setUpGraphicsView(hbox)
+            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
 
             if pixelArray is None:
                 lblImageMissing.show()
@@ -465,16 +470,24 @@ def displayImageROISubWindow(self, derivedImagePath=None):
             else:
                 graphicsView.setImage(pixelArray)
 
-            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList = setUpPixelDataWidgets(self, layout, 
-                                                                          graphicsView)
-
-            #setUpImageEventHandlers(self, graphicsView, pixelDataLabel, roiMeanLabel,
-            #                        cmbROIs, buttonList)
-
-            #spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs)
-            #spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
-            #spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
-
+            (pixelDataLabel, roiMeanLabel, 
+             cmbROIs, buttonList, 
+             btnDraw, btnErase) = setUpPixelDataWidgets(self, layout, graphicsView, zoomSlider, zoomLabel)
+           
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
+                                                                    graphicsView, 
+                                                                    cmbROIs)
+            spinBoxIntensity.blockSignals(True)
+            spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
+            spinBoxIntensity.blockSignals(False)
+            spinBoxContrast.blockSignals(True)
+            spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
+            spinBoxContrast.blockSignals(False)
+            
+            setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+                                            btnDraw, btnErase,
+                                            roiMeanLabel, cmbROIs, buttonList,
+                                            zoomSlider, zoomLabel)
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
@@ -508,11 +521,11 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
 
-            graphicsView = setUpGraphicsView(hbox)
+            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
             graphicsView.dictROIs = ROIs(NumImages=len(imageList))
             
             pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase = setUpPixelDataWidgets(self, layout, 
-                                                                          graphicsView,
+                                                                          graphicsView, zoomSlider, zoomLabel,
                                                                            imageSlider)
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
                                                                      graphicsView, 
@@ -520,7 +533,6 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                                      imageSlider)
 
             layout.addWidget(imageSlider)
-
             imageSlider.valueChanged.connect(
                   lambda: imageROISliderMoved(self, seriesName, 
                                                    imageList, 
@@ -530,9 +542,9 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    btnDraw, btnErase,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
-                                                   graphicsView, subWindow,
-                                                   buttonList))
-           
+                                                   graphicsView, subWindow, buttonList, zoomSlider,
+                                                   zoomLabel))
+          
             imageROISliderMoved(self, seriesName, 
                                     imageList, 
                                     imageSlider,
@@ -542,8 +554,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     btnDraw, btnErase,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
-                                    graphicsView, subWindow, buttonList)
-            
+                                    graphicsView, subWindow, buttonList, zoomSlider, zoomLabel)       
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
@@ -614,7 +625,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                         lblImageMissing, pixelDataLabel, roiMeanLabel,
                         cmbROIs,  btnDraw, btnErase,
                         spinBoxIntensity, spinBoxContrast,  
-                        graphicsView, subWindow, buttonList):
+                        graphicsView, subWindow, buttonList, zoomSlider, zoomLabel):
         """On the Multiple Image with ROI Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
@@ -633,8 +644,8 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
                     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase,
-                              imageSlider) 
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider, 
+                              zoomLabel, imageSlider) 
                     spinBoxIntensity.blockSignals(True)
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
                     spinBoxIntensity.blockSignals(False)
@@ -644,6 +655,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
                                             btnDraw, btnErase,
                                             roiMeanLabel, cmbROIs, buttonList,
+                                            zoomSlider, zoomLabel,
                                          imageSlider)
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
@@ -656,7 +668,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
 
 def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
                               roiMeanLabel, self, buttonList, 
-                              btnDraw, btnErase,
+                              btnDraw, btnErase, zoomSlider, zoomLabel,
                               imageSlider=None ):
     try:
         logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
@@ -674,20 +686,20 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel,
         roiMeanLabel.clear()
         setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
                                 btnDraw, btnErase, roiMeanLabel,
-                                     cmbROIs, buttonList, imageSlider)
+                                     cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
     except Exception as e:
            print('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
            logger.error('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
     
 
 def deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase,
-              imageSlider=None):
+              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, zoomSlider,
+              zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.deleteROITidyUp called")
     
     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase,
-                              imageSlider) 
+                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider,
+                             zoomLabel, imageSlider) 
     displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider)
     if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1: 
         cmbROIs.clear()
@@ -847,3 +859,21 @@ def roiNameChanged(cmbROIs, graphicsView, newText):
     except Exception as e:
             print('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.roiNameChanged: ' + str(e)) 
+
+
+def updateZoomSlider(zoomSlider, zoomLabel, increment):
+    logger.info("DisplayImageDrawRIO.updateZoomSlider called")
+    #print("updateZoomSlider increment={}".format(increment))
+    zoomSlider.blockSignals(True)
+    if increment == 0:
+        zoomSlider.setValue(0)
+        zoomLabel.setText("<H4>100%</H4>")
+    else:
+        newValue = zoomSlider.value() + increment
+        newZoomValue = 100 + (newValue * 25)
+        zoomLabel.setText("<H4>" + str(newZoomValue) + "%</H4>")
+        if zoomSlider.value() < zoomSlider.maximum() and increment > 0:
+            zoomSlider.setValue(newValue)
+        elif zoomSlider.value() > zoomSlider.minimum() and increment < 0:
+            zoomSlider.setValue(newValue)
+    zoomSlider.blockSignals(False)
