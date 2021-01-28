@@ -59,6 +59,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were selected in the Treeview.",
                               title="No Studies Selected")
+            return
         else:
             for study in studiesTreeViewList:
                 studyList.append(Study.fromTreeView(self.objWeasel, study))
@@ -75,6 +76,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were selected in the Treeview.",
                               title="No Series Selected")
+            return
         else:
             for series in seriesTreeViewList:
                 seriesList.append(Series.fromTreeView(self.objWeasel, series))
@@ -91,6 +93,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were selected in the Treeview.",
                               title="No Images Selected")
+            return
         else:
             for images in imagesTreeViewList:
                 imagesList.append(Image.fromTreeView(self.objWeasel, images))
@@ -107,6 +110,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were checked in the Treeview.",
                               title="No Studies Checked")
+            return 
         else:
             for study in studiesTreeViewList:
                 studyList.append(Study.fromTreeView(self.objWeasel, study))
@@ -123,6 +127,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
                               title="No Series Checked")
+            return 
         else:
             for series in seriesTreeViewList:
                 seriesList.append(Series.fromTreeView(self.objWeasel, series))
@@ -139,6 +144,7 @@ class UserInterfaceTools:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were checked in the Treeview.",
                               title="No Images Checked")
+            return
         else:
             for images in imagesTreeViewList:
                 imagesList.append(Image.fromTreeView(self.objWeasel, images))

@@ -18,6 +18,7 @@ def main(objWeasel):
     standard_deviation_filter = paramList[0]
     # Get checked series
     seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
     for series in seriesList:
         # Create a new Series for each Series checked
         newSeries = series.new(series_name="GaussianFiltered_"+str(series.seriesID))

@@ -10,6 +10,7 @@ def main(objWeasel):
     tag = paramList[0]
     value = paramList[1]
     imageList = ui.getCheckedImages()
+    if imageList is None: return # Exit function if no images are checked
     ui.showMessageWindow(msg="Overwriting the checked DICOM files with the typed values", title="Edit DICOM")
     for image in imageList:
         image.Item(tag, value)

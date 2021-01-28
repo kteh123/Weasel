@@ -15,6 +15,7 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
     for series in seriesList:
         seriesMagnitude = series.Magnitude
         if checkT2Star(seriesMagnitude):

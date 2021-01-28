@@ -17,7 +17,9 @@ def isSeriesOnly(self):
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get the series in the Checkboxes
-    series = ui.getCheckedSeries()[0]
+    seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
+    series = seriesList[0]
     if checkT1(series):
         seriesMagnitude = series.Magnitude
         try:

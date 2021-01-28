@@ -9,6 +9,7 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all images in the Checkboxes
     imageList = ui.getCheckedImages()
+    if imageList is None: return # Exit function if no images are checked
     index_bar = 0
     for image in imageList:
         # Get PixelArray from the corresponding slice

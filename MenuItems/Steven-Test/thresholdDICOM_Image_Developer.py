@@ -11,7 +11,8 @@ def isSeriesOnly(self):
 
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
-    seriesPathList = ui.getCheckedSeries()
+    seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
     # Lower and upper threshold from the input window 
     inputDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}
     info = "Insert a value between 0 and 100. Upper threshold must be greater than lower threshold"
@@ -20,7 +21,7 @@ def main(objWeasel):
     low_thresh = paramList[0]
     high_thresh = paramList[1]
     index_series = 1
-    for series in seriesPathList:
+    for series in seriesList:
         newSeries = series.new(suffix=FILE_SUFFIX)
         index_bar = 0
         for image in series.children:

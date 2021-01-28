@@ -33,7 +33,7 @@ def checkDimensionsMatch(seriesList):
     dimensionsArray = []
     for series in seriesList:
         dimensionsArray.append(series.Dimensions)
-    if len(np.unique(dimensionsArray, axis=0))==1:
+    if len(np.unique(dimensionsArray, axis=0)) == 1:
         return True
     else:
         return None

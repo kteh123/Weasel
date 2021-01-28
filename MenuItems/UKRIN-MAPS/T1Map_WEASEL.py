@@ -16,6 +16,7 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     # Get all series in the Checkboxes
     seriesList = ui.getCheckedSeries() # getSelectedStudy()
+    if seriesList is None: return # Exit function if no series are checked
     # List of series that will be used for T1 Map calculation
     seriesListTI = []
     for series in seriesList:

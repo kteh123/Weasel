@@ -10,6 +10,7 @@ def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     if tools.treeView.isASeriesSelected(objWeasel):
         seriesList = ui.getSelectedSeries()
+        if seriesList is None: return # Exit function if no series are checked
         series = seriesList[0] # Because the if conditional only gets the last series selected
         inputDict = {"New Series Name":"string"}
         paramList = ui.inputWindow(inputDict, title="Please type in the new series name")

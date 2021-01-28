@@ -18,6 +18,7 @@ def main(objWeasel):
     standard_deviation_filter = paramList[0]
     # Get checked images
     imageList = ui.getCheckedImages()
+    if imageList is None: return # Exit function if no images are checked
     # Create new Series where the resulting images will be saved
     newSeries = Image.newSeriesFrom(imageList, suffix=FILE_SUFFIX)
     for image in imageList:

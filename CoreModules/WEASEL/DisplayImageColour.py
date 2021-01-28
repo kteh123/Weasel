@@ -351,17 +351,25 @@ def setUpColourTools(self, layout, imv,
             #For the update button, connect signal to slot
             if singleImageSelected:
                 #Viewing and potentially updating a single DICOM images
-                    btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
-                                            (self, 
-                                            spinBoxIntensity, spinBoxContrast,
-                                            lblHiddenImagePath.text(),
-                                                    lblHiddenSeriesName.text(),
-                                                    lblHiddenStudyName.text(),
-                                                    cmbColours.currentText(),
-                                                    lut=None))
+                    #btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
+                    #                        (self, 
+                    #                        spinBoxIntensity, spinBoxContrast,
+                    #                        lblHiddenImagePath.text(),
+                    #                                lblHiddenSeriesName.text(),
+                    #                                lblHiddenStudyName.text(),
+                    #                                cmbColours.currentText(),
+                    #                                lut=None))
+                    btnUpdate.clicked.connect(lambda:updateDICOM(self, 
+                                                lblHiddenImagePath,
+                                                lblHiddenSeriesName,
+                                                lblHiddenStudyName,
+                                                cmbColours,
+                                                    spinBoxIntensity, 
+                                                    spinBoxContrast, singleImage=True))
             else:
                 #Viewing and potentially updating a series of DICOM images
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
+                                                                lblHiddenImagePath,
                                                                 lblHiddenSeriesName,
                                                                 lblHiddenStudyName,
                                                                 cmbColours,
@@ -968,8 +976,8 @@ def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
 
-def updateDICOM(self, lblHiddenSeriesName, lblHiddenStudyName, cmbColours, 
-                spinBoxIntensity, spinBoxContrast):
+def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, cmbColours, 
+                spinBoxIntensity, spinBoxContrast, singleImage=False):
         """
         This function is executed when the Update button 
         is clicked and it coordinates the calling of the functions, 
@@ -990,19 +998,34 @@ def updateDICOM(self, lblHiddenSeriesName, lblHiddenStudyName, cmbColours,
         """
         try:
             logger.info("DisplayImageColour.updateDICOM called")
-            seriesName = lblHiddenSeriesName.text()
-            studyName = lblHiddenStudyName.text()
-            colourTable = cmbColours.currentText()
-            global userSelectionDict
-            obj = userSelectionDict[seriesName]
-            #print("DisplayImageColour.updateDICOM called")
-            #print("obj.getSeriesUpdateStatus() = {}".format(obj.getSeriesUpdateStatus()))
-            #print("obj.getImageUpdateStatus() = {}".format(obj.getImageUpdateStatus()))
-            if obj.getSeriesUpdateStatus():
-                levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-                updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels)
-            if obj.getImageUpdateStatus():
-                updateDicomSeriesImageByImage(self, seriesName, studyName)
+            buttonReply = QMessageBox.question(self, 
+                          'Update DICOM', "You are about to overwrite series DICOM Files. Please confirm to proceed.", 
+                          QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            if buttonReply == QMessageBox.Ok:
+                imageName = lblHiddenImagePath.text()
+                seriesName = lblHiddenSeriesName.text()
+                studyName = lblHiddenStudyName.text()
+                colourTable = cmbColours.currentText()
+                if singleImage == False:
+                    global userSelectionDict
+                    obj = userSelectionDict[seriesName]
+                    #print("DisplayImageColour.updateDICOM called")
+                    #print("obj.getSeriesUpdateStatus() = {}".format(obj.getSeriesUpdateStatus()))
+                    #print("obj.getImageUpdateStatus() = {}".format(obj.getImageUpdateStatus()))
+                    if obj.getSeriesUpdateStatus():
+                        levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
+                        updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels)
+                    if obj.getImageUpdateStatus():
+                        updateDicomSeriesImageByImage(self, seriesName, studyName)
+                else:
+                    saveDICOM_Image.updateSingleDicomImage(self, 
+                                                           spinBoxIntensity,
+                                                           spinBoxContrast,
+                                                           imageName,
+                                                           seriesName,
+                                                           studyName,
+                                                           colourTable,
+                                                           lut=None)
         except Exception as e:
             print('Error in DisplayImageColour.updateDICOM: ' + str(e))
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))

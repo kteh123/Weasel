@@ -14,6 +14,7 @@ def isSeriesOnly(self):
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
     for series in seriesList:
         newSeries = series.new(suffix=FILE_SUFFIX)
         pixelArray = series.PixelArray
