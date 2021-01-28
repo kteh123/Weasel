@@ -56,8 +56,6 @@ def main(objWeasel):
                 imagePath = objWeasel.selectedImagePath
                 pixelArray = returnPixelArray(imagePath, *listParams)
                 derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
-                displayImageColour.displayImageSubWindow(objWeasel, studyID, 
-                                                         seriesID, derivedImageFileName)
                 # Save the DICOM file in the new file path                                        
                 saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, 
                                                       pixelArray, FILE_SUFFIX)
@@ -66,6 +64,8 @@ def main(objWeasel):
                                                      derivedImageFileName, FILE_SUFFIX)
                 #Update tree view with xml file modified above
                 treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
+                displayImageColour.displayImageSubWindow(objWeasel, studyID, 
+                                                         seriesID, derivedImageFileName)
             elif treeView.isASeriesSelected(objWeasel):
                 imagePathList = \
                         objWeasel.objXMLReader.getImagePathList(studyID, seriesID)

@@ -89,8 +89,8 @@ def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
     lower_value = minimum_value + (lower_threshold / 100) * (maximum_value - minimum_value)
 
     thresholdedArray = pixelArray
-    thresholdedArray[pixelArray < lower_value] = 0
-    thresholdedArray[pixelArray > upper_value] = 0
+    thresholdedArray[thresholdedArray < lower_value] = 0
+    thresholdedArray[thresholdedArray > upper_value] = 0
     thresholdedArray[thresholdedArray != 0] = 1
     return thresholdedArray
 

@@ -83,6 +83,12 @@
           <module>thresholdDICOM_Image</module>
         </item>
         <item>
+		<item>
+          <label>Rename Series</label>
+          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
+		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+          <module>renameSeries</module>
+        </item>
           <!--Inserts a separator, a horizontal line in the menu-->
           <separator>yes</separator>
         </item>
@@ -96,13 +102,7 @@
           <label>Gaussian Filter Developer (GroupWise)</label>
           <shortcut>Ctrl+F+3</shortcut>
           <tooltip>gaussian</tooltip>
-          <module>gaussianFilterDICOM_Image_Developer</module>
-        </item>
-        <item>
-          <label>Edit DICOM Tag Developer</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Choose DICOM header and change the selected files</tooltip>
-          <module>editDICOM_Image_Developer</module>
+          <module>gaussianFilterDICOM_Image_GroupWise</module>
         </item>
         <item>
           <label>Threshold Developer (SlicebySlice)</label>
@@ -117,10 +117,10 @@
           <module>mergeDICOM_Developer</module>
         </item>
 		<item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
+          <label>Edit DICOM Tag Developer</label>
+          <shortcut>Ctrl+D</shortcut>
+          <tooltip>Choose DICOM header and change the selected files</tooltip>
+          <module>editDICOM_Image_Developer</module>
         </item>
   </menu>
   <menu name="TRISTAN">

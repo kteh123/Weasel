@@ -223,8 +223,11 @@ def createNewPixelArray(imageArray, dataset):
                 dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleSlope = rescaleSlope.flatten()[0]
                 dataset.PerFrameFunctionalGroupsSequence[index].PixelValueTransformationSequence[0].RescaleIntercept = rescaleIntercept.flatten()[0]
                 # Set Window Center and Width
-                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = (np.amax(tempArray) + np.amin(tempArray)) / 2 # (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
-                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = np.amax(tempArray) - np.amin(tempArray) # int(target.flatten()[0])
+                center = (np.amax(tempArray) + np.amin(tempArray)) / 2 # (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))
+                width = np.amax(tempArray) - np.amin(tempArray) # int(target.flatten()[0])
+                if width == 1.0: width = 1.1 
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowCenter = center
+                dataset.PerFrameFunctionalGroupsSequence[index].FrameVOILUTSequence[0].WindowWidth = width
             else:
                 # Rotate back to Original Position
                 imageArrayInt = np.transpose(imageArrayInt)
@@ -234,6 +237,7 @@ def createNewPixelArray(imageArray, dataset):
                 # Set Window Center and Width
                 center = (np.amax(tempArray) + np.amin(tempArray)) / 2
                 width = np.amax(tempArray) - np.amin(tempArray)
+                if width == 1.0: width = 1.1
                 dataset.add_new('0x00281050', 'DS', center)
                 dataset.add_new('0x00281051', 'DS', width)
                 # dataset.WindowCenter = (0 if int(np.amin(imageArrayInt)) < 0 else int(target.flatten()[0]/2))

@@ -37,7 +37,7 @@ def main(objWeasel):
             inputArray = magnitude_corrected
         else:
             inputArray = magnitude
-        mapper = T1(np.transpose(inputArray), ti, multithread=False, parameters=2)
+        mapper = T1(np.transpose(inputArray), ti, multithread=True, parameters=2)
         pixelArray = mapper.t1_map
         #outputSeries = mergedSeries.new(series_name="T1Map_UKRIN", suffix=FILE_SUFFIX)
         outputSeries = seriesListTI[0].new(series_name="T1Map_UKRIN", suffix=FILE_SUFFIX)

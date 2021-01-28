@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QApplication,
 import os
 import sys
 import logging
+from multiprocessing import current_process
 
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
@@ -34,8 +35,8 @@ __author__ = 'Steve Shillitoe'
 #Create and configure the logger
 #First delete the previous log file if there is one
 LOG_FILE_NAME = "Activity_Log.log"
-if os.path.exists(LOG_FILE_NAME):
-    os.remove(LOG_FILE_NAME) 
+if os.path.exists(LOG_FILE_NAME) and current_process().name == 'MainProcess':
+    os.remove(LOG_FILE_NAME)
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 logging.basicConfig(filename=LOG_FILE_NAME, 
                 level=logging.INFO, 
@@ -89,6 +90,4 @@ def main():
 
 if __name__ == '__main__':
         main()
-
-
-        
+   

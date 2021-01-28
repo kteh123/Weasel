@@ -120,13 +120,12 @@ class UserInterfaceTools:
         seriesList = []
         seriesTreeViewList = treeView.returnCheckedSeries(self.objWeasel)
         if seriesTreeViewList == []:
-            UserInterfaceTools.showMessageWindow(self.objWeasel, msg="Script didn't run successfully because"
+            self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
                               title="No Series Checked")
         else:
             for series in seriesTreeViewList:
                 seriesList.append(Series.fromTreeView(self.objWeasel, series))
-
         return seriesList
     
 

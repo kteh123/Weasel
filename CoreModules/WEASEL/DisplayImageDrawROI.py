@@ -727,17 +727,17 @@ def loadROI(self, cmbROIs, graphicsView):
         #   2. Then the user loads the series of ROIs that are superimposed upon the images
 
         # Prompt Windows to select Series
-        # paramDict = {"Series":"listview"}
-        # listview window doesn't adjust automatically
-        paramDict = {"Series":"dropdownlist"}
+        # paramDict = {"Series":"dropdownlist"}
+        paramDict = {"Series":"listview"}
         helpMsg = "Select a Series with ROI"
         studyID = self.selectedStudy
         study = self.objXMLReader.getStudy(studyID)
-        listSeries = [series.attrib['id'] for series in study if 'ROI' in series.attrib['id']]
+        listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()
-        if inputDlg.closeInputDialog() == False: 
-            seriesID = listParams[0]
+        if inputDlg.closeInputDialog() == False:
+            # for series ID in listParams[0]: # more than 1 ROI may be selected
+            seriesID = listParams[0][0] # Temporary, only the first ROI
             imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
             maskList = []
             # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do

@@ -93,9 +93,9 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
             subWindow.setWindowTitle(windowTitle)
 
             if derivedImagePath:
-                imagePathForDisplay = derivedImagePath
-            else:
-                imagePathForDisplay = self.selectedImagePath
+                self.selectedImagePath = derivedImagePath
+
+            imagePathForDisplay = self.selectedImagePath
             
             lblHiddenImagePath = QLabel(imagePathForDisplay)
             pixelArray = readDICOM_Image.returnPixelArray(imagePathForDisplay)

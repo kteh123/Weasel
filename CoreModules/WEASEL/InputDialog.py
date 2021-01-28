@@ -133,16 +133,15 @@ class ParameterInputDialog(QDialog):
                     self.input.addItems(lists[listCounter])
                     #self.input.setFlags(item.flags() | Qt.ItemIsUserCheckable)
                     #self.input.setCheckState(Qt.Unchecked)
-                    self.input.setFixedSize(self.input.sizeHintForColumn(0) + 
-                                            2 * self.input.frameWidth(), 
-                      self.input.sizeHintForRow(0) * self.input.count() + 2 * self.input.frameWidth())
                     # scroll bar 
                     scrollBar = QScrollBar(self) 
                     # setting vertical scroll bar to it 
-                    self.input.setVerticalScrollBar(scrollBar) 
+                    self.input.setVerticalScrollBar(scrollBar)
+                    self.input.setMinimumHeight(self.input.sizeHintForColumn(0))
+                    self.input.setMinimumWidth(self.input.sizeHintForColumn(0))
                     listCounter += 1
                     
-                self.layout.addRow(key,  self.input)
+                self.layout.addRow(key, self.input)
                 self.listWidget.append(self.input)
             self.layout.addRow("", self.buttonBox)
             self.setLayout(self.layout)
