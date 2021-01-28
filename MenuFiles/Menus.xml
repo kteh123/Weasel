@@ -82,7 +82,6 @@
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
         </item>
-        <item>
 		<item>
           <label>Rename Series</label>
           <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
