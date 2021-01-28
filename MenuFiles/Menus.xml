@@ -88,6 +88,7 @@
 		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
           <module>renameSeries</module>
         </item>
+		<item>
           <!--Inserts a separator, a horizontal line in the menu-->
           <separator>yes</separator>
         </item>
