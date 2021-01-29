@@ -36,8 +36,6 @@ class GraphicsView(QGraphicsView):
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
-        #self.zoomSlider = zoomSlider
-        #self.zoomLabel = zoomLabel
         self.graphicsItem = None
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -46,7 +44,7 @@ class GraphicsView(QGraphicsView):
         self.currentROIName = None
         self.dictROIs = ROIs()
         self.menu = QMenu()
-        #Following commented out to display vertical and
+        #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -60,14 +58,16 @@ class GraphicsView(QGraphicsView):
 
     def setImage(self, pixelArray, mask = None):
         try:
+            logger.info("GraphicsView.setImage called")
+            print("GraphicsView.setImage called")
             if self.graphicsItem is not None:
                 self.graphicsItem = None
                 self.scene.clear()
 
             self.graphicsItem = GraphicsItem(pixelArray, mask)
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
-            self.reapplyZoom()
             self.scene.addItem(self.graphicsItem)
+            self.reapplyZoom()
             self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
             self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
         except Exception as e:
@@ -75,6 +75,7 @@ class GraphicsView(QGraphicsView):
 
 
     def reapplyZoom(self):
+        print("reapplyZoom self._zoom={}".format(self._zoom))
         if self._zoom > 0:
             factor = 1.25
             totalFactor = factor**self._zoom
@@ -84,7 +85,12 @@ class GraphicsView(QGraphicsView):
     def zoomFromMouseClicks(self, zoomValue):
         if self.zoomEnabled:
             self.zoomImage(zoomValue)
-        
+    
+
+    def fitImageToViewPort(self):
+        self.zoomImage(ZOOM_IN)
+        self.zoomImage(ZOOM_OUT)
+
 
     def zoomImage(self, zoomValue):
         if zoomValue > 0:
@@ -112,19 +118,30 @@ class GraphicsView(QGraphicsView):
         self.zoomImage(event.angleDelta().y())
 
 
-    def fitItemInView(self, scale=True):
-        if self.graphicsItem is not None:
-            rect = QRectF(self.graphicsItem.pixMap.rect())
-            if not rect.isNull():
-                self.setSceneRect(rect)
-                unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
-                self.scale(1 / unity.width(), 1 / unity.height())
-                viewrect = self.viewport().rect()
-                scenerect = self.transform().mapRect(rect)
-                factor = min(viewrect.width() / scenerect.width(),
-                                viewrect.height() / scenerect.height())
-                self.scale(factor, factor)
-                self._zoom = 0
+    def fitItemInView(self):#, scale=True
+        try:
+            logger.info("GraphicsView.fitItemInView called")
+            print("GraphicsView.fitItemInView called")
+            if self.graphicsItem is not None:
+                rect = QRectF(self.graphicsItem.pixMap.rect())
+                print("GraphicsView.fitItemInView called rect ={}".format(rect))
+                if not rect.isNull():
+                    self.setSceneRect(rect)
+                    unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
+                    print("GraphicsView.fitItemInView called unity ={}".format(unity))
+                    self.scale(1 / unity.width(), 1 / unity.height())
+                    viewrect = self.viewport().rect()
+                    print("GraphicsView.fitItemInView called viewrect ={}".format(viewrect))
+                    scenerect = self.transform().mapRect(rect)
+                    print("GraphicsView.fitItemInView called scenerect ={}".format(scenerect))
+                    factor = min(viewrect.width() / scenerect.width(),
+                                    viewrect.height() / scenerect.height())
+                    self.scale(factor, factor)
+                    print("GraphicsView.fitItemInView factor={}".format(factor))
+                    print("****************************************************")
+                    self._zoom = 0
+        except Exception as e:
+            print('Error in GraphicsView.fitItemInView: ' + str(e))
 
 
     def toggleDragMode(self):
