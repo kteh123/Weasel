@@ -274,7 +274,6 @@
     <Compile Include="CoreModules\WEASEL\weaselXMLReader.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Developer\DeveloperTools.py" />
     <Compile Include="Developer\External\imagingTools.py" />
     <Compile Include="Developer\External\tristanAlgorithms.py" />
     <Compile Include="Developer\External\ukrinAlgorithms.py" />

@@ -109,21 +109,13 @@ def setUpGraphicsViewSubWindow(self):
         lblImageMissing.hide()
         layout.addWidget(lblImageMissing)
         hbox = QHBoxLayout()
+        hbox.setContentsMargins(0, 0, 0, 0)
         layout.addLayout(hbox)
         subWindow.show()
         return hbox, layout, lblImageMissing, subWindow
     except Exception as e:
             print('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
             logger.error('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
-
-
-def closeEvent(event):
-    try:
-        logger.info("DisplayImageDrawROI.closeEvent called")
-        event.ignore()
-    except Exception as e:
-        print('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
-        logger.error('Error in DisplayImageDrawROI.closeEvent: ' + str(e))
 
 
 def addNewROItoDropDownList(newRegion, roiCombo):
@@ -159,6 +151,7 @@ def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
 
     groupBoxLevels = QGroupBox('Image Levels')
     gridLayoutLevels = QGridLayout()
+    gridLayoutLevels.setHorizontalSpacing(10)
     groupBoxLevels.setLayout(gridLayoutLevels)
     layout.addWidget(groupBoxLevels)
     
@@ -166,6 +159,7 @@ def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
     gridLayoutLevels.addWidget(lblContrast, 0,2)
     gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
+    gridLayoutLevels.setHorizontalSpacing(10)
     
     spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(graphicsView,
                 spinBoxIntensity.value(), spinBoxContrast.value(),  cmbROIs, imageSlider))
@@ -189,12 +183,10 @@ def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = 
             logger.error('Error in DisplayImageDrawROI.updateImageLevels: ' + str(e))
 
 
-def setUpPixelDataWidgets(self, layout, graphicsView, zoomSlider, zoomLabel, imageSlider=None):
+def setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zoomSlider, zoomLabel, imageSlider=None):
     try:
         logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
         buttonList = []
-        pixelDataLabel = QLabel("Pixel data")
-        roiMeanLabel = QLabel("ROI Mean Value")
         lblCmbROIs =  QLabel("ROIs")
         cmbROIs = QComboBox()
         cmbROIs.setDuplicatesEnabled(False)
@@ -264,37 +256,45 @@ def setUpPixelDataWidgets(self, layout, graphicsView, zoomSlider, zoomLabel, ima
         cmbROIs.setToolTip("Displays a list of ROIs created")
         cmbROIs.setEditable(True)
         cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
-        spacerItem = QSpacerItem(20, 20, 
-                                 QtWidgets.QSizePolicy.Minimum, 
-                                 QtWidgets.QSizePolicy.Expanding)
 
-        groupBoxImageData = QGroupBox('ROI')
-        gridLayoutROI = QGridLayout()
-        gridLayoutImageData =  QGridLayout()
-        groupBoxImageData.setLayout(gridLayoutROI)
-        layout.addWidget(groupBoxImageData)
-
-        #First row
-        gridLayoutROI.addWidget(lblCmbROIs, 0,0, alignment=Qt.AlignRight, )
-        gridLayoutROI.addWidget(cmbROIs, 0,1, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnNewROI, 0,2, alignment=Qt.AlignLeft, )
-        gridLayoutROI.addWidget(btnResetROI, 0,3, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnDeleteROI, 0,4, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnSaveROI, 0, 5, alignment=Qt.AlignLeft,)
-        #Second row
-        gridLayoutROI.addItem(spacerItem, 1, 0)
-        gridLayoutROI.addItem(spacerItem, 1, 1)
-        gridLayoutROI.addWidget(btnLoad, 1, 2, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnDraw, 1, 3, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnErase, 1,4, alignment=Qt.AlignLeft,)
-        gridLayoutROI.addWidget(btnZoom, 1, 5, alignment=Qt.AlignLeft,)
-        #Third row
-        gridLayoutROI.addWidget(pixelDataLabel, 2, 0, 1, 3)
-        gridLayoutROI.addWidget(roiMeanLabel, 2, 4, 1, 2)
-        return pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase
+        groupBoxROI = QGroupBox('ROI')
+        layout.addWidget(groupBoxROI)
+        layoutROI = QHBoxLayout(groupBoxROI)
+        
+        layoutROI.addWidget(lblCmbROIs,alignment=Qt.AlignRight, )
+        layoutROI.addWidget(cmbROIs,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnNewROI, alignment=Qt.AlignLeft, )
+        layoutROI.addWidget(btnResetROI,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnDeleteROI,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnSaveROI,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnLoad,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnDraw,  alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnErase, alignment=Qt.AlignLeft,)
+        layoutROI.addWidget(btnZoom,  alignment=Qt.AlignLeft,)
+        
+        return cmbROIs, buttonList, btnDraw, btnErase
     except Exception as e:
-           print('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))
-           logger.error('Error in DisplayImageDrawROI.setUpPixelDataWidgets: ' + str(e))  
+           print('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e))
+           logger.error('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e))  
+
+
+def setPixelDataLabels(layout):
+    try:
+        logger.info("DisplayImageDrawROI.setPixelDataLabels called.")
+        pixelDataLabel = QLabel("Pixel data")
+        roiMeanLabel = QLabel("ROI Mean Value")
+
+        groupBoxPixelData = QGroupBox('Pixel/ROI Data')
+        layout.addWidget(groupBoxPixelData)
+        layoutPixelData = QHBoxLayout(groupBoxPixelData)
+
+        layoutPixelData.addWidget(pixelDataLabel)
+        layoutPixelData.addWidget(roiMeanLabel)
+        return pixelDataLabel, roiMeanLabel
+    except Exception as e:
+           print('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))
+           logger.error('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))  
+
 
 
 def setEraseButtonColour(setRed, btnDraw, btnErase):
@@ -450,122 +450,6 @@ def setUpGraphicsView(hbox):
             logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
 
 
-def displayImageROISubWindow(self, derivedImagePath=None):
-        """
-        Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
-        """
-        try:
-            logger.info("DisplayImageDrawROI displayImageROISubWindow called")
-            pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-        
-            hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
-            windowTitle = displayImageCommon.getDICOMFileData(self)
-            subWindow.setWindowTitle(windowTitle)
-
-            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
-
-            if pixelArray is None:
-                lblImageMissing.show()
-                graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
-            else:
-                graphicsView.setImage(pixelArray)
-
-            (pixelDataLabel, roiMeanLabel, 
-             cmbROIs, buttonList, 
-             btnDraw, btnErase) = setUpPixelDataWidgets(self, layout, graphicsView, zoomSlider, zoomLabel)
-           
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
-                                                                    graphicsView, 
-                                                                    cmbROIs)
-            spinBoxIntensity.blockSignals(True)
-            spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
-            spinBoxIntensity.blockSignals(False)
-            spinBoxContrast.blockSignals(True)
-            spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
-            spinBoxContrast.blockSignals(False)
-            
-            setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                                            btnDraw, btnErase,
-                                            roiMeanLabel, cmbROIs, buttonList,
-                                            zoomSlider, zoomLabel)
-        except (IndexError, AttributeError):
-                subWindow.close()
-                msgBox = QMessageBox()
-                msgBox.setWindowTitle("View a DICOM series or image with an ROI")
-                msgBox.setText("Select either a series or an image")
-                msgBox.exec()
-        except Exception as e:
-            print('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))
-            logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e)) 
-
-
-def displayMultiImageROISubWindow(self, imageList, studyName, 
-                     seriesName, sliderPosition = -1):
-        """
-        Creates a subwindow that displays all the DICOM images in a series. 
-        A slider allows the user to navigate  through the images.  
-        The user may create an ROI on the series of images.
-        """
-        try:
-            logger.info("DisplayImageDrawROI.displayMultiImageROISubWindow called")
-            hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
-            
-            imageSlider = QSlider(Qt.Horizontal)
-            imageSlider.setMinimum(1)
-            imageSlider.setMaximum(len(imageList))
-            if sliderPosition == -1:
-                imageSlider.setValue(1)
-            else:
-                imageSlider.setValue(sliderPosition)
-            imageSlider.setSingleStep(1)
-            imageSlider.setTickPosition(QSlider.TicksBothSides)
-            imageSlider.setTickInterval(1)
-
-            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
-            graphicsView.dictROIs = ROIs(NumImages=len(imageList))
-            
-            pixelDataLabel, roiMeanLabel, cmbROIs, buttonList, btnDraw, btnErase = setUpPixelDataWidgets(self, layout, 
-                                                                          graphicsView, zoomSlider, zoomLabel,
-                                                                           imageSlider)
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
-                                                                     graphicsView, 
-                                                                     cmbROIs, 
-                                                                     imageSlider)
-
-            layout.addWidget(imageSlider)
-            imageSlider.valueChanged.connect(
-                  lambda: imageROISliderMoved(self, seriesName, 
-                                                   imageList, 
-                                                   imageSlider,
-                                                   lblImageMissing, pixelDataLabel,
-                                                   roiMeanLabel, cmbROIs,
-                                                   btnDraw, btnErase,
-                                                   spinBoxIntensity, 
-                                                   spinBoxContrast,
-                                                   graphicsView, subWindow, buttonList, zoomSlider,
-                                                   zoomLabel))
-          
-            imageROISliderMoved(self, seriesName, 
-                                    imageList, 
-                                    imageSlider,
-                                    lblImageMissing, 
-                                    pixelDataLabel, 
-                                    roiMeanLabel, cmbROIs,
-                                    btnDraw, btnErase,
-                                    spinBoxIntensity, 
-                                    spinBoxContrast,
-                                    graphicsView, subWindow, buttonList, zoomSlider, zoomLabel)       
-        except (IndexError, AttributeError):
-                subWindow.close()
-                msgBox = QMessageBox()
-                msgBox.setWindowTitle("View a DICOM series or image with an ROI")
-                msgBox.setText("Select either a series or an image")
-                msgBox.exec()    
-        except Exception as e:
-            print('Error in displayMultiImageROISubWindow: ' + str(e))
-            logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
-
-
 def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
         logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
         xCoord = graphicsView.graphicsItem.xMouseCoord
@@ -682,8 +566,8 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel,
         pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.setImage(pixelArray, mask)
-        pixelDataLabel.clear() 
-        roiMeanLabel.clear()
+        pixelDataLabel.setText("Pixel Data:") 
+        roiMeanLabel.setText("ROI Mean Value:") 
         setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
                                 btnDraw, btnErase, roiMeanLabel,
                                      cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
@@ -877,3 +761,124 @@ def updateZoomSlider(zoomSlider, zoomLabel, increment):
         elif zoomSlider.value() > zoomSlider.minimum() and increment < 0:
             zoomSlider.setValue(newValue)
     zoomSlider.blockSignals(False)
+
+
+def displayImageROISubWindow(self, derivedImagePath=None):
+    """
+    Creates a subwindow that displays one DICOM image and allows the creation of an ROI on it 
+    """
+    try:
+        logger.info("DisplayImageDrawROI displayImageROISubWindow called")
+        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        
+        hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
+        windowTitle = displayImageCommon.getDICOMFileData(self)
+        subWindow.setWindowTitle(windowTitle)
+
+        graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
+
+     
+        pixelDataLabel, roiMeanLabel = setPixelDataLabels(layout)
+        (cmbROIs, buttonList, 
+            btnDraw, btnErase) = setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zoomSlider, zoomLabel)
+           
+        spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
+                                                                graphicsView, 
+                                                                cmbROIs)
+        if pixelArray is None:
+            lblImageMissing.show()
+            graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
+        else:
+            graphicsView.setImage(pixelArray)
+
+        spinBoxIntensity.blockSignals(True)
+        spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
+        spinBoxIntensity.blockSignals(False)
+        spinBoxContrast.blockSignals(True)
+        spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
+        spinBoxContrast.blockSignals(False)
+            
+        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+                                        btnDraw, btnErase,
+                                        roiMeanLabel, cmbROIs, buttonList,
+                                        zoomSlider, zoomLabel)
+       
+        
+    except (IndexError, AttributeError):
+            subWindow.close()
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("View a DICOM series or image with an ROI")
+            msgBox.setText("Select either a series or an image")
+            msgBox.exec()
+    except Exception as e:
+        print('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))
+        logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e)) 
+
+
+def displayMultiImageROISubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1):
+        """
+        Creates a subwindow that displays all the DICOM images in a series. 
+        A slider allows the user to navigate  through the images.  
+        The user may create an ROI on the series of images.
+        """
+        try:
+            logger.info("DisplayImageDrawROI.displayMultiImageROISubWindow called")
+            hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
+            
+            imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setMinimum(1)
+            imageSlider.setMaximum(len(imageList))
+            if sliderPosition == -1:
+                imageSlider.setValue(1)
+            else:
+                imageSlider.setValue(sliderPosition)
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
+
+            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
+            graphicsView.dictROIs = ROIs(NumImages=len(imageList))
+            pixelDataLabel, roiMeanLabel = setPixelDataLabels(layout)
+            cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, layout, 
+                                                                    pixelDataLabel, roiMeanLabel,
+                                                                    graphicsView, 
+                                                                    zoomSlider, zoomLabel,
+                                                                    imageSlider)
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
+                                                                     graphicsView, 
+                                                                     cmbROIs, 
+                                                                     imageSlider)
+
+            layout.addWidget(imageSlider)
+            imageSlider.valueChanged.connect(
+                  lambda: imageROISliderMoved(self, seriesName, 
+                                                   imageList, 
+                                                   imageSlider,
+                                                   lblImageMissing, pixelDataLabel,
+                                                   roiMeanLabel, cmbROIs,
+                                                   btnDraw, btnErase,
+                                                   spinBoxIntensity, 
+                                                   spinBoxContrast,
+                                                   graphicsView, subWindow, buttonList, zoomSlider,
+                                                   zoomLabel))
+          
+            imageROISliderMoved(self, seriesName, 
+                                    imageList, 
+                                    imageSlider,
+                                    lblImageMissing, 
+                                    pixelDataLabel, 
+                                    roiMeanLabel, cmbROIs,
+                                    btnDraw, btnErase,
+                                    spinBoxIntensity, 
+                                    spinBoxContrast,
+                                    graphicsView, subWindow, buttonList, zoomSlider, zoomLabel)       
+        except (IndexError, AttributeError):
+                subWindow.close()
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("View a DICOM series or image with an ROI")
+                msgBox.setText("Select either a series or an image")
+                msgBox.exec()    
+        except Exception as e:
+            print('Error in displayMultiImageROISubWindow: ' + str(e))
+            logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
