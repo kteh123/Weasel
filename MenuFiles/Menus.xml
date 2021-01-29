@@ -82,13 +82,13 @@
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
         </item>
-        <item>
 		<item>
           <label>Rename Series</label>
           <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
 		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
           <module>renameSeries</module>
         </item>
+		<item>
           <!--Inserts a separator, a horizontal line in the menu-->
           <separator>yes</separator>
         </item>
