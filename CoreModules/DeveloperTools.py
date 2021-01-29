@@ -679,6 +679,8 @@ class Study:
 
 
 class Series:
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'seriesUID', 'images', 'children',
+                  'numberChildren', 'suffix', 'referencePathsList' ,'indices')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, children=None, seriesUID=None, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
@@ -989,6 +991,8 @@ class Series:
 
 
 class Image:
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path',
+                 'suffix', 'referencePath')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, path, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID

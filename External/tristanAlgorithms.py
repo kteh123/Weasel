@@ -26,10 +26,10 @@ class TRISTAN():
         self.pixelArray = pixelArray
 
 
-    def MIP(self, sliceList):
+    def MIP(self):
         try:
             mip = []
-            for index in range(len(sliceList)):
+            for index in range(np.shape(self.pixelArray)[0]):
                 mip.append(np.max(self.pixelArray[index, ...], axis=0))
             return np.array(mip)
         except Exception as e:
