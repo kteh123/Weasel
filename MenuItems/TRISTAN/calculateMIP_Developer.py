@@ -1,12 +1,6 @@
-import CoreModules.DeveloperTools as tools
-from CoreModules.DeveloperTools import UserInterfaceTools as ui
-from CoreModules.DeveloperTools import PixelArrayDICOMTools as pixel
-from CoreModules.DeveloperTools import GenericDICOMTools as dicom
-#**************************************************************************
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image # Write a developer tool to deal with image sort
-import numpy as np
+from CoreModules.DeveloperTools import UserInterfaceTools
 from External.tristanAlgorithms import TRISTAN
-from CoreModules.imagingTools import formatArrayForAnalysis
+import numpy as np
 FILE_SUFFIX = '_MIP'
 #***************************************************************************
 
@@ -16,17 +10,20 @@ def isSeriesOnly(self):
 
 
 def main(objWeasel):
-    if tools.treeView.isASeriesSelected(objWeasel):
-        imagePathList = ui.getImagesFromSeries(objWeasel)
-        # Pre-processing - this bit uses CoreModules directly. Will have to convert to Developer
-        imagePathList, sliceList, numberSlices, _ = readDICOM_Image.sortSequenceByTag(imagePathList, "SliceLocation")
-        pixelArray = pixel.getPixelArrayFromDICOM(imagePathList)
-        pixelArray = formatArrayForAnalysis(pixelArray, int(len(sliceList)/numberSlices), readDICOM_Image.getDicomDataset(imagePathList[0]), dimension='4D')
+    ui = UserInterfaceTools(objWeasel)
+    seriesList = ui.getCheckedSeries()
+    for series in seriesList:
+        # Pre-processing
+        series.sort("SliceLocation")
+        pixelArray = series.PixelArray
+        reformatShape = (series.NumberOfSlices, int(np.shape(pixelArray)[0]/series.NumberOfSlices), np.shape(pixelArray)[1], np.shape(pixelArray)[2])
+        pixelArray = pixelArray.reshape(reformatShape)
         # Run MIP
-        pixelArray = TRISTAN(pixelArray).MIP(np.unique(sliceList))
-        # Save resulting image to DICOM (and update XML)
-        outputhPath = pixel.writeNewPixelArray(objWeasel, pixelArray, imagePathList, FILE_SUFFIX)
-        # Refresh the UI screen
-        ui.refreshWeasel(objWeasel)
-        # Display resulting image
-        ui.displayImage(objWeasel, outputhPath)
+        pixelArray = TRISTAN(pixelArray).MIP() # Can definitely improve MIP itself
+        # Save resulting image to new DICOM series(and update XML)
+        newSeries = series.new(suffix=FILE_SUFFIX)
+        newSeries.write(pixelArray)
+    # Refresh the UI screen
+    ui.refreshWeasel()
+    # Display resulting image
+    newSeries.DisplaySeries()
