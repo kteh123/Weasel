@@ -34,8 +34,6 @@ import CoreModules.WEASEL.InputDialog as inputDialog
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
-#import gc
-#gc.collect()
 import logging
 logger = logging.getLogger(__name__)
 
@@ -802,7 +800,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
                                         btnDraw, btnErase,
                                         roiMeanLabel, cmbROIs, buttonList,
                                         zoomSlider, zoomLabel)
-       
+        
         
     except (IndexError, AttributeError):
             subWindow.close()

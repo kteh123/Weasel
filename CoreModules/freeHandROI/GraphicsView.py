@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QRectF, Qt,  QCoreApplication
 from PyQt5 import QtCore 
 from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
-                            QAction, QActionGroup, QApplication)
+                            QAction, QActionGroup, QApplication )
 from PyQt5.QtGui import QPixmap, QCursor, QIcon
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
@@ -50,6 +50,8 @@ class GraphicsView(QGraphicsView):
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
+   # def resizeEvent(self, event):
+    #    print("GraphicsView resize event event={}".format(event))
 
     def setZoomEnabled(self, boolValue):
         self.zoomEnabled = boolValue
@@ -59,15 +61,17 @@ class GraphicsView(QGraphicsView):
     def setImage(self, pixelArray, mask = None):
         try:
             logger.info("GraphicsView.setImage called")
-            print("GraphicsView.setImage called")
             if self.graphicsItem is not None:
                 self.graphicsItem = None
                 self.scene.clear()
 
             self.graphicsItem = GraphicsItem(pixelArray, mask)
-            self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
+            #Give graphicsItem some time to adjust itself
+            QApplication.processEvents()
             self.scene.addItem(self.graphicsItem)
+            self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.reapplyZoom()
+
             self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
             self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
         except Exception as e:
@@ -75,11 +79,11 @@ class GraphicsView(QGraphicsView):
 
 
     def reapplyZoom(self):
-        print("reapplyZoom self._zoom={}".format(self._zoom))
         if self._zoom > 0:
             factor = 1.25
             totalFactor = factor**self._zoom
             self.scale(totalFactor, totalFactor)
+        
 
 
     def zoomFromMouseClicks(self, zoomValue):
