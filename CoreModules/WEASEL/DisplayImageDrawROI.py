@@ -116,6 +116,44 @@ def setUpGraphicsViewSubWindow(self):
             logger.error('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
 
 
+def setUpGraphicsView(hbox):
+    try:
+        logger.info("DisplayImageDrawROI.setUpGraphicsView called.")
+        groupBoxImageData = QGroupBox()
+        layoutImageData = QVBoxLayout()
+        groupBoxImageData.setLayout(layoutImageData)
+        hbox.addWidget(groupBoxImageData)
+
+        graphicsView = GraphicsView()
+        hbox.addWidget(graphicsView)
+
+        zoomSlider, zoomLabel, groupBoxZoom = setUpZoomSlider()
+        hbox.addWidget(groupBoxZoom)
+
+        return graphicsView, zoomSlider, zoomLabel
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setUpGraphicsView: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
+
+
+def setUpZoomSlider():
+    zoomSlider = Slider(Qt.Vertical)
+    zoomLabel = QLabel("<H4>100%</H4>")
+    zoomSlider.setMinimum(0)
+    zoomSlider.setMaximum(20)
+    zoomSlider.setSingleStep(1)
+    zoomSlider.setTickPosition(QSlider.TicksBothSides)
+    zoomSlider.setTickInterval(1)
+    zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
+
+    groupBoxZoom = QGroupBox('Zoom')
+    layoutZoom = QVBoxLayout()
+    groupBoxZoom.setLayout(layoutZoom)
+    layoutZoom.addWidget(zoomSlider)
+    layoutZoom.addWidget(zoomLabel)
+    return zoomSlider, zoomLabel, groupBoxZoom 
+
+
 def addNewROItoDropDownList(newRegion, roiCombo):
     logger.info("DisplayImageDrawROI.addNewROItoDropDownList called.")
     noDuplicate = True
@@ -419,33 +457,6 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
 def updateROIName(graphicsView, cmbROIs):
     logger.info("DisplayImageDrawROI.updateROIName called.")
     graphicsView.currentROIName = cmbROIs.currentText()
-    
-
-def setUpGraphicsView(hbox):
-    try:
-        logger.info("DisplayImageDrawROI.setUpGraphicsView called.")
-        zoomSlider = Slider(Qt.Vertical)
-        zoomLabel = QLabel("<H4>100%</H4>")
-        graphicsView = GraphicsView()
-        hbox.addWidget(graphicsView)
-
-        zoomSlider.setMinimum(0)
-        zoomSlider.setMaximum(20)
-        zoomSlider.setSingleStep(1)
-        zoomSlider.setTickPosition(QSlider.TicksBothSides)
-        zoomSlider.setTickInterval(1)
-        zoomSlider.valueChanged.connect(lambda: graphicsView.zoomImage(zoomSlider.direction()))
-
-        groupBoxZoom = QGroupBox('Zoom')
-        layoutZoom = QVBoxLayout()
-        groupBoxZoom.setLayout(layoutZoom)
-        layoutZoom.addWidget(zoomSlider)
-        layoutZoom.addWidget(zoomLabel)
-        hbox.addWidget(groupBoxZoom)
-        return graphicsView, zoomSlider, zoomLabel
-    except Exception as e:
-            print('Error in DisplayImageDrawROI.setUpGraphicsView: ' + str(e))
-            logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
 
 
 def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
