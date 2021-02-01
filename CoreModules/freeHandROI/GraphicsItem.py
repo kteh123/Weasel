@@ -45,7 +45,6 @@ class GraphicsItem(QGraphicsObject):
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.width = float(self.pixMap.width()) 
         self.height = float(self.pixMap.height())
-        print("Graphics Item width={}, height={}".format(self.width,self.height ))
         self.last_x, self.last_y = None, None
         self.start_x = None
         self.start_y = None
@@ -286,7 +285,7 @@ class GraphicsItem(QGraphicsObject):
         logger.info("GraphicsItem.reloadImage called")
         self.qimage = None
         self.pixMap = None
-        #self.turnOfDrawEraseZoom()
+        #self.turnOffDrawEraseZoom()
         self.qimage = self.origQimage
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.update()
