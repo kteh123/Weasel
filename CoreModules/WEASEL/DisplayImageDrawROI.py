@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (QApplication,
                             QGroupBox, 
                             QDoubleSpinBox,
                             QPushButton,  
-                            QLabel,  
+                            QLabel, QFrame, 
                             QSlider, 
                             QCheckBox,
                             QSpacerItem,
@@ -116,24 +116,81 @@ def setUpGraphicsViewSubWindow(self):
             logger.error('Error in DisplayImageDrawRIO.setUpGraphicsViewSubWindow: ' + str(e))
 
 
-def setUpGraphicsView(hbox):
+def setUpGraphicsView(hbox, cmbROIs, imageSlide=None):
     try:
         logger.info("DisplayImageDrawROI.setUpGraphicsView called.")
-        groupBoxImageData = QGroupBox()
-        layoutImageData = QVBoxLayout()
-        groupBoxImageData.setLayout(layoutImageData)
-        hbox.addWidget(groupBoxImageData)
-
         graphicsView = GraphicsView()
+
+        (groupBoxImageData, pixelValueTxt, 
+         pixelColourTxt, pixelPositionTxt, 
+         roiMeanTxt, roiStdDevTxt,
+         spinBoxIntensity, spinBoxContrast) = setUpImageDataWidgets(graphicsView, cmbROIs, imageSlide)
+        hbox.addWidget(groupBoxImageData)
+        
         hbox.addWidget(graphicsView)
 
         zoomSlider, zoomLabel, groupBoxZoom = setUpZoomSlider()
         hbox.addWidget(groupBoxZoom)
 
-        return graphicsView, zoomSlider, zoomLabel
+        return (graphicsView, zoomSlider, zoomLabel,pixelValueTxt, 
+         pixelColourTxt, pixelPositionTxt, 
+         roiMeanTxt, roiStdDevTxt, spinBoxIntensity, spinBoxContrast)
     except Exception as e:
             print('Error in DisplayImageDrawROI.setUpGraphicsView: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.setUpGraphicsViewe: ' + str(e))  
+
+
+def setUpImageDataWidgets(graphicsView, cmbROIs, imageSlider = None):
+    try:
+        logger.info("DisplayImageDrawROI.setUpImageDataWidgets called.")
+        groupBoxImageData = QGroupBox()
+        layoutImageData = QVBoxLayout()
+        groupBoxImageData.setLayout(layoutImageData)
+    
+        pixelValueLabel = QLabel("Pixel Value")
+        pixelValueTxt = QLabel()
+        pixelValueTxt.setStyleSheet("color : red;")
+        pixelColourLabel = QLabel("Pixel Colour")
+        pixelColourTxt = QLabel()
+        pixelColourTxt.setStyleSheet("color : red;")
+        pixelPositionLabel = QLabel("@ Position (x,y)")
+        pixelPositionTxt = QLabel()
+        pixelPositionTxt.setStyleSheet("color : red;")
+
+        roiMeanLabel = QLabel("ROI Mean Value")
+        roiMeanTxt = QLabel()
+        roiMeanTxt.setStyleSheet("color : red;")
+        roiStdDevLabel = QLabel("Standard Deviation")
+        roiStdDevTxt = QLabel()
+        roiStdDevTxt.setStyleSheet("color : red;")
+
+        (spinBoxIntensity, spinBoxContrast, 
+         lblIntensity, lblContrast) = setUpLevelsSpinBoxes(graphicsView, cmbROIs, imageSlider = None)        
+        
+        layoutImageData.addWidget(pixelValueLabel, Qt.AlignLeft)
+        layoutImageData.addWidget(pixelValueTxt, Qt.AlignLeft)
+        layoutImageData.addWidget(pixelColourLabel, Qt.AlignLeft)
+        layoutImageData.addWidget(pixelColourTxt, Qt.AlignLeft)
+        layoutImageData.addWidget(pixelPositionLabel, Qt.AlignLeft)
+        layoutImageData.addWidget(pixelPositionTxt, Qt.AlignLeft)
+        
+        layoutImageData.addWidget(roiMeanLabel, Qt.AlignLeft) 
+        layoutImageData.addWidget(roiMeanTxt, Qt.AlignLeft) 
+        layoutImageData.addWidget(roiStdDevLabel, Qt.AlignLeft)
+        layoutImageData.addWidget(roiStdDevTxt, Qt.AlignLeft)
+
+        layoutImageData.addWidget(lblIntensity, Qt.AlignLeft)
+        layoutImageData.addWidget(spinBoxIntensity, Qt.AlignLeft)
+        layoutImageData.addWidget(lblContrast, Qt.AlignLeft)
+        layoutImageData.addWidget(spinBoxContrast, Qt.AlignLeft)
+        layoutImageData.addStretch(15)
+    
+        return (groupBoxImageData, pixelValueTxt, pixelColourTxt,pixelPositionTxt, 
+                roiMeanTxt, roiStdDevTxt,
+                spinBoxIntensity, spinBoxContrast)
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setUpImageDataWidgets: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setUpImageDataWidgets: ' + str(e))
 
 
 def setUpZoomSlider():
@@ -168,15 +225,15 @@ def addNewROItoDropDownList(newRegion, roiCombo):
         roiCombo.blockSignals(False)
 
 
-def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
+def setUpLevelsSpinBoxes(graphicsView, cmbROIs, imageSlider = None): 
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
     spinBoxIntensity = QDoubleSpinBox()
     spinBoxContrast = QDoubleSpinBox()
     
     lblIntensity = QLabel("Centre (Intensity)")
     lblContrast = QLabel("Width (Contrast)")
-    lblIntensity.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-    lblContrast.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+    lblIntensity.setAlignment(Qt.AlignLeft)
+    lblContrast.setAlignment(Qt.AlignLeft)
     
     spinBoxIntensity.setMinimum(-100000.00)
     spinBoxContrast.setMinimum(-100000.00)
@@ -185,24 +242,24 @@ def setUpLevelsSpinBoxes(layout, graphicsView, cmbROIs, imageSlider = None):
     spinBoxIntensity.setWrapping(True)
     spinBoxContrast.setWrapping(True)
 
-    groupBoxLevels = QGroupBox('Image Levels')
-    gridLayoutLevels = QGridLayout()
-    gridLayoutLevels.setHorizontalSpacing(10)
-    groupBoxLevels.setLayout(gridLayoutLevels)
-    layout.addWidget(groupBoxLevels)
+    #groupBoxLevels = QGroupBox('Image Levels')
+    #gridLayoutLevels = QGridLayout()
+    #gridLayoutLevels.setHorizontalSpacing(10)
+    #groupBoxLevels.setLayout(gridLayoutLevels)
+    #layout.addWidget(groupBoxLevels)
     
-    gridLayoutLevels.addWidget(lblIntensity, 0,0)
-    gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
-    gridLayoutLevels.addWidget(lblContrast, 0,2)
-    gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
-    gridLayoutLevels.setHorizontalSpacing(10)
+    #gridLayoutLevels.addWidget(lblIntensity, 0,0)
+    #gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
+    #gridLayoutLevels.addWidget(lblContrast, 0,2)
+    #gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
+    #gridLayoutLevels.setHorizontalSpacing(10)
     
     spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(graphicsView,
                 spinBoxIntensity.value(), spinBoxContrast.value(),  cmbROIs, imageSlider))
     spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(graphicsView,
                 spinBoxIntensity.value(), spinBoxContrast.value(), cmbROIs, imageSlider))  
-    layout.addLayout(gridLayoutLevels) 
-    return spinBoxIntensity, spinBoxContrast
+    #layout.addLayout(gridLayoutLevels) 
+    return spinBoxIntensity, spinBoxContrast, lblIntensity, lblContrast
     
 
 def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = None):
@@ -219,12 +276,14 @@ def updateImageLevels(graphicsView, intensity, contrast, cmbROIs, imageSlider = 
             logger.error('Error in DisplayImageDrawROI.updateImageLevels: ' + str(e))
 
 
-def setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zoomSlider, zoomLabel, imageSlider=None):
+def setUpROIButtons(self, layout, pixelValueTxt, 
+         pixelColourTxt, pixelPositionTxt, 
+         roiMeanTxt, roiStdDevTxt, graphicsView, 
+         zoomSlider, zoomLabel, cmbROIs, imageSlider=None):
     try:
         logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
         buttonList = []
         lblCmbROIs =  QLabel("ROIs")
-        cmbROIs = QComboBox()
         cmbROIs.setDuplicatesEnabled(False)
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0)
@@ -284,8 +343,10 @@ def setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zo
         cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
         cmbROIs.currentIndexChanged.connect(
-            lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                                  roiMeanLabel, self, buttonList, btnDraw, btnErase, 
+            lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt, 
+                                                pixelColourTxt, pixelPositionTxt, 
+                                   roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                   btnDraw, btnErase, 
                                   zoomSlider, zoomLabel, imageSlider))
 
         cmbROIs.editTextChanged.connect( lambda text: roiNameChanged(cmbROIs, graphicsView, text))
@@ -308,29 +369,28 @@ def setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zo
         layoutROI.addWidget(btnErase, alignment=Qt.AlignLeft,)
         layoutROI.addWidget(btnZoom,  alignment=Qt.AlignLeft,)
         
-        return cmbROIs, buttonList, btnDraw, btnErase
+        return  buttonList, btnDraw, btnErase
     except Exception as e:
            print('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e))
            logger.error('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e))  
 
 
-def setPixelDataLabels(layout):
-    try:
-        logger.info("DisplayImageDrawROI.setPixelDataLabels called.")
-        pixelDataLabel = QLabel("Pixel data")
-        roiMeanLabel = QLabel("ROI Mean Value")
+#def setPixelDataLabels(layout):
+#    try:
+#        logger.info("DisplayImageDrawROI.setPixelDataLabels called.")
+#        pixelDataLabel = QLabel("Pixel data")
+#        roiMeanLabel = QLabel("ROI Mean Value")
 
-        groupBoxPixelData = QGroupBox('Pixel/ROI Data')
-        layout.addWidget(groupBoxPixelData)
-        layoutPixelData = QHBoxLayout(groupBoxPixelData)
+#        groupBoxPixelData = QGroupBox('Pixel/ROI Data')
+#        layout.addWidget(groupBoxPixelData)
+#        layoutPixelData = QHBoxLayout(groupBoxPixelData)
 
-        layoutPixelData.addWidget(pixelDataLabel)
-        layoutPixelData.addWidget(roiMeanLabel)
-        return pixelDataLabel, roiMeanLabel
-    except Exception as e:
-           print('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))
-           logger.error('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))  
-
+#        layoutPixelData.addWidget(pixelDataLabel)
+#        layoutPixelData.addWidget(roiMeanLabel)
+#        return pixelDataLabel, roiMeanLabel
+#    except Exception as e:
+#           print('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))
+#           logger.error('Error in DisplayImageDrawROI.setPixelDataLabels: ' + str(e))  
 
 
 def setEraseButtonColour(setRed, btnDraw, btnErase):
@@ -416,17 +476,20 @@ def eraseROI(btn, checked, graphicsView, buttonList):
          )
 
 
-def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnErase,
-                            roiMeanLabel, cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
+def setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+                            pixelColourTxt, pixelPositionTxt, 
+                            roiMeanTxt, roiStdDevTxt, btnDraw, btnErase,
+                            cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
-    lambda: displayImageDataUnderMouse(graphicsView, pixelDataLabel))
+    lambda: displayImageDataUnderMouse(graphicsView, pixelValueTxt, 
+                            pixelColourTxt, pixelPositionTxt))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
         lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
-        lambda: displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider))
+        lambda: displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider))
 
     graphicsView.graphicsItem.sigMaskEdited.connect(
         lambda:replaceMask(graphicsView, cmbROIs.currentText(), imageSlider))
@@ -436,12 +499,15 @@ def setUpImageEventHandlers(self, graphicsView, pixelDataLabel, btnDraw, btnEras
 
     graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
-    graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider, 
+    graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, 
+                                       pixelValueTxt, pixelColourTxt, pixelPositionTxt, 
+                                       roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                       btnDraw, btnErase, zoomSlider, 
                               zoomLabel, imageSlider ))
 
     graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase,  
+              pixelValueTxt, pixelColourTxt, pixelPositionTxt, 
+         roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase,  
               zoomSlider, zoomLabel, imageSlider))
 
     graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
@@ -459,15 +525,22 @@ def updateROIName(graphicsView, cmbROIs):
     graphicsView.currentROIName = cmbROIs.currentText()
 
 
-def displayImageDataUnderMouse(graphicsView, pixelDataLabel):
+def displayImageDataUnderMouse(graphicsView, pixelValueTxt, 
+                            pixelColourTxt, pixelPositionTxt):
         logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
         xCoord = graphicsView.graphicsItem.xMouseCoord
         yCoord = graphicsView.graphicsItem.yMouseCoord
         pixelColour = graphicsView.graphicsItem.pixelColour
         pixelValue = graphicsView.graphicsItem.pixelValue
-        str ="Pixel value {}, Pixel colour {} @ X = {}, Y = {}".format(pixelValue, pixelColour,
-                                                                      xCoord, yCoord)
-        pixelDataLabel.setText(str)
+        strValue = str(pixelValue)
+        strColour =  str(pixelColour)
+        strPosition = str(xCoord) + ',' + str(yCoord)
+        #str ="Pixel value {},\nPixel colour {}\n@ X = {}, Y = {}".format(pixelValue, pixelColour,
+         #                                                             xCoord, yCoord)
+        pixelValueTxt.setText(strValue)
+        pixelColourTxt.setText(strColour)
+        pixelPositionTxt.setText(strPosition)
+        #pixelDataLabel.setText(str)
 
 
 def getRoiMeanAndStd(mask, pixelArray):
@@ -477,7 +550,7 @@ def getRoiMeanAndStd(mask, pixelArray):
     return mean, std
 
 
-def displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider=None):
+def displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider=None):
         logger.info("DisplayImageDrawROI.displayROIMeanAndStd called")
         if imageSlider:
             imageNumber = imageSlider.value()
@@ -488,10 +561,12 @@ def displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider=
         mask = graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = getRoiMeanAndStd(mask, pixelArray)
-            str ="ROI mean = {}, standard deviation = {}".format(mean, std)
+            roiMeanTxt.setText(str(mean))
+            roiStdDevTxt.setText(str(std))
+            #str ="ROI mean = {},\nstandard deviation = {}".format(mean, std)
         else:
-            str = ""
-        roiMeanLabel.setText(str)
+            roiMeanTxt.clear()
+            roiStdDevTxt.clear()
         
 
 def storeMaskData(graphicsView, regionName, imageSlider=None):
@@ -515,7 +590,9 @@ def replaceMask(graphicsView, regionName, imageSlider=None):
         
 
 def imageROISliderMoved(self, seriesName, imageList, imageSlider,
-                        lblImageMissing, pixelDataLabel, roiMeanLabel,
+                        lblImageMissing, pixelValueTxt, 
+                        pixelColourTxt, pixelPositionTxt, 
+                        roiMeanTxt, roiStdDevTxt,
                         cmbROIs,  btnDraw, btnErase,
                         spinBoxIntensity, spinBoxContrast,  
                         graphicsView, subWindow, buttonList, zoomSlider, zoomLabel):
@@ -536,8 +613,10 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     lblImageMissing.show()
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
-                    reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider, 
+                    reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt, 
+                            pixelColourTxt, pixelPositionTxt, 
+                            roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                            btnDraw, btnErase, zoomSlider, 
                               zoomLabel, imageSlider) 
                     spinBoxIntensity.blockSignals(True)
                     spinBoxIntensity.setValue(graphicsView.graphicsItem.intensity)
@@ -545,11 +624,13 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                     spinBoxContrast.blockSignals(True)
                     spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
                     spinBoxContrast.blockSignals(False)
-                    setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                                            btnDraw, btnErase,
-                                            roiMeanLabel, cmbROIs, buttonList,
-                                            zoomSlider, zoomLabel,
-                                         imageSlider)
+                    setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+                                pixelColourTxt, pixelPositionTxt, 
+                                roiMeanTxt, roiStdDevTxt,
+                                btnDraw, btnErase,
+                                cmbROIs, buttonList,
+                                zoomSlider, zoomLabel,
+                                imageSlider)
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
@@ -559,8 +640,9 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
             logger.error('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
 
 
-def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, 
+def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt, 
+                                pixelColourTxt, pixelPositionTxt, 
+                                roiMeanTxt, roiStdDevTxt, self, buttonList, 
                               btnDraw, btnErase, zoomSlider, zoomLabel,
                               imageSlider=None ):
     try:
@@ -575,31 +657,38 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel,
         pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.setImage(pixelArray, mask)
-        pixelDataLabel.setText("Pixel Data:") 
-        roiMeanLabel.setText("ROI Mean Value:") 
-        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
-                                btnDraw, btnErase, roiMeanLabel,
-                                     cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
+        setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+                                pixelColourTxt, pixelPositionTxt, 
+                                roiMeanTxt, roiStdDevTxt, 
+                                btnDraw, btnErase, 
+                                cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
     except Exception as e:
            print('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
            logger.error('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
     
 
 def deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelDataLabel, roiMeanLabel, buttonList, btnDraw, btnErase, zoomSlider,
+              pixelValueTxt, pixelColourTxt, pixelPositionTxt, 
+              roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase, zoomSlider,
               zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.deleteROITidyUp called")
     
-    reloadImageInNewImageItem(cmbROIs, graphicsView, pixelDataLabel, 
-                              roiMeanLabel, self, buttonList, btnDraw, btnErase, zoomSlider,
+    reloadImageInNewImageItem(cmbROIs, graphicsView, 
+                              pixelValueTxt, pixelColourTxt, 
+                              pixelPositionTxt, 
+                              roiMeanTxt, roiStdDevTxt, 
+                              self, buttonList, btnDraw, btnErase, zoomSlider,
                              zoomLabel, imageSlider) 
-    displayROIMeanAndStd(self, roiMeanLabel, graphicsView, cmbROIs, imageSlider)
+    displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)
     if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1: 
         cmbROIs.clear()
         cmbROIs.addItem("region1")
         cmbROIs.setCurrentIndex(0) 
-        pixelDataLabel.clear()
-        roiMeanLabel.clear()
+        roiMeanTxt.clear()
+        roiStdDevTxt.clear()
+        pixelValueTxt.clear()
+        pixelColourTxt.clear() 
+        pixelPositionTxt.clear()
     else:
         if imageSlider:
             imageNumber = imageSlider.value()
@@ -735,7 +824,6 @@ def roiNameChanged(cmbROIs, graphicsView, newText):
         #Prevent spaces in new ROI name
         if ' ' in newText:
             newText = newText.replace(" ", "")
-            print("newText={}".format(newText))
             cmbROIs.setItemText(currentIndex, newText)
             cmbROIs.setCurrentText(newText)
         index = cmbROIs.findText(newText);
@@ -778,22 +866,25 @@ def displayImageROISubWindow(self, derivedImagePath=None):
     """
     try:
         logger.info("DisplayImageDrawROI displayImageROISubWindow called")
-        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-        
         hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
         windowTitle = displayImageCommon.getDICOMFileData(self)
         subWindow.setWindowTitle(windowTitle)
+        cmbROIs = QComboBox()
+        (graphicsView, 
+         zoomSlider, zoomLabel,
+         pixelValueTxt, 
+         pixelColourTxt, pixelPositionTxt, 
+         roiMeanTxt, roiStdDevTxt, 
+         spinBoxIntensity, spinBoxContrast) = setUpGraphicsView(hbox, cmbROIs,
+                                                                       imageSlide=None)
 
-        graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
-
-     
-        pixelDataLabel, roiMeanLabel = setPixelDataLabels(layout)
-        (cmbROIs, buttonList, 
-            btnDraw, btnErase) = setUpROIButtons(self, layout, pixelDataLabel, roiMeanLabel, graphicsView, zoomSlider, zoomLabel)
+        (buttonList, btnDraw, btnErase) = setUpROIButtons(self, layout, 
+                                             pixelValueTxt, 
+                                             pixelColourTxt, pixelPositionTxt, 
+                                             roiMeanTxt, roiStdDevTxt, 
+                                             graphicsView, zoomSlider, zoomLabel, cmbROIs)
            
-        spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
-                                                                graphicsView, 
-                                                                cmbROIs)
+        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         if pixelArray is None:
             lblImageMissing.show()
             graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
@@ -807,9 +898,11 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         spinBoxContrast.setValue(graphicsView.graphicsItem.contrast)
         spinBoxContrast.blockSignals(False)
             
-        setUpImageEventHandlers(self, graphicsView, pixelDataLabel, 
+        setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+                                    pixelColourTxt, pixelPositionTxt, 
+                                    roiMeanTxt, roiStdDevTxt, 
                                         btnDraw, btnErase,
-                                        roiMeanLabel, cmbROIs, buttonList,
+                                         cmbROIs, buttonList,
                                         zoomSlider, zoomLabel)
         
         
@@ -824,6 +917,24 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e)) 
 
 
+def setUpImageSlider(sliderPosition, imageList):
+    try:
+        imageSlider = QSlider(Qt.Horizontal)
+        imageSlider.setMinimum(1)
+        imageSlider.setMaximum(len(imageList))
+        if sliderPosition == -1:
+            imageSlider.setValue(1)
+        else:
+            imageSlider.setValue(sliderPosition)
+        imageSlider.setSingleStep(1)
+        imageSlider.setTickPosition(QSlider.TicksBothSides)
+        imageSlider.setTickInterval(1)
+        return imageSlider
+    except Exception as e:
+        print('Error in DisplayImageDrawROI.setUpImageSlider: ' + str(e))
+        logger.error('Error in DisplayImageDrawROI.setUpImageSlider: ' + str(e)) 
+
+
 def displayMultiImageROISubWindow(self, imageList, studyName, 
                      seriesName, sliderPosition = -1):
         """
@@ -835,37 +946,39 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             logger.info("DisplayImageDrawROI.displayMultiImageROISubWindow called")
             hbox, layout, lblImageMissing, subWindow = setUpGraphicsViewSubWindow(self)
             
-            imageSlider = QSlider(Qt.Horizontal)
-            imageSlider.setMinimum(1)
-            imageSlider.setMaximum(len(imageList))
-            if sliderPosition == -1:
-                imageSlider.setValue(1)
-            else:
-                imageSlider.setValue(sliderPosition)
-            imageSlider.setSingleStep(1)
-            imageSlider.setTickPosition(QSlider.TicksBothSides)
-            imageSlider.setTickInterval(1)
-
-            graphicsView, zoomSlider, zoomLabel = setUpGraphicsView(hbox)
+            imageSlider = setUpImageSlider(sliderPosition, imageList)
+            cmbROIs = QComboBox()
+            (graphicsView, 
+             zoomSlider, zoomLabel,
+             pixelValueTxt, 
+             pixelColourTxt, pixelPositionTxt, 
+             roiMeanTxt, roiStdDevTxt, 
+             spinBoxIntensity, spinBoxContrast) = setUpGraphicsView(hbox, cmbROIs,
+                                                                       imageSlider)
+            layout.addWidget(imageSlider)
             graphicsView.dictROIs = ROIs(NumImages=len(imageList))
-            pixelDataLabel, roiMeanLabel = setPixelDataLabels(layout)
-            cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, layout, 
-                                                                    pixelDataLabel, roiMeanLabel,
+            #pixelDataLabel, roiMeanLabel = setPixelDataLabels(layout)
+            buttonList, btnDraw, btnErase = setUpROIButtons(self, layout, 
+                                                                    pixelValueTxt, 
+                                                                    pixelColourTxt, 
+                                                                    pixelPositionTxt, 
+                                                                    roiMeanTxt, roiStdDevTxt,
                                                                     graphicsView, 
                                                                     zoomSlider, zoomLabel,
+                                                                    cmbROIs,
                                                                     imageSlider)
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
-                                                                     graphicsView, 
-                                                                     cmbROIs, 
-                                                                     imageSlider)
-
-            layout.addWidget(imageSlider)
+            
+            #spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(layout, 
+            #                                                         graphicsView, 
+            #                                                         cmbROIs, 
+            #                                                         imageSlider)
             imageSlider.valueChanged.connect(
                   lambda: imageROISliderMoved(self, seriesName, 
                                                    imageList, 
                                                    imageSlider,
-                                                   lblImageMissing, pixelDataLabel,
-                                                   roiMeanLabel, cmbROIs,
+                                                   lblImageMissing, pixelValueTxt, 
+                                                   pixelColourTxt, pixelPositionTxt, 
+                                                   roiMeanTxt, roiStdDevTxt, cmbROIs,
                                                    btnDraw, btnErase,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
@@ -876,8 +989,9 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     imageList, 
                                     imageSlider,
                                     lblImageMissing, 
-                                    pixelDataLabel, 
-                                    roiMeanLabel, cmbROIs,
+                                    pixelValueTxt, 
+                                    pixelColourTxt, pixelPositionTxt, 
+                                    roiMeanTxt, roiStdDevTxt, cmbROIs,
                                     btnDraw, btnErase,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
