@@ -125,24 +125,17 @@ class GraphicsView(QGraphicsView):
     def fitItemInView(self):#, scale=True
         try:
             logger.info("GraphicsView.fitItemInView called")
-            print("GraphicsView.fitItemInView called")
             if self.graphicsItem is not None:
                 rect = QRectF(self.graphicsItem.pixMap.rect())
-                print("GraphicsView.fitItemInView called rect ={}".format(rect))
                 if not rect.isNull():
                     self.setSceneRect(rect)
                     unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
-                    print("GraphicsView.fitItemInView called unity ={}".format(unity))
                     self.scale(1 / unity.width(), 1 / unity.height())
                     viewrect = self.viewport().rect()
-                    print("GraphicsView.fitItemInView called viewrect ={}".format(viewrect))
                     scenerect = self.transform().mapRect(rect)
-                    print("GraphicsView.fitItemInView called scenerect ={}".format(scenerect))
                     factor = min(viewrect.width() / scenerect.width(),
                                     viewrect.height() / scenerect.height())
                     self.scale(factor, factor)
-                    print("GraphicsView.fitItemInView factor={}".format(factor))
-                    print("****************************************************")
                     self._zoom = 0
         except Exception as e:
             print('Error in GraphicsView.fitItemInView: ' + str(e))
