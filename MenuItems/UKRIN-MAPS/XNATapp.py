@@ -1,10 +1,15 @@
 import os
-import xnat
 import datetime
 import zipfile
 import warnings
 import requests
 from CoreModules.DeveloperTools import UserInterfaceTools
+try:
+    import xnat
+except ImportError:
+    from pip._internal import main as pip
+    pip(['install', '--user', 'xnat'])
+    import xnat
 
 def isEnabled(self):
     return True
