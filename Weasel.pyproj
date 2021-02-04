@@ -23,6 +23,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CoreModules\freeHandROI\Constants.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CoreModules\freeHandROI\helperFunctions.py">
       <SubType>Code</SubType>
     </Compile>

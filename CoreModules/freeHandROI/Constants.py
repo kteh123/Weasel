@@ -1,0 +1,8 @@
+MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
+PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
+ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
+DELETE_ICON = 'CoreModules\\freeHandROI\\cursors\\delete_icon.png'
+NEW_ICON = 'CoreModules\\freeHandROI\\cursors\\new_icon.png'
+RESET_ICON = 'CoreModules\\freeHandROI\\cursors\\reset_icon.png'
+SAVE_ICON = 'CoreModules\\freeHandROI\\cursors\\save_icon.png'
+LOAD_ICON = 'CoreModules\\freeHandROI\\cursors\\load_icon.png'
