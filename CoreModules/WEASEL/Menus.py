@@ -6,8 +6,8 @@ import os
 import sys
 import pathlib
 import importlib
-import CoreModules.WEASEL.TreeView  as treeView
-from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
+import TreeView  as treeView
+from weaselMenuXMLReader import WeaselMenuXMLReader
 import logging
 logger = logging.getLogger(__name__)
 

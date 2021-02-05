@@ -28,12 +28,12 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 import CoreModules.pyqtgraph as pg 
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView 
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
-import CoreModules.WEASEL.MessageWindow  as messageWindow
-from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+import readDICOM_Image as readDICOM_Image
+import saveDICOM_Image as saveDICOM_Image
+import TreeView  as treeView 
+import DisplayImageCommon as displayImageCommon
+import MessageWindow  as messageWindow
+from UserImageColourSelection import UserSelection
 
 import logging
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 #            [2] - intensity level
 #            [3] - contrast level
 # userSelectionList is initialised with default values in the function displayMultiImageSubWindow
-#The class UserSelection in CoreModules.WEASEL.UserImageColourSelection supplies the functionality
+#The class UserSelection in UserImageColourSelection supplies the functionality
 #to manipulate userSelectionList. 
 userSelectionDict = {}
 

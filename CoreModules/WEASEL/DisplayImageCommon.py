@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 
 from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import readDICOM_Image as readDICOM_Image
 import numpy as np
 from scipy.stats import iqr
 import math

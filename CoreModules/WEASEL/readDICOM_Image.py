@@ -3,7 +3,7 @@ import struct
 import numpy as np
 import pydicom
 from scipy.spatial.transform import Rotation
-from CoreModules.WEASEL.Affine import Affine
+from Affine import Affine
 
 
 def returnPixelArray(imagePath):

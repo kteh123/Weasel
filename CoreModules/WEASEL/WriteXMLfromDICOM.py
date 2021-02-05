@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
 from pyqtgraph.Qt import QtCore, QtGui
-import CoreModules.WEASEL.iBeatImport as iBeatImport
+import iBeatImport as iBeatImport
 
 
 def select_path():
