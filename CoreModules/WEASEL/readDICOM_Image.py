@@ -2,8 +2,7 @@ import os
 import struct
 import numpy as np
 import pydicom
-from scipy.spatial.transform import Rotation
-from Affine import Affine
+from nibabel.affines import apply_affine
 
 
 def returnPixelArray(imagePath):
@@ -290,22 +289,19 @@ def getAffineArray(dataset):
         print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
 
 
-def mapMaskToImage(mask, dataset, datasetOriginal):
-    # Consider replacing "affineArray, pixelArray" with dataset
+def mapMaskToImage(mask, datasetMask, datasetTarget):
     try:
-        # Dataset or list of paths? This will require a bit more work when the time to write the load mask comes
-        affineOriginal = Affine(getAffineArray(datasetOriginal))
-        affineArray = Affine(getAffineArray(dataset))
-        invertedAffine = np.linalg.inv(affineOriginal)
+        affineTarget = getAffineArray(datasetTarget)
+        affineMask = getAffineArray(datasetMask)
         listIndexes = []
         indexes = np.transpose(np.where(mask==1))
         for index in indexes:
             if len(index) == 2: 
-                temp_index = tuple(index) + (0,)
+                temp_index = np.array([index[0], index[1], 0])
             else:
-                temp_index = tuple(index)
-            rwd = affineArray.index2coord(temp_index)
-            newCoord = tuple(invertedAffine.index2coord(rwd).astype(int))
+                temp_index = np.array([index[1], index[2], index[0]])
+            newMaskCoord = np.round(applyAffine(affineTarget, affineMask, np.array(temp_index)), 3)
+            newCoord = np.round(newMaskCoord).astype(int)
             if (len(index) == 2) and (newCoord[-1] == 0):
                 listIndexes.append((newCoord[1], newCoord[0]))
             elif len(index) == 3:
@@ -314,6 +310,15 @@ def mapMaskToImage(mask, dataset, datasetOriginal):
         return listIndexes
     except Exception as e:
         print('Error in function readDICOM_Image.mapMaskToImage: ' + str(e))
+
+
+def applyAffine(affineReference, affineTarget, coordinates):
+    try:
+        maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
+        return apply_affine(maskToTarget, coordinates)
+    except Exception as e:
+        print('Error in function readDICOM_Image.applyAffine: ' + str(e))
+
 
 
 def getColourmap(imagePath):

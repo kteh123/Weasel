@@ -12,6 +12,7 @@ def isSeriesOnly(self):
 def main(objWeasel):
     ui = UserInterfaceTools(objWeasel)
     seriesList = ui.getCheckedSeries()
+    if seriesList is None: return # Exit function if no series are checked
     for series in seriesList:
         # Pre-processing
         series.sort("SliceLocation")

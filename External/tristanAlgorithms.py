@@ -30,7 +30,7 @@ class TRISTAN():
         try:
             mip = []
             for index in range(np.shape(self.pixelArray)[0]):
-                mip.append(np.max(self.pixelArray[index, ...], axis=0))
+                mip.append(np.amax(self.pixelArray[index, ...], axis=0))
             return np.array(mip)
         except Exception as e:
             print('Error in function TRISTAN.MIP: ' + str(e))
