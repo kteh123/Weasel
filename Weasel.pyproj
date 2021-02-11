@@ -23,7 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CoreModules\freeHandROI\Constants.py">
+    <Compile Include="CoreModules\freeHandROI\Resources.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CoreModules\freeHandROI\helperFunctions.py">
@@ -1572,14 +1572,18 @@
     <Content Include=".gitignore" />
     <Content Include="Activity_Log.log" />
     <Content Include="config.xml" />
-    <Content Include="CoreModules\freeHandROI\cursors\delete_icon.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\erasor.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\magnifying_glass.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\new_icon.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\pencil.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\load_icon.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\reset_icon.png" />
-    <Content Include="CoreModules\freeHandROI\cursors\save_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\applySeries_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\brightness_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\contrast_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\delete_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\erasor.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\export.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\magnifying_glass.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\new_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\pencil.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\load_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\reset_icon.png" />
+    <Content Include="CoreModules\freeHandROI\Icons\save_icon.png" />
     <Content Include="CoreModules\pyqtgraph\canvas\CanvasTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\canvas\TransformGuiTemplate.ui" />
     <Content Include="CoreModules\pyqtgraph\console\template.ui" />
@@ -19232,7 +19236,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CoreModules\freeHandROI\" />
-    <Folder Include="CoreModules\freeHandROI\cursors\" />
+    <Folder Include="CoreModules\freeHandROI\Icons\" />
     <Folder Include="CoreModules\WEASEL\" />
     <Folder Include="CoreModules\pyqtgraph\" />
     <Folder Include="CoreModules\pyqtgraph\canvas\" />
