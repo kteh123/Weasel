@@ -8,7 +8,7 @@ class WeaselMenuXMLReader:
     def __init__(self, menuXMLFile): 
         try:
             self.hasXMLFileParsedOK = True
-            self.fullFilePath =  os.path.join("MenuFiles", menuXMLFile)
+            self.fullFilePath =  os.path.join("Configurations", menuXMLFile)
             #self.fullFilePath = "MenuFiles\\" + menuXMLFile
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
