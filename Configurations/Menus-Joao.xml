@@ -1,0 +1,208 @@
+<menus>
+  <menu name="File">
+        <item>
+          <label>Load DICOM Images</label>
+          <shortcut>Ctrl+L</shortcut>
+          <tooltip>Load DICOM images from a scan folder</tooltip>
+          <module>LoadDICOM</module>
+        </item>
+        <item>
+          <label>Tile Subwindows</label>
+          <shortcut>Ctrl+T</shortcut>
+          <tooltip>Returns subwindows to a tile pattern</tooltip>
+          <module>TileAllSubWindows</module>
+        </item>
+        <item>
+          <label>Close All Image Windows</label>
+          <shortcut>Ctrl+A</shortcut>
+          <tooltip>Closes All Image Windows</tooltip>
+          <module>CloseAllImageWindows</module>
+        </item>
+        <item>
+          <label>Close All Sub Windows</label>
+          <shortcut>Ctrl+X</shortcut>
+          <tooltip>Close All Sub Windows</tooltip>
+          <module>CloseAllSubWindows</module>
+        </item>
+  </menu>
+  <menu name="Tools">
+        <item>
+          <label>View Series/Image</label>
+          <shortcut>Ctrl+V</shortcut>
+          <tooltip>View DICOM Image or series</tooltip>
+          <module>ViewImage</module>
+          <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+        </item>
+        <item>
+          <label>View Series/Image with ROI</label>
+          <shortcut>Ctrl+R</shortcut>
+          <tooltip>View DICOM Image or series with the ROI tool</tooltip>
+          <module>ViewROIImage</module>
+          <context_menu>yes</context_menu>
+        </item>
+        <item>
+          <label>View Metadata</label>
+          <shortcut>Ctrl+M</shortcut>
+          <tooltip>View DICOM Image or series metadata</tooltip>
+          <module>ViewMetaData</module>
+          <context_menu>yes</context_menu>  
+        </item>
+        <item>
+          <label>Delete Series/Image</label>
+          <shortcut>Ctrl+D</shortcut>
+          <tooltip>Delete a DICOM Image or series</tooltip>
+          <module>DeleteImage</module>
+        </item>
+        <item>
+          <label>Copy Series</label>
+          <shortcut>Ctrl+C</shortcut>
+          <tooltip>Copy a DICOM series</tooltip>
+          <module>copyDICOM_Image</module>
+        </item>
+        <item>
+          <label>Binary Operations</label>
+          <shortcut>Ctrl+B</shortcut>
+          <tooltip>Performs binary operations on two images</tooltip>
+          <module>BinaryOperationsOnImages</module>
+        </item>
+        <item>
+          <label>Invert Series/Image</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>invertDICOM_Image</module>
+        </item>
+        <item>
+          <label>Square Series/Image</label>
+          <shortcut>Ctrl+S</shortcut>
+          <tooltip>Square a DICOM Image or series</tooltip>
+          <module>squareDICOM_Image</module>
+        </item>
+		<item>
+          <label>Threshold Series/Image</label>
+          <shortcut>Ctrl+T</shortcut>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image</module>
+        </item>
+		<item>
+          <label>Rename Series</label>
+          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
+		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+          <module>renameSeries</module>
+        </item>
+  </menu>
+  <menu name="TRISTAN">
+        <item>
+          <label>MIP (Developer)</label>
+          <shortcut>Ctrl+M+I</shortcut>
+          <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
+          <module>calculateMIP_Developer</module>
+        </item>
+  </menu>
+  <menu name="UKRIN-MAPS">
+    	<item>
+          <label>T2* Fitting</label>
+          <tooltip>Perform a T2* Fitting in the checked series</tooltip>
+          <module>T2Star_WEASEL</module>
+        </item>
+		<item>
+          <label>B0 Map</label>
+          <tooltip>Calculate B0 Map in the checked series</tooltip>
+          <module>B0Map_WEASEL</module>
+        </item>
+		<item>
+          <label>T2 Map</label>
+          <tooltip>Calculate T2 Map in the checked series</tooltip>
+          <module>T2Map_WEASEL</module>
+        </item>
+		<item>
+          <label>T1 Map</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_WEASEL</module>
+        </item>
+		<item>
+          <label>T1 Map Study Level</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_Study_WEASEL</module>
+        </item>
+		<item>
+          <label>T1 Map iBEAT</label>
+          <tooltip>Calculate T1 Map in the checked series</tooltip>
+          <module>T1Map_iBEAT</module>
+        </item>
+  </menu>
+  <menu name="Steven-Test">
+  		<item>
+          <label>Square Developer (GroupWise)</label>
+          <tooltip>Square a DICOM Image or series</tooltip>
+          <module>squareDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Gaussian Filter Developer (Slice-by-slice)</label>
+          <shortcut>Ctrl+F+3</shortcut>
+          <tooltip>gaussian</tooltip>
+          <module>gaussianFilterDICOM_Image_Slice</module>
+        </item>
+		<item>
+          <label>Gaussian Filter Developer (GroupWise)</label>
+          <shortcut>Ctrl+F+3</shortcut>
+          <tooltip>gaussian</tooltip>
+          <module>gaussianFilterDICOM_Image_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (GroupWise)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_GroupWise</module>
+        </item>
+		<item>
+          <label>Multiply Series (Slice-by-slice)</label>
+          <tooltip>Multiply between 2 or more series and save into 1 series</tooltip>
+          <module>multiplyDICOM_Series_Slice</module>
+        </item>
+		<item>
+          <label>Threshold Developer (Slice-by-slice)</label>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Invert Developer (Slice-by-slice/Overwrite)</label>
+          <tooltip>Invert a DICOM Image or series</tooltip>
+          <module>invertDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+        <item>
+          <label>Edit DICOM Tag</label>
+          <tooltip>Choose DICOM header and change the selected files</tooltip>
+          <module>editDICOM_Image_Developer</module>
+        </item>
+		<item>
+          <label>Merge Series</label>
+          <tooltip>Merge selected images or series into 1 series</tooltip>
+          <module>mergeDICOM_Developer</module>
+        </item>
+  </menu>
+  <menu name="XNAT">
+    	<item>
+          <label>Download</label>
+          <tooltip>Download images from XNAT</tooltip>
+		  <icon>docs\\images\\XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>download</function>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+		<item>
+          <label>Upload</label>
+          <tooltip>Upload images from XNAT</tooltip>
+		  <icon>docs\\images\\XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>upload</function>
+        </item>
+  </menu>
+</menus>
+  
+    
+  
