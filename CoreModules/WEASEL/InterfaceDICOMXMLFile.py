@@ -1,5 +1,5 @@
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.TreeView as treeView
+import readDICOM_Image as readDICOM_Image
+import TreeView as treeView
 import logging
 logger = logging.getLogger(__name__)
 

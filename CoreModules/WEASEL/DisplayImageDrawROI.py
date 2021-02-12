@@ -24,14 +24,15 @@ import scipy
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
-import CoreModules.WEASEL.styleSheet as styleSheet
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
-import CoreModules.WEASEL.MessageWindow as messageWindow
-import CoreModules.WEASEL.InputDialog as inputDialog
-import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
+from scipy.ndimage.morphology import binary_dilation, binary_closing
+import styleSheet as styleSheet
+import readDICOM_Image as readDICOM_Image
+import saveDICOM_Image as saveDICOM_Image
+import TreeView  as treeView
+import DisplayImageCommon as displayImageCommon
+import MessageWindow as messageWindow
+import InputDialog as inputDialog
+import InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import CoreModules.freeHandROI.Resources as icons
@@ -780,7 +781,13 @@ def loadROI(self, cmbROIs, graphicsView):
             # for series ID in listParams[0]: # more than 1 ROI may be selected
             seriesID = listParams[0][0] # Temporary, only the first ROI
             imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            maskList = []
+            if treeView.isASeriesSelected(self):
+                targetPath = self.imageList
+            else:
+                targetPath = [self.selectedImagePath]
+            maskInput = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+            maskInput[maskInput != 0] = 1
+            maskList = [] # Output Mask
             # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
             if hasattr(readDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
                 region = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
@@ -788,21 +795,48 @@ def loadROI(self, cmbROIs, graphicsView):
                 region = "new_region_number"
 
             # Affine re-adjustment
-            # It takes longer to load with this, so we could do an if/else involving Affine
-            for dicomFile in self.imageList:
+            for dicomFile in targetPath:
                 dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(readDICOM_Image.getPixelArray(dataset_original)))
+                horizontalFlag = None
+                verticalFlag = None
                 for maskFile in imagePathList:
                     dataset = readDICOM_Image.getDicomDataset(maskFile)
                     maskArray = readDICOM_Image.getPixelArray(dataset)
                     maskArray[maskArray != 0] = 1
                     affineResults = readDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
-                    for coordinates in affineResults:
-                        tempArray[coordinates] = 1
-                    #tempArray = np.add(tempArray, np.transpose(affineResults))
-                #np.where(tempArray > 1, tempArray, 1)
+                    if affineResults:
+                        try:
+                            coords = zip(*affineResults)
+                            tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
+                            if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
+                            if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
+                        except:
+                            pass
+                # Will need an Enhanced MRI as example  
+                if ~hasattr(dataset_original, 'PerFrameFunctionalGroupsSequence'):
+                    if horizontalFlag == True:
+                        struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
+                        tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
+                        tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
+                    elif verticalFlag == True:
+                        struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
+                        tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
+                        tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
 
+            # Faster approach - 3D and no dilation
+            #maskList = np.zeros(np.shape(readDICOM_Image.returnSeriesPixelArray(targetPath)))
+            #dataset_original = readDICOM_Image.getDicomDataset(targetPath)
+            #dataset = readDICOM_Image.getDicomDataset(imagePathList[0])
+            #affineResults = readDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
+            #if affineResults:
+                #try:
+                    #coords = zip(*affineResults)
+                    #maskList[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
+                #except:
+                    #pass
+            
             # First populate the ROI_Storage data structure in a loop
             for imageNumber in range(len(maskList)):
                 graphicsView.dictROIs.addRegion(region, np.array(maskList[imageNumber]).astype(bool), imageNumber + 1)

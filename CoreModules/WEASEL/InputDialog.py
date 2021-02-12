@@ -3,7 +3,7 @@ allows the user to input one or more integers, floats or strings.
 These data items can be returned to the calling program in a list. 
 
 This class would be imported thus,
-import CoreModules.WEASEL.InputDialog as inputDialog
+import InputDialog as inputDialog
 and example usage within a while loop to validate the input data could be
 
 paramDict = {"Lower Threshold":"integer", "Upper Threshold":"integer"}

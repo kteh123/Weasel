@@ -20,10 +20,10 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 import CoreModules.pyqtgraph as pg 
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import readDICOM_Image as readDICOM_Image
+import saveDICOM_Image as saveDICOM_Image
+import TreeView  as treeView
+import DisplayImageCommon as displayImageCommon
 import logging
 logger = logging.getLogger(__name__)
 

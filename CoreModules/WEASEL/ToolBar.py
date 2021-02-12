@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import (QAction)
 from PyQt5.QtGui import  QIcon
 import logging
-import CoreModules.WEASEL.MenuToolBarCommon as menuToolBarCommon
+import MenuToolBarCommon as menuToolBarCommon
 logger = logging.getLogger(__name__)
 
 FERRET_LOGO = 'images\\FERRET_LOGO.png'

@@ -6,7 +6,7 @@ from pydicom.sequence import Sequence
 import datetime
 import copy
 import random
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import readDICOM_Image as readDICOM_Image
 
 
 def calculateContourArray(dicomdata, roi):

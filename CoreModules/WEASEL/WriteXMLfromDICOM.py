@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
 from pyqtgraph.Qt import QtCore, QtGui
-import CoreModules.WEASEL.iBeatImport as iBeatImport
+import iBeatImport as iBeatImport
 
 
 def select_path():
@@ -199,7 +199,7 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             name = ET.SubElement(image_element, 'name')
             time = ET.SubElement(image_element, 'time')
             date = ET.SubElement(image_element, 'date')
-            label.text = str(len(image_root.getchildren())).zfill(6)
+            label.text = str(len(list(image_root.iter('image')))).zfill(6)
             name.text =  os.path.normpath(list_paths[index])
             
             # The next lines save the time and date to XML - They consider multiple/eventual formats
