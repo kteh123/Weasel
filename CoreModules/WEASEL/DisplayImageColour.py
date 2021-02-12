@@ -232,7 +232,7 @@ def displayImageSubWindow(self, studyName, seriesName):
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(self)
-            subWindow.setStyleSheet("background-color:#ccccff;")
+            #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
              lblHiddenStudyName, 
              lblHiddenSeriesName) = setUpImageGroupBox(imageLayout, self.selectedImagePath, studyName, seriesName)
@@ -312,7 +312,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
             pixelDataLayout, graphicsViewLayout, sliderLayout, 
             lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
-            subWindow.setStyleSheet("background-color:#6666ff;")
+            #subWindow.setStyleSheet("background-color:#6666ff;")
 
             #set up list of lists to hold user selected colour table and level data
             userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]

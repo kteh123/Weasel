@@ -73,7 +73,7 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         (graphicsView, roiToolsLayout, imageLevelsLayout, 
         graphicsViewLayout, sliderLayout, 
         imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self)
-        subWindow.setStyleSheet("background-color:#d9d9d9;")
+        #subWindow.setStyleSheet("background-color:#d9d9d9;")
 
         zoomSlider, zoomValueLabel = setUpZoomSlider(graphicsView)
 
@@ -127,7 +127,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             (graphicsView, roiToolsLayout, imageLevelsLayout, 
             graphicsViewLayout, sliderLayout, 
             imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
-            subWindow.setStyleSheet("background-color:#737373;")
+            #subWindow.setStyleSheet("background-color:#737373;")
             imageSlider = setUpImageSlider(sliderLayout, sliderPosition, imageList)
            
             zoomSlider, zoomValueLabel = setUpZoomSlider(graphicsView)
