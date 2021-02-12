@@ -7,10 +7,12 @@ colour table, contrast & intensity values."""
 
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import (QFileDialog,                            
                             QMessageBox, 
                             QWidget, 
                             QGridLayout, 
+                            QHBoxLayout,
                             QVBoxLayout, 
                             QMdiSubWindow, 
                             QGroupBox, 
@@ -18,7 +20,6 @@ from PyQt5.QtWidgets import (QFileDialog,
                             QPushButton,  
                             QLabel,  
                             QSlider, 
-                            QCheckBox,  
                             QComboBox)
 
 import os
@@ -27,13 +28,16 @@ from scipy.stats import iqr
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
+import math
+from scipy.stats import iqr
 import CoreModules.pyqtgraph as pg 
-import readDICOM_Image as readDICOM_Image
-import saveDICOM_Image as saveDICOM_Image
-import TreeView  as treeView 
-import DisplayImageCommon as displayImageCommon
-import MessageWindow  as messageWindow
-from UserImageColourSelection import UserSelection
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.TreeView  as treeView 
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import CoreModules.WEASEL.MessageWindow  as messageWindow
+from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+import CoreModules.freeHandROI.Resources as icons
 
 import logging
 logger = logging.getLogger(__name__)
@@ -69,7 +73,146 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 #to manipulate userSelectionList. 
 userSelectionDict = {}
 
-def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
+def setUpSubWindow(self, imageSeries = False):
+    """
+    This function creates a subwindow with a vertical layout &
+    a missing image label.
+
+    Input Parameters
+    ****************
+    self - an object reference to the WEASEL interface.
+
+    Output Parameters
+    *****************
+    layout - PyQt5 QVBoxLayout vertical layout box
+    lblImageMissing - Label displaying the text 'Missing Image'. Hidden 
+                        until WEASEL tries to display a missing image
+    subWindow - An QMdiSubWindow subwindow
+    """
+    try:
+        logger.info("DisplayImageColour.setUpSubWindow")
+        subWindow = QMdiSubWindow(self)
+        subWindow.setObjectName = 'image_viewer'
+        subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                      Qt.WindowCloseButtonHint | 
+                                      Qt.WindowMinimizeButtonHint)
+        
+        
+        height, width = self.getMDIAreaDimensions()
+        subWindow.setGeometry(0,0,width*0.6,height)
+        self.mdiArea.addSubWindow(subWindow)
+        
+        mainVerticalLayout = QVBoxLayout()
+        widget = QWidget()
+        widget.setLayout(mainVerticalLayout)
+        subWindow.setWidget(widget)
+
+        topRowMainLayout = QHBoxLayout()
+        colourTableLayout = QHBoxLayout()
+        colourTableLayout.setContentsMargins(0, 2, 0, 0)
+        colourTableLayout.setSpacing(5)
+        colourTableGroupBox = QGroupBox("Colour Table")
+        colourTableGroupBox.setLayout(colourTableLayout)
+
+        imageLayout = QVBoxLayout()
+        imageLayout.setContentsMargins(0, 2, 0, 0)
+        imageLayout.setSpacing(0)
+        imageGroupBox = QGroupBox("Image")
+        #if not imageSeries:
+        #    imageGroupBox.setVisible(False)
+        imageGroupBox.setLayout(imageLayout)
+
+        imageLevelsLayout= QHBoxLayout()
+        imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
+        imageLevelsLayout.setSpacing(0)
+        imageLevelsGroupBox = QGroupBox()
+        imageLevelsGroupBox.setLayout(imageLevelsLayout)
+
+        topRowMainLayout.addWidget(colourTableGroupBox)
+        topRowMainLayout.addWidget(imageGroupBox)
+        topRowMainLayout.addWidget(imageLevelsGroupBox)
+        
+        mainVerticalLayout.addLayout(topRowMainLayout)
+
+        lblImageMissing = QLabel("<h4>Image Missing</h4>")
+        lblImageMissing.hide()
+        mainVerticalLayout.addWidget(lblImageMissing)
+
+        graphicsViewLayout = pg.GraphicsLayoutWidget()
+        plotItem = graphicsViewLayout.addPlot() 
+        plotItem.getViewBox().setAspectLocked() 
+        imgItem = pg.ImageItem(border='w')   
+        graphicsView = pg.ImageView(view=plotItem, imageItem=imgItem)
+        #mainVerticalLayout.addWidget(graphicsViewLayout)  does not work
+        mainVerticalLayout.addWidget(graphicsView)
+
+        imageDataLayout = QHBoxLayout()
+        imageDataLayout.setContentsMargins(0, 0, 0, 0)
+        imageDataLayout.setSpacing(0)
+        imageDataGroupBox = QGroupBox()
+        imageDataGroupBox.setLayout(imageDataLayout)
+        mainVerticalLayout.addWidget(imageDataGroupBox)
+
+        sliderLayout = QHBoxLayout()
+        if imageSeries:
+            mainVerticalLayout.addLayout(sliderLayout)
+        else:
+            windowTitle = displayImageCommon.getDICOMFileData(self)
+            subWindow.setWindowTitle(windowTitle)
+
+        subWindow.show()
+        return (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
+                imageDataLayout, graphicsViewLayout, sliderLayout, 
+                lblImageMissing, subWindow)
+    except Exception as e:
+            print('Error in DisplayImageColour.setUpSubWindow: ' + str(e))
+            logger.error('Error in DisplayImageColour.setUpSubWindow: ' + str(e))
+
+
+def setUpPixelDataGroupBox(pixelDataLayout):
+        lblPixel = QLabel("<h4>Pixel Value:</h4>")
+        lblPixel.show()
+        pixelDataLayout.addWidget(lblPixel)
+        lblPixelValue = QLabel()
+        lblPixelValue.show()
+        lblPixelValue.setStyleSheet("color : red; padding-left:0; margin-left:0;")
+        pixelDataLayout.addWidget(lblPixelValue)
+        pixelDataLayout.addStretch(50)
+        return  lblPixelValue
+
+
+def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
+    try: 
+        deleteButton = QPushButton()
+        deleteButton.setToolTip(
+            'Deletes the DICOM image being viewed')
+        deleteButton.setIcon(QIcon(QPixmap(icons.DELETE_ICON)))
+        lblHiddenImagePath = QLabel(imagePathForDisplay)
+        lblHiddenStudyName = QLabel(studyName)
+        lblHiddenSeriesName = QLabel(seriesName)
+        
+        #Maintain image data in hidden labels on the subwindow.
+        #These values will used when updating an image with a
+        #new colour table & intensity & contrast values. This
+        #is done because several of these windows may be open
+        #at once and the global self.selectedImagePath maybe
+        #points to an image in a window other than the one
+        #the user is working on
+        imageLayout.addWidget(deleteButton)
+        imageLayout.addWidget(lblHiddenSeriesName)
+        imageLayout.addWidget(lblHiddenStudyName)
+        imageLayout.addWidget(lblHiddenImagePath)
+
+        lblHiddenImagePath.hide()
+        lblHiddenStudyName.hide()
+        lblHiddenSeriesName.hide()
+        return deleteButton, lblHiddenImagePath, lblHiddenStudyName, lblHiddenSeriesName
+    except Exception as e:
+        print('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
+        logger.error('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
+
+
+def displayImageSubWindow(self, studyName, seriesName):
         """
         Creates a subwindow that displays a single DICOM image. 
 
@@ -86,61 +229,36 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
             logger.info("DisplayImageColour.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
+            (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
+                pixelDataLayout, graphicsViewLayout, sliderLayout, 
+                lblImageMissing, subWindow) = setUpSubWindow(self)
+            subWindow.setStyleSheet("background-color:#ccccff;")
+            (deleteButton, lblHiddenImagePath, 
+             lblHiddenStudyName, 
+             lblHiddenSeriesName) = setUpImageGroupBox(imageLayout, self.selectedImagePath, studyName, seriesName)
+            btnApply = QPushButton() 
+            cmbColours = QComboBox()
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply, cmbColours, 
+                                                                     lblHiddenSeriesName, lblHiddenImagePath,
+                                                                     imageLevelsLayout, graphicsView, singleImageSelected=True)
             
-            layout, lblImageMissing, subWindow = \
-                displayImageCommon.setUpImageViewerSubWindow(self)
-            windowTitle = displayImageCommon.getDICOMFileData(self)
-            subWindow.setWindowTitle(windowTitle)
+            lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
 
-            if derivedImagePath:
-                self.selectedImagePath = derivedImagePath
-
-            imagePathForDisplay = self.selectedImagePath
-            
-            lblHiddenImagePath = QLabel(imagePathForDisplay)
-            pixelArray = readDICOM_Image.returnPixelArray(imagePathForDisplay)
-            colourTable, lut = readDICOM_Image.getColourmap(imagePathForDisplay)
-
-            lblHiddenImagePath.hide()
-            lblHiddenStudyName = QLabel(studyName)
-            lblHiddenStudyName.hide()
-            lblHiddenSeriesName = QLabel(seriesName)
-            lblHiddenSeriesName.hide()
-            
-            #Maintain image data in hidden labels on the subwindow.
-            #These values will used when updating an image with a
-            #new colour table & intensity & contrast values. This
-            #is done because several of these windows may be open
-            #at once and the global self.selectedImagePath maybe
-            #points to an image in a window other than the one
-            #the user is working on
-            layout.addWidget(lblHiddenSeriesName)
-            layout.addWidget(lblHiddenStudyName)
-            layout.addWidget(lblHiddenImagePath)
-
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(                                               
-                                                     layout, 
-                                                     spinBoxIntensity, 
-                                                     spinBoxContrast)
-
-            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
-            lblPixelValue.show()
-            layout.addWidget(lblPixelValue)
-            
-            cmbColours = setUpColourTools(self, layout, imv, True,  
+            cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, True,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, 
-                                                spinBoxIntensity, spinBoxContrast)
+                                                spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, lblImageMissing, lblPixelValue)
+
             
-            displayImageCommon.displayColourTableInComboBox(cmbColours, colourTable)
-            displayPixelArray(self, pixelArray, 0,
-                                    lblImageMissing,
-                                    lblPixelValue,
-                                    spinBoxIntensity, spinBoxContrast,
-                                    imv, colourTable, cmbColours, lblHiddenSeriesName.text(),
-                                    lut) 
+
+            displayOneImage(self, lblImageMissing, lblPixelValue,
+                            spinBoxIntensity, spinBoxContrast,
+                            graphicsView, cmbColours, lblHiddenSeriesName.text())
+
+            
+            deleteButton.clicked.connect(lambda:
+                                         deleteSingleImage(self, self.selectedImagePath, 
+                                      studyName, seriesName, subWindow))
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -151,6 +269,20 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         except Exception as e:
             print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
             logger.error('Error in  DisplayImageColour.displayImageSubWindow: ' + str(e)) 
+
+
+def displayOneImage(self, lblImageMissing, lblPixelValue,
+                            spinBoxIntensity, spinBoxContrast,
+                            graphicsView, cmbColours, SeriesName):
+    pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+    colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+    displayPixelArray(self, pixelArray, 0,lblImageMissing,
+                            lblPixelValue,
+                            spinBoxIntensity, spinBoxContrast,
+                            graphicsView,
+                             colourTable, cmbColours, SeriesName,
+                            lut) 
+    displayColourTableInComboBox(cmbColours, colourTable)
 
 
 def displayMultiImageSubWindow(self, imageList, studyName, 
@@ -177,8 +309,10 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         """
         try:
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
-            layout, lblImageMissing, subWindow = \
-                displayImageCommon.setUpImageViewerSubWindow(self)
+            (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
+            pixelDataLayout, graphicsViewLayout, sliderLayout, 
+            lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
+            subWindow.setStyleSheet("background-color:#6666ff;")
 
             #set up list of lists to hold user selected colour table and level data
             userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
@@ -198,36 +332,28 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             #may not the same as that from which the image is
             #being deleted.
             firstImagePath = imageList[0]
-            lblHiddenImagePath = QLabel(firstImagePath)
-            lblHiddenImagePath.hide()
-            lblHiddenStudyName = QLabel(studyName)
-            lblHiddenStudyName.hide()
-            lblHiddenSeriesName = QLabel(seriesName)
-            lblHiddenSeriesName.hide()
-            btnDeleteDICOMFile = QPushButton('Delete DICOM Image')
-            btnDeleteDICOMFile.setToolTip(
-            'Deletes the DICOM image being viewed')
-            btnDeleteDICOMFile.hide()
-         
-            layout.addWidget(lblHiddenImagePath)
-            layout.addWidget(lblHiddenSeriesName)
-            layout.addWidget(lblHiddenStudyName)
-            layout.addWidget(btnDeleteDICOMFile)
+            (deleteButton, lblHiddenImagePath, 
+             lblHiddenStudyName, 
+             lblHiddenSeriesName) = setUpImageGroupBox(imageLayout, firstImagePath, studyName, seriesName)
 
-            spinBoxIntensity = QDoubleSpinBox()
-            spinBoxContrast = QDoubleSpinBox()
+            btnApply = QPushButton() 
+            cmbColours = QComboBox()
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply,
+                                                                     cmbColours, lblHiddenSeriesName, lblHiddenImagePath,
+                                                                     imageLevelsLayout, 
+                                                                     graphicsView, singleImageSelected=False)
+           
+
             imageSlider = QSlider(Qt.Horizontal)
+            lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
+            cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
+                                                lblHiddenImagePath, lblHiddenSeriesName, 
+                                                lblHiddenStudyName, 
+                                                spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, 
+                                                lblImageMissing, lblPixelValue, imageSlider)
 
-            img, imv, viewBox = displayImageCommon.setUpViewBoxForImage( 
-                                                     layout, spinBoxIntensity, spinBoxContrast) 
-            lblPixelValue = QLabel("<h4>Pixel Value:</h4>")
-            lblPixelValue.show()
-            layout.addWidget(lblPixelValue)
-            cmbColours = setUpColourTools(self, layout, imv, False,  
-                                               lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, 
-                                               spinBoxIntensity, spinBoxContrast,
-                                               imageSlider)
-
+           
+            
             imageSlider.setMinimum(1)
             imageSlider.setMaximum(len(imageList))
             if sliderPosition == -1:
@@ -237,15 +363,15 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
-            layout.addWidget(imageSlider)
+            sliderLayout.addWidget(imageSlider)
             imageSlider.valueChanged.connect(
                   lambda: imageSliderMoved(self, seriesName, 
                                                 imageList, 
                                                 imageSlider.value(),
                                                 lblImageMissing,
                                                 lblPixelValue,
-                                                btnDeleteDICOMFile,
-                                                imv, 
+                                                deleteButton,
+                                                 graphicsView, 
                                                 spinBoxIntensity, spinBoxContrast,
                                                 cmbColours,
                                                 subWindow))
@@ -256,13 +382,13 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                   imageSlider.value(),
                                   lblImageMissing,
                                   lblPixelValue,
-                                  btnDeleteDICOMFile,
-                                  imv, 
+                                  deleteButton,
+                                   graphicsView, 
                                   spinBoxIntensity, spinBoxContrast,
                                   cmbColours,
                                   subWindow)
             
-            btnDeleteDICOMFile.clicked.connect(lambda:
+            deleteButton.clicked.connect(lambda:
                                                deleteImageInMultiImageViewer(self,
                                       self.selectedImagePath, 
                                       lblHiddenStudyName.text(), 
@@ -280,12 +406,65 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             logger.error('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))
 
 
-def setUpColourTools(self, layout, imv,
+def setUpLevelsSpinBoxes(self, applyButton, cmbColours, lblHiddenSeriesName, lblHiddenImagePath,
+                         imageLevelsLayout, graphicsView, singleImageSelected=True): 
+    try:
+        logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
+        spinBoxIntensity, spinBoxContrast = displayImageCommon.setUpLevelsSpinBoxes(imageLevelsLayout)
+
+        spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(self,
+                graphicsView,spinBoxIntensity, spinBoxContrast))
+        spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(self,
+        graphicsView,spinBoxIntensity, spinBoxContrast))
+            
+        if not singleImageSelected: #series selected
+            spinBoxIntensity.valueChanged.connect(lambda: updateImageUserSelection(
+                                                    self,  applyButton, cmbColours,
+                                                    spinBoxIntensity, spinBoxContrast,
+                                                    lblHiddenSeriesName.text(),
+                                                    lblHiddenImagePath.text()))
+            spinBoxContrast.valueChanged.connect(lambda: updateImageUserSelection(
+                                                    self,  applyButton, cmbColours,
+                                                    spinBoxIntensity, spinBoxContrast,
+                                                    lblHiddenSeriesName.text(),
+                                                    lblHiddenImagePath.text()))
+    
+    
+        histogramObject = graphicsView.getHistogramWidget().getHistogram()
+        histogramObject.sigLevelsChanged.connect(lambda: getHistogramLevels(graphicsView, spinBoxIntensity, spinBoxContrast))
+        graphicsView.ui.roiBtn.hide()
+        graphicsView.ui.menuBtn.hide() 
+  
+        return spinBoxIntensity, spinBoxContrast
+    except Exception as e:
+            print('Error in DisplayImageColour.setUpLevelsSpinBoxes: ' + str(e))
+            logger.error('Error in DisplayImageColour.setUpLevelsSpinBoxes: ' + str(e))
+
+
+def getHistogramLevels( graphicsView, spinBoxIntensity, spinBoxContrast):
+        """
+        This function determines contrast and intensity from the image
+        and set the contrast & intensity spinboxes to these values.
+
+        Input Parameters
+        *****************
+         graphicsView - pyqtGraph imageView widget
+        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
+        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
+        """
+        minLevel, maxLevel =  graphicsView.getLevels()
+        width = maxLevel - minLevel
+        centre = minLevel + (width/2)
+        spinBoxIntensity.setValue(centre)
+        spinBoxContrast.setValue(width)
+
+
+def setUpColourTools(self, layout,  graphicsView,
             singleImageSelected,
             lblHiddenImagePath,
             lblHiddenSeriesName,
             lblHiddenStudyName, spinBoxIntensity, spinBoxContrast,             
-            imageSlider = None):
+            btnApply, cmbColours, lblImageMissing, lblPixelValue, imageSlider = None):
         """
             Generates widgets for the display of a 
             dropdown list containing colour tables
@@ -296,11 +475,11 @@ def setUpColourTools(self, layout, imv,
             self - an object reference to the WEASEL interface.
             layout - a QVBoxLayout widget that lines up widgets vertically.
                     The parent layout on the subwindow.
-            imv - pyqtGraph imageView widget
+             graphicsView - pyqtGraph imageView widget
             singleImageSelected - boolean variable, set to True if a 
                     single image is being viewed. Otherwise set to False
             lblHiddenImagePath - name of the hidden label widget whose text
-                    contains the path to an image file.
+                    contains the path to an image file.applyColourTableToSeries
             lblHiddenSeriesName - name of the hidden label widget whose text
                     contains the name of the DICOM series whose images are 
                     being viewed.
@@ -317,49 +496,35 @@ def setUpColourTools(self, layout, imv,
         """
         try:
             logger.info("displayImageColour.setUpColourTools called")
-            groupBoxColour = QGroupBox('Colour Table')
-            groupBoxLevels = QGroupBox('Levels')
-            #gridLayoutColour will later be added to groupBoxLevels
-            gridLayoutColour = QGridLayout()
-            gridLayoutLevels = QGridLayout()
-            #add grid layouts to the group boxes
-            groupBoxColour.setLayout(gridLayoutColour)
-            groupBoxLevels.setLayout(gridLayoutLevels)
-            layout.addWidget(groupBoxColour)
 
             #When this checkbox is checked, the selected colour table, 
             #contrast and intensity levels are added to the whole series
-            chkApply = QCheckBox("Apply Selection to whole series")
-            chkApply.stateChanged.connect(lambda:applyColourTableToSeries(self, imv, 
+            btnApply.setCheckable(True)
+            btnApply.setIcon(QIcon(QPixmap(icons.APPLY_SERIES_ICON)))
+            btnApply.setToolTip(
+                    "Click to apply colour table and levels selected by the user to the whole series")
+            
+            btnApply.clicked.connect(lambda:applyColourTableToSeries(self, btnApply, graphicsView, 
                                                                          cmbColours, 
-                                                                         lblHiddenSeriesName.text(),
-                                                                         chkApply))
-            chkApply.setToolTip(
-                    "Tick to apply colour table and levels selected by the user to the whole series")
-       
-            cmbColours = QComboBox()
+                                                                        lblHiddenSeriesName.text()
+                                                                        ))
             cmbColours.blockSignals(True)
             cmbColours.addItems(listColours)
             cmbColours.setCurrentIndex(0)
             cmbColours.blockSignals(False)
             cmbColours.setToolTip('Select a colour table to apply to the image')
-            cmbColours.currentIndexChanged.connect(lambda:
-                        applyColourTableToSeries(self, imv, cmbColours, lblHiddenSeriesName.text(), chkApply))
+           
+            layout.addWidget(cmbColours)
 
-            btnUpdate = QPushButton('Update') 
+            btnUpdate = QPushButton() 
+            btnUpdate.setIcon(QIcon(QPixmap(icons.SAVE_ICON)))
             btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
             #For the update button, connect signal to slot
             if singleImageSelected:
+                cmbColours.currentIndexChanged.connect(lambda:
+                         applyColourTableToAnImage(cmbColours, graphicsView))
                 #Viewing and potentially updating a single DICOM images
-                    #btnUpdate.clicked.connect(lambda:saveDICOM_Image.updateSingleDicomImage
-                    #                        (self, 
-                    #                        spinBoxIntensity, spinBoxContrast,
-                    #                        lblHiddenImagePath.text(),
-                    #                                lblHiddenSeriesName.text(),
-                    #                                lblHiddenStudyName.text(),
-                    #                                cmbColours.currentText(),
-                    #                                lut=None))
-                    btnUpdate.clicked.connect(lambda:updateDICOM(self, 
+                btnUpdate.clicked.connect(lambda:updateDICOM(self, 
                                                 lblHiddenImagePath,
                                                 lblHiddenSeriesName,
                                                 lblHiddenStudyName,
@@ -368,6 +533,8 @@ def setUpColourTools(self, layout, imv,
                                                     spinBoxContrast, singleImage=True))
             else:
                 #Viewing and potentially updating a series of DICOM images
+                cmbColours.currentIndexChanged.connect(lambda:
+                        applyColourTableToSeries(self, btnApply,  graphicsView, cmbColours, lblHiddenSeriesName.text()))
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
                                                                 lblHiddenImagePath,
                                                                 lblHiddenSeriesName,
@@ -377,68 +544,39 @@ def setUpColourTools(self, layout, imv,
                                                                     spinBoxContrast))
             
   
-            btnExport = QPushButton('Export') 
+            btnExport = QPushButton() 
+            btnExport.setIcon(QIcon(QPixmap(icons.EXPORT_ICON)))
             btnExport.setToolTip('Exports the image to an external graphic file.')
-            btnExport.clicked.connect(lambda:exportImage(self, imv, cmbColours))
-
-            #Levels 
-            lblIntensity = QLabel("Centre (Intensity)")
-            lblContrast = QLabel("Width (Contrast)")
-            lblIntensity.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-            lblContrast.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            btnExport.clicked.connect(lambda:exportImage(self,  graphicsView, cmbColours))
+            btnReset = QPushButton() 
+            btnReset.setIcon(QIcon(QPixmap(icons.RESET_ICON)))
+            btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
             
-            spinBoxIntensity.setMinimum(-100000.00)
-            spinBoxContrast.setMinimum(-100000.00)
-            spinBoxIntensity.setMaximum(1000000000.00)
-            spinBoxContrast.setMaximum(1000000000.00)
-            spinBoxIntensity.setWrapping(True)
-            spinBoxContrast.setWrapping(True)
-            spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(self,
-            imv,spinBoxIntensity, spinBoxContrast))
-            spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(self,
-            imv,spinBoxIntensity, spinBoxContrast))
-            
-            if not singleImageSelected: #series selected
-                spinBoxIntensity.valueChanged.connect(lambda: updateImageUserSelection(
-                                                      self,  chkApply, cmbColours,
-                                                      spinBoxIntensity, spinBoxContrast,
-                                                      lblHiddenSeriesName.text(),
-                                                      lblHiddenImagePath.text()))
-                spinBoxContrast.valueChanged.connect(lambda: updateImageUserSelection(
-                                                      self,  chkApply, cmbColours,
-                                                      spinBoxIntensity, spinBoxContrast,
-                                                      lblHiddenSeriesName.text(),
-                                                      lblHiddenImagePath.text()))
-
-            gridLayoutLevels.addWidget(lblIntensity, 0,0)
-            gridLayoutLevels.addWidget(spinBoxIntensity, 0, 1)
-            gridLayoutLevels.addWidget(lblContrast, 0,2)
-            gridLayoutLevels.addWidget(spinBoxContrast, 0,3)
-            gridLayoutColour.addWidget(cmbColours,0,0)
-
-            if not singleImageSelected: #series selected
+            if singleImageSelected: #series selected
+                layout.addWidget(btnReset)
+                layout.addWidget(btnUpdate)
+                layout.addWidget(btnExport)
+                btnReset.clicked.connect(lambda: displayOneImage(self, lblImageMissing, lblPixelValue,
+                            spinBoxIntensity, spinBoxContrast,
+                            graphicsView, cmbColours, lblHiddenSeriesName.text()))                                                     
+            else:
                 #Viewing a DICOM series, so show the Reset button
                 #and Apply to Series checkbox
-                gridLayoutColour.addWidget(chkApply,0,1)
-                btnReset = QPushButton('Reset') 
-                btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
+                layout.addWidget(btnApply)
+                
                 #Clicking Reset button deletes user selected colour table and contrast 
                 #and intensity levelts and returns images to values in the original DICOM file.
                 btnReset.clicked.connect(lambda: clearUserSelection(self, imageSlider,
                                                                    lblHiddenSeriesName.text()))
-                gridLayoutColour.addWidget(btnReset,0,2)
-                gridLayoutColour.addWidget(btnUpdate,1,1)
-                gridLayoutColour.addWidget(btnExport,1,2)
-                gridLayoutColour.addWidget(groupBoxLevels, 2, 0, 1, 3)
+                layout.addWidget(btnReset)
+                layout.addWidget(btnUpdate)
+                layout.addWidget(btnExport)
                 cmbColours.activated.connect(lambda:
-                        updateImageUserSelection(self,  chkApply, cmbColours,
+                        updateImageUserSelection(self,  btnApply, cmbColours,
                                                       spinBoxIntensity, spinBoxContrast,
                                                       lblHiddenSeriesName.text(),
                                                       lblHiddenImagePath.text()))
-            else:
-                gridLayoutColour.addWidget(btnUpdate,0,1)
-                gridLayoutColour.addWidget(btnExport,0,2)
-                gridLayoutColour.addWidget(groupBoxLevels, 1, 0, 1, 3)
+                
 
             return cmbColours
         except Exception as e:
@@ -449,7 +587,7 @@ def setUpColourTools(self, layout, imv,
 def displayPixelArray(self, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue,
                           spinBoxIntensity, spinBoxContrast,
-                          imv, colourTable, cmbColours, 
+                           graphicsView, colourTable, cmbColours, 
                           seriesName,
                           lut=None,
                           multiImage=False, deleteButton=None):
@@ -460,7 +598,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
         Input Parmeters
         ***************
         self - an object reference to the WEASEL interface.
-        pixelArray - pixel array to be displayed in imv
+        pixelArray - pixel array to be displayed in  graphicsView
         currentImageNumber - ordinal number of the image to be displayed
                 in the list of images forming the series.
         lblImageMissing - Label widget that displays the text 'Missing Image'
@@ -468,7 +606,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 and the X,Y coordinates of the mouse pointer.
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
-        imv - pyqtGraph imageView widget
+         graphicsView - pyqtGraph imageView widget
         colourTable - String variable containing the name of a colour table
         cmbColours - Name of the dropdown list of colour table names
         seriesName - string variable containing the name of DICOM series 
@@ -482,21 +620,13 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
 
         try:
             logger.info("DisplayImageColour.displayPixelArray called")
-            if multiImage:
-                #only show delete button when viewing a series
-                deleteButton.show()
-            else:
-                #Create dummy button to prevent runtime error
-                #This is the case when viewing a single image
-                deleteButton = QPushButton()
-                deleteButton.hide()
 
             #Check that pixel array holds an image & display it
             if pixelArray is None:
                 #the image is missing, so show a black screen
                 lblImageMissing.show()
                 deleteButton.hide()
-                imv.setImage(np.array([[0,0,0],[0,0,0]]))  
+                graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
                 if multiImage: #series
                     centre = spinBoxIntensity.value()
@@ -506,31 +636,29 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                                                                                width, 
                                                                                currentImageNumber)
                     if not success:
-                        centre, width, maximumValue, minimumValue = displayImageCommon.readLevelsFromDICOMImage(
-                                                                                            self, pixelArray)
+                        centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
 
                 else:  #single image 
-                    centre, width, maximumValue, minimumValue = displayImageCommon.readLevelsFromDICOMImage(
-                                                                                        self, pixelArray)
+                    centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
 
                 blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, True)
                 spinBoxIntensity.setValue(centre)
                 spinBoxContrast.setValue(width)
                 blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, False)
-                blockHistogramSignals(imv, True)
+                blockHistogramSignals( graphicsView, True)
                 if len(np.shape(pixelArray)) < 3:
-                    imv.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
+                     graphicsView.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
                 else:
-                    imv.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
-                blockHistogramSignals(imv, False)
+                     graphicsView.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
+                blockHistogramSignals( graphicsView, False)
         
                 #Add Colour Table or look up table To Image
-                displayImageCommon.setPgColourMap(colourTable, imv, cmbColours, lut)
+                setPgColourMap(colourTable,  graphicsView, cmbColours, lut)
 
                 lblImageMissing.hide()   
   
-                imv.getView().scene().sigMouseMoved.connect(
-                   lambda pos: displayImageCommon.getPixelValue(pos, imv, pixelArray, lblPixelValue))
+                graphicsView.getView().scene().sigMouseMoved.connect(
+                   lambda pos: getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue))
 
         except Exception as e:
             print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
@@ -615,7 +743,7 @@ def blockHistogramSignals(imgView, block):
 
 def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
-                        btnDeleteDICOMFile, imv, 
+                        deleteButton,  graphicsView, 
                         spinBoxIntensity, spinBoxContrast,
                         cmbColours,
                         subWindow):
@@ -629,7 +757,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         lblImageMissing - Label widget that displays the text 'Missing Image'
         lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
                 and the X,Y coordinates of the mouse pointer.
-        imv - pyqtGraph imageView widget
+         graphicsView - pyqtGraph imageView widget
         imageList - list of image file paths of the images in the series to be displayed
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
@@ -660,17 +788,17 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                     colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
 
                 #display above colour table in colour table dropdown list
-                displayImageCommon.displayColourTableInComboBox(cmbColours, colourTable)
+                displayColourTableInComboBox(cmbColours, colourTable)
 
                 displayPixelArray(self, pixelArray, currentImageNumber, 
                                        lblImageMissing,
                                        lblPixelValue,
                                        spinBoxIntensity, spinBoxContrast,
-                                       imv, colourTable,
+                                        graphicsView, colourTable,
                                        cmbColours, seriesName,
                                        lut,
                                        multiImage=True,  
-                                       deleteButton=btnDeleteDICOMFile) 
+                                       deleteButton=deleteButton) 
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
@@ -678,6 +806,52 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         except Exception as e:
             print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
+
+def deleteSingleImage(self, currentImagePath, 
+                                      studyName, seriesName, subWindow):
+    """When the Delete button is clicked on the single image viewer,
+    this function deletes the physical image, removes the 
+    reference to it in the XML file and removes it from the image viewer.
+    
+    Input Parmeters
+    ***************
+        self - an object reference to the WEASEL interface.
+        currentImagePath - file path to the image being viewed.
+        studyName - string variable containing name of the DICOMstudy 
+                containing the DICOM series of images to be displayed
+        seriesName - string variable containing the name of DICOM series
+                of images to be displayed
+        lastSliderPosition - integer variable holding the value of the 
+                    slider when the delete button is clicked; i.e., the
+                    number of the image being deleted.
+    """
+    try:
+        logger.info("DisplayImageColour.deleteSingleImage called")
+        imageName = os.path.basename(currentImagePath)
+        #print ('study id {} series id {}'.format(studyName, seriesName))
+        buttonReply = QMessageBox.question(self, 
+            'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+            QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+
+        if buttonReply == QMessageBox.Ok:
+            #Delete physical file
+            os.remove(currentImagePath)
+            #Remove deleted image from the list
+
+            #Refresh the multi-image viewer to remove deleted image
+            #First close it
+            #displayImageCommon.closeSubWindow(self, seriesName)
+
+            self.objXMLReader.removeOneImageFromSeries(
+                    studyName, seriesName, currentImagePath)
+            subWindow.hide()
+            subWindow.close()
+            #Update tree view with xml file modified above
+            treeView.refreshDICOMStudiesTreeView(self)
+           
+    except Exception as e:
+        print('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
+        logger.error('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
 
 
 def deleteImageInMultiImageViewer(self, currentImagePath, 
@@ -764,7 +938,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
         logger.error('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
 
 
-def exportImage(self, imv, cmbColours):
+def exportImage(self,  graphicsView, cmbColours):
     """Function executed when the Export button is clicked.  
     It exports the DICOM image and its colour table to a png graphics file.
     It launches a file dialog, so that the user can select the file path to 
@@ -774,7 +948,7 @@ def exportImage(self, imv, cmbColours):
     Input Parmeters
     ***************
         self - an object reference to the WEASEL interface.
-        imv - pyqtGraph imageView widget
+         graphicsView - pyqtGraph imageView widget
         cmbColours - A dropdown list of colour table names based on the QComboBox class
     """
     try:
@@ -788,11 +962,11 @@ def exportImage(self, imv, cmbColours):
         fileName, _ = QFileDialog.getSaveFileName(caption="Enter a file name", 
                                                     directory=defaultImageName, 
                                                     filter="*.png")
-        minimumValue, maximumValue = imv.getLevels()
+        minimumValue, maximumValue =  graphicsView.getLevels()
 
         #Test if the user has selected a file name
         if fileName:
-            exportImageViaMatplotlib(self, imv.getImageItem().image,
+            exportImageViaMatplotlib(self,  graphicsView.getImageItem().image,
                                             fileName, 
                                             colourTable,
                                              minimumValue,
@@ -816,11 +990,11 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumVa
         minimumValue - Minimum pixel value in the image
     """ 
     try:
-        axisOrder = pg.getConfigOption('imageAxisOrder') 
-        if axisOrder =='row-major':
-            #Transpose the array so as to match the screen image 
-            # (a transpose is already applied when reading DICO image)
-            pixelArray = np.transpose(pixelArray)
+        #axisOrder = pg.getConfigOption('imageAxisOrder') 
+        #if axisOrder =='row-major':
+        #    #Transpose the array so as to match the screen image 
+        #    # (a transpose is already applied when reading DICO image)
+        #    pixelArray = np.transpose(pixelArray)
         cmap = plt.get_cmap(colourTable)
         pos = plt.imshow(pixelArray,  cmap=cmap)
         plt.clim(int(minimumValue), int(maximumValue))
@@ -834,7 +1008,15 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumVa
         logger.error('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
 
 
-def applyColourTableToSeries(self, imv, cmbColours, seriesName, applySeriesCheckBox=None): 
+def applyColourTableToAnImage(cmbColours, graphicsView):
+    colourTable = cmbColours.currentText()
+    if colourTable.lower() == 'custom':
+        colourTable = 'gray'                
+        displayColourTableInComboBox(cmbColours, 'gray')   
+    setPgColourMap(colourTable,  graphicsView)
+
+
+def applyColourTableToSeries(self, button, graphicsView, cmbColours, seriesName): 
     """This function applies a user selected colour map to the current image.
     If the Apply checkbox is checked then the new colour map is also applied to 
     the whole series of DICOM images by setting a boolean flag to True.
@@ -842,26 +1024,27 @@ def applyColourTableToSeries(self, imv, cmbColours, seriesName, applySeriesCheck
     Input Parmeters
     ***************
         self - an object reference to the WEASEL interface.
-        imv - pyqtGraph imageView widget
+         graphicsView - pyqtGraph imageView widget
         cmbColours - A dropdown list of colour table names based on the QComboBox class
         seriesName - string variable containing the name of 
             DICOM series of images to be displayed
         applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
     """
-    global userSelectionDict
-    obj = userSelectionDict[seriesName]
     try:
-        colourTable = cmbColours.currentText()
-        if colourTable.lower() == 'custom':
-            colourTable = 'gray'                
-            displayImageCommon.displayColourTableInComboBox(cmbColours, 'gray')   
+        applyColourTableToAnImage(cmbColours, graphicsView)
 
-        displayImageCommon.setPgColourMap(colourTable, imv)
-        if applySeriesCheckBox.isChecked():
+        global userSelectionDict
+        obj = userSelectionDict[seriesName]
+        
+        if button.isChecked():
+            button.setStyleSheet("background-color: red")
             obj.setSeriesUpdateStatus(True)
             obj.setImageUpdateStatus(False)
         else:
             obj.setSeriesUpdateStatus(False)
+            button.setStyleSheet(
+            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+            )
                
     except Exception as e:
         print('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))
@@ -898,7 +1081,7 @@ def clearUserSelection(self, imageSlider, seriesName):
         imageSlider.setValue(imageNumber)
                     
 
-def updateImageUserSelection(self, applySeriesCheckBox, 
+def updateImageUserSelection(self, applyButton, 
                              cmbColours,
                              spinBoxIntensity, spinBoxContrast,
                              seriesName, 
@@ -924,7 +1107,7 @@ def updateImageUserSelection(self, applySeriesCheckBox,
         """
     try:
         logger.info('updateImageUserSelection called')
-        if applySeriesCheckBox.isChecked() == False:
+        if not applyButton.isChecked():
             #The apply user selection to whole series checkbox 
             #is not checked
 
@@ -950,14 +1133,14 @@ def updateImageUserSelection(self, applySeriesCheckBox,
         logger.error('Error in DisplayImageColour.updateImageUserSelection: ' + str(e))
 
 
-def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
+def updateImageLevels(self,  graphicsView, spinBoxIntensity, spinBoxContrast):
     """When the contrast and intensity values are adjusted using the spinboxes, 
     this function sets the corresponding values in the image being viewed. 
     
     Input Parmeters
     ***************
         self - an object reference to the WEASEL interface.
-        imv - pyqtGraph imageView widget
+         graphicsView - pyqtGraph imageView widget
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
     """
@@ -969,8 +1152,8 @@ def updateImageLevels(self, imv, spinBoxIntensity, spinBoxContrast):
         minimumValue = centre - halfWidth
         maximumValue = centre + halfWidth
         #print("centre{}, width{},  minimumValue{}, maximumValue{}".format(centre, width,  minimumValue, maximumValue))
-        imv.setLevels( minimumValue, maximumValue)
-        imv.show()
+        graphicsView.setLevels( minimumValue, maximumValue)
+        graphicsView.show()
     except Exception as e:
         print('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
@@ -1116,3 +1299,162 @@ def updateDicomSeriesImageByImage(self, seriesName, studyName):
         messageWindow.closeMessageSubWindow(self)
     except Exception as e:
         print('Error in DisplayImageColour.updateDicomSeriesImageByImage: ' + str(e))
+
+
+def displayColourTableInComboBox(cmbColours, colourTable):
+    """
+    This function causes the combobox widget cmbColours to 
+    display the name of the colour table stored in the string
+    variable colourTable. 
+
+     Input Parmeters
+     ****************
+    cmbColours - name of the dropdown lists of colour map names
+    colourTable - String variable containing the name of a colour table
+    """
+    try:
+        cmbColours.blockSignals(True)
+        index = cmbColours.findText(colourTable)
+        if index >= 0:
+            cmbColours.setCurrentIndex(index)
+        cmbColours.blockSignals(False)
+    except Exception as e:
+            print('Error in DisplayImageColour.displayColourTableInComboBox: ' + str(e))
+            logger.error('Error in DisplayImageColour.displayColourTableInComboBox: ' + str(e))
+
+
+
+def setPgColourMap(colourTable,  graphicsView, cmbColours=None, lut=None):
+    """This function converts a matplotlib colour map into
+    a colour map that can be used by the pyqtGraph imageView widget.
+    
+    Input Parmeters
+    ***************
+        colourTable - name of the colour map
+         graphicsView - name of the imageView widget
+        cmbColours - name of the dropdown lists of colour map names
+        lut - name of the look up table containing raw colour data
+    """
+
+    try:
+        if colourTable == None:
+            colourTable = 'gray'
+
+        if cmbColours:
+            displayColourTableInComboBox(cmbColours, colourTable)   
+        
+        if colourTable == 'custom':
+            colors = lut
+        elif colourTable == 'gray':
+            colors = [[0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0]]
+        else:
+            cmMap = cm.get_cmap(colourTable)
+            colourClassName = cmMap.__class__.__name__
+            if colourClassName == 'ListedColormap':
+                colors = cmMap.colors
+            elif colourClassName == 'LinearSegmentedColormap':
+                colors = cmMap(np.linspace(0, 1))
+          
+        positions = np.linspace(0, 1, len(colors))
+        pgMap = pg.ColorMap(positions, colors)
+        graphicsView.setColorMap(pgMap)        
+    except Exception as e:
+        print('Error in DisplayImageColour.setPgColourMap: ' + str(e))
+        logger.error('Error in DisplayImageColour.setPgColourMap: ' + str(e))
+
+
+def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue):
+    """
+    This function checks that the mouse pointer is over the
+    image and when it is, it determines the value of the pixel
+    under the mouse pointer and displays this in the label
+    lblPixelValue.
+
+    Input parameters
+    ****************
+    pos - X,Y coordinates of the mouse pointer
+     graphicsView - pyqtGraph imageView widget
+    pixelArray - pixel array to be displayed in  graphicsView
+    lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
+                and the X,Y coordinates of the mouse pointer.
+    """
+    try:
+        #print ("Image position: {}".format(pos))
+        container =  graphicsView.getView()
+        if container.sceneBoundingRect().contains(pos): 
+            mousePoint = container.getViewBox().mapSceneToView(pos) 
+            x_i = math.floor(mousePoint.x())
+            y_i = math.floor(mousePoint.y()) 
+            z_i =  graphicsView.currentIndex
+            if (len(np.shape(pixelArray)) == 2) and y_i >= 0 and y_i < pixelArray.shape [ 1 ] \
+                and x_i >= 0 and x_i < pixelArray.shape [ 0 ]: 
+                lblPixelValue.setText(
+                    "<h4> = {} @ X: {}, Y: {}</h4>"
+                .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+            elif (len(np.shape(pixelArray)) == 3) and z_i >= 0 and z_i < pixelArray.shape [ 0 ] \
+                and x_i >= 0 and x_i < pixelArray.shape [ 1 ] \
+                and y_i >= 0 and y_i < pixelArray.shape [ 2 ]:
+                lblPixelValue.setText(
+                    "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
+                .format (round(pixelArray[ z_i, x_i, y_i ], 3), x_i, y_i, z_i))
+            else:
+                lblPixelValue.setText("")
+        else:
+            lblPixelValue.setText("")
+                   
+    except Exception as e:
+        print('Error in DisplayImageColour.getPixelValue: ' + str(e))
+        logger.error('Error in DisplayImageColour.getPixelValue: ' + str(e))
+
+
+def readLevelsFromDICOMImage(self, pixelArray): 
+        """Reads levels directly from the DICOM image
+        
+        Input Parmeters
+        ***************
+        self - an object reference to the WEASEL interface.
+        pixelArray - pixel array to be displayed
+
+        Output Parameters
+        *****************
+        centre - Image intensity
+        width - Image contrast
+        maximumValue - Maximum pixel value in the image
+        minimumValue - Minimum pixel value in the image
+        """
+        try:
+            logger.info("DisplayImageColour.readLevelsFromDICOMImage called")
+            #set default values
+            centre = -1 
+            width = -1 
+            maximumValue = -1  
+            minimumValue = -1 
+            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+            if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
+                slope = float(getattr(dataset, 'RescaleSlope', 1))
+                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                centre = dataset.WindowCenter # * slope + intercept
+                width = dataset.WindowWidth # * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2
+            elif dataset and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
+                slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
+                intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
+                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
+                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2 
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                width = maximumValue - abs(minimumValue)
+
+            return centre, width, maximumValue, minimumValue
+        except Exception as e:
+            print('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
+            logger.error('Error in DisplayImageColour.readLevelsFromDICOMImage: ' + str(e))
+
