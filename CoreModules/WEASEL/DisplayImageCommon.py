@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (QFileDialog,
 
 from matplotlib import cm
 import CoreModules.pyqtgraph as pg 
-import readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import numpy as np
 import logging
 import CoreModules.freeHandROI.Resources as icons

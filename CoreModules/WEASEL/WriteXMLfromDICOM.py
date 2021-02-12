@@ -6,7 +6,7 @@ import pydicom
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
-import iBeatImport as iBeatImport
+import CoreModules.WEASEL.iBeatImport as iBeatImport
 
 
 def get_files_info(scan_directory):
