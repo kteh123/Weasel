@@ -560,7 +560,7 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
                             cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
-    lambda :displayImageDataUnderMouse(graphicsView, pixelValueTxt))
+    lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
         lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
@@ -602,15 +602,18 @@ def updateROIName(graphicsView, cmbROIs):
     graphicsView.currentROIName = cmbROIs.currentText()
 
 
-def displayImageDataUnderMouse( graphicsView, pixelValueTxt):
+def displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt):
         logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
         #print("mousePointerOverImage={}".format(mousePointerOverImage))
-        xCoord = graphicsView.graphicsItem.xMouseCoord
-        yCoord = graphicsView.graphicsItem.yMouseCoord
-        pixelValue = graphicsView.graphicsItem.pixelValue
-        strValue = str(pixelValue)
-        strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord)
-        pixelValueTxt.setText('= ' + strValue + strPosition)
+        if mouseOverImage:
+            xCoord = graphicsView.graphicsItem.xMouseCoord
+            yCoord = graphicsView.graphicsItem.yMouseCoord
+            pixelValue = graphicsView.graphicsItem.pixelValue
+            strValue = str(pixelValue)
+            strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord)
+            pixelValueTxt.setText('= ' + strValue + strPosition)
+        else:
+             pixelValueTxt.setText('')
        
         
 

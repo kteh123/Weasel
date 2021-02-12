@@ -19,7 +19,7 @@ __author__ = 'Steve Shillitoe'
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
-    sigMouseHovered = QtCore.Signal()
+    sigMouseHovered = QtCore.Signal(bool)
     sigMaskCreated = QtCore.Signal()
     sigMaskEdited = QtCore.Signal()
     sigZoomIn = QtCore.Signal()
@@ -118,22 +118,17 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverLeaveEvent(self, event):
-        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+         self.sigMouseHovered.emit(False)
 
 
     def hoverMoveEvent(self, event):
-        self.xMouseCoord = ""
-        self.yMouseCoord = ""
-        self.pixelValue = ""
-        if self.isUnderMouse():
-            self.xMouseCoord = int(event.pos().x())
-            self.yMouseCoord = int(event.pos().y())
-            self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).value()
-            self.sigMouseHovered.emit()
+        self.xMouseCoord = int(event.pos().x())
+        self.yMouseCoord = int(event.pos().y())
+        self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
+        self.pixelValue = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).value()
+        self.sigMouseHovered.emit(True)
        
-        
-
 
     def mouseMoveEvent(self, event):
         buttons = event.buttons()
