@@ -7,6 +7,7 @@ import CoreModules.freeHandROI.helperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
+import CoreModules.freeHandROI.Resources as icons
 #np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -14,9 +15,6 @@ logger = logging.getLogger(__name__)
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
 
-PEN_CURSOR = 'CoreModules\\freeHandROI\\cursors\\pencil.png'
-ERASOR_CURSOR = 'CoreModules\\freeHandROI\\cursors\\erasor.png'
-MAGNIFYING_GLASS_CURSOR = 'CoreModules\\freeHandROI\\cursors\\Magnifying_Glass.png'
 
 class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
@@ -63,12 +61,6 @@ class GraphicsItem(QGraphicsObject):
         self.setToolTip("Use the mouse wheel to zoom")
 
 
-    def turnOffDrawEraseAndZoom(self):
-        self.drawEnabled = False
-        self.eraseEnabled = False
-        self.zoomEnabled = False
-
-
     def updateImageLevels(self, intensity, contrast, roi):
         try:
             logger.info("GraphicsItem.updateImageLevels called")
@@ -112,15 +104,15 @@ class GraphicsItem(QGraphicsObject):
 
     def hoverEnterEvent(self, event):
         if self.drawEnabled:
-            pm = QPixmap(PEN_CURSOR)
+            pm = QPixmap(icons.PEN_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.eraseEnabled:
-            pm = QPixmap(ERASOR_CURSOR)
+            pm = QPixmap(icons.ERASOR_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.zoomEnabled:
-            pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
+            pm = QPixmap(icons.MAGNIFYING_GLASS_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
 
@@ -130,12 +122,17 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverMoveEvent(self, event):
+        self.xMouseCoord = ""
+        self.yMouseCoord = ""
+        self.pixelValue = ""
         if self.isUnderMouse():
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
             self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
             self.pixelValue = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).value()
             self.sigMouseHovered.emit()
+       
+        
 
 
     def mouseMoveEvent(self, event):

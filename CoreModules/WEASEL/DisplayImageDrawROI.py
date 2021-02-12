@@ -560,7 +560,7 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
                             cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     graphicsView.graphicsItem.sigMouseHovered.connect(
-    lambda: displayImageDataUnderMouse(graphicsView, pixelValueTxt))
+    lambda :displayImageDataUnderMouse(graphicsView, pixelValueTxt))
 
     graphicsView.graphicsItem.sigMaskCreated.connect(
         lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
@@ -602,14 +602,16 @@ def updateROIName(graphicsView, cmbROIs):
     graphicsView.currentROIName = cmbROIs.currentText()
 
 
-def displayImageDataUnderMouse(graphicsView, pixelValueTxt):
+def displayImageDataUnderMouse( graphicsView, pixelValueTxt):
         logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
+        #print("mousePointerOverImage={}".format(mousePointerOverImage))
         xCoord = graphicsView.graphicsItem.xMouseCoord
         yCoord = graphicsView.graphicsItem.yMouseCoord
         pixelValue = graphicsView.graphicsItem.pixelValue
         strValue = str(pixelValue)
         strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord)
         pixelValueTxt.setText('= ' + strValue + strPosition)
+       
         
 
 def getRoiMeanAndStd(mask, pixelArray):
@@ -717,9 +719,7 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
         pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.setImage(pixelArray, mask)
-        #If the mouse pointer is on the image, display pixel value at that
-        #position on the new image
-        displayImageDataUnderMouse(graphicsView, pixelValueTxt)
+   
         setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt, 
                                 btnDraw, btnErase, 
