@@ -185,7 +185,7 @@
   <menu name="XNAT">
     	<item>
           <label>Download</label>
-          <tooltip>Download images from XNAT</tooltip>
+          <tooltip>Prompts a window that allows to download images from XNAT</tooltip>
 		  <icon>docs\\images\\XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>download</function>
@@ -196,7 +196,7 @@
         </item>
 		<item>
           <label>Upload</label>
-          <tooltip>Upload images from XNAT</tooltip>
+          <tooltip>Prompts a window that allows to upload images from XNAT</tooltip>
 		  <icon>docs\\images\\XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>upload</function>
