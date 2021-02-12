@@ -16,7 +16,7 @@ from multiprocessing import current_process
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
 sys.path.append(os.path.join(sys.path[0],'External'))
-sys.path.append(os.path.join(sys.path[0],'MenuItems'))
+sys.path.append(os.path.join(sys.path[0],'Pipelines'))
 
 import CoreModules.WEASEL.styleSheet as styleSheet
 from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader

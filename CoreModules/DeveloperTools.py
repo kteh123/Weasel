@@ -13,7 +13,7 @@ import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
-from MenuItems.ViewMetaData import displayMetaDataSubWindow
+from Pipelines.ViewMetaData import displayMetaDataSubWindow
 
 
 class UserInterfaceTools:
