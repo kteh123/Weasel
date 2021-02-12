@@ -8,8 +8,8 @@ import sys
 import logging
 import time
 from collections import defaultdict
-import Menus  as menus
-import ViewImage as viewImage
+import CoreModules.WEASEL.Menus as menus
+import MenuItems.ViewImage as viewImage
 logger = logging.getLogger(__name__)
 
 

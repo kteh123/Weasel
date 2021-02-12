@@ -8,11 +8,11 @@ import datetime
 import copy
 import random
 from matplotlib import cm
-import readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
-import TreeView  as treeView
-import DisplayImageColour  as displayImageColour
-import MessageWindow  as messageWindow
+import CoreModules.WEASEL.TreeView as treeView
+import CoreModules.WEASEL.DisplayImageColour as displayImageColour
+import CoreModules.WEASEL.MessageWindow as messageWindow
 import logging
 
 logger = logging.getLogger(__name__)

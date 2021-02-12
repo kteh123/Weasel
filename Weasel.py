@@ -26,7 +26,7 @@ import CoreModules.WEASEL.ToolBar as toolBar
 
 
 __version__ = '1.0'
-__author__ = 'Steve Shillitoe'
+__author__ = 'Steve Shillitoe & Joao Sousa'
 
 
 #Create and configure the logger
@@ -86,5 +86,5 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == '__main__':
-        main()
+    main()
    

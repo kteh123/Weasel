@@ -2,7 +2,7 @@ import xml.etree.cElementTree as ET
 from pathlib import Path
 from datetime import datetime
 import logging
-import readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 
 logger = logging.getLogger(__name__)
 
