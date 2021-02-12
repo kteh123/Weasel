@@ -35,10 +35,10 @@ setup(
     author='Steven Shillitoe & Joao Sousa',
     author_email='s.shillitoe@sheffield.ac.uk & j.g.sousa@sheffield.ac.uk',
     version="1.0",
-    description="Prototype DICOM image viewer.",
+    description="Prototyping Medical Imaging Applications.",
     long_description = long_description,
     long_description_content_type='text/markdown',
-    url="https://qib-sheffield.github.io/weasel.github.io",
+    url="https://weasel.pro",
     license="Apache-2.0",
 
     # Python Packages and Installation
