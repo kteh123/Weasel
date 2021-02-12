@@ -6,7 +6,7 @@ from CoreModules.DeveloperTools import UserInterfaceTools, Image
 def main(Weasel):
     ui = UserInterfaceTools(Weasel)
     # Get all images in the Checkboxes
-    imageList = ui.getCheckedImagesSteven()
+    imageList = ui.getCheckedImages()
     # if imageList is None: return # Exit function if no images are checked
     index_bar = 0
     for image in imageList:
