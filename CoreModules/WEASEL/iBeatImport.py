@@ -4,12 +4,7 @@ import re
 #Also need to do pip install xlrd
 import warnings
 import readDICOM_Image
-try:
-    import pandas as pd
-except ImportError:
-    from pip._internal import main as pip
-    pip(['install', '--user', 'pandas'])
-    import pandas as pd
+import pandas as pd
 
 def getScanInfo(dicomData):
     try:

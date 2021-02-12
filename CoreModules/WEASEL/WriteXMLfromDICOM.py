@@ -6,25 +6,7 @@ import pydicom
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
-from pyqtgraph.Qt import QtCore, QtGui
 import iBeatImport as iBeatImport
-
-
-def select_path():
-    """This method opens a Dialog Box that allows the user to choose the folder containing the MRI scan.
-        The path to the folder is what is returned in this method.
-    """
-    try:
-        cwd = os.getcwd()
-        app = QtGui.QApplication([])  # pylint: disable=unused-variable
-        scan_directory = QtGui.QFileDialog.getExistingDirectory(None, 'Select the'
-                   ' directory containing the scan', cwd, QtGui.QFileDialog.ShowDirsOnly)
-        if len(scan_directory) == 0:
-            raise SystemExit('No folder selected')
-
-        return scan_directory
-    except Exception as e:
-        print('Error in WriteXMLfromDICOM.select_path: ' + str(e))
 
 
 def get_files_info(scan_directory):
@@ -285,15 +267,3 @@ def create_XML_file(DICOM_XML_object, scan_directory):
         return os.path.join(scan_directory, filename)
     except Exception as e:
         print('Error in WriteXMLfromDICOM.create_XML_file: ' + str(e))
-
-
-def main():
-    generic_path = select_path()
-    scans, paths = get_scan_data(generic_path)
-    dictionary = build_dictionary(scans)
-    xml = open_dicom_to_xml(dictionary, scans, paths)
-    create_XML_file(xml, generic_path)
-
-
-if __name__ == '__main__':
-    main()

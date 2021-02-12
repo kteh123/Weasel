@@ -4,12 +4,7 @@ import zipfile
 import warnings
 import requests
 from CoreModules.DeveloperTools import UserInterfaceTools
-try:
-    import xnat
-except ImportError:
-    from pip._internal import main as pip
-    pip(['install', '--user', 'xnat'])
-    import xnat
+import xnat
 
 def isEnabled(self):
     return True
@@ -20,6 +15,7 @@ def download(objWeasel):
     credentialsWindow = {"URL":"string,https://test-ukrin.dpuk.org", "Username":"string,j.sousa", "Password":"string"}
     info = "Please insert the XNAT URL and your XNAT credentials"
     loginDetails = ui.inputWindow(credentialsWindow, title="XNAT Login", helpText=info)
+    if loginDetails is None: return
     url = loginDetails[0] # https://test-ukrin.dpuk.org
     username = loginDetails[1]
     password = loginDetails[2]
