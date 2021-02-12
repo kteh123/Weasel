@@ -16,7 +16,7 @@ The 'Sample Data' folder contains 24 DICOM images and an XML file describing thi
 
 # Installation
 
-**Git** is required to download this repository, unless you choose to download the `.zip` file. In order for Weasel to run successfully, it is required to have **Python (>=3.6)** installed.
+**Git** is required to download this repository, unless you choose to download the `.zip` file. In order for Weasel to run successfully, it is required to have **Python (>=3.7)** installed.
 
 Download URLs:
 
@@ -74,4 +74,22 @@ and start Weasel by running the command
 
 If you're a developer, you may start Weasel by opening an IDE (Sublime Text, VS Code, Visual Studio, etc.) and run the Weasel.py script.
 
-(Mention Pyinstaller? Executable?)
+# Generate the Executable
+
+If you wish to get one file that executes the whole software, you can compile the Python project into an executable of the operative system you're using by using `pyinstaller`.
+
+First, you need to install it by running:
+
+`pip install pyinstaller`
+
+Then you have to navigate to your Weasel folder
+
+`cd <Weasel_folder_path>`
+
+and run the following command:
+
+`pyinstaller --hidden-import requests --onefile Weasel.py` (might have to add "--hidden-import xnat" in the future)
+
+If you wish to go forward with this procedure, it's highly recommended that you use a new and clean python virtual environment to install the relevant packages and make use of those only during compilation.
+
+The generated executable can be found in the `dist` folder. You may delete the `build` folder and the `Weasel.spec` file which are created during this process.
