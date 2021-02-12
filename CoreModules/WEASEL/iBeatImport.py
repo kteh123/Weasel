@@ -3,7 +3,7 @@ import datetime
 import re
 #Also need to do pip install xlrd
 import warnings
-import readDICOM_Image
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import pandas as pd
 
 def getScanInfo(dicomData):

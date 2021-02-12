@@ -25,14 +25,14 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, binary_closing
-import styleSheet as styleSheet
-import readDICOM_Image as readDICOM_Image
-import saveDICOM_Image as saveDICOM_Image
-import TreeView  as treeView
-import DisplayImageCommon as displayImageCommon
-import MessageWindow as messageWindow
-import InputDialog as inputDialog
-import InterfaceDICOMXMLFile as interfaceDICOMXMLFile
+import CoreModules.WEASEL.styleSheet as styleSheet
+import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.TreeView as treeView
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+import CoreModules.WEASEL.MessageWindow as messageWindow
+import CoreModules.WEASEL.InputDialog as inputDialog
+import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.freeHandROI.GraphicsView import GraphicsView
 from CoreModules.freeHandROI.ROI_Storage import ROIs 
 import CoreModules.freeHandROI.Resources as icons

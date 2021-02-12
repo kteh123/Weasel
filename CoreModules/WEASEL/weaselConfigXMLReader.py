@@ -1,4 +1,4 @@
-import xml.etree.cElementTree as ET  
+import xml.etree.cElementTree as ET
 import logging
 logger = logging.getLogger(__name__)
 
