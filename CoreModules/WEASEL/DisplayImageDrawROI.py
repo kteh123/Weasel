@@ -408,6 +408,7 @@ def setUpImageDataWidgets(imageDataLayout, graphicsView, zoomValueLabel, imageSl
 def setUpImageSlider(sliderLayout, sliderPosition, imageList):
     try:
         imageSlider = QSlider(Qt.Horizontal)
+        imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
         imageSlider.setMinimum(1)
         imageSlider.setMaximum(len(imageList))
         if sliderPosition == -1:

@@ -345,6 +345,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
            
 
             imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
@@ -1181,8 +1182,13 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
         """
         try:
             logger.info("DisplayImageColour.updateDICOM called")
-            buttonReply = QMessageBox.question(self, 
-                          'Update DICOM', "You are about to overwrite series DICOM Files. Please confirm to proceed.", 
+            if singleImage:
+                buttonReply = QMessageBox.question(self, 
+                          'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
+                          QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            else:
+                buttonReply = QMessageBox.question(self, 
+                          'Update DICOM', "You are about to overwrite this series of DICOM Files. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
                 imageName = lblHiddenImagePath.text()
