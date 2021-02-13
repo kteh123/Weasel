@@ -327,8 +327,7 @@ def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
         cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
 
         cmbROIs.currentIndexChanged.connect(
-            lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt, 
-                                    
+            lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,                          
                                    roiMeanTxt, roiStdDevTxt, self, buttonList, 
                                    btnDraw, btnErase, 
                                   zoomSlider, zoomLabel, imageSlider))
@@ -559,42 +558,46 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
                             roiMeanTxt, roiStdDevTxt, btnDraw, btnErase,
                             cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
-    graphicsView.graphicsItem.sigMouseHovered.connect(
-    lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt))
+    try:
+        graphicsView.graphicsItem.sigMouseHovered.connect(
+        lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt))
 
-    graphicsView.graphicsItem.sigMaskCreated.connect(
-        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
+        graphicsView.graphicsItem.sigMaskCreated.connect(
+            lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
-    graphicsView.graphicsItem.sigMaskCreated.connect(
-        lambda: displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider))
+        graphicsView.graphicsItem.sigMaskCreated.connect(
+            lambda: displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider))
 
-    graphicsView.graphicsItem.sigMaskEdited.connect(
-        lambda:replaceMask(graphicsView, cmbROIs.currentText(), imageSlider))
+        graphicsView.graphicsItem.sigMaskEdited.connect(
+            lambda:replaceMask(graphicsView, cmbROIs.currentText(), imageSlider))
 
-    graphicsView.graphicsItem.sigMaskEdited.connect(
-        lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
+        graphicsView.graphicsItem.sigMaskEdited.connect(
+            lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
-    graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
+        graphicsView.sigContextMenuDisplayed.connect(lambda:setButtonsToDefaultStyle(buttonList))
 
-    graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, 
-                                       pixelValueTxt,  
-                                       roiMeanTxt, roiStdDevTxt, self, buttonList, 
-                                       btnDraw, btnErase, zoomSlider, 
-                              zoomLabel, imageSlider ))
+        graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, 
+                                            pixelValueTxt,  
+                                            roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                            btnDraw, btnErase, zoomSlider, 
+                                    zoomLabel, imageSlider ))
 
-    graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
-              pixelValueTxt,  
-         roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase,  
-              zoomSlider, zoomLabel, imageSlider))
+        graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
+                    pixelValueTxt,  
+                roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase,  
+                    zoomSlider, zoomLabel, imageSlider))
 
-    graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
+        graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
 
-    graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
+        graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
 
-    graphicsView.sigROIChanged.connect(lambda:setButtonsToDefaultStyle(buttonList))
-    graphicsView.sigROIChanged.connect(lambda:updateROIName(graphicsView, cmbROIs))
-    graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName, cmbROIs))
-    graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(zoomSlider, zoomLabel, increment))
+        graphicsView.sigROIChanged.connect(lambda:setButtonsToDefaultStyle(buttonList))
+        graphicsView.sigROIChanged.connect(lambda:updateROIName(graphicsView, cmbROIs))
+        graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName, cmbROIs))
+        graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(zoomSlider, zoomLabel, increment))
+    except Exception as e:
+            print('Error in DisplayImageDrawROI.setUpImageEventHandlers: ' + str(e))
+            logger.error('Error in DisplayImageDrawROI.setUpImageEventHandlers: ' + str(e))  
 
 
 def updateROIName(graphicsView, cmbROIs):
@@ -722,7 +725,7 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
         pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.setImage(pixelArray, mask)
-   
+        displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)  
         setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt, 
                                 btnDraw, btnErase, 

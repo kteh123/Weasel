@@ -61,6 +61,7 @@ class GraphicsView(QGraphicsView):
                 self.scene.clear()
 
             self.graphicsItem = GraphicsItem(pixelArray, mask)
+       
             #Give graphicsItem some time to adjust itself
             QApplication.processEvents()
             self.scene.addItem(self.graphicsItem)

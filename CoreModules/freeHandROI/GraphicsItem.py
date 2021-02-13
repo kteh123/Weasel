@@ -278,7 +278,6 @@ class GraphicsItem(QGraphicsObject):
         logger.info("GraphicsItem.reloadImage called")
         self.qimage = None
         self.pixMap = None
-        #self.turnOffDrawEraseZoom()
         self.qimage = self.origQimage
         self.pixMap = QPixmap.fromImage(self.qimage)
         self.update()
