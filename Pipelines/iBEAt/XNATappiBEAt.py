@@ -20,6 +20,7 @@ def download(objWeasel):
     credentialsWindow = {"URL":"string,https://xnat.vital-it.ch", "Username":"string", "Password":"string"}
     info = "Please insert the XNAT URL and your XNAT credentials"
     loginDetails = ui.inputWindow(credentialsWindow, title="XNAT Login", helpText=info)
+    if loginDetails is None: return
     url = loginDetails[0] # 
     username = loginDetails[1]
     password = loginDetails[2]
