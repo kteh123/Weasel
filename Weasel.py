@@ -23,6 +23,7 @@ from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.weaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.Menus as menus
 import CoreModules.WEASEL.ToolBar as toolBar
+from CoreModules.WEASEL.Scripting import Scripting
 
 
 __version__ = '1.0'
@@ -41,7 +42,7 @@ logging.basicConfig(filename=LOG_FILE_NAME,
 logger = logging.getLogger(__name__)
 
 
-class Weasel(QMainWindow):
+class Weasel(QMainWindow, Scripting):
     def __init__(self): 
         """Creates the MDI container."""
         super (). __init__ () 
