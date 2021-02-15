@@ -94,6 +94,7 @@ class GraphicsItem(QGraphicsObject):
         """
         Estimate the min/max values of *data* by subsampling.
         """
+        logger.info("freeHandROI.GraphicsItem.__quickMinMax called")
         while data.size > 1e6:
             ax = np.argmax(data.shape)
             sl = [slice(None)] * data.ndim
@@ -103,6 +104,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverEnterEvent(self, event):
+        logger.info("freeHandROI.GraphicsItem.hoverEnterEvent called")
         if self.drawEnabled:
             pm = QPixmap(icons.PEN_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
@@ -118,11 +120,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverLeaveEvent(self, event):
+         logger.info("freeHandROI.GraphicsItem.hoverLeaveEvent called")
          QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
          self.sigMouseHovered.emit(False)
 
 
     def hoverMoveEvent(self, event):
+        logger.info("freeHandROI.GraphicsItem.hoverMoveEvent called")
         self.xMouseCoord = int(event.pos().x())
         self.yMouseCoord = int(event.pos().y())
         self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
@@ -131,6 +135,7 @@ class GraphicsItem(QGraphicsObject):
        
 
     def mouseMoveEvent(self, event):
+        logger.info("freeHandROI.GraphicsItem.mouseMoveEvent called")
         buttons = event.buttons()
         if (buttons == Qt.LeftButton):
             xCoord = int(event.pos().x())
@@ -163,6 +168,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def mouseReleaseEvent(self, event):
+        logger.info("freeHandROI.GraphicsItem.mouseReleaseEvent called")
         button = event.button()
         if (button == Qt.LeftButton):
             if self.drawEnabled:
@@ -405,6 +411,7 @@ class GraphicsItem(QGraphicsObject):
             
 
     def mousePressEvent(self, event):
+        logger.info("freeHandROI.GraphicsItem.mousePressEven called")
         button = event.button()
         if (button == Qt.LeftButton):
           self.sigZoomIn.emit()
