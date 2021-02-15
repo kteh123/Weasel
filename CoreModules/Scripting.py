@@ -2,7 +2,7 @@ import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import Image
 
-class Scripting():
+class Pipelines():
 
     def images(self):
         """
