@@ -7,6 +7,7 @@ __author__ = 'Steve Shillitoe'
 
 class ROIs():
     def __init__(self, NumImages = 1):
+        logger.info("ROI_Storage object initialised")
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
@@ -110,6 +111,41 @@ class ROIs():
                 return False
         except Exception as e:
                 print('Error in ROI_Storage.hasRegionGotMask: ' + str(e))
+
+
+    def hasImageGotMask(self, regionName, imageNumber):
+        logger.info("RIO_Storage.hasImageGotMask called")
+        try:
+            if regionName in self.dictMasks: 
+                mask = self.dictMasks[regionName][imageNumber - 1]
+                if mask.any():
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        except Exception as e:
+            print('Error in ROI_Storage.hasImageGotMask: ' + str(e))
+            logger.error('Error in ROI_Storage.hasImageGotMask: ' + str(e))
+
+
+    def returnListImagesWithMasks(self, regionName):
+        logger.info("RIO_Storage.returnListImagesWithMasks called")
+        try:
+            listImagesWithMasks = []
+            if regionName in self.dictMasks: 
+                maskList = self.dictMasks[regionName]
+                for i in range(self.NumOfImages):
+                   mask = self.dictMasks[regionName][i]
+                    if mask.any():
+                        listImagesWithMasks.append(i)
+           
+            return listImagesWithMasks
+
+        except Exception as e:
+            print('Error in ROI_Storage.returnListImagesWithMasks: ' + str(e))
+            logger.error('Error in ROI_Storage.returnListImagesWithMasks: ' + str(e))
+
 
     def deleteMask(self, regionName=None):
         try:
