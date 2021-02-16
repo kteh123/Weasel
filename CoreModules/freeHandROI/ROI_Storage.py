@@ -136,8 +136,8 @@ class ROIs():
             if regionName in self.dictMasks: 
                 maskList = self.dictMasks[regionName]
                 for i in range(self.NumOfImages):
-                    mask = self.dictMasks[regionName][i]
-                    if mask.any():
+                   mask = self.dictMasks[regionName][i]
+                   if mask.any():
                         listImagesWithMasks.append(i)
            
             return listImagesWithMasks

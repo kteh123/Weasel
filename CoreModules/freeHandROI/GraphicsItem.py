@@ -8,7 +8,7 @@ from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
 import CoreModules.freeHandROI.Resources as icons
-#np.set_printoptions(threshold=sys.maxsize)
+np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
 
@@ -152,7 +152,9 @@ class GraphicsItem(QGraphicsObject):
                 # Update the origin for next time.
                 self.last_x = xCoord
                 self.last_y = yCoord
-                self.pathCoordsList.append([self.last_x, self.last_y])
+                #Do not add duplicates to the list
+                if [self.last_x, self.last_y] not in self.pathCoordsList:
+                    self.pathCoordsList.append([self.last_x, self.last_y])
                 self.mouseMoved = True
 
             if self.eraseEnabled:
@@ -187,6 +189,7 @@ class GraphicsItem(QGraphicsObject):
                         self.prevPathCoordsList = self.pathCoordsList
                         self.createMask(self.pathCoordsList)
                         self.listROICoords = self.getListRoiInnerPoints(self.mask)
+                        #print("Inner coords={}".format(self.listROICoords))
                         self.fillFreeHandRoi()
                         self.start_x = None 
                         self.start_y = None
@@ -301,10 +304,8 @@ class GraphicsItem(QGraphicsObject):
         logger.info("GraphicsItem.fillFreeHandRoi called")
         if self.listROICoords is not None:
             for coords in self.listROICoords:
-                #x = coords[0]
-                #y = coords[1]
-                x = coords[1]
-                y = coords[0]
+                x = coords[0]
+                y = coords[1]
                 self.setPixelToRed(x, y)
 
 
@@ -313,10 +314,10 @@ class GraphicsItem(QGraphicsObject):
         listROICoords = self.getListRoiInnerPoints(roi)
         if listROICoords is not None:
             for coords in listROICoords:
-                #x = coords[0]
-                #y = coords[1]
-                x = coords[1]
-                y = coords[0]
+                x = coords[0]
+                y = coords[1]
+                #x = coords[1]
+                #y = coords[0]
                 #print("({}, {})".format(x, y))
                 pixelColour = self.qimage.pixel(x, y) 
                 pixelRGB =  QColor(pixelColour).getRgb()
@@ -381,7 +382,7 @@ class GraphicsItem(QGraphicsObject):
         logger.info("GraphicsItem.getListRoiInnerPoints called")
         if roi is not None:
             result = np.where(roi == True)
-            return list(zip(result[0], result[1]))
+            return list(zip(result[1], result[0]))
         else:
             return None
 
@@ -392,21 +393,22 @@ class GraphicsItem(QGraphicsObject):
         self.mask = np.full((nx, ny), False, dtype=bool)
 
 
-    def createMask(self, roiLineCoords):
+    def createMask(self, roiBoundaryCoords):
             logger.info("GraphicsItem.createMask called")
             self.mask = None
-            ny, nx = np.shape(self.pixelArray)
-            #print("roiLineCoords ={}".format(roiLineCoords))
+            nx, ny = np.shape(self.pixelArray)
+            #print("roiBoundaryCoords ={}".format(roiBoundaryCoords))
             # Create vertex coordinates for each grid cell...
             # (<0,0> is at the top left of the grid in this system)
             x, y = np.meshgrid(np.arange(nx), np.arange(ny))
-            x, y = x.flatten(), y.flatten()
-            points = np.vstack((x, y)).T #points = every [x,y] pair within the original image
-        
-            #print("roiLineCoords={}".format(roiLineCoords))
-            roiPath = MplPath(roiLineCoords)
-            #print("roiPath={}".format(roiPath))
-            self.mask = roiPath.contains_points(points).reshape((ny, nx))
+            points = list(zip(x.flatten(),y.flatten()))
+            #print("Points={}".format(points))
+            #print("roiBoundaryCoords={}".format(roiBoundaryCoords))
+            roiPath = MplPath(roiBoundaryCoords)
+             # print("roiPath={}".format(roiPath))
+            #setting radius=0.1 includes the drawn boundary in the ROI
+            #ideally radius should = pixel size
+            self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
             self.sigMaskCreated.emit()
             
 
@@ -417,3 +419,14 @@ class GraphicsItem(QGraphicsObject):
           self.sigZoomIn.emit()
         elif (button == Qt.RightButton): 
           self.sigZoomOut.emit()
+
+
+
+    #      def get_mask(img_frame, drawn_roi, row, col):
+    #for i in np.arange(row):
+    #    for j in np.arange(col):
+    #         if np.logical_and(drawn_roi.path.contains_points([(j,i)]) == [True], img_frame[i][j] > 0):
+    #             mask[i][j] = 1
+    #mask_bool = mask.astype(bool)
+    #mask_bool = ~mask_bool
+    #return mask_bool
