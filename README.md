@@ -88,7 +88,7 @@ Then you have to navigate to your Weasel folder
 
 and run the following command:
 
-`pyinstaller --hidden-import requests --exclude-module External --onefile Weasel.py` (might have to add "--hidden-import xnat" in the future)
+`pyinstaller --hidden-import requests --hidden-import xnat --exclude-module External --onefile Weasel.py`
 
 If you wish to go forward with this procedure, it's highly recommended that you use a new and clean python virtual environment to install the relevant packages and make use of those only during compilation.
 

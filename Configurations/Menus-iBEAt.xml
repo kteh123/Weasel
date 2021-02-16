@@ -139,7 +139,7 @@
     	<item>
           <label>Download</label>
           <tooltip>Download images from XNAT</tooltip>
-		  <icon>docs\\images\\XNAT-LOGO.png</icon>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>download</function>
         </item>
@@ -150,7 +150,7 @@
 		<item>
           <label>Upload</label>
           <tooltip>Upload images from XNAT</tooltip>
-		  <icon>docs\\images\\XNAT-LOGO.png</icon>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>upload</function>
         </item>
@@ -159,7 +159,7 @@
         <item>
           <label>Download</label>
           <tooltip>Download images from </tooltip>
-          <icon>docs\\images\\XNAT-LOGO.png</icon>
+          <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATappiBEAt</module>
           <function>download</function>
         </item>
@@ -170,7 +170,7 @@
         <item>
           <label>Upload</label>
           <tooltip>Upload images from XNAT</tooltip>
-          <icon>docs\\images\\XNAT-LOGO.png</icon>
+          <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATappiBEAt</module>
           <function>upload</function>
         </item>
