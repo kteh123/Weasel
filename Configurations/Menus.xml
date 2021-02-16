@@ -29,14 +29,14 @@
         <item>
           <label>View Series/Image</label>
           <shortcut>Ctrl+V</shortcut>
-          <tooltip>View DICOM Image or series</tooltip>
+          <tooltip>View a DICOM Image or series with a colour table</tooltip>
           <module>ViewImage</module>
           <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
         </item>
         <item>
           <label>View Series/Image with ROI</label>
           <shortcut>Ctrl+R</shortcut>
-          <tooltip>View DICOM Image or series with the ROI tool</tooltip>
+          <tooltip>View a DICOM Image or series with the freehand ROI drawing tool</tooltip>
           <module>ViewROIImage</module>
           <context_menu>yes</context_menu>
         </item>

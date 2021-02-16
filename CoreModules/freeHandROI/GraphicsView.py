@@ -2,7 +2,7 @@ from PyQt5.QtCore import QRectF, Qt,  QCoreApplication
 from PyQt5 import QtCore 
 from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
                             QAction, QActionGroup, QApplication )
-from PyQt5.QtGui import QPixmap, QCursor, QIcon
+from PyQt5.QtGui import QPixmap, QCursor, QIcon, QToolTip
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
 import CoreModules.freeHandROI.Resources as icons
@@ -39,14 +39,12 @@ class GraphicsView(QGraphicsView):
         self.currentROIName = None
         self.dictROIs = ROIs()
         self.menu = QMenu()
+        self.menu.hovered.connect(self._actionHovered)
         #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
-
-   # def resizeEvent(self, event):
-    #    print("GraphicsView resize event event={}".format(event))
 
     def setZoomEnabled(self, boolValue):
         self.zoomEnabled = boolValue
@@ -153,7 +151,9 @@ class GraphicsView(QGraphicsView):
             self.menu.clear()
             self.sigContextMenuDisplayed.emit()
             zoomIn = QAction('Zoom In', None)
+            zoomIn.setToolTip('Click to zoom in')
             zoomOut = QAction('Zoom Out', None)
+            zoomOut.setToolTip('Click to zoom out')
             zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
             zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
 
@@ -187,8 +187,14 @@ class GraphicsView(QGraphicsView):
             self.menu.addAction(resetROI)
             self.menu.addAction(deleteROI)
             self.menu.exec_(event.globalPos())  
+            
+            
 
-    
+    def _actionHovered(self, action):
+        tip = action.toolTip()
+        QToolTip.showText(QCursor.pos(), tip)
+
+
     def drawROI(self, fromContextMenu = False):
         if not self.graphicsItem.drawEnabled:
             if fromContextMenu:

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import  Qt
 from PyQt5 import QtCore 
-from PyQt5.QtWidgets import (QAction, QApplication, QMessageBox, QMenu)
-from PyQt5.QtGui import  QIcon
+from PyQt5.QtWidgets import QAction, QApplication, QMessageBox, QMenu, QToolTip 
+from PyQt5.QtGui import QCursor, QIcon 
 import os
 import sys
 import pathlib
@@ -22,6 +22,7 @@ def setupMenus(self, menuXMLFile):
     for menu in menus:
         menuName = menu.attrib['name']
         self.topMenu = mainMenu.addMenu(menuName)
+        self.topMenu.hovered.connect(_actionHovered)
         self.listMenus.append(self.topMenu)
         for item in menu:
             buildUserDefinedToolsMenuItem(self, self.topMenu, item)
@@ -137,10 +138,16 @@ def displayContextMenu(self, pos):
     self.context.exec_(self.treeView.mapToGlobal(pos))
 
 
+def _actionHovered(action):
+        tip = action.toolTip()
+        QToolTip.showText(QCursor.pos(), tip)
+
+
 def buildContextMenu(self, menuXMLFile):
     logger.info("Menus.buildContextMenu called")
     try:
         self.context = QMenu(self)
+        self.context.hovered.connect(_actionHovered)
         objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
         for item in items:
