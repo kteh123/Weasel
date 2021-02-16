@@ -4,12 +4,7 @@ import zipfile
 import warnings
 import requests
 from CoreModules.DeveloperTools import UserInterfaceTools
-try:
-    import xnat
-except ImportError:
-    from pip._internal import main as pip
-    pip(['install', '--user', 'xnat'])
-    import xnat
+import xnat
 
 def isEnabled(self):
     return True
@@ -89,6 +84,7 @@ def upload(objWeasel):
     credentialsWindow = {"URL":"string,https://xnat.vital-it.ch", "Username":"string", "Password":"string"}
     info = "Please insert the XNAT URL and your XNAT credentials"
     loginDetails = ui.inputWindow(credentialsWindow, title="XNAT Login", helpText=info)
+    if loginDetails is None: return
     url = loginDetails[0] #
     username = loginDetails[1]
     password = loginDetails[2]
@@ -97,12 +93,14 @@ def upload(objWeasel):
         projectWindow = {"Project":"dropdownlist"}
         projectInfo = "URL: " + url + "<p>Select the Project to upload the images from</p>"
         projectName = ui.inputWindow(projectWindow, title="XNAT Upload", helpText=projectInfo, lists=[xnatProjects])
+        if projectName is None: return
         if projectName:
             xnatSubjects = [subject.label for subject in session.projects[projectName[0]].subjects.values()]
             xnatSubjects.insert(0, "Upload at Project Level")
             subjectWindow = {"Subject":"dropdownlist"}
             subjectInfo = "URL: " + url + "<p>Project: " + projectName[0] + "</p><p>Select the Subject to upload the images from</p>"
             subjectName = ui.inputWindow(subjectWindow, title="XNAT Upload", helpText=subjectInfo, lists=[xnatSubjects])
+            if subjectName is None: return
             if subjectName:
                 if subjectName[0] == "Upload at Project Level":
                     uploadPaths = selectXNATPathUpload(objWeasel)
@@ -119,6 +117,7 @@ def upload(objWeasel):
                     experimentWindow = {"Experiment":"dropdownlist"}
                     experimentInfo = "URL: " + url + "<p>Project: " + projectName[0] + "</p><p>Subject: " + subjectName[0] + "</p><p>Select the Experiment to upload the images from</p>"
                     experimentName = ui.inputWindow(experimentWindow, title="XNAT Upload", helpText=experimentInfo, lists=[xnatExperiments])
+                    if experimentName is None: return
                     if experimentName:
                         if experimentName[0] == "Upload at Subject Level":
                             uploadPaths = selectXNATPathUpload(objWeasel)
