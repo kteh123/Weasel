@@ -189,7 +189,7 @@ class GraphicsItem(QGraphicsObject):
                         self.prevPathCoordsList = self.pathCoordsList
                         self.createMask(self.pathCoordsList)
                         self.listROICoords = self.getListRoiInnerPoints(self.mask)
-                        #print("Inner coords={}".format(self.listROICoords))
+                        print("ROI Inner coords={}".format(self.listROICoords))
                         self.fillFreeHandRoi()
                         self.start_x = None 
                         self.start_y = None
