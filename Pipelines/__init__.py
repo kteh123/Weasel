@@ -1,4 +1,2 @@
 import Pipelines.CloseAllSubWindows
 import Pipelines.ToolsFunctions
-#import External.ukat
-import External.tristanAlgorithms
