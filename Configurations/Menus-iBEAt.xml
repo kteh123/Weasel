@@ -131,20 +131,20 @@
 <!--          <module>XNATappiBEAt</module>-->
 <!--          <function>download</function>-->
 <!--        </item>-->
+        <item>
+        <!--Inserts a separator, a horizontal line in the menu-->-->
+          <separator>yes</separator>
+        </item>
 <!--        <item>-->
-<!--          <!--Inserts a separator, a horizontal line in the menu-->-->
-<!--          <separator>yes</separator>-->
-<!--        </item>-->
-<!--        <item>-->
-<!--          <label>Upload</label>-->
-<!--          <tooltip>Upload images from XNAT</tooltip>-->
-<!--          <icon>docs/images/XNAT-LOGO.png</icon>-->
-<!--          <module>XNATappiBEAt</module>-->
-<!--          <function>upload</function>-->
+<!--         <label>Upload</label>-->
+<!--         <tooltip>Upload images from XNAT</tooltip>-->
+<!--         <icon>docs/images/XNAT-LOGO.png</icon>-->
+<!--         <module>XNATappiBEAt</module>-->
+<!--         <function>upload</function>-->
 <!--        </item>-->
         <item>
           <label>Invert Series iBEAt/Image</label>
-           <shortcut>Ctrl+I</shortcut>
+          <shortcut>Ctrl+I</shortcut>
           <module>invertDICOM_Image_Developer</module>
         </item>
   </menu>
