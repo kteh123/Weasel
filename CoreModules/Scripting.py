@@ -1,15 +1,13 @@
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
-from CoreModules.DeveloperTools import Image
+from CoreModules.DeveloperTools import UserInterfaceTools, Image, Series
 
-
-class Images:
+class List:
     """
-    A class containing a list of DICOM images in the study. 
+    A superclass for managing Lists. 
     """
-
-    def __init__(self, ImagesList):
-        self.List = ImagesList
+    def __init__(self, List):
+        self.List = List
 
     def Empty(self):
         """
@@ -23,25 +21,62 @@ class Images:
         """
         return len(self.List)
 
+    def Enumerate(self):
+        """
+        Enumerates the images in the list.
+        """
+        return enumerate(self.List)
+
+
+
+class ImagesList(List):
+    """
+    A class containing a list of DICOM images. 
+    """
     def Display(self):
         """
         Displays all images in the list.
         """
         if len(self.List) == 0: return
-        Image.DisplayImages(self.List)
+        self.List[0].DisplayImages(self.List)
 
-       
+
+
+class SeriesList(List):
+    """
+    A class containing a list of DICOM series. 
+    """
+    def Display(self):
+        """
+        Displays all series in the list.
+        """
+        if len(self.List) == 0: return
+        for series in self.List: series.DisplaySeries()
+
+
+
 class Pipelines:
-
+    """
+    A class for accessing GUI elements from within a pipeline script. 
+    """
     def Images(self):
         """
-        Returns a list with objects of class Images of the items checked in the Treeview.
+        Returns a list of Images checked by the user.
         """
         imagesList = [] 
         for image in treeView.returnCheckedImages(self):
             imagesList.append(Image.fromTreeView(self, image))
-        return Images(imagesList)
+        return ImagesList(imagesList)
 
+    def Series(self):
+        """
+        Returns a list of Series checked by the user.
+        """
+        seriesList = []
+        for series in treeView.returnCheckedSeries(self):
+            seriesList.append(Series.fromTreeView(self, series))
+        return SeriesList(seriesList)
+ 
     def ProgressBar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
         Displays a Progress Bar with the unit set in "index".
@@ -56,4 +91,11 @@ class Pipelines:
         """
         messageWindow.hideProgressBar(self)
         messageWindow.closeMessageSubWindow(self)
+
+    def Refresh(self, new_series_name='Series'):
+        """
+        Refreshes the Weasel display.
+        """
+        ui = UserInterfaceTools(self)
+        ui.refreshWeasel(new_series_name=new_series_name)
 

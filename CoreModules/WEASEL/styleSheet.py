@@ -10,6 +10,7 @@ TRISTAN_GREY = """
                              border-color: rgb(10, 10, 10);
                              border-radius: 5px;
                              text-align: centre;
+                             color: black;
                              font-weight: bold;
                              font-size: 9pt;
                              padding: 3px;} 
@@ -54,6 +55,7 @@ TRISTAN_GREY = """
                 QLabel{ padding: 4px;
                         min-height: 1em;
                         text-align: centre;
+                        color: black;
                         font-weight: bold;
                         font-size: 9pt;
                         background: transparent;
@@ -94,6 +96,7 @@ TRISTAN_GREY = """
                                                           stop: 0 #CCCCBB, stop: 1 #FFFFFF);
 
                     show-decoration-selected: 1;
+                    color: black;
                     }
 
                 QTreeView::branch:hover {

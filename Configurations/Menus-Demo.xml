@@ -63,9 +63,21 @@
   <menu name="Templates">
 
         <item>
-          <label>Invert pixel values (overwrite)</label>
+          <label>Invert pixel values in place (image-by-image)</label>
            <shortcut>Ctrl+I</shortcut>
           <module>Template_InvertPixelValues</module>
+        </item>
+
+        <item>
+          <label>Invert pixel values in a new series (image-by-image)</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>Template_InvertPixelValuesNew</module>
+        </item>
+    
+        <item>
+          <label>Invert pixel values in place (series-by-series)</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>Template_InvertPixelValuesSeries</module>
         </item>
     
         <item>

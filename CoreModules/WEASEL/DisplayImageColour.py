@@ -212,7 +212,7 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
         logger.error('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
 
 
-def displayImageSubWindow(self, studyName, seriesName):
+def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         """
         Creates a subwindow that displays a single DICOM image. 
 
@@ -229,6 +229,9 @@ def displayImageSubWindow(self, studyName, seriesName):
             logger.info("DisplayImageColour.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
+            if derivedImagePath:
+                self.selectedImagePath = derivedImagePath
+
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(self)

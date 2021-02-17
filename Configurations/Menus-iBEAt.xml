@@ -123,25 +123,57 @@
           <module>editDICOM_Image_Developer</module>
         </item>
   </menu>
+  <menu name="TRISTAN">
+        <item>
+          <label>MIP (Developer)</label>
+          <shortcut>Ctrl+M+I</shortcut>
+          <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
+          <module>calculateMIP_Developer</module>
+        </item>
+        <item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+  </menu>
+  <menu name="XNAT">
+    	<item>
+          <label>Download</label>
+          <tooltip>Download images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>download</function>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+		<item>
+          <label>Upload</label>
+          <tooltip>Upload images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>upload</function>
+        </item>
+  </menu>
   <menu name="iBEAt">
-<!--        <item>-->
-<!--          <label>Download</label>-->
-<!--          <tooltip>Download images from </tooltip>-->
-<!--          <icon>docs\\images\\XNAT-LOGO.png</icon>-->
-<!--          <module>XNATappiBEAt</module>-->
-<!--          <function>download</function>-->
-<!--        </item>-->
-<!--        <item>-->
-<!--          <!--Inserts a separator, a horizontal line in the menu-->-->
-<!--          <separator>yes</separator>-->
-<!--        </item>-->
-<!--        <item>-->
-<!--          <label>Upload</label>-->
-<!--          <tooltip>Upload images from XNAT</tooltip>-->
-<!--          <icon>docs\\images\\XNAT-LOGO.png</icon>-->
-<!--          <module>XNATappiBEAt</module>-->
-<!--          <function>upload</function>-->
-<!--        </item>-->
+        <item>
+          <label>Download</label>
+          <tooltip>Download images from </tooltip>
+          <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATappiBEAt</module>
+          <function>download</function>
+        </item>
+        <item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+        <item>
+          <label>Upload</label>
+          <tooltip>Upload images from XNAT</tooltip>
+          <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATappiBEAt</module>
+          <function>upload</function>
+        </item>
         <item>
           <label>Invert Series iBEAt/Image</label>
            <shortcut>Ctrl+I</shortcut>
