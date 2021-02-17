@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
         QMdiSubWindow, QMainWindow,  
-        QStatusBar)
-
+        QStatusBar, QDockWidget, QLabel)
+from PyQt5.QtCore import  Qt
 import os
 import sys
 import logging
