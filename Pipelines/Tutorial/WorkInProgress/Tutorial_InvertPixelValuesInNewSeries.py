@@ -11,7 +11,8 @@ def main(Weasel):
     for i, Image in ImageList.Enumerate(): # Loop over images and display a progress Bar
         Weasel.ProgressBar(max=ImageList.Count(), index=i+1, msg="Inverting image {}", title="Invert pixel values ")
         newImage = Image.new(series=newSeries)
-        newImage.write(-Image.PixelArray, series=newSeries)
+        newImage.write(-Image.PixelArray,series=newSeries)
+ #       newImage.write(-Image.PixelArray)
     Weasel.CloseProgressBar()   # Close the progress bar
     Weasel.Refresh(new_series_name=newSeries.seriesID)
-    newSeries.Display()            # Display all images in the list in a single display
+    newSeries.Display()         # Display all images in the list in a single display

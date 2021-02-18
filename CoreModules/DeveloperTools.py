@@ -878,6 +878,12 @@ class Series:
         return pixelArray
     
     @property
+    def ROIindices(self):
+        tempImage = self.PixelArray
+        tempImage[tempImage != 0] = 1
+        return np.transpose(np.where(tempImage == 1))
+
+    @property
     def Dimensions(self):
         return np.shape(self.PixelArray)
 
@@ -1070,6 +1076,12 @@ class Image:
     @property
     def PixelArray(self):
         return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+    
+    @property
+    def ROIindices(self):
+        tempImage = self.PixelArray
+        tempImage[tempImage != 0] = 1
+        return np.transpose(np.where(tempImage == 1))
         
     @property
     def Dimensions(self):
