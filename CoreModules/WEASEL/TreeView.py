@@ -1,7 +1,7 @@
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemView,
-                             QMdiSubWindow, QMenu, QAction,
+                             QMdiSubWindow, QMenu, QAction, QDockWidget,
                             QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
 import os
 import sys
@@ -13,19 +13,17 @@ import Pipelines.ViewImage as viewImage
 logger = logging.getLogger(__name__)
 
 
-def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter):
+def createTreeBranch(self, branchName, branch, parent):
     try:
         branchID = branch.attrib['id']
         thisBranch = QTreeWidgetItem(parent)
-        treeWidgetItemCounter += 1
-        self.progBar.setValue(treeWidgetItemCounter)
         thisBranch.setText(0, branchName + " - {}".format(branchID))
         thisBranch.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         #put a checkbox in front of this branch
         thisBranch.setFlags(thisBranch.flags() | Qt.ItemIsUserCheckable)
         thisBranch.setCheckState(0, Qt.Unchecked)
         thisBranch.setExpanded(True)
-        return thisBranch, treeWidgetItemCounter
+        return thisBranch# treeWidgetItemCounter
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -34,7 +32,7 @@ def createTreeBranch(self, branchName, branch, parent, treeWidgetItemCounter):
         logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
-def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
+def createImageLeaf(self, image, seriesBranch):
     try:
         #Extract filename from file path
         if image:
@@ -54,8 +52,6 @@ def createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter):
             imageLeaf.setText(1, imageDate)
             imageLeaf.setText(2, imageTime)
             imageLeaf.setText(3, imagePath)
-            treeWidgetItemCounter += 1
-            self.progBar.setValue(treeWidgetItemCounter)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -71,40 +67,28 @@ def resizeTreeViewColumns(self):
     self.treeView.hideColumn(3)
 
 
-def closeProgressBar(self):
-    self.lblLoading.clear()
-    self.progBar.hide()
-    self.progBar.reset()
+#def closeProgressBar(self):
+#    self.lblLoading.clear()
+#    self.progBar.hide()
+#    self.progBar.reset()
 
 
 def buildTreeView(self):
     try:
         self.treeView.clear()
-        treeWidgetItemCounter = 0 
+        #treeWidgetItemCounter = 0 
         subjects = self.objXMLReader.getSubjects()
         for subject in subjects:
-            subjectBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                "Subject", 
-                                                                subject, 
-                                                                self.treeView, 
-                                                                treeWidgetItemCounter)
+            subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView)
         
             for study in subject:
-                studyBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                    "Study", 
-                                                                    study, 
-                                                                    subjectBranch, 
-                                                                    treeWidgetItemCounter)
+                studyBranch = createTreeBranch(self, "Study",  study, subjectBranch)
                                                              
                 for series in study:
-                    seriesBranch, treeWidgetItemCounter = createTreeBranch(self, 
-                                                                           "Series", 
-                                                                           series, 
-                                                                           studyBranch, 
-                                                                           treeWidgetItemCounter)
+                    seriesBranch = createTreeBranch(self, "Series", series,  studyBranch)
     
                     for image in series:
-                        createImageLeaf(self, image, seriesBranch, treeWidgetItemCounter)
+                        createImageLeaf(self, image, seriesBranch)
              
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -120,39 +104,19 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
         try:
             logger.info("TreeView.makeDICOMStudiesTreeView called")
             if os.path.exists(XML_File_Path):
-                widget = QWidget()
-                widget.setLayout(QVBoxLayout()) 
-                subWindow = QMdiSubWindow(self)
-                subWindow.setWidget(widget)
-                subWindow.setObjectName("tree_view")
-                subWindow.setWindowTitle("DICOM Study Structure")
-                height, width = self.getMDIAreaDimensions()
-                subWindow.setGeometry(0, 0, width * 0.4, height)
-                self.mdiArea.addSubWindow(subWindow)
-                subWindow.show()
-
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-                
-                self.lblLoading = QLabel()
-                widget.layout().addWidget(self.lblLoading)
-
-                self.progBar = QProgressBar(self)
-                widget.layout().addWidget(self.progBar)
-                widget.layout().setAlignment(Qt.AlignTop)
-
-                numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
-                initialiseProgressBar(self, numTreeViewItems)
                
                 self.treeView = QTreeWidget()
+                self.treeView.setMinimumSize(700,500)
+                
                 #Enable multiple selection using up arrow and Ctrl keys
                 self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
                 self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
                 self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-                widget.layout().addWidget(self.treeView)
 
                 buildTreeView(self)
 
@@ -162,32 +126,31 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
                 self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
-                self.treeView.show()
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
-                closeProgressBar(self)    
+                
+
+                #Display tree view in left-hand side docked widget
+                #If such a widget already exists remove it to allow
+                #a new tree view to be displayed
+                dockwidget = self.findChild(QDockWidget)
+                if dockwidget:
+                    self.removeDockWidget(dockwidget)
+                    
+                dockwidget =  QDockWidget("DICOM Study Structure", self, Qt.SubWindow)
+                dockwidget.setAllowedAreas(Qt.LeftDockWidgetArea)
+                dockwidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
+                self.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
+                dockwidget.setWidget(self.treeView)
+                self.treeView.show()
+                
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
             line_number = exception_traceback.tb_lineno
             print('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
             logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
-
-
-def setupLoadingLabel(self, lblLoading):
-    numSubjects, numStudies, numSeries, numImages, numTreeViewItems \
-            = self.objXMLReader.getNumberItemsInTreeView()
-    lblLoading.setText('<H4>You are loading {} subject(s) {} study(s), with {} series containing {} images</H4>'
-         .format(numSubjects, numStudies, numSeries, numImages))
-    self.lblLoading.setWordWrap(True)
-    return numTreeViewItems
-
-
-def initialiseProgressBar(self, numTreeViewItems):
-    self.progBar.show()
-    self.progBar.setMaximum(numTreeViewItems)
-    self.progBar.setValue(0)
 
 
 def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
@@ -197,15 +160,11 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
             self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-            numTreeViewItems = setupLoadingLabel(self, self.lblLoading)
 
-            initialiseProgressBar(self, numTreeViewItems)
             # Joao Sousa suggestion
             self.treeView.hide()
             buildTreeView(self)
-            self.progBar.setValue(numTreeViewItems)
             resizeTreeViewColumns(self)
-            closeProgressBar(self)
 
             #If no tree view items are now selected,
             #disable items in the Tools menu.
