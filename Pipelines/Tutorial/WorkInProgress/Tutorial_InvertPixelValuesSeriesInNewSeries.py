@@ -12,7 +12,7 @@ def main(Weasel):
         Weasel.ProgressBar(max=List.Count(), index=i+1, msg="Inverting series {}", title="Invert pixel values ")
         newSeries = Series.new(suffix="_Invert")    # Derive a new series
         newSeries.write(-Series.PixelArray)         # Write the results in the new series
-    newSeries.Display()     # Display the new series
+        newSeries.Display()     # Display the new series
     Weasel.CloseProgressBar()   # Close the progress bar
     Weasel.Refresh(new_series_name=newSeries.seriesID) # Refresh weasel
     
