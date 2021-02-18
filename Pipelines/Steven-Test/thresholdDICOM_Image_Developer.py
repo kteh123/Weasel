@@ -34,4 +34,4 @@ def main(objWeasel):
     ui.closeMessageWindow()
     # Refresh the UI screen
     ui.refreshWeasel(new_series_name=newSeries.seriesID)
-    newSeries.DisplaySeries()
+    newSeries.Display()

@@ -786,10 +786,10 @@ class Series:
                 self.images = imagePathList
                 if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
-    def DisplaySeries(self):
+    def Display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images)
 
-    def DisplayMetadata(self):
+    def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
 
     @property
@@ -1056,7 +1056,7 @@ class Image:
         outputSeries.images = outputPathList
         return outputSeries
     
-    def DisplayImage(self):
+    def Display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.path)
 
     @staticmethod
@@ -1064,7 +1064,7 @@ class Image:
         pathsList = [image.path for image in listImages]
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList)
 
-    def DisplayMetadata(self):
+    def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
 
     @property

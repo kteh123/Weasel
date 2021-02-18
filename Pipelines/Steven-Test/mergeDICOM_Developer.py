@@ -11,7 +11,7 @@ def MergeSeriesCopy(objWeasel):
     if imageList is None: return # Exit function if no images are checked
     mergedSeries = Image.merge(imageList, series_name='Overwritten_Series', overwrite=True)
     ui.refreshWeasel()
-    mergedSeries.DisplaySeries()
+    mergedSeries.Display()
 
 
 def main(objWeasel):
@@ -20,4 +20,4 @@ def main(objWeasel):
     if seriesList is None: return # Exit function if no series are checked
     mergedSeries = Series.merge(seriesList, series_name='NewSeries', overwrite=False)
     ui.refreshWeasel()
-    mergedSeries.DisplaySeries()
+    mergedSeries.Display()

@@ -15,4 +15,4 @@ def main(objWeasel):
     for image in imageList:
         image.Item(tag, value)
     ui.closeMessageWindow()
-    imageList[0].DisplayMetadata()
+    imageList[0].Metadata()

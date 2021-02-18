@@ -27,4 +27,4 @@ def main(objWeasel):
     # Refresh the UI screen
     ui.refreshWeasel()
     # Display resulting image
-    newSeries.DisplaySeries()
+    newSeries.Display()

@@ -46,7 +46,7 @@ def main(objWeasel):
         # Refresh Weasel
         ui.refreshWeasel(new_series_name=outputSeries.seriesID)
         # Display series
-        outputSeries.DisplaySeries()
+        outputSeries.Display()
     else:
         ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T1 Map', title='NOT POSSIBLE TO CALCULATE T1 MAP')
 
