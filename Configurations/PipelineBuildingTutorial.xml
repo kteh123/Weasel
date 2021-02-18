@@ -82,6 +82,13 @@
           <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_InvertPixelValuesInNewSeries</module>
         </item>
+
+        <item>
+          <label>Invert pixel values in a new series (series-by-series)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesSeriesInNewSeries</module>
+        </item>
+    
   </menu>
   
   
