@@ -26,7 +26,7 @@ def main(objWeasel):
     # Refresh the UI screen
     ui.refreshWeasel(new_series_name=newSeries.seriesID)
     # Display series
-    newSeries.DisplaySeries()
+    newSeries.Display()
 
 
 def checkDimensionsMatch(seriesList):

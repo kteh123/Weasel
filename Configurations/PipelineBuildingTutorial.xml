@@ -1,4 +1,5 @@
 <menus>
+  
   <menu name="File">
         <item>
           <label>Load DICOM Images</label>
@@ -25,6 +26,7 @@
           <module>CloseAllSubWindows</module>
         </item>
   </menu>
+  
   <menu name="Tools">
         <item>
           <label>View Series/Image</label>
@@ -60,26 +62,30 @@
           <module>copyDICOM_Image</module>
         </item>
   </menu>
-  <menu name="Templates">
+  
+  <menu name="Tutorial">
 
         <item>
           <label>Invert pixel values in place (image-by-image)</label>
            <shortcut>Ctrl+I</shortcut>
-          <module>Template_InvertPixelValues</module>
+          <module>Tutorial_InvertPixelValues</module>
+        </item>
+
+        <item>
+          <label>Invert pixel values in place (series-by-series)</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesSeries</module>
         </item>
 
         <item>
           <label>Invert pixel values in a new series (image-by-image)</label>
-           <shortcut>Ctrl+I</shortcut>
-          <module>Template_InvertPixelValuesNew</module>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesInNewSeries</module>
         </item>
-    
-        <item>
-          <label>Invert pixel values in place (series-by-series)</label>
-           <shortcut>Ctrl+I</shortcut>
-          <module>Template_InvertPixelValuesSeries</module>
-        </item>
-    
+  </menu>
+  
+  
+  <menu name="Examples">  
         <item>
           <label>Square Series/Image</label>
           <shortcut>Ctrl+S</shortcut>
@@ -98,7 +104,7 @@
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
         </item>
-		<item>
+		  <item>
           <label>Rename Series</label>
           <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
 		      <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->

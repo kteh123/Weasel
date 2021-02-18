@@ -589,10 +589,10 @@ class PixelArrayDICOMTools:
         on the "inputPath" and on the "suffix".
         """
         try:
-            if isinstance(inputPath, list):
+            if isinstance(inputPath, list) and len(inputPath) > 1:
                 datasetList = readDICOM_Image.getSeriesDicomDataset(inputPath)
                 for index, dataset in enumerate(datasetList):
-                    modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray, dataset)
+                    modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray[index], dataset)
                     saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath[index])
             else:
                 dataset = readDICOM_Image.getDicomDataset(inputPath)
@@ -786,10 +786,10 @@ class Series:
                 self.images = imagePathList
                 if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
-    def DisplaySeries(self):
+    def Display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images)
 
-    def DisplayMetadata(self):
+    def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
 
     @property
@@ -1029,7 +1029,6 @@ class Image:
             newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, '', suffix=suffix)
         else:
             newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, '', suffix=suffix)
-            newImage.parent = series
         newImage.referencePath = self.path
         return newImage
 
@@ -1057,7 +1056,7 @@ class Image:
         outputSeries.images = outputPathList
         return outputSeries
     
-    def DisplayImage(self):
+    def Display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.path)
 
     @staticmethod
@@ -1065,7 +1064,7 @@ class Image:
         pathsList = [image.path for image in listImages]
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList)
 
-    def DisplayMetadata(self):
+    def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
 
     @property

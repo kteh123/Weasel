@@ -28,10 +28,9 @@ class List:
         return enumerate(self.List)
 
 
-
 class ImagesList(List):
     """
-    A class containing a list of DICOM images. 
+    A class containing a list of objects of class Image. 
     """
     def Display(self):
         """
@@ -40,11 +39,16 @@ class ImagesList(List):
         if len(self.List) == 0: return
         self.List[0].DisplayImages(self.List)
 
+    def NewParent(self, suffix="_Suffix"):
+        """
+        Creates a new parent series from the images in the list.
+        """
+        return self.List[0].newSeriesFrom(self.List, suffix=suffix)
 
 
 class SeriesList(List):
     """
-    A class containing a list of DICOM series. 
+    A class containing a list of class Series. 
     """
     def Display(self):
         """
@@ -52,7 +56,6 @@ class SeriesList(List):
         """
         if len(self.List) == 0: return
         for series in self.List: series.DisplaySeries()
-
 
 
 class Pipelines:

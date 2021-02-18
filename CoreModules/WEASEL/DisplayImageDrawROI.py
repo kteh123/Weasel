@@ -776,7 +776,6 @@ def loadROI(self, cmbROIs, graphicsView):
         #   2. Then the user loads the series of ROIs that are superimposed upon the images
 
         # Prompt Windows to select Series
-        # paramDict = {"Series":"dropdownlist"}
         paramDict = {"Series":"listview"}
         helpMsg = "Select a Series with ROI"
         studyID = self.selectedStudy
@@ -799,8 +798,7 @@ def loadROI(self, cmbROIs, graphicsView):
             if hasattr(readDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
                 region = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
             else:
-                region = "new_region_number"
-
+                region = "new_region_label"
             # Affine re-adjustment
             for dicomFile in targetPath:
                 dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
@@ -816,20 +814,20 @@ def loadROI(self, cmbROIs, graphicsView):
                         try:
                             coords = zip(*affineResults)
                             tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                            if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
-                            if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
+                            #if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
+                            #if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
                         except:
                             pass
                 # Will need an Enhanced MRI as example  
-                if ~hasattr(dataset_original, 'PerFrameFunctionalGroupsSequence'):
-                    if horizontalFlag == True:
-                        struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
-                        tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                        tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
-                    elif verticalFlag == True:
-                        struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
-                        tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                        tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
+                #if ~hasattr(dataset_original, 'PerFrameFunctionalGroupsSequence'):
+                    #if horizontalFlag == True:
+                        #struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
+                        #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
+                        #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
+                    #elif verticalFlag == True:
+                        #struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
+                        #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
+                        #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
 
             # Faster approach - 3D and no dilation
@@ -900,21 +898,6 @@ def saveROI(self, regionName, graphicsView):
     except Exception as e:
             print('Error in DisplayImageDrawROI.saveROI: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.saveROI: ' + str(e)) 
-
-    # Save all ROIs
-    #for label, mask in dictROIs.dictMasks.items():
-
-    # Test Affine
-    #inputPath1 = ['C:\\Users\\md1jgra\\Desktop\\Joao-3-scanners-2019\\test-affine\\1.2.840.113619.6.408.218238138221875479893414809240658168986-15-1-test.dcm']
-    #outputPath = ['C:\\Users\\md1jgra\\Desktop\\Joao-3-scanners-2019\\test-affine\\1.2.840.113619.6.408.218238138221875479893414809240658168986-15-1-test-mask.dcm']
-    #newMask = []
-    #for index, file in enumerate(inputPath1):
-    #    dataset = readDICOM_Image.getDicomDataset(file)
-    #    dataset_original = readDICOM_Image.getDicomDataset(inputPath[index])
-    #    newMask.append(readDICOM_Image.mapMaskToImage(maskList[index], dataset, dataset_original))
-    #saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath1, newMask, suffix, parametric_map="SEG")
-    #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath1, outputPath, suffix)
-    #treeView.refreshDICOMStudiesTreeView(self, newSeriesName=seriesID)
 
 
 def roiNameChanged(cmbROIs, graphicsView, newText):

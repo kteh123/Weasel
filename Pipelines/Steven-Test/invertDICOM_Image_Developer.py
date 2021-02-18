@@ -26,4 +26,5 @@ def main(objWeasel):
     # Refresh the UI screen
     ui.refreshWeasel(new_series_name=imageList[-1].seriesID)
     # Display all checked images
-    Image.DisplayImages(imageList)
+    imageList[0].Display()
+    #Image.DisplayImges(imageList)

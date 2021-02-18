@@ -37,7 +37,7 @@ def main(objWeasel):
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series
-            newSeries.DisplaySeries()
+            newSeries.Display()
         else:
             ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the T2* Map', title='NOT POSSIBLE TO CALCULATE T2* MAP')
 
