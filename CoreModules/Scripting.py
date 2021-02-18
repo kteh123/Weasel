@@ -55,7 +55,7 @@ class SeriesList(List):
         Displays all series in the list.
         """
         if len(self.List) == 0: return
-        for series in self.List: series.DisplaySeries()
+        for series in self.List: series.Display()
 
 
 class Pipelines:

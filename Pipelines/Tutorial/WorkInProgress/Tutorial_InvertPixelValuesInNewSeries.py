@@ -14,5 +14,4 @@ def main(Weasel):
         newImage.write(-Image.PixelArray, series=newSeries)
     Weasel.CloseProgressBar()   # Close the progress bar
     Weasel.Refresh(new_series_name=newSeries.seriesID)
-    newSeries.DisplaySeries()      # Display all images in the list in a single display
-    #newSeries.Display()            # Display all images in the list in a single display
+    newSeries.Display()            # Display all images in the list in a single display
