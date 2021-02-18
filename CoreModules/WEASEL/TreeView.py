@@ -67,12 +67,6 @@ def resizeTreeViewColumns(self):
     self.treeView.hideColumn(3)
 
 
-#def closeProgressBar(self):
-#    self.lblLoading.clear()
-#    self.progBar.hide()
-#    self.progBar.reset()
-
-
 def buildTreeView(self):
     try:
         self.treeView.clear()
@@ -109,6 +103,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
                
                 self.treeView = QTreeWidget()
+                #Minimum width of the tree view has to be set
+                #to 700 to ensure its parent, the docking widget 
+                #initially displays wide enough to show the tree view
                 self.treeView.setMinimumSize(700,500)
                 
                 #Enable multiple selection using up arrow and Ctrl keys
@@ -406,6 +403,24 @@ def isAStudySelected(self):
             logger.error('Error in isAStudySelected: ' + str(e))
 
 
+def isASubjectSelected(self):
+        """Returns True is a subject is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("WEASEL isASubjectSelected called.")
+            selectedItem = self.treeView.currentItem()
+            if selectedItem:
+                if 'subject' in selectedItem.text(0).lower():
+                    return True
+                else:
+                    return False
+            else:
+               return False
+        except Exception as e:
+            print('Error in isASubjectSelected: ' + str(e))
+            logger.error('Error in isASubjectSelected: ' + str(e))
+
+
 def toggleToolButtons(self):
         """TO DO"""
         try:
@@ -416,8 +431,12 @@ def toggleToolButtons(self):
                     if not menuItem.isSeparator():
                         if not(menuItem.data() is None):
                             #Assume not all tools will act on an image
-                             #Assume all tools act on a series   
-                            if isASeriesSelected(self):
+                            #Assume all tools act on a series  
+                            if isASubjectSelected(self) or isAStudySelected(self):
+                                #None of the menu tools operate on 
+                                #studies or subjects at present
+                                menuItem.setEnabled(False)    
+                            elif isASeriesSelected(self):
                                  menuItem.setEnabled(True)
                             elif isAnImageSelected(self):
                                 if menuItem.data():
