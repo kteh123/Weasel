@@ -9,9 +9,9 @@ def main(Weasel):
     if ImageList.Empty(): return   # if none are checked then do nothing
     newSeries = ImageList.NewParent(suffix="_Invert")
     for i, Image in ImageList.Enumerate(): # Loop over images and display a progress Bar
-        Weasel.ProgressBar(max=ImageList.Count(), index=i+1, msg="Inverting image {}", title="Invert pixel values ")
+        Weasel.ProgressBar(max=ImageList.Count(), index=i+1, msg="Inverting image {}")
         newImage = Image.new(series=newSeries)
-        newImage.write(-Image.PixelArray, series=newSeries)
-    Weasel.CloseProgressBar()   # Close the progress bar
-    Weasel.Refresh(new_series_name=newSeries.seriesID)
+        newImage.write(-Image.PixelArray,series=newSeries)
     newSeries.Display()            # Display all images in the list in a single display
+    Weasel.Refresh()
+    

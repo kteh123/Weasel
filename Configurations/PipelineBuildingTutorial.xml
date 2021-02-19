@@ -66,6 +66,16 @@
   <menu name="Tutorial">
 
         <item>
+          <label>Copy series</label>
+          <shortcut>Ctrl+C</shortcut>
+          <module>Tutorial_CopySeries</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
           <label>Invert pixel values in place (image-by-image)</label>
            <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_InvertPixelValues</module>
@@ -82,6 +92,13 @@
           <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_InvertPixelValuesInNewSeries</module>
         </item>
+
+        <item>
+          <label>Invert pixel values in a new series (series-by-series)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesSeriesInNewSeries</module>
+        </item>
+    
   </menu>
   
   

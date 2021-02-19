@@ -120,7 +120,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
-                self.treeView.itemSelectionChanged.connect(lambda: toggleToolButtons(self))
+                self.treeView.itemClicked.connect(lambda: toggleItemCheckedState(self))
+                #self.treeView.itemSelectionChanged.connect(lambda: checkItemsWhenRangeSelected(self))
+                self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
                 self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
                 
@@ -165,7 +167,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
 
             #If no tree view items are now selected,
             #disable items in the Tools menu.
-            toggleToolButtons(self)
+            toggleMenuItems(self)
             collapseSeriesBranches(self.treeView.invisibleRootItem())
             collapseStudiesBranches(self.treeView.invisibleRootItem())
             # Joao Sousa suggestion
@@ -339,7 +341,7 @@ def isAnItemSelected(self):
     """Returns True is an item is selected DICOM
     tree view, else returns False"""
     try:
-        logger.info("WEASEL isAnItemSelected called.")
+        logger.info("TreeView isAnItemSelected called.")
         if self.treeView.selectedItems():
             return True
         else:
@@ -353,7 +355,7 @@ def isAnImageSelected(self):
         """Returns True is a single image is selected in the DICOM
         tree view, else returns False"""
         try:
-            logger.info("WEASEL isAnImageSelected called.")
+            logger.info("TreeView isAnImageSelected called.")
             selectedItem = self.treeView.currentItem()
             if selectedItem:
                 if 'image' in selectedItem.text(0).lower():
@@ -371,7 +373,7 @@ def isASeriesSelected(self):
         """Returns True is a series is selected in the DICOM
         tree view, else returns False"""
         try:
-            logger.info("WEASEL isASeriesSelected called.")
+            logger.info("TreeView isASeriesSelected called.")
             selectedItem = self.treeView.currentItem()
             if selectedItem:
                 if 'series' in selectedItem.text(0).lower():
@@ -389,7 +391,7 @@ def isAStudySelected(self):
         """Returns True is a study is selected in the DICOM
         tree view, else returns False"""
         try:
-            logger.info("WEASEL isAStudySelected called.")
+            logger.info("TreeView isAStudySelected called.")
             selectedItem = self.treeView.currentItem()
             if selectedItem:
                 if 'study' in selectedItem.text(0).lower():
@@ -403,11 +405,46 @@ def isAStudySelected(self):
             logger.error('Error in isAStudySelected: ' + str(e))
 
 
+def checkItemsWhenRangeSelected(self):
+    logger.info("TreeView.checkItemsWhenRangeSelected called.")
+    #print("TreeView.checkItemsWhenRangeSelected called.")
+    self.treeView.blockSignals(True)
+    for selectedItem in self.treeView.selectedItems():
+        if selectedItem.isSelected():
+            selectedItem.setCheckState(0, Qt.Checked)
+        else:
+            selectedItem.setCheckState(0, Qt.Unchecked)
+    self.treeView.blockSignals(False)
+
+
+def toggleItemCheckedState(self):
+        """When a tree view item is selected, it is also checked"""
+        try:
+            logger.info("TreeView.toggleItemCheckedState called.")
+           # print("TreeView.toggleItemCheckedState called.")
+           # for selectedItem in self.treeView.selectedItems():
+            if len(self.treeView.selectedItems()) == 1:
+                selectedItem = self.treeView.currentItem()
+                if selectedItem.checkState(0)  == Qt.Checked:
+                    selectedItem.setCheckState(0, Qt.Unchecked)
+                    selectedItem.setSelected(False) 
+                else:
+                    selectedItem.setCheckState(0, Qt.Checked)
+            else:
+                for selectedItem in self.treeView.selectedItems():
+                    selectedItem.setCheckState(0, Qt.Checked)
+
+                
+        except Exception as e:
+            print('Error in toggleItemCheckedState: ' + str(e))
+            logger.error('Error in toggleItemCheckedState: ' + str(e))
+
+
 def isASubjectSelected(self):
         """Returns True is a subject is selected in the DICOM
         tree view, else returns False"""
         try:
-            logger.info("WEASEL isASubjectSelected called.")
+            logger.info("TreeView isASubjectSelected called.")
             selectedItem = self.treeView.currentItem()
             if selectedItem:
                 if 'subject' in selectedItem.text(0).lower():
@@ -421,10 +458,10 @@ def isASubjectSelected(self):
             logger.error('Error in isASubjectSelected: ' + str(e))
 
 
-def toggleToolButtons(self):
+def toggleMenuItems(self):
         """TO DO"""
         try:
-            logger.info("TreeView.toggleToolButtons called.")
+            logger.info("TreeView.toggleMenuItems called.")
             for menu in self.listMenus:
                 menuItems = menu.actions()
                 for menuItem in menuItems:
@@ -444,8 +481,8 @@ def toggleToolButtons(self):
                                 else:
                                     menuItem.setEnabled(False) 
         except Exception as e:
-            print('Error in TreeView.toggleToolButtons: ' + str(e))
-            logger.error('Error in TreeView.toggleToolButtons: ' + str(e))
+            print('Error in TreeView.toggleMenuItems: ' + str(e))
+            logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
 
 
 def onTreeViewItemClicked(self, item):
