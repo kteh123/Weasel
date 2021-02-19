@@ -121,7 +121,6 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
                 self.treeView.itemClicked.connect(lambda: toggleItemCheckedState(self))
-                #self.treeView.itemSelectionChanged.connect(lambda: checkItemsWhenRangeSelected(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
                 self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
                 self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
@@ -403,18 +402,7 @@ def isAStudySelected(self):
         except Exception as e:
             print('Error in isAStudySelected: ' + str(e))
             logger.error('Error in isAStudySelected: ' + str(e))
-
-
-def checkItemsWhenRangeSelected(self):
-    logger.info("TreeView.checkItemsWhenRangeSelected called.")
-    #print("TreeView.checkItemsWhenRangeSelected called.")
-    self.treeView.blockSignals(True)
-    for selectedItem in self.treeView.selectedItems():
-        if selectedItem.isSelected():
-            selectedItem.setCheckState(0, Qt.Checked)
-        else:
-            selectedItem.setCheckState(0, Qt.Unchecked)
-    self.treeView.blockSignals(False)
+            logger.error('Error in isAStudySelected: ' + str(e))
 
 
 def toggleItemCheckedState(self):
@@ -425,14 +413,15 @@ def toggleItemCheckedState(self):
            # for selectedItem in self.treeView.selectedItems():
             if len(self.treeView.selectedItems()) == 1:
                 selectedItem = self.treeView.currentItem()
+                selectedItem.setSelected(False)
                 if selectedItem.checkState(0)  == Qt.Checked:
-                    selectedItem.setCheckState(0, Qt.Unchecked)
-                    selectedItem.setSelected(False) 
+                    selectedItem.setCheckState(0, Qt.Unchecked) 
                 else:
                     selectedItem.setCheckState(0, Qt.Checked)
             else:
                 for selectedItem in self.treeView.selectedItems():
                     selectedItem.setCheckState(0, Qt.Checked)
+                    selectedItem.setSelected(False)
 
                 
         except Exception as e:

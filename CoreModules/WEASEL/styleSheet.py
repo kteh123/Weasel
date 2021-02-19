@@ -104,17 +104,17 @@ TRISTAN_GREY = """
                     }
 
                QTreeView::branch:selected {
-                    background: darkblue;
+                    background: #99caff;
                     color: white;
                     }
 
                 QTreeView::branch:selected:hover {
-                    background: darkblue;
+                    background: #99caff;
                     color: white;
                     }
 
                 QTreeView::item:selected {
-                    background: darkblue;
+                    background: #99caff;
                     color: white;
                     }
 
@@ -123,7 +123,7 @@ TRISTAN_GREY = """
                     }
 
                 QTreeView::item:selected:hover {
-                    background: darkblue;
+                    background: #99caff;
                     color: white;
                     }
 
