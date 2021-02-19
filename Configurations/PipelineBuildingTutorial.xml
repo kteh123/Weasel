@@ -14,6 +14,12 @@
           <module>TileAllSubWindows</module>
         </item>
         <item>
+          <label>Close All Image Windows</label>
+          <shortcut>Ctrl+A</shortcut>
+          <tooltip>Closes All Image Windows</tooltip>
+          <module>CloseAllImageWindows</module>
+        </item>
+        <item>
           <label>Close All Sub Windows</label>
           <shortcut>Ctrl+X</shortcut>
           <tooltip>Close All Sub Windows</tooltip>
@@ -58,6 +64,16 @@
   </menu>
   
   <menu name="Tutorial">
+
+        <item>
+          <label>Copy series</label>
+          <shortcut>Ctrl+C</shortcut>
+          <module>Tutorial_CopySeries</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
 
         <item>
           <label>Invert pixel values in place (image-by-image)</label>

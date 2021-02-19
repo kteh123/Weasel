@@ -1,6 +1,8 @@
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
-from CoreModules.DeveloperTools import UserInterfaceTools, Image, Series
+from CoreModules.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import Image as ImageJoao
+from CoreModules.DeveloperTools import Series as SeriesJoao
 
 class List:
     """
@@ -57,6 +59,23 @@ class SeriesList(List):
         if len(self.List) == 0: return
         for series in self.List: series.Display()
 
+class Image(ImageJoao):
+    """
+    A class containing a single image. 
+    """
+
+class Series(SeriesJoao):
+    """
+    A class containing a single Series. 
+    """
+    def Copy(self):
+        """
+        Creates a copy of the Series. 
+        """       
+        Copy = self.new(suffix="_Copy")    
+        Copy.write(self.PixelArray) 
+        return Copy     
+
 
 class Pipelines:
     """
@@ -99,6 +118,7 @@ class Pipelines:
         """
         Refreshes the Weasel display.
         """
+        self.CloseProgressBar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
 
