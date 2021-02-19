@@ -274,16 +274,14 @@ class UserInterfaceTools:
             print('Error in function #.displayMetadata: ' + str(e))
 
 
-    def displayImages(self, inputPath):
+    def displayImages(self, inputPath, studyID, seriesID):
         """
         Display the PixelArray in "inputPath" in the User Interface.
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath)
                 displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
                 if len(inputPath) == 1:
                     displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath[0])
                 else:
@@ -792,7 +790,7 @@ class Series:
                 if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
     def Display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.images)
+        UserInterfaceTools(self.objWeasel).displayImages(self.images, self.studyID, self.seriesID)
 
     def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
@@ -1089,12 +1087,12 @@ class Image:
         return outputSeries
     
     def Display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.path)
+        UserInterfaceTools(self.objWeasel).displayImages(self.path, self.studyID, self.seriesID)
 
     @staticmethod
     def DisplayImages(listImages):
         pathsList = [image.path for image in listImages]
-        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList)
+        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].studyID, listImages[0].seriesID)
 
     def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
