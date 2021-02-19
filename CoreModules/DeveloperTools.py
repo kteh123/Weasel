@@ -2,8 +2,10 @@ import os
 import numpy as np
 import random
 import pydicom
+import nibabel as nib
 import copy
 import itertools
+import warnings
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
@@ -282,7 +284,10 @@ class UserInterfaceTools:
                 displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
-                displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
+                if len(inputPath) == 1:
+                    displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath[0])
+                else:
+                    displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
             return
         except Exception as e:
             print('Error in function #.displayImages: ' + str(e))
@@ -867,7 +872,7 @@ class Series:
         return imaginarySeries 
 
     @property
-    def PixelArray(self):
+    def PixelArray(self, ROI=None):
         pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
         if self.Multiframe:    
             tempArray = []
@@ -875,7 +880,20 @@ class Series:
                 tempArray.append(pixelArray[index, ...])
             pixelArray = np.array(tempArray)
             del tempArray
+        if isinstance(ROI, Series):
+            mask = np.zeros(np.shape(pixelArray))
+            coords = ROI.ROIindices
+            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+            pixelArray = pixelArray * mask
+        elif ROI == None:
+            pass
+        else:
+            warnings.warn("The input argument ROI should be a Series instance.") 
         return pixelArray
+
+    @property
+    def ListAffines(self):
+        return [readDICOM_Image.returnAffineArray(image) for image in self.images]
     
     @property
     def ROIindices(self):
@@ -995,6 +1013,14 @@ class Series:
         else:
             return False
 
+    def saveNIFTI(self, directory=None, filename=None):
+        if directory is None: directory=os.path.dirname(self.images[0])
+        if filename is None: filename=self.seriesID
+        dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
+        niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.ListAffines[0])
+        niftiObj.header.extensions.append(dicomHeader)
+        nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+
 
 class Image:
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path',
@@ -1074,14 +1100,28 @@ class Image:
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
 
     @property
-    def PixelArray(self):
-        return PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+    def PixelArray(self, ROI=None):
+        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+        if isinstance(ROI, Image):
+            mask = np.zeros(np.shape(pixelArray))
+            coords = ROI.ROIindices
+            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+            pixelArray = pixelArray * mask
+        elif ROI == None:
+            pass
+        else:
+            warnings.warn("The input argument ROI should be an Image instance.") 
+        return pixelArray
     
     @property
     def ROIindices(self):
         tempImage = self.PixelArray
         tempImage[tempImage != 0] = 1
         return np.transpose(np.where(tempImage == 1))
+
+    @property
+    def Affine(self):
+        return readDICOM_Image.returnAffineArray(self.path)
         
     @property
     def Dimensions(self):
@@ -1120,3 +1160,11 @@ class Image:
             return PixelArrayDICOMTools.getDICOMobject(self.path)
         else:
             return []
+
+    def saveNIFTI(self, directory=None, filename=None):
+        if directory is None: directory=os.path.dirname(self.path)
+        if filename is None: filename=self.seriesID
+        dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
+        niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.Affine)
+        niftiObj.header.extensions.append(dicomHeader)
+        nib.save(niftiObj, directory + '/' + filename + '.nii.gz')

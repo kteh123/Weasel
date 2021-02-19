@@ -35,7 +35,7 @@ def main(self):
         self.selectedStudy = ''
         self.selectedSeries = ''
         self.selectedImageName = ''
-        self.currentImagePath = ''
+        self.selectedImagePath = ''
         #browse to DICOM folder and get DICOM folder name
         scan_directory = getScanDirectory(self)
         #print(" scan_directory = ",  scan_directory)

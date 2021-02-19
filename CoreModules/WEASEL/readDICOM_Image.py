@@ -195,7 +195,12 @@ def getSeriesDicomDataset(imagePathList):
     """This method reads the DICOM files in imagePathList and 
     returns a list where each element is a DICOM Dataset object/class"""
     try:
-        datasetList = [getDicomDataset(imagePath) for imagePath in imagePathList if getDicomDataset(imagePath) is not None]
+        #datasetList = [getDicomDataset(imagePath) for imagePath in imagePathList if getDicomDataset(imagePath) is not None]
+        datasetList = []
+        for imagePath in imagePathList:
+            dataset = getDicomDataset(imagePath)
+            if dataset is not None:
+                datasetList.append(dataset)
         if datasetList:
             return datasetList
         else:
