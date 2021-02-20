@@ -2,6 +2,7 @@
 # Template part of a tutorial 
 # Inverts a number of selected images and saves them in a new series, 
 # image by image and showing a progress bar
+# BUG: IF YOU SELECT TWO IMAGES IN DIFFERENT SERIES, THEY ARE NOTE SAVED IN THE SAME SERIES
 #***************************************************************************
 
 def main(Weasel):

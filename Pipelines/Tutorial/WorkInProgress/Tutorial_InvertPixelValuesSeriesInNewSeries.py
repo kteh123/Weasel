@@ -3,6 +3,7 @@
 # Inverts the images in a number of selected series
 # and saves them in a new series, 
 # series by series and showing a progress bar
+# BUG: Throws an error
 #***************************************************************************
 
 def main(Weasel):
@@ -11,6 +12,6 @@ def main(Weasel):
         Weasel.ProgressBar(max=List.Count(), index=i+1, msg="Inverting series {}")
         newSeries = Series.new(suffix="_Invert")    # Derive a new series
         newSeries.write(-Series.PixelArray)         # Write the results in the new series
-        newSeries.Display()     # Display the new series
+        newSeries.Display()     # Display the new series 
     Weasel.Refresh() # Refresh weasel
     

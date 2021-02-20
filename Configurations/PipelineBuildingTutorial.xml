@@ -72,6 +72,12 @@
         </item>
 
         <item>
+          <label>Delete images</label>
+          <shortcut>Ctrl+D</shortcut>
+          <module>Tutorial_Delete</module>
+        </item>
+
+        <item>
           <separator>yes</separator>
         </item>
 

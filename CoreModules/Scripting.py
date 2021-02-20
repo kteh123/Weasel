@@ -3,6 +3,8 @@ import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Image as ImageJoao
 from CoreModules.DeveloperTools import Series as SeriesJoao
+import os
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 
 class List:
     """
@@ -13,21 +15,28 @@ class List:
 
     def Empty(self):
         """
-        Checks if the list of images is empty.
+        Checks if the list is empty.
         """
         return len(self.List) == 0
 
     def Count(self):
         """
-        Returns the number images in the list.
+        Returns the number of items in the list.
         """
         return len(self.List)
 
     def Enumerate(self):
         """
-        Enumerates the images in the list.
+        Enumerates the items in the list.
         """
         return enumerate(self.List)
+
+    def Delete(self):
+        """
+        Deletes all items in the list
+        """
+        for item in self.List:
+            item.Delete()
 
 
 class ImagesList(List):
@@ -63,6 +72,18 @@ class Image(ImageJoao):
     """
     A class containing a single image. 
     """
+    def Delete(self):
+        """
+        Deletes the image
+        """
+        displayImageCommon.closeSubWindow(self.objWeasel, self.path)
+        if os.path.exists(self.path): os.remove(self.path)
+        NrOfImagesInSeries = len(self.objWeasel.objXMLReader.getImageList(self.studyID, self.seriesID))
+        if NrOfImagesInSeries == 1:
+            self.objWeasel.objXMLReader.removeSeriesFromXMLFile(self.studyID, self.seriesID)
+        else:
+            self.objWeasel.objXMLReader.removeOneImageFromSeries(self.studyID, self.seriesID, self.path)
+
 
 class Series(SeriesJoao):
     """
@@ -74,7 +95,12 @@ class Series(SeriesJoao):
         """       
         Copy = self.new(suffix="_Copy")    
         Copy.write(self.PixelArray) 
-        return Copy     
+        return Copy   
+
+    def Delete(self):
+        """
+        Deletes the series (TBC)
+        """  
 
 
 class Pipelines:
