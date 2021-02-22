@@ -76,8 +76,8 @@
         </item>
 
         <item>
-          <label>Copy study</label>
-          <module>Tutorial_CopyStudy</module>
+          <label>Copy studies</label>
+          <module>Tutorial_CopyStudies</module>
         </item>
 
         <item>

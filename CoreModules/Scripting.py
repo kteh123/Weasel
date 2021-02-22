@@ -3,6 +3,7 @@ import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Image as ImageJoao
 from CoreModules.DeveloperTools import Series as SeriesJoao
+from CoreModules.DeveloperTools import Study as StudyJoao
 import os
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 
@@ -82,6 +83,14 @@ class SeriesList(List):
         if len(self.List) == 0: return
         return self.List[0].merge(self.List, series_name=series_name)
 
+class StudyList(List):
+    """
+    A class containing a list of class Study. 
+    """
+    def Display(self):
+        """
+        Displays all studies in the list (NOT YET AVAILABLE).
+        """
 
 class Image(ImageJoao):
     """
@@ -107,7 +116,6 @@ class Image(ImageJoao):
         else:
             self.objWeasel.objXMLReader.removeOneImageFromSeries(self.studyID, self.seriesID, self.path)
 
-
 class Series(SeriesJoao):
     """
     A class containing a single Series. 
@@ -122,10 +130,26 @@ class Series(SeriesJoao):
 
     def Delete(self):
         """
-        Deletes the series
+        Deletes the Series
         """  
-        for Image in self.children(): 
-            Image.Delete()
+        for Child in self.children(): 
+            Child.Delete()
+
+class Study(StudyJoao):
+    """
+    A class containing a single Study. 
+    """
+    def Copy(self):
+        """
+        Creates a copy of the Study (Needs a new() method for studies). 
+        """          
+
+    def Delete(self):
+        """
+        Deletes the Study
+        """  
+        for Child in self.children(): 
+            Child.Delete()
 
 
 class Pipelines:
@@ -149,6 +173,15 @@ class Pipelines:
         for series in treeView.returnCheckedSeries(self):
             seriesList.append(Series.fromTreeView(self, series))
         return SeriesList(seriesList)
+
+    def Studies(self):
+        """
+        Returns a list of Studies checked by the user.
+        """
+        studyList = []
+        for study in treeView.returnCheckedStudies(self):
+            studyList.append(Study.fromTreeView(self, study))
+        return StudyList(studyList)
  
     def ProgressBar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
