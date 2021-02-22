@@ -2,7 +2,9 @@
 # Template part of a tutorial 
 # Deletes the selected images
 # showing progress with a status bar 
-# ISSUE: Does not close window if image on display
+# ISSUE 60: Does not close window if image on display
+# ISSUE 61: Deleting images is very slow
+# ISSUE 62: Deleting all images in a series does not delete the series
 #***************************************************************************
 
 def main(Weasel):

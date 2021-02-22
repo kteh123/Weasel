@@ -50,6 +50,13 @@ class ImagesList(List):
         if len(self.List) == 0: return
         self.List[0].DisplayImages(self.List)
 
+    def Merge(self, series_name='MergedSeries'):
+        """
+        Merges a list of images into a new series under the same study
+        """
+        if len(self.List) == 0: return
+        return self.List[0].merge(self.List, series_name=series_name)
+
     def NewParent(self, suffix="_Suffix"):
         """
         Creates a new parent series from the images in the list.
@@ -66,12 +73,28 @@ class SeriesList(List):
         Displays all series in the list.
         """
         if len(self.List) == 0: return
-        for series in self.List: series.Display()
+        for Series in self.List: Series.Display()
+    
+    def Merge(self, series_name='MergedSeries'):
+        """
+        Merges a list of series into a new series under the same study
+        """
+        if len(self.List) == 0: return
+        return self.List[0].merge(self.List, series_name=series_name)
+
 
 class Image(ImageJoao):
     """
     A class containing a single image. 
     """
+    def Copy(self):
+        """
+        Creates a copy of the Series. 
+        """       
+        Copy = self.new(suffix="_Copy")    
+        Copy.write(self.PixelArray) 
+        return Copy  
+
     def Delete(self):
         """
         Deletes the image
@@ -99,8 +122,10 @@ class Series(SeriesJoao):
 
     def Delete(self):
         """
-        Deletes the series (TBC)
+        Deletes the series
         """  
+        for Image in self.children(): 
+            Image.Delete()
 
 
 class Pipelines:
