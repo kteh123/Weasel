@@ -218,10 +218,10 @@ def displayManySingleImageSubWindows(self):
             studyName = image[0]
             seriesName = image[1]
             imagePath = image[2]
-            displayImageSubWindow(self, studyName, seriesName, imagePath)
+            displayImageSubWindow(self, imagePath, seriesName, studyName)
 
 
-def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
+def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyName=None):
         """
         Creates a subwindow that displays a single DICOM image. 
 
