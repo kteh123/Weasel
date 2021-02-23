@@ -3,6 +3,9 @@ import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Image as ImageJoao
 from CoreModules.DeveloperTools import Series as SeriesJoao
+from CoreModules.DeveloperTools import Study as StudyJoao
+import os
+import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 
 class List:
     """
@@ -13,21 +16,28 @@ class List:
 
     def Empty(self):
         """
-        Checks if the list of images is empty.
+        Checks if the list is empty.
         """
         return len(self.List) == 0
 
     def Count(self):
         """
-        Returns the number images in the list.
+        Returns the number of items in the list.
         """
         return len(self.List)
 
     def Enumerate(self):
         """
-        Enumerates the images in the list.
+        Enumerates the items in the list.
         """
         return enumerate(self.List)
+
+    def Delete(self):
+        """
+        Deletes all items in the list
+        """
+        for item in self.List:
+            item.Delete()
 
 
 class ImagesList(List):
@@ -40,6 +50,13 @@ class ImagesList(List):
         """
         if len(self.List) == 0: return
         self.List[0].DisplayImages(self.List)
+
+    def Merge(self, series_name='MergedSeries'):
+        """
+        Merges a list of images into a new series under the same study
+        """
+        if len(self.List) == 0: return
+        return self.List[0].merge(self.List, series_name=series_name)
 
     def NewParent(self, suffix="_Suffix"):
         """
@@ -57,12 +74,47 @@ class SeriesList(List):
         Displays all series in the list.
         """
         if len(self.List) == 0: return
-        for series in self.List: series.Display()
+        for Series in self.List: Series.Display()
+    
+    def Merge(self, series_name='MergedSeries'):
+        """
+        Merges a list of series into a new series under the same study
+        """
+        if len(self.List) == 0: return
+        return self.List[0].merge(self.List, series_name=series_name)
+
+class StudyList(List):
+    """
+    A class containing a list of class Study. 
+    """
+    def Display(self):
+        """
+        Displays all studies in the list (NOT YET AVAILABLE).
+        """
 
 class Image(ImageJoao):
     """
     A class containing a single image. 
     """
+    def Copy(self):
+        """
+        Creates a copy of the Series. 
+        """       
+        Copy = self.new(suffix="_Copy")    
+        Copy.write(self.PixelArray) 
+        return Copy  
+
+    def Delete(self):
+        """
+        Deletes the image
+        """
+        displayImageCommon.closeSubWindow(self.objWeasel, self.path)
+        if os.path.exists(self.path): os.remove(self.path)
+        NrOfImagesInSeries = len(self.objWeasel.objXMLReader.getImageList(self.studyID, self.seriesID))
+        if NrOfImagesInSeries == 1:
+            self.objWeasel.objXMLReader.removeSeriesFromXMLFile(self.studyID, self.seriesID)
+        else:
+            self.objWeasel.objXMLReader.removeOneImageFromSeries(self.studyID, self.seriesID, self.path)
 
 class Series(SeriesJoao):
     """
@@ -74,7 +126,30 @@ class Series(SeriesJoao):
         """       
         Copy = self.new(suffix="_Copy")    
         Copy.write(self.PixelArray) 
-        return Copy     
+        return Copy   
+
+    def Delete(self):
+        """
+        Deletes the Series
+        """  
+        for Child in self.children(): 
+            Child.Delete()
+
+class Study(StudyJoao):
+    """
+    A class containing a single Study. 
+    """
+    def Copy(self):
+        """
+        Creates a copy of the Study (Needs a new() method for studies). 
+        """          
+
+    def Delete(self):
+        """
+        Deletes the Study
+        """  
+        for Child in self.children(): 
+            Child.Delete()
 
 
 class Pipelines:
@@ -98,6 +173,15 @@ class Pipelines:
         for series in treeView.returnCheckedSeries(self):
             seriesList.append(Series.fromTreeView(self, series))
         return SeriesList(seriesList)
+
+    def Studies(self):
+        """
+        Returns a list of Studies checked by the user.
+        """
+        studyList = []
+        for study in treeView.returnCheckedStudies(self):
+            studyList.append(Study.fromTreeView(self, study))
+        return StudyList(studyList)
  
     def ProgressBar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """

@@ -60,9 +60,37 @@
   <menu name="Tutorial">
 
         <item>
+          <label>Copy images</label>
+          <module>Tutorial_CopyImages</module>
+        </item>
+    
+        <item>
           <label>Copy series</label>
-          <shortcut>Ctrl+C</shortcut>
           <module>Tutorial_CopySeries</module>
+        </item>
+
+        <item>
+          <label>Copy studies</label>
+          <module>Tutorial_CopyStudies</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Merge series</label>
+          <module>Tutorial_MergeSeries</module>
+        </item>
+
+        <item>
+          <label>Merge images</label>
+          <module>Tutorial_MergeImages</module>
+        </item>
+
+        <item>
+          <label>Delete images</label>
+          <module>Tutorial_Delete</module>
         </item>
 
         <item>

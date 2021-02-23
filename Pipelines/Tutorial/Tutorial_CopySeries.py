@@ -2,7 +2,6 @@
 # Template part of a tutorial 
 # Creates a copy of the checked series
 # showing progress with a status bar 
-# WORKS APART FROM THE DISPLAY() ISSUE
 #***************************************************************************
 
 def main(Weasel):
