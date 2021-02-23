@@ -15,7 +15,8 @@ def main(self):
                 self.imageList = self.objXMLReader.getImagePathList(studyName, seriesName)
                 displayImageColour.displayMultiImageSubWindow(self, self.imageList, studyName, seriesName)
             elif treeView.isAnImageSelected(self):
-                displayImageColour.displayImageSubWindow(self, studyName, seriesName)
+                #displayImageColour.displayImageSubWindow(self, studyName, seriesName)
+                displayImageColour.displayManySingleImageSubWindows(self)
         except Exception as e:
             print('Error in ViewImage.main: ' + str(e))
             logger.error('Error in ViewImage.main: ' + str(e))

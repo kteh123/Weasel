@@ -44,6 +44,7 @@ def createImageLeaf(self, image, seriesBranch):
             imageTime = image.find('time').text
             imagePath = image.find('name').text
             imageLeaf = QTreeWidgetItem(seriesBranch)
+            imageLeaf.setToolTip(0, "At least one image must be checked to view an image(s)")
             imageLeaf.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             #put a checkbox in front of each image
             imageLeaf.setFlags(imageLeaf.flags() | Qt.ItemIsUserCheckable)
@@ -103,6 +104,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
                
                 self.treeView = QTreeWidget()
+                
                 #Minimum width of the tree view has to be set
                 #to 700 to ensure its parent, the docking widget 
                 #initially displays wide enough to show the tree view
@@ -120,10 +122,13 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
-                self.treeView.itemClicked.connect(lambda: toggleItemCheckedState(self))
+                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
+                self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
+                #self.treeView.itemClicked.connect(lambda item: print(item.text(0)))#1
+                #self.treeView.itemSelectionChanged.connect(lambda: print("itemSelectionChanged"))
                 self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
-                self.treeView.itemClicked.connect(lambda: onTreeViewItemClicked(self, self.treeView.currentItem()))
+                self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
@@ -320,6 +325,8 @@ def expandTreeViewBranch(item, newSeriesName = ''):
                 for n in range(itemCount):
                     childItem = item.child(n)
                     branchText = childItem.text(0).lower()
+                    if 'study' in branchText:
+                        childItem.setExpanded(True)
                     if 'series' in branchText:
                         seriesName = branchText.replace('series -', '').strip()
                         item.treeWidget().blockSignals(True)
@@ -355,14 +362,17 @@ def isAnImageSelected(self):
         tree view, else returns False"""
         try:
             logger.info("TreeView isAnImageSelected called.")
-            selectedItem = self.treeView.currentItem()
-            if selectedItem:
-                if 'image' in selectedItem.text(0).lower():
-                    return True
+            if self.treeView.currentItem():
+                selectedItem = self.treeView.currentItem()
+                if selectedItem:
+                    if 'image' in selectedItem.text(0).lower():
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
+                   return False
             else:
-               return False
+                   return False
         except Exception as e:
             print('Error in isAnImageSelected: ' + str(e))
             logger.error('Error in isAnImageSelected: ' + str(e))
@@ -373,14 +383,17 @@ def isASeriesSelected(self):
         tree view, else returns False"""
         try:
             logger.info("TreeView isASeriesSelected called.")
-            selectedItem = self.treeView.currentItem()
-            if selectedItem:
-                if 'series' in selectedItem.text(0).lower():
-                    return True
+            if self.treeView.currentItem():
+                selectedItem = self.treeView.currentItem()
+                if selectedItem:
+                    if 'series' in selectedItem.text(0).lower():
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
+                   return False
             else:
-               return False
+                return False
         except Exception as e:
             print('Error in isASeriesSelected: ' + str(e))
             logger.error('Error in isASeriesSelected: ' + str(e))
@@ -402,30 +415,47 @@ def isAStudySelected(self):
         except Exception as e:
             print('Error in isAStudySelected: ' + str(e))
             logger.error('Error in isAStudySelected: ' + str(e))
-            logger.error('Error in isAStudySelected: ' + str(e))
+           
 
-
-def toggleItemCheckedState(self):
+def toggleItemCheckedState(self, item, col):
         """When a tree view item is selected, it is also checked"""
         try:
             logger.info("TreeView.toggleItemCheckedState called.")
-           # print("TreeView.toggleItemCheckedState called.")
-           # for selectedItem in self.treeView.selectedItems():
-            if len(self.treeView.selectedItems()) == 1:
-                selectedItem = self.treeView.currentItem()
-                selectedItem.setSelected(False)
-                if selectedItem.checkState(0)  == Qt.Checked:
-                    selectedItem.setCheckState(0, Qt.Unchecked) 
-                else:
-                    selectedItem.setCheckState(0, Qt.Checked)
-            else:
-                for selectedItem in self.treeView.selectedItems():
-                    selectedItem.setCheckState(0, Qt.Checked)
-                    selectedItem.setSelected(False)
+            
+            #print("Check state={} selected]{}".format(item.checkState(0),item.isSelected() ))
+            #if item.isSelected():
+            #    if item.checkState(0)  == Qt.Checked:
+            #        item.setCheckState(0, Qt.Unchecked)
+            #    elif item.checkState(0)  == Qt.Unchecked:
+            #        item.setCheckState(0, Qt.Checked)
+            #else: #Item not selected
+            #    if item.checkState(0)  == Qt.Checked:
+            #        item.setSelected(True)
+            #    elif item.checkState(0)  == Qt.Unchecked:
+            #        item.setSelected(False)
+            
+            #When a user uses the arrow key to make a multiple selection
+            #this loop checks all the attached checkboxes
+            if self.treeView.selectedItems():
+                if len(self.treeView.selectedItems()) > 1:
+                    for selectedItem in self.treeView.selectedItems():
+                        selectedItem.setSelected(True)
+                        selectedItem.setCheckState(0, Qt.Checked)
 
-                
+            #if len(self.treeView.selectedItems()) == 1:
+            #    selectedItem = self.treeView.currentItem()
+            #    if selectedItem.checkState(0)  == Qt.Checked:
+            #        selectedItem.setCheckState(0, Qt.Unchecked) 
+            #    else:
+            #        selectedItem.setCheckState(0, Qt.Checked)
+            #else:
+            #    for selectedItem in self.treeView.selectedItems():
+            #        selectedItem.setCheckState(0, Qt.Checked)
+                     
         except Exception as e:
-            print('Error in toggleItemCheckedState: ' + str(e))
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            line_number = exception_traceback.tb_lineno
+            print('Error in toggleItemCheckedState at line number {} when {}: '.format(line_number, e))
             logger.error('Error in toggleItemCheckedState: ' + str(e))
 
 
@@ -641,9 +671,9 @@ def returnCheckedImages(self):
     """This function generates and returns a list of checked images."""
     logger.info("TreeView.returnCheckedImages called")
     try:
+        self.checkedImageList = []
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
-        checkedImages = []
         for i in range(subjectCount):
             subject = root.child(i)
             studyCount = subject.childCount()
@@ -656,8 +686,15 @@ def returnCheckedImages(self):
                     for n in range(imageCount):
                         image = series.child(n)
                         if image.checkState(0) == Qt.Checked:
-                            checkedImages.append(image)
-        return checkedImages
+                            checkedImagesData = []
+                            series = image.parent()
+                            study = series.parent()
+                            checkedImagesData.append(study.text(0).lower().replace("study", "").replace("-","").strip())
+                            checkedImagesData.append(series.text(0).lower().replace("series", "").replace("-","").strip())
+                            checkedImagesData.append(image.text(3))
+                            self.checkedImageList.append(checkedImagesData)
+        
+        #print("self.checkedImageList = {}".format(self.checkedImageList))
     except Exception as e:
         print('Error in TreeView.returnCheckedImages: ' + str(e))
         logger.error('Error in TreeView.returnCheckedImages: ' + str(e))

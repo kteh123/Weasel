@@ -62,7 +62,16 @@ class Slider(QSlider):
         return self._direction
 
 
-def displayImageROISubWindow(self, derivedImagePath=None):
+def displayManySingleImageSubWindows(self):
+    if len(self.checkedImageList)>0: 
+        for image in self.checkedImageList:
+            studyName = image[0]
+            seriesName = image[1]
+            imagePath = image[2]
+            displayImageROISubWindow(self, studyName, seriesName, imagePath)
+
+
+def displayImageROISubWindow(self, studyName, seriesName, imagePath):
     """
     Creates a subwindow that displays one DICOM image and allows an ROI 
     to be drawn on it 
@@ -73,6 +82,9 @@ def displayImageROISubWindow(self, derivedImagePath=None):
         (graphicsView, roiToolsLayout, imageLevelsLayout, 
         graphicsViewLayout, sliderLayout, 
         imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self)
+        imageName = os.path.basename(imagePath)
+        windowTitle = studyName + "-" + seriesName + "-" + imageName
+        subWindow.setWindowTitle(windowTitle)
         #subWindow.setStyleSheet("background-color:#d9d9d9;")
 
         zoomSlider, zoomValueLabel = setUpZoomSlider(graphicsView)
@@ -247,9 +259,9 @@ def setUpSubWindow(self, imageSeries=False):
         sliderLayout = QHBoxLayout()
         if imageSeries:
             mainVerticalLayout.addLayout(sliderLayout)
-        else:
-            windowTitle = displayImageCommon.getDICOMFileData(self)
-            subWindow.setWindowTitle(windowTitle)
+        #else:
+        #    windowTitle = displayImageCommon.getDICOMFileData(self)
+        #    subWindow.setWindowTitle(windowTitle)
 
         subWindow.show()
         return (graphicsView, roiToolsLayout, imageLevelsLayout, 

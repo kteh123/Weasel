@@ -7,8 +7,8 @@ colour table, contrast & intensity values."""
 
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import (QFileDialog,                            
+from PyQt5.QtGui import QPixmap, QIcon,  QCursor
+from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
                             QMessageBox, 
                             QWidget, 
                             QGridLayout, 
@@ -156,9 +156,9 @@ def setUpSubWindow(self, imageSeries = False):
         sliderLayout = QHBoxLayout()
         if imageSeries:
             mainVerticalLayout.addLayout(sliderLayout)
-        else:
-            windowTitle = displayImageCommon.getDICOMFileData(self)
-            subWindow.setWindowTitle(windowTitle)
+        #else:
+        #    windowTitle = displayImageCommon.getDICOMFileData(self)
+        #    subWindow.setWindowTitle(windowTitle)
 
         subWindow.show()
         return (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
@@ -212,6 +212,15 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
         logger.error('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
 
 
+def displayManySingleImageSubWindows(self):
+    if len(self.checkedImageList)>0: 
+        for image in self.checkedImageList:
+            studyName = image[0]
+            seriesName = image[1]
+            imagePath = image[2]
+            displayImageSubWindow(self, studyName, seriesName, imagePath)
+
+
 def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
         """
         Creates a subwindow that displays a single DICOM image. 
@@ -235,6 +244,9 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(self)
+            imageName = os.path.basename(self.selectedImagePath)
+            windowTitle = studyName + "-" + seriesName + "-" + imageName
+            subWindow.setWindowTitle(windowTitle)
             #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
              lblHiddenStudyName, 
@@ -256,11 +268,11 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
 
             displayOneImage(self, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
-                            graphicsView, cmbColours, lblHiddenSeriesName.text())
+                            graphicsView, cmbColours, lblHiddenSeriesName.text(), lblHiddenImagePath.text())
 
             
             deleteButton.clicked.connect(lambda:
-                                         deleteSingleImage(self, self.selectedImagePath, 
+                                         deleteSingleImage(self, lblHiddenImagePath.text(), 
                                       studyName, seriesName, subWindow))
 
         except (IndexError, AttributeError):
@@ -276,9 +288,9 @@ def displayImageSubWindow(self, studyName, seriesName, derivedImagePath=None):
 
 def displayOneImage(self, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
-                            graphicsView, cmbColours, SeriesName):
-    pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
-    colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+                            graphicsView, cmbColours, SeriesName, imagePath):
+    pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+    colourTable, lut = readDICOM_Image.getColourmap(imagePath)
     displayPixelArray(self, pixelArray, 0,lblImageMissing,
                             lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
@@ -392,8 +404,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                   cmbColours,
                                   subWindow)
             
-            deleteButton.clicked.connect(lambda:
-                                               deleteImageInMultiImageViewer(self,
+            deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(self,
                                       self.selectedImagePath, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
@@ -562,7 +573,7 @@ def setUpColourTools(self, layout,  graphicsView,
                 layout.addWidget(btnExport)
                 btnReset.clicked.connect(lambda: displayOneImage(self, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
-                            graphicsView, cmbColours, lblHiddenSeriesName.text()))                                                     
+                            graphicsView, cmbColours, lblHiddenSeriesName.text(), lblHiddenImagePath.text()))                                                     
             else:
                 #Viewing a DICOM series, so show the Reset button
                 #and Apply to Series checkbox
@@ -811,6 +822,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
             print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
 
+
 def deleteSingleImage(self, currentImagePath, 
                                       studyName, seriesName, subWindow):
     """When the Delete button is clicked on the single image viewer,
@@ -839,20 +851,18 @@ def deleteSingleImage(self, currentImagePath,
 
         if buttonReply == QMessageBox.Ok:
             #Delete physical file
-            os.remove(currentImagePath)
-            #Remove deleted image from the list
-
-            #Refresh the multi-image viewer to remove deleted image
-            #First close it
-            #displayImageCommon.closeSubWindow(self, seriesName)
-
-            self.objXMLReader.removeOneImageFromSeries(
-                    studyName, seriesName, currentImagePath)
+            QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
             subWindow.hide()
             subWindow.close()
+            QApplication.processEvents()
+            os.remove(currentImagePath)
+            #Remove deleted image from the list
+            self.objXMLReader.removeOneImageFromSeries(
+                    studyName, seriesName, currentImagePath)
+            QApplication.processEvents()
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(self)
-           
+            QApplication.restoreOverrideCursor()
     except Exception as e:
         print('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
         logger.error('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
