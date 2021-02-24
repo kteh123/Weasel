@@ -420,6 +420,7 @@ def setUpImageDataWidgets(imageDataLayout, graphicsView, zoomValueLabel, imageSl
 def setUpImageSlider(sliderLayout, sliderPosition, imageList):
     try:
         imageSlider = QSlider(Qt.Horizontal)
+        imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
         imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
         imageSlider.setMinimum(1)
         imageSlider.setMaximum(len(imageList))

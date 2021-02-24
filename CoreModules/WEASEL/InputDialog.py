@@ -72,9 +72,14 @@ class ParameterInputDialog(QDialog):
             super(ParameterInputDialog, self).__init__()
             self.setWindowTitle(title)
             #Hide ? help button
-            self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+            #self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+            self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
             #Hide top right hand corner X close button
-            self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowCloseButtonHint)
+            #self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowCloseButtonHint)
+            self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+            # The following line creates a Customized Window where there are no close and help buttons - relevant for MacOS
+            # Consider Qt.FramelessWindowHint if it works for Mac OS
+            self.setWindowFlag(QtCore.Qt.CustomizeWindowHint, True)
             QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel   #OK and Cancel button
             #QBtn = QDialogButtonBox.Ok    #OK button only
             self.buttonBox = QDialogButtonBox(QBtn)

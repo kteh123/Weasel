@@ -360,6 +360,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
            
 
             imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
             imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
