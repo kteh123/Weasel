@@ -23,7 +23,8 @@ def main(self):
             raise NoTreeViewItemSelected
 
         if treeView.isAnImageSelected(self):
-            displayImageROI.displayImageROISubWindow(self)
+            #displayImageROI.displayImageROISubWindow(self)
+            displayImageROI.displayManySingleImageSubWindows(self)
         elif treeView.isASeriesSelected(self):
             studyName = self.selectedStudy 
             seriesName = self.selectedSeries

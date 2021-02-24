@@ -92,10 +92,11 @@ TRISTAN_GREY = """
                         border-color: rgb(200, 51, 255);}
                 
                 QTreeView {
-                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
-                                                          stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+                    background-color: #CCCCBB;
+                    
+                    /* qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,  stop: 0 #CCCCBB, stop: 1 #FFFFFF);*/
 
-                    show-decoration-selected: 1;
+                    /*show-decoration-selected: 1;*/
                     color: black;
                     }
 
@@ -104,27 +105,28 @@ TRISTAN_GREY = """
                     }
 
                QTreeView::branch:selected {
-                    background: #99caff;
+                    background: #cce5ff;
                     color: white;
                     }
 
                 QTreeView::branch:selected:hover {
-                    background: #99caff;
+                    background: #CCCCBB;
                     color: white;
                     }
 
                 QTreeView::item:selected {
-                    background: #99caff;
-                    color: white;
+                    background: #CCCCBB;
+                    color:white;
                     }
 
                 QTreeView::item:hover {
                     background: #cce5ff;
+                    color: white;
                     }
 
                 QTreeView::item:selected:hover {
-                    background: #99caff;
-                    color: white;
+                    background: #CCCCBB;
+                    color: black;
                     }
 
 
