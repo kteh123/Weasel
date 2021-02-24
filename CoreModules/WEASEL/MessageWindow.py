@@ -49,17 +49,21 @@ def displayMessageSubWindow(self, message, title="Loading DICOM files"):
 
 
 def setMsgWindowProgBarMaxValue(self, maxValue):
-        self.progBarMsg.show()
-        self.progBarMsg.setMaximum(maxValue)
+    self.progBarMsg.show()
+    self.progBarMsg.setMaximum(maxValue)
 
 
 def setMsgWindowProgBarValue(self, value):
-        self.progBarMsg.setValue(value)
+    self.progBarMsg.setValue(value)
 
 def hideProgressBar(self):
-        if self.progBarMsg:
-            self.progBarMsg.hide()
+    try:
+        self.progBarMsg.hide()
+    except:
+        pass
 
 def closeMessageSubWindow(self):
-        if self.msgSubWindow:
-            self.msgSubWindow.close()
+    try:
+        self.msgSubWindow.close()
+    except:
+        pass
