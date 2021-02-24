@@ -61,4 +61,5 @@ def hideProgressBar(self):
             self.progBarMsg.hide()
 
 def closeMessageSubWindow(self):
-        self.msgSubWindow.close()
+        if self.msgSubWindow:
+            self.msgSubWindow.close()

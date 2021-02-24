@@ -1,11 +1,11 @@
+import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
-from CoreModules.DeveloperTools import Image as ImageJoao
-from CoreModules.DeveloperTools import Series as SeriesJoao
 from CoreModules.DeveloperTools import Study as StudyJoao
-import os
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+from CoreModules.DeveloperTools import Series as SeriesJoao
+from CoreModules.DeveloperTools import Image as ImageJoao
+
 
 class List:
     """
@@ -83,6 +83,7 @@ class SeriesList(List):
         if len(self.List) == 0: return
         return self.List[0].merge(self.List, series_name=series_name)
 
+
 class StudyList(List):
     """
     A class containing a list of class Study. 
@@ -92,29 +93,26 @@ class StudyList(List):
         Displays all studies in the list (NOT YET AVAILABLE).
         """
 
+
 class Image(ImageJoao):
     """
     A class containing a single image. 
     """
-    def Copy(self):
+    def Copy(self, series=None):
         """
         Creates a copy of the Series. 
         """       
-        Copy = self.new(suffix="_Copy")    
-        Copy.write(self.PixelArray) 
+        #Copy = self.new(suffix="_Copy")    
+        #Copy.write(self.PixelArray) 
+        Copy = self.copy(series=series)
         return Copy  
 
     def Delete(self):
         """
         Deletes the image
         """
-        displayImageCommon.closeSubWindow(self.objWeasel, self.path)
-        if os.path.exists(self.path): os.remove(self.path)
-        NrOfImagesInSeries = len(self.objWeasel.objXMLReader.getImageList(self.studyID, self.seriesID))
-        if NrOfImagesInSeries == 1:
-            self.objWeasel.objXMLReader.removeSeriesFromXMLFile(self.studyID, self.seriesID)
-        else:
-            self.objWeasel.objXMLReader.removeOneImageFromSeries(self.studyID, self.seriesID, self.path)
+        self.delete()
+
 
 class Series(SeriesJoao):
     """
@@ -124,16 +122,17 @@ class Series(SeriesJoao):
         """
         Creates a copy of the Series. 
         """       
-        Copy = self.new(suffix="_Copy")    
-        Copy.write(self.PixelArray) 
+        #Copy = self.new(suffix="_Copy")    
+        #Copy.write(self.PixelArray)
+        Copy = self.copy()
         return Copy   
 
     def Delete(self):
         """
         Deletes the Series
         """  
-        for Child in self.children(): 
-            Child.Delete()
+        self.delete()
+
 
 class Study(StudyJoao):
     """
@@ -161,8 +160,18 @@ class Pipelines:
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        for image in treeView.returnCheckedImages(self):
-            imagesList.append(Image.fromTreeView(self, image))
+        imagesTreeViewList = treeView.returnCheckedImages(self)
+        if imagesTreeViewList == []:
+            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
+                              " no images were checked in the Treeview.",
+                              title="No Images Checked")
+            return
+        else:
+            for images in imagesTreeViewList:
+                imagesList.append(Image.fromTreeView(self, images))
+        # When Tutorials is finished, the above can be replaced by the following 2 lines 
+        #imagesList = UserInterfaceTools(self).getCheckedImages()
+        #if imagesList is None: imagesList = []
         return ImagesList(imagesList)
 
     def Series(self):
@@ -170,8 +179,17 @@ class Pipelines:
         Returns a list of Series checked by the user.
         """
         seriesList = []
-        for series in treeView.returnCheckedSeries(self):
-            seriesList.append(Series.fromTreeView(self, series))
+        seriesTreeViewList = treeView.returnCheckedSeries(self)
+        if seriesTreeViewList == []:
+            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
+                              " no series were checked in the Treeview.",
+                              title="No Series Checked")
+        else:
+            for series in seriesTreeViewList:
+                seriesList.append(Series.fromTreeView(self, series))
+        # When Tutorials is finished, the above can be replaced by the following 2 lines 
+        #seriesList = UserInterfaceTools(self).getCheckedSeries()
+        #if seriesList is None: seriesList = []
         return SeriesList(seriesList)
 
     def Studies(self):
@@ -179,8 +197,17 @@ class Pipelines:
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        for study in treeView.returnCheckedStudies(self):
-            studyList.append(Study.fromTreeView(self, study))
+        studiesTreeViewList = treeView.returnCheckedStudies(self)
+        if studiesTreeViewList == []:
+            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
+                              " no studies were checked in the Treeview.",
+                              title="No Studies Checked")
+        else:
+            for study in studiesTreeViewList:
+                studyList.append(Study.fromTreeView(self, study))
+        # When Tutorials is finished, the above can be replaced by the following 2 lines 
+        #studyList = UserInterfaceTools(self).getCheckedStudies()
+        #if studyList is None: studyList = []
         return StudyList(studyList)
  
     def ProgressBar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
@@ -198,11 +225,10 @@ class Pipelines:
         messageWindow.hideProgressBar(self)
         messageWindow.closeMessageSubWindow(self)
 
-    def Refresh(self, new_series_name='Series'):
+    def Refresh(self, new_series_name=None):
         """
         Refreshes the Weasel display.
         """
         self.CloseProgressBar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
-
