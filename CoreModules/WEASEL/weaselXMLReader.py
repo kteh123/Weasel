@@ -100,7 +100,6 @@ class WeaselXMLReader:
         try:
             xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
              ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
-             '[@parentID=' + chr(34) + seriesID + chr(34) + ']' \
              '[@typeID=' + chr(34) + suffix + chr(34) +']'
             return self.root.find(xPath)
         except Exception as e:
@@ -230,7 +229,6 @@ class WeaselXMLReader:
         try:
             currentStudy = self.getStudy(studyID)
             newAttributes = {'id':newSeriesID, 
-                                'parentID':seriesID,
                                 'typeID':suffix}
                    
             #Add new series to study to hold new images
@@ -261,8 +259,6 @@ class WeaselXMLReader:
 
     def insertNewImageInXML(self, imageName,
                    newImageFileName, studyID, seriesID, suffix, newSeriesName=None):
-        #First determine if a series with parentID=seriesID exists
-        #and typeID=suffix
         try:
             dataset = readDICOM_Image.getDicomDataset(newImageFileName)
             if newSeriesName:
@@ -280,7 +276,6 @@ class WeaselXMLReader:
                 #Get study branch
                 currentStudy = self.getStudy(studyID)
                 newAttributes = {'id':newSeriesID, 
-                                    'parentID':seriesID, 
                                     'typeID':suffix}
                    
                 #Add new series to study to hold new images
