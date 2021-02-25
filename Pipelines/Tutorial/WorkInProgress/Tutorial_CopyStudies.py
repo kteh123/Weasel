@@ -5,9 +5,9 @@
 #***************************************************************************
 
 def main(Weasel):
-    List = Weasel.Studies()                # get the list of studies checked by the user
-    for i, Study in List.Enumerate():      # Loop over studies in the list and display a progress Bar
-        Weasel.ProgressBar(max=List.Count(), index=i+1, msg="Copying studies {}")
-        Study.Copy()                       # Copy and Display the new study  
-    Weasel.Refresh()                       # Refresh Weasel
+    List = Weasel.studies()                # get the list of studies checked by the user
+    for i, Study in List.enumerate:      # Loop over studies in the list and display a progress Bar
+        Weasel.progress_bar(max=List.length, index=i+1, msg="Copying studies {}")
+        Study.copy()                       # Copy and Display the new study  
+    Weasel.refresh()                       # Refresh Weasel
     

@@ -2,9 +2,9 @@ import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
-from CoreModules.DeveloperTools import Study as StudyJoao
-from CoreModules.DeveloperTools import Series as SeriesJoao
-from CoreModules.DeveloperTools import Image as ImageJoao
+from CoreModules.DeveloperTools import Study
+from CoreModules.DeveloperTools import Series
+from CoreModules.DeveloperTools import Image
 
 
 class List:
@@ -14,30 +14,33 @@ class List:
     def __init__(self, List):
         self.List = List
 
-    def Empty(self):
+    @property
+    def empty(self):
         """
         Checks if the list is empty.
         """
         return len(self.List) == 0
 
-    def Count(self):
+    @property
+    def length(self):
         """
         Returns the number of items in the list.
         """
         return len(self.List)
 
-    def Enumerate(self):
+    @property
+    def enumerate(self):
         """
         Enumerates the items in the list.
         """
         return enumerate(self.List)
 
-    def Delete(self):
+    def delete(self):
         """
         Deletes all items in the list
         """
         for item in self.List:
-            item.Delete()
+            item.delete()
 
 
 class ImagesList(List):
@@ -51,14 +54,14 @@ class ImagesList(List):
         if len(self.List) == 0: return
         self.List[0].DisplayImages(self.List)
 
-    def Merge(self, series_name='MergedSeries'):
+    def merge(self, series_name='MergedSeries'):
         """
         Merges a list of images into a new series under the same study
         """
         if len(self.List) == 0: return
         return self.List[0].merge(self.List, series_name=series_name)
 
-    def NewParent(self, suffix="_Suffix"):
+    def new_parent(self, suffix="_Suffix"):
         """
         Creates a new parent series from the images in the list.
         """
@@ -76,7 +79,7 @@ class SeriesList(List):
         if len(self.List) == 0: return
         for Series in self.List: Series.Display()
     
-    def Merge(self, series_name='MergedSeries'):
+    def merge(self, series_name='MergedSeries'):
         """
         Merges a list of series into a new series under the same study
         """
@@ -94,78 +97,18 @@ class StudyList(List):
         """
 
 
-class Image(ImageJoao):
-    """
-    A class containing a single image. 
-    """
-    def Copy(self, series=None):
-        """
-        Creates a copy of the Series. 
-        """       
-        #Copy = self.new(suffix="_Copy")    
-        #Copy.write(self.PixelArray) 
-        Copy = self.copy(series=series)
-        return Copy  
-
-    def Delete(self):
-        """
-        Deletes the image
-        """
-        self.delete()
-
-
-class Series(SeriesJoao):
-    """
-    A class containing a single Series. 
-    """
-    def Copy(self):
-        """
-        Creates a copy of the Series. 
-        """       
-        #Copy = self.new(suffix="_Copy")    
-        #Copy.write(self.PixelArray)
-        Copy = self.copy()
-        return Copy   
-
-    def Delete(self):
-        """
-        Deletes the Series
-        """  
-        self.delete()
-
-
-class Study(StudyJoao):
-    """
-    A class containing a single Study. 
-    """
-    def Copy(self):
-        """
-        Creates a copy of the Study (Needs a new() method for studies). 
-        """          
-
-    def Delete(self):
-        """
-        Deletes the Study
-        """  
-        for Child in self.children(): 
-            Child.Delete()
-
-
 class Pipelines:
     """
     A class for accessing GUI elements from within a pipeline script. 
     """
-    def Images(self):
+    def images(self, msg='Please select one or more images'):
         """
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
         imagesTreeViewList = treeView.returnCheckedImages(self)
         if imagesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
-                              " no images were checked in the Treeview.",
-                              title="No Images Checked")
-            return
+            UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for images in imagesTreeViewList:
                 imagesList.append(Image.fromTreeView(self, images))
@@ -174,16 +117,14 @@ class Pipelines:
         #if imagesList is None: imagesList = []
         return ImagesList(imagesList)
 
-    def Series(self):
+    def series(self, msg='Please select one or more series'):
         """
         Returns a list of Series checked by the user.
         """
         seriesList = []
         seriesTreeViewList = treeView.returnCheckedSeries(self)
         if seriesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
-                              " no series were checked in the Treeview.",
-                              title="No Series Checked")
+            UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for series in seriesTreeViewList:
                 seriesList.append(Series.fromTreeView(self, series))
@@ -192,16 +133,14 @@ class Pipelines:
         #if seriesList is None: seriesList = []
         return SeriesList(seriesList)
 
-    def Studies(self):
+    def studies(self, msg='Please select one or more studies'):
         """
         Returns a list of Studies checked by the user.
         """
         studyList = []
         studiesTreeViewList = treeView.returnCheckedStudies(self)
         if studiesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg="Script didn't run successfully because"
-                              " no studies were checked in the Treeview.",
-                              title="No Studies Checked")
+            UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for study in studiesTreeViewList:
                 studyList.append(Study.fromTreeView(self, study))
@@ -210,7 +149,7 @@ class Pipelines:
         #if studyList is None: studyList = []
         return StudyList(studyList)
  
-    def ProgressBar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
+    def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
         Displays a Progress Bar with the unit set in "index".
         """
@@ -218,14 +157,14 @@ class Pipelines:
         messageWindow.setMsgWindowProgBarMaxValue(self, max)
         messageWindow.setMsgWindowProgBarValue(self, index)
 
-    def CloseProgressBar(self):
+    def close_progress_bar(self):
         """
         Closes the Progress Bar.
         """
         messageWindow.hideProgressBar(self)
         messageWindow.closeMessageSubWindow(self)
 
-    def Refresh(self, new_series_name=None):
+    def refresh(self, new_series_name=None):
         """
         Refreshes the Weasel display.
         """
