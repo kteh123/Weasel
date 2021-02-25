@@ -272,8 +272,7 @@ def setUpSubWindow(self, imageSeries=False):
             logger.error('Error in DisplayImageDrawRIO.setUpSubWindow: ' + str(e))
 
 
-def setUpROIButtons(self, roiToolsLayout, pixelValueTxt, 
-          
+def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
          roiMeanTxt, roiStdDevTxt, graphicsView, 
          zoomSlider, zoomLabel, imageSlider=None):
     try:
@@ -813,7 +812,12 @@ def loadROI(self, cmbROIs, graphicsView):
             else:
                 region = "new_region_label"
             # Affine re-adjustment
-            for dicomFile in targetPath:
+            for index, dicomFile in enumerate(targetPath):
+                messageWindow.displayMessageSubWindow(self,
+                "<H4>Loading selected ROI into target image {}</H4>".format(index + 1),
+                "Load ROIs")
+                messageWindow.setMsgWindowProgBarMaxValue(self, len(targetPath))
+                messageWindow.setMsgWindowProgBarValue(self, index + 1)
                 dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(readDICOM_Image.getPixelArray(dataset_original)))
                 horizontalFlag = None
@@ -842,6 +846,8 @@ def loadROI(self, cmbROIs, graphicsView):
                         #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                         #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
+            messageWindow.setMsgWindowProgBarValue(self, index + 2)
+            messageWindow.closeMessageSubWindow(self)
 
             # Faster approach - 3D and no dilation
             #maskList = np.zeros(np.shape(readDICOM_Image.returnSeriesPixelArray(targetPath)))
