@@ -47,12 +47,12 @@ class ImagesList(List):
     """
     A class containing a list of objects of class Image. 
     """
-    def Display(self):
+    def display(self):
         """
         Displays all images in the list.
         """
         if len(self.List) == 0: return
-        self.List[0].DisplayImages(self.List)
+        self.List[0].displayImages(self.List)
 
     def merge(self, series_name='MergedSeries'):
         """
@@ -72,12 +72,12 @@ class SeriesList(List):
     """
     A class containing a list of class Series. 
     """
-    def Display(self):
+    def display(self):
         """
         Displays all series in the list.
         """
         if len(self.List) == 0: return
-        for Series in self.List: Series.Display()
+        for Series in self.List: Series.display()
     
     def merge(self, series_name='MergedSeries'):
         """
@@ -91,7 +91,7 @@ class StudyList(List):
     """
     A class containing a list of class Study. 
     """
-    def Display(self):
+    def display(self):
         """
         Displays all studies in the list (NOT YET AVAILABLE).
         """
@@ -168,6 +168,6 @@ class Pipelines:
         """
         Refreshes the Weasel display.
         """
-        self.CloseProgressBar()
+        self.close_progress_bar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)

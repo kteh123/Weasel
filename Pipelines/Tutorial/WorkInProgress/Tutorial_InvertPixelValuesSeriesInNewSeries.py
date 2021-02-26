@@ -12,6 +12,6 @@ def main(Weasel):
         Weasel.progress_bar(max=List.length, index=i+1, msg="Inverting series {}")
         newSeries = Series.new(suffix="_Invert")    # Derive a new series
         newSeries.write(-Series.PixelArray)         # Write the results in the new series
-        newSeries.Display()     # Display the new series 
+        newSeries.display()     # Display the new series 
     Weasel.refresh() # Refresh weasel
     

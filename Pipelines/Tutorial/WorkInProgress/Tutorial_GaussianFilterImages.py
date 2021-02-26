@@ -15,5 +15,5 @@ def main(Weasel):
         Weasel.progress_bar(max=Filtered.length, index=i+1, msg="Filtering image {}")
         PixelArray = gaussianFilter(Image.PixelArray, 3)
         Image.write(PixelArray)
-    Filtered.Display()            # Display all images in the new series in a single display
+    Filtered.display()            # Display all images in the new series in a single display
     Weasel.refresh()

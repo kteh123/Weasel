@@ -10,4 +10,4 @@ def main(Weasel):
         Weasel.progress_bar(max=SeriesList.length, index=i+1, msg="Inverting series {}", title="Invert pixel values ")
         Series.write(-Series.PixelArray)     # Invert the pixel array and overwrite existing pixel array
     Weasel.close_progress_bar()   # Close the progress bar
-    SeriesList.Display()        # Display all Series in the list
+    SeriesList.display()        # Display all Series in the list

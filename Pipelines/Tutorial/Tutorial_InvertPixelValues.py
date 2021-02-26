@@ -10,4 +10,4 @@ def main(Weasel):
         Weasel.progress_bar(max=ImageList.length, index=i+1, msg="Inverting image {}", title="Invert pixel values ")
         Image.write(-Image.PixelArray)      # Invert the pixel array and overwrite existing pixel array
     Weasel.close_progress_bar()   # Close the progress bar
-    ImageList.Display()            # Display all images in the list in a single display
+    ImageList.display()            # Display all images in the list in a single display
