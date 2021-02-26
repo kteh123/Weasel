@@ -873,8 +873,9 @@ def loadROI(self, cmbROIs, graphicsView):
             cmbROIs.blockSignals(False)
 
             # Redisplay the current image to show the mask
-            mask = graphicsView.dictROIs.getMask(region, 1)
-            graphicsView.graphicsItem.reloadMask(mask)
+            #mask = graphicsView.dictROIs.getMask(region, 1)
+            #graphicsView.graphicsItem.reloadMask(mask)
+            cmbROIs.setCurrentIndex(cmbROIs.count() - 1)
         
     except Exception as e:
             print('Error in DisplayImageDrawROI.loadROI: ' + str(e))

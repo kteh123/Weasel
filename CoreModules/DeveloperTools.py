@@ -972,7 +972,8 @@ class Series:
             mask = np.zeros(np.shape(pixelArray))
             coords = ROI.ROIindices
             mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            pixelArray = pixelArray * mask
+            #pixelArray = pixelArray * mask
+            pixelArray = np.extract(mask.astype(bool), pixelArray)
         elif ROI == None:
             pass
         else:
@@ -1213,7 +1214,8 @@ class Image:
             mask = np.zeros(np.shape(pixelArray))
             coords = ROI.ROIindices
             mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            pixelArray = pixelArray * mask
+            #pixelArray = pixelArray * mask
+            pixelArray = np.extract(mask.astype(bool), pixelArray)
         elif ROI == None:
             pass
         else:
