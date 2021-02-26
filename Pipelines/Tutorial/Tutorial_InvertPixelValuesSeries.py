@@ -5,9 +5,9 @@
 #***************************************************************************
 
 def main(Weasel):
-    SeriesList = Weasel.Series()    # get the list of all series checked by the user
-    for i, Series in SeriesList.Enumerate(): # Loop over series and display a progress Bar
-        Weasel.ProgressBar(max=SeriesList.Count(), index=i+1, msg="Inverting series {}", title="Invert pixel values ")
+    SeriesList = Weasel.series()    # get the list of all series checked by the user
+    for i, Series in SeriesList.enumerate: # Loop over series and display a progress Bar
+        Weasel.progress_bar(max=SeriesList.length, index=i+1, msg="Inverting series {}", title="Invert pixel values ")
         Series.write(-Series.PixelArray)     # Invert the pixel array and overwrite existing pixel array
-    Weasel.CloseProgressBar()   # Close the progress bar
+    Weasel.close_progress_bar()   # Close the progress bar
     SeriesList.Display()        # Display all Series in the list
