@@ -52,7 +52,7 @@ def main(objWeasel):
             #The OK button was clicked & the Cancel has not been clicked
             studyID = objWeasel.selectedStudy
             seriesID = objWeasel.selectedSeries
-            if treeView.isAnImageSelected(objWeasel):
+            if objWeasel.isAnImageChecked:
                 imagePath = objWeasel.selectedImagePath
                 pixelArray = returnPixelArray(imagePath, *listParams)
                 derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
@@ -66,7 +66,7 @@ def main(objWeasel):
                 treeView.refreshDICOMStudiesTreeView(objWeasel, newSeriesID)
                 displayImageColour.displayImageSubWindow(objWeasel, studyID, 
                                                          seriesID, derivedImageFileName)
-            elif treeView.isASeriesSelected(objWeasel):
+            elif objWeasel.isASeriesChecked:
                 imagePathList = \
                         objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
                 #Iterate through list of images and square each image

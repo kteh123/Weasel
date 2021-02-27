@@ -70,6 +70,16 @@ def displayManySingleImageSubWindows(self):
             imagePath = image[2]
             displayImageROISubWindow(self, studyName, seriesName, imagePath)
 
+def displayManyMultiImageSubWindows(self):
+    if len(self.checkedSeriesList)>0: 
+        for series in self.checkedSeriesList:
+            subjectName = series[0]
+            studyName = series[1]
+            seriesName = series[2]
+            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+            displayMultiImageROISubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1)
+
 
 def displayImageROISubWindow(self, studyName, seriesName, imagePath):
     """
@@ -125,6 +135,17 @@ def displayImageROISubWindow(self, studyName, seriesName, imagePath):
     except Exception as e:
         print('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))
         logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))  
+
+
+def displayManyMultiImageSubWindows(self):
+    if len(self.checkedSeriesList)>0: 
+        for series in self.checkedSeriesList:
+            subjectName = series[0]
+            studyName = series[1]
+            seriesName = series[2]
+            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+            displayMultiImageROISubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1)
 
 
 def displayMultiImageROISubWindow(self, imageList, studyName, 
@@ -799,7 +820,7 @@ def loadROI(self, cmbROIs, graphicsView):
             # for series ID in listParams[0]: # more than 1 ROI may be selected
             seriesID = listParams[0][0] # Temporary, only the first ROI
             imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            if treeView.isASeriesSelected(self):
+            if self.isASeriesChecked:
                 targetPath = self.imageList
             else:
                 targetPath = [self.selectedImagePath]

@@ -17,12 +17,12 @@ def main(self):
         in the XML file."""
         logger.info("DeleteImage.main called")
         try:
-            if treeView.isAnItemSelected(self) == False:
+            if treeView.isAnItemChecked(self) == False:
                 raise NoTreeViewItemSelected
 
             studyName = self.selectedStudy
             seriesName = self.selectedSeries
-            if treeView.isAnImageSelected(self):
+            if self.isAnImageChecked:
                 imageName = self.selectedImageName
                 imagePath = self.selectedImagePath
                 buttonReply = QMessageBox.question(self, 
@@ -53,7 +53,7 @@ def main(self):
                             studyName, seriesName, imagePath)
                     #Update tree view with xml file modified above
                     treeView.refreshDICOMStudiesTreeView(self)
-            elif treeView.isASeriesSelected(self):
+            elif self.isASeriesChecked:
                 buttonReply = QMessageBox.question(self, 
                   'Delete DICOM series', "You are about to delete series {}".format(seriesName), 
                   QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
