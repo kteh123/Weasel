@@ -171,3 +171,22 @@ class Pipelines:
         self.close_progress_bar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
+
+    def user_input(self, title="User input window", *fields):
+        """
+        Creates a pop-up window to get user input.
+        """
+        inputDict = {}
+        lists = []
+        for field in fields:
+            if field["type"] == "float": 
+                inputDict[field["label"]] = "float"
+            if field["type"] == "int":
+                inputDict[field["label"]] = "int"
+            if field["type"] == "string":
+                inputDict[field["label"]] = "string"
+        ui = UserInterfaceTools(self)
+        paramList = ui.inputWindow(inputDict, title=title, lists=lists)
+        if paramList is None: 
+            return (1,) + tuple(paramList)
+        return (0,) + tuple(paramList)

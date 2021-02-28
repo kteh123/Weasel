@@ -58,6 +58,15 @@
   </menu>
   
   <menu name="Tutorial">
+    
+        <item>
+          <label>Display images and series</label>
+          <module>Tutorial_Display</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
 
         <item>
           <label>Copy images</label>
