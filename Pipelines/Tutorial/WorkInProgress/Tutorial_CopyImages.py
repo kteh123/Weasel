@@ -6,9 +6,10 @@
 #***************************************************************************
 
 def main(Weasel):
-    Images = Weasel.Images()                 # get the list of series checked by the user
-    for i, Image in Images.Enumerate():      # Loop over Series in the list and display a progress Bar
-        Weasel.ProgressBar(max=Images.Count(), index=i+1, msg="Copying images {}")
-        Image.Copy()                # Copy and Display the new image  
-    Weasel.Refresh()                # Refresh weasel
+    Images = Weasel.images()                 # get the list of series checked by the user
+    for i, Image in Images.enumerate:      # Loop over Series in the list and display a progress Bar
+        Weasel.ProgressBar(max=Images.length, index=i+1, msg="Copying images {}")
+        Image.copy()                # Copy the new image  
+    Weasel.refresh()                # Refresh weasel
+
     

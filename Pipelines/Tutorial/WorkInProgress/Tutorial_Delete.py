@@ -8,9 +8,9 @@
 #***************************************************************************
 
 def main(Weasel):
-    List = Weasel.Images()                 # get the list of images checked by the user
-    for i, Image in List.Enumerate():      # Loop over Images in the list and display a progress Bar
-        Weasel.ProgressBar(max=List.Count(), index=i+1, msg="Deleting images {}")
-        Image.Delete()                     # Delete the image  
-    Weasel.Refresh()                
+    List = Weasel.images()                 # get the list of images checked by the user
+    for i, Image in List.enumerate:      # Loop over Images in the list and display a progress Bar
+        Weasel.progress_bar(max=List.length, index=i+1, msg="Deleting images {}")
+        Image.delete()                     # Delete the image  
+    Weasel.refresh()                
     

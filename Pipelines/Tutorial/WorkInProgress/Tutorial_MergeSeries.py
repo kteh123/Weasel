@@ -6,9 +6,9 @@
 
 
 def main(Weasel):
-    Series = Weasel.Series()    # get the list of series checked by the user
-    if Series.Empty(): return
-    MergedSeries = Series.Merge(series_name='MergedSeries')
-    MergedSeries.Display()
-    Weasel.Refresh()
+    Series = Weasel.series()    # get the list of series checked by the user
+    if Series.empty: return
+    MergedSeries = Series.merge(series_name='MergedSeries')
+    MergedSeries.display()
+    Weasel.refresh()
     

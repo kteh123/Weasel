@@ -109,6 +109,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             layout.addWidget(lblHiddenStudyID)
            
             imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
 
             img, imv, viewBox = displayImageCommon.setUpViewBoxForImage(layout) 
             lblPixelValue, lblROIMeanValue = setUpLabels(layout)

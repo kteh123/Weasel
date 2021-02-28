@@ -25,6 +25,7 @@ def main(objWeasel):
             seriesListTI.append(series)
     if seriesListTI:
         mergedSeries = Series.merge(seriesListTI, series_name='All_TIs', overwrite=False)
+        #ui.refreshWeasel()
         mergedSeries.sort("SliceLocation", "InversionTime")
         magnitudeSeries = mergedSeries.Magnitude
         # CONSIDER REFORMAT_SHAPE - 4D such as (256, 256, 5, 10) for eg.

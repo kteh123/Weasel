@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import random
 import pydicom
@@ -356,15 +357,14 @@ class GenericDICOMTools:
                         saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 inputPath, derivedPath, suffix)
-            return derivedPath
+            return derivedPath, newSeriesID
         except Exception as e:
             print('Error in function #.copyDICOM: ' + str(e))
 
 
     def deleteDICOM(self, inputPath):
         """
-        A window is prompted asking the user if it wishes to delete all images in "inputPath".
-        It performs the file removal upon affirmative answer.
+        This functions remove all files in inputhPath and updates the XML file accordingly.
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
@@ -642,6 +642,33 @@ class Subject:
             studyItem = subjectItem.child(i)
             children.append(Study.fromTreeView(objWeasel, studyItem))
         return cls(objWeasel, subjectID, children=children)
+    
+    def new(self, subjectID=None):
+        if subjectID is None:
+            subjectID = self.subjectID + "_Copy"
+        return Subject(self.objWeasel, subjectID, children=[])
+
+    #def copy():
+
+    def delete(self):
+        for studies in self.children:
+            studies.delete()
+        self.children = []
+        self.numberChildren = 0
+        self.subjectID = ''
+        # Delete the instance, such as del self???
+
+    def add(self, Study):
+        self.children.append(Study)
+        self.numberChildren = len(self.children)
+
+    def remove(self, allStudies=False, Study=None):
+        if allStudies == True:
+            self.children = []
+            self.numberChildren = 0
+        elif Series is not None:
+            self.children.remove(Study)
+            self.numberChildren = len(self.children)
 
 
 class Study:
@@ -675,6 +702,45 @@ class Study:
             seriesItem = studyItem.child(i)
             children.append(Series.fromTreeView(objWeasel, seriesItem))
         return cls(objWeasel, subjectID, studyID, children=children)
+
+    def new(self):
+        studyID = time.strftime('%Y%m%d_%H%M%S')
+        #studyID = self.studyID + "_Copy"
+        return Study(self.objWeasel, self.subjectID, studyID, children=[])
+
+    def copy(self, newStudy=False, newSeries=True):
+        if newStudy == True:
+            studyID = time.strftime('%Y%m%d_%H%M%S')
+            #studyID = self.studyID + "_Copy"
+            newStudyInstance = self.new(studyID=studyID)
+            for series in self.children:
+                copiedSeries = series.copy()
+                newStudyInstance.add(copiedSeries)
+                # This needs a function to add new study to XML
+        # Second option will mantain the study and duplicate the series
+        else:
+            for series in self.children:
+                copiedSeries = series.copy(newSeries=newSeries)
+
+    def delete(self):
+        for series in self.children:
+            series.delete()
+        self.children = []
+        self.numberChildren = 0
+        self.subjectID = self.studyID = ''
+        # Delete the instance, such as del self???
+
+    def add(self, Series):
+        self.children.append(Series)
+        self.numberChildren = len(self.children)
+    
+    def remove(self, allSeries=False, Series=None):
+        if allSeries == True:
+            self.children = []
+            self.numberChildren = 0
+        elif Series is not None:
+            self.children.remove(Series)
+            self.numberChildren = len(self.children)
 
     @property
     def Dimensions(self):
@@ -742,6 +808,30 @@ class Series:
         newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
         newSeries.referencePathsList = self.images
         return newSeries
+    
+    def copy(self, newSeries=True, series_id=None, series_name=None, series_uid=None):
+        if newSeries == True:
+            #series_id = None
+            #series_name = None
+            #series_uid = None
+            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
+            return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix="_Copy")
+        else:
+            series_id = self.seriesID.split('_', 1)[0]
+            series_name = self.seriesID.split('_', 1)[1]
+            series_uid = self.seriesUID
+            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
+            for newCopiedImagePath in newPathsList:
+                newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
+                self.add(newImage)
+
+    def delete(self):
+        GenericDICOMTools.deleteDICOM(self.objWeasel, self.images)
+        self.images = self.referencePathsList = []
+        self.children = self.indices = []
+        self.numberChildren = 0
+        self.subjectID = self.studyID = self.seriesID = self.seriesUID = ''
+        # Delete the instance, such as del self???
 
     def add(self, Image):
         self.images.append(Image.path)
@@ -753,7 +843,7 @@ class Series:
             self.images = []
             self.children = []
             self.numberChildren = 0
-        else:
+        elif Image is not None:
             self.images.remove(Image.path)
             self.children.remove(Image)
             self.numberChildren = len(self.children)
@@ -773,7 +863,7 @@ class Series:
         outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
         pathsList = [image for series in listSeries for image in series.images]
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel(new_series_name=listSeries[0].seriesID)
+        #UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel(new_series_name=listSeries[0].seriesID)
         outputSeries.images = outputPathList
         outputSeries.referencePathsList = outputPathList
         return outputSeries
@@ -789,7 +879,7 @@ class Series:
                 self.images = imagePathList
                 if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
-    def Display(self):
+    def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images, self.studyID, self.seriesID)
 
     def Metadata(self):
@@ -882,7 +972,8 @@ class Series:
             mask = np.zeros(np.shape(pixelArray))
             coords = ROI.ROIindices
             mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            pixelArray = pixelArray * mask
+            #pixelArray = pixelArray * mask
+            pixelArray = np.extract(mask.astype(bool), pixelArray)
         elif ROI == None:
             pass
         else:
@@ -1062,6 +1153,25 @@ class Image:
         newImage.referencePath = self.path
         return newImage
 
+    def copy(self, series=None):
+        if series is None:
+            series_id = None
+            series_name = None
+            series_uid = None
+        else:
+            series_id = series.seriesID.split('_', 1)[0]
+            series_name = series.seriesID.split('_', 1)[1]
+            series_uid = series.seriesUID
+        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
+        return Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath)
+
+    def delete(self):
+        GenericDICOMTools.deleteDICOM(self.objWeasel, self.path)
+        self.path = []
+        self.referencePath = []
+        self.subjectID = self.studyID = self.seriesID = ''
+        # Delete the instance, such as del self???
+
     def write(self, pixelArray, series=None):
         if os.path.exists(self.path):
             PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
@@ -1082,15 +1192,15 @@ class Image:
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
         outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
+        #UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
         outputSeries.images = outputPathList
         return outputSeries
     
-    def Display(self):
+    def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.path, self.studyID, self.seriesID)
 
     @staticmethod
-    def DisplayImages(listImages):
+    def displayImages(listImages):
         pathsList = [image.path for image in listImages]
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].studyID, listImages[0].seriesID)
 
@@ -1104,7 +1214,8 @@ class Image:
             mask = np.zeros(np.shape(pixelArray))
             coords = ROI.ROIindices
             mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            pixelArray = pixelArray * mask
+            #pixelArray = pixelArray * mask
+            pixelArray = np.extract(mask.astype(bool), pixelArray)
         elif ROI == None:
             pass
         else:

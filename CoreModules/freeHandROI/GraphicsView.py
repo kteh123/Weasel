@@ -52,8 +52,8 @@ class GraphicsView(QGraphicsView):
 
 
     def setImage(self, pixelArray, mask = None):
+        logger.info("freeHandROI.GraphicsView.setImage called")
         try:
-            logger.info("GraphicsView.setImage called")
             if self.graphicsItem is not None:
                 self.graphicsItem = None
                 self.scene.clear()
@@ -69,7 +69,8 @@ class GraphicsView(QGraphicsView):
             self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
             self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
         except Exception as e:
-            print('Error in GraphicsView.setImage: ' + str(e))
+            print('Error in freeHandROI.GraphicsView.setImage: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.setImage: ' + str(e))
 
 
     def reapplyZoom(self):
@@ -91,25 +92,30 @@ class GraphicsView(QGraphicsView):
 
 
     def zoomImage(self, zoomValue):
-        if zoomValue > 0:
-            factor = 1.25
-            self._zoom += 1
-            #print("+self._zoom={}".format(self._zoom))
-            increment = 1
-        else:
-            factor = 0.8
-            self._zoom -= 1
-            increment = -1
-            #print("-self._zoom={}".format(self._zoom))
-        if self._zoom > 0:
-            self.scale(factor, factor)
-        elif self._zoom == 0:
-            self.fitItemInView()
-            increment = 0
-        else:
-            self._zoom = 0
-            increment = 0
-        self.sigUpdateZoom.emit(increment)
+        logger.info("freeHandROI.GraphicsView.zoomImage called")
+        try:
+            if zoomValue > 0:
+                factor = 1.25
+                self._zoom += 1
+                #print("+self._zoom={}".format(self._zoom))
+                increment = 1
+            else:
+                factor = 0.8
+                self._zoom -= 1
+                increment = -1
+                #print("-self._zoom={}".format(self._zoom))
+            if self._zoom > 0:
+                self.scale(factor, factor)
+            elif self._zoom == 0:
+                self.fitItemInView()
+                increment = 0
+            else:
+                self._zoom = 0
+                increment = 0
+            self.sigUpdateZoom.emit(increment)
+        except Exception as e:
+            print('Error in freeHandROI.GraphicsView.zoomImage: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.zoomImage: ' + str(e))
 
 
     def wheelEvent(self, event):
@@ -117,8 +123,8 @@ class GraphicsView(QGraphicsView):
 
 
     def fitItemInView(self):#, scale=True
+        logger.info("freeHandROI.GraphicsView.fitItemInView called")
         try:
-            logger.info("GraphicsView.fitItemInView called")
             if self.graphicsItem is not None:
                 rect = QRectF(self.graphicsItem.pixMap.rect())
                 if not rect.isNull():
@@ -132,62 +138,72 @@ class GraphicsView(QGraphicsView):
                     self.scale(factor, factor)
                     self._zoom = 0
         except Exception as e:
-            print('Error in GraphicsView.fitItemInView: ' + str(e))
+            print('Error in freeHandROI.GraphicsView.fitItemInView: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.fitItemInView: ' + str(e))
 
 
     def toggleDragMode(self):
-        if self.dragMode() == QGraphicsView.ScrollHandDrag:
-            self.setDragMode(QGraphicsView.NoDrag)
-        else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            self.setDragMode(QGraphicsView.ScrollHandDrag)
+        logger.info("freeHandROI.GraphicsView.toggleDragMode called")
+        try:
+            if self.dragMode() == QGraphicsView.ScrollHandDrag:
+                self.setDragMode(QGraphicsView.NoDrag)
+            else:
+                self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.setDragMode(QGraphicsView.ScrollHandDrag)
+        except Exception as e:
+            print('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
 
 
     def contextMenuEvent(self, event):
         #display pop-up context menu when the right mouse button is pressed
         #as long as zoom is not enabled
-        if not self.zoomEnabled:
-            self.menu.clear()
-            self.sigContextMenuDisplayed.emit()
-            zoomIn = QAction('Zoom In', None)
-            zoomIn.setToolTip('Click to zoom in')
-            zoomOut = QAction('Zoom Out', None)
-            zoomOut.setToolTip('Click to zoom out')
-            zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
-            zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
+        logger.info("freeHandROI.GraphicsView.contextMenuEvent called")
+        try:
+            if not self.zoomEnabled:
+                self.menu.clear()
+                self.sigContextMenuDisplayed.emit()
+                zoomIn = QAction('Zoom In', None)
+                zoomIn.setToolTip('Click to zoom in')
+                zoomOut = QAction('Zoom Out', None)
+                zoomOut.setToolTip('Click to zoom out')
+                zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
+                zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
 
-            drawROI = QAction(QIcon(icons.PEN_CURSOR), 'Draw', None)
-            drawROI.setToolTip("Draw an ROI")
-            drawROI.triggered.connect(lambda: self.drawROI(True))
+                drawROI = QAction(QIcon(icons.PEN_CURSOR), 'Draw', None)
+                drawROI.setToolTip("Draw an ROI")
+                drawROI.triggered.connect(lambda: self.drawROI(True))
 
-            eraseROI  = QAction(QIcon(icons.ERASOR_CURSOR), 'Erasor', None)
-            eraseROI.setToolTip("Erase the ROI")
-            eraseROI.triggered.connect(lambda: self.eraseROI(True))
+                eraseROI  = QAction(QIcon(icons.ERASOR_CURSOR), 'Erasor', None)
+                eraseROI.setToolTip("Erase the ROI")
+                eraseROI.triggered.connect(lambda: self.eraseROI(True))
 
-            newROI  = QAction(QIcon(icons.NEW_ICON),'New ROI', None)
-            newROI.setToolTip("Create a new ROI")
-            newROI.triggered.connect(self.newROI)
+                newROI  = QAction(QIcon(icons.NEW_ICON),'New ROI', None)
+                newROI.setToolTip("Create a new ROI")
+                newROI.triggered.connect(self.newROI)
 
-            resetROI  = QAction(QIcon(icons.RESET_ICON),'Reset ROI', None)
-            resetROI.setToolTip("Clear drawn ROI from the image")
-            resetROI.triggered.connect(self.resetROI)
+                resetROI  = QAction(QIcon(icons.RESET_ICON),'Reset ROI', None)
+                resetROI.setToolTip("Clear drawn ROI from the image")
+                resetROI.triggered.connect(self.resetROI)
 
-            deleteROI  = QAction(QIcon(icons.DELETE_ICON), 'Delete ROI', None)
-            deleteROI.setToolTip("Delete drawn ROI from the image")
-            deleteROI.triggered.connect(self.deleteROI)
-            
-            self.menu.addAction(zoomIn)
-            self.menu.addAction(zoomOut)
-            self.menu.addSeparator()
-            self.menu.addAction(drawROI)
-            self.menu.addAction(eraseROI)
-            self.menu.addSeparator()
-            self.menu.addAction(newROI)
-            self.menu.addAction(resetROI)
-            self.menu.addAction(deleteROI)
-            self.menu.exec_(event.globalPos())  
-            
+                deleteROI  = QAction(QIcon(icons.DELETE_ICON), 'Delete ROI', None)
+                deleteROI.setToolTip("Delete drawn ROI from the image")
+                deleteROI.triggered.connect(self.deleteROI)
+
+                self.menu.addAction(zoomIn)
+                self.menu.addAction(zoomOut)
+                self.menu.addSeparator()
+                self.menu.addAction(drawROI)
+                self.menu.addAction(eraseROI)
+                self.menu.addSeparator()
+                self.menu.addAction(newROI)
+                self.menu.addAction(resetROI)
+                self.menu.addAction(deleteROI)
+                self.menu.exec_(event.globalPos())  
+        except Exception as e:
+            print('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
             
 
     def _actionHovered(self, action):
@@ -196,34 +212,44 @@ class GraphicsView(QGraphicsView):
 
 
     def drawROI(self, fromContextMenu = False):
-        if not self.graphicsItem.drawEnabled:
-            if fromContextMenu:
-                self.sigSetDrawButtonRed.emit(True)
-            self.graphicsItem.drawEnabled = True
-            self.setZoomEnabled(False)
-            self.graphicsItem.eraseEnabled = False
-        else:
-            self.graphicsItem.drawEnabled = False
-            if fromContextMenu:
-                self.sigSetDrawButtonRed.emit(False)
+        logger.info("freeHandROI.GraphicsView.drawROI called")
+        try:
+            if not self.graphicsItem.drawEnabled:
+                if fromContextMenu:
+                    self.sigSetDrawButtonRed.emit(True)
+                self.graphicsItem.drawEnabled = True
+                self.setZoomEnabled(False)
+                self.graphicsItem.eraseEnabled = False
+            else:
+                self.graphicsItem.drawEnabled = False
+                if fromContextMenu:
+                    self.sigSetDrawButtonRed.emit(False)
+        except Exception as e:
+            print('Error in freeHandROI.GraphicsView.drawROI: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.drawROI: ' + str(e))
 
 
     def eraseROI(self, fromContextMenu = False):
-        if not self.graphicsItem.eraseEnabled:
-            if fromContextMenu:
-                self.sigSetEraseButtonRed.emit(True)
-            self.graphicsItem.drawEnabled = False
-            self.setZoomEnabled(False)
-            self.graphicsItem.eraseEnabled = True
-        else:
-            self.graphicsItem.eraseEnabled = False
-            if fromContextMenu:
-                self.sigSetEraseButtonRed.emit(False)
+        logger.info("freeHandROI.GraphicsView.eraseROI called")
+        try:
+            if not self.graphicsItem.eraseEnabled:
+                if fromContextMenu:
+                    self.sigSetEraseButtonRed.emit(True)
+                self.graphicsItem.drawEnabled = False
+                self.setZoomEnabled(False)
+                self.graphicsItem.eraseEnabled = True
+            else:
+                self.graphicsItem.eraseEnabled = False
+                if fromContextMenu:
+                    self.sigSetEraseButtonRed.emit(False)
+        except Exception as e:
+            print('Error in freeHandROI.GraphicsView.eraseROI: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.eraseROI: ' + str(e))
             
 
     def newROI(self):
+        logger.info("freeHandROI.GraphicsView.newROI called")
         try:
-            logger.info("GraphicsView.newROI called")
             self.sigROIChanged.emit()
             if self.dictROIs.hasRegionGotMask(self.currentROIName):
                 newRegion = self.dictROIs.getNextRegionName()
@@ -236,24 +262,27 @@ class GraphicsView(QGraphicsView):
                     "You must add ROIs to the current region before creating a new one")
                 msgBox.exec()
         except Exception as e:
-            print('Error in GraphicsView.newROI: ' + str(e))
+            print('Error in freeHandROI.GraphicsView.newROI: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.newROI: ' + str(e))
 
 
     def resetROI(self):
+        logger.info("freeHandROI.GraphicsView.resetROI called")
         try:
             self.sigROIChanged.emit()
-            logger.info("GraphicsView.resetROI called")
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigReloadImage.emit()
         except Exception as e:
-            print('Error in GraphicsView.resetROI: ' + str(e))
+            print('Error in freeHandROI.GraphicsView.resetROI: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.resetROI: ' + str(e))
 
 
     def deleteROI(self):
+        logger.info("freeHandROI.GraphicsView.deleteROI called")
         try:
             self.sigROIChanged.emit()
-            logger.info("GraphicsView.deleteROI called")
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
         except Exception as e:
-            print('Error in GraphicsView.deleteROI: ' + str(e))
+            print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
+            logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))

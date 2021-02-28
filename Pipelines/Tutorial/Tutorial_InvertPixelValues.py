@@ -5,9 +5,9 @@
 #***************************************************************************
 
 def main(Weasel):
-    ImageList = Weasel.Images()    # get the list of images checked by the user
-    for i, Image in ImageList.Enumerate(): # Loop over images and display a progress Bar
-        Weasel.ProgressBar(max=ImageList.Count(), index=i+1, msg="Inverting image {}", title="Invert pixel values ")
+    ImageList = Weasel.images()    # get the list of images checked by the user
+    for i, Image in ImageList.enumerate: # Loop over images and display a progress Bar
+        Weasel.progress_bar(max=ImageList.length, index=i+1, msg="Inverting image {}", title="Invert pixel values ")
         Image.write(-Image.PixelArray)      # Invert the pixel array and overwrite existing pixel array
-    Weasel.CloseProgressBar()   # Close the progress bar
-    ImageList.Display()            # Display all images in the list in a single display
+    Weasel.close_progress_bar()   # Close the progress bar
+    ImageList.display()            # Display all images in the list in a single display

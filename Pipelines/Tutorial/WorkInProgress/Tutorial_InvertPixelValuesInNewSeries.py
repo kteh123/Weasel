@@ -9,13 +9,13 @@
 #***************************************************************************
 
 def main(Weasel):
-    ImageList = Weasel.Images()    # get the list of images checked by the user
-    if ImageList.Empty(): return   # if none are checked then do nothing
-    newSeries = ImageList.NewParent(suffix="_Invert")
-    for i, Image in ImageList.Enumerate(): # Loop over images and display a progress Bar
-        Weasel.ProgressBar(max=ImageList.Count(), index=i+1, msg="Inverting image {}")
+    ImageList = Weasel.images()    # get the list of images checked by the user
+    if ImageList.empty: return   # if none are checked then do nothing
+    newSeries = ImageList.new_parent(suffix="_Invert")
+    for i, Image in ImageList.enumerate: # Loop over images and display a progress Bar
+        Weasel.progress_bar(max=ImageList.length, index=i+1, msg="Inverting image {}")
         newImage = Image.new(series=newSeries)
         newImage.write(-Image.PixelArray)
-    newSeries.Display()            # Display all images in the list in a single display
-    Weasel.Refresh()
+    newSeries.display()            # Display all images in the list in a single display
+    Weasel.refresh()
     

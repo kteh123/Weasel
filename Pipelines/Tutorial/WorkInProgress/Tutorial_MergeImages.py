@@ -6,9 +6,9 @@
 
 
 def main(Weasel):
-    Images = Weasel.Images()    # get the list of images checked by the user
-    if Images.Empty(): return
-    MergedSeries = Images.Merge(series_name='MergedSeries')
-    MergedSeries.Display()
-    Weasel.Refresh()
+    Images = Weasel.images()    # get the list of images checked by the user
+    if Images.empty: return
+    MergedSeries = Images.merge(series_name='MergedSeries')
+    MergedSeries.display()
+    Weasel.refresh()
     

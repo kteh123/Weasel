@@ -49,22 +49,31 @@ def displayMessageSubWindow(self, message, title="Loading DICOM files"):
 
 
 def setMsgWindowProgBarMaxValue(self, maxValue):
-        self.progBarMsg.show()
-        self.progBarMsg.setMaximum(maxValue)
+    self.progBarMsg.show()
+    self.progBarMsg.setMaximum(maxValue)
 
 
 def setMsgWindowProgBarValue(self, value):
-        self.progBarMsg.setValue(value)
+    self.progBarMsg.setValue(value)
 
 
 def hideProgressBar(self):
     try:
+<<<<<<< HEAD
         if self.progBarMsg:
             self.progBarMsg.hide()
     except Exception as e:
             print('Error in : Weasel.hideProgressBar: ' + str(e))
             logger.error('Error in : Weasel.hideProgressBar: ' + str(e))
 
+=======
+        self.progBarMsg.hide()
+    except:
+        pass
+>>>>>>> fed51efa9fd330c7486f88a514f2ecfcdc483ecb
 
 def closeMessageSubWindow(self):
+    try:
         self.msgSubWindow.close()
+    except:
+        pass

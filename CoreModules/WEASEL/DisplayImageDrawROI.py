@@ -293,8 +293,7 @@ def setUpSubWindow(self, imageSeries=False):
             logger.error('Error in DisplayImageDrawRIO.setUpSubWindow: ' + str(e))
 
 
-def setUpROIButtons(self, roiToolsLayout, pixelValueTxt, 
-          
+def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
          roiMeanTxt, roiStdDevTxt, graphicsView, 
          zoomSlider, zoomLabel, imageSlider=None):
     try:
@@ -441,6 +440,7 @@ def setUpImageDataWidgets(imageDataLayout, graphicsView, zoomValueLabel, imageSl
 def setUpImageSlider(sliderLayout, sliderPosition, imageList):
     try:
         imageSlider = QSlider(Qt.Horizontal)
+        imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
         imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
         imageSlider.setMinimum(1)
         imageSlider.setMaximum(len(imageList))
@@ -833,7 +833,12 @@ def loadROI(self, cmbROIs, graphicsView):
             else:
                 region = "new_region_label"
             # Affine re-adjustment
-            for dicomFile in targetPath:
+            for index, dicomFile in enumerate(targetPath):
+                messageWindow.displayMessageSubWindow(self,
+                "<H4>Loading selected ROI into target image {}</H4>".format(index + 1),
+                "Load ROIs")
+                messageWindow.setMsgWindowProgBarMaxValue(self, len(targetPath))
+                messageWindow.setMsgWindowProgBarValue(self, index + 1)
                 dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(readDICOM_Image.getPixelArray(dataset_original)))
                 horizontalFlag = None
@@ -862,6 +867,8 @@ def loadROI(self, cmbROIs, graphicsView):
                         #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                         #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
+            messageWindow.setMsgWindowProgBarValue(self, index + 2)
+            messageWindow.closeMessageSubWindow(self)
 
             # Faster approach - 3D and no dilation
             #maskList = np.zeros(np.shape(readDICOM_Image.returnSeriesPixelArray(targetPath)))
@@ -887,8 +894,9 @@ def loadROI(self, cmbROIs, graphicsView):
             cmbROIs.blockSignals(False)
 
             # Redisplay the current image to show the mask
-            mask = graphicsView.dictROIs.getMask(region, 1)
-            graphicsView.graphicsItem.reloadMask(mask)
+            #mask = graphicsView.dictROIs.getMask(region, 1)
+            #graphicsView.graphicsItem.reloadMask(mask)
+            cmbROIs.setCurrentIndex(cmbROIs.count() - 1)
         
     except Exception as e:
             print('Error in DisplayImageDrawROI.loadROI: ' + str(e))

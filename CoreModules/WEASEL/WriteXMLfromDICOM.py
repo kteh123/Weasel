@@ -162,11 +162,9 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             for study in xml_dict[subject]:
                 study_element = ET.SubElement(subject_element, 'study')
                 study_element.set('id', study)
-                study_element.set('parentID', '')
                 for series in xml_dict[subject][study]:
                     series_element = ET.SubElement(study_element, 'series')
                     series_element.set('id', series)
-                    series_element.set('parentID', '')
 
         for index, file in enumerate(list_dicom):
             subject, study, sequence, series_number = get_study_series(file)
@@ -221,7 +219,6 @@ def open_dicom_to_xml_iBEAT(xml_dict, list_dicom, list_paths):
             for series in xml_dict[study]:
                 series_element = ET.SubElement(study_element, 'series')
                 series_element.set('id', series)
-                series_element.set('parentID', '')
 
         for index, file in enumerate(list_dicom):
             study_search_string, series_search_string = iBeatImport.getScanInfo(file)
