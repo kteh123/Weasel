@@ -121,6 +121,15 @@
           <module>Tutorial_InvertPixelValuesSeriesInNewSeries</module>
         </item>
     
+        <item>
+          <separator>yes</separator>
+        </item>
+    
+        <item>
+          <label>2D Gaussian filter</label>
+          <module>Tutorial_GaussianFilterImages</module>
+        </item>
+    
   </menu>
   
   
