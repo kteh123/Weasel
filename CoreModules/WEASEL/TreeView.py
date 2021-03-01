@@ -110,7 +110,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 #Minimum width of the tree view has to be set
                 #to 700 to ensure its parent, the docking widget 
                 #initially displays wide enough to show the tree view
-                self.treeView.setMinimumSize(700,500)
+                self.treeView.setMinimumSize(300,500)
                 
                 #Enable multiple selection using up arrow and Ctrl keys
                 self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)

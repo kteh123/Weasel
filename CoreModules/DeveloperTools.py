@@ -330,7 +330,12 @@ class GenericDICOMTools:
                 if series_name:
                     saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", series_name)
                 else:
-                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                    if hasattr(newDataset, "SeriesDescription"):
+                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                    elif hasattr(newDataset, "SequenceName"):
+                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SequenceName", str(newDataset.SequenceName + suffix))
+                    elif hasattr(newDataset, "ProtocolName"):
+                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "ProtocolName", str(newDataset.ProtocolName + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath,
                                              derivedPath, suffix)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
@@ -354,7 +359,12 @@ class GenericDICOMTools:
                     if series_name:
                         saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)
                     else:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                        if hasattr(newDataset, "SeriesDescription"):
+                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                        elif hasattr(newDataset, "SequenceName"):
+                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", str(newDataset.SequenceName + suffix))
+                        elif hasattr(newDataset, "ProtocolName"):
+                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", str(newDataset.ProtocolName + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 inputPath, derivedPath, suffix)
             return derivedPath, newSeriesID
@@ -396,7 +406,13 @@ class GenericDICOMTools:
                 for path in imagePathList:
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
-                    saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_name + suffix)
+                    dataset = readDICOM_Image.getDicomDataset(path)
+                    if hasattr(dataset, "SeriesDescription"):
+                        saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_name + suffix)
+                    elif hasattr(dataset, "SequenceName"):
+                        saveDICOM_Image.overwriteDicomFileTag(path, "SequenceName", series_name + suffix)
+                    elif hasattr(dataset, "ProtocolName"):
+                        saveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name + suffix)
                 newImagePathList = imagePathList
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 imagePathList, newImagePathList, suffix)
@@ -411,7 +427,12 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name + suffix)
+                    if hasattr(newDataset, "SeriesDescription"):
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name + suffix)
+                    elif hasattr(newDataset, "SequenceName"):
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", series_name + suffix)
+                    elif hasattr(newDataset, "ProtocolName"):
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name + suffix)
                     newImagePathList.append(newFilePath)
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 imagePathList, newImagePathList, suffix)
@@ -1057,7 +1078,7 @@ class Series:
         if self.images:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
-                if tagDescription == 'SeriesDescription':
+                if (tagDescription == 'SeriesDescription') or (tagDescription == 'SequenceName') or (tagDescription == 'ProtocolName'):
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
                 elif tagDescription == 'SeriesNumber':
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
