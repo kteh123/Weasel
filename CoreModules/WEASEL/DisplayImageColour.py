@@ -74,23 +74,57 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 userSelectionDict = {}
 
 def displayManySingleImageSubWindows(self):
-    if len(self.checkedImageList)>0: 
-        for image in self.checkedImageList:
-            studyName = image[0]
-            seriesName = image[1]
-            imagePath = image[2]
-            displayImageSubWindow(self, imagePath, seriesName, studyName)
+    try:
+        logger.info("DisplayImageColour.displayImageFromTreeView")
+        if len(self.checkedImageList)>0: 
+            for image in self.checkedImageList:
+                studyName = image[0]
+                seriesName = image[1]
+                imagePath = image[2]
+                displayImageSubWindow(self, imagePath, seriesName, studyName)
+    except Exception as e:
+        print('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
+        logger.error('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
 
 
 def displayManyMultiImageSubWindows(self):
-    if len(self.checkedSeriesList)>0: 
-        for series in self.checkedSeriesList:
-            subjectName = series[0]
-            studyName = series[1]
-            seriesName = series[2]
-            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageSubWindow(self, imageList, studyName, 
-                     seriesName, sliderPosition = -1)
+    try:
+        logger.info("DisplayImageColour.displayManyMultiImageSubWindows")
+        if len(self.checkedSeriesList)>0: 
+            for series in self.checkedSeriesList:
+                subjectName = series[0]
+                studyName = series[1]
+                seriesName = series[2]
+                imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+                displayMultiImageSubWindow(self, imageList, studyName, 
+                         seriesName, sliderPosition = -1)
+    except Exception as e:
+        print('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
+        logger.error('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
+
+
+def displayImageFromTreeView(self, item, col):
+    #only display an image if the series or image name in column 1
+    #(second column) of the tree view is double clicked.
+    try:
+        logger.info("DisplayImageColour.displayImageFromTreeView")
+        if col == 1:
+            #Has an image or a series been double-clicked?
+            if treeView.isAnImageSelected(item):
+                studyName = item.parent().parent().text(1).replace('Study -', '').strip()
+                seriesName = item.parent().text(1).replace('Series -', '').strip()
+                imagePath = item.text(4)
+                displayImageSubWindow(self, imagePath, seriesName, studyName)
+            elif treeView.isASeriesSelected(item):
+                subjectName = item.parent().parent().text(1).replace('Subject -', '').strip().lower()
+                studyName = item.parent().text(1).replace('Study -', '').strip().lower()
+                seriesName = item.text(1).replace('Series -', '').strip().lower()
+                imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+                displayMultiImageSubWindow(self, imageList, studyName, 
+                         seriesName, sliderPosition = -1)
+    except Exception as e:
+            print('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
+            logger.error('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
 
 
 def setUpSubWindow(self, imageSeries = False):
@@ -309,8 +343,8 @@ def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyNam
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
-                msgBox.setWindowTitle("View a DICOM series or image")
-                msgBox.setText("Select either a series or an image")
+                msgBox.setWindowTitle("View a DICOM image")
+                msgBox.setText("Select an image to view")
                 msgBox.exec()
         except Exception as e:
             print('Error in DisplayImageColour.displayImageSubWindow: ' + str(e))
@@ -448,8 +482,8 @@ def displayMultiImageSubWindow(self, imageList, studyName,
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox() 
-                msgBox.setWindowTitle("View a DICOM series or image")
-                msgBox.setText("Select either a series or an image")
+                msgBox.setWindowTitle("View a DICOM series")
+                msgBox.setText("Select a series to view")
                 msgBox.exec()  
         except Exception as e:
             print('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))

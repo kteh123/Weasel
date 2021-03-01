@@ -10,6 +10,7 @@ import time
 from collections import defaultdict
 import CoreModules.WEASEL.Menus as menus
 import Pipelines.ViewImage as viewImage
+import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
 
 
@@ -128,7 +129,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
+                self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 #self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
                 
                 resizeTreeViewColumns(self)
@@ -348,7 +349,7 @@ def isAnItemChecked(self):
     """Returns True is an item is selected DICOM
     tree view, else returns False"""
     try:
-        logger.info("TreeView isAnItemChecked called.")
+        logger.info("TreeView.isAnItemChecked called.")
         if self.isAnImageChecked or self.isASeriesChecked:
             return True
         else:
@@ -358,46 +359,35 @@ def isAnItemChecked(self):
         logger.error('Error in isAnItemChecked: ' + str(e))
 
 
-#def isAnImageSelected(self):
-#        """Returns True is a single image is selected in the DICOM
-#        tree view, else returns False"""
-#        try:
-#            logger.info("TreeView isAnImageSelected called.")
-#            if self.treeView.currentItem():
-#                selectedItem = self.treeView.currentItem()
-#                if selectedItem:
-#                    if 'image' in selectedItem.text(0).lower():
-#                        return True
-#                    else:
-#                        return False
-#                else:
-#                   return False
-#            else:
-#                   return False
-#        except Exception as e:
-#            print('Error in isAnImageSelected: ' + str(e))
-#            logger.error('Error in isAnImageSelected: ' + str(e))
+def isAnImageSelected(item):
+        """Returns True is a single image is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("TreeView.isAnImageSelected called.")
+            if 'image' in item.text(1).lower():
+                return True
+            else:
+                return False
+              
+        except Exception as e:
+            print('Error in isAnImageSelected: ' + str(e))
+            logger.error('Error in isAnImageSelected: ' + str(e))
             
 
-#def isASeriesSelected(self):
-#        """Returns True is a series is selected in the DICOM
-#        tree view, else returns False"""
-#        try:
-#            logger.info("TreeView isASeriesSelected called.")
-#            if self.treeView.currentItem():
-#                selectedItem = self.treeView.currentItem()
-#                if selectedItem:
-#                    if 'series' in selectedItem.text(0).lower():
-#                        return True
-#                    else:
-#                        return False
-#                else:
-#                   return False
-#            else:
-#                return False
-#        except Exception as e:
-#            print('Error in isASeriesSelected: ' + str(e))
-#            logger.error('Error in isASeriesSelected: ' + str(e))
+def isASeriesSelected(item):
+        """Returns True is a series is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("TreeView isASeriesSelected called.")
+           
+            if 'series' in item.text(1).lower():
+                return True
+            else:
+                return False
+                
+        except Exception as e:
+            print('Error in isASeriesSelected: ' + str(e))
+            logger.error('Error in isASeriesSelected: ' + str(e))
 
 
 #def isAStudySelected(self):
