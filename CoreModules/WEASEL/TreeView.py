@@ -134,7 +134,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
-                
+                collapseStudiesBranches(self.treeView.invisibleRootItem())
 
                 #Display tree view in left-hand side docked widget
                 #If such a widget already exists remove it to allow
