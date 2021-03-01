@@ -8,6 +8,12 @@ import sys
 import logging
 from multiprocessing import current_process
 
+if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
 #Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
 #path[0] is the current working directory
 #pathlib.Path().absolute() is the current directory where the script is located. 
@@ -61,11 +67,6 @@ class Weasel(QMainWindow, Pipelines):
         self.selectedImageName = ''
         self.selectedImagePath = ''
         self.checkedImageList = []
-        self.checkedSeriesList = []
-        self.checkedStudyList = []
-        self.isAnImageChecked = False
-        self.isASeriesChecked = False
-        self.isAStudyChecked = False
         
          # XML reader object to process XML configuration file
         self.objConfigXMLReader = WeaselConfigXMLReader()

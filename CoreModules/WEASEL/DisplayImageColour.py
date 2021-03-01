@@ -1041,11 +1041,11 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumVa
     try:
         #axisOrder = pg.getConfigOption('imageAxisOrder') 
         #if axisOrder =='row-major':
-        #    #Transpose the array so as to match the screen image 
-        #    # (a transpose is already applied when reading DICO image)
-        #    pixelArray = np.transpose(pixelArray)
+        #Transpose the array so as to match the screen image 
+        # (a transpose is already applied when reading DICOM image)
+        pixelArray = np.transpose(pixelArray)
         cmap = plt.get_cmap(colourTable)
-        pos = plt.imshow(pixelArray,  cmap=cmap)
+        pos = plt.imshow(pixelArray, cmap=cmap)
         plt.clim(int(minimumValue), int(maximumValue))
         cBar = plt.colorbar()
         cBar.minorticks_on()
