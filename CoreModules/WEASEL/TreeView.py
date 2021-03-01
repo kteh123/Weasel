@@ -128,7 +128,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                #self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
+                self.treeView.itemDoubleClicked.connect(lambda: viewImage.main(self))
                 #self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
                 
                 resizeTreeViewColumns(self)
