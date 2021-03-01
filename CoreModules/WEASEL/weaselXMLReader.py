@@ -283,7 +283,14 @@ class WeaselXMLReader:
             if newSeriesName:
                 newSeriesID = str(dataset.SeriesNumber) + "_" + newSeriesName
             else:
-                newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+                if hasattr(dataset, "SeriesDescription"):
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+                elif hasattr(dicom, "SequenceName"):
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SequenceName
+                elif hasattr(dicom, "ProtocolName"):
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.ProtocolName
+                else:
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + "No Sequence Name"
             series = self.getSeriesOfSpecifiedType(
                 studyID, seriesID, newSeriesID, suffix)
             #Get image label, date & time
