@@ -21,5 +21,5 @@ def main(objWeasel):
         pixelArray = np.square(pixelArray)
         newSeries.write(pixelArray)
     ui.refreshWeasel(new_series_name=newSeries.seriesID)
-    newSeries.Display()
+    newSeries.display()
         

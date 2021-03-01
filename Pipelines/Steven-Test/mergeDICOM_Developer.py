@@ -20,4 +20,4 @@ def main(objWeasel):
     if seriesList is None: return # Exit function if no series are checked
     mergedSeries = Series.merge(seriesList, series_name='NewSeries', overwrite=False)
     ui.refreshWeasel()
-    mergedSeries.Display()
+    mergedSeries.display()

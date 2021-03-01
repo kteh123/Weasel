@@ -35,7 +35,12 @@ def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
         if newSeriesName:
             seriesID = str(dataset.SeriesNumber) + "_" + newSeriesName
         else:
-            seriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+            if hasattr(dataset, "SeriesDescription"):
+                seriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+            elif hasattr(dataset, "SequenceName"):
+                seriesID = str(dataset.SeriesNumber) + "_" + dataset.SequenceName
+            elif hasattr(dataset, "ProtocolName"):
+                seriesID = str(dataset.SeriesNumber) + "_" + dataset.ProtocolName
         imageList = self.objXMLReader.getImageList(studyID, seriesID)
         if imageList:
             #A series of images already exists 
@@ -47,7 +52,12 @@ def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
                 dataset.SeriesDescription = newSeriesName
                 return getNewSeriesName(studyID, dataset, suffix, newSeriesName=newSeriesName)
             else:
-                dataset.SeriesDescription = dataset.SeriesDescription + suffix
+                if hasattr(dataset, "SeriesDescription"):
+                    dataset.SeriesDescription = dataset.SeriesDescription + suffix
+                elif hasattr(dataset, "SequenceName"):
+                    dataset.SequenceName = dataset.SequenceName + suffix
+                elif hasattr(dataset, "ProtocolName"):
+                    dataset.ProtocolName = dataset.ProtocolName + suffix
                 return getNewSeriesName(studyID, dataset, suffix)
         else:
             logger.info("InterfaceDICOMXMLFile getNewSeriesName returns seriesID {}".format(seriesID))
@@ -119,7 +129,13 @@ def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
         logger.info("InterfaceDICOMXMLFile renameSeriesinXMLFile called")
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageList[0])
         seriesNumber = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesNumber) if series_id is None else str(series_id)
-        newName = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesDescription) if series_name is None else str(series_name)
+        try:
+            newName = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesDescription) if series_name is None else str(series_name)
+        except:
+            try:
+                newName = str(readDICOM_Image.getDicomDataset(imageList[0]).SequenceName) if series_name is None else str(series_name)
+            except:
+                newName = str(readDICOM_Image.getDicomDataset(imageList[0]).ProtocolName) if series_name is None else str(series_name)
         xmlSeriesName = seriesNumber + "_" + newName
         self.objXMLReader.renameSeriesinXMLFile(studyID, seriesID, xmlSeriesName)
     except Exception as e:

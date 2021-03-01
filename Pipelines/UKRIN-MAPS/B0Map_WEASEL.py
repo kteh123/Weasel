@@ -34,7 +34,7 @@ def main(objWeasel):
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series
-            newSeries.Display()
+            newSeries.display()
         elif checkB0(seriesReal) and checkB0(seriesImaginary):
             seriesReal.sort("SliceLocation", "EchoTime")
             seriesImaginary.sort("SliceLocation", "EchoTime")
@@ -50,7 +50,7 @@ def main(objWeasel):
             # Refresh the UI screen
             ui.refreshWeasel(new_series_name=newSeries.seriesID)
             # Display series
-            newSeries.Display()
+            newSeries.display()
         else:
             ui.showMessageWindow(msg='The checked series doesn\'t meet the criteria to calculate the B0 Map', title='NOT POSSIBLE TO CALCULATE B0 MAP')
 
