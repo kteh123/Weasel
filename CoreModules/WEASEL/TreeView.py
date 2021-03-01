@@ -484,7 +484,8 @@ def toggleMenuItems(self):
                     if not menuItem.isSeparator():
                         if not(menuItem.data() is None):
                             #Assume not all tools will act on an image
-                            #Assume all tools act on a series  
+                            #Assume all tools act on a series 
+                            menuItem.setEnabled(False)  
                             if self.isASeriesChecked:
                                  menuItem.setEnabled(True)
                             elif self.isAnImageChecked:
