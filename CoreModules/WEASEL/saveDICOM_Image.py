@@ -339,8 +339,6 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
                 newDicom.SeriesDescription = dicomData.SeriesDescription + comment
             elif len(dicomData.dir("SequenceName"))>0 & len(dicomData.dir("PulseSequenceName"))==0:
                 newDicom.SeriesDescription = dicomData.SequenceName + comment
-            elif len(dicomData.dir("SeriesDescription"))>0:
-                newDicom.SeriesDescription = dicomData.SeriesDescription + comment
             elif len(dicomData.dir("ProtocolName"))>0:
                 newDicom.SeriesDescription = dicomData.ProtocolName + comment
             else:

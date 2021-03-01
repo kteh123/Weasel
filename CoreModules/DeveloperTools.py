@@ -645,7 +645,7 @@ class Subject:
             root = objWeasel.treeView.invisibleRootItem()
             children = []
             for i in range(root.childCount()):
-                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
                     subjectItem = root.child(i)
                     for j in range(subjectItem.childCount()):
                         studyItem = subjectItem.child(j)
@@ -657,7 +657,7 @@ class Subject:
         
     @classmethod
     def fromTreeView(cls, objWeasel, subjectItem):
-        subjectID = subjectItem.text(0).replace('Subject -', '').strip()
+        subjectID = subjectItem.text(1).replace('Subject -', '').strip()
         children = []
         for i in range(subjectItem.childCount()):
             studyItem = subjectItem.child(i)
@@ -701,10 +701,10 @@ class Study:
             root = objWeasel.treeView.invisibleRootItem()
             children = []
             for i in range(root.childCount()):
-                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
                     subjectItem = root.child(i)
                     for j in range(subjectItem.childCount()):
-                        if subjectItem.child(j).text(0) == 'Study -' + str(self.studyID):
+                        if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
                             studyItem = subjectItem.child(j)
                             for k in range(studyItem.childCount()):
                                 seriesItem = studyItem.child(k)
@@ -716,8 +716,8 @@ class Study:
         
     @classmethod
     def fromTreeView(cls, objWeasel, studyItem):
-        subjectID = studyItem.parent().text(0).replace('Subject -', '').strip()
-        studyID = studyItem.text(0).replace('Study -', '').strip()
+        subjectID = studyItem.parent().text(1).replace('Subject -', '').strip()
+        studyID = studyItem.text(1).replace('Study -', '').strip()
         children = []
         for i in range(studyItem.childCount()):
             seriesItem = studyItem.child(i)
@@ -781,13 +781,13 @@ class Series:
             root = objWeasel.treeView.invisibleRootItem()
             children = []
             for i in range(root.childCount()):
-                if root.child(i).text(0) == 'Subject -' + str(self.subjectID):
+                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
                     subjectItem = root.child(i)
                     for j in range(subjectItem.childCount()):
-                        if subjectItem.child(j).text(0) == 'Study -' + str(self.studyID):
+                        if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
                             studyItem = subjectItem.child(j)
                             for k in range(studyItem.childCount()):
-                                if studyItem.child(k).text(0) == 'Series -' + str(self.seriesID):
+                                if studyItem.child(k).text(1) == 'Series -' + str(self.seriesID):
                                     seriesItem = studyItem.child(k)
                                     for n in range(seriesItem.childCount()):
                                         imageItem = seriesItem.child(n)
@@ -807,14 +807,14 @@ class Series:
 
     @classmethod
     def fromTreeView(cls, objWeasel, seriesItem):
-        subjectID = seriesItem.parent().parent().text(0).replace('Subject -', '').strip()
-        studyID = seriesItem.parent().text(0).replace('Study -', '').strip()
-        seriesID = seriesItem.text(0).replace('Series -', '').strip()
+        subjectID = seriesItem.parent().parent().text(1).replace('Subject -', '').strip()
+        studyID = seriesItem.parent().text(1).replace('Study -', '').strip()
+        seriesID = seriesItem.text(1).replace('Series -', '').strip()
         images = []
         children = []
         for i in range(seriesItem.childCount()):
             imageItem = seriesItem.child(i)
-            images.append(imageItem.text(3))
+            images.append(imageItem.text(4))
             children.append(Image.fromTreeView(objWeasel, imageItem))
         return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images, children=children)
     
@@ -1146,10 +1146,10 @@ class Image:
 
     @classmethod
     def fromTreeView(cls, objWeasel, imageItem):
-        subjectID = imageItem.parent().parent().parent().text(0).replace('Subject -', '').strip()
-        studyID = imageItem.parent().parent().text(0).replace('Study -', '').strip()
-        seriesID = imageItem.parent().text(0).replace('Series -', '').strip()
-        path = imageItem.text(3)
+        subjectID = imageItem.parent().parent().parent().text(1).replace('Subject -', '').strip()
+        studyID = imageItem.parent().parent().text(1).replace('Study -', '').strip()
+        seriesID = imageItem.parent().text(1).replace('Series -', '').strip()
+        path = imageItem.text(4)
         return cls(objWeasel, subjectID, studyID, seriesID, path)
     
     @staticmethod
