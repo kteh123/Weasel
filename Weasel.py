@@ -67,6 +67,11 @@ class Weasel(QMainWindow, Pipelines):
         self.selectedImageName = ''
         self.selectedImagePath = ''
         self.checkedImageList = []
+        self.checkedSeriesList = []
+        self.checkedStudyList = []
+        self.isAnImageChecked = False
+        self.isASeriesChecked = False
+        self.isAStudyChecked = False
         
          # XML reader object to process XML configuration file
         self.objConfigXMLReader = WeaselConfigXMLReader()
