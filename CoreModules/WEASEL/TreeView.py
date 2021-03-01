@@ -116,14 +116,14 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
                 self.treeView.setUniformRowHeights(True)
                 self.treeView.setColumnCount(4)
-                self.treeView.setHeaderLabels(["DICOM Files", "Date", "Time", "Path"])
+                self.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
                 buildTreeView(self)
 
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
-                self.treeView.itemClicked.connect(lambda item: checkParentItems(item))
+                self.treeView.itemChanged.connect(lambda item: checkParentItems(item))
                 self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
