@@ -1,5 +1,6 @@
 import CoreModules.WEASEL.DisplayImageDrawROI as displayImageROI
 import CoreModules.WEASEL.TreeView  as treeView
+from PyQt5.QtWidgets import QMessageBox
 import logging
 logger = logging.getLogger(__name__)
 
@@ -15,21 +16,17 @@ def main(self):
     Executed using the 'View Image with ROI' Menu item in the Tools menu."""
     try:
         logger.info("Menus.viewROIImage called")
-        #print('treeView.isAnItemSelected(self)={}'.format(treeView.isAnItemSelected(self)))
+        #print('treeView.isAnItemChecked(self)={}'.format(treeView.isAnItemChecked(self)))
         #print('treeView.isAnImageSelected(self)={}'.format(treeView.isAnImageSelected(self)))
-        #print('treeView.isASeriesSelected(self)={}'.format(treeView.isASeriesSelected(self)))
+        #print('self.isASeriesChecked={}'.format(self.isASeriesChecked))
         
-        if treeView.isAnItemSelected(self) == False:
+        if treeView.isAnItemChecked(self) == False:
             raise NoTreeViewItemSelected
 
-        if treeView.isAnImageSelected(self):
-            #displayImageROI.displayImageROISubWindow(self)
+        if self.isASeriesChecked:
+            displayImageROI.displayManyMultiImageSubWindows(self)
+        elif self.isAnImageChecked:
             displayImageROI.displayManySingleImageSubWindows(self)
-        elif treeView.isASeriesSelected(self):
-            studyName = self.selectedStudy 
-            seriesName = self.selectedSeries
-            self.imageList = self.objXMLReader.getImagePathList(studyName, seriesName)
-            displayImageROI.displayMultiImageROISubWindow(self, self.imageList, studyName, seriesName)
 
     except NoTreeViewItemSelected:
             msgBox = QMessageBox()

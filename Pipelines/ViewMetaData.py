@@ -20,13 +20,13 @@ def main(self):
         logger.info("ViewMetaData.viewMetadata called")
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
-        if treeView.isAnImageSelected(self):
+        if self.isAnImageChecked:
             imagePath = self.selectedImagePath
             imageName = self.selectedImageName
             dataset = readDICOM_Image.getDicomDataset(imagePath)
             displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 
                                             dataset)
-        elif treeView.isASeriesSelected(self):
+        elif self.isASeriesChecked:
             studyID = self.selectedStudy 
             seriesID = self.selectedSeries
             imageList = self.objXMLReader.getImagePathList(studyID, seriesID)

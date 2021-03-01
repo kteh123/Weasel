@@ -111,7 +111,7 @@ def buildContextMenuItem(context, item, self):
 
 def displayContextMenu(self, pos):
     try:
-        if not treeView.isASubjectSelected(self) and not treeView.isAStudySelected(self):
+        if self.isASeriesChecked or self.isAnImageChecked:
             self.context.exec_(self.treeView.mapToGlobal(pos))
     except Exception as e:
         print('Error in function Menus.displayContextMenu: ' + str(e))

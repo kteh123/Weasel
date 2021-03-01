@@ -30,7 +30,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
     """Creates a subwindow that displays either a DICOM image or series of DICOM images
     processed using the algorithm in funcAlgorithm."""
     try:
-        if treeView.isAnImageSelected(objWeasel):
+        if objWeasel.isAnImageChecked:
             imagePath = objWeasel.selectedImagePath
             studyID = objWeasel.selectedStudy
             pixelArray = returnPixelArray(imagePath, funcAlgorithm)
@@ -49,7 +49,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(objWeasel, seriesID)
 
-        elif treeView.isASeriesSelected(objWeasel):
+        elif objWeasel.isASeriesChecked:
             imagePathList, studyID = returnImagePathList(objWeasel)
             setupMessageBox(objWeasel, len(imagePathList))
 

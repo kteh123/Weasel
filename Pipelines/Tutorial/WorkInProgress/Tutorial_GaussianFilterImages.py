@@ -8,12 +8,16 @@
 from CoreModules.imagingTools import gaussianFilter
 
 def main(Weasel):
-    Images = Weasel.images()     # get the list of images checked by the user
-    if Images.empty: return    # if none are checked then do nothing
-    Filtered = Images.merge(series_name='Gaussian Filter') # merge the images into a new series
-    for i, Image in Filtered.enumerate: # Loop over images and display a progress Bar
+    Images = Weasel.images(msg = "Please select the images to filter")     
+    if Images.empty: return    
+    cancel, width = Weasel.user_input( 
+        {"type":"float", "label":"Filter width in pixels", "default":1.0}, 
+        title="Gaussian filter settings")
+    if cancel: return
+    Filtered = Images.merge(series_name='Gaussian Filter') 
+    for i, Image in Filtered.enumerate: 
         Weasel.progress_bar(max=Filtered.length, index=i+1, msg="Filtering image {}")
-        PixelArray = gaussianFilter(Image.PixelArray, 3)
+        PixelArray = gaussianFilter(Image.PixelArray, width)
         Image.write(PixelArray)
-    Filtered.display()            # Display all images in the new series in a single display
+    Filtered.display()            
     Weasel.refresh()

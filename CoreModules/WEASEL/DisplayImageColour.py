@@ -73,6 +73,26 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 #to manipulate userSelectionList. 
 userSelectionDict = {}
 
+def displayManySingleImageSubWindows(self):
+    if len(self.checkedImageList)>0: 
+        for image in self.checkedImageList:
+            studyName = image[0]
+            seriesName = image[1]
+            imagePath = image[2]
+            displayImageSubWindow(self, imagePath, seriesName, studyName)
+
+
+def displayManyMultiImageSubWindows(self):
+    if len(self.checkedSeriesList)>0: 
+        for series in self.checkedSeriesList:
+            subjectName = series[0]
+            studyName = series[1]
+            seriesName = series[2]
+            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+            displayMultiImageSubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1)
+
+
 def setUpSubWindow(self, imageSeries = False):
     """
     This function creates a subwindow with a vertical layout &
@@ -221,6 +241,17 @@ def displayManySingleImageSubWindows(self):
             displayImageSubWindow(self, imagePath, seriesName, studyName)
 
 
+def displayManyMultiImageSubWindows(self):
+    if len(self.checkedSeriesList)>0: 
+        for series in self.checkedSeriesList:
+            subjectName = series[0]
+            studyName = series[1]
+            seriesName = series[2]
+            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+            displayMultiImageSubWindow(self, imageList, studyName, 
+                     seriesName, sliderPosition = -1)
+
+
 def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyName=None):
         """
         Creates a subwindow that displays a single DICOM image. 
@@ -298,6 +329,9 @@ def displayOneImage(self, lblImageMissing, lblPixelValue,
                              colourTable, cmbColours, SeriesName,
                             lut) 
     displayColourTableInComboBox(cmbColours, colourTable)
+
+
+
 
 
 def displayMultiImageSubWindow(self, imageList, studyName, 

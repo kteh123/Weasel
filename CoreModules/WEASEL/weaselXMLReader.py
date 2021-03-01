@@ -61,6 +61,7 @@ class WeaselXMLReader:
 
     def getImageList(self, studyID, seriesID):
         try:
+            print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
             xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
             return self.root.findall(xPath)
@@ -109,11 +110,29 @@ class WeaselXMLReader:
 
     def getImagePathList(self, studyID, seriesID):
         try:
-            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
-            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
-            #print(xPath)
+    #        root = ET.parse(INPUT_FILE_PATH)
+    #for target in root.findall("//Script"):
+    #    stepTexts = target.findall(".//StepText")
+    #    for stepText in stepTexts:
+    #        if FIND.lower() in stepText.text.lower():
+    #            print target.attrib['name'],' -- ',stepText.text
+
+            #for subject in self.root.findall(".//subject"):
+            #    studies = subject.findall("study[@id=" + chr(34) + studyID + chr(34) + "]")
+            #    for study in studies:
+            #        images = study.findall("series[@id=" + chr(34) + seriesID + chr(34) + "]/image")
+                                         
+            #print("getImagePathList: studyID={}, seriesID={}".format(studyID, seriesID))#subject/
+            #.//subject//
+  
+            xPath = 'subject//study[@id=' + chr(34) + studyID + chr(34) + \
+            ']//series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            # xPath = './/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+            print(xPath)
             images = self.root.findall(xPath)
+            print("images={}".format(images))
             imageList = [image.find('name').text for image in images]
+            print("length imageList={}".format(len(imageList)))
             return imageList
         except Exception as e:
             print('Error in weaselXMLReader.getImagePathList: ' + str(e))
