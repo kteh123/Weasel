@@ -121,7 +121,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
                 buildTreeView(self)
-
+                self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(item))
@@ -129,7 +129,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
+                
                 #self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
                 
                 resizeTreeViewColumns(self)
@@ -205,7 +205,7 @@ def collapseStudiesBranches(item):
             itemCount = item.childCount()
             for n in range(itemCount):
                 childItem = item.child(n)
-                if 'study' in childItem.text(0).lower():
+                if 'study' in childItem.text(1).lower():
                     item.treeWidget().blockSignals(True)
                     childItem.setExpanded(False)
                     item.treeWidget().blockSignals(False)
@@ -229,7 +229,7 @@ def collapseSeriesBranches(item):
             itemCount = item.childCount()
             for n in range(itemCount):
                 childItem = item.child(n)
-                if 'series' in childItem.text(0).lower():
+                if 'series' in childItem.text(1).lower():
                     item.treeWidget().blockSignals(True)
                     childItem.setExpanded(False)
                     item.treeWidget().blockSignals(False)
@@ -326,7 +326,7 @@ def expandTreeViewBranch(item, newSeriesName = ''):
                 itemCount = item.childCount()
                 for n in range(itemCount):
                     childItem = item.child(n)
-                    branchText = childItem.text(0).lower()
+                    branchText = childItem.text(1).lower()
                     if 'study' in branchText:
                         childItem.setExpanded(True)
                     if 'series' in branchText:
@@ -397,7 +397,7 @@ def isASeriesSelected(item):
 #            logger.info("TreeView isAStudySelected called.")
 #            selectedItem = self.treeView.currentItem()
 #            if selectedItem:
-#                if 'study' in selectedItem.text(0).lower():
+#                if 'study' in selectedItem.text(1).lower():
 #                    return True
 #                else:
 #                    return False
@@ -463,7 +463,7 @@ def toggleItemCheckedState(self, item, col):
 #            logger.info("TreeView isASubjectSelected called.")
 #            selectedItem = self.treeView.currentItem()
 #            if selectedItem:
-#                if 'subject' in selectedItem.text(0).lower():
+#                if 'subject' in selectedItem.text(1).lower():
 #                    return True
 #                else:
 #                    return False
@@ -770,10 +770,10 @@ def getPathParentNode(self, inputPath):
                     imageCount = series.childCount()
                     for n in range(imageCount):
                         image = series.child(n)
-                        if image.text(3) == inputPath:
-                            subjectID = subject.text(0).replace('Subject -', '').strip()
-                            studyID = study.text(0).replace('Study -', '').strip()
-                            seriesID = series.text(0).replace('Series -', '').strip()
+                        if image.text(4) == inputPath:
+                            subjectID = subject.text(1).replace('Subject -', '').strip()
+                            studyID = study.text(1).replace('Study -', '').strip()
+                            seriesID = series.text(1).replace('Series -', '').strip()
                             return (subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in TreeView.getPathParentNode: ' + str(e))
