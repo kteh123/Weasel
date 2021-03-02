@@ -109,7 +109,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView = QTreeWidget()
                 
                 #Minimum width of the tree view has to be set
-                #to 700 to ensure its parent, the docking widget 
+                #to 300 to ensure its parent, the docking widget 
                 #initially displays wide enough to show the tree view
                 self.treeView.setMinimumSize(300,500)
                 
@@ -127,7 +127,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(item))
                 self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
-                self.treeView.itemClicked.connect(lambda: returnCheckedImages(self))
+                self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
                 
                 #self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
@@ -658,6 +658,32 @@ def returnCheckedSeries(self):
     except Exception as e:
         print('Error in TreeView.returnCheckedSeries: ' + str(e))
         logger.error('Error in TreeView.returnCheckedSeries: ' + str(e))
+
+
+def returnCheckedImages(self):
+    """This function generates and returns a list of checked images."""
+    logger.info("TreeView.returnCheckedImages called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedImagesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                for n in range(seriesCount):
+                    series = study.child(n)
+                    imagesCount = series.childCount()
+                    for k in range(imagesCount):
+                        image = series.child(k)
+                        if image.checkState(0) == Qt.Checked:
+                            checkedImagesList.append(image)
+        return checkedImagesList
+    except Exception as e:
+        print('Error in TreeView.returnCheckedImages: ' + str(e))
+        logger.error('Error in TreeView.returnCheckedImages: ' + str(e))
     
 
 def returnSeriesImageList(self, subjectName, studyName, seriesName):
@@ -693,9 +719,9 @@ def returnSeriesImageList(self, subjectName, studyName, seriesName):
 
 
 
-def returnCheckedImages(self):
+def returnCheckedItems(self):
     """This function generates and returns lists of checked items."""
-    logger.info("TreeView.returnCheckedImages called")
+    logger.info("TreeView.returnCheckedItems called")
     try:
         self.checkedImageList = []
         self.checkedSeriesList = []
@@ -750,8 +776,8 @@ def returnCheckedImages(self):
         if len(self.checkedStudyList) > 0:
             self.isAStudyChecked = True
     except Exception as e:
-        print('Error in TreeView.returnCheckedImages: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedImages: ' + str(e))
+        print('Error in TreeView.returnCheckedItems: ' + str(e))
+        logger.error('Error in TreeView.returnCheckedItems: ' + str(e))
 
 
 def getPathParentNode(self, inputPath):
