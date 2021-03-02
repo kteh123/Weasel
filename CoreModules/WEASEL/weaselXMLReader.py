@@ -70,10 +70,11 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getImageList: ' + str(e))
 
 
-    def getSeries(self, studyID, seriesID):
-        try:
-            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']'
+    def getSeries(self, subjectID, studyID, seriesID):
+        try: #'./subject[@id=' + chr(34) + subjectID + chr(34) + ']' + \
+            xPath = './/study[@id=' + chr(34) + studyID + chr(34) + ']' + \
+                    '/series[@id=' + chr(34) + seriesID + chr(34) + ']'
+            print ("Xpath = {}".format(xPath))
             return self.root.find(xPath)
         except Exception as e:
             print('Error in WeaselXMLReader.getSeries: ' + str(e)) 
@@ -166,16 +167,17 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e))
 
 
-    def removeOneImageFromSeries(self, studyID, seriesID, imagePath):
+    def removeOneImageFromSeries(self, subjectID, studyID, seriesID, imagePath):
         try:
             #Get the series (parent) containing this image (child)
             #then remove child from parent
-            series = self.getSeries(studyID, seriesID)
-            for image in series:
-                if image.find('name').text == imagePath:
-                    series.remove(image)
-                    self.tree.write(self.fullFilePath)
-                    break
+            series = self.getSeries(subjectID, studyID, seriesID)
+            if series:
+                for image in series:
+                    if image.find('name').text == imagePath:
+                        series.remove(image)
+                        self.tree.write(self.fullFilePath)
+                        break
         except Exception as e:
             print('Error in WeaselXMLReader.removeOneImageFromSeries: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.removeOneImageFromSeries: ' + str(e))
@@ -344,9 +346,9 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e))
 
 
-    def renameSeriesinXMLFile(self, studyID, seriesID, xmlSeriesName):
+    def renameSeriesinXMLFile(self, subjectID, studyID, seriesID, xmlSeriesName):
         try:
-            series = self.getSeries(studyID, seriesID)
+            series = self.getSeries(subjectID, studyID, seriesID)
             series.attrib['id'] = xmlSeriesName
             self.tree.write(self.fullFilePath)
         except Exception as e:

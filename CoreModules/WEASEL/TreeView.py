@@ -456,22 +456,21 @@ def toggleItemCheckedState(self, item, col):
             logger.error('Error in toggleItemCheckedState: ' + str(e))
 
 
-#def isASubjectSelected(self):
-#        """Returns True is a subject is selected in the DICOM
-#        tree view, else returns False"""
-#        try:
-#            logger.info("TreeView isASubjectSelected called.")
-#            selectedItem = self.treeView.currentItem()
-#            if selectedItem:
-#                if 'subject' in selectedItem.text(1).lower():
-#                    return True
-#                else:
-#                    return False
-#            else:
-#               return False
-#        except Exception as e:
-#            print('Error in isASubjectSelected: ' + str(e))
-#            logger.error('Error in isASubjectSelected: ' + str(e))
+def isASubjectSelected(selectedItem):
+    """Returns True is a subject is selected in the DICOM
+    tree view, else returns False"""
+    try:
+        logger.info("TreeView isASubjectSelected called.")
+        if selectedItem:
+            if 'subject' in selectedItem.text(1).lower():
+                return True
+            else:
+                return False
+        else:
+            return False
+    except Exception as e:
+        print('Error in isASubjectSelected: ' + str(e))
+        logger.error('Error in isASubjectSelected: ' + str(e))
 
 
 def toggleMenuItems(self):
@@ -733,11 +732,12 @@ def returnCheckedImages(self):
                             checkedImagesData = []
                             series = image.parent()
                             study = series.parent()
+                            subject = study.parent()
                             checkedImagesData.append(study.text(1).lower().replace("study", "").replace("-","").strip())
                             checkedImagesData.append(series.text(1).lower().replace("series", "").replace("-","").strip())
                             checkedImagesData.append(image.text(4))
+                            checkedImagesData.append(subject.text(1).lower().replace("subject", "").replace("-","").strip())
                             self.checkedImageList.append(checkedImagesData)
-        
 
         self.isAnImageChecked = False
         self.isASeriesChecked = False
