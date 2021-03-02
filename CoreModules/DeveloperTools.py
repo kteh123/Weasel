@@ -281,10 +281,10 @@ class UserInterfaceTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath)
+                displayImageColour.displayImageSubWindow(self.objWeasel, inputPath, seriesID, studyID)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if len(inputPath) == 1:
-                    displayImageColour.displayImageSubWindow(self.objWeasel, studyID, seriesID, derivedImagePath=inputPath[0])
+                    displayImageColour.displayImageSubWindow(self.objWeasel, inputPath[0], seriesID, studyID)
                 else:
                     displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
             return

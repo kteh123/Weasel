@@ -95,7 +95,7 @@ def removeImageFromXMLFile(self, imageFileName):
         if len(images) == 1:
             self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
         elif len(images) > 1:
-            self.objXMLReader.removeOneImageFromSeries(studyID, seriesID, imageFileName)
+            self.objXMLReader.removeOneImageFromSeries(subjectID, studyID, seriesID, imageFileName)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeImageFromXMLFile: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeImageFromXMLFile: ' + str(e))
