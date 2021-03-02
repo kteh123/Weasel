@@ -656,8 +656,8 @@ def displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt):
 
 def getRoiMeanAndStd(mask, pixelArray):
     logger.info("DisplayImageDrawROI.getRoiMeanAndStd called")
-    mean = round(np.mean(np.extract(mask, pixelArray)), 3)
-    std = round(np.std(np.extract(mask, pixelArray)), 3)
+    mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 3)
+    std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 3)
     return mean, std
 
 
