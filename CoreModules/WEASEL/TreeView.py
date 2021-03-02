@@ -18,7 +18,6 @@ def createTreeBranch(self, branchName, branch, parent):
     try:
         branchID = branch.attrib['id']
         logger.info("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
-        print("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
         thisBranch = QTreeWidgetItem(parent)
         thisBranch.setText(0, '')
         thisBranch.setText(1, branchName + " - {}".format(branchID))
@@ -44,7 +43,7 @@ def createImageLeaf(self, image, seriesBranch):
                 imageName = os.path.basename(image.find('name').text)
             else:
                 imageName = image.find('label').text
-            logger.info("____TreeView.createImageLeaf, imageName={}".format(imageName))
+            logger.info("TreeView.createImageLeaf called with imageName={}".format(imageName))
             imageDate = image.find('date').text
             imageTime = image.find('time').text
             imagePath = image.find('name').text
@@ -76,16 +75,13 @@ def resizeTreeViewColumns(self):
 
 def buildTreeView(self):
     try:
+        logger.info("TreeView.buildTreeView called")
         self.treeView.clear()
-        #treeWidgetItemCounter = 0 
         subjects = self.objXMLReader.getSubjects()
-        print("Num Subjects ={}".format(len(subjects)))
         for subject in subjects:
             subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView)
             for study in subject:
                 studyBranch = createTreeBranch(self, "Study",  study, subjectBranch)
-                logger.info("number of series={}".format(len(study)))
-                print("number of series={}".format(len(study)))
                 for series in study:
                     seriesBranch = createTreeBranch(self, "Series", series,  studyBranch)
                     for image in series:
