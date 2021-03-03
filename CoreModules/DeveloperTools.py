@@ -383,7 +383,7 @@ class GenericDICOMTools:
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
                     os.remove(path)
-                    interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
+                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
         except Exception as e:
             print('Error in function #.deleteDICOM: ' + str(e))
 
@@ -1174,7 +1174,7 @@ class Image:
         newImage.referencePath = self.path
         return newImage
 
-    def copy(self, series=None):
+    def copy(self, suffix="_Copy", series=None):
         if series is None:
             series_id = None
             series_name = None
@@ -1183,8 +1183,10 @@ class Image:
             series_id = series.seriesID.split('_', 1)[0]
             series_name = series.seriesID.split('_', 1)[1]
             series_uid = series.seriesUID
-        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
-        return Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath)
+        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix)
+        copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath)
+        if series: series.add(copiedImage)
+        return copiedImage
 
     def delete(self):
         GenericDICOMTools.deleteDICOM(self.objWeasel, self.path)
@@ -1221,7 +1223,7 @@ class Image:
         UserInterfaceTools(self.objWeasel).displayImages(self.path, self.studyID, self.seriesID)
 
     @staticmethod
-    def displayImages(listImages):
+    def displayListImages(listImages):
         pathsList = [image.path for image in listImages]
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].studyID, listImages[0].seriesID)
 

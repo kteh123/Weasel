@@ -68,7 +68,7 @@ def hideProgressBar(self):
 
 def closeMessageSubWindow(self):
     try:
-        if self.msgSubWindow.isActiveWindow() == True:
+        if self.msgSubWindow.isEnabled() == True:
             self.msgSubWindow.close()
     except Exception as e:
             print('Error in : Weasel.closeMessageSubWindow: ' + str(e))

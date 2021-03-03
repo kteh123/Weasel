@@ -52,7 +52,7 @@ class ImagesList(List):
         Displays all images in the list.
         """
         if len(self.List) == 0: return
-        self.List[0].displayImages(self.List)
+        self.List[0].displayListImages(self.List)
 
     def merge(self, series_name='MergedSeries'):
         """

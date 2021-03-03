@@ -14,7 +14,7 @@ def main(Weasel):
     newSeries = ImageList.new_parent(suffix="_Invert")
     for i, Image in ImageList.enumerate: # Loop over images and display a progress Bar
         Weasel.progress_bar(max=ImageList.length, index=i+1, msg="Inverting image {}")
-        newImage = Image.new(series=newSeries)
+        newImage = Image.copy(series=newSeries)
         newImage.write(-Image.PixelArray)
     newSeries.display()            # Display all images in the list in a single display
     Weasel.refresh()
