@@ -149,11 +149,12 @@ def setUpSubWindow(self, imageSeries = False):
         subWindow.setObjectName = 'image_viewer'
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
-                                      Qt.WindowMinimizeButtonHint)
+                                      Qt.WindowMinimizeButtonHint |
+                                      Qt.WindowMaximizeButtonHint)
         
         
         height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width*0.6,height)
+        subWindow.setGeometry(0,0,width,height)
         self.mdiArea.addSubWindow(subWindow)
         
         mainVerticalLayout = QVBoxLayout()

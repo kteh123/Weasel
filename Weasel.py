@@ -58,6 +58,9 @@ class Weasel(QMainWindow, Pipelines):
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
         self.mdiArea = QMdiArea(self.centralwidget)
+        #Add scroll bars as needed when the subwindows are tiled
+        self.mdiArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.mdiArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.mdiArea.tileSubWindows()
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.statusBar = QStatusBar()

@@ -233,7 +233,8 @@ def setUpSubWindow(self, imageSeries=False):
         subWindow.setObjectName = 'image_viewer'
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
-                                      Qt.WindowMinimizeButtonHint)
+                                      Qt.WindowMinimizeButtonHint |
+                                      Qt.WindowMaximizeButtonHint)
         
         
         height, width = self.getMDIAreaDimensions()
