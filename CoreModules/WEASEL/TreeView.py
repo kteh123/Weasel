@@ -480,12 +480,20 @@ def toggleMenuItems(self):
         try:
             logger.info("TreeView.toggleMenuItems called.")
             for menu in self.listMenus:
+                if menu.title() == 'File':
+                    #Do not apply this function to items in the
+                    #File menu
+                    continue
                 menuItems = menu.actions()
                 for menuItem in menuItems:
                     if not menuItem.isSeparator():
                         if not(menuItem.data() is None):
                             #Assume not all tools will act on an image
                             #Assume all tools act on a series 
+                            #
+                            #Disable all menu items to account for the
+                            #case when all checkboxes are unchecked. 
+                            #Then enable depending on what is checked.
                             menuItem.setEnabled(False)  
                             if self.isASeriesChecked:
                                  menuItem.setEnabled(True)
