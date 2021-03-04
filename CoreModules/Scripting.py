@@ -1,10 +1,11 @@
 import os
+from pydicom import dcmread
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Study
 from CoreModules.DeveloperTools import Series
-from CoreModules.DeveloperTools import Image
+from CoreModules.DeveloperTools import Image as ImageJoao
 
 
 class List:
@@ -67,6 +68,12 @@ class ImagesList(List):
         """
         return self.List[0].newSeriesFrom(self.List, suffix=suffix)
 
+    def Item(self, *args):
+        """
+        Applies the Item method to all images in the list
+        """
+        return [image.Item(args) for image in self.List]
+
 
 class SeriesList(List):
     """
@@ -95,6 +102,22 @@ class StudyList(List):
         """
         Displays all studies in the list (NOT YET AVAILABLE).
         """
+
+class Image(ImageJoao):
+    """
+    A temporary class for protoptying new image methods. 
+    """
+    def read(self):
+        """
+        Returns a pydicom dataset.
+        """
+        return dcmread(self.path)
+
+    def save(self, ds):
+        """
+        Writes out a pydicom dataset.
+        """
+        ds.save_as(self.path)
 
 
 class Pipelines:
@@ -172,7 +195,7 @@ class Pipelines:
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
 
-    def user_input(self, title="User input window", *fields):
+    def user_input(self, *fields, title="User input window"):
         """
         Creates a pop-up window to get user input.
         """
@@ -185,6 +208,8 @@ class Pipelines:
                 inputDict[field["label"]] = "int"
             if field["type"] == "string":
                 inputDict[field["label"]] = "string"
+            if field["type"] == "list":
+                inputDict[field["label"]] = ""
         ui = UserInterfaceTools(self)
         paramList = ui.inputWindow(inputDict, title=title, lists=lists)
         if paramList is None: 
