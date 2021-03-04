@@ -77,6 +77,9 @@ def buildTreeView(self):
     try:
         logger.info("TreeView.buildTreeView called")
         self.treeView.clear()
+        #block tree view signals to prevent recursive
+        #searchs when each item is added to the tree view.
+        self.treeView.blockSignals(True)
         subjects = self.objXMLReader.getSubjects()
         for subject in subjects:
             subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView)
@@ -86,7 +89,7 @@ def buildTreeView(self):
                     seriesBranch = createTreeBranch(self, "Series", series,  studyBranch)
                     for image in series:
                         createImageLeaf(self, image, seriesBranch)
-             
+        self.treeView.blockSignals(False)   
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -168,12 +171,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
 
             # Joao Sousa suggestion
             self.treeView.hide()
-            #block tree view signals to prevent recursive
-            #searchs when each item is added to the tree view.
-            self.treeView.blockSignals(True)
             buildTreeView(self)
             resizeTreeViewColumns(self)
-            self.treeView.blockSignals(False)
 
             #If no tree view items are now selected,
             #disable items in the Tools menu.
