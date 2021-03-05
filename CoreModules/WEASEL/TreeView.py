@@ -67,10 +67,18 @@ def createImageLeaf(self, image, seriesBranch):
 
 
 def resizeTreeViewColumns(self):
-    self.treeView.resizeColumnToContents(0)
-    self.treeView.resizeColumnToContents(1)
-    self.treeView.resizeColumnToContents(2)
-    self.treeView.hideColumn(3)
+    try:
+        self.treeView.resizeColumnToContents(0)
+        self.treeView.resizeColumnToContents(1)
+        self.treeView.resizeColumnToContents(2)
+        self.treeView.hideColumn(3)
+        self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
+        self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
+        self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
+        print("self.treeViewColumnWidths={}".format(self.treeViewColumnWidths))
+    except Exception as e:
+            print('Error in TreeView.resizeTreeViewColumns: ' + str(e))
+            logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
 def buildTreeView(self):
@@ -132,8 +140,6 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
                 
-                #self.treeView.itemClicked.connect(lambda item: onTreeViewItemClicked(self, item))
-                
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
                 collapseStudiesBranches(self.treeView.invisibleRootItem())
@@ -160,7 +166,6 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
 
 
-
 def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
@@ -169,10 +174,18 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #Load and parse updated XML file
             self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
 
+            #store current column widths to be able
+            #to restore them when the tree view is refreshed
+            self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
+            self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
+            self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
             # Joao Sousa suggestion
             self.treeView.hide()
             buildTreeView(self)
-            resizeTreeViewColumns(self)
+            #resizeTreeViewColumns(self)
+            self.treeView.setColumnWidth(1, self.treeViewColumnWidths[1])
+            self.treeView.setColumnWidth(2, self.treeViewColumnWidths[2])  
+            self.treeView.setColumnWidth(3, self.treeViewColumnWidths[3])
 
             #If no tree view items are now selected,
             #disable items in the Tools menu.

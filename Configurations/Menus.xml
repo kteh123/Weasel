@@ -1,5 +1,8 @@
 <menus>
   <menu name="File">
+    <!--Do not change the name of the above top level File menu as this will stop
+      TreeView.toggleMenuItems working correctly
+      -->
         <item>
           <label>Load DICOM Images</label>
           <shortcut>Ctrl+L</shortcut>
