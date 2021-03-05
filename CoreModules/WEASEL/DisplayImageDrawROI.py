@@ -161,7 +161,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             graphicsViewLayout, sliderLayout, 
             imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
             #subWindow.setStyleSheet("background-color:#737373;")
-            imageSlider = setUpImageSlider(sliderLayout, sliderPosition, imageList)
+            imageSlider, imageNumberLabel = setUpImageSlider(sliderLayout, sliderPosition, imageList, subWindow)
            
             zoomSlider, zoomValueLabel = setUpZoomSlider(graphicsView)
 
@@ -188,7 +188,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    spinBoxIntensity, 
                                                    spinBoxContrast,
                                                    graphicsView, subWindow, buttonList, zoomSlider,
-                                                   zoomValueLabel))
+                                                   zoomValueLabel, imageNumberLabel))
           
             imageROISliderMoved(self, seriesName, 
                                     imageList, 
@@ -199,7 +199,9 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                     btnDraw, btnErase,
                                     spinBoxIntensity, 
                                     spinBoxContrast,
-                                    graphicsView, subWindow, buttonList, zoomSlider, zoomValueLabel)       
+                                    graphicsView, subWindow, 
+                                    buttonList, zoomSlider, 
+                                    zoomValueLabel, imageNumberLabel)       
         except (IndexError, AttributeError):
                 subWindow.close()
                 msgBox = QMessageBox()
@@ -438,13 +440,20 @@ def setUpImageDataWidgets(imageDataLayout, graphicsView, zoomValueLabel, imageSl
             logger.error('Error in DisplayImageDrawROI.setUpImageDataWidgets: ' + str(e))
 
 
-def setUpImageSlider(sliderLayout, sliderPosition, imageList):
+def setUpImageSlider(sliderLayout, sliderPosition, imageList, subWindow):
     try:
         imageSlider = QSlider(Qt.Horizontal)
         imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
         imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
+        maxNumberImages = len(imageList)
         imageSlider.setMinimum(1)
-        imageSlider.setMaximum(len(imageList))
+        imageSlider.setMaximum(maxNumberImages)
+        if maxNumberImages < 4:
+            imageSlider.setFixedWidth(subWindow.width()*.2)
+        elif maxNumberImages > 3 and maxNumberImages < 11:
+            imageSlider.setFixedWidth(subWindow.width()*.5)
+        else:
+            imageSlider.setFixedWidth(subWindow.width()*.85)
         if sliderPosition == -1:
             imageSlider.setValue(1)
         else:
@@ -454,7 +463,9 @@ def setUpImageSlider(sliderLayout, sliderPosition, imageList):
         imageSlider.setTickInterval(1)
 
         sliderLayout.addWidget(imageSlider)
-        return imageSlider
+        imageNumberLabel = QLabel()
+        sliderLayout.addWidget(imageNumberLabel)
+        return imageSlider, imageNumberLabel
     except Exception as e:
         print('Error in DisplayImageDrawROI.setUpImageSlider: ' + str(e))
         logger.error('Error in DisplayImageDrawROI.setUpImageSlider: ' + str(e))
@@ -710,7 +721,9 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                         roiMeanTxt, roiStdDevTxt,
                         cmbROIs,  btnDraw, btnErase,
                         spinBoxIntensity, spinBoxContrast,  
-                        graphicsView, subWindow, buttonList, zoomSlider, zoomLabel):
+                        graphicsView, subWindow, 
+                        buttonList, zoomSlider, 
+                        zoomLabel, imageNumberLabel):
         """On the Multiple Image with ROI Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed"""
@@ -719,6 +732,9 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
             imageNumber = imageSlider.value()
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
+                maxNumberImages = str(len(imageList))
+                imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
+                imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)

@@ -75,7 +75,7 @@ def resizeTreeViewColumns(self):
         self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
         self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
         self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
-        print("self.treeViewColumnWidths={}".format(self.treeViewColumnWidths))
+        #print("self.treeViewColumnWidths={}".format(self.treeViewColumnWidths))
     except Exception as e:
             print('Error in TreeView.resizeTreeViewColumns: ' + str(e))
             logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))

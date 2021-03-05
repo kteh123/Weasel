@@ -437,9 +437,15 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                                 lblImageMissing, lblPixelValue, imageSlider)
 
            
-            
+            maxNumberImages = len(imageList)
             imageSlider.setMinimum(1)
-            imageSlider.setMaximum(len(imageList))
+            imageSlider.setMaximum(maxNumberImages)
+            if maxNumberImages < 4:
+                imageSlider.setFixedWidth(subWindow.width()*.2)
+            elif maxNumberImages > 3 and maxNumberImages < 11:
+                imageSlider.setFixedWidth(subWindow.width()*.5)
+            else:
+                imageSlider.setFixedWidth(subWindow.width()*.85)
             if sliderPosition == -1:
                 imageSlider.setValue(1)
             else:
@@ -447,7 +453,12 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
+            imageNumberLabel = QLabel()
             sliderLayout.addWidget(imageSlider)
+            sliderLayout.addWidget(imageNumberLabel)
+            if len(imageList) < 11:
+                sliderLayout.addStretch(1)
+            
             imageSlider.valueChanged.connect(
                   lambda: imageSliderMoved(self, seriesName, 
                                                 imageList, 
@@ -457,7 +468,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                                 deleteButton,
                                                  graphicsView, 
                                                 spinBoxIntensity, spinBoxContrast,
-                                                cmbColours,
+                                                cmbColours, imageNumberLabel,
                                                 subWindow))
            
             #Display the first image in the viewer
@@ -469,7 +480,7 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                   deleteButton,
                                    graphicsView, 
                                   spinBoxIntensity, spinBoxContrast,
-                                  cmbColours,
+                                  cmbColours, imageNumberLabel,
                                   subWindow)
             
             deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(self,
@@ -828,7 +839,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
                         deleteButton,  graphicsView, 
                         spinBoxIntensity, spinBoxContrast,
-                        cmbColours,
+                        cmbColours, imageNumberLabel,
                         subWindow):
 
         """On the Multiple Image Display sub window, this
@@ -840,7 +851,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         lblImageMissing - Label widget that displays the text 'Missing Image'
         lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
                 and the X,Y coordinates of the mouse pointer.
-         graphicsView - pyqtGraph imageView widget
+        graphicsView - pyqtGraph imageView widget
         imageList - list of image file paths of the images in the series to be displayed
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
@@ -851,10 +862,12 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
         try:
             global userSelectionDict
             obj = userSelectionDict[seriesName]
-
             logger.info("DisplayImageColour.imageSliderMoved called")
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
+                maxNumberImages = str(len(imageList))
+                imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
+                imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
                 pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
