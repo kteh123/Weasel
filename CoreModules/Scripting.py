@@ -15,21 +15,18 @@ class List:
     def __init__(self, List):
         self.List = List
 
-    @property
     def empty(self):
         """
         Checks if the list is empty.
         """
         return len(self.List) == 0
 
-    @property
     def length(self):
         """
         Returns the number of items in the list.
         """
         return len(self.List)
 
-    @property
     def enumerate(self):
         """
         Enumerates the items in the list.
@@ -40,21 +37,18 @@ class List:
         """
         Deletes all items in the list
         """
-        for item in self.List:
-            item.delete()
+        for item in self.List: item.delete()
 
+    def display(self):
+        """
+        Displays all items in the list.
+        """
+        for item in self.List: item.display()
 
 class ImagesList(List):
     """
     A class containing a list of objects of class Image. 
     """
-    def display(self):
-        """
-        Displays all images in the list.
-        """
-        if len(self.List) == 0: return
-        self.List[0].displayListImages(self.List)
-
     def merge(self, series_name='MergedSeries'):
         """
         Merges a list of images into a new series under the same study
@@ -78,14 +72,7 @@ class ImagesList(List):
 class SeriesList(List):
     """
     A class containing a list of class Series. 
-    """
-    def display(self):
-        """
-        Displays all series in the list.
-        """
-        if len(self.List) == 0: return
-        for Series in self.List: Series.display()
-    
+    """    
     def merge(self, series_name='MergedSeries'):
         """
         Merges a list of series into a new series under the same study
@@ -98,10 +85,7 @@ class StudyList(List):
     """
     A class containing a list of class Study. 
     """
-    def display(self):
-        """
-        Displays all studies in the list (NOT YET AVAILABLE).
-        """
+
 
 class Image(ImageJoao):
     """
