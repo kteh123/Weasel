@@ -238,7 +238,7 @@ def setUpSubWindow(self, imageSeries=False):
         
         
         height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width*0.6,height)
+        subWindow.setGeometry(0, 0, width, height)
         self.mdiArea.addSubWindow(subWindow)
         
         mainVerticalLayout = QVBoxLayout()
@@ -429,7 +429,7 @@ def setUpImageDataWidgets(imageDataLayout, graphicsView, zoomValueLabel, imageSl
         imageDataLayout.addWidget(roiStdDevTxt, Qt.AlignLeft)
         imageDataLayout.addWidget(zoomLabel, Qt.AlignLeft)
         imageDataLayout.addWidget(zoomValueLabel, Qt.AlignLeft)
-        imageDataLayout.addStretch(50)
+        imageDataLayout.addStretch(10)
     
         return (pixelValueTxt,  
                 roiMeanTxt, roiStdDevTxt)
@@ -595,7 +595,8 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
     try:
         graphicsView.graphicsItem.sigMouseHovered.connect(
-        lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt))
+        lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage, graphicsView, 
+                                                         pixelValueTxt, imageSlider))
 
         graphicsView.graphicsItem.sigMaskCreated.connect(
             lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
@@ -640,7 +641,7 @@ def updateROIName(graphicsView, cmbROIs):
     graphicsView.currentROIName = cmbROIs.currentText()
 
 
-def displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt):
+def displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt, imageSlider=None):
         logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
         #print("mousePointerOverImage={}".format(mousePointerOverImage))
         if mouseOverImage:
@@ -648,7 +649,11 @@ def displayImageDataUnderMouse(mouseOverImage, graphicsView, pixelValueTxt):
             yCoord = graphicsView.graphicsItem.yMouseCoord
             pixelValue = graphicsView.graphicsItem.pixelValue
             strValue = str(pixelValue)
-            strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord)
+            if imageSlider:
+                imageNumber = imageSlider.value()
+            else:
+                imageNumber = 1
+            strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
             pixelValueTxt.setText('= ' + strValue + strPosition)
         else:
              pixelValueTxt.setText('')

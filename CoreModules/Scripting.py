@@ -1,10 +1,11 @@
 import os
+from pydicom import dcmread
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Study
 from CoreModules.DeveloperTools import Series
-from CoreModules.DeveloperTools import Image
+from CoreModules.DeveloperTools import Image as ImageJoao
 
 
 class List:
@@ -14,21 +15,18 @@ class List:
     def __init__(self, List):
         self.List = List
 
-    @property
     def empty(self):
         """
         Checks if the list is empty.
         """
         return len(self.List) == 0
 
-    @property
     def length(self):
         """
         Returns the number of items in the list.
         """
         return len(self.List)
 
-    @property
     def enumerate(self):
         """
         Enumerates the items in the list.
@@ -39,21 +37,18 @@ class List:
         """
         Deletes all items in the list
         """
-        for item in self.List:
-            item.delete()
+        for item in self.List: item.delete()
 
+    def display(self):
+        """
+        Displays all items in the list.
+        """
+        for item in self.List: item.display()
 
 class ImagesList(List):
     """
     A class containing a list of objects of class Image. 
     """
-    def display(self):
-        """
-        Displays all images in the list.
-        """
-        if len(self.List) == 0: return
-        self.List[0].displayListImages(self.List)
-
     def merge(self, series_name='MergedSeries'):
         """
         Merges a list of images into a new series under the same study
@@ -67,18 +62,17 @@ class ImagesList(List):
         """
         return self.List[0].newSeriesFrom(self.List, suffix=suffix)
 
+    def Item(self, *args):
+        """
+        Applies the Item method to all images in the list
+        """
+        return [image.Item(args) for image in self.List]
+
 
 class SeriesList(List):
     """
     A class containing a list of class Series. 
-    """
-    def display(self):
-        """
-        Displays all series in the list.
-        """
-        if len(self.List) == 0: return
-        for Series in self.List: Series.display()
-    
+    """    
     def merge(self, series_name='MergedSeries'):
         """
         Merges a list of series into a new series under the same study
@@ -91,10 +85,23 @@ class StudyList(List):
     """
     A class containing a list of class Study. 
     """
-    def display(self):
+
+
+class Image(ImageJoao):
+    """
+    A temporary class for protoptying new image methods. 
+    """
+    def read(self):
         """
-        Displays all studies in the list (NOT YET AVAILABLE).
+        Returns a pydicom dataset.
         """
+        return dcmread(self.path)
+
+    def save(self, ds):
+        """
+        Writes out a pydicom dataset.
+        """
+        ds.save_as(self.path)
 
 
 class Pipelines:
@@ -172,7 +179,7 @@ class Pipelines:
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
 
-    def user_input(self, title="User input window", *fields):
+    def user_input(self, *fields, title="User input window"):
         """
         Creates a pop-up window to get user input.
         """
@@ -185,6 +192,8 @@ class Pipelines:
                 inputDict[field["label"]] = "int"
             if field["type"] == "string":
                 inputDict[field["label"]] = "string"
+            if field["type"] == "list":
+                inputDict[field["label"]] = ""
         ui = UserInterfaceTools(self)
         paramList = ui.inputWindow(inputDict, title=title, lists=lists)
         if paramList is None: 

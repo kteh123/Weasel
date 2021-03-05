@@ -60,8 +60,13 @@
   <menu name="Tutorial">
     
         <item>
-          <label>Display images and series</label>
-          <module>Tutorial_Display</module>
+          <label>Display images</label>
+          <module>Tutorial_DisplayImages</module>
+        </item>
+
+        <item>
+          <label>Display series</label>
+          <module>Tutorial_DisplaySeries</module>
         </item>
 
         <item>

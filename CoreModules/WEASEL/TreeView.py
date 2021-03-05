@@ -480,12 +480,20 @@ def toggleMenuItems(self):
         try:
             logger.info("TreeView.toggleMenuItems called.")
             for menu in self.listMenus:
+                if menu.title() == 'File':
+                    #Do not apply this function to items in the
+                    #File menu
+                    continue
                 menuItems = menu.actions()
                 for menuItem in menuItems:
                     if not menuItem.isSeparator():
                         if not(menuItem.data() is None):
                             #Assume not all tools will act on an image
                             #Assume all tools act on a series 
+                            #
+                            #Disable all menu items to account for the
+                            #case when all checkboxes are unchecked. 
+                            #Then enable depending on what is checked.
                             menuItem.setEnabled(False)  
                             if self.isASeriesChecked:
                                  menuItem.setEnabled(True)
@@ -719,6 +727,35 @@ def returnSeriesImageList(self, subjectName, studyName, seriesName):
             print('Error in TreeView.returnSeriesImageList: ' + str(e))
             logger.error('Error in TreeView.returnSeriesImageList: ' + str(e))
 
+
+def returnImageName(self, subjectName, studyName, seriesName, imagePath):
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        for i in range(subjectCount):
+            subject = root.child(i)
+            subjectID = subject.text(1).replace("Subject", "").replace("-","").strip()
+            if subjectID == subjectName:
+                studyCount = subject.childCount()
+                for j in range(studyCount):
+                    study = subject.child(j)
+                    studyID = study.text(1).replace("Study", "").replace("-","").strip()
+                    if studyID == studyName:
+                        seriesCount = study.childCount()
+                        for k in range(seriesCount):
+                            series = study.child(k)
+                            seriesID = series.text(1).replace("Series", "").replace("-","").strip()
+                            if seriesID == seriesName:
+                                imageCount = series.childCount()
+                                for n in range(imageCount):
+                                    image = series.child(n)
+                                    if image.text(4) == imagePath:
+                                        return image.text(1).replace("Image", "").replace("-","").strip()
+                                break
+        return ''
+    except Exception as e:
+            print('Error in TreeView.returnImageName: ' + str(e))
+            logger.error('Error in TreeView.returnImageName: ' + str(e))
 
 
 def returnCheckedItems(self):

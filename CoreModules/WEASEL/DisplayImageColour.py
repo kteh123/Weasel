@@ -154,7 +154,7 @@ def setUpSubWindow(self, imageSeries = False):
         
         
         height, width = self.getMDIAreaDimensions()
-        subWindow.setGeometry(0,0,width,height)
+        subWindow.setGeometry(0, 0, width, height)
         self.mdiArea.addSubWindow(subWindow)
         
         mainVerticalLayout = QVBoxLayout()
@@ -211,9 +211,6 @@ def setUpSubWindow(self, imageSeries = False):
         sliderLayout = QHBoxLayout()
         if imageSeries:
             mainVerticalLayout.addLayout(sliderLayout)
-        #else:
-        #    windowTitle = displayImageCommon.getDICOMFileData(self)
-        #    subWindow.setWindowTitle(windowTitle)
 
         subWindow.show()
         return (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
@@ -328,7 +325,8 @@ def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyNam
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, True,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, 
-                                                spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, lblImageMissing, lblPixelValue)
+                                                spinBoxIntensity, spinBoxContrast, btnApply, 
+                                                cmbColours, lblImageMissing, lblPixelValue)
 
             
 
@@ -743,7 +741,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                 lblImageMissing.hide()   
   
                 graphicsView.getView().scene().sigMouseMoved.connect(
-                   lambda pos: getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue))
+                   lambda pos: getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, currentImageNumber+1))
 
         except Exception as e:
             print('Error in DisplayImageColour.displayPixelArray: ' + str(e))
@@ -1452,7 +1450,7 @@ def setPgColourMap(colourTable,  graphicsView, cmbColours=None, lut=None):
         logger.error('Error in DisplayImageColour.setPgColourMap: ' + str(e))
 
 
-def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue):
+def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, imageNumber=1):
     """
     This function checks that the mouse pointer is over the
     image and when it is, it determines the value of the pixel
@@ -1474,12 +1472,12 @@ def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue):
             mousePoint = container.getViewBox().mapSceneToView(pos) 
             x_i = math.floor(mousePoint.x())
             y_i = math.floor(mousePoint.y()) 
-            z_i =  graphicsView.currentIndex
+            z_i =  imageNumber
             if (len(np.shape(pixelArray)) == 2) and y_i >= 0 and y_i < pixelArray.shape [ 1 ] \
                 and x_i >= 0 and x_i < pixelArray.shape [ 0 ]: 
                 lblPixelValue.setText(
-                    "<h4> = {} @ X: {}, Y: {}</h4>"
-                .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i))
+                    "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
+                .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i, z_i))
             elif (len(np.shape(pixelArray)) == 3) and z_i >= 0 and z_i < pixelArray.shape [ 0 ] \
                 and x_i >= 0 and x_i < pixelArray.shape [ 1 ] \
                 and y_i >= 0 and y_i < pixelArray.shape [ 2 ]:
