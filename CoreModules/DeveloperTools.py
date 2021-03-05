@@ -194,6 +194,21 @@ class UserInterfaceTools:
         """
         QMessageBox.information(self.objWeasel, title, msg)
 
+    def showQuestionWindow(self, title="Message Window Title", question="You wish to proceed (OK) or not (Cancel)?"):
+        """
+        Displays a question window in the User Interface with the title in "title" and
+        with the question in "question". The 2 strings in the arguments are the input by default.
+        The user has to click either "OK" or "Cancel" in order to continue using the interface.
+
+        It returns 0 if reply is "Cancel" and 1 if reply is "OK".
+        """
+        buttonReply = QMessageBox.question(self, title, question, 
+                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+        if buttonReply == QMessageBox.Ok:
+            return 1
+        else:
+            return 0
+
 
     def closeMessageWindow(self):
         """
@@ -841,7 +856,8 @@ class Series:
             series_id = self.seriesID.split('_', 1)[0]
             series_name = self.seriesID.split('_', 1)[1]
             series_uid = self.seriesUID
-            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
+            suffix = self.suffix
+            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix)
             for newCopiedImagePath in newPathsList:
                 newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
                 self.add(newImage)
@@ -878,6 +894,13 @@ class Series:
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
             self.images = outputPath
+    
+    def read(self):
+        return self.PydicomList
+
+    def save(self, PydicomList):
+        for index, dataset in enumerate(PydicomList):
+            saveDICOM_Image.saveDicomToFile(dataset, output_path=self.images[index])
 
     @staticmethod
     def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
@@ -1123,7 +1146,7 @@ class Series:
         else:
             return False
 
-    def saveNIFTI(self, directory=None, filename=None):
+    def export_as_nifti(self, directory=None, filename=None):
         if directory is None: directory=os.path.dirname(self.images[0])
         if filename is None: filename=self.seriesID
         dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
@@ -1133,7 +1156,7 @@ class Series:
 
 
 class Image:
-    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path',
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path', 'seriesUID',
                  'suffix', 'referencePath')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, path, suffix=None):
         self.objWeasel = objWeasel
@@ -1141,6 +1164,7 @@ class Image:
         self.studyID = studyID
         self.seriesID = seriesID
         self.path = path
+        self.seriesUID = self.SeriesUID
         self.suffix = '' if suffix is None else suffix
         self.referencePath = ''
 
@@ -1174,15 +1198,17 @@ class Image:
         newImage.referencePath = self.path
         return newImage
 
-    def copy(self, suffix="_Copy", series=None):
+    def copy(self, series=None):
         if series is None:
-            series_id = None
-            series_name = None
-            series_uid = None
+            series_id = self.seriesID.split('_', 1)[0]
+            series_name = self.seriesID.split('_', 1)[1]
+            series_uid = self.seriesUID
+            suffix = self.suffix
         else:
             series_id = series.seriesID.split('_', 1)[0]
             series_name = series.seriesID.split('_', 1)[1]
             series_uid = series.seriesUID
+            suffix = series.suffix
         newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix)
         copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath)
         if series: series.add(copiedImage)
@@ -1202,7 +1228,7 @@ class Image:
             if series is None:
                 series_id = self.seriesID.split('_', 1)[0]
                 series_name = self.seriesID.split('_', 1)[1]
-                series_uid = None
+                series_uid = self.seriesUID
             else:
                 series_id = series.seriesID.split('_', 1)[0]
                 series_name = series.seriesID.split('_', 1)[1]
@@ -1210,6 +1236,12 @@ class Image:
             outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
             self.path = outputPath[0]
             if series: series.add(self)
+        
+    def read(self):
+        return self.PydicomObject
+
+    def save(self, PydicomObject):
+        saveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
 
     @staticmethod
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
@@ -1227,6 +1259,20 @@ class Image:
         pathsList = [image.path for image in listImages]
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].studyID, listImages[0].seriesID)
 
+    @property
+    def Name(self):
+        return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+
+    @property
+    def SeriesUID(self):
+        if not self.path:
+            self.seriesUID = None
+        elif os.path.exists(self.path):
+            self.seriesUID = readDICOM_Image.getImageTagValue(self.path, 'SeriesInstanceUID')
+        else:
+            self.seriesUID = None
+        return self.seriesUID
+    
     def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
 
@@ -1293,7 +1339,7 @@ class Image:
         else:
             return []
 
-    def saveNIFTI(self, directory=None, filename=None):
+    def export_as_nifti(self, directory=None, filename=None):
         if directory is None: directory=os.path.dirname(self.path)
         if filename is None: filename=self.seriesID
         dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
