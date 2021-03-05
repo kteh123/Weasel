@@ -1,9 +1,6 @@
 <menus>
   
   <menu name="File">
-      <!--Do not change the name of the above top level File menu as this will stop
-      TreeView.toggleMenuItems working correctly
-      -->
         <item>
           <label>Load DICOM Images</label>
           <shortcut>Ctrl+L</shortcut>
@@ -96,13 +93,13 @@
         </item>
 
         <item>
-          <label>Merge series</label>
-          <module>Tutorial_MergeSeries</module>
-        </item>
-
-        <item>
           <label>Merge images</label>
           <module>Tutorial_MergeImages</module>
+        </item>
+    
+        <item>
+          <label>Merge series</label>
+          <module>Tutorial_MergeSeries</module>
         </item>
 
         <item>

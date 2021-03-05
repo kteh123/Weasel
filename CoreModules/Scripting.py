@@ -91,13 +91,13 @@ class Image(ImageJoao):
     """
     A temporary class for protoptying new image methods. 
     """
-    def read(self):
+    def __read(self):
         """
         Returns a pydicom dataset.
         """
         return dcmread(self.path)
 
-    def save(self, ds):
+    def __save(self, ds):
         """
         Writes out a pydicom dataset.
         """
