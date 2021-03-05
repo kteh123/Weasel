@@ -27,5 +27,5 @@ def main(objWeasel):
     ui.refreshWeasel(new_series_name=imageList[-1].seriesID)
     # Display all checked images
     imageList[0].display()
-    #imageList[0].saveNIFTI()
+    #imageList[0].export_as_nifti()
     #Image.DisplayImages(imageList)

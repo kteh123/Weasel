@@ -100,9 +100,13 @@ class WeaselXMLReader:
 
     def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
         try:
-            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
-             ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
-             '[@typeID=' + chr(34) + suffix + chr(34) +']'
+            if suffix == '':
+                xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']'
+            else:
+                xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
+                '[@typeID=' + chr(34) + suffix + chr(34) +']'
             return self.root.find(xPath)
         except Exception as e:
             print('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e)) 
@@ -287,9 +291,9 @@ class WeaselXMLReader:
             else:
                 if hasattr(dataset, "SeriesDescription"):
                     newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
-                elif hasattr(dicom, "SequenceName"):
+                elif hasattr(dataset, "SequenceName"):
                     newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SequenceName
-                elif hasattr(dicom, "ProtocolName"):
+                elif hasattr(dataset, "ProtocolName"):
                     newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.ProtocolName
                 else:
                     newSeriesID = str(dataset.SeriesNumber) + "_" + "No Sequence Name"

@@ -194,6 +194,7 @@ class UserInterfaceTools:
         """
         QMessageBox.information(self.objWeasel, title, msg)
 
+
     def showQuestionWindow(self, title="Message Window Title", question="You wish to proceed (OK) or not (Cancel)?"):
         """
         Displays a question window in the User Interface with the title in "title" and
