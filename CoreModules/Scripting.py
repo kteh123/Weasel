@@ -1,11 +1,10 @@
 import os
-from pydicom import dcmread
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Study
 from CoreModules.DeveloperTools import Series
-from CoreModules.DeveloperTools import Image as ImageJoao
+from CoreModules.DeveloperTools import Image
 
 
 class List:
@@ -68,6 +67,12 @@ class ImagesList(List):
         """
         return [image.Item(args) for image in self.List]
 
+    def display(self):
+        """
+        Displays all images as a series.
+        """
+        self.List[0].displayListImages(self.List)
+
 
 class SeriesList(List):
     """
@@ -85,23 +90,6 @@ class StudyList(List):
     """
     A class containing a list of class Study. 
     """
-
-
-class Image(ImageJoao):
-    """
-    A temporary class for protoptying new image methods. 
-    """
-    def __read(self):
-        """
-        Returns a pydicom dataset.
-        """
-        return dcmread(self.path)
-
-    def __save(self, ds):
-        """
-        Writes out a pydicom dataset.
-        """
-        ds.save_as(self.path)
 
 
 class Pipelines:
