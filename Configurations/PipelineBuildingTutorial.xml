@@ -108,6 +108,11 @@
         </item>
 
         <item>
+          <label>Delete series</label>
+          <module>Tutorial_DeleteSeries</module>
+        </item>
+    
+        <item>
           <separator>yes</separator>
         </item>
 
@@ -152,11 +157,15 @@
           <label>Anonymise</label>
           <module>Tutorial_Anonymise</module>
         </item>
+
+        <item>
+          <label>Anonymise a copy</label>
+          <module>Tutorial_AnonymiseCopy</module>
+        </item>
     
-  </menu>
-  
-  
-  <menu name="Examples">  
+
+    
+    <menu name="Examples">  
         <item>
           <label>Square Series/Image</label>
           <shortcut>Ctrl+S</shortcut>
