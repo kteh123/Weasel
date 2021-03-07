@@ -857,3 +857,33 @@ def getPathParentNode(self, inputPath):
     except Exception as e:
         print('Error in TreeView.getPathParentNode: ' + str(e))
         logger.error('Error in TreeView.getPathParentNode: ' + str(e))
+
+
+def getSeriesNumberAfterLast(self, inputPath):
+    """This function returns a list of subjectID, studyID an seriesID based on the given filepath."""
+    logger.info("TreeView.getPathParentNode called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                seriesList = []
+                seriesFlag = False
+                for k in range(seriesCount):
+                    series = study.child(k)
+                    seriesList.append(int((series.text(1).replace('Series -', '').strip()).split('_')[0]))
+                    imageCount = series.childCount()
+                    for n in range(imageCount):
+                        image = series.child(n)
+                        if image.text(4) == inputPath:
+                            seriesFlag = True
+                if seriesFlag == True:
+                    seriesList.sort()
+                    return str(seriesList[-1] + 1)
+    except Exception as e:
+        print('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
+        logger.error('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
