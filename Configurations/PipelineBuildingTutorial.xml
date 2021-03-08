@@ -162,8 +162,17 @@
           <label>Anonymise a copy</label>
           <module>Tutorial_AnonymiseCopy</module>
         </item>
-    
 
+   </menu>
+  
+    <menu name="iBEAt">
+
+      <item>
+        <label>Harmonize data (Leeds)</label>
+        <module>iBEAt_HarmonizeDataLeeds</module>
+      </item>
+
+    </menu>
     
     <menu name="Examples">  
         <item>

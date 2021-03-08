@@ -11,18 +11,46 @@ def main(weasel):
 
     series_names = []                
     for i, series in list_of_series.enumerate():      
-        weasel.progress_bar(max=list_of_series.length(), index=i+1, msg="Getting series name {}")
+        weasel.progress_bar(max=list_of_series.length(), index=i+1, msg="Finding series name {}")
         series_names.append(iBEAt_series_name(series))
+
+    series_names = iBEAt_series_names_update(series_names)
+
+    for i, series in list_of_series.enumerate():      
+        weasel.progress_bar(max=list_of_series.length(), index=i+1, msg="Renaming series{}")
+        series.Item("SeriesDescription", series_names[i])
 
     weasel.refresh()            
 
 
 
+def iBEAt_series_names_update(series_names): 
+    """
+    For some series the name must be extended
+    """
+    inject = series_names.index('DCE_kidneys_cor-oblique_fb')
+    for i, name in enumerate(series_names[inject:]):
+        if name[0:17] == 'T1w_abdomen_dixon': 
+            series_names[inject+i] += '_post_contrast'
+
+    asl = [i for i, x in enumerate(series_names) if x == 'ASL_kidneys_pCASL_cor-oblique_fb']
+    nr_of_asl_series = asl.len()/5
+    for i in range(nr_of_asl_series):
+        series_names[asl[5*i+0]] += '_M0_moco'
+        series_names[asl[5*i+1]] += '_PW_moco'
+        series_names[asl[5*i+2]] += '_RBF_moco'
+        series_names[asl[5*i+3]] += '_control_moco'
+        series_names[asl[5*i+4]] += '_label0_moco'
+
+    return series_names
+   
+
+
 def iBEAt_series_name(series): 
-"""
-The sequence names in Leeds have been removed by the anonymisation
-procedure and must be recovered from other attributes
-"""
+    """
+    The sequence names in Leeds have been removed by the anonymisation
+    procedure and must be recovered from other attributes
+    """
     ds = series.children[0].read()
 
     if ds.SequenceName == '*tfi2d1_192 ':
