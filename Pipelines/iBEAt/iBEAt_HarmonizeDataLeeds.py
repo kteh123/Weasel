@@ -63,13 +63,13 @@ def iBEAt_series_name(series):
         return 'T2w_abdomen_haste_tra_mbh'
 
     if ds.SequenceName == '*fl3d2':
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\OUT_PHASE\NORM\DIS2D ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\OUT_PHASE\\NORM\\DIS2D ':
             return 'T1w_abdomen_dixon_cor_bh_out_phase'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\IN_PHASE\NORM\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\IN_PHASE\\NORM\\DIS2D':
             return 'T1w_abdomen_dixon_cor_bh_in_phase'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\FAT\NORM\DIS2D ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\FAT\\NORM\\DIS2D ':
             return 'T1w_abdomen_dixon_cor_bh_fat'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\WATER\NORM\DIS2D ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\WATER\\NORM\\DIS2D ':
             return 'T1w_abdomen_dixon_cor_bh_water'
 
     if ds.SequenceName == '*fl2d1r4':
@@ -80,56 +80,56 @@ def iBEAt_series_name(series):
 
     if ds.SequenceName == '*fl2d1_v120in ':
         if ds.ImagePositionPatient[0] < 0:
-            if ds.ImageType == 'ORIGINAL\PRIMARY\MAG\RETRO\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\MAG\\RETRO\\DIS2D':
                 return 'PC_RenalArtery_Right_EcgTrig_fb_120_magnitude'
-            if ds.ImageType == 'DERIVED\PRIMARY\P\RETRO\DIS2D ':
+            if ds.ImageType == 'DERIVED\\PRIMARY\\P\\RETRO\\DIS2D ':
                 return 'PC_RenalArtery_Right_EcgTrig_fb_120_phase'
         else:
-            if ds.ImageType == 'ORIGINAL\PRIMARY\MAG\RETRO\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\MAG\\RETRO\\DIS2D':
                 return 'PC_RenalArtery_Left_EcgTrig_fb_120_magnitude'
-            if ds.ImageType == 'DERIVED\PRIMARY\P\RETRO\DIS2D ':
+            if ds.ImageType == 'DERIVED\\PRIMARY\\P\\RETRO\\DIS2D ':
                 return 'PC_RenalArtery_Left_EcgTrig_fb_120_phase'
 
     if ds.SequenceName == '*fl2d12 ':
         if ds.InPlanePhaseEncodingDirection == 'COL ':
-            if ds.ImageType == 'ORIGINAL\PRIMARY\M\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\DIS2D':
                 return 'T2star_map_pancreas_tra_mbh_magnitude'
-            if ds.ImageType == 'ORIGINAL\PRIMARY\P\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\DIS2D':
                 return 'T2star_map_pancreas_tra_mbh_phase'
-            if ds.ImageType == 'DERIVED\PRIMARY\T2_STAR MAP\DIS2D ':
+            if ds.ImageType == 'DERIVED\\PRIMARY\\T2_STAR MAP\\DIS2D ':
                 return 'T2star_map_pancreas_tra_mbh_T2star'
         else:
-            if ds.ImageType == 'ORIGINAL\PRIMARY\M\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\DIS2D':
                 return 'T2star_map_kidneys_cor-oblique_mbh_magnitude'
-            if ds.ImageType == 'ORIGINAL\PRIMARY\P\DIS2D':
+            if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\DIS2D':
                 return 'T2star_map_kidneys_cor-oblique_mbh_phase'
-            if ds.ImageType == 'DERIVED\PRIMARY\T2_STAR MAP\DIS2D ':
+            if ds.ImageType == 'DERIVED\\PRIMARY\\T2_STAR MAP\\DIS2D ':
                 return 'T2star_map_kidneys_cor-oblique_mbh_T2star'
 
     if ds.SequenceName == '*fl2d1':
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\NORM\DIS2D ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\NORM\\DIS2D ':
             return 'T1w_kidneys_cor-oblique_mbh_magnitude'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\P\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\DIS2D':
             return 'T1w_kidneys_cor-oblique_mbh_phase'
 
     if ds.SequenceName == '*tfl2d1r106 ':
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\DIS2D':
             return 'T1map_kidneys_cor-oblique_mbh_magnitude'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\P\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\DIS2D':
             return 'T1map_kidneys_cor-oblique_mbh_phase'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\P\MOCO\DIS2D ' or ds.ImageType == 'ORIGINAL\PRIMARY\M\MOCO\DIS2D ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\MOCO\\DIS2D ' or ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\MOCO\\DIS2D ':
             return 'T1map_kidneys_cor-oblique_mbh_moco'
-        if ds.ImageType == 'DERIVED\PRIMARY\T1 MAP\MOCO\T1\DIS2D':
+        if ds.ImageType == 'DERIVED\\PRIMARY\\T1 MAP\\MOCO\\T1\\DIS2D':
             return 'T1map_kidneys_cor-oblique_mbh_T1map'
 
     if ds.SequenceName == '*tfl2d1r96':
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\DIS2D':
             return 'T2map_kidneys_cor-oblique_mbh_magnitude'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\P\DIS2D':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\P\\DIS2D':
             return 'T2map_kidneys_cor-oblique_mbh_phase'
-        if ds.ImageType == 'ORIGINAL\PRIMARY\M\DIS2D\MOCO ':
+        if ds.ImageType == 'ORIGINAL\\PRIMARY\\M\\DIS2D\\MOCO ':
             return 'T2map_kidneys_cor-oblique_mbh_magnitude_moco'
-        if ds.ImageType == 'DERIVED\PRIMARY\T2 MAP\DIS2D\MOCO\T2':
+        if ds.ImageType == 'DERIVED\\PRIMARY\\T2 MAP\\DIS2D\\MOCO\\T2':
             return 'T2map_kidneys_cor-oblique_mbh_T2map'
 
     if ds.SequenceName[0:5] == '*ep_b':
@@ -141,7 +141,7 @@ def iBEAt_series_name(series):
     if ds.SequenceName == '*fl3d1':
         if ds.ScanOptions == 'PFP ':
             return 'MT_OFF_kidneys_cor-oblique_bh'
-        if ds.ScanOptions == 'PFP\MT':
+        if ds.ScanOptions == 'PFP\\MT':
             return 'MT_ON_kidneys_cor-oblique_bh'
 
     if ds.SequenceName == '*tfi2d1_154 ':
