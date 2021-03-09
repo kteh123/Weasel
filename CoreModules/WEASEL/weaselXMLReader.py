@@ -55,14 +55,14 @@ class WeaselXMLReader:
     def getStudies(self):
         return self.root.findall('./subject/study')
 
-
     def getSubjects(self):
         return self.root.findall('./subject')
 
 
     def getImageList(self, studyID, seriesID):
         try:
-            xPath = './/study[@id=' + chr(34) + studyID + chr(34) + \
+            print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
+            xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
             return self.root.findall(xPath)
         except Exception as e:
@@ -71,11 +71,10 @@ class WeaselXMLReader:
 
 
     def getSeries(self, subjectID, studyID, seriesID):
-        try: 
-            xPath = './subject[@id=' + chr(34) + subjectID + chr(34) + ']' + \
-                '/study[@id=' + chr(34) + studyID + chr(34) + ']' + \
+        try: #'./subject[@id=' + chr(34) + subjectID + chr(34) + ']' + \
+            xPath = './/study[@id=' + chr(34) + studyID + chr(34) + ']' + \
                     '/series[@id=' + chr(34) + seriesID + chr(34) + ']'
-            #print ("Xpath = {}".format(xPath))
+            print ("Xpath = {}".format(xPath))
             return self.root.find(xPath)
         except Exception as e:
             print('Error in WeaselXMLReader.getSeries: ' + str(e)) 
@@ -337,7 +336,8 @@ class WeaselXMLReader:
                 newImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
-                labelNewImage.text = imageLabel
+                #labelNewImage.text = imageLabel
+                labelNewImage.text = str(len(series)).zfill(6)
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
                 timeNewImage = ET.SubElement(newImage, 'time')
