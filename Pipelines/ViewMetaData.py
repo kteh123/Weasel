@@ -5,12 +5,13 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
         QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
-        QTreeWidgetItem, QGridLayout, QSlider, QCheckBox, QLayout, 
+        QTreeWidgetItem, QGridLayout, QSlider, QCheckBox, QLayout, QAbstractItemView,
         QProgressBar, QComboBox, QTableWidget, QTableWidgetItem, QFrame)
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import os
 import logging
 logger = logging.getLogger(__name__)
 
@@ -19,20 +20,28 @@ def main(self):
     try:
         logger.info("ViewMetaData.viewMetadata called")
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-
-        if self.isAnImageChecked:
-            imagePath = self.selectedImagePath
-            imageName = self.selectedImageName
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 
+        
+        if self.isASeriesChecked:
+            if len(self.checkedSeriesList)>0: 
+                for series in self.checkedSeriesList:
+                    subjectName = series[0]
+                    studyName = series[1]
+                    seriesName = series[2]
+                    imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+                    firstImagePath = imageList[0]
+                    dataset = readDICOM_Image.getDicomDataset(firstImagePath)
+                    displayMetaDataSubWindow(self, "Metadata for series {}".format(seriesName), 
                                             dataset)
-        elif self.isASeriesChecked:
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
-            imageList = self.objXMLReader.getImagePathList(studyID, seriesID)
-            firstImagePath = imageList[0]
-            dataset = readDICOM_Image.getDicomDataset(firstImagePath)
-            displayMetaDataSubWindow(self, "Metadata for series {}".format(seriesID), 
+        elif self.isAnImageChecked:
+            if len(self.checkedImageList)>0: 
+                for image in self.checkedImageList:
+                    studyName = image[0]
+                    seriesName = image[1]
+                    imagePath = image[2]
+                    subjectID = image[3]
+                    imageName = os.path.basename(imagePath)
+                    dataset = readDICOM_Image.getDicomDataset(imagePath)
+                    displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 
                                             dataset)
 
         QApplication.restoreOverrideCursor()
@@ -85,6 +94,7 @@ def buildTableView(self, dataset):
             tableWidget = QTableWidget()
             tableWidget.setShowGrid(True)
             tableWidget.setColumnCount(4)
+            tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
             #Create table header row
             headerItem = QTableWidgetItem(QTableWidgetItem("Tag\n")) 
@@ -100,30 +110,31 @@ def buildTableView(self, dataset):
             headerItem.setTextAlignment(Qt.AlignLeft)
             headerItem = tableWidget.setHorizontalHeaderItem(3 ,headerItem)
 
-            for data_element in dataset:
-                #Exclude pixel data from metadata listing
-                if data_element.name == 'Pixel Data':
-                    continue
-                rowPosition = tableWidget.rowCount()
-                tableWidget.insertRow(rowPosition)
-                tableWidget.setItem(rowPosition , 0, 
-                                QTableWidgetItem(str(data_element.tag)))
-                tableWidget.setItem(rowPosition , 1, 
-                                QTableWidgetItem(data_element.name))
-                tableWidget.setItem(rowPosition , 2, 
-                                QTableWidgetItem(data_element.VR))
-                if data_element.VR == "UN" or data_element.VR == "OW":
-                    try:
-                        valueMetadata = str(data_element.value.decode('utf-8'))
-                    except:
+            if dataset:
+                for data_element in dataset:
+                    #Exclude pixel data from metadata listing
+                    if data_element.name == 'Pixel Data':
+                        continue
+                    rowPosition = tableWidget.rowCount()
+                    tableWidget.insertRow(rowPosition)
+                    tableWidget.setItem(rowPosition , 0, 
+                                    QTableWidgetItem(str(data_element.tag)))
+                    tableWidget.setItem(rowPosition , 1, 
+                                    QTableWidgetItem(data_element.name))
+                    tableWidget.setItem(rowPosition , 2, 
+                                    QTableWidgetItem(data_element.VR))
+                    if data_element.VR == "UN" or data_element.VR == "OW":
                         try:
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = str(data_element.value.decode('utf-8'))
                         except:
-                            valueMetadata = str(data_element.value)
-                else:
-                    valueMetadata = str(data_element.value)
-                tableWidget.setItem(rowPosition , 3, 
-                                QTableWidgetItem(valueMetadata))
+                            try:
+                                valueMetadata = str(list(data_element))
+                            except:
+                                valueMetadata = str(data_element.value)
+                    else:
+                        valueMetadata = str(data_element.value)
+                    tableWidget.setItem(rowPosition , 3, 
+                                    QTableWidgetItem(valueMetadata))
 
 
             #Resize columns to fit contents
