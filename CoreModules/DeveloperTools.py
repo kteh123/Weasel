@@ -330,9 +330,9 @@ class GenericDICOMTools:
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
                 newDataset = readDICOM_Image.getDicomDataset(inputPath)
@@ -356,9 +356,9 @@ class GenericDICOMTools:
                                              derivedPath, suffix)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(inputPath, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
                 derivedPath = []
@@ -396,10 +396,16 @@ class GenericDICOMTools:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 os.remove(inputPath)
                 interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
+                for displayWindow in self.mdiArea.subWindowList():
+                    if displayWindow.windowTitle().split(" - ")[-1] == os.path.basename(inputPath):
+                        displayWindow.close()
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
                     os.remove(path)
-                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)   
+                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)
+                for displayWindow in self.mdiArea.subWindowList():
+                    if displayWindow.windowTitle().split(" - ")[-1] in map(os.path.basename, inputPath):
+                        displayWindow.close()
         except Exception as e:
             print('Error in function #.deleteDICOM: ' + str(e))
 
@@ -412,9 +418,9 @@ class GenericDICOMTools:
         try:
             if os.path.exists(imagePathList[0]):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(imagePathList)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(imagePathList, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList, seriesNumber=series_id)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             newImagePathList = []
@@ -457,6 +463,33 @@ class GenericDICOMTools:
             print('Error in #.mergeDicomIntoOneSeries: ' + str(e))
 
 
+    def generateSeriesIDs(self, inputPath, seriesNumber=None):
+        """
+        This function generates and returns a SeriesUID and an InstanceUID.
+        The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
+        The InstanceUID is generated based on SeriesUID.
+        """
+        try:
+            if isinstance(inputPath, str) and os.path.exists(inputPath):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
+                if seriesNumber is None:
+                    #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath)
+                    (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
+                    seriesNumber = str(int(self.objXMLReader.getStudy(studyID)[-1].attrib['id'].split('_')[0]) + 1)
+            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
+                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
+                if seriesNumber is None:
+                    #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath[0])
+                    (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
+                    seriesNumber = str(int(self.objXMLReader.getStudy(studyID)[-1].attrib['id'].split('_')[0]) + 1)
+            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
+            seriesID = ids[0]
+            seriesUID = ids[1]
+            return seriesID, seriesUID
+        except Exception as e:
+            print('Error in function #.generateUIDs: ' + str(e))
+
+
     @staticmethod
     def editDICOMTag(inputPath, dicomTag, newValue):
         """
@@ -472,26 +505,6 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
             print('Error in function #.editDICOMTag: ' + str(e))
-
-
-    @staticmethod
-    def generateSeriesIDs(inputPath, seriesNumber=None):
-        """
-        This function generates and returns a SeriesUID and an InstanceUID.
-        The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
-        The InstanceUID is generated based on SeriesUID.
-        """
-        try:
-            if isinstance(inputPath, str) and os.path.exists(inputPath):
-                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
-            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
-            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
-            seriesID = ids[0]
-            seriesUID = ids[1]
-            return seriesID, seriesUID
-        except Exception as e:
-            print('Error in function #.generateUIDs: ' + str(e))
 
 
     @staticmethod
@@ -836,11 +849,11 @@ class Series:
     
     def new(self, suffix=None, series_id=None, series_name=None, series_uid=None):
         if series_id is None:
-            series_id, _ = GenericDICOMTools.generateSeriesIDs(self.images)
+            series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
         if series_name is None:
             series_name = self.seriesID.split('_', 1)[1] + suffix
         if series_uid is None:
-            _, series_uid = GenericDICOMTools.generateSeriesIDs(self.images, seriesNumber=series_id)
+            _, series_uid = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images, seriesNumber=series_id)
         seriesID = str(series_id) + '_' + series_name
         newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
         newSeries.referencePathsList = self.images
@@ -1181,11 +1194,11 @@ class Image:
     def newSeriesFrom(listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None):
         pathsList = [image.path for image in listImages]
         if series_id is None:
-            series_id, _ = GenericDICOMTools.generateSeriesIDs(pathsList)
+            series_id, _ = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList)
         if series_name is None:
             series_name = listImages[0].seriesID.split('_', 1)[1] + suffix
         if series_uid is None:
-            _, series_uid = GenericDICOMTools.generateSeriesIDs(pathsList, seriesNumber=series_id)
+            _, series_uid = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList, seriesNumber=series_id)
         seriesID = str(series_id) + '_' + series_name
         newSeries = Series(listImages[0].objWeasel, listImages[0].subjectID, listImages[0].studyID, seriesID, seriesUID=series_uid, suffix=suffix)
         newSeries.referencePathsList = pathsList

@@ -10,7 +10,6 @@ import random
 from matplotlib import cm
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.ParametricMapsDictionary as param
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import logging
 
