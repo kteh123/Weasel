@@ -7,9 +7,9 @@
 def main(Weasel):
     Images = Weasel.images(msg = "Please select the images")     
     if Images.empty: return    
-    cancel, A, B, operation = Weasel.user_input(title="Settings for binary operation", 
-        {"type":"list", "label":"Image A", "default":0,  "list": Images(0018x, 0024x)}
-        {"type":"list", "label":"Image B", "default":0,  "list": Images(0018x, 0024x)}
+    cancel, width, A, B, operation = Weasel.user_input(title="Settings for binary operation", 
+        {"type":"list", "label":"Image A", "default":0,  "list": Images(0x0018, 0x0024)}
+        {"type":"list", "label":"Image B", "default":0,  "list": Images(0x0018, 0x0024)}
         {"type":"list", "label":"operation", "default":0,  "list": ["A * B", "A / B", "A + B", "A - B"]}
         )
     if cancel: return

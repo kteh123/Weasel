@@ -75,13 +75,14 @@ userSelectionDict = {}
 
 def displayManySingleImageSubWindows(self):
     try:
-        logger.info("DisplayImageColour.displayImageFromTreeView")
+        logger.info("DisplayImageColour.displayManySingleImageSubWindows")
         if len(self.checkedImageList)>0: 
             for image in self.checkedImageList:
                 studyName = image[0]
                 seriesName = image[1]
                 imagePath = image[2]
-                displayImageSubWindow(self, imagePath, seriesName, studyName)
+                subjectID = []
+                displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
     except Exception as e:
         print('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
         logger.error('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
@@ -96,7 +97,7 @@ def displayManyMultiImageSubWindows(self):
                 studyName = series[1]
                 seriesName = series[2]
                 imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, studyName, 
+                displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
         print('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
@@ -111,16 +112,17 @@ def displayImageFromTreeView(self, item, col):
         if col == 1:
             #Has an image or a series been double-clicked?
             if treeView.isAnImageSelected(item):
+                subjectName = item.parent().parent().parent().text(1).replace('Subject -', '').strip().lower()
                 studyName = item.parent().parent().text(1).replace('Study -', '').strip()
                 seriesName = item.parent().text(1).replace('Series -', '').strip()
                 imagePath = item.text(4)
-                displayImageSubWindow(self, imagePath, seriesName, studyName)
+                displayImageSubWindow(self, imagePath, subjectName, seriesName, studyName)
             elif treeView.isASeriesSelected(item):
                 subjectName = item.parent().parent().text(1).replace('Subject -', '').strip().lower()
                 studyName = item.parent().text(1).replace('Study -', '').strip().lower()
                 seriesName = item.text(1).replace('Series -', '').strip().lower()
                 imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, studyName, 
+                displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
             print('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
@@ -146,7 +148,11 @@ def setUpSubWindow(self, imageSeries = False):
     try:
         logger.info("DisplayImageColour.setUpSubWindow")
         subWindow = QMdiSubWindow(self)
-        subWindow.setObjectName = 'image_viewer'
+        if imageSeries:
+            subWindow.setObjectName = imageSeries
+        else:
+            subWindow.setObjectName = 'image_viewer'
+
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
                                       Qt.WindowMinimizeButtonHint |
@@ -270,7 +276,8 @@ def displayManySingleImageSubWindows(self):
             studyName = image[0]
             seriesName = image[1]
             imagePath = image[2]
-            displayImageSubWindow(self, imagePath, seriesName, studyName)
+            subjectName = image[3]
+            displayImageSubWindow(self, imagePath, subjectName, seriesName, studyName)
 
 
 def displayManyMultiImageSubWindows(self):
@@ -280,11 +287,11 @@ def displayManyMultiImageSubWindows(self):
             studyName = series[1]
             seriesName = series[2]
             imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageSubWindow(self, imageList, studyName, 
+            displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyName=None):
+def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesName=None, studyName=None):
         """
         Creates a subwindow that displays a single DICOM image. 
 
@@ -337,7 +344,7 @@ def displayImageSubWindow(self, derivedImagePath=None, seriesName=None, studyNam
             
             deleteButton.clicked.connect(lambda:
                                          deleteSingleImage(self, lblHiddenImagePath.text(), 
-                                      studyName, seriesName, subWindow))
+                                      subjectID, studyName, seriesName, subWindow))
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -364,10 +371,7 @@ def displayOneImage(self, lblImageMissing, lblPixelValue,
     displayColourTableInComboBox(cmbColours, colourTable)
 
 
-
-
-
-def displayMultiImageSubWindow(self, imageList, studyName, 
+def displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
@@ -421,7 +425,8 @@ def displayMultiImageSubWindow(self, imageList, studyName,
             btnApply = QPushButton() 
             cmbColours = QComboBox()
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply,
-                                                                     cmbColours, lblHiddenSeriesName, lblHiddenImagePath,
+                                                                     cmbColours, lblHiddenSeriesName, 
+                                                                     lblHiddenImagePath,
                                                                      imageLevelsLayout, 
                                                                      graphicsView, singleImageSelected=False)
            
@@ -484,10 +489,10 @@ def displayMultiImageSubWindow(self, imageList, studyName,
                                   subWindow)
             
             deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(self,
-                                      self.selectedImagePath, 
+                                      self.selectedImagePath, imageList, subjectName, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
-                                      imageSlider.value()))
+                                      imageSlider.value(), subWindow))
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -904,7 +909,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
 
 
-def deleteSingleImage(self, currentImagePath, 
+def deleteSingleImage(self, currentImagePath, subjectID, 
                                       studyName, seriesName, subWindow):
     """When the Delete button is clicked on the single image viewer,
     this function deletes the physical image, removes the 
@@ -938,7 +943,7 @@ def deleteSingleImage(self, currentImagePath,
             QApplication.processEvents()
             os.remove(currentImagePath)
             #Remove deleted image from the list
-            self.objXMLReader.removeOneImageFromSeries(
+            self.objXMLReader.removeOneImageFromSeries(subjectID,
                     studyName, seriesName, currentImagePath)
             QApplication.processEvents()
             #Update tree view with xml file modified above
@@ -949,9 +954,9 @@ def deleteSingleImage(self, currentImagePath,
         logger.error('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
 
 
-def deleteImageInMultiImageViewer(self, currentImagePath, 
-                                      studyName, seriesName,
-                                      lastSliderPosition):
+def deleteImageInMultiImageViewer(self, currentImagePath, imageList, 
+                                   subjectName, studyName, seriesName,
+                                      lastSliderPosition, subWindow):
     """When the Delete button is clicked on the multi image viewer,
     this function deletes the physical image, removes the 
     reference to it in the XML file and removes it from the image viewer.
@@ -980,31 +985,31 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
             #Delete physical file
             os.remove(currentImagePath)
             #Remove deleted image from the list
-            self.imageList.remove(currentImagePath)
+            imageList.remove(currentImagePath)
 
             #Refresh the multi-image viewer to remove deleted image
             #First close it
-            displayImageCommon.closeSubWindow(self, seriesName)
+            subWindow.close()
                 
-            if len(self.imageList) == 0:
+            if len(imageList) == 0:
                 #Only redisplay the multi-image viewer if there
                 #are still images in the series to display
                 #The image list is empty, so do not redisplay
                 #multi image viewer 
                 pass   
-            elif len(self.imageList) == 1:
+            elif len(imageList) == 1:
                 #There is only one image left in the display
-                displayMultiImageSubWindow(self, self.imageList, studyName, seriesName)
-            elif len(self.imageList) + 1 == lastSliderPosition:    
+                displayMultiImageSubWindow(self, imageList, subjectName, studyName, seriesName)
+            elif len(imageList) + 1 == lastSliderPosition:    
                     #we are deleting the last image in the series of images
                     #so move the slider back to the penultimate image in list 
-                displayMultiImageSubWindow(self, self.imageList, 
-                                    studyName, seriesName, len(self.imageList))
+                displayMultiImageSubWindow(self, imageList, subjectName,
+                                    studyName, seriesName, len(imageList))
             else:
                 #We are deleting an image at the start of the list
                 #or in the body of the list. Move slider forwards to 
                 #the next image in the list.
-                displayMultiImageSubWindow(self, self.imageList, 
+                displayMultiImageSubWindow(self, imageList, subjectName,
                                     studyName, seriesName, lastSliderPosition)
      
             #Now update XML file
@@ -1024,7 +1029,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath,
                 #so just remove the image from the xml file
                 ##need to get the series (parent) containing this image (child)
                 ##then remove child from parent
-                self.objXMLReader.removeOneImageFromSeries(
+                self.objXMLReader.removeOneImageFromSeries(subjectName, 
                     studyName, seriesName, currentImagePath)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(self)

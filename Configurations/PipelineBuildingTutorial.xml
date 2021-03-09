@@ -44,12 +44,6 @@
           <context_menu>yes</context_menu>  
         </item>
         <item>
-          <label>Delete Series/Image</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Delete a DICOM Image or series</tooltip>
-          <module>DeleteImage</module>
-        </item>
-        <item>
           <label>Copy Series</label>
           <shortcut>Ctrl+C</shortcut>
           <tooltip>Copy a DICOM series</tooltip>
