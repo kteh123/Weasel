@@ -9,6 +9,11 @@ class WeaselMenuXMLReader:
         try:
             self.hasXMLFileParsedOK = True
             self.fullFilePath =  os.path.join("Configurations", menuXMLFile)
+            
+            # ISSUE 36
+            # weasel_parent = parent_folder(parent_folder('Weasel.py'))
+            # self.fullFilePath = search(weasel_parent, menuXMLFile)
+
             #self.fullFilePath = "MenuFiles\\" + menuXMLFile
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
