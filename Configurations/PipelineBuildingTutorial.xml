@@ -73,6 +73,11 @@
         </item>
     
         <item>
+          <label>Copy images (without a progress bar)</label>
+          <module>Tutorial_CopyImagesDirect</module>
+        </item>
+    
+        <item>
           <label>Copy series</label>
           <module>Tutorial_CopySeries</module>
         </item>
@@ -87,13 +92,27 @@
         </item>
 
         <item>
-          <label>Merge images</label>
+          <label>Merge images into a new series</label>
           <module>Tutorial_MergeImages</module>
         </item>
     
         <item>
-          <label>Merge series</label>
+          <label>Merge series into a new series</label>
           <module>Tutorial_MergeSeries</module>
+        </item>
+    
+        <item>
+          <label>Copy and merge images</label>
+          <module>Tutorial_MergeImagesCopy</module>
+        </item>
+    
+        <item>
+          <label>Cope and merge series</label>
+          <module>Tutorial_MergeSeriesCopy</module>
+        </item>
+    
+        <item>
+          <separator>yes</separator>
         </item>
 
         <item>
