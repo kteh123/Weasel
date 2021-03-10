@@ -175,7 +175,7 @@ class UserInterfaceTools:
                 (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
             return seriesID
         except Exception as e:
-            print('Error in function #.getSeriesFromImages: ' + str(e))
+            print('getSeriesFromImages: ' + str(e))
 
     
     def showMessageWindow(self, msg="Please insert message in the function call", title="Message Window Title"):
@@ -314,7 +314,7 @@ class UserInterfaceTools:
                     outputList.append(param)
             return outputList
         except Exception as e:
-            print('Error in function #.inputWindow: ' + str(e))
+            print('inputWindow: ' + str(e))
 
 
     def displayMetadata(self, inputPath):
@@ -330,7 +330,7 @@ class UserInterfaceTools:
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 displayMetaDataSubWindow(self.objWeasel, "Metadata for image {}".format(inputPath[0]), dataset)
         except Exception as e:
-            print('Error in function #.displayMetadata: ' + str(e))
+            print('displayMetadata: ' + str(e))
 
 
     def displayImages(self, inputPath, studyID, seriesID):
@@ -347,7 +347,7 @@ class UserInterfaceTools:
                     displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
             return
         except Exception as e:
-            print('Error in function #.displayImages: ' + str(e))
+            print('displayImages: ' + str(e))
         
     
     def refreshWeasel(self, new_series_name=None):
@@ -360,7 +360,7 @@ class UserInterfaceTools:
             else:
                 treeView.refreshDICOMStudiesTreeView(self.objWeasel)
         except Exception as e:
-            print('Error in function #.refreshWeasel: ' + str(e))
+            print('refreshWeasel: ' + str(e))
 
 
 class GenericDICOMTools:
@@ -427,7 +427,7 @@ class GenericDICOMTools:
                                 inputPath, derivedPath, suffix)
             return derivedPath, newSeriesID
         except Exception as e:
-            print('Error in function #.copyDICOM: ' + str(e))
+            print('copyDICOM: ' + str(e))
 
 
     def deleteDICOM(self, inputPath):
@@ -449,7 +449,7 @@ class GenericDICOMTools:
                     if displayWindow.windowTitle().split(" - ")[-1] in map(os.path.basename, inputPath):
                         displayWindow.close()
         except Exception as e:
-            print('Error in function #.deleteDICOM: ' + str(e))
+            print('deleteDICOM: ' + str(e))
 
 
     def mergeDicomIntoOneSeries(self, imagePathList, series_uid=None, series_id=None, series_name="New Series", suffix="_Merged", overwrite=False):
@@ -502,7 +502,7 @@ class GenericDICOMTools:
                                 imagePathList, newImagePathList, suffix)
             return newImagePathList
         except Exception as e:
-            print('Error in #.mergeDicomIntoOneSeries: ' + str(e))
+            print('mergeDicomIntoOneSeries: ' + str(e))
 
 
     def generateSeriesIDs(self, inputPath, seriesNumber=None):
@@ -529,7 +529,7 @@ class GenericDICOMTools:
             seriesUID = ids[1]
             return seriesID, seriesUID
         except Exception as e:
-            print('Error in function #.generateUIDs: ' + str(e))
+            print('Error in DeveloperTools.generateSeriesIDs: ' + str(e))
 
 
     @staticmethod
@@ -546,7 +546,7 @@ class GenericDICOMTools:
                 for path in inputPath:
                     saveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
-            print('Error in function #.editDICOMTag: ' + str(e))
+            print('Error in DeveloperTools.editDICOMTag: ' + str(e))
 
 
     @staticmethod
@@ -559,7 +559,7 @@ class GenericDICOMTools:
             imagePathListSorted, sliceListSorted, numberSlices, indecesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "SliceLocation")
             return imagePathListSorted, sliceListSorted
         except Exception as e:
-            print('Error in function #.sortBySliceLocation: ' + str(e))
+            print('Error in DeveloperTools.sortBySliceLocation: ' + str(e))
 
 
     @staticmethod
@@ -572,7 +572,7 @@ class GenericDICOMTools:
             imagePathListSorted, echoListSorted, numberEchoes, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "EchoTime")
             return imagePathListSorted, echoListSorted
         except Exception as e:
-            print('Error in function #.sortByEchoTime: ' + str(e))
+            print('Error in DeveloperTools.sortByEchoTime: ' + str(e))
 
 
     @staticmethod
@@ -585,7 +585,7 @@ class GenericDICOMTools:
             imagePathListSorted, timePointsListSorted, numberTimePoints, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "AcquisitionNumber")
             return imagePathListSorted, timePointsListSorted
         except Exception as e:
-            print('Error in function #.sortByEchoTime: ' + str(e))
+            print('Error in DeveloperTools.sortByEchoTime: ' + str(e))
         
 
 class PixelArrayDICOMTools:
@@ -605,7 +605,7 @@ class PixelArrayDICOMTools:
             else:
                 return None
         except Exception as e:
-            print('Error in function #.getPixelArrayFromDICOM: ' + str(e))
+            print('Error in DeveloperTools.getPixelArrayFromDICOM: ' + str(e))
 
 
     @staticmethod
@@ -623,7 +623,7 @@ class PixelArrayDICOMTools:
             else:
                 return None
         except Exception as e:
-            print('Error in function #.getDICOMobject: ' + str(e))
+            print('Error in DeveloperTools.getDICOMobject: ' + str(e))
 
 
     def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None):
@@ -674,7 +674,7 @@ class PixelArrayDICOMTools:
             return derivedImagePathList
 
         except Exception as e:
-            print('Error in function #.writePixelArrayToDicom: ' + str(e))
+            print('Error in DeveloperTools.writePixelArrayToDicom: ' + str(e))
 
 
     @staticmethod
@@ -694,7 +694,7 @@ class PixelArrayDICOMTools:
                 modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray, dataset)
                 saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath)
         except Exception as e:
-            print('Error in #.overwritePixelArray: ' + str(e))
+            print('overwritePixelArray: ' + str(e))
 
 
 class Project:
