@@ -81,7 +81,7 @@ def displayManySingleImageSubWindows(self):
                 studyName = image[0]
                 seriesName = image[1]
                 imagePath = image[2]
-                subjectID = []
+                subjectID = image[3]
                 displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
     except Exception as e:
         print('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
