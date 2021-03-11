@@ -203,20 +203,56 @@ class Pipelines:
     def user_input(self, *fields, title="User input window"):
         """
         Creates a pop-up window to get user input.
+        
+        Calling sequence
+        ----------------
+        cancel, value_1, ..., value_n = user_input(field_1, ..., field_n, title="My title")
+        Here "n" can be any number
+
+        Parameters
+        ----------
+        field_i: a dictionary of one of the following forms:
+
+        {"type":"float", "label":"Name of the field", "default":1.0}
+        {"type":"integer", "label":"Name of the field", "default":1}
+        {"type":"string", "label":"Name of the field", "default":"My string"}
+        {"type":"dropdownlist", "label":"Name of the field", "list":["item 1",...,"item n" ], "default":2}
+        {"type":"listview", "label":"Name of the field", "list":["item 1",...,"item n"]}
+
+        title: title shown to the user above the pop-up
+
+        Return values
+        -------------
+        cancel = True (False) if the user clicked Cancel (OK)
+        value_i: the value chosen by the user.
+            This has the same type as the default value entered:
+                an index for dropdownlist type
+                a list of indices for listview type
         """
         inputDict = {}
         lists = []
         for field in fields:
-            if field["type"] == "float": 
-                inputDict[field["label"]] = "float"
-            if field["type"] == "int":
-                inputDict[field["label"]] = "int"
-            if field["type"] == "string":
-                inputDict[field["label"]] = "string"
-            if field["type"] == "list":
-                inputDict[field["label"]] = ""
+            if field["type"] == "listview":
+                inputDict[field["label"]] = field["type"]
+            else:
+                inputDict[field["label"]] = field["type"] + "," + str(field["default"])
+            if field["type"] == "dropdownlist" or field["type"] == "listview":
+                lists.append(field["list"])
         ui = UserInterfaceTools(self)
         paramList = ui.inputWindow(inputDict, title=title, lists=lists)
         if paramList is None: 
-            return (1,) + tuple(paramList)
+            return (1,) + (0,) * len(fields)
+
+        # for lists, need to return index instead of value
+
+        for i, field in enumerate(fields):
+            if field["type"] == "dropdownlist":
+                value = paramList[i]
+                paramList[i] = field["list"].index(value)
+            if field["type"] == "listview":
+                value_list = paramList[i]
+                for v, value in enumerate(value_list):
+                    value_list[v] = field["list"].index(value) 
+                paramList[i] = value_list
+
         return (0,) + tuple(paramList)

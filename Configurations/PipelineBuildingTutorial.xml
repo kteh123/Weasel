@@ -81,35 +81,6 @@
           <label>Copy series</label>
           <module>Tutorial_CopySeries</module>
         </item>
-
-        <item>
-          <label>Copy studies</label>
-          <module>Tutorial_CopyStudies</module>
-        </item>
-
-        <item>
-          <separator>yes</separator>
-        </item>
-
-        <item>
-          <label>Merge images into a new series</label>
-          <module>Tutorial_MergeImages</module>
-        </item>
-    
-        <item>
-          <label>Merge series into a new series</label>
-          <module>Tutorial_MergeSeries</module>
-        </item>
-    
-        <item>
-          <label>Copy and merge images</label>
-          <module>Tutorial_MergeImagesCopy</module>
-        </item>
-    
-        <item>
-          <label>Cope and merge series</label>
-          <module>Tutorial_MergeSeriesCopy</module>
-        </item>
     
         <item>
           <separator>yes</separator>
@@ -124,7 +95,31 @@
           <label>Delete series</label>
           <module>Tutorial_DeleteSeries</module>
         </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Merge images into a new series</label>
+          <module>Tutorial_MergeImages</module>
+        </item>
     
+        <item>
+          <label>Copy and merge images</label>
+          <module>Tutorial_MergeImagesCopy</module>
+        </item>
+    
+        <item>
+          <label>Merge series into a new series</label>
+          <module>Tutorial_MergeSeries</module>
+        </item>
+    
+        <item>
+          <label>Cope and merge series</label>
+          <module>Tutorial_MergeSeriesCopy</module>
+        </item>
+
         <item>
           <separator>yes</separator>
         </item>
@@ -158,8 +153,8 @@
         </item>
     
         <item>
-          <label>2D Gaussian filter</label>
-          <module>Tutorial_GaussianFilterImages</module>
+          <label>Filter images with a local filter</label>
+          <module>Tutorial_LocalFilterImages</module>
         </item>
 
         <item>
