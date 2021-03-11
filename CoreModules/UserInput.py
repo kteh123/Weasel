@@ -233,7 +233,7 @@ def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
         inputWindow(paramDict, lists=[algorithmList, natureList])
     """
     try:
-        inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
+        inputDlg = ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
         # Return None if the user hits the Cancel button
         if inputDlg.closeInputDialog() == True:
             return None
