@@ -910,7 +910,9 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
-              
+        except TypeError as e: 
+            print('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
+            logger.error('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
         except Exception as e:
             print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
