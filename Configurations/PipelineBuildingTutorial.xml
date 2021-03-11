@@ -158,6 +158,11 @@
         </item>
 
         <item>
+          <label>User input tutorial</label>
+          <module>Tutorial_UserInput</module>
+        </item>
+
+        <item>
           <separator>yes</separator>
         </item>
 

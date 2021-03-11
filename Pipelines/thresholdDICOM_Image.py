@@ -7,7 +7,7 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
-import CoreModules.WEASEL.InputDialog as inputDialog
+from CoreModules.UserInput import inputDialog
 from CoreModules.imagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 
