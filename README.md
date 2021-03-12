@@ -93,3 +93,7 @@ and run the following command:
 If you wish to go forward with this procedure, it's highly recommended that you use a new and clean python virtual environment to install the relevant packages and make use of those only during compilation.
 
 The generated executable can be found in the `dist` folder. You may delete the `build` folder and the `Weasel.spec` file which are created during this process.
+
+## Multiframe Images
+
+Weasel runs the command `emf2sf` of [dcm4che](https://www.dcm4che.org/) on Multiframe DICOM. The authors will describe more details about this on the [website](https://weasel.pro).

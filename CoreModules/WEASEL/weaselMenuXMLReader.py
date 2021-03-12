@@ -1,6 +1,7 @@
 import xml.etree.cElementTree as ET  
 import logging
-import os.path
+import os
+import pathlib
 logger = logging.getLogger(__name__)
 
 
@@ -8,7 +9,11 @@ class WeaselMenuXMLReader:
     def __init__(self, menuXMLFile): 
         try:
             self.hasXMLFileParsedOK = True
-            self.fullFilePath =  os.path.join("Configurations", menuXMLFile)
+            for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
+                for individualFile in filenames:
+                    if individualFile.endswith(".xml") and menuXMLFile in individualFile:
+                        self.fullFilePath = os.path.join(dirpath, individualFile)
+                        break
             
             # ISSUE 36
             # weasel_parent = parent_folder(parent_folder('Weasel.py'))

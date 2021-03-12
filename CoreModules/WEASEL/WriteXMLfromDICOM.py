@@ -1,4 +1,6 @@
 import os
+import pathlib
+import subprocess
 import re
 import datetime
 import numpy as np
@@ -71,12 +73,37 @@ def get_scan_data(scan_directory):
         list_dicom = list()
         file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
         file_list.sort(key=natural_keys)
+        multiframe_files_list = list()
         for filepath in file_list:
             try:
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
-                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber']
+                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence']
                 dataset = pydicom.dcmread(filepath, force=True, specific_tags=list_tags)
+                # If Multiframe, use dcm4ch to split into single-frame
+                if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                    if os.name =='nt':
+                        multiframeScript = 'emf2sf.bat'
+                    else:
+                        multiframeScript = 'emf2sf'
+                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "CoreModules", "WEASEL", "dcm4che-5.23.1", "bin", multiframeScript)
+                    multiframeDir = os.path.dirname(filepath)
+                    fileBase = "SingleFrame_"
+                    if hasattr(dataset, 'SeriesDescription'):
+                        fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
+                    elif hasattr(dataset, 'ProtocolName'):
+                        fileBaseFlag = fileBase + "00_" + str(dataset.ProtocolName)
+                    elif hasattr(dataset, 'SequenceName'):
+                        fileBaseFlag = fileBase + "00_" + str(dataset.SequenceName)
+                    # Run the dcm4che emf2sf
+                    multiframeCommand = [multiframeProgram, "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
+                    commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
+                    # Get list of filenames with fileBase and add to multiframe_files_list
+                    for new_file in os.listdir(multiframeDir):
+                        if new_file.startswith(fileBase):
+                            multiframe_files_list.append(os.path.join(multiframeDir, new_file))
+                    os.remove(filepath)
+                    continue
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
                     and ('DIRFILE' not in filepath) and ('DICOMDIR' not in filepath)):
@@ -84,9 +111,25 @@ def get_scan_data(scan_directory):
                     list_dicom.extend([dataset])
             except:
                 continue
+            
+        # The following segment is to deal with the multiframe images if there is any.
+        # The np.unique removes files that might have appended more than once previously
+        for singleframe in np.unique(multiframe_files_list):
+            try:
+                list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
+                             'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
+                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber']
+                dataset = pydicom.dcmread(singleframe, force=True, specific_tags=list_tags)
+                if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
+                    any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
+                    and ('DIRFILE' not in singleframe) and ('DICOMDIR' not in singleframe)):
+                    list_paths.extend([singleframe])
+                    list_dicom.extend([dataset])
+            except:
+                continue
+
         if len(list_dicom) == 0:
-            raise FileNotFoundError(
-                'No DICOM files present in the selected folder')
+            raise FileNotFoundError('No DICOM files present in the selected folder')
 
         return list_dicom, list_paths
     except Exception as e:
@@ -95,10 +138,10 @@ def get_scan_data(scan_directory):
 
 def get_study_series(dicom):
     try:
-        if hasattr(dicom, 'PatientName'):
-            subject = str(dicom.PatientName)
-        elif hasattr(dicom, 'PatientID'):
+        if hasattr(dicom, 'PatientID'):
             subject = str(dicom.PatientID)
+        elif hasattr(dicom, 'PatientName'):
+            subject = str(dicom.PatientName)
         else:
             subject = "No Subject Name"
         study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0]
