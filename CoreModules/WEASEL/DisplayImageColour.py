@@ -93,11 +93,11 @@ def displayManyMultiImageSubWindows(self):
         logger.info("DisplayImageColour.displayManyMultiImageSubWindows")
         if len(self.checkedSeriesList)>0: 
             for series in self.checkedSeriesList:
-                subjectName = series[0]
+                subjectID = series[0]
                 studyName = series[1]
                 seriesName = series[2]
-                imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
+                imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
+                displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
         print('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
@@ -112,17 +112,17 @@ def displayImageFromTreeView(self, item, col):
         if col == 1:
             #Has an image or a series been double-clicked?
             if treeView.isAnImageSelected(item):
-                subjectName = item.parent().parent().parent().text(1).replace('Subject -', '').strip().lower()
+                subjectID = item.parent().parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().parent().text(1).replace('Study -', '').strip()
                 seriesName = item.parent().text(1).replace('Series -', '').strip()
                 imagePath = item.text(4)
-                displayImageSubWindow(self, imagePath, subjectName, seriesName, studyName)
+                displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
             elif treeView.isASeriesSelected(item):
-                subjectName = item.parent().parent().text(1).replace('Subject -', '').strip().lower()
-                studyName = item.parent().text(1).replace('Study -', '').strip().lower()
-                seriesName = item.text(1).replace('Series -', '').strip().lower()
-                imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
+                subjectID = item.parent().parent().text(1).replace('Subject -', '').strip()
+                studyName = item.parent().text(1).replace('Study -', '').strip()
+                seriesName = item.text(1).replace('Series -', '').strip()
+                imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
+                displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
             print('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
@@ -239,7 +239,8 @@ def setUpPixelDataGroupBox(pixelDataLayout):
         return  lblPixelValue
 
 
-def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
+def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, 
+                       seriesName, subjectID):
     try: 
         deleteButton = QPushButton()
         deleteButton.setToolTip(
@@ -248,6 +249,7 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
         lblHiddenImagePath = QLabel(imagePathForDisplay)
         lblHiddenStudyName = QLabel(studyName)
         lblHiddenSeriesName = QLabel(seriesName)
+        lblHiddenSubjectID = QLabel(subjectID)
         
         #Maintain image data in hidden labels on the subwindow.
         #These values will used when updating an image with a
@@ -260,11 +262,13 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName, seriesName):
         imageLayout.addWidget(lblHiddenSeriesName)
         imageLayout.addWidget(lblHiddenStudyName)
         imageLayout.addWidget(lblHiddenImagePath)
+        imageLayout.addWidget(lblHiddenSubjectID)
 
         lblHiddenImagePath.hide()
         lblHiddenStudyName.hide()
         lblHiddenSeriesName.hide()
-        return deleteButton, lblHiddenImagePath, lblHiddenStudyName, lblHiddenSeriesName
+        lblHiddenSubjectID.hide()
+        return deleteButton, lblHiddenImagePath, lblHiddenStudyName, lblHiddenSeriesName, lblHiddenSubjectID
     except Exception as e:
         print('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
         logger.error('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
@@ -276,18 +280,18 @@ def displayManySingleImageSubWindows(self):
             studyName = image[0]
             seriesName = image[1]
             imagePath = image[2]
-            subjectName = image[3]
-            displayImageSubWindow(self, imagePath, subjectName, seriesName, studyName)
+            subjectID = image[3]
+            displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
 
 
 def displayManyMultiImageSubWindows(self):
     if len(self.checkedSeriesList)>0: 
         for series in self.checkedSeriesList:
-            subjectName = series[0]
+            subjectID = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
+            imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
+            displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1)
 
 
@@ -320,7 +324,8 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
             #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
              lblHiddenStudyName, 
-             lblHiddenSeriesName) = setUpImageGroupBox(imageLayout, self.selectedImagePath, studyName, seriesName)
+             lblHiddenSeriesName, 
+             lblHiddenSubjectID) = setUpImageGroupBox(imageLayout, self.selectedImagePath, studyName, seriesName, subjectID)
             btnApply = QPushButton() 
             cmbColours = QComboBox()
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply, cmbColours, 
@@ -331,7 +336,7 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
 
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, True,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
-                                                lblHiddenStudyName, 
+                                                lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, 
                                                 cmbColours, lblImageMissing, lblPixelValue)
 
@@ -371,7 +376,7 @@ def displayOneImage(self, lblImageMissing, lblPixelValue,
     displayColourTableInComboBox(cmbColours, colourTable)
 
 
-def displayMultiImageSubWindow(self, imageList, subjectName, studyName, 
+def displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
@@ -420,7 +425,8 @@ def displayMultiImageSubWindow(self, imageList, subjectName, studyName,
             firstImagePath = imageList[0]
             (deleteButton, lblHiddenImagePath, 
              lblHiddenStudyName, 
-             lblHiddenSeriesName) = setUpImageGroupBox(imageLayout, firstImagePath, studyName, seriesName)
+             lblHiddenSeriesName, 
+             lblHiddenSubjectID) = setUpImageGroupBox(imageLayout, firstImagePath, studyName, seriesName, subjectID)
 
             btnApply = QPushButton() 
             cmbColours = QComboBox()
@@ -437,7 +443,7 @@ def displayMultiImageSubWindow(self, imageList, subjectName, studyName,
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
-                                                lblHiddenStudyName, 
+                                                lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, 
                                                 lblImageMissing, lblPixelValue, imageSlider)
 
@@ -459,7 +465,8 @@ def displayMultiImageSubWindow(self, imageList, subjectName, studyName,
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             imageNumberLabel = QLabel()
-            sliderLayout.addWidget(imageSlider)
+            if maxNumberImages > 1:
+                sliderLayout.addWidget(imageSlider)
             sliderLayout.addWidget(imageNumberLabel)
             if len(imageList) < 11:
                 sliderLayout.addStretch(1)
@@ -489,7 +496,7 @@ def displayMultiImageSubWindow(self, imageList, subjectName, studyName,
                                   subWindow)
             
             deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(self,
-                                      self.selectedImagePath, imageList, subjectName, 
+                                      self.selectedImagePath, imageList, subjectID, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
                                       imageSlider.value(), subWindow))
@@ -562,7 +569,7 @@ def setUpColourTools(self, layout,  graphicsView,
             singleImageSelected,
             lblHiddenImagePath,
             lblHiddenSeriesName,
-            lblHiddenStudyName, spinBoxIntensity, spinBoxContrast,             
+            lblHiddenStudyName, lblHiddenSubjectID, spinBoxIntensity, spinBoxContrast,             
             btnApply, cmbColours, lblImageMissing, lblPixelValue, imageSlider = None):
         """
             Generates widgets for the display of a 
@@ -626,7 +633,7 @@ def setUpColourTools(self, layout,  graphicsView,
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
                                                 lblHiddenImagePath,
                                                 lblHiddenSeriesName,
-                                                lblHiddenStudyName,
+                                                lblHiddenStudyName, lblHiddenSubjectID,
                                                 cmbColours,
                                                     spinBoxIntensity, 
                                                     spinBoxContrast, singleImage=True))
@@ -637,7 +644,7 @@ def setUpColourTools(self, layout,  graphicsView,
                 btnUpdate.clicked.connect(lambda:updateDICOM(self, 
                                                                 lblHiddenImagePath,
                                                                 lblHiddenSeriesName,
-                                                                lblHiddenStudyName,
+                                                                lblHiddenStudyName, lblHiddenSubjectID,
                                                                 cmbColours,
                                                                     spinBoxIntensity, 
                                                                     spinBoxContrast))
@@ -903,7 +910,9 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
 
                 subWindow.setWindowTitle(seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
-              
+        except TypeError as e: 
+            print('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
+            logger.error('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
         except Exception as e:
             print('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
@@ -938,7 +947,6 @@ def deleteSingleImage(self, currentImagePath, subjectID,
         if buttonReply == QMessageBox.Ok:
             #Delete physical file
             QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-            subWindow.hide()
             subWindow.close()
             QApplication.processEvents()
             os.remove(currentImagePath)
@@ -955,7 +963,7 @@ def deleteSingleImage(self, currentImagePath, subjectID,
 
 
 def deleteImageInMultiImageViewer(self, currentImagePath, imageList, 
-                                   subjectName, studyName, seriesName,
+                                   subjectID, studyName, seriesName,
                                       lastSliderPosition, subWindow):
     """When the Delete button is clicked on the multi image viewer,
     this function deletes the physical image, removes the 
@@ -983,13 +991,15 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
 
         if buttonReply == QMessageBox.Ok:
             #Delete physical file
-            os.remove(currentImagePath)
+            if os.path.exists(currentImagePath):
+                os.remove(currentImagePath)
             #Remove deleted image from the list
             imageList.remove(currentImagePath)
 
             #Refresh the multi-image viewer to remove deleted image
             #First close it
             subWindow.close()
+            QApplication.processEvents()
                 
             if len(imageList) == 0:
                 #Only redisplay the multi-image viewer if there
@@ -999,17 +1009,17 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
                 pass   
             elif len(imageList) == 1:
                 #There is only one image left in the display
-                displayMultiImageSubWindow(self, imageList, subjectName, studyName, seriesName)
+                displayMultiImageSubWindow(self, imageList, subjectID, studyName, seriesName)
             elif len(imageList) + 1 == lastSliderPosition:    
                     #we are deleting the last image in the series of images
                     #so move the slider back to the penultimate image in list 
-                displayMultiImageSubWindow(self, imageList, subjectName,
+                displayMultiImageSubWindow(self, imageList, subjectID,
                                     studyName, seriesName, len(imageList))
             else:
                 #We are deleting an image at the start of the list
                 #or in the body of the list. Move slider forwards to 
                 #the next image in the list.
-                displayMultiImageSubWindow(self, imageList, subjectName,
+                displayMultiImageSubWindow(self, imageList, subjectID,
                                     studyName, seriesName, lastSliderPosition)
      
             #Now update XML file
@@ -1018,18 +1028,13 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
             #whole series from XML file
             #If it is not the last image in a series
             #just remove the image from the XML file 
-            images = self.objXMLReader.getImageList(studyName, seriesName)
-            if len(images) == 1:
-                #only one image, so remove the series from the xml file
-                #need to get study (parent) containing this series (child)
-                #then remove child from parent
-                self.objXMLReader.removeSeriesFromXMLFile(studyName, seriesName)
-            elif len(images) > 1:
-                #more than 1 image in the series, 
-                #so just remove the image from the xml file
-                ##need to get the series (parent) containing this image (child)
-                ##then remove child from parent
-                self.objXMLReader.removeOneImageFromSeries(subjectName, 
+            if len(imageList) == 0:
+                #no images left in the series, so remove it from the xml file
+                self.objXMLReader.removeSeriesFromXMLFile(subjectID, studyName, seriesName)
+            elif len(imageList) > 0:
+                #1 or more images in the series, 
+                #so just remove the image from its series in the xml file
+                self.objXMLReader.removeOneImageFromSeries(subjectID, 
                     studyName, seriesName, currentImagePath)
             #Update tree view with xml file modified above
             treeView.refreshDICOMStudiesTreeView(self)
@@ -1259,8 +1264,8 @@ def updateImageLevels(self,  graphicsView, spinBoxIntensity, spinBoxContrast):
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
 
-def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, cmbColours, 
-                spinBoxIntensity, spinBoxContrast, singleImage=False):
+def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, lblHiddenSubjectID,
+                cmbColours, spinBoxIntensity, spinBoxContrast, singleImage=False):
         """
         This function is executed when the Update button 
         is clicked and it coordinates the calling of the functions, 
@@ -1293,6 +1298,7 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
                 imageName = lblHiddenImagePath.text()
                 seriesName = lblHiddenSeriesName.text()
                 studyName = lblHiddenStudyName.text()
+                subjectID = lblHiddenSubjectID.text()
                 colourTable = cmbColours.currentText()
                 if singleImage == False:
                     global userSelectionDict
@@ -1302,9 +1308,9 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
                     #print("obj.getImageUpdateStatus() = {}".format(obj.getImageUpdateStatus()))
                     if obj.getSeriesUpdateStatus():
                         levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-                        updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels)
+                        updateWholeDicomSeries(self, subjectID, seriesName, studyName, colourTable, levels)
                     if obj.getImageUpdateStatus():
-                        updateDicomSeriesImageByImage(self, seriesName, studyName)
+                        updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName)
                 else:
                     saveDICOM_Image.updateSingleDicomImage(self, 
                                                            spinBoxIntensity,
@@ -1319,7 +1325,7 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))
 
 
-def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut=None):
+def updateWholeDicomSeries(self, subjectID, seriesID, studyID, colourTable, levels, lut=None):
     """
     Updates every image in a DICOM series with one colour table and
             one set of levels
@@ -1337,7 +1343,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut
         """
     try:
         logger.info("In DisplayImageColour.updateWholeDicomSeries")
-        imagePathList = self.objXMLReader.getImagePathList(studyName, seriesName)
+        imagePathList = self.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
 
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
@@ -1358,7 +1364,7 @@ def updateWholeDicomSeries(self, seriesName, studyName, colourTable, levels, lut
         print('Error in DisplayImageColour.updateWholeDicomSeries: ' + str(e))
 
 
-def updateDicomSeriesImageByImage(self, seriesName, studyName):
+def updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName):
     """Updates one or more images in a DICOM series each with potentially
     a different table and set of levels
     
@@ -1376,7 +1382,7 @@ def updateDicomSeriesImageByImage(self, seriesName, studyName):
     try:
         logger.info("In DisplayImageColour.updateDicomSeriesImageByImage")
        
-        imagePathList = self.objXMLReader.getImagePathList(studyName, seriesName)
+        imagePathList = self.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
 
         #Iterate through list of images and update each image
         numImages = len(imagePathList)

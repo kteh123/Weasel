@@ -405,24 +405,6 @@ def isASeriesSelected(item):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-#def isAStudySelected(self):
-#        """Returns True is a study is selected in the DICOM
-#        tree view, else returns False"""
-#        try:
-#            logger.info("TreeView isAStudySelected called.")
-#            selectedItem = self.treeView.currentItem()
-#            if selectedItem:
-#                if 'study' in selectedItem.text(1).lower():
-#                    return True
-#                else:
-#                    return False
-#            else:
-#               return False
-#        except Exception as e:
-#            print('Error in isAStudySelected: ' + str(e))
-#            logger.error('Error in isAStudySelected: ' + str(e))
-
-
 def toggleBlockSelectionCheckedState(self):
     try:
         logger.info("TreeView.toggleBlockSelectionCheckedState called.")
@@ -520,124 +502,6 @@ def toggleMenuItems(self):
             logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
 
 
-#def onTreeViewItemClicked(self, item):
-#    """When a DICOM study treeview item is clicked, this function
-#    populates the relevant class variables that store the following
-#    DICOM image data: study ID, Series ID, Image name, image file path"""
-#    logger.info("TreeView.onTreeViewItemClicked called")
-#    try:
-#        #test for returning dictionary of studyIDs:seriesIDs
-#        #print(returnCheckedSeries(self))
-#        if item:
-#            selectedText = item.text(0)
-#            if 'study' in selectedText.lower():
-#                studyID = selectedText.replace('Study -', '').strip()
-#                self.selectedStudy = studyID
-#                self.selectedSeries = ''
-#                self.selectedImagePath = ''
-#                self.selectedImageName = ''
-#                self.statusBar.showMessage('Study - ' + studyID + ' selected.')
-#            elif 'series' in selectedText.lower():
-#                seriesID = selectedText.replace('Series -', '').strip()
-#                studyID = item.parent().text(0).replace('Study -', '').strip()
-#                self.selectedStudy = studyID
-#                self.selectedSeries = seriesID
-#                self.selectedImagePath = ''
-#                self.selectedImageName = ''
-#                fullSeriesID = studyID + ': ' + seriesID + ': no image selected.'
-#                self.statusBar.showMessage('Study and series - ' +  fullSeriesID)
-#            elif 'image' in selectedText.lower():
-#                imageID = selectedText.replace('Image -', '')
-#                imagePath =item.text(3)
-#                seriesID = item.parent().text(0).replace('Series -', '').strip()
-#                studyID = item.parent().parent().text(0).replace('Study -', '').strip()
-#                self.selectedStudy = studyID
-#                self.selectedSeries = seriesID
-#                self.selectedImagePath = imagePath.strip()
-#                self.selectedImageName = imageID.strip()
-#                fullImageID = studyID + ': ' + seriesID + ': '  + imageID
-#                self.statusBar.showMessage('Image - ' + fullImageID + ' selected.')
-#    except Exception as e:
-#            exception_type, exception_object, exception_traceback = sys.exc_info()
-#            #filename = exception_traceback.tb_frame.f_code.co_filename
-#            line_number = exception_traceback.tb_lineno
-#            print('Error in TreeView.onTreeViewItemClicked at line {}: '.format(line_number) + str(e))
-#            logger.error('Error in TreeView.onTreeViewItemClicked at line {}: '.format(line_number) + str(e))
-
-
-#def returnSelectedStudies(self):
-#    """This function generates and returns a list of selected studies."""
-#    logger.info("TreeView.returnSelectedStudies called")
-#    try:
-#        root = self.treeView.invisibleRootItem()
-#        subjectCount = root.childCount()
-#        selectedStudiesList = []
-#        for i in range(subjectCount):
-#            subject = root.child(i)
-#            subjectFlag = True if subject.isSelected() == True else False
-#            studyCount = subject.childCount()
-#            for j in range(studyCount):
-#                study = subject.child(j)
-#                if (study.isSelected() == True or subjectFlag == True):
-#                    selectedStudiesList.append(study)
-#        return selectedStudiesList
-#    except Exception as e:
-#        print('Error in TreeView.returnSelectedStudies: ' + str(e))
-#        logger.error('Error in TreeView.returnSelectedStudies: ' + str(e))
-
-
-#def returnSelectedSeries(self):
-#    """This function generates and returns a list of selected series."""
-#    logger.info("TreeView.returnSelectedSeries called")
-#    try:
-#        root = self.treeView.invisibleRootItem()
-#        subjectCount = root.childCount()
-#        selectedSeriesList = []
-#        for i in range(subjectCount):
-#            subject = root.child(i)
-#            subjectFlag = True if subject.isSelected() == True else False
-#            studyCount = subject.childCount()
-#            for j in range(studyCount):
-#                study = subject.child(j)
-#                studyFlag = True if (study.isSelected() == True or subjectFlag == True) else False
-#                seriesCount = study.childCount()
-#                for n in range(seriesCount):
-#                    series = study.child(n)
-#                    if (series.isSelected() == True or studyFlag == True):
-#                        selectedSeriesList.append(series)
-#        return selectedSeriesList
-#    except Exception as e:
-#        print('Error in TreeView.returnSelectedSeries: ' + str(e))
-#        logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
-
-
-#def returnSelectedImages(self):
-#    """This function generates and returns a list of selected images."""
-#    logger.info("TreeView.returnSelectedImages called")
-#    try:
-#        root = self.treeView.invisibleRootItem()
-#        subjectCount = root.childCount()
-#        selectedImages = []
-#        for i in range(subjectCount):
-#            subject = root.child(i)
-#            subjectFlag = True if subject.isSelected() == True else False
-#            studyCount = subject.childCount()
-#            for j in range(studyCount):
-#                study = subject.child(j)
-#                studyFlag = True if (study.isSelected() == True or subjectFlag == True) else False
-#                seriesCount = study.childCount()
-#                for k in range(seriesCount):
-#                    series = study.child(k)
-#                    seriesFlag = True if (series.isSelected() == True or studyFlag == True) else False
-#                    imageCount = series.childCount()
-#                    for n in range(imageCount):
-#                        image = series.child(n)
-#                        if (image.isSelected() == True or seriesFlag == True):
-#                            selectedImages.append(image)
-#        return selectedImages
-#    except Exception as e:
-#        print('Error in TreeView.returnSelectedSeries: ' + str(e))
-#        logger.error('Error in TreeView.returnSelectedSeries: ' + str(e))
 
 
 def returnCheckedStudies(self):
@@ -717,17 +581,17 @@ def returnSeriesImageList(self, subjectName, studyName, seriesName):
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
-            subjectID = subject.text(1).lower().replace("subject", "").replace("-","").strip()
+            subjectID = subject.text(1).replace("Subject", "").replace("-","").strip()
             if subjectID == subjectName:
                 studyCount = subject.childCount()
                 for j in range(studyCount):
                     study = subject.child(j)
-                    studyID = study.text(1).lower().replace("study", "").replace("-","").strip()
+                    studyID = study.text(1).replace("Study", "").replace("-","").strip()
                     if studyID == studyName:
                         seriesCount = study.childCount()
                         for k in range(seriesCount):
                             series = study.child(k)
-                            seriesID = series.text(1).lower().replace("series", "").replace("-","").strip()
+                            seriesID = series.text(1).replace("Series", "").replace("-","").strip()
                             if seriesID == seriesName:
                                 imageCount = series.childCount()
                                 for n in range(imageCount):
@@ -789,8 +653,8 @@ def returnCheckedItems(self):
                 if study.checkState(0) == Qt.Checked:
                     checkedSubjectData = []
                     parentStudy = study.parent()
-                    checkedSubjectData.append(parentStudy.text(1).lower().replace("subject", "").replace("-","").strip())
-                    checkedSubjectData.append(study.text(1).lower().replace("study", "").replace("-","").strip())
+                    checkedSubjectData.append(parentStudy.text(1).replace("Subject", "").replace("-","").strip())
+                    checkedSubjectData.append(study.text(1).replace("Study", "").replace("-","").strip())
                     self.checkedStudyList.append(checkedSubjectData)
                 seriesCount = study.childCount()
                 for k in range(seriesCount):
@@ -799,9 +663,9 @@ def returnCheckedItems(self):
                         checkedSeriesData = []
                         parentSeries = series.parent()
                         grandParentSeries = parentSeries.parent() 
-                        checkedSeriesData.append(grandParentSeries.text(1).lower().replace("subject", "").replace("-","").strip())
-                        checkedSeriesData.append(parentSeries.text(1).lower().replace("study", "").replace("-","").strip())
-                        checkedSeriesData.append(series.text(1).lower().replace("series", "").replace("-","").strip())
+                        checkedSeriesData.append(grandParentSeries.text(1).replace("Subject", "").replace("-","").strip())
+                        checkedSeriesData.append(parentSeries.text(1).replace("Study", "").replace("-","").strip())
+                        checkedSeriesData.append(series.text(1).replace("Series", "").replace("-","").strip())
                         self.checkedSeriesList.append(checkedSeriesData)
                     imageCount = series.childCount()
                     for n in range(imageCount):
@@ -811,10 +675,10 @@ def returnCheckedItems(self):
                             series = image.parent()
                             study = series.parent()
                             subject = study.parent()
-                            checkedImagesData.append(study.text(1).lower().replace("study", "").replace("-","").strip())
-                            checkedImagesData.append(series.text(1).lower().replace("series", "").replace("-","").strip())
+                            checkedImagesData.append(study.text(1).replace("Study", "").replace("-","").strip())
+                            checkedImagesData.append(series.text(1).replace("Series", "").replace("-","").strip())
                             checkedImagesData.append(image.text(4))
-                            checkedImagesData.append(subject.text(1).lower().replace("subject", "").replace("-","").strip())
+                            checkedImagesData.append(subject.text(1).replace("Subject", "").replace("-","").strip())
                             self.checkedImageList.append(checkedImagesData)
 
         self.isAnImageChecked = False

@@ -18,10 +18,9 @@ def main(weasel):
     # Get user input: type of filter and size
 
     filters = ["Gaussian", "Uniform", "Median", "Maximum", "Wiener"]
-    cancel, tmp, filter, size = weasel.user_input(
-        {"type":"listview", "label":"Which filter?", "list":filters},
+    cancel, filter, size = weasel.user_input(
         {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
-        {"type":"integer", "label":"Filter size in pixels", "default":20}, 
+        {"type":"integer", "label":"Filter size in pixels", "default":20, "minimum":1, "maximum":1000}, 
         title = "Filter settings")
     if cancel: return
 
@@ -31,15 +30,15 @@ def main(weasel):
 
     for i, image in list_of_images.enumerate():
         weasel.progress_bar(max=list_of_images.length(), index=i+1, msg="Filtering image {}")
-        if filter == "Gaussian":
+        if filter == 0:
             image.write(-ndimage.gaussian_filter(image.PixelArray, sigma=size))
-        elif filter == "Uniform":
+        elif filter == 1:
             image.write(ndimage.uniform_filter(image.PixelArray, size=size))
-        elif filter == "Median":
+        elif filter == 2:
             image.write(ndimage.median_filter(image.PixelArray, size))
-        elif filter == "Maximum":
+        elif filter == 3:
             image.write(ndimage.maximum_filter(image.PixelArray, size=size))
-        elif filter == "Wiener":
+        elif filter == 4:
             image.write(wiener(image.PixelArray, (size, size)))
 
     # Display the new series and refresh weasel
