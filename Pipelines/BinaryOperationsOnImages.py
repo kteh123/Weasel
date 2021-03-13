@@ -129,7 +129,8 @@ def displayBinaryOperations(self, subjectID, studyID, seriesID):
             self.imv3.ui.roiBtn.hide()
             self.imv3.ui.menuBtn.hide()
 
-            
+            studyID = self.selectedStudy 
+            seriesID = self.selectedSeries
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
