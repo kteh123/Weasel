@@ -319,7 +319,7 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(self)
             imageName = os.path.basename(self.selectedImagePath)
-            windowTitle = studyName + "-" + seriesName + "-" + imageName
+            windowTitle = subjectID + "-" + studyName + "-" + seriesName + "-" + imageName
             subWindow.setWindowTitle(windowTitle)
             #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
@@ -472,7 +472,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                 sliderLayout.addStretch(1)
             
             imageSlider.valueChanged.connect(
-                  lambda: imageSliderMoved(self, seriesName, 
+                  lambda: imageSliderMoved(self, subjectID, studyName, seriesName, 
                                                 imageList, 
                                                 imageSlider.value(),
                                                 lblImageMissing,
@@ -484,7 +484,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                                                 subWindow))
            
             #Display the first image in the viewer
-            imageSliderMoved(self, seriesName, 
+            imageSliderMoved(self, subjectID, studyName, seriesName, 
                                   imageList,
                                   imageSlider.value(),
                                   lblImageMissing,
@@ -847,7 +847,8 @@ def blockHistogramSignals(imgView, block):
         histogramObject.blockSignals(block)
 
 
-def imageSliderMoved(self, seriesName, imageList, imageNumber,
+def imageSliderMoved(self, subjectID, studyName, seriesName, 
+                        imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
                         deleteButton,  graphicsView, 
                         spinBoxIntensity, spinBoxContrast,
@@ -908,7 +909,7 @@ def imageSliderMoved(self, seriesName, imageList, imageNumber,
                                        multiImage=True,  
                                        deleteButton=deleteButton) 
 
-                subWindow.setWindowTitle(seriesName + ' - ' 
+                subWindow.setWindowTitle(subjectID + '-' + studyName + '-'+ seriesName + '-' 
                          + os.path.basename(self.selectedImagePath))
         except TypeError as e: 
             print('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))

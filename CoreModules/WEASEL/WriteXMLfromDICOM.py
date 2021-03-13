@@ -211,15 +211,15 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
             subject_element = ET.SubElement(DICOM_XML_object, 'subject')
             subject_element.set('id', subject)
             #add expanded attribute SS
-            subject_element.set('expanded', 'True')
+            subject_element.set('expanded', 'False')  #added by SS 12.03.21
             for study in xml_dict[subject]:
                 study_element = ET.SubElement(subject_element, 'study')
                 study_element.set('id', study)
-                study_element.set('expanded', 'True')
+                study_element.set('expanded', 'False') #added by SS 12.03.21
                 for series in xml_dict[subject][study]:
                     series_element = ET.SubElement(study_element, 'series')
                     series_element.set('id', series)
-                    series_element.set('expanded', 'True')
+                    series_element.set('expanded', 'False') #added by SS 12.03.21
         for index, file in enumerate(list_dicom):
             subject, study, sequence, series_number = get_study_series(file)
             subject_search_string = "./*[@id='" + subject + "']"

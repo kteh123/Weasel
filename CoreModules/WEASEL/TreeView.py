@@ -17,6 +17,11 @@ logger = logging.getLogger(__name__)
 def createTreeBranch(self, branchName, branch, parent):
     try:
         branchID = branch.attrib['id']
+        if branch.attrib['expanded']:
+            expand = branch.attrib['expanded']
+        else:
+            expand = False
+        #print("expand={}".format(expand))
         logger.info("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
         thisBranch = QTreeWidgetItem(parent)
         thisBranch.setText(0, '')
@@ -25,7 +30,10 @@ def createTreeBranch(self, branchName, branch, parent):
         #put a checkbox in front of this branch
         thisBranch.setFlags(thisBranch.flags() | Qt.ItemIsUserCheckable)
         thisBranch.setCheckState(0, Qt.Unchecked)
-        thisBranch.setExpanded(True)
+        if expand == "True":
+            thisBranch.setExpanded(True)
+        else:
+            thisBranch.setExpanded(False)
         return thisBranch# treeWidgetItemCounter
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -182,7 +190,6 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             # Joao Sousa suggestion
             self.treeView.hide()
             buildTreeView(self)
-            #resizeTreeViewColumns(self)
             self.treeView.setColumnWidth(1, self.treeViewColumnWidths[1])
             self.treeView.setColumnWidth(2, self.treeViewColumnWidths[2])  
             self.treeView.setColumnWidth(3, self.treeViewColumnWidths[3])
@@ -192,8 +199,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.isASeriesChecked = False
             self.isAnImageChecked = False
             toggleMenuItems(self)
-            collapseSeriesBranches(self.treeView.invisibleRootItem())
-            collapseStudiesBranches(self.treeView.invisibleRootItem())
+            #collapseSeriesBranches(self.treeView.invisibleRootItem())
+            #collapseStudiesBranches(self.treeView.invisibleRootItem())
             # Joao Sousa suggestion
             self.treeView.show()
 
@@ -201,7 +208,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #except the new series branch that has been created
 
             # Joao commented on the 16/10/2020
-            expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName=newSeriesName)
+            #expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName=newSeriesName)
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))

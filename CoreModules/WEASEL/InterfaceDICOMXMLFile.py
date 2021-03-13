@@ -10,14 +10,8 @@ def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeries
        """
         try:
             logger.info("InterfaceDICOMXMLFile insertNewImageInXMLFile called")
-            #studyID = self.selectedStudy 
-            #seriesID = self.selectedSeries
             (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
-            #if self.selectedImagePath:
-            #    imagePath = self.selectedImagePath
-            #else:
-            #    imagePath = None
-            #returns new series ID or existing series ID as appropriate
+    
             return self.objXMLReader.insertNewImageInXML(imagePath,
                    newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
             
@@ -70,10 +64,6 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
     """Creates a new series to hold the series of New images"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSeriesInXMLFile called")
-        #Get current study & series IDs
-        #studyID = self.selectedStudy 
-        #seriesID = self.selectedSeries
-        # Get a new series ID by default
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
         dataset = readDICOM_Image.getDicomDataset(newImageList[0])
         newSeriesID = getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName) # If developer sets seriesName
