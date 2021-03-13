@@ -29,7 +29,13 @@ class UserInterfaceTools:
 
     def __init__(self, objWeasel):
         self.objWeasel = objWeasel
-    
+
+    def getCurrentSubject(self):
+        """
+        Returns the Subject ID of the latest item selected in the Treeview.
+        """
+        # NEED TO GET GLOBAL VARIABLE FOR SUBJECT - WINDOW DISPLAYING
+        return self.objWeasel.selectedStudy
 
     def getCurrentStudy(self):
         """
@@ -152,30 +158,6 @@ class UserInterfaceTools:
             for images in imagesTreeViewList:
                 imagesList.append(Image.fromTreeView(self.objWeasel, images))
         return imagesList
-
-
-    def getImagesFromSeries(self, studyID=None, seriesID=None):
-        """
-        Returns a list of strings with the paths of all images in (studyID, seriesID).
-        """
-        if (studyID is None) or (seriesID is None):
-            studyID = self.getCurrentStudy()
-            seriesID = self.getCurrentSeries()
-        return self.objWeasel.objXMLReader.getImagePathList(studyID, seriesID)
-
-
-    def getSeriesFromImages(self, inputPath):
-        """
-        Returns a list of strings with the paths of all images in (studyID, seriesID).
-        """
-        try:
-            if isinstance(inputPath, str) and os.path.exists(inputPath):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath)
-            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                (subjectID, studyID, seriesID) = treeView.getPathParentNode(self.objWeasel, inputPath[0])
-            return seriesID
-        except Exception as e:
-            print('getSeriesFromImages: ' + str(e))
 
     
     def showMessageWindow(self, msg="Please insert message in the function call", title="Message Window Title"):
@@ -333,18 +315,18 @@ class UserInterfaceTools:
             print('displayMetadata: ' + str(e))
 
 
-    def displayImages(self, inputPath, studyID, seriesID):
+    def displayImages(self, inputPath, subjectID, studyID, seriesID):
         """
         Display the PixelArray in "inputPath" in the User Interface.
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                displayImageColour.displayImageSubWindow(self.objWeasel, inputPath, seriesID, studyID)
+                displayImageColour.displayImageSubWindow(self.objWeasel, inputPath, subjectID, seriesID, studyID)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if len(inputPath) == 1:
-                    displayImageColour.displayImageSubWindow(self.objWeasel, inputPath[0], seriesID, studyID)
+                    displayImageColour.displayImageSubWindow(self.objWeasel, inputPath[0], subjectID, seriesID, studyID)
                 else:
-                    displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, studyID, seriesID)
+                    displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, subjectID, studyID, seriesID)
             return
         except Exception as e:
             print('displayImages: ' + str(e))
@@ -517,13 +499,13 @@ class GenericDICOMTools:
                 if seriesNumber is None:
                     #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath)
                     (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
-                    seriesNumber = str(int(self.objXMLReader.getStudy(studyID)[-1].attrib['id'].split('_')[0]) + 1)
+                    seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 if seriesNumber is None:
                     #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath[0])
                     (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
-                    seriesNumber = str(int(self.objXMLReader.getStudy(studyID)[-1].attrib['id'].split('_')[0]) + 1)
+                    seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
             seriesID = ids[0]
             seriesUID = ids[1]
@@ -980,7 +962,7 @@ class Series:
                 if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
 
     def display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.images, self.studyID, self.seriesID)
+        UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
 
     def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
@@ -1308,12 +1290,12 @@ class Image:
         return outputSeries
     
     def display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.path, self.studyID, self.seriesID)
+        UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
 
     @staticmethod
     def displayListImages(listImages):
         pathsList = [image.path for image in listImages]
-        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].studyID, listImages[0].seriesID)
+        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
 
     @property
     def Name(self):

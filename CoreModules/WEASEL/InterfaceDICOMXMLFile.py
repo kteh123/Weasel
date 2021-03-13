@@ -19,14 +19,14 @@ def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeries
             #    imagePath = None
             #returns new series ID or existing series ID as appropriate
             return self.objXMLReader.insertNewImageInXML(imagePath,
-                   newImageFileName, studyID, seriesID, suffix, newSeriesName=newSeriesName)
+                   newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
             
         except Exception as e:
             print('Error in insertNewImageInXMLFile: ' + str(e))
             logger.error('Error in insertNewImageInXMLFile: ' + str(e))
 
 
-def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
+def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=None):
     """This function uses recursion to find the next available
     series name.  A new series name is created by adding a suffix
     at the end of an existing series name. """
@@ -41,7 +41,7 @@ def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
                 seriesID = str(dataset.SeriesNumber) + "_" + dataset.SequenceName
             elif hasattr(dataset, "ProtocolName"):
                 seriesID = str(dataset.SeriesNumber) + "_" + dataset.ProtocolName
-        imageList = self.objXMLReader.getImageList(studyID, seriesID)
+        imageList = self.objXMLReader.getImageList(subjectID, studyID, seriesID)
         if imageList:
             #A series of images already exists 
             #for the series called seriesID
@@ -50,7 +50,7 @@ def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
             #new series ID
             if newSeriesName:
                 dataset.SeriesDescription = newSeriesName
-                return getNewSeriesName(studyID, dataset, suffix, newSeriesName=newSeriesName)
+                return getNewSeriesName(subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName)
             else:
                 if hasattr(dataset, "SeriesDescription"):
                     dataset.SeriesDescription = dataset.SeriesDescription + suffix
@@ -58,7 +58,7 @@ def getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=None):
                     dataset.SequenceName = dataset.SequenceName + suffix
                 elif hasattr(dataset, "ProtocolName"):
                     dataset.ProtocolName = dataset.ProtocolName + suffix
-                return getNewSeriesName(studyID, dataset, suffix)
+                return getNewSeriesName(subjectID, studyID, dataset, suffix)
         else:
             logger.info("InterfaceDICOMXMLFile getNewSeriesName returns seriesID {}".format(seriesID))
             return seriesID
@@ -76,9 +76,9 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
         # Get a new series ID by default
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
         dataset = readDICOM_Image.getDicomDataset(newImageList[0])
-        newSeriesID = getNewSeriesName(self, studyID, dataset, suffix, newSeriesName=newSeriesName) # If developer sets seriesName
+        newSeriesID = getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName) # If developer sets seriesName
         self.objXMLReader.insertNewSeriesInXML(origImageList, 
-                    newImageList, studyID, newSeriesID, seriesID, suffix)
+                    newImageList, subjectID, studyID, newSeriesID, seriesID, suffix)
         self.statusBar.showMessage('New series created: - ' + newSeriesID)
         return newSeriesID
     except Exception as e:
@@ -91,9 +91,9 @@ def removeImageFromXMLFile(self, imageFileName):
     try:
         logger.info("InterfaceDICOMXMLFile removeImageFromXMLFile called")
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageFileName)
-        images = self.objXMLReader.getImageList(studyID, seriesID)
+        images = self.objXMLReader.getImageList(subjectID, studyID, seriesID)
         if len(images) == 1:
-            self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+            self.objXMLReader.removeSeriesFromXMLFile(subjectID, studyID, seriesID)
         elif len(images) > 1:
             self.objXMLReader.removeOneImageFromSeries(subjectID, studyID, seriesID, imageFileName)
     except Exception as e:
@@ -117,7 +117,7 @@ def removeSeriesFromXMLFile(self, origImageList):
     try:
         logger.info("InterfaceDICOMXMLFile removeSeriesFromXMLFile called")
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
-        self.objXMLReader.removeSeriesFromXMLFile(studyID, seriesID)
+        self.objXMLReader.removeSeriesFromXMLFile(subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
@@ -137,7 +137,7 @@ def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
             except:
                 newName = str(readDICOM_Image.getDicomDataset(imageList[0]).ProtocolName) if series_name is None else str(series_name)
         xmlSeriesName = seriesNumber + "_" + newName
-        self.objXMLReader.renameSeriesinXMLFile(studyID, seriesID, xmlSeriesName)
+        self.objXMLReader.renameSeriesinXMLFile(subjectID, studyID, seriesID, xmlSeriesName)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeSeriesFromXMLFile: ' + str(e))

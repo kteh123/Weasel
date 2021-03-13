@@ -59,19 +59,19 @@ class WeaselXMLReader:
         return self.root.findall('.//subject')
 
     #Redundant?
-    #def getImageList(self, subjectID, studyID, seriesID):
-    #    """Returns a list of image elements in a specific series"""
-    #    try:
-    #        #print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
-    #        #xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
+    def getImageList(self, subjectID, studyID, seriesID):
+        """Returns a list of image elements in a specific series"""
+        try:
+            #print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
+            #xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
 
-    #        xPath = './subject[@id='+ chr(34) + subjectID + chr(34) + \
-    #                '] /study[@id=' + chr(34) + studyID + chr(34) + \
-    #             ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
-    #        return self.root.findall(xPath)
-    #    except Exception as e:
-    #        print('Error in WeaselXMLReader.getImageList: ' + str(e)) 
-    #        logger.error('Error in WeaselXMLReader.getImageList: ' + str(e))
+            xPath = './subject[@id='+ chr(34) + subjectID + chr(34) + \
+                    '] /study[@id=' + chr(34) + studyID + chr(34) + \
+                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
+            return self.root.findall(xPath)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getImageList: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getImageList: ' + str(e))
 
 
     def getSeries(self, subjectID, studyID, seriesID):
@@ -104,20 +104,20 @@ class WeaselXMLReader:
             print('Error in WeaselXMLReader.getStudy: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getStudy: ' + str(e))
 
-#redundant?
-    #def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
-    #    try:
-    #        if suffix == '':
-    #            xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-    #            ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']'
-    #        else:
-    #            xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-    #            ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
-    #            '[@typeID=' + chr(34) + suffix + chr(34) +']'
-    #        return self.root.find(xPath)
-    #    except Exception as e:
-    #        print('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e)) 
-    #        logger.error('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e))
+    #redundant?
+    def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
+        try:
+            if suffix == '':
+                xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']'
+            else:
+                xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
+                '[@typeID=' + chr(34) + suffix + chr(34) +']'
+            return self.root.find(xPath)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e))
 
 
     def getImagePathList(self, subjectID, studyID, seriesID):
@@ -151,16 +151,16 @@ class WeaselXMLReader:
             print('Error in function weaselXMLReader.getNumberItemsInTreeView: ' + str(e))
             logger.error('Error in weaselXMLReader.getNumberItemsInTreeView: ' + str(e))
 
-#redundant?
-    #def getNumberImagesInSeries(self, studyID, seriesID):
-    #    try:
-    #        xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-    #                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
-    #                    '/image'
-    #        return len(self.root.find(xPath))
-    #    except Exception as e:
-    #        print('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e)) 
-    #        logger.error('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e))
+    #redundant?
+    def getNumberImagesInSeries(self, studyID, seriesID):
+        try:
+            xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
+                        ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
+                        '/image'
+            return len(self.root.find(xPath))
+        except Exception as e:
+            print('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e))
 
 
     def removeOneImageFromSeries(self, subjectID, studyID, seriesID, imagePath):
