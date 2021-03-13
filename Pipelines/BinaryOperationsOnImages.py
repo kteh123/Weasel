@@ -75,6 +75,16 @@ def isSeriesOnly(self):
 
 
 def main(self):
+    if self.isASeriesChecked:
+        if len(self.checkedSeriesList)>0: 
+            for series in self.checkedSeriesList:
+                subjectID = series[0]
+                studyID = series[1]
+                seriesID = series[2]
+                displayBinaryOperations(self, subjectID, studyID, seriesID)
+
+
+def displayBinaryOperations(self, subjectID, studyID, seriesID):
         """Displays the sub window for performing binary operations
         on 2 images"""
         try:
@@ -119,8 +129,7 @@ def main(self):
             self.imv3.ui.roiBtn.hide()
             self.imv3.ui.menuBtn.hide()
 
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
+            
             self.lblImageMissing1 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing2 = QLabel("<h4>Image Missing</h4>")
             self.lblImageMissing1.hide()
@@ -130,9 +139,7 @@ def main(self):
             self.btnSave.setEnabled(False)
             self.btnSave.clicked.connect(lambda: saveNewDICOMFileFromBinOp(self))
 
-            studyID = self.selectedStudy 
-            seriesID = self.selectedSeries
-            imagePathList =self.objXMLReader.getImagePathList(studyID, 
+            imagePathList = self.objXMLReader.getImagePathList(subjectID, studyID, 
                                                                seriesID) 
             #form a list of image file names without extensions
             imageNameList = [os.path.splitext(os.path.basename(image))[0] 

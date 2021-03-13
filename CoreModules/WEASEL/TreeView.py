@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 def createTreeBranch(self, branchName, branch, parent):
     try:
         branchID = branch.attrib['id']
-        if branch.attrib['expanded']:
-            expand = branch.attrib['expanded']
-        else:
-            expand = False
+        #if branch.attrib['expanded']:
+        #    expand = branch.attrib['expanded']
+        #else:
+        #    expand = False
         #print("expand={}".format(expand))
         logger.info("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
         thisBranch = QTreeWidgetItem(parent)
