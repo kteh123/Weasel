@@ -19,6 +19,8 @@ def createTreeBranch(self, branchName, branch, parent, refresh=False):
         branchID = branch.attrib['id']
         if 'expanded' in branch.attrib:
             expand = branch.attrib['expanded']
+        else:
+            expand = False
             #print("expand={} when branch={}".format(expand, branchID))
         logger.info("TreeView.createTreeBranch, branch ID={}".format(branchID))
         thisBranch = QTreeWidgetItem(parent)
@@ -145,8 +147,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                #self.treeView.itemCollapsed.connect(lambda item: toggleMenuItems(self))
-                #self.treeView.itemExpanded.connect(lambda item: toggleMenuItems(self))
+                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewState(item, False))
+                self.treeView.itemExpanded.connect(lambda item: saveTreeViewState(item, True))
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
@@ -189,7 +191,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
             # Joao Sousa suggestion
             self.treeView.hide()
-            buildTreeView(self, refresh=False)
+            buildTreeView(self, refresh=True)
             self.treeView.setColumnWidth(1, self.treeViewColumnWidths[1])
             self.treeView.setColumnWidth(2, self.treeViewColumnWidths[2])  
             self.treeView.setColumnWidth(3, self.treeViewColumnWidths[3])
@@ -394,7 +396,40 @@ def isAnImageSelected(item):
         except Exception as e:
             print('Error in isAnImageSelected: ' + str(e))
             logger.error('Error in isAnImageSelected: ' + str(e))
-            
+
+
+def isASubjectSelected(item):
+    """Returns True is a subject is selected in the DICOM
+    tree view, else returns False"""
+    try:
+        logger.info("TreeView isASubjectSelected called.")
+        if item:
+            if 'subject' in item.text(1).lower():
+                return True
+            else:
+                return False
+        else:
+            return False
+    except Exception as e:
+        print('Error in isASubjectSelected: ' + str(e))
+        logger.error('Error in isASubjectSelected: ' + str(e))
+ 
+
+def isAStudySelected(item):
+        """Returns True is a study is selected in the DICOM
+        tree view, else returns False"""
+        try:
+            logger.info("TreeView isAStudySelected called.")
+           
+            if 'study' in item.text(1).lower():
+                return True
+            else:
+                return False
+                
+        except Exception as e:
+            print('Error in isAStudySelected: ' + str(e))
+            logger.error('Error in isAStudySelected: ' + str(e))
+
 
 def isASeriesSelected(item):
         """Returns True is a series is selected in the DICOM
@@ -411,6 +446,18 @@ def isASeriesSelected(item):
             print('Error in isASeriesSelected: ' + str(e))
             logger.error('Error in isASeriesSelected: ' + str(e))
 
+
+def saveTreeViewState(item, expanded='True'):
+    if isASubjectSelected(item):
+        subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
+    elif isAStudySelected(item):
+        subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
+        studyID = item.text(1).replace("Study", "").replace("-","").strip()
+    elif isASeriesSelected(item):
+        subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
+        studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
+        seriesID = item.text(1).replace("Series", "").replace("-","").strip()
+    
 
 def toggleBlockSelectionCheckedState(self):
     try:
@@ -460,23 +507,6 @@ def toggleItemCheckedState(self, item, col):
             logger.error('Error in toggleItemCheckedState: ' + str(e))
 
 
-def isASubjectSelected(selectedItem):
-    """Returns True is a subject is selected in the DICOM
-    tree view, else returns False"""
-    try:
-        logger.info("TreeView isASubjectSelected called.")
-        if selectedItem:
-            if 'subject' in selectedItem.text(1).lower():
-                return True
-            else:
-                return False
-        else:
-            return False
-    except Exception as e:
-        print('Error in isASubjectSelected: ' + str(e))
-        logger.error('Error in isASubjectSelected: ' + str(e))
-
-
 def toggleMenuItems(self):
         """TO DO"""
         try:
@@ -507,8 +537,6 @@ def toggleMenuItems(self):
         except Exception as e:
             print('Error in TreeView.toggleMenuItems: ' + str(e))
             logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
-
-
 
 
 def returnCheckedStudies(self):

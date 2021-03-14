@@ -74,24 +74,22 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getImageList: ' + str(e))
 
 
-    def getSeries(self, subjectID, studyID, seriesID):
-        try: #'./subject[@id=' + chr(34) + subjectID + chr(34) + ']' + \
-            xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) + ']' \
-                    '/study[@id=' + chr(34) + studyID + chr(34) + ']' + \
-                    '/series[@id=' + chr(34) + seriesID + chr(34) + ']'
-            #print ("get series Xpath = {}".format(xPath))
-            return self.root.find(xPath)
-        except Exception as e:
-            print('Error in WeaselXMLReader.getSeries: ' + str(e)) 
-            logger.error('Error in WeaselXMLReader.getSeries_: ' + str(e))
-
-
     def saveXMLFile(self, filePath):
         try:
             self.tree.write(filePath)
         except Exception as e:
             print('Error in WeaselXMLReader.saveXMLFile: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.saveXMLFile: ' + str(e))
+
+
+    def getSubject(self, subjectID):
+        try:
+            xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) + ']'
+            #print(xPath)
+            return self.root.find(xPath)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getSubject: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getSubject: ' + str(e))
 
 
     def getStudy(self, subjectID, studyID):
@@ -103,6 +101,19 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.getStudy: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getStudy: ' + str(e))
+
+
+    def getSeries(self, subjectID, studyID, seriesID):
+        try: 
+            xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) + ']' \
+                    '/study[@id=' + chr(34) + studyID + chr(34) + ']' + \
+                    '/series[@id=' + chr(34) + seriesID + chr(34) + ']'
+            #print ("get series Xpath = {}".format(xPath))
+            return self.root.find(xPath)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getSeries: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getSeries_: ' + str(e))
+
 
     #redundant?
     def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
