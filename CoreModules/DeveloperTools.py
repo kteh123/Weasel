@@ -347,7 +347,7 @@ class UserInterfaceTools:
 
 class GenericDICOMTools:
 
-    def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, suffix="_Copy"):
+    def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, suffix="_Copy", output_dir=None):
         """
         Creates a DICOM copy of all files in "inputPath" (1 or more) into a new series.
         """
@@ -360,7 +360,7 @@ class GenericDICOMTools:
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
                 newDataset = readDICOM_Image.getDicomDataset(inputPath)
-                derivedPath = saveDICOM_Image.returnFilePath(inputPath, suffix)
+                derivedPath = saveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
                 saveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
                 # The next lines perform an overwrite operation over the copied images
                 instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
@@ -388,7 +388,7 @@ class GenericDICOMTools:
                 derivedPath = []
                 for path in inputPath:
                     newDataset = readDICOM_Image.getDicomDataset(path)
-                    newFilePath = saveDICOM_Image.returnFilePath(path, suffix)
+                    newFilePath = saveDICOM_Image.returnFilePath(path, suffix, output_folder=output_dir)
                     saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     derivedPath.append(newFilePath)
                     # The next lines perform an overwrite operation over the copied images
@@ -421,14 +421,14 @@ class GenericDICOMTools:
                 os.remove(inputPath)
                 interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
-                    if displayWindow.windowTitle().split("-")[-1] == os.path.basename(inputPath):
+                    if displayWindow.windowTitle().split(" - ")[-1] == os.path.basename(inputPath):
                         displayWindow.close()
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
                     os.remove(path)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
-                    if displayWindow.windowTitle().split("-")[-1] in list(map(os.path.basename, inputPath)):
+                    if displayWindow.windowTitle().split(" - ")[-1] in list(map(os.path.basename, inputPath)):
                         displayWindow.close()
         except Exception as e:
             print('deleteDICOM: ' + str(e))
@@ -461,7 +461,7 @@ class GenericDICOMTools:
                         saveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name + suffix)
                 newImagePathList = imagePathList
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
-                                imagePathList, newImagePathList, suffix)
+                                imagePathList, newImagePathList, suffix, newSeriesName=series_name)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, imagePathList)     
             else:
                 for path in imagePathList:
@@ -481,7 +481,7 @@ class GenericDICOMTools:
                         saveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name + suffix)
                     newImagePathList.append(newFilePath)
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
-                                imagePathList, newImagePathList, suffix)
+                                imagePathList, newImagePathList, suffix, newSeriesName=series_name)
             return newImagePathList
         except Exception as e:
             print('mergeDicomIntoOneSeries: ' + str(e))
@@ -608,7 +608,7 @@ class PixelArrayDICOMTools:
             print('Error in DeveloperTools.getDICOMobject: ' + str(e))
 
 
-    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None):
+    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, output_dir=None):
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
@@ -617,7 +617,7 @@ class PixelArrayDICOMTools:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 numImages = 1
                 derivedImageList = [pixelArray]
-                derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath, suffix)
+                derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
                 derivedImagePathList = [derivedImageFilePath]
 
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
@@ -625,7 +625,7 @@ class PixelArrayDICOMTools:
                     # If it's Enhanced MRI
                     numImages = 1
                     derivedImageList = [pixelArray]
-                    derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[0], suffix)
+                    derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[0], suffix, output_folder=output_dir)
                     derivedImagePathList = [derivedImageFilePath]
                 else:
                     # Iterate through list of images (slices) and save the resulting Map for each DICOM image
@@ -633,7 +633,7 @@ class PixelArrayDICOMTools:
                     derivedImagePathList = []
                     derivedImageList = []
                     for index in range(numImages):
-                        derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[index], suffix)
+                        derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[index], suffix, output_folder=output_dir)
                         derivedImagePathList.append(derivedImageFilePath)
                         if numImages==1:
                             derivedImageList.append(pixelArray)
@@ -871,7 +871,7 @@ class Series:
             children.append(Image.fromTreeView(objWeasel, imageItem))
         return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images, children=children)
     
-    def new(self, suffix=None, series_id=None, series_name=None, series_uid=None):
+    def new(self, suffix="_Copy", series_id=None, series_name=None, series_uid=None):
         if series_id is None:
             series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
         if series_name is None:
@@ -883,19 +883,19 @@ class Series:
         newSeries.referencePathsList = self.images
         return newSeries
     
-    def copy(self, newSeries=True, series_id=None, series_name=None, series_uid=None):
+    def copy(self, suffix="_Copy", newSeries=True, series_id=None, series_name=None, series_uid=None, output_dir=None):
         if newSeries == True:
             #series_id = None
             #series_name = None
             #series_uid = None
-            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix="_Copy")
-            return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix="_Copy")
+            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
+            return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix=suffix)
         else:
             series_id = self.seriesID.split('_', 1)[0]
             series_name = self.seriesID.split('_', 1)[1]
             series_uid = self.seriesUID
             suffix = self.suffix
-            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix)
+            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
             for newCopiedImagePath in newPathsList:
                 newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
                 self.add(newImage)
@@ -923,14 +923,14 @@ class Series:
             self.children.remove(Image)
             self.numberChildren = len(self.children)
 
-    def write(self, pixelArray):
+    def write(self, pixelArray, output_dir=None):
         if self.images:
             PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
         else:
             series_id = self.seriesID.split('_', 1)[0]
             series_name = self.seriesID.split('_', 1)[1]
             inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
-            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID)
+            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir)
             self.images = outputPath
     
     def read(self):
@@ -1236,19 +1236,19 @@ class Image:
         newImage.referencePath = self.path
         return newImage
 
-    def copy(self, series=None):
+    def copy(self, suffix='_Copy', series=None, output_dir=None):
         if series is None:
             series_id = self.seriesID.split('_', 1)[0]
             series_name = self.seriesID.split('_', 1)[1]
             series_uid = self.seriesUID
-            suffix = self.suffix
+            #suffix = self.suffix
         else:
             series_id = series.seriesID.split('_', 1)[0]
             series_name = series.seriesID.split('_', 1)[1]
             series_uid = series.seriesUID
             suffix = series.suffix
-        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix)
-        copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath)
+        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
+        copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath, suffix=suffix)
         if series: series.add(copiedImage)
         return copiedImage
 
@@ -1259,7 +1259,7 @@ class Image:
         self.subjectID = self.studyID = self.seriesID = ''
         # Delete the instance, such as del self???
 
-    def write(self, pixelArray, series=None):
+    def write(self, pixelArray, series=None, output_dir=None):
         if os.path.exists(self.path):
             PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
         else:
@@ -1271,7 +1271,7 @@ class Image:
                 series_id = series.seriesID.split('_', 1)[0]
                 series_name = series.seriesID.split('_', 1)[1]
                 series_uid = series.seriesUID
-            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, output_dir=output_dir)
             self.path = outputPath[0]
             if series: series.add(self)
         

@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def returnFilePath(imagePath, suffix, new_path=None):#, outputFolder=None):
+def returnFilePath(imagePath, suffix, new_path=None, output_folder=None):
     """This method returns the new filepath of the object to be saved."""
     # Think of a way to choose a select a new FilePath
     try:
@@ -25,8 +25,10 @@ def returnFilePath(imagePath, suffix, new_path=None):#, outputFolder=None):
             if new_path is not None:
                 newFilePath = new_path + '.dcm'
             else:
-                #if outputFolder is None:
-                outputFolder = os.path.join(os.path.dirname(imagePath), "output" + suffix)
+                if output_folder is None:
+                    outputFolder = os.path.join(os.path.dirname(imagePath), "output" + suffix)
+                else:
+                    outputFolder = output_folder
                 fileName = os.path.splitext(os.path.basename(imagePath))[0]
                 try: os.mkdir(outputFolder)
                 except: pass
