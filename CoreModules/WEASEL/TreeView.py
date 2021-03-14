@@ -17,9 +17,10 @@ logger = logging.getLogger(__name__)
 def createTreeBranch(self, branchName, branch, parent, refresh=False):
     try:
         branchID = branch.attrib['id']
-        expand = branch.attrib['expanded']
-        #print("expand={}".format(expand))
-        logger.info("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
+        if 'expanded' in branch.attrib:
+            expand = branch.attrib['expanded']
+            #print("expand={} when branch={}".format(expand, branchID))
+        logger.info("TreeView.createTreeBranch, branch ID={}".format(branchID))
         thisBranch = QTreeWidgetItem(parent)
         thisBranch.setText(0, '')
         thisBranch.setText(1, branchName + " - {}".format(branchID))
@@ -36,7 +37,7 @@ def createTreeBranch(self, branchName, branch, parent, refresh=False):
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
-        print('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
+        print('Error in TreeView.createTreeBranch at line {} when branch ID={}: '.format(line_number, branchID) + str(e)) 
         logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
