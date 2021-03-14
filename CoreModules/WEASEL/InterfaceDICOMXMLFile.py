@@ -44,7 +44,7 @@ def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=No
             #new series ID
             if newSeriesName:
                 dataset.SeriesDescription = newSeriesName
-                return getNewSeriesName(subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName)
+                return getNewSeriesName(subjectID, studyID, dataset, suffix, newSeriesName=None)
             else:
                 if hasattr(dataset, "SeriesDescription"):
                     dataset.SeriesDescription = dataset.SeriesDescription + suffix

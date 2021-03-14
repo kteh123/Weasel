@@ -319,7 +319,7 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(self)
             imageName = os.path.basename(self.selectedImagePath)
-            windowTitle = subjectID + "-" + studyName + "-" + seriesName + "-" + imageName
+            windowTitle = subjectID + " - " + studyName + " - " + seriesName + " - " + imageName
             subWindow.setWindowTitle(windowTitle)
             #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
@@ -909,7 +909,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                                        multiImage=True,  
                                        deleteButton=deleteButton) 
 
-                subWindow.setWindowTitle(subjectID + '-' + studyName + '-'+ seriesName + '-' 
+                subWindow.setWindowTitle(subjectID + ' - ' + studyName + ' - '+ seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
         except TypeError as e: 
             print('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))

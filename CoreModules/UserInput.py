@@ -14,7 +14,7 @@ class UserInput:
     Generating user input from the weasel object directly 
     """
 
-    def user_input(self, *args, title="User input window"):
+    def user_input(self, *fields, title="User input window"):
         """
         Creates a pop-up window to get user input.
         
@@ -51,10 +51,6 @@ class UserInput:
         See Tutorial_UserInput.py
 
         """
-
-        # convert tuple to list so values can be changed
-
-        fields = list(args)
 
         # set default values for items that are not provided by the caller
 
@@ -152,7 +148,7 @@ class UserInput:
                 for v, value in enumerate(value_list):
                     value_list[v] = field["list"].index(value) 
                 field["value"] = value_list
-
+                
             elif field["type"] == "dropdownlist":
                 value = paramList[f]
                 field["value"] = field["list"].index(value) 
@@ -165,8 +161,6 @@ class UserInput:
 
             elif field["type"] == "float":
                 field["value"] = paramList[f]
-
-            fields[f] = field
 
         return 0, fields
 
