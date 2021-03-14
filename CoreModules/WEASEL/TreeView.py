@@ -14,13 +14,10 @@ import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
 
 
-def createTreeBranch(self, branchName, branch, parent):
+def createTreeBranch(self, branchName, branch, parent, refresh=False):
     try:
         branchID = branch.attrib['id']
-        if branch.attrib['expanded']:
-            expand = branch.attrib['expanded']
-        else:
-            expand = False
+        expand = branch.attrib['expanded']
         #print("expand={}".format(expand))
         logger.info("TreeView.createTreeBranch, branch name={} {}".format(branchName, branchID))
         thisBranch = QTreeWidgetItem(parent)
@@ -30,10 +27,10 @@ def createTreeBranch(self, branchName, branch, parent):
         #put a checkbox in front of this branch
         thisBranch.setFlags(thisBranch.flags() | Qt.ItemIsUserCheckable)
         thisBranch.setCheckState(0, Qt.Unchecked)
-        if expand == "True":
-            thisBranch.setExpanded(True)
-        else:
-            thisBranch.setExpanded(False)
+        thisBranch.setExpanded(True)
+        if refresh:
+            if expand == "False":
+                thisBranch.setExpanded(False)
         return thisBranch# treeWidgetItemCounter
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -89,7 +86,7 @@ def resizeTreeViewColumns(self):
             logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
-def buildTreeView(self):
+def buildTreeView(self, refresh=False):
     try:
         logger.info("TreeView.buildTreeView called")
         self.treeView.clear()
@@ -98,11 +95,11 @@ def buildTreeView(self):
         self.treeView.blockSignals(True)
         subjects = self.objXMLReader.getSubjects()
         for subject in subjects:
-            subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView)
+            subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView, refresh)
             for study in subject:
-                studyBranch = createTreeBranch(self, "Study",  study, subjectBranch)
+                studyBranch = createTreeBranch(self, "Study",  study, subjectBranch, refresh)
                 for series in study:
-                    seriesBranch = createTreeBranch(self, "Series", series,  studyBranch)
+                    seriesBranch = createTreeBranch(self, "Series", series,  studyBranch, refresh)
                     for image in series:
                         createImageLeaf(self, image, seriesBranch)
         self.treeView.blockSignals(False)   
@@ -147,6 +144,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
+                #self.treeView.itemCollapsed.connect(lambda item: toggleMenuItems(self))
+                #self.treeView.itemExpanded.connect(lambda item: toggleMenuItems(self))
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
@@ -189,7 +188,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
             # Joao Sousa suggestion
             self.treeView.hide()
-            buildTreeView(self)
+            buildTreeView(self, refresh=False)
             self.treeView.setColumnWidth(1, self.treeViewColumnWidths[1])
             self.treeView.setColumnWidth(2, self.treeViewColumnWidths[2])  
             self.treeView.setColumnWidth(3, self.treeViewColumnWidths[3])
