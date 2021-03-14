@@ -421,14 +421,14 @@ class GenericDICOMTools:
                 os.remove(inputPath)
                 interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
-                    if displayWindow.windowTitle().split(" - ")[-1] == os.path.basename(inputPath):
+                    if displayWindow.windowTitle().split("-")[-1] == os.path.basename(inputPath):
                         displayWindow.close()
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
                     os.remove(path)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
-                    if displayWindow.windowTitle().split(" - ")[-1] in list(map(os.path.basename, inputPath)):
+                    if displayWindow.windowTitle().split("-")[-1] in list(map(os.path.basename, inputPath)):
                         displayWindow.close()
         except Exception as e:
             print('deleteDICOM: ' + str(e))
