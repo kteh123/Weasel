@@ -6,7 +6,7 @@
 def main(weasel):
 
     list_of_series = weasel.series() 
-    if list_of_series.empty(): return
+    if len(list_of_series) == 0: return
     list_of_series.copy().merge(series_name='MergedSeries')
     weasel.refresh()
     

@@ -3,49 +3,79 @@
 # Leeds site
 #***************************************************************************
 
-
+#import time
 
 def main(weasel):
 
-    list_of_series = weasel.series() 
-    
-    # merge series with the same series number (needs a merge in place method)
+#    time_start = time.clock()
+    list_of_series = weasel.series()
+#    print(time.clock() - time_start)
+
+    # Rename sequences
 
     series_names = []                
-    for i, series in list_of_series.enumerate():      
-        weasel.progress_bar(max=list_of_series.length(), index=i+1, msg="Finding series name {}")
+    for i, series in enumerate(list_of_series):      
+        weasel.progress_bar(max=len(list_of_series), index=i+1, msg="Identifying series {}")
         series_names.append(iBEAt_series_name(series))
 
-    series_names = iBEAt_series_names_update(series_names)
+    series_names = iBEAt_series_names_suffix(series_names)
 
-    for i, series in list_of_series.enumerate():      
-        weasel.progress_bar(max=list_of_series.length(), index=i+1, msg="Renaming series {}")
-        series.Item("SeriesDescription", series_names[i])
+    for i, series in enumerate(list_of_series):      
+        weasel.progress_bar(max=len(list_of_series), index=i+1, msg="Renaming series {}")
+        series.Item("SeriesDescription", series_names[i])       
+# REPLACE BY:
+#       series.SeriesDescription = series_names[i]
 
-    weasel.refresh()            
+    # Set the Preparation Times for the T2 series manually
+    # NOT CORRECT - T2 series have a suffix so this is only the first part of the name
+    # also needs sorting by slice location.
 
+    T2_PrepTimes = [0.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0]
+    for series in list_of_series:
+        if series.Item("SeriesDescription") == 'T2map_kidneys_cor-oblique_mbh':
+            for i, image in enumerate(series.children):
+                weasel.progress_bar(max=len(series.children), index=i+1, msg="Writing T2 prep time {}")
+                image.Item("InversionTime", T2_PrepTimes[i])  
+# REPLACE BY:
+#       if series.SeriesDescription == 'T2map_kidneys_cor-oblique_mbh':
+#            series.InversionTime = T2_PrepTimes
 
+    # Set the b-values for the IVIM series manually
 
-def iBEAt_series_names_update(series_names): 
-    """
-    For some series the name must be extended
-    """
-    inject = series_names.index('DCE_kidneys_cor-oblique_fb')
-    for i, name in enumerate(series_names[inject:]):
-        if name[0:17] == 'T1w_abdomen_dixon': 
-            series_names[inject+i] += '_post_contrast'
+    IVIM_bvalues = [
+        0.0010000086, 
+        10.000086, 
+    	19.99908294, 
+  	    30.00085926, 
+  	    50.00168544, 
+  	    80.0007135, 
+  	    100.0008375, 
+  	    199.9998135, 
+  	    300.0027313, 
+  	    600.0 
+    ]
 
-    asl = [i for i, x in enumerate(series_names) if x == 'ASL_kidneys_pCASL_cor-oblique_fb']
-    nr_of_asl_series = int(len(asl)/5)
-    for i in range(nr_of_asl_series):
-        series_names[asl[5*i+0]] += '_M0_moco'
-        series_names[asl[5*i+1]] += '_PW_moco'
-        series_names[asl[5*i+2]] += '_RBF_moco'
-        series_names[asl[5*i+3]] += '_control_moco'
-        series_names[asl[5*i+4]] += '_label0_moco'
+    IVIM_bvalues +=  IVIM_bvalues + IVIM_bvalues
+    gradient = [1,0,0] * 10 + [0,1,0] * 10 + [0,0,1] * 10   # Assumption - needs to be verified
 
-    return series_names
-   
+    # SERIES NEEDS SORTING BY SLICE LOCATION
+
+    for series in list_of_series:
+        if series.Item("SeriesDescription") == 'IVIM_kidneys_cor-oblique_fb':
+            for i, image in enumerate(series.children):
+                weasel.progress_bar(max=len(series.children), index=i+1, msg="Writing IVIM b-values {}")
+                ds = image.read()
+                ds.SharedFunctionalGroupsSequence[0].MRDiffusionSequence[0].DiffusionBValue = IVIM_bvalues[i]
+                ds.SharedFunctionalGroupsSequence[0].MRDiffusionSequence[0].DiffusionGradientDirectionSequence[0].DiffusionGradientOrientation = gradient[i]
+                image.save(ds)      
+# REPLACE BY:
+#       if series.SeriesDescription == 'IVIM_kidneys_cor-oblique_fb':
+#            for i, image in series.images().enumerate():
+#                image.SharedFunctionalGroupsSequence[0].MRDiffusionSequence[0].DiffusionBValue = IVIM_bvalues[i]
+#                image.SharedFunctionalGroupsSequence[0].MRDiffusionSequence[0].DiffusionGradientDirectionSequence[0].DiffusionGradientOrientation = gradient[i]
+               
+    weasel.refresh()  
+
 
 
 def iBEAt_series_name(series): 
@@ -82,9 +112,9 @@ def iBEAt_series_name(series):
             sequence = 'PC_RenalArtery_Right_EcgTrig_fb_120'
         else:
             sequence = 'PC_RenalArtery_Left_EcgTrig_fb_120'
-        if ds.ImageType[2] == 'MAG': return sequence + '_magnitude'
         if ds.ImageType[2] == 'P': return sequence + '_phase'
-
+        if ds.ImageType[2] == 'MAG': return sequence + '_magnitude'
+        
     if ds.SequenceName == '*fl2d12':
         if ds.InPlanePhaseEncodingDirection == 'COL':
             sequence = 'T2star_map_pancreas_tra_mbh'
@@ -115,9 +145,9 @@ def iBEAt_series_name(series):
 
     if ds.SequenceName[0:5] == '*ep_b':
         if series.numberChildren < 1000:
-            return 'IVIM_kidneys_cor-oblique_fb '
+            return 'IVIM_kidneys_cor-oblique_fb'
         else:
-            return 'DTI_kidneys_cor-oblique_fb '
+            return 'DTI_kidneys_cor-oblique_fb'
 
     if ds.SequenceName == '*fl3d1':
         if ds.ScanOptions == 'PFP': 
@@ -131,4 +161,28 @@ def iBEAt_series_name(series):
     if ds.SequenceName == 'RAVE3d1': return 'RAVE_kidneys_fb'
 
     return 'Sequence not recognized'
+
+
+def iBEAt_series_names_suffix(series_names): 
+    """
+    For some series the name must be extended
+    """
+    if series_names.count('DCE_kidneys_cor-oblique_fb') > 0:
+        inject = series_names.index('DCE_kidneys_cor-oblique_fb')
+        for i, name in enumerate(series_names[inject:]):
+            if name[0:17] == 'T1w_abdomen_dixon':
+                series_names[inject+i] += '_post_contrast'              
+
+    asl = [i for i, x in enumerate(series_names) if x == 'ASL_kidneys_pCASL_cor-oblique_fb']
+    nr_of_asl_series = int(len(asl)/5)
+    for i in range(nr_of_asl_series):
+        series_names[asl[5*i+0]] += '_M0_moco'
+        series_names[asl[5*i+1]] += '_PW_moco'
+        series_names[asl[5*i+2]] += '_RBF_moco'
+        series_names[asl[5*i+3]] += '_control_moco'
+        series_names[asl[5*i+4]] += '_label0_moco'
+
+    return series_names
+
+   
     

@@ -8,8 +8,8 @@ from pydicom.dataset import Dataset
 
 def main(weasel):
     list_of_images = weasel.images()                 # get the list of images checked by the user
-    for i, image in list_of_images.enumerate():      # Loop over Series in the list and display a progress Bar
-        weasel.progress_bar(max=list_of_images.length(), index=i+1, msg="Anonymising images {}")
+    for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
+        weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Anonymising images {}")
 
         ds = image.read()               # Load the dataset into memory
         ds.PatientName = "Anonymous"    # replace PatientName
