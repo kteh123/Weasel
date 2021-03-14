@@ -32,8 +32,9 @@ def main(self):
     try:
         logger.info("LoadDICOM.main called")
         closeAllSubWindows.main(self)
-        self.selectedStudy = ''
-        self.selectedSeries = ''
+        #self.selectedSubject = ''  SS 13.03.21
+        #self.selectedStudy = ''
+        #self.selectedSeries = ''
         self.selectedImageName = ''
         self.selectedImagePath = ''
         #browse to DICOM folder and get DICOM folder name

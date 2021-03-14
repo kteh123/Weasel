@@ -68,7 +68,8 @@ def displayManySingleImageSubWindows(self):
             studyName = image[0]
             seriesName = image[1]
             imagePath = image[2]
-            displayImageROISubWindow(self, studyName, seriesName, imagePath)
+            subjectID = image[3]
+            displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath)
 
 def displayManyMultiImageSubWindows(self):
     if len(self.checkedSeriesList)>0: 
@@ -77,11 +78,11 @@ def displayManyMultiImageSubWindows(self):
             studyName = series[1]
             seriesName = series[2]
             imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageROISubWindow(self, imageList, studyName, 
+            displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayImageROISubWindow(self, studyName, seriesName, imagePath):
+def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
     """
     Creates a subwindow that displays one DICOM image and allows an ROI 
     to be drawn on it 
@@ -93,7 +94,7 @@ def displayImageROISubWindow(self, studyName, seriesName, imagePath):
         graphicsViewLayout, sliderLayout, 
         imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self)
         imageName = os.path.basename(imagePath)
-        windowTitle = studyName + "-" + seriesName + "-" + imageName
+        windowTitle = subjectID + "-" + studyName + "-" + seriesName + "-" + imageName
         subWindow.setWindowTitle(windowTitle)
         #subWindow.setStyleSheet("background-color:#d9d9d9;")
 
@@ -105,7 +106,7 @@ def displayImageROISubWindow(self, studyName, seriesName, imagePath):
         
         cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, 
                               roiToolsLayout, pixelValueTxt, roiMeanTxt, roiStdDevTxt, graphicsView, 
-                             zoomSlider, zoomValueLabel)
+                             zoomSlider, zoomValueLabel, subjectID, studyName)
         
         spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(imageLevelsLayout, 
                                                                  graphicsView, cmbROIs)
@@ -144,12 +145,12 @@ def displayManyMultiImageSubWindows(self):
             studyName = series[1]
             seriesName = series[2]
             imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageROISubWindow(self, imageList, studyName, 
+            displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayMultiImageROISubWindow(self, imageList, studyName, 
-                     seriesName, sliderPosition = -1):
+def displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
+                     seriesName, sliderPosition = -1 ):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
         A slider allows the user to navigate  through the images.  
@@ -166,12 +167,12 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             zoomSlider, zoomValueLabel = setUpZoomSlider(graphicsView)
 
             pixelValueTxt, roiMeanTxt, roiStdDevTxt = setUpImageDataWidgets(imageDataLayout, 
-                                                        graphicsView, 
+                                                               graphicsView, 
                                                         zoomValueLabel)
         
             cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, 
                               roiToolsLayout, pixelValueTxt, roiMeanTxt, roiStdDevTxt, 
-                             graphicsView, zoomSlider, zoomValueLabel)
+                             graphicsView, zoomSlider, zoomValueLabel, subjectName, studyName)
         
             spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(imageLevelsLayout, 
                                                                  graphicsView, cmbROIs)
@@ -179,7 +180,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
             graphicsView.dictROIs = ROIs(NumImages=len(imageList))
             
             imageSlider.valueChanged.connect(
-                  lambda: imageROISliderMoved(self, seriesName, 
+                  lambda: imageROISliderMoved(self, subjectName, studyName, seriesName, 
                                                    imageList, 
                                                    imageSlider,
                                                    lblImageMissing, pixelValueTxt, 
@@ -190,7 +191,7 @@ def displayMultiImageROISubWindow(self, imageList, studyName,
                                                    graphicsView, subWindow, buttonList, zoomSlider,
                                                    zoomValueLabel, imageNumberLabel))
           
-            imageROISliderMoved(self, seriesName, 
+            imageROISliderMoved(self, subjectName, studyName, seriesName, 
                                     imageList, 
                                     imageSlider,
                                     lblImageMissing, 
@@ -283,9 +284,6 @@ def setUpSubWindow(self, imageSeries=False):
         sliderLayout = QHBoxLayout()
         if imageSeries:
             mainVerticalLayout.addLayout(sliderLayout)
-        #else:
-        #    windowTitle = displayImageCommon.getDICOMFileData(self)
-        #    subWindow.setWindowTitle(windowTitle)
 
         subWindow.show()
         return (graphicsView, roiToolsLayout, imageLevelsLayout, 
@@ -298,7 +296,7 @@ def setUpSubWindow(self, imageSeries=False):
 
 def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
          roiMeanTxt, roiStdDevTxt, graphicsView, 
-         zoomSlider, zoomLabel, imageSlider=None):
+         zoomSlider, zoomLabel, subjectID, studyID, imageSlider=None):
     try:
         logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
         buttonList = []
@@ -331,7 +329,8 @@ def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
 
         btnLoad = QPushButton()
         btnLoad.setToolTip('Loads existing ROIs')
-        btnLoad.clicked.connect(lambda: loadROI(self, cmbROIs, graphicsView))
+        btnLoad.clicked.connect(lambda: loadROI(self, cmbROIs, 
+                                            graphicsView, subjectID, studyID))
         btnLoad.setIcon(QIcon(QPixmap(icons.LOAD_ICON)))
 
         btnErase = QPushButton()
@@ -716,7 +715,8 @@ def replaceMask(graphicsView, regionName, imageSlider=None):
         graphicsView.dictROIs.replaceMask(regionName, mask, imageNumber)
         
 
-def imageROISliderMoved(self, seriesName, imageList, imageSlider,
+def imageROISliderMoved(self, subjectName, studyName, seriesName, 
+                        imageList, imageSlider,
                         lblImageMissing, pixelValueTxt,  
                         roiMeanTxt, roiStdDevTxt,
                         cmbROIs,  btnDraw, btnErase,
@@ -757,7 +757,7 @@ def imageROISliderMoved(self, seriesName, imageList, imageSlider,
                                 zoomSlider, zoomLabel,
                                 imageSlider)
 
-                subWindow.setWindowTitle(seriesName + ' - ' 
+                subWindow.setWindowTitle(subjectName + '-' + studyName + '-' + seriesName + '-' 
                          + os.path.basename(self.selectedImagePath))
                # print("imageSliderMoved after={}".format(self.selectedImagePath))
         except Exception as e:
@@ -823,7 +823,7 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
         graphicsView.graphicsItem.reloadMask(mask)
  
         
-def loadROI(self, cmbROIs, graphicsView):
+def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
     try:
         logger.info("DisplayImageDrawROI.loadROI called")
         # The following workflow is assumed:
@@ -833,8 +833,8 @@ def loadROI(self, cmbROIs, graphicsView):
         # Prompt Windows to select Series
         paramDict = {"Series":"listview"}
         helpMsg = "Select a Series with ROI"
-        studyID = self.selectedStudy
-        study = self.objXMLReader.getStudy(studyID)
+        #studyID = self.selectedStudy
+        study = self.objXMLReader.getStudy(subjectID, studyID)
         listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()

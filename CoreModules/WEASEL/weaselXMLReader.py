@@ -254,7 +254,8 @@ class WeaselXMLReader:
         try:
             currentStudy = self.getStudy(subjectID, studyID)
             newAttributes = {'id':newSeriesID, 
-                                'typeID':suffix}
+                                'typeID':suffix,
+                                'expanded':'False'}
                    
             #Add new series to study to hold new images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
