@@ -13,7 +13,7 @@ def main(weasel):
     # Get images checked by the user
 
     list_of_images = weasel.images(msg = "Please select the images to filter")     
-    if list_of_images.empty(): return 
+    if len(list_of_images) == 0: return 
 
     # Get user input: type of filter and size
 
@@ -28,8 +28,8 @@ def main(weasel):
 
     # filtered = list_of_images.copy().merge(series_name='Filter') 
 
-    for i, image in list_of_images.enumerate():
-        weasel.progress_bar(max=list_of_images.length(), index=i+1, msg="Filtering image {}")
+    for i, image in enumerate(list_of_images):
+        weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Filtering image {}")
         if filter == 0:
             image.write(-ndimage.gaussian_filter(image.PixelArray, sigma=size))
         elif filter == 1:

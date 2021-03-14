@@ -6,8 +6,8 @@
 def main(weasel):
 
     list_of_images = weasel.images()                 # get the list of series checked by the user
-    for i, image in list_of_images.enumerate():      # Loop over Series in the list and display a progress Bar
-        weasel.progress_bar(max=list_of_images.length(), index=i+1, msg="Copying images {}")
+    for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
+        weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Copying images {}")
         image.copy()                # Copy the image 
     weasel.refresh()                # Refresh weasel
 

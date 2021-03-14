@@ -7,7 +7,7 @@
 def main(weasel):
     
     list_of_images = weasel.images() 
-    if list_of_images.empty(): return
+    if len(list_of_images) == 0: return
     list_of_images.copy().merge(series_name='MergedSeries')
     weasel.refresh()
 

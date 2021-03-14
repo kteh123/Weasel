@@ -8,63 +8,36 @@ from CoreModules.DeveloperTools import Series
 from CoreModules.DeveloperTools import Image
 from CoreModules.UserInput import UserInput
 
-
-class List:
+class ListOfDicomObjects(list):
     """
-    A superclass for managing Lists. 
+    A superclass for managing Lists of Subjects, Studies, Series or Images. 
     """
-    def __init__(self, List):
-        self.List = List
-
-    def empty(self):
-        """
-        Checks if the list is empty.
-        """
-        return len(self.List) == 0
-
-    def length(self):
-        """
-        Returns the number of items in the list.
-        """
-        return len(self.List)
-
-    def enumerate(self):
-        """
-        Enumerates the items in the list.
-        """
-        return enumerate(self.List)
-
     def delete(self):
         """
         Deletes all items in the list
         """
-        for item in self.List: 
+        for item in self: 
             item.delete()
 
     def display(self):
         """
         Displays all items in the list.
         """
-        for item in self.List: 
+        for item in self: 
             item.display()
 
 
-class ImagesList(List):
+class ImagesList(ListOfDicomObjects):
     """
     A class containing a list of objects of class Image. 
     """
-    def image(self, index=0):
-        """
-        Returns image with given index.
-        """
-        return self.List[index]
 
     def copy(self):
         """
         Returns a copy of the list of images.
         """
         copy = []
-        for image in self.List: 
+        for image in self: 
             copy.append(image.copy())
         return ImagesList(copy)
         
@@ -72,44 +45,38 @@ class ImagesList(List):
         """
         Merges a list of images into a new series under the same study
         """
-        if len(self.List) == 0: return
-        return self.List[0].merge(self.List, series_name=series_name, overwrite=True)
+        if len(self) == 0: return
+        return self[0].merge(self, series_name=series_name, overwrite=True)
 
     def new_parent(self, suffix="_Suffix"):
         """
         Creates a new parent series from the images in the list.
         """
-        return self.List[0].newSeriesFrom(self.List, suffix=suffix)
+        return self[0].newSeriesFrom(self, suffix=suffix)
 
     def Item(self, *args):
         """
         Applies the Item method to all images in the list
         """
-        return [image.Item(args) for image in self.List]
+        return [image.Item(args) for image in self]
 
     def display(self):
         """
         Displays all images as a series.
         """
-        self.List[0].displayListImages(self.List)
+        self[0].displayListImages(self)
 
 
-class SeriesList(List):
+class SeriesList(ListOfDicomObjects):
     """
     A class containing a list of class Series. 
     """  
-    def series(self, index=0):
-        """
-        Returns series with given index.
-        """
-        return self.List[index]
-
     def copy(self):
         """
         Returns a copy of the list of series.
         """
         copy = []
-        for series in self.List: 
+        for series in self: 
             copy.append(series.copy())
         return SeriesList(copy)
 
@@ -117,11 +84,11 @@ class SeriesList(List):
         """
         Merges a list of series into a new series under the same study
         """
-        if len(self.List) == 0: return
-        return self.List[0].merge(self.List, series_name=series_name, overwrite=True)
+        if len(self) == 0: return
+        return self[0].merge(self, series_name=series_name, overwrite=True)
 
 
-class StudyList(List):
+class StudyList(ListOfDicomObjects):
     """
     A class containing a list of class Study. 
     """
