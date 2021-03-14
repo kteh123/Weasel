@@ -3,10 +3,13 @@
 # Leeds site
 #***************************************************************************
 
+#import time
 
 def main(weasel):
 
-    list_of_series = weasel.series() 
+#    time_start = time.clock()
+    list_of_series = weasel.series()
+#    print(time.clock() - time_start)
 
     # Rename sequences
 
@@ -24,7 +27,8 @@ def main(weasel):
 #       series.SeriesDescription = series_names[i]
 
     # Set the Preparation Times for the T2 series manually
-    # NOT CORRECT - SERIES have a suffix, and also needs sorting by slice location.
+    # NOT CORRECT - T2 series have a suffix so this is only the first part of the name
+    # also needs sorting by slice location.
 
     T2_PrepTimes = [0.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0]
     for series in list_of_series:
