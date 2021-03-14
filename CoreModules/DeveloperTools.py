@@ -428,7 +428,7 @@ class GenericDICOMTools:
                     os.remove(path)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
-                    if displayWindow.windowTitle().split(" - ")[-1] in map(os.path.basename, inputPath):
+                    if displayWindow.windowTitle().split(" - ")[-1] in list(map(os.path.basename, inputPath)):
                         displayWindow.close()
         except Exception as e:
             print('deleteDICOM: ' + str(e))

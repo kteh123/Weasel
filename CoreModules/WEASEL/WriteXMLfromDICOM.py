@@ -83,7 +83,7 @@ def get_scan_data(scan_directory):
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence']
-                dataset = pydicom.dcmread(filepath, force=True, specific_tags=list_tags)
+                dataset = pydicom.dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 # If Multiframe, use dcm4ch to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                     if os.name =='nt':
@@ -123,7 +123,7 @@ def get_scan_data(scan_directory):
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber']
-                dataset = pydicom.dcmread(singleframe, force=True, specific_tags=list_tags)
+                dataset = pydicom.dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
                     and ('DIRFILE' not in singleframe) and ('DICOMDIR' not in singleframe)):

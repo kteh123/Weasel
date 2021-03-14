@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def returnFilePath(imagePath, suffix, new_path=None):
+def returnFilePath(imagePath, suffix, new_path=None):#, outputFolder=None):
     """This method returns the new filepath of the object to be saved."""
     # Think of a way to choose a select a new FilePath
     try:
@@ -25,6 +25,7 @@ def returnFilePath(imagePath, suffix, new_path=None):
             if new_path is not None:
                 newFilePath = new_path + '.dcm'
             else:
+                #if outputFolder is None:
                 outputFolder = os.path.join(os.path.dirname(imagePath), "output" + suffix)
                 fileName = os.path.splitext(os.path.basename(imagePath))[0]
                 try: os.mkdir(outputFolder)
@@ -474,7 +475,15 @@ def saveDicomToFile(dicomData, output_path=None):
                     output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
 
         pydicom.filewriter.dcmwrite(output_path, dicomData, write_like_original=True)
-        del dicomData
+        # Try to read the new generated file to check if it's corrupted
+        #list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
+        #             'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
+        #             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence']
+        #try:
+        #    pydicom.dcmread(output_path, specific_tags=list_tags)
+        #except:
+        #    del output_path
+        #    print('File ' + output_path + ' corrupted during the saving process. Weasel deleted the mentioned file locally.')
         return
     except Exception as e:
         print('Error in function saveDICOM_Image.saveDicomToFile: ' + str(e))
