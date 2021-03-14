@@ -65,9 +65,9 @@ class WeaselXMLReader:
             #print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
             #xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
 
-            xPath = './subject[@id='+ chr(34) + subjectID + chr(34) + \
-                    '] /study[@id=' + chr(34) + studyID + chr(34) + \
-                 ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
+            xPath = './/subject[@id='+ chr(34) + subjectID + chr(34) + \
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'        
             return self.root.findall(xPath)
         except Exception as e:
             print('Error in WeaselXMLReader.getImageList: ' + str(e)) 
