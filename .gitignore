@@ -14,7 +14,7 @@
 *.sln.docstates
 *.pyproj
 *.sln
-.config.xml
+config.xml
 /WEASELData
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

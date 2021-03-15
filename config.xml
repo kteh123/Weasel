@@ -1,7 +1,7 @@
 <!-- Put this file in .gitignore-->
 <config>
-  <menu_file>iBEAt.xml</menu_file>
-  <weasel_data_folder>Weasel</weasel_data_folder>
+  <menu_file>PipelineBuildingTutorial.xml</menu_file>
+  <weasel_data_folder>..</weasel_data_folder>
 </config>
   
 
