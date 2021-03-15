@@ -210,8 +210,9 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
         for subject in xml_dict:
             subject_element = ET.SubElement(DICOM_XML_object, 'subject')
             subject_element.set('id', subject)
-            #add expanded attribute SS
-            subject_element.set('expanded', 'False')  #added by SS 12.03.21
+            #added expanded attribute SS
+            #subject branches always expanded
+            subject_element.set('expanded', 'True')  #added by SS 12.03.21
             for study in xml_dict[subject]:
                 study_element = ET.SubElement(subject_element, 'study')
                 study_element.set('id', study)

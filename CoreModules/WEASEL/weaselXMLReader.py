@@ -55,15 +55,19 @@ class WeaselXMLReader:
     def getStudies(self):
         return self.root.findall('.//subject/study')
 
-    def getSubjects(self):
-        return self.root.findall('.//subject')
 
-    #Redundant?
+    def getSubjects(self):
+        try:
+            return self.root.findall('.//subject')
+        except Exception as e:
+            print('Error in WeaselXMLReader.getSubjects: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getSubjects: ' + str(e))
+
+   
     def getImageList(self, subjectID, studyID, seriesID):
         """Returns a list of image elements in a specific series"""
         try:
             #print("getImageList: studyID={}, seriesID={}".format(studyID, seriesID))
-            #xPath = './subject/study[@id=' + chr(34) + studyID + chr(34) + \
 
             xPath = './/subject[@id='+ chr(34) + subjectID + chr(34) + \
                     ']/study[@id=' + chr(34) + studyID + chr(34) + \
@@ -74,8 +78,10 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getImageList: ' + str(e))
 
 
-    def saveXMLFile(self, filePath):
+    def saveXMLFile(self, filePath=None):
         try:
+            if filePath is None:
+                filePath = self.fullFilePath
             self.tree.write(filePath)
         except Exception as e:
             print('Error in WeaselXMLReader.saveXMLFile: ' + str(e)) 
@@ -92,6 +98,15 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getSubject: ' + str(e))
 
 
+    def setSubjectExpandedState(self, subjectID, expandedState='True'):
+        try:
+            subjectElement = self.getSubject(subjectID)
+            subjectElement.set('expanded', expandedState)
+        except Exception as e:
+            print('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e))
+
+
     def getStudy(self, subjectID, studyID):
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
@@ -101,6 +116,15 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.getStudy: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getStudy: ' + str(e))
+
+    
+    def setStudyExpandedState(self, subjectID, studyID, expandedState='True'):
+        try:
+            studyElement = self.getStudy(subjectID, studyID)
+            studyElement.set('expanded', expandedState)
+        except Exception as e:
+            print('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e))
 
 
     def getSeries(self, subjectID, studyID, seriesID):
@@ -113,6 +137,15 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.getSeries: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getSeries_: ' + str(e))
+
+    
+    def setSeriesExpandedState(self, subjectID, studyID, seriesID, expandedState='True'):
+        try:
+            seriesElement = self.getSeries(subjectID, studyID, seriesID)
+            seriesElement.set('expanded', expandedState)
+        except Exception as e:
+            print('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e))
 
 
     #redundant?
