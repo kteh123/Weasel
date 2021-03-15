@@ -123,11 +123,11 @@ def makeDICOM_XML_File(self, scan_directory):
 
             messageWindow.displayMessageSubWindow(self,
                 "Collecting {} files from the {}".format(numFiles, folder))
-            scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory)
+            scans, paths = WriteXMLfromDICOM.get_scan_data(scan_directory, messageWindow, self)
             messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
-            dictionary = WriteXMLfromDICOM.build_dictionary(scans)
+            dictionary = WriteXMLfromDICOM.build_dictionary(scans, messageWindow, self)
             messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
-            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths)
+            xml = WriteXMLfromDICOM.open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
             messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
             fullFilePath = WriteXMLfromDICOM.create_XML_file(xml, scan_directory)
             self.msgSubWindow.close()

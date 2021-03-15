@@ -67,7 +67,7 @@ def scan_tree(scan_directory):
             yield entry
 
 
-def get_scan_data(scan_directory):
+def get_scan_data(scan_directory, msgWindow, self):
     """This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     """
@@ -78,8 +78,12 @@ def get_scan_data(scan_directory):
         file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
         file_list.sort(key=natural_keys)
         multiframe_files_list = list()
+        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
+        fileCounter = 0
         for filepath in file_list:
             try:
+                fileCounter += 1
+                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence']
@@ -165,11 +169,15 @@ def get_study_series(dicom):
         print('Error in WriteXMLfromDICOM.get_study_series: ' + str(e))
 
 
-def build_dictionary(list_dicom):
+def build_dictionary(list_dicom, msgWindow, self):
     try:
         logger.info("WriteXMLfromDICOM.build_dictionary called")
         xml_dict = {}
+        fileCounter = 0
+        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for file in list_dicom:
+            fileCounter += 1
+            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number = get_study_series(file)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
@@ -197,7 +205,7 @@ def get_studies_series_iBEAT(list_dicom):
         print('Error in WriteXMLfromDICOM.get_studies_series_iBEAT: ' + str(e))
 
 
-def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
+def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
     """This method opens all DICOM files in the given list and saves 
         information from each file individually to an XML tree/structure.
     """
@@ -221,7 +229,11 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
                     series_element = ET.SubElement(study_element, 'series')
                     series_element.set('id', series)
                     series_element.set('expanded', 'False') #added by SS 12.03.21
+        fileCounter = 0
+        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for index, file in enumerate(list_dicom):
+            fileCounter += 1
+            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number = get_study_series(file)
             subject_search_string = "./*[@id='" + subject + "']"
             study_root = DICOM_XML_object.find(subject_search_string)
