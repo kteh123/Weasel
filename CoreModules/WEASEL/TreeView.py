@@ -14,14 +14,9 @@ import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
 
 
-def createTreeBranch(self, branchName, branch, parent, refresh=False):
+def createTreeBranch(branchName, branch, parent, refresh=False):
     try:
         branchID = branch.attrib['id']
-        if 'expanded' in branch.attrib:
-            expand = branch.attrib['expanded']
-        else:
-            expand = False
-            #print("expand={} when branch={}".format(expand, branchID))
         logger.info("TreeView.createTreeBranch, branch ID={}".format(branchID))
         thisBranch = QTreeWidgetItem(parent)
         thisBranch.setText(0, '')
@@ -32,6 +27,11 @@ def createTreeBranch(self, branchName, branch, parent, refresh=False):
         thisBranch.setCheckState(0, Qt.Unchecked)
         thisBranch.setExpanded(True)
         if refresh:
+            if 'expanded' in branch.attrib:
+                expand = branch.attrib['expanded']
+            else:
+                expand = False
+            #print("expand={} when branch={}".format(expand, branchID))
             if expand == "False":
                 thisBranch.setExpanded(False)
         return thisBranch# treeWidgetItemCounter
@@ -43,7 +43,7 @@ def createTreeBranch(self, branchName, branch, parent, refresh=False):
         logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
-def createImageLeaf(self, image, seriesBranch):
+def createImageLeaf(image, seriesBranch):
     try:
         #Extract filename from file path
         if image:
@@ -98,13 +98,13 @@ def buildTreeView(self, refresh=False):
         self.treeView.blockSignals(True)
         subjects = self.objXMLReader.getSubjects()
         for subject in subjects:
-            subjectBranch = createTreeBranch(self, "Subject",  subject,  self.treeView, refresh)
+            subjectBranch = createTreeBranch("Subject",  subject,  self.treeView, refresh)
             for study in subject:
-                studyBranch = createTreeBranch(self, "Study",  study, subjectBranch, refresh)
+                studyBranch = createTreeBranch("Study",  study, subjectBranch, refresh)
                 for series in study:
-                    seriesBranch = createTreeBranch(self, "Series", series,  studyBranch, refresh)
+                    seriesBranch = createTreeBranch("Series", series,  studyBranch, refresh)
                     for image in series:
-                        createImageLeaf(self, image, seriesBranch)
+                        createImageLeaf(image, seriesBranch)
         self.treeView.blockSignals(False)   
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -147,8 +147,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewState(item, False))
-                self.treeView.itemExpanded.connect(lambda item: saveTreeViewState(item, True))
+                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewState(self, item, "False"))
+                self.treeView.itemExpanded.connect(lambda item: saveTreeViewState(self, item, "True"))
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
@@ -447,17 +447,21 @@ def isASeriesSelected(item):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-def saveTreeViewState(item, expanded='True'):
+def saveTreeViewState(self, item, expandedState='True'):
     if isASubjectSelected(item):
         subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
+        print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
+        self.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
     elif isAStudySelected(item):
         subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
         studyID = item.text(1).replace("Study", "").replace("-","").strip()
+        self.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
     elif isASeriesSelected(item):
         subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
         studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
         seriesID = item.text(1).replace("Series", "").replace("-","").strip()
-    
+        self.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
+
 
 def toggleBlockSelectionCheckedState(self):
     try:
