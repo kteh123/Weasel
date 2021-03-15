@@ -148,22 +148,6 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e))
 
 
-    #redundant?
-    def getSeriesOfSpecifiedType(self, studyID, seriesID, newSeriesID, suffix):
-        try:
-            if suffix == '':
-                xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']'
-            else:
-                xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-                ']/series[@id=' + chr(34) + newSeriesID + chr(34) + ']' \
-                '[@typeID=' + chr(34) + suffix + chr(34) +']'
-            return self.root.find(xPath)
-        except Exception as e:
-            print('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e)) 
-            logger.error('Error in WeaselXMLReader.getSeriesOfSpecifiedType_: ' + str(e))
-
-
     def getImagePathList(self, subjectID, studyID, seriesID):
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
@@ -283,8 +267,8 @@ class WeaselXMLReader:
             else:
                 xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
                         ']/study[@id=' + chr(34) + studyID + chr(34) + \
-                    ']/series[@id=' + chr(34) + seriesID + chr(34)  + \
-                    ']/image[name=' + chr(34) + imageName + chr(34) +']/date'
+                        ']/series[@id=' + chr(34) + seriesID + chr(34)  + \
+                        ']/image[name=' + chr(34) + imageName + chr(34) +']/date'
             
                 return self.root.find(xPath).text
                  
@@ -342,9 +326,9 @@ class WeaselXMLReader:
                     newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.ProtocolName
                 else:
                     newSeriesID = str(dataset.SeriesNumber) + "_" + "No Sequence Name"
-            series = self.getSeriesOfSpecifiedType(
-                studyID, seriesID, newSeriesID, suffix)
-            #Get image label, date & time
+            # Check if the newSeries exists or not
+            series = self.getSeries(subjectID, studyID, newSeriesID)
+            #Get image label, date & time of Original image in case it's needed.
             imageLabel = self.getImageLabel(subjectID, studyID, seriesID, imageName)
             imageTime = self.getImageTime(subjectID, studyID, seriesID)#, imageName)
             imageDate = self.getImageDate(subjectID, studyID, seriesID)#, imageName)
@@ -353,7 +337,7 @@ class WeaselXMLReader:
                 #Get study branch
                 currentStudy = self.getStudy(subjectID, studyID)
                 newAttributes = {'id':newSeriesID, 
-                                    'typeID':suffix}
+                                 'typeID':suffix}
                    
                 #Add new series to study to hold new images
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
