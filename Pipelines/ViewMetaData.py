@@ -91,15 +91,11 @@ def displayMetaDataSubWindow(self, tableTitle, dataset):
 def iterateSequenceTag(table, dataset, level=">"):
     try:
         for data_element in dataset:
-            rowPosition = table.rowCount()
-            table.insertRow(rowPosition)
             if isinstance(data_element, pydicom.dataset.Dataset):
-                table.setItem(rowPosition , 0, QTableWidgetItem(level))
-                table.setItem(rowPosition , 1, QTableWidgetItem(""))
-                table.setItem(rowPosition , 2, QTableWidgetItem(""))
-                table.setItem(rowPosition , 3, QTableWidgetItem(""))
-                table = iterateSequenceTag(table, data_element, level=level+">")
+                table = iterateSequenceTag(table, data_element, level=level)
             else:
+                rowPosition = table.rowCount()
+                table.insertRow(rowPosition)
                 table.setItem(rowPosition , 0, QTableWidgetItem(level + str(data_element.tag)))
                 table.setItem(rowPosition , 1, QTableWidgetItem(data_element.name))
                 table.setItem(rowPosition , 2, QTableWidgetItem(data_element.VR))
@@ -173,7 +169,7 @@ def buildTableView(self, dataset):
                         valueMetadata = str(data_element.value)
                     if data_element.VR == "SQ":
                         tableWidget.setItem(rowPosition , 3, QTableWidgetItem(""))
-                        tableWidget = iterateSequenceTag(tableWidget, data_element)
+                        tableWidget = iterateSequenceTag(tableWidget, data_element, level=">")
                     else:
                         tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
 
