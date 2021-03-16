@@ -12,6 +12,7 @@ from PyQt5.QtGui import QCursor, QIcon, QColor
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import os
+import pydicom
 import logging
 logger = logging.getLogger(__name__)
 
@@ -87,6 +88,43 @@ def displayMetaDataSubWindow(self, tableTitle, dataset):
         logger.error('Error in : ViewMetaData.displayMetaDataSubWindow' + str(e))
 
 
+def iterateSequenceTag(table, dataset, level=">"):
+    try:
+        for data_element in dataset:
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+            if isinstance(data_element, pydicom.dataset.Dataset):
+                table.setItem(rowPosition , 0, QTableWidgetItem(level))
+                table.setItem(rowPosition , 1, QTableWidgetItem(""))
+                table.setItem(rowPosition , 2, QTableWidgetItem(""))
+                table.setItem(rowPosition , 3, QTableWidgetItem(""))
+                table = iterateSequenceTag(table, data_element, level=level+">")
+            else:
+                table.setItem(rowPosition , 0, QTableWidgetItem(level + str(data_element.tag)))
+                table.setItem(rowPosition , 1, QTableWidgetItem(data_element.name))
+                table.setItem(rowPosition , 2, QTableWidgetItem(data_element.VR))
+                if data_element.VR == "OW" or data_element.VR == "OB":
+                    try:
+                        valueMetadata = str(data_element.value.decode('utf-8'))
+                    except:
+                        try:
+                            valueMetadata = str(list(data_element))
+                        except:
+                            valueMetadata = str(data_element.value)
+                else:
+                    valueMetadata = str(data_element.value)
+                if data_element.VR == "SQ":
+                    table.setItem(rowPosition , 3, QTableWidgetItem(""))
+                    table = iterateSequenceTag(table, data_element, level=level+">")
+                    level = level[:-1]
+                else:
+                    table.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
+        return table
+    except Exception as e:
+        print('Error in : ViewMetaData.iterateSequenceTag' + str(e))
+        logger.error('Error in : ViewMetaData.iterateSequenceTag' + str(e))
+
+
 def buildTableView(self, dataset):
         """Builds a Table View displaying DICOM image metadata
         as Tag, name, VR & Value"""
@@ -123,7 +161,7 @@ def buildTableView(self, dataset):
                                     QTableWidgetItem(data_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(data_element.VR))
-                    if data_element.VR == "UN" or data_element.VR == "OW":
+                    if data_element.VR == "OW" or data_element.VR == "OB": # data_element.VR == "UN" or
                         try:
                             valueMetadata = str(data_element.value.decode('utf-8'))
                         except:
@@ -133,8 +171,11 @@ def buildTableView(self, dataset):
                                 valueMetadata = str(data_element.value)
                     else:
                         valueMetadata = str(data_element.value)
-                    tableWidget.setItem(rowPosition , 3, 
-                                    QTableWidgetItem(valueMetadata))
+                    if data_element.VR == "SQ":
+                        tableWidget.setItem(rowPosition , 3, QTableWidgetItem(""))
+                        tableWidget = iterateSequenceTag(tableWidget, data_element)
+                    else:
+                        tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
 
 
             #Resize columns to fit contents
