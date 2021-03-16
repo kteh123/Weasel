@@ -4,7 +4,7 @@
       TreeView.toggleMenuItems working correctly
       -->
         <item>
-          <label>Load DICOM Images</label>
+          <label>Open DICOM folder</label>
           <shortcut>Ctrl+L</shortcut>
           <tooltip>Load DICOM images from a scan folder</tooltip>
           <module>LoadDICOM</module>

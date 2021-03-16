@@ -1,4 +1,5 @@
 import os
+import time
 import pathlib
 import subprocess
 import re
@@ -9,6 +10,10 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
 import CoreModules.WEASEL.iBeatImport as iBeatImport
+import CoreModules.WEASEL.MessageWindow  as messageWindow
+
+from PyQt5.QtWidgets import (QApplication, QFileDialog)
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -333,3 +338,75 @@ def create_XML_file(DICOM_XML_object, scan_directory):
         return os.path.join(scan_directory, filename)
     except Exception as e:
         print('Error in WriteXMLfromDICOM.create_XML_file: ' + str(e))
+
+
+def getScanDirectory(self):
+    """Displays an open folder dialog window to allow the
+    user to select the folder holding the DICOM files"""
+    try:
+        logger.info('WriteXMLfromDICOM.getScanDirectory called.')
+        #cwd = os.getcwd()
+
+        scan_directory = QFileDialog.getExistingDirectory(
+            self,
+            'Select the directory containing the scan', 
+            self.weaselDataFolder, 
+            QFileDialog.ShowDirsOnly)
+        return scan_directory
+    except Exception as e:
+        print('Error in function WriteXMLfromDICOM.getScanDirectory: ' + str(e))
+
+
+def existsDICOMXMLFile(scanDirectory):
+    """This function returns True if an XML file of scan images already
+    exists in the scan directory."""
+    try:
+        logger.info("WriteXMLfromDICOM.existsDICOMXMLFile called")
+        flag = False
+        with os.scandir(scanDirectory) as entries:
+                for entry in entries:
+                    if entry.is_file():
+                        if entry.name.lower() == \
+                            os.path.basename(scanDirectory).lower() + ".xml":
+                            flag = True
+                            break
+        return flag                   
+    except Exception as e:
+        print('Error in function WriteXMLfromDICOM.existsDICOMXMLFile: ' + str(e))
+        logger.error('Error in function WriteXMLfromDICOM.existsDICOMXMLFile: ' + str(e))
+
+
+def makeDICOM_XML_File(self, scan_directory):
+    """Creates an XML file that describes the contents of the scan folder,
+    scan_directory.  Returns the full file path of the resulting XML file,
+    which takes it's name from the scan folder."""
+    try:
+        logger.info("WriteXMLfromDICOM.makeDICOM_XML_File called.")
+        if scan_directory:
+            start_time=time.time()
+            numFiles, numFolders = get_files_info(scan_directory)
+            if numFolders == 0:
+                folder = os.path.basename(scan_directory) + ' folder.'
+            else:
+                folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
+                    + 'subdirectory(s)'
+
+            messageWindow.displayMessageSubWindow(self,
+                "Collecting {} files from the {}".format(numFiles, folder))
+            scans, paths = get_scan_data(scan_directory, messageWindow, self)
+            messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
+            dictionary = build_dictionary(scans, messageWindow, self)
+            messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
+            xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
+            messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
+            fullFilePath = create_XML_file(xml, scan_directory)
+            self.msgSubWindow.close()
+            end_time=time.time()
+            xmlCreationTime = end_time - start_time 
+            print('XML file creation time = {}'.format(xmlCreationTime))
+            logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}."
+                        .format(fullFilePath))
+        return fullFilePath
+    except Exception as e:
+        print('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
+        logger.error('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))

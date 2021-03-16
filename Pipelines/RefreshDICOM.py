@@ -11,8 +11,10 @@ import Pipelines.CloseAllSubWindows as closeAllSubWindows
 
 logger = logging.getLogger(__name__)
 
+
 def isEnabled(self):
     return True
+
 
 def main(self):
     """This function is executed when the Load DICOM menu item is selected.
@@ -22,7 +24,7 @@ def main(self):
     a new one from scratch.
     """
     try:
-        logger.info("LoadDICOM.main called")
+        logger.info("RefreshDICOM.main called")
         closeAllSubWindows.main(self)
         self.selectedImageName = ''
         self.selectedImagePath = ''
@@ -30,23 +32,13 @@ def main(self):
         scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
         #print(" scan_directory = ",  scan_directory)
         if scan_directory:
-            #look inside DICOM folder for an XML file with same name as DICOM folder
-            if WriteXMLfromDICOM.existsDICOMXMLFile(scan_directory):
-                XML_File_Path = scan_directory + '//' + os.path.basename(scan_directory) + '.xml'
-            else:
-                #if there is no XML file, create one
-                QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-                XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, scan_directory)
-                QApplication.restoreOverrideCursor()
-
             QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
+            XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, scan_directory)
             treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
             QApplication.restoreOverrideCursor()
     except Exception as e:
-        print('Error in function LoadDICOM.main: ' + str(e))
-        logger.error('Error in function LoadDICOM.main: ' + str(e))
-
-
+        print('Error in function RefreshDICOM.main: ' + str(e))
+        logger.error('Error in function RefreshDICOM.main: ' + str(e))
 
 
 

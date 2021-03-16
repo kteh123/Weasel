@@ -182,7 +182,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             #Load and parse updated XML file
-            self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
+            #self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
 
             #store current column widths to be able
             #to restore them when the tree view is refreshed
@@ -206,10 +206,8 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             # Joao Sousa suggestion
             self.treeView.show()
 
-            #Now collapse all series branches so as to hide the images
-            #except the new series branch that has been created
-
-            # Joao commented on the 16/10/2020
+            #Save XML file to disc
+            self.objXMLReader.saveXMLFile()
             #expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName=newSeriesName)
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
@@ -342,31 +340,31 @@ def areAllChildrenChecked(item):
             logger.error('Error in TreeView.areAllChildrenChecked: ' + str(e))
 
 
-def expandTreeViewBranch(item, newSeriesName = ''):
-        """TO DO"""
-        try:
-            logger.info("TreeView.expandTreeViewBranch called.")
-            if item.childCount() > 0:
-                itemCount = item.childCount()
-                for n in range(itemCount):
-                    childItem = item.child(n)
-                    branchText = childItem.text(1).lower()
-                    if 'study' in branchText:
-                        childItem.setExpanded(True)
-                    if 'series' in branchText:
-                        seriesName = branchText.replace('series -', '').strip()
-                        item.treeWidget().blockSignals(True)
-                        if seriesName == newSeriesName.lower():
-                            item.setExpanded(True)
-                            childItem.setExpanded(True)
-                        else:
-                            childItem.setExpanded(False)
-                        item.treeWidget().blockSignals(False)
-                    else:
-                        expandTreeViewBranch(childItem, newSeriesName)
-        except Exception as e:
-            print('Error in TreeView.expandTreeViewBranch: ' + str(e))
-            logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
+#def expandTreeViewBranch(item, newSeriesName = ''):
+#        """TO DO"""
+#        try:
+#            logger.info("TreeView.expandTreeViewBranch called.")
+#            if item.childCount() > 0:
+#                itemCount = item.childCount()
+#                for n in range(itemCount):
+#                    childItem = item.child(n)
+#                    branchText = childItem.text(1).lower()
+#                    if 'study' in branchText:
+#                        childItem.setExpanded(True)
+#                    if 'series' in branchText:
+#                        seriesName = branchText.replace('series -', '').strip()
+#                        item.treeWidget().blockSignals(True)
+#                        if seriesName == newSeriesName.lower():
+#                            item.setExpanded(True)
+#                            childItem.setExpanded(True)
+#                        else:
+#                            childItem.setExpanded(False)
+#                        item.treeWidget().blockSignals(False)
+#                    else:
+#                        expandTreeViewBranch(childItem, newSeriesName)
+#        except Exception as e:
+#            print('Error in TreeView.expandTreeViewBranch: ' + str(e))
+#            logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
 
 
 def isAnItemChecked(self):
@@ -790,3 +788,12 @@ def getSeriesNumberAfterLast(self, inputPath):
     except Exception as e:
         print('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
         logger.error('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
+
+
+def closeTreeView(self):
+    try:
+        self.treeView.clear()
+        self.treeView.close()
+    except Exception as e:
+        print('Error in TreeView.CloseTreeView: ' + str(e))
+        logger.error('Error in TreeView.CloseTreeView: ' + str(e))

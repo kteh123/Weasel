@@ -1,4 +1,7 @@
-"""The ParameterInputDialog class creates a pop-up input dialog that 
+"""
+THIS MODULE IS NOW REDUNDANT. INTEGRATED IN USERINPUT.PY
+import CoreModules.UserInput as inputDialog
+The ParameterInputDialog class creates a pop-up input dialog that 
 allows the user to input one or more integers, floats or strings.  
 These data items can be returned to the calling program in a list. 
 

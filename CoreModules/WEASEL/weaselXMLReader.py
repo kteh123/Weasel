@@ -201,7 +201,7 @@ class WeaselXMLReader:
                     if image.find('name').text == imagePath:
                         series.remove(image)
                         #print("removed image {}".format(imagePath))
-                        self.tree.write(self.fullFilePath)
+                        #self.tree.write(self.fullFilePath)
                         break
         except Exception as e:
             print('Error in WeaselXMLReader.removeOneImageFromSeries: ' + str(e)) 
@@ -216,8 +216,8 @@ class WeaselXMLReader:
             series = self.getSeries(subjectID, studyID, seriesID)
             if study and series:
                 study.remove(series)
-                #print("removed series {}".format(seriesID))
-                self.tree.write(self.fullFilePath)
+                ##print("removed series {}".format(seriesID))
+                #self.tree.write(self.fullFilePath)
             else:
                 print("Unable to remove series {}".format(seriesID))
         except AttributeError as e:
@@ -305,7 +305,7 @@ class WeaselXMLReader:
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
 
-            self.tree.write(self.fullFilePath)
+            #self.tree.write(self.fullFilePath)
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e))
@@ -357,7 +357,7 @@ class WeaselXMLReader:
                 timeNewImage.text = imageTime
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
-                self.tree.write(self.fullFilePath)
+                #self.tree.write(self.fullFilePath)
                 return newSeriesID
             else:
                 #A series already exists to hold new images from
@@ -373,7 +373,7 @@ class WeaselXMLReader:
                 timeNewImage.text = imageTime
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
-                self.tree.write(self.fullFilePath)
+                #self.tree.write(self.fullFilePath)
                 return series.attrib['id']
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e)) 
@@ -384,7 +384,7 @@ class WeaselXMLReader:
         try:
             series = self.getSeries(subjectID, studyID, seriesID)
             series.attrib['id'] = xmlSeriesName
-            self.tree.write(self.fullFilePath)
+            #self.tree.write(self.fullFilePath)
         except Exception as e:
             print('Error in WeaselXMLReader.renameSeriesinXMLFile: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.renameSeriesinXMLFile: ' + str(e))
