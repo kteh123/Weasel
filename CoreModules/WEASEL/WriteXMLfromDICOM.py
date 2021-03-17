@@ -112,10 +112,14 @@ def get_scan_data(scan_directory, msgWindow, self):
                     multiframeCommand = [multiframeProgram, "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
                     commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
                     # Get list of filenames with fileBase and add to multiframe_files_list
-                    for new_file in os.listdir(multiframeDir):
-                        if new_file.startswith(fileBase):
-                            multiframe_files_list.append(os.path.join(multiframeDir, new_file))
-                    os.remove(filepath)
+                    if commandResult == 0:
+                        for new_file in os.listdir(multiframeDir):
+                            if new_file.startswith(fileBase):
+                                multiframe_files_list.append(os.path.join(multiframeDir, new_file))
+                        os.remove(filepath)
+                    else:
+                        print('Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n'\
+                              'The DICOM file ' + filepath + ' was not deleted.')
                     continue
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
