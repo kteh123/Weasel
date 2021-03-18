@@ -110,7 +110,7 @@ class WeaselXMLReader:
     def getStudy(self, subjectID, studyID):
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
-                ']/study[@id=' + chr(34) + studyID + chr(34) + ']'
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + ']'
             #print(xPath)
             return self.root.find(xPath)
         except Exception as e:
@@ -151,8 +151,8 @@ class WeaselXMLReader:
     def getImagePathList(self, subjectID, studyID, seriesID):
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
-            ']/study[@id=' + chr(34) + studyID + chr(34) + \
-            ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']/image'
             # print(xPath)
             images = self.root.findall(xPath)
             #print("images={}".format(images))
@@ -183,8 +183,8 @@ class WeaselXMLReader:
     def getNumberImagesInSeries(self, studyID, seriesID):
         try:
             xPath = './/subject/study[@id=' + chr(34) + studyID + chr(34) + \
-                        ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
-                        '/image'
+                    ']/series[@id=' + chr(34) + seriesID + chr(34) + ']' + \
+                    '/image'
             return len(self.root.find(xPath))
         except Exception as e:
             print('Error in WeaselXMLReader.getNumberImagesInSeries: ' + str(e)) 
@@ -280,10 +280,12 @@ class WeaselXMLReader:
     def insertNewSeriesInXML(self, origImageList, newImageList, subjectID,
                      studyID, newSeriesID, seriesID, suffix):
         try:
+            dataset = readDICOM_Image.getDicomDataset(newImageList[0])
             currentStudy = self.getStudy(subjectID, studyID)
             newAttributes = {'id':newSeriesID, 
-                                'typeID':suffix,
-                                'expanded':'False'}
+                             'typeID':suffix,
+                             'expanded':'False',
+                             'uid':str(dataset.SeriesInstanceUID)}
                    
             #Add new series to study to hold new images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
@@ -337,7 +339,8 @@ class WeaselXMLReader:
                 #Get study branch
                 currentStudy = self.getStudy(subjectID, studyID)
                 newAttributes = {'id':newSeriesID, 
-                                 'typeID':suffix}
+                                 'typeID':suffix,
+                                 'uid':str(dataset.SeriesInstanceUID)}
                    
                 #Add new series to study to hold new images
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)

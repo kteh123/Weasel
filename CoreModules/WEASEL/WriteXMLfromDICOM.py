@@ -10,7 +10,8 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
 import CoreModules.WEASEL.iBeatImport as iBeatImport
-import CoreModules.WEASEL.MessageWindow  as messageWindow
+import CoreModules.WEASEL.MessageWindow as messageWindow
+import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 
 from PyQt5.QtWidgets import (QApplication, QFileDialog)
 
@@ -72,7 +73,7 @@ def scan_tree(scan_directory):
             yield entry
 
 
-def get_scan_data(scan_directory, msgWindow, self):
+def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
     """This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     """
@@ -91,8 +92,14 @@ def get_scan_data(scan_directory, msgWindow, self):
                 msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
-                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence']
+                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
+                             'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = pydicom.dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
+                if not hasattr(dataset, 'SeriesDescription'):
+                    full_dataset = pydicom.dcmread(filepath)
+                    full_dataset.SeriesDescription = 'NoSeriesDescription'
+                    saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
+                    del full_dataset
                 # If Multiframe, use dcm4ch to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                     if os.name =='nt':
@@ -102,13 +109,14 @@ def get_scan_data(scan_directory, msgWindow, self):
                     multiframeProgram = os.path.join(pathlib.Path().absolute(), "CoreModules", "WEASEL", "dcm4che-5.23.1", "bin", multiframeScript)
                     multiframeDir = os.path.dirname(filepath)
                     fileBase = "SingleFrame_"
-                    if hasattr(dataset, 'SeriesDescription'):
-                        fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
-                    elif hasattr(dataset, 'ProtocolName'):
-                        fileBaseFlag = fileBase + "00_" + str(dataset.ProtocolName)
-                    elif hasattr(dataset, 'SequenceName'):
-                        fileBaseFlag = fileBase + "00_" + str(dataset.SequenceName)
+                    #if hasattr(dataset, 'SeriesDescription'):
+                    fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
+                    #elif hasattr(dataset, 'ProtocolName'):
+                    #    fileBaseFlag = fileBase + "00_" + str(dataset.ProtocolName)
+                    #elif hasattr(dataset, 'SequenceName'):
+                    #    fileBaseFlag = fileBase + "00_" + str(dataset.SequenceName)
                     # Run the dcm4che emf2sf
+                    msgWindow.displayMessageSubWindow(self, "Multiframe DICOM detected. Converting to single frame ...")
                     multiframeCommand = [multiframeProgram, "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
                     commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
                     # Get list of filenames with fileBase and add to multiframe_files_list
@@ -117,6 +125,9 @@ def get_scan_data(scan_directory, msgWindow, self):
                             if new_file.startswith(fileBase):
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
                         os.remove(filepath)
+                        msgWindow.displayMessageSubWindow(self, progBarMsg)
+                        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
+                        msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                     else:
                         print('Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n'\
                               'The DICOM file ' + filepath + ' was not deleted.')
@@ -135,7 +146,7 @@ def get_scan_data(scan_directory, msgWindow, self):
             try:
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
-                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber']
+                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = pydicom.dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
@@ -163,17 +174,19 @@ def get_study_series(dicom):
         else:
             subject = "No Subject Name"
         study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0]
-        if hasattr(dicom, "SeriesDescription"):
-            sequence = str(dicom.SeriesDescription)
-        elif hasattr(dicom, "SequenceName"):
-            sequence = str(dicom.SequenceName)
-        elif hasattr(dicom, "ProtocolName"):
-            sequence = str(dicom.ProtocolName)
-        else:
-            sequence = "No Sequence Name"
+        #if hasattr(dicom, "SeriesDescription"):
+        sequence = str(dicom.SeriesDescription)
+        #elif hasattr(dicom, "SequenceName"):
+        #    sequence = str(dicom.SequenceName)
+        #elif hasattr(dicom, "ProtocolName"):
+        #    sequence = str(dicom.ProtocolName)
+        #else:
+        #    sequence = "No Sequence Name"
         series_number = str(dicom.SeriesNumber)
+        study_uid = str(dicom.StudyInstanceUID)
+        series_uid = str(dicom.SeriesInstanceUID)
 
-        return subject, study, sequence, series_number
+        return subject, study, sequence, series_number, study_uid, series_uid
     except Exception as e:
         print('Error in WriteXMLfromDICOM.get_study_series: ' + str(e))
 
@@ -187,7 +200,7 @@ def build_dictionary(list_dicom, msgWindow, self):
         for file in list_dicom:
             fileCounter += 1
             msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-            subject, study, sequence, series_number = get_study_series(file)
+            subject, study, sequence, series_number, _, _ = get_study_series(file)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
             xml_dict[subject][study].append(series_number + "_" + sequence)
@@ -243,12 +256,14 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
         for index, file in enumerate(list_dicom):
             fileCounter += 1
             msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-            subject, study, sequence, series_number = get_study_series(file)
+            subject, study, sequence, series_number, study_uid, series_uid = get_study_series(file)
             subject_search_string = "./*[@id='" + subject + "']"
             study_root = DICOM_XML_object.find(subject_search_string)
             study_search_string = "./*[@id='" + study + "']"
             series_root = study_root.find(study_search_string)
             series_search_string = "./*[@id='"+ series_number + "_" + sequence + "']"
+            study_root.set('uid', study_uid)
+            series_root.set('uid', series_uid)
             image_root = series_root.find(series_search_string)
             image_element = ET.SubElement(image_root, 'image')
             label = ET.SubElement(image_element, 'label')
@@ -395,9 +410,9 @@ def makeDICOM_XML_File(self, scan_directory):
                 folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
                     + 'subdirectory(s)'
 
-            messageWindow.displayMessageSubWindow(self,
-                "Collecting {} files from the {}".format(numFiles, folder))
-            scans, paths = get_scan_data(scan_directory, messageWindow, self)
+            progBarMsg = "Collecting {} files from the {}".format(numFiles, folder)
+            messageWindow.displayMessageSubWindow(self, progBarMsg)
+            scans, paths = get_scan_data(scan_directory, messageWindow, progBarMsg, self)
             messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
             dictionary = build_dictionary(scans, messageWindow, self)
             messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
