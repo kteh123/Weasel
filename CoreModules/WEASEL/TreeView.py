@@ -34,6 +34,15 @@ def createTreeBranch(branchName, branch, parent, refresh=False):
             #print("expand={} when branch={}".format(expand, branchID))
             if expand == "False":
                 thisBranch.setExpanded(False)
+            
+            if 'checked' in branch.attrib:
+                checked = branch.attrib['checked']
+            else:
+                checked = "False"
+            #print("checked={} when branch={}".format(checked, branchID))
+            if checked == "True":
+                thisBranch.setCheckState(0, Qt.Checked)
+
         return thisBranch# treeWidgetItemCounter
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -66,6 +75,16 @@ def createImageLeaf(image, seriesBranch, refresh=False):
             imageLeaf.setText(2, imageDate)
             imageLeaf.setText(3, imageTime)
             imageLeaf.setText(4, imagePath)
+
+            if refresh:
+                if 'checked' in image.attrib:
+                    checked = image.attrib['checked']
+                    #print("checked in image")
+                else:
+                    checked = "False"
+                #print("checked={} when image Name={}".format(checked, imageName))
+                if checked == "True":
+                    imageLeaf.setCheckState(0, Qt.Checked)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -89,7 +108,7 @@ def resizeTreeViewColumns(self):
             logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
-def buildTreeView(self, refresh=False):
+def buildTreeView(self, refresh=True):
     try:
         logger.info("TreeView.buildTreeView called")
         self.treeView.clear()
@@ -147,6 +166,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
+                self.treeView.itemClicked.connect(lambda item: onItemChecked(self, item))
                 self.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(self, item, "False"))
                 self.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(self, item, "True"))
                 
@@ -268,19 +288,20 @@ def checkChildItems(self, item):
     item  - A QTreeWidgetItem whose checkbox state has just changed
     """
     logger.info("TreeView.checkChildItems called")
+    #print("TreeView.checkChildItems called")
     try:
         if item.childCount() > 0:
             itemCount = item.childCount()
             for n in range(itemCount):
                 childItem = item.child(n)
                 #Give child checkboxes the same state as their 
-                #parent checkboxe
+                #parent checkbox
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, item.checkState(0))
-                if item.checkState(0):
-                    saveTreeViewCheckedState(self, item, 'True')
+                if childItem.checkState(0) == Qt.Checked:
+                    saveTreeViewCheckedState(self, childItem, "True")
                 else:
-                    saveTreeViewCheckedState(self, item, 'False')
+                    saveTreeViewCheckedState(self, childItem, "False")
                 item.treeWidget().blockSignals(False)
                 checkChildItems(self, childItem)
     except Exception as e:
@@ -297,15 +318,16 @@ def checkParentItems(self, item):
     item  - A QTreeWidgetItem whose checkbox state has just changed
     """
     logger.info("TreeView.checkParentItems called")
+    #print("TreeView.checkParentItems called")
     try:
         if item.parent():
             item.treeWidget().blockSignals(True)
             if areAllChildrenChecked(item.parent()):
                 item.parent().setCheckState(0, Qt.Checked)
-                saveTreeViewCheckedState(self, item, 'True')
+                saveTreeViewCheckedState(self, item.parent(), "True")
             else:
                 item.parent().setCheckState(0, Qt.Unchecked)
-                saveTreeViewCheckedState(self, item, 'False')
+                saveTreeViewCheckedState(self, item.parent(), "False")
             item.treeWidget().blockSignals(False)
             checkParentItems(self, item.parent())
     except Exception as e:
@@ -389,6 +411,7 @@ def isAnImageSelected(item):
         tree view, else returns False"""
         try:
             logger.info("TreeView.isAnImageSelected called.")
+            #print("item.text(1).lower()={}".format(item.text(1).lower()))
             if 'image' in item.text(1).lower():
                 return True
             else:
@@ -461,9 +484,17 @@ def saveTreeViewExpandedState(self, item, expandedState='True'):
         subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
         studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
         seriesID = item.text(1).replace("Series", "").replace("-","").strip()
+        self.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
 
 
-def saveTreeViewCheckedState(self, item, checkedState='True'):
+def onItemChecked(self, item):
+    if item.checkState(0) == Qt.Checked:
+        saveTreeViewCheckedState(self, item, "True")
+    else:
+        saveTreeViewCheckedState(self, item, "False")
+
+
+def saveTreeViewCheckedState(self, item, checkedState="True"):
     if isASubjectSelected(item):
         subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
         #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
@@ -481,7 +512,8 @@ def saveTreeViewCheckedState(self, item, checkedState='True'):
         subjectID = item.parent().parent().parent().text(1).replace("Subject", "").replace("-","").strip()
         studyID = item.parent().parent().text(1).replace("Study", "").replace("-","").strip()
         seriesID = item.parent().text(1).replace("Series", "").replace("-","").strip()
-        imageName = item.text(1).replace("Image", "").replace("-","").strip()
+        imageName = item.text(4)
+        #print("image name={}".format(imageName))
         self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
 
 
