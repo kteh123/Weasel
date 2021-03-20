@@ -1031,7 +1031,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
             #just remove the image from the XML file 
             if len(imageList) == 0:
                 #no images left in the series, so remove it from the xml file
-                self.objXMLReader.removeSeriesFromXMLFile(subjectID, studyName, seriesName)
+                self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyName, seriesName)
             elif len(imageList) > 0:
                 #1 or more images in the series, 
                 #so just remove the image from its series in the xml file
