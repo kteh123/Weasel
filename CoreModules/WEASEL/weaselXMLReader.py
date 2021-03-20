@@ -281,7 +281,7 @@ class WeaselXMLReader:
 
 
     def removeSubjectFromXMLFile(self, subjectID):
-         """Removes a whole subject from the DICOM XML file"""
+        """Removes a whole subject from the DICOM XML file"""
         try:
             logger.info("weaseXMLReader.removeSubjectFromXMLFile called")
             subject = self.getSubject(subjectID)
@@ -298,7 +298,7 @@ class WeaselXMLReader:
 
 
     def removeOneStudyFromSubject(self, subjectID, studyID):
-         """Removes a whole study from the DICOM XML file"""
+        """Removes a whole study from the DICOM XML file"""
         try:
             logger.info("weaseXMLReader.removeOneStudyFromSubject called")
             subject = self.getSubject(subjectID)
@@ -378,12 +378,12 @@ class WeaselXMLReader:
             
         #Get image date & time from original image
         for newSubject in newSubjectList: 
+            pass
             #Add logic to copy across new subjects to the root of the xml tree
             #newSeries = ET.SubElement(newSubject,'study')
 
 
-    def insertNewStudyinXML(self, newSeriesList, subjectID,
-                     studyID, newStudyID, suffix):
+    def insertNewStudyinXML(self, newSeriesList, subjectID, studyID, newStudyID, suffix):
         try:
             currentSubject = self.getSubject(subjectID)
             newAttributes = {'id':newStudyID, 
@@ -396,6 +396,7 @@ class WeaselXMLReader:
             
             #Get image date & time from original image
             for newSeries in newSeriesList: 
+                pass
                 #Add logic to copy across new series to the new study
                 #newSeries = ET.SubElement(newStudy,'study')
  
