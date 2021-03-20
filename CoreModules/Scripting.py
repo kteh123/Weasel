@@ -1,5 +1,5 @@
 import os
-
+from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
@@ -160,6 +160,34 @@ class Pipelines(UserInput):
         """
         messageWindow.hideProgressBar(self)
         messageWindow.closeMessageSubWindow(self)
+
+    def message(self, msg="Hello world!", title="Message window"):
+        """
+        Displays a window in the User Interface with the title in "title" and
+        with the message in "msg". 
+        """
+        messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+
+    def information(self, msg="Are you OK today?", title="Message window"):
+        """
+        Displays an information window in the User Interface with the title in "title" and
+        with the message in "msg". The user has to click "OK" in order to continue using the interface.
+        """
+        QMessageBox.information(self, title, msg)
+
+    def question(self, msg="Shall we carry on?", title="Message Window Title"):
+        """
+        Displays a question window in the User Interface with the title in "title" and
+        with the question in "msg". 
+        The user has to click either "OK" or "Cancel" in order to continue using the interface.
+        It returns 0 if reply is "Cancel" and 1 if reply is "OK".
+        """
+        buttonReply = QMessageBox.question(self, title, msg, 
+                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+        if buttonReply == QMessageBox.Ok:
+            return 1
+        else:
+            return 0
 
     def refresh(self, new_series_name=None):
         """
