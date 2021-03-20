@@ -43,7 +43,7 @@ def createTreeBranch(branchName, branch, parent, refresh=False):
         logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
-def createImageLeaf(image, seriesBranch):
+def createImageLeaf(image, seriesBranch, refresh=False):
     try:
         #Extract filename from file path
         if image:
@@ -104,7 +104,7 @@ def buildTreeView(self, refresh=False):
                 for series in study:
                     seriesBranch = createTreeBranch("Series", series,  studyBranch, refresh)
                     for image in series:
-                        createImageLeaf(image, seriesBranch)
+                        createImageLeaf(image, seriesBranch, refresh)
         self.treeView.blockSignals(False)   
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -141,14 +141,14 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 buildTreeView(self)
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
-                self.treeView.itemChanged.connect(lambda item: checkChildItems(item))
-                self.treeView.itemChanged.connect(lambda item: checkParentItems(item))
+                self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
+                self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
                 self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewState(self, item, "False"))
-                self.treeView.itemExpanded.connect(lambda item: saveTreeViewState(self, item, "True"))
+                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(self, item, "False"))
+                self.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(self, item, "True"))
                 
                 resizeTreeViewColumns(self)
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
@@ -181,8 +181,6 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
-            #Load and parse updated XML file
-            #self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
 
             #store current column widths to be able
             #to restore them when the tree view is refreshed
@@ -201,8 +199,7 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             self.isASeriesChecked = False
             self.isAnImageChecked = False
             toggleMenuItems(self)
-            #collapseSeriesBranches(self.treeView.invisibleRootItem())
-            #collapseStudiesBranches(self.treeView.invisibleRootItem())
+            
             # Joao Sousa suggestion
             self.treeView.show()
 
@@ -262,7 +259,7 @@ def collapseSeriesBranches(item):
             logger.error('Error in TreeView.collapseSeriesBranches: ' + str(e))
 
 
-def checkChildItems(item):
+def checkChildItems(self, item):
     """This function uses recursion to set the state of child checkboxes to
     match that of their parent.
     
@@ -280,14 +277,18 @@ def checkChildItems(item):
                 #parent checkboxe
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, item.checkState(0))
+                if item.checkState(0):
+                    saveTreeViewCheckedState(self, item, 'True')
+                else:
+                    saveTreeViewCheckedState(self, item, 'False')
                 item.treeWidget().blockSignals(False)
-                checkChildItems(childItem)
+                checkChildItems(self, childItem)
     except Exception as e:
         print('Error in TreeView.checkChildItems: ' + str(e))
         logger.error('Error in TreeView.checkChildItems: ' + str(e))
 
 
-def checkParentItems(item):
+def checkParentItems(self, item):
     """This function uses recursion to set the state of Parent checkboxes to
     match collective state of their children.
     
@@ -301,10 +302,12 @@ def checkParentItems(item):
             item.treeWidget().blockSignals(True)
             if areAllChildrenChecked(item.parent()):
                 item.parent().setCheckState(0, Qt.Checked)
+                saveTreeViewCheckedState(self, item, 'True')
             else:
                 item.parent().setCheckState(0, Qt.Unchecked)
+                saveTreeViewCheckedState(self, item, 'False')
             item.treeWidget().blockSignals(False)
-            checkParentItems(item.parent())
+            checkParentItems(self, item.parent())
     except Exception as e:
             print('Error in TreeView.checkParentItems: ' + str(e))
             logger.error('Error in TreeView.checkParentItems: ' + str(e))
@@ -445,10 +448,10 @@ def isASeriesSelected(item):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-def saveTreeViewState(self, item, expandedState='True'):
+def saveTreeViewExpandedState(self, item, expandedState='True'):
     if isASubjectSelected(item):
         subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
-        print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
+        #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
         self.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
     elif isAStudySelected(item):
         subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
@@ -458,7 +461,28 @@ def saveTreeViewState(self, item, expandedState='True'):
         subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
         studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
         seriesID = item.text(1).replace("Series", "").replace("-","").strip()
-        self.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
+
+
+def saveTreeViewCheckedState(self, item, checkedState='True'):
+    if isASubjectSelected(item):
+        subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
+        #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
+        self.objXMLReader.setSubjectCheckedState( subjectID, checkedState)
+    elif isAStudySelected(item):
+        subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
+        studyID = item.text(1).replace("Study", "").replace("-","").strip()
+        self.objXMLReader.setStudyCheckedState( subjectID, studyID, checkedState)
+    elif isASeriesSelected(item):
+        subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
+        studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
+        seriesID = item.text(1).replace("Series", "").replace("-","").strip()
+        self.objXMLReader.setSeriesCheckedState(subjectID, studyID, seriesID, checkedState)
+    elif isAnImageSelected(item):
+        subjectID = item.parent().parent().parent().text(1).replace("Subject", "").replace("-","").strip()
+        studyID = item.parent().parent().text(1).replace("Study", "").replace("-","").strip()
+        seriesID = item.parent().text(1).replace("Series", "").replace("-","").strip()
+        imageName = item.text(1).replace("Image", "").replace("-","").strip()
+        self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
 
 
 def toggleBlockSelectionCheckedState(self):

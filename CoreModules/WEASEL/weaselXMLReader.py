@@ -107,6 +107,15 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e))
 
 
+    def setSubjectCheckedState(self, subjectID, checkedState='True'):
+        try:
+            subjectElement = self.getSubject(subjectID)
+            subjectElement.set('checked', checkedState)
+        except Exception as e:
+            print('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e))
+
+
     def getStudy(self, subjectID, studyID):
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
@@ -125,6 +134,15 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e))
+
+
+    def setStudyCheckedState(self, subjectID, studyID, checkedState='True'):
+        try:
+            studyElement = self.getStudy(subjectID, studyID)
+            studyElement.set('checked', checkedState)
+        except Exception as e:
+            print('Error in WeaselXMLReader.setStudyCheckedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setStudyCheckedState: ' + str(e))
 
 
     def getSeries(self, subjectID, studyID, seriesID):
@@ -146,6 +164,40 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e))
+
+
+    def setSeriesCheckedState(self, subjectID, studyID, seriesID, checkedState='True'):
+        try:
+            seriesElement = self.getSeries(subjectID, studyID, seriesID)
+            seriesElement.set('checked', checkedState)
+            #print("series {} checked {}".format(seriesElement, checkedState))
+        except Exception as e:
+            print('Error in WeaselXMLReader.setSeriesCheckedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setSeriesCheckedState: ' + str(e))
+
+
+    def getImage(self, subjectID, studyID, seriesID, imageName):
+        try:
+            xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series[@id=' + chr(34) + seriesID + chr(34)  + \
+                    ']/image[name=' + chr(34) + imageName + chr(34) +']'
+            return self.root.find(xPath)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getImage: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getImage: ' + str(e))
+
+
+    def setImageCheckedState(self, subjectID, studyID, seriesID, imageName, checkedState="True"):
+        try:
+            imageElement = self.getImage(subjectID, studyID, seriesID, imageName)
+            #print("Image {} checked {}".format(imageElement, checkedState))
+            if imageElement:
+                imageElement.set('checked', checkedState)
+                #print("Image {} checked {}".format(imageElement, checkedState))
+        except Exception as e:
+            print('Error in WeaselXMLReader.setImageCheckedState: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.setImageCheckedState: ' + str(e))
 
 
     def getImagePathList(self, subjectID, studyID, seriesID):
@@ -200,7 +252,7 @@ class WeaselXMLReader:
                 for image in series:
                     if image.find('name').text == imagePath:
                         series.remove(image)
-                        #print("removed image {}".format(imagePath))
+                       # print("removed image {}".format(imagePath))
                         #self.tree.write(self.fullFilePath)
                         break
         except Exception as e:
@@ -285,12 +337,14 @@ class WeaselXMLReader:
             newAttributes = {'id':newSeriesID, 
                              'typeID':suffix,
                              'expanded':'False',
-                             'uid':str(dataset.SeriesInstanceUID)}
+                             'uid':str(dataset.SeriesInstanceUID),
+                              'checked': 'False'}
+
                    
             #Add new series to study to hold new images
             newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
-            comment = ET.Comment('This series holds a whole series of new images')
-            newSeries.append(comment)
+            #comment = ET.Comment('This series holds a whole series of new images')
+            #newSeries.append(comment)
             #Get image date & time from original image
             for index, imageNewName in enumerate(newImageList): #origImageList
                 #imageLabel = self.getImageLabel(studyID, seriesID, imageName)
@@ -340,13 +394,14 @@ class WeaselXMLReader:
                 currentStudy = self.getStudy(subjectID, studyID)
                 newAttributes = {'id':newSeriesID, 
                                  'typeID':suffix,
-                                 'uid':str(dataset.SeriesInstanceUID)}
-                   
+                                 'uid':str(dataset.SeriesInstanceUID),
+                                 'checked':'False'}
+
                 #Add new series to study to hold new images
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
                     
-                comment = ET.Comment('This series holds new images')
-                newSeries.append(comment)
+                #comment = ET.Comment('This series holds new images')
+                #newSeries.append(comment)
                     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
