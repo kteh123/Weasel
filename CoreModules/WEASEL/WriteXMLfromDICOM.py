@@ -97,9 +97,10 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 dataset = pydicom.dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 if not hasattr(dataset, 'SeriesDescription'):
                     full_dataset = pydicom.dcmread(filepath)
-                    full_dataset.SeriesDescription = 'NoSeriesDescription'
+                    full_dataset.SeriesDescription = 'No Series Description'
                     saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
                     del full_dataset
+                    dataset.SeriesDescription = 'No Series Description'
                 # If Multiframe, use dcm4ch to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                     if os.name =='nt':
@@ -107,7 +108,8 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     else:
                         multiframeScript = 'emf2sf'
                     multiframeProgram = os.path.join(pathlib.Path().absolute(), "CoreModules", "WEASEL", "dcm4che-5.23.1", "bin", multiframeScript)
-                    multiframeDir = os.path.dirname(filepath)
+                    multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
+                    os.makedirs(multiframeDir, exist_ok=True)
                     fileBase = "SingleFrame_"
                     #if hasattr(dataset, 'SeriesDescription'):
                     fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
@@ -124,7 +126,8 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                         for new_file in os.listdir(multiframeDir):
                             if new_file.startswith(fileBase):
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
-                        os.remove(filepath)
+                        # Discussion about removing the original file or not
+                        #os.remove(filepath)
                         msgWindow.displayMessageSubWindow(self, progBarMsg)
                         msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
                         msgWindow.setMsgWindowProgBarValue(self, fileCounter)
@@ -142,8 +145,13 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
             
         # The following segment is to deal with the multiframe images if there is any.
         # The np.unique removes files that might have appended more than once previously
+        fileCounter = 0
         for singleframe in np.unique(multiframe_files_list):
             try:
+                fileCounter += 1
+                msgWindow.displayMessageSubWindow(self, "Reading {} single frame DICOM files converted earlier".format(len(np.unique(multiframe_files_list))))
+                msgWindow.setMsgWindowProgBarMaxValue(self, len(np.unique(multiframe_files_list)))
+                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
@@ -157,6 +165,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 continue
 
         if len(list_dicom) == 0:
+            msgWindow.displayMessageSubWindow(self, "No DICOM files present in the selected folder")
             raise FileNotFoundError('No DICOM files present in the selected folder')
 
         return list_dicom, list_paths
