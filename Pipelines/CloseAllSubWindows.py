@@ -1,11 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 
-def isEnabled(self):
+def isEnabled(weasel):
     return True
 
-def main(self):  
+def main(weasel):  
         """Closes all the sub windows open in the MDI"""
         logger.info("WEASEL CloseAllSubWindows.main called")
-        self.mdiArea.closeAllSubWindows()
+        weasel.close_all_windows()
         

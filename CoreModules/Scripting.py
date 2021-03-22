@@ -109,9 +109,6 @@ class Pipelines(UserInput):
         else:
             for images in imagesTreeViewList:
                 imagesList.append(Image.fromTreeView(self, images))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #imagesList = UserInterfaceTools(self).getCheckedImages()
-        #if imagesList is None: imagesList = []
         return ImagesList(imagesList)
 
     def series(self, msg='Please select one or more series'):
@@ -125,9 +122,6 @@ class Pipelines(UserInput):
         else:
             for series in seriesTreeViewList:
                 seriesList.append(Series.fromTreeView(self, series))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #seriesList = UserInterfaceTools(self).getCheckedSeries()
-        #if seriesList is None: seriesList = []
         return SeriesList(seriesList)
 
     def studies(self, msg='Please select one or more studies'):
@@ -141,17 +135,24 @@ class Pipelines(UserInput):
         else:
             for study in studiesTreeViewList:
                 studyList.append(Study.fromTreeView(self, study))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #studyList = UserInterfaceTools(self).getCheckedStudies()
-        #if studyList is None: studyList = []
         return StudyList(studyList)
  
     def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
-        Displays a Progress Bar with the unit set in "index".
+        Displays a progress bar with the unit set in "index".
+        Note: launching a new progress bar at each iteration costs time, so this
+        should only be used in iterations where the progress bar is updated infrequently
+        For iterations with frequent updates, use progress_bar outside the iteration
+        and then update_progress_bar inside the iteration
         """
         messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
         messageWindow.setMsgWindowProgBarMaxValue(self, max)
+        messageWindow.setMsgWindowProgBarValue(self, index)
+
+    def update_progress_bar(self, index=0):
+        """
+        Updates the progress bar with a new index.
+        """
         messageWindow.setMsgWindowProgBarValue(self, index)
 
     def close_progress_bar(self):
@@ -167,6 +168,12 @@ class Pipelines(UserInput):
         with the message in "msg". 
         """
         messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+
+    def close_message(self):
+        """
+        Closes the message window 
+        """
+        self.msgSubWindow.close()
 
     def information(self, msg="Are you OK today?", title="Message window"):
         """
@@ -196,4 +203,20 @@ class Pipelines(UserInput):
         self.close_progress_bar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
+
+    def close_all_windows(self):
+        """
+        Closes all open windows.
+        """
+        self.mdiArea.closeAllSubWindows()
+
+    def folder(self, msg='Please select a folder'):
+        """
+        Ask the user to select a folder
+        """
+        return QFileDialog.getExistingDirectory(self,
+            msg, 
+            self.weaselDataFolder, 
+            QFileDialog.ShowDirsOnly
+        )
 
