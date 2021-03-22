@@ -412,7 +412,7 @@ def isAnImageSelected(item):
         try:
             logger.info("TreeView.isAnImageSelected called.")
             #print("item.text(1).lower()={}".format(item.text(1).lower()))
-            if 'image' in item.text(1).lower():
+            if ('image' in item.text(1).lower()) and ('images' not in item.text(1).lower()):
                 return True
             else:
                 return False
