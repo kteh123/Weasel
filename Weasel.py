@@ -30,7 +30,7 @@ from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.weaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.Menus as menus
 import CoreModules.WEASEL.ToolBar as toolBar
-from CoreModules.Scripting import Pipelines
+from Scripting.Scripting import Pipelines
 
 
 __version__ = '1.0'
