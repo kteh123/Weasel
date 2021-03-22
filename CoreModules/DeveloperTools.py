@@ -681,106 +681,122 @@ class PixelArrayDICOMTools:
 
 class Project:
     def __init__(self, objWeasel):
-        root = objWeasel.treeView.invisibleRootItem()
+        self.objWeasel = objWeasel
+
+    @property
+    def children(self, index=None):
+        root = self.objWeasel.treeView.invisibleRootItem()
         children = []
         for i in range(root.childCount()):
             subjectItem = root.child(i)
-            children.append(Subject.fromTreeView(objWeasel, subjectItem))
-        self.children = children
-        self.numberChildren = len(self.children)
+            children.append(Subject.fromTreeView(self.objWeasel, subjectItem))
+        if isinstance(index, int):
+            return children[index]
+        else:
+            return children
+    
+    @property
+    def numberChildren(self):
+        return len(self.children)
 
 
 class Subject:
-    def __init__(self, objWeasel, subjectID, children=None):
+    def __init__(self, objWeasel, subjectID):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
-        if children is None:
-            root = objWeasel.treeView.invisibleRootItem()
-            children = []
-            for i in range(root.childCount()):
-                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                    subjectItem = root.child(i)
-                    for j in range(subjectItem.childCount()):
-                        studyItem = subjectItem.child(j)
-                        children.append(Study.fromTreeView(objWeasel, studyItem))
-            self.children = children
+    
+    @property
+    def children(self, index=None):
+        root = self.objWeasel.treeView.invisibleRootItem()
+        children = []
+        for i in range(root.childCount()):
+            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
+                subjectItem = root.child(i)
+                for j in range(subjectItem.childCount()):
+                    studyItem = subjectItem.child(j)
+                    children.append(Study.fromTreeView(self.objWeasel, studyItem))
+        if isinstance(index, int):
+            return children[index]
         else:
-            self.children = children
-        self.numberChildren = len(self.children)
-        
+            return children
+
+    @property
+    def numberChildren(self):
+        return len(self.children)
+
     @classmethod
     def fromTreeView(cls, objWeasel, subjectItem):
         subjectID = subjectItem.text(1).replace('Subject -', '').strip()
-        children = []
-        for i in range(subjectItem.childCount()):
-            studyItem = subjectItem.child(i)
-            children.append(Study.fromTreeView(objWeasel, studyItem))
-        return cls(objWeasel, subjectID, children=children)
+        return cls(objWeasel, subjectID)
     
-    def new(self, subjectID=None):
+    def new(self, suffix="_Copy", subjectID=None):
         if subjectID is None:
-            subjectID = self.subjectID + "_Copy"
-        return Subject(self.objWeasel, subjectID, children=[])
+            subjectID = self.subjectID + suffix
+        return Subject(self.objWeasel, subjectID)
 
-    #def copy():
+    #def copy(self):
 
-    def delete(self):
-        for studies in self.children:
-            studies.delete()
-        self.children = []
-        self.numberChildren = 0
-        self.subjectID = ''
-        # Delete the instance, such as del self???
+    #def delete(self):
+    #    for studies in self.children:
+    #        studies.delete()
+    #    self.children = []
+    #    self.numberChildren = 0
+    #    self.subjectID = ''
+    #    # Delete the instance, such as del self???
 
-    def add(self, Study):
-        self.children.append(Study)
-        self.numberChildren = len(self.children)
+    #def add(self, Study):
+    #    self.children.append(Study)
+    #    self.numberChildren = len(self.children)
 
-    def remove(self, allStudies=False, Study=None):
-        if allStudies == True:
-            self.children = []
-            self.numberChildren = 0
-        elif Series is not None:
-            self.children.remove(Study)
-            self.numberChildren = len(self.children)
+    #def remove(self, allStudies=False, Study=None):
+    #    if allStudies == True:
+    #        self.children = []
+    #        self.numberChildren = 0
+    #    elif Series is not None:
+    #        self.children.remove(Study)
+    #        self.numberChildren = len(self.children)
 
 
 class Study:
-    def __init__(self, objWeasel, subjectID, studyID, children=None):
+    def __init__(self, objWeasel, subjectID, studyID):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
         self.studyID = studyID
-        if children is None:
-            root = objWeasel.treeView.invisibleRootItem()
-            children = []
-            for i in range(root.childCount()):
-                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                    subjectItem = root.child(i)
-                    for j in range(subjectItem.childCount()):
-                        if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
-                            studyItem = subjectItem.child(j)
-                            for k in range(studyItem.childCount()):
-                                seriesItem = studyItem.child(k)
-                                children.append(Series.fromTreeView(objWeasel, seriesItem))
-            self.children = children
+        # StudyUID???
+
+    @property
+    def children(self, index=None):
+        root = self.objWeasel.treeView.invisibleRootItem()
+        children = []
+        for i in range(root.childCount()):
+            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
+                subjectItem = root.child(i)
+                for j in range(subjectItem.childCount()):
+                    if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
+                        studyItem = subjectItem.child(j)
+                        for k in range(studyItem.childCount()):
+                            seriesItem = studyItem.child(k)
+                            children.append(Series.fromTreeView(self.objWeasel, seriesItem))        
+        if isinstance(index, int):
+            return children[index]
         else:
-            self.children = children
-        self.numberChildren = len(self.children)
+            return children
+
+    @property
+    def numberChildren(self):
+        return len(self.children)
         
     @classmethod
     def fromTreeView(cls, objWeasel, studyItem):
         subjectID = studyItem.parent().text(1).replace('Subject -', '').strip()
         studyID = studyItem.text(1).replace('Study -', '').strip()
-        children = []
-        for i in range(studyItem.childCount()):
-            seriesItem = studyItem.child(i)
-            children.append(Series.fromTreeView(objWeasel, seriesItem))
-        return cls(objWeasel, subjectID, studyID, children=children)
+        return cls(objWeasel, subjectID, studyID)
 
     def new(self):
         studyID = time.strftime('%Y%m%d_%H%M%S')
         #studyID = self.studyID + "_Copy"
-        return Study(self.objWeasel, self.subjectID, studyID, children=[])
+        # StudyUID???
+        return Study(self.objWeasel, self.subjectID, studyID)
 
     def copy(self, newStudy=False, newSeries=True):
         if newStudy == True:
@@ -801,17 +817,20 @@ class Study:
             series.delete()
         self.children = []
         self.numberChildren = 0
+        # XML function to add and remove this
         self.subjectID = self.studyID = ''
         # Delete the instance, such as del self???
 
     def add(self, Series):
         self.children.append(Series)
+        # XML function to add and remove this
         self.numberChildren = len(self.children)
     
     def remove(self, allSeries=False, Series=None):
         if allSeries == True:
             self.children = []
             self.numberChildren = 0
+            # XML function to add and remove this
         elif Series is not None:
             self.children.remove(Series)
             self.numberChildren = len(self.children)
@@ -822,54 +841,55 @@ class Study:
 
 
 class Series:
-    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'seriesUID', 'images', 'children',
-                  'numberChildren', 'suffix', 'referencePathsList' ,'indices')
-    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, children=None, seriesUID=None, suffix=None):
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'seriesUID', 'images',
+                 'suffix', 'referencePathsList')
+    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, seriesUID=None, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
         self.studyID = studyID
         self.seriesID = seriesID
         self.images = [] if listPaths is None else listPaths
-        if children is None:
-            root = objWeasel.treeView.invisibleRootItem()
-            children = []
-            for i in range(root.childCount()):
-                if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                    subjectItem = root.child(i)
-                    for j in range(subjectItem.childCount()):
-                        if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
-                            studyItem = subjectItem.child(j)
-                            for k in range(studyItem.childCount()):
-                                if studyItem.child(k).text(1) == 'Series -' + str(self.seriesID):
-                                    seriesItem = studyItem.child(k)
-                                    for n in range(seriesItem.childCount()):
-                                        imageItem = seriesItem.child(n)
-                                        children.append(Image.fromTreeView(objWeasel, imageItem))
-            self.children = children
-        else:
-            self.children = children
-        self.numberChildren = len(self.children)
         self.seriesUID = self.SeriesUID if seriesUID is None else seriesUID
         self.suffix = '' if suffix is None else suffix
         self.referencePathsList = []
         # This is to deal with Enhanced MRI
-        if self.PydicomList and len(self.images) == 1:
-            self.indices = list(np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence))) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
+        #if self.PydicomList and len(self.images) == 1:
+        #    self.indices = list(np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence))) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
+        #else:
+        #    self.indices = []
+
+    @property
+    def children(self, index=None):
+        root = self.objWeasel.treeView.invisibleRootItem()
+        children = []
+        for i in range(root.childCount()):
+            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
+                subjectItem = root.child(i)
+                for j in range(subjectItem.childCount()):
+                    if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
+                        studyItem = subjectItem.child(j)
+                        for k in range(studyItem.childCount()):
+                            if studyItem.child(k).text(1) == 'Series -' + str(self.seriesID):
+                                seriesItem = studyItem.child(k)
+                                for n in range(seriesItem.childCount()):
+                                    imageItem = seriesItem.child(n)
+                                    children.append(Image.fromTreeView(self.objWeasel, imageItem))     
+        if isinstance(index, int):
+            return children[index]
         else:
-            self.indices = []
+            return children
+
+    @property
+    def numberChildren(self):
+        return len(self.children)
 
     @classmethod
     def fromTreeView(cls, objWeasel, seriesItem):
         subjectID = seriesItem.parent().parent().text(1).replace('Subject -', '').strip()
         studyID = seriesItem.parent().text(1).replace('Study -', '').strip()
         seriesID = seriesItem.text(1).replace('Series -', '').strip()
-        images = []
-        children = []
-        for i in range(seriesItem.childCount()):
-            imageItem = seriesItem.child(i)
-            images.append(imageItem.text(4))
-            children.append(Image.fromTreeView(objWeasel, imageItem))
-        return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images, children=children)
+        images = objWeasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
+        return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images)
     
     def new(self, suffix="_Copy", series_id=None, series_name=None, series_uid=None):
         if series_id is None:
@@ -885,9 +905,6 @@ class Series:
     
     def copy(self, suffix="_Copy", newSeries=True, series_id=None, series_name=None, series_uid=None, output_dir=None):
         if newSeries == True:
-            #series_id = None
-            #series_name = None
-            #series_uid = None
             newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
             return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix=suffix)
         else:
@@ -903,25 +920,28 @@ class Series:
     def delete(self):
         GenericDICOMTools.deleteDICOM(self.objWeasel, self.images)
         self.images = self.referencePathsList = []
-        self.children = self.indices = []
-        self.numberChildren = 0
+        #self.children = self.indices = []
+        #self.numberChildren = 0
         self.subjectID = self.studyID = self.seriesID = self.seriesUID = ''
         # Delete the instance, such as del self???
 
     def add(self, Image):
         self.images.append(Image.path)
-        self.children.append(Image)
-        self.numberChildren = len(self.children)
+        # Might need XML functions
+        #self.children.append(Image)
+        #self.numberChildren = len(self.children)
 
     def remove(self, allImages=False, Image=None):
         if allImages == True:
             self.images = []
-            self.children = []
-            self.numberChildren = 0
+            # Might need XML functions
+            #self.children = []
+            #self.numberChildren = 0
         elif Image is not None:
             self.images.remove(Image.path)
-            self.children.remove(Image)
-            self.numberChildren = len(self.children)
+            # Might need XML functions
+            #self.children.remove(Image)
+            #self.numberChildren = len(self.children)
 
     def write(self, pixelArray, output_dir=None):
         if self.images:
@@ -954,12 +974,34 @@ class Series:
         if self.Item(tagDescription) or self.Tag(tagDescription):
             imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
             self.images = imagePathList
-            if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
+            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
         for tag in argv:
             if self.Item(tag) or self.Tag(tag):
                 imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tag)
                 self.images = imagePathList
-                if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
+                #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
+    
+    #def sort(self, *argv):
+    #    tuple_to_sort = []
+    #    list_to_sort = []
+    #    list_to_sort.append(self.images)
+    #    for tag in argv:
+    #        if self.Item(tag) or self.Tag(tag):
+    #            if tag.startswith("("):
+    #                attributeList = self.Tag(tag)
+    #            else:
+    #                attributeList = self.Item(tag)
+    #            list_to_sort.append(attributeList)
+    #    for index, _ in enumerate(self.images):
+    #        individual_tuple = []
+    #        for individual_list in list_to_sort:
+    #            individual_tuple.append(individual_list[index])
+    #        tuple_to_sort.append(tuple(individual_tuple))
+    #    tuple_sorted = sorted(tuple_to_sort, key = lambda x: x[1:])
+    #    list_sorted_paths = []
+    #    for individual in tuple_sorted:
+    #        list_sorted_paths.append(individual[0])
+    #    return list_sorted_paths
 
     def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
@@ -1044,12 +1086,12 @@ class Series:
     @property
     def PixelArray(self, ROI=None):
         pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
-        if self.Multiframe:    
-            tempArray = []
-            for index in self.indices:
-                tempArray.append(pixelArray[index, ...])
-            pixelArray = np.array(tempArray)
-            del tempArray
+        #if self.Multiframe:    
+        #    tempArray = []
+        #    for index in self.indices:
+        #        tempArray.append(pixelArray[index, ...])
+        #    pixelArray = np.array(tempArray)
+        #    del tempArray
         if isinstance(ROI, Series):
             mask = np.zeros(np.shape(pixelArray))
             coords = ROI.ROIindices
@@ -1086,21 +1128,21 @@ class Series:
 
     @property
     def NumberOfSlices(self):
-        numSlices = 0
-        if self.Multiframe:
-            numSlices = int(self.Item("NumberOfFrames"))
-        else:
-            numSlices = len(np.unique(self.SliceLocations))
+        #numSlices = 0
+        #if self.Multiframe:
+        #    numSlices = int(self.Item("NumberOfFrames"))
+        #else:
+        numSlices = len(np.unique(self.SliceLocations))
         return numSlices
 
     @property
     def SliceLocations(self):
-        slices = []
-        if self.Multiframe:
-            #slices = self.indices
-            slices = self.Item("PerFrameFunctionalGroupsSequence.FrameContentSequence.InStackPositionNumber")
-        else:
-            slices = self.Item("SliceLocation")
+        #slices = []
+        #if self.Multiframe:
+        #    #slices = self.indices
+        #    slices = self.Item("PerFrameFunctionalGroupsSequence.FrameContentSequence.InStackPositionNumber")
+        #else:
+        slices = self.Item("SliceLocation")
         return slices
     
     @property
@@ -1144,10 +1186,10 @@ class Series:
                 elif tagDescription == 'SeriesNumber':
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
             itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
-            if self.Multiframe: 
-                tempList = [itemList[index] for index in self.indices]
-                itemList = tempList
-                del tempList
+            #if self.Multiframe: 
+            #    tempList = [itemList[index] for index in self.indices]
+            #    itemList = tempList
+            #    del tempList
         else:
             itemList = []
         return itemList
@@ -1162,10 +1204,10 @@ class Series:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
             itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
-            if self.Multiframe: 
-                tempList = [itemList[index] for index in self.indices]
-                itemList = tempList
-                del tempList
+            #if self.Multiframe: 
+            #    tempList = [itemList[index] for index in self.indices]
+            #    itemList = tempList
+            #    del tempList
         else:
             itemList = []
         return itemList
@@ -1177,12 +1219,12 @@ class Series:
         else:
             return []
     
-    @property
-    def Multiframe(self):
-        if self.indices:
-            return True
-        else:
-            return False
+    #@property
+    #def Multiframe(self):
+    #    if self.indices:
+    #        return True
+    #    else:
+    #        return False
 
     def export_as_nifti(self, directory=None, filename=None):
         if directory is None: directory=os.path.dirname(self.images[0])
