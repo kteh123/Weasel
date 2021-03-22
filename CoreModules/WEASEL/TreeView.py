@@ -108,7 +108,7 @@ def resizeTreeViewColumns(self):
             logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
-def buildTreeView(self, refresh=True):
+def buildTreeView(self, refresh=False):
     try:
         logger.info("TreeView.buildTreeView called")
         self.treeView.clear()
@@ -142,7 +142,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-                
+                self.objXMLReader.callResetXMLTree()
                 self.treeView = QTreeWidget()
                 
                 #Minimum width of the tree view has to be set
@@ -158,6 +158,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
                 buildTreeView(self)
+                resizeTreeViewColumns(self)
+                collapseSeriesBranches(self.treeView.invisibleRootItem())
+                collapseStudiesBranches(self.treeView.invisibleRootItem())
 
 
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
@@ -168,13 +171,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                #self.treeView.itemClicked.connect(lambda item: onItemChecked(self, item))
                 self.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(self, item, "False"))
                 self.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(self, item, "True"))
                 
-                resizeTreeViewColumns(self)
-                collapseSeriesBranches(self.treeView.invisibleRootItem())
-                collapseStudiesBranches(self.treeView.invisibleRootItem())
 
                 #Display tree view in left-hand side docked widget
                 #If such a widget already exists remove it to allow
