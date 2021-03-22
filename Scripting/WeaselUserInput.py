@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UserInput:
+class WeaselUserInput:
     """
     Generating user input from the weasel object directly 
     """

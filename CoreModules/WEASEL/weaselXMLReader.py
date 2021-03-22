@@ -369,7 +369,7 @@ class WeaselXMLReader:
     def insertNewSubjectinXML(self, newSubjectList, newStudyID, suffix):
         newAttributes = {'id':newStudyID, 
                             'typeID':suffix,
-                            'expanded':'False',
+                            'expanded':'True',
                             'checked': 'False'}
         #NOTE is 'uid':str(dataset.SeriesInstanceUID) relevant here?
         #        
@@ -536,3 +536,31 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.renameSubjectInXMLFile: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.renameSubjectInXMLFile: ' + str(e))
+
+
+    def callResetXMLTree(self):
+        self.resetXMLTree(self.root)
+
+
+    def resetXMLTree(self, root):
+        """This function uses recursion to set the checked and expanded 
+        attributes to False
+
+        Input Parameters
+        ****************
+        root - an element in the XML tree
+                """
+        logger.info("TreeView.resetXMLTree called")
+        try:
+            if root.tag == 'image':
+                root.attrib['checked'] = 'False'
+                return
+       
+            for elem in root.getchildren():
+                elem.attrib['checked'] = 'False'
+                if elem.tag != 'subject':
+                    elem.attrib['expanded'] = 'False'
+                self.resetXMLTree(elem)
+        except Exception as e:
+            print('Error in TreeView.resetXMLTree: ' + str(e))
+            logger.error('Error in TreeView.resetXMLTree: ' + str(e))
