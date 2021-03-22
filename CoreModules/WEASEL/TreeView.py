@@ -473,17 +473,17 @@ def isASeriesSelected(item):
 
 def saveTreeViewExpandedState(self, item, expandedState='True'):
     if isASubjectSelected(item):
-        subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
+        subjectID = item.text(1).replace("Subject - ", "").strip()
         #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
         self.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
     elif isAStudySelected(item):
-        subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
-        studyID = item.text(1).replace("Study", "").replace("-","").strip()
+        subjectID = item.parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.text(1).replace("Study - ", "").strip()
         self.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
     elif isASeriesSelected(item):
-        subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
-        studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
-        seriesID = item.text(1).replace("Series", "").replace("-","").strip()
+        subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.parent().text(1).replace("Study - ", "").strip()
+        seriesID = item.text(1).replace("Series - ", "").strip()
         self.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
 
 
@@ -496,22 +496,22 @@ def onItemChecked(self, item):
 
 def saveTreeViewCheckedState(self, item, checkedState="True"):
     if isASubjectSelected(item):
-        subjectID = item.text(1).replace("Subject", "").replace("-","").strip()
+        subjectID = item.text(1).replace("Subject - ", "").strip()
         #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
         self.objXMLReader.setSubjectCheckedState( subjectID, checkedState)
     elif isAStudySelected(item):
-        subjectID = item.parent().text(1).replace("Subject", "").replace("-","").strip()
-        studyID = item.text(1).replace("Study", "").replace("-","").strip()
+        subjectID = item.parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.text(1).replace("Study - ", "").strip()
         self.objXMLReader.setStudyCheckedState( subjectID, studyID, checkedState)
     elif isASeriesSelected(item):
-        subjectID = item.parent().parent().text(1).replace("Subject", "").replace("-","").strip()
-        studyID = item.parent().text(1).replace("Study", "").replace("-","").strip()
-        seriesID = item.text(1).replace("Series", "").replace("-","").strip()
+        subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.parent().text(1).replace("Study - ", "").strip()
+        seriesID = item.text(1).replace("Series - ", "").strip()
         self.objXMLReader.setSeriesCheckedState(subjectID, studyID, seriesID, checkedState)
     elif isAnImageSelected(item):
-        subjectID = item.parent().parent().parent().text(1).replace("Subject", "").replace("-","").strip()
-        studyID = item.parent().parent().text(1).replace("Study", "").replace("-","").strip()
-        seriesID = item.parent().text(1).replace("Series", "").replace("-","").strip()
+        subjectID = item.parent().parent().parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.parent().parent().text(1).replace("Study - ", "").strip()
+        seriesID = item.parent().text(1).replace("Series - ", "").strip()
         imageName = item.text(4)
         #print("image name={}".format(imageName))
         self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
@@ -674,17 +674,17 @@ def returnSeriesImageList(self, subjectName, studyName, seriesName):
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
-            subjectID = subject.text(1).replace("Subject", "").replace("-","").strip()
+            subjectID = subject.text(1).replace("Subject - ", "").strip()
             if subjectID == subjectName:
                 studyCount = subject.childCount()
                 for j in range(studyCount):
                     study = subject.child(j)
-                    studyID = study.text(1).replace("Study", "").replace("-","").strip()
+                    studyID = study.text(1).replace("Study - ", "").strip()
                     if studyID == studyName:
                         seriesCount = study.childCount()
                         for k in range(seriesCount):
                             series = study.child(k)
-                            seriesID = series.text(1).replace("Series", "").replace("-","").strip()
+                            seriesID = series.text(1).replace("Series - ", "").strip()
                             if seriesID == seriesName:
                                 imageCount = series.childCount()
                                 for n in range(imageCount):
@@ -704,23 +704,23 @@ def returnImageName(self, subjectName, studyName, seriesName, imagePath):
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
-            subjectID = subject.text(1).replace("Subject", "").replace("-","").strip()
+            subjectID = subject.text(1).replace("Subject - ", "").strip()
             if subjectID == subjectName:
                 studyCount = subject.childCount()
                 for j in range(studyCount):
                     study = subject.child(j)
-                    studyID = study.text(1).replace("Study", "").replace("-","").strip()
+                    studyID = study.text(1).replace("Study - ", "").strip()
                     if studyID == studyName:
                         seriesCount = study.childCount()
                         for k in range(seriesCount):
                             series = study.child(k)
-                            seriesID = series.text(1).replace("Series", "").replace("-","").strip()
+                            seriesID = series.text(1).replace("Series - ", "").strip()
                             if seriesID == seriesName:
                                 imageCount = series.childCount()
                                 for n in range(imageCount):
                                     image = series.child(n)
                                     if image.text(4) == imagePath:
-                                        return image.text(1).replace("Image", "").replace("-","").strip()
+                                        return image.text(1).replace("Image - ", "").strip()
                                 break
         return ''
     except Exception as e:
@@ -746,8 +746,8 @@ def returnCheckedItems(self):
                 if study.checkState(0) == Qt.Checked:
                     checkedSubjectData = []
                     parentStudy = study.parent()
-                    checkedSubjectData.append(parentStudy.text(1).replace("Subject", "").replace("-","").strip())
-                    checkedSubjectData.append(study.text(1).replace("Study", "").replace("-","").strip())
+                    checkedSubjectData.append(parentStudy.text(1).replace("Subject - ", "").strip())
+                    checkedSubjectData.append(study.text(1).replace("Study - ", "").strip())
                     self.checkedStudyList.append(checkedSubjectData)
                 seriesCount = study.childCount()
                 for k in range(seriesCount):
@@ -756,9 +756,9 @@ def returnCheckedItems(self):
                         checkedSeriesData = []
                         parentSeries = series.parent()
                         grandParentSeries = parentSeries.parent() 
-                        checkedSeriesData.append(grandParentSeries.text(1).replace("Subject", "").replace("-","").strip())
-                        checkedSeriesData.append(parentSeries.text(1).replace("Study", "").replace("-","").strip())
-                        checkedSeriesData.append(series.text(1).replace("Series", "").replace("-","").strip())
+                        checkedSeriesData.append(grandParentSeries.text(1).replace("Subject - ", "").strip())
+                        checkedSeriesData.append(parentSeries.text(1).replace("Study - ", "").strip())
+                        checkedSeriesData.append(series.text(1).replace("Series - ", "").strip())
                         self.checkedSeriesList.append(checkedSeriesData)
                     imageCount = series.childCount()
                     for n in range(imageCount):
@@ -768,10 +768,10 @@ def returnCheckedItems(self):
                             series = image.parent()
                             study = series.parent()
                             subject = study.parent()
-                            checkedImagesData.append(study.text(1).replace("Study", "").replace("-","").strip())
-                            checkedImagesData.append(series.text(1).replace("Series", "").replace("-","").strip())
+                            checkedImagesData.append(study.text(1).replace("Study - ", "").strip())
+                            checkedImagesData.append(series.text(1).replace("Series - ", "").strip())
                             checkedImagesData.append(image.text(4))
-                            checkedImagesData.append(subject.text(1).replace("Subject", "").replace("-","").strip())
+                            checkedImagesData.append(subject.text(1).replace("Subject - ", "").strip())
                             self.checkedImageList.append(checkedImagesData)
 
         self.isAnImageChecked = False
