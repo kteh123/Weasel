@@ -1,12 +1,26 @@
-from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
+from PyQt5.QtWidgets import (QApplication, QMessageBox, QFileDialog)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
 from CoreModules.DeveloperTools import UserInterfaceTools
 import CoreModules.WEASEL.MessageWindow as messageWindow
 
-class WslDisplay():
+class WeaselDisplay():
     """
     A class for accessing GUI elements from within a pipeline script. 
     """
  
+    def cursor_arrow_to_hourglass(self):
+        """
+        Turns the arrow shape for the cursor into an hourglass (for length calculations). 
+        """   
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+
+    def cursor_hourglass_to_arrow(self):
+        """
+        Restores the cursor into an arrow after it was set to hourglass 
+        """   
+        QApplication.restoreOverrideCursor()
+
     def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """
         Displays a progress bar with the unit set in "index".
