@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import Scripting.dicom_labels as dicom_labels
+from Scripting.dicom_labels import dicom_labels
 
 def DicomDataFrame_to_ElementTree(project):
     """Converts a pandas DataFrame of a DICOM folder into

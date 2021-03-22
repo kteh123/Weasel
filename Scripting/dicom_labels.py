@@ -2,8 +2,8 @@
 import datetime
 
 def dicom_labels(image):
-    """Returns a set of human readable labels for a row in a DataFrame.
-    input: row in a DataFrame
+    """Returns a set of human readable labels for a row in a DataFrame or a pyDicom Dataset.
+    input: image = row in a DataFrame or pyDicom DataSet
     output: tuple of strings
     """ 
     subject_label = str(image.PatientName)

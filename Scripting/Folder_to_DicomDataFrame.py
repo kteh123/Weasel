@@ -1,5 +1,4 @@
 import os
-
 from Scripting.Files_to_DicomDataFrame import Files_to_DicomDataFrame
 
 def Folder_to_DicomDataFrame(folder, weasel):
