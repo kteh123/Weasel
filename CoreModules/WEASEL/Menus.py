@@ -148,3 +148,16 @@ def buildContextMenu(self, menuXMLFile):
             #filename = exception_traceback.tb_frame.f_code.co_filename
             line_number = exception_traceback.tb_lineno
             print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
+
+
+def setFileMenuItemEnabled(self, itemText, state):
+    for menu in self.listMenus:
+        if menu.title() == 'File':
+            #apply this function to items in the
+            #File menu
+            menuItems = menu.actions()
+            for menuItem in menuItems:
+                if menuItem.text() == itemText:
+                    menuItem.setEnabled(state)
+
+                    

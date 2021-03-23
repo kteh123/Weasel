@@ -71,6 +71,7 @@ class Weasel(QMainWindow, Pipelines):
         #self.selectedSeries = ''
         self.selectedImageName = ''
         self.selectedImagePath = ''
+        self.DICOMFolder = ''
         self.checkedImageList = []
         self.checkedSeriesList = []
         self.checkedStudyList = []
@@ -82,7 +83,7 @@ class Weasel(QMainWindow, Pipelines):
          # XML reader object to process XML configuration file
         self.objConfigXMLReader = WeaselConfigXMLReader()
         menuXMLFile = self.objConfigXMLReader.getMenuFile()
-        print("menuXMLFile = {}".format(menuXMLFile))
+        #print("menuXMLFile = {}".format(menuXMLFile))
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         
          # XML reader object to process XML DICOM data file

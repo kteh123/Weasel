@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def isEnabled(self):
-    return True
+    return False
 
 
 def main(self):
@@ -29,7 +29,8 @@ def main(self):
         self.selectedImageName = ''
         self.selectedImagePath = ''
         #browse to DICOM folder and get DICOM folder name
-        scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
+        #scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
+        scan_directory = self.DICOMFolder
         #print(" scan_directory = ",  scan_directory)
         if scan_directory:
             QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
