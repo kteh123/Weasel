@@ -188,6 +188,20 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getImage: ' + str(e))
 
 
+    def getImageParentIDs(self, imageName):
+        try:
+            xPathSubject = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/../../..'
+            subjectID = self.root.find(xPathSubject).attrib['id']
+            xPathStudy = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/../..'
+            studyID = self.root.find(xPathStudy).attrib['id']
+            xPathSeries = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/..'
+            seriesID = self.root.find(xPathSeries).attrib['id']
+            return (subjectID, studyID, seriesID)
+        except Exception as e:
+            print('Error in WeaselXMLReader.getImageParentIDs: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getImageParentIDs: ' + str(e))
+
+
     def setImageCheckedState(self, subjectID, studyID, seriesID, imageName, checkedState="True"):
         try:
             imageElement = self.getImage(subjectID, studyID, seriesID, imageName)
