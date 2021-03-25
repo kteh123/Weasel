@@ -7,6 +7,11 @@ import sys
 import pathlib
 import importlib
 import CoreModules.WEASEL.TreeView as treeView
+import CoreModules.WEASEL.LoadDICOM as loadDICOM
+import CoreModules.WEASEL.RefreshDICOM as refreshDICOM
+import CoreModules.WEASEL.TileAllSubWindows as tileAllSubWindows
+import CoreModules.WEASEL.CloseAllSubWindows as closeAllSubWindows
+import CoreModules.WEASEL.CloseTreeView as closeTreeView
 from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
 import logging
 logger = logging.getLogger(__name__)
@@ -17,6 +22,7 @@ def setupMenus(self, menuXMLFile):
     logger.info("Menus.setupMenus")
     self.listMenus = []
     mainMenu = self.menuBar()
+    setUpFileMenu(mainMenu, self)
     objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
     menus = objXMLMenuReader.getMenus()
     for menu in menus:
@@ -134,6 +140,11 @@ def buildContextMenu(self, menuXMLFile):
     try:
         self.context = QMenu(self)
         self.context.hovered.connect(_actionHovered)
+
+        createFileMenuItem("Reset Tree View", "Ctrl+E", 
+        "Uncheck all checkboxes on the tree view.",
+        True, treeView, self, "callUnCheckTreeViewItems", context=True)
+
         objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
         listPythonFiles = []
@@ -141,8 +152,10 @@ def buildContextMenu(self, menuXMLFile):
             for individualFile in filenames:
                 if individualFile.endswith(".py"):
                     listPythonFiles.append(os.path.join(dirpath, individualFile))
+
         for item in items:
             buildContextMenuItem(self, self.context, item, listPythonFiles)
+
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -151,13 +164,61 @@ def buildContextMenu(self, menuXMLFile):
 
 
 def setFileMenuItemEnabled(self, itemText, state):
-    for menu in self.listMenus:
-        if menu.title() == 'File':
-            #apply this function to items in the
-            #File menu
-            menuItems = menu.actions()
-            for menuItem in menuItems:
-                if menuItem.text() == itemText:
-                    menuItem.setEnabled(state)
+    for menuItem in self.fileMenu.actions():
+        if menuItem.text() == itemText:
+            menuItem.setEnabled(state)
+            break
 
-                    
+
+def createFileMenuItem(label, shortcut, toolTip, enabled, module, self, 
+                       function=None, context=False):
+    menuItem = QAction(label, self)
+    menuItem.setShortcut(shortcut)
+    menuItem.setToolTip(toolTip)
+    menuItem.setEnabled(enabled)
+    if function:
+        thisFunction = function
+    else:
+        thisFunction = "main"
+    objFunction = getattr(module, thisFunction)
+    menuItem.triggered.connect(lambda : objFunction(self))
+    if context:
+        self.context.addAction(menuItem)
+    else:
+        self.fileMenu.addAction(menuItem)
+
+
+def setUpFileMenu(mainMenu, self):
+    try:
+        self.fileMenu = mainMenu.addMenu("File")
+        self.fileMenu.hovered.connect(_actionHovered)
+
+        createFileMenuItem("Open DICOM folder", "Ctrl+O", 
+        "If an XML file exists in the scan folder, open it. Otherwise create one and open it.",
+        True, loadDICOM, self)
+
+        createFileMenuItem("Refresh DICOM folder", "Ctrl+R", 
+        "Create a new XML file for the DICOM images in the scan folder and open it.",
+        False, refreshDICOM,  self)
+
+        createFileMenuItem("Tile Subwindows", "Ctrl+T", 
+        "Arranges subwindows to a tile pattern.",
+        True, tileAllSubWindows,  self)
+
+        createFileMenuItem("Close All Sub Windows", "Ctrl+X", 
+        "Close All Sub Windows.",
+        True, closeAllSubWindows,  self)
+
+        createFileMenuItem("Reset Tree View", "Ctrl+E", 
+        "Uncheck all checkboxes on the tree view.",
+        False, treeView, self, "callUnCheckTreeViewItems")
+
+        createFileMenuItem("Close DICOM folder", "Ctrl+C", 
+        "Closes the tree view and removes reference to the DICOM folder.",
+        False, closeTreeView,  self)
+
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.setUpFileMenu at line number {}: '.format(line_number) + str(e))

@@ -66,11 +66,11 @@ class Weasel(QMainWindow, Pipelines):
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
-        #self.selectedSubject = ''  SS 13.03.21
-        #self.selectedStudy = ''
-        #self.selectedSeries = ''
-        self.selectedImageName = ''
-        self.selectedImagePath = ''
+        #self.selectedSubject = ''  SS 13.03.21  maybe redundant
+        #self.selectedStudy = '' maybe redundant
+        #self.selectedSeries = ''maybe redundant
+        #self.selectedImageName = ''maybe redundant
+        #self.selectedImagePath = ''maybe redundant
         self.DICOMFolder = ''
         self.checkedImageList = []
         self.checkedSeriesList = []
