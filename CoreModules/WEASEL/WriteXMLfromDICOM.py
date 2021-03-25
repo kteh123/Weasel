@@ -97,12 +97,14 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                              'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 if not hasattr(dataset, 'SeriesDescription'):
-                    full_dataset = dcmread(filepath)
-                    full_dataset.SeriesDescription = 'No Series Description'
-                    saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
-                    del full_dataset
-                    #elem = DataElement(0x0008103E, 'LO', 'No Series Description')
-                    #filewriter.write_DTvalue(filepath, elem)
+                    #full_dataset = dcmread(filepath)
+                    #full_dataset.SeriesDescription = 'No Series Description'
+                    #saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
+                    #del full_dataset
+                    elem = DataElement(0x0008103E, 'LO', 'No Series Description')
+                    with dcmread(filepath, force=True) as ds:
+                        ds.add(elem)
+                        ds.save_as(filepath)
                     dataset.SeriesDescription = 'No Series Description'
                 # If Multiframe, use dcm4che to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
