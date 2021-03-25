@@ -1,44 +1,5 @@
 <menus>
   
-  <menu name="File">
-    <item>
-      <label>Open DICOM folder</label>
-      <shortcut>Ctrl+O</shortcut>
-      <tooltip>
-        If an XML file exists in the scan folder, open it. Otherwise create one and open it.
-      </tooltip>
-      <module>LoadDICOM</module>
-    </item>
-
-    <item>
-      <label>Refresh DICOM folder</label>
-      <shortcut>Ctrl+R</shortcut>
-      <tooltip>Create a new XML file for the DICOM images in the scan folder and open it.</tooltip>
-      <module>RefreshDICOM</module>
-    </item>
-
-    <item>
-      <label>Tile Subwindows</label>
-      <shortcut>Ctrl+T</shortcut>
-      <tooltip>Returns subwindows to a tile pattern</tooltip>
-      <module>TileAllSubWindows</module>
-    </item>
-
-    <item>
-      <label>Close All Sub Windows</label>
-      <shortcut>Ctrl+X</shortcut>
-      <tooltip>Close All Sub Windows</tooltip>
-      <module>CloseAllSubWindows</module>
-    </item>
-
-    <item>
-      <label>Close DICOM folder</label>
-      <shortcut>Ctrl+C</shortcut>
-      <tooltip>Saves the XML file to disc</tooltip>
-      <module>CloseTreeView</module>
-    </item>
-  </menu>
-  
   <menu name="Tools">
         <item>
           <label>View Series/Image</label>
