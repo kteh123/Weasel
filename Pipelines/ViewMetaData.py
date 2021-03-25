@@ -1,6 +1,6 @@
 
 from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt, pyqtSignal, QObject
+from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
         QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
@@ -129,6 +129,7 @@ def buildTableView(self, dataset):
             tableWidget.setShowGrid(True)
             tableWidget.setColumnCount(4)
             tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            #tableWidget.setEditTriggers(QAbstractItemView.DoubleClicked)
 
             #Create table header row
             headerItem = QTableWidgetItem(QTableWidgetItem("Tag\n")) 
@@ -142,11 +143,34 @@ def buildTableView(self, dataset):
             tableWidget.setHorizontalHeaderItem(2, headerItem)
             headerItem = QTableWidgetItem(QTableWidgetItem("Value\n")) 
             headerItem.setTextAlignment(Qt.AlignLeft)
-            headerItem = tableWidget.setHorizontalHeaderItem(3 ,headerItem)
+            tableWidget.setHorizontalHeaderItem(3 , headerItem)
 
             if dataset:
+                # Loop through the DICOM group (0002, XXXX) first
+                for meta_element in dataset.file_meta:
+                    rowPosition = tableWidget.rowCount()
+                    tableWidget.insertRow(rowPosition)
+                    tableWidget.setItem(rowPosition , 0, 
+                                    QTableWidgetItem(str(meta_element.tag)))
+                    tableWidget.setItem(rowPosition , 1, 
+                                    QTableWidgetItem(meta_element.name))
+                    tableWidget.setItem(rowPosition , 2, 
+                                    QTableWidgetItem(meta_element.VR))
+                    if meta_element.VR == "OW" or meta_element.VR == "OB" or meta_element.VR == "UN":
+                        try:
+                            valueMetadata = str(list(meta_element))
+                        except:
+                            valueMetadata = str(meta_element.value)
+                    else:
+                        valueMetadata = str(meta_element.value)
+                    if meta_element.VR == "SQ":
+                        tableWidget.setItem(rowPosition , 3, QTableWidgetItem(""))
+                        tableWidget = iterateSequenceTag(tableWidget, meta_element, level=">")
+                    else:
+                        tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
+                
                 for data_element in dataset:
-                    #Exclude pixel data from metadata listing
+                    # Exclude pixel data from metadata listing
                     if data_element.name == 'Pixel Data':
                         continue
                     rowPosition = tableWidget.rowCount()
@@ -157,12 +181,14 @@ def buildTableView(self, dataset):
                                     QTableWidgetItem(data_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(data_element.VR))
-                    if data_element.VR == "OW" or data_element.VR == "OB": # data_element.VR == "UN" or
+                    if data_element.VR == "OW" or data_element.VR == "OB" or data_element.VR == "UN":
                         try:
-                            valueMetadata = str(data_element.value.decode('utf-8'))
+                            #valueMetadata = str(data_element.value.decode('utf-8'))
+                            valueMetadata = str(list(data_element))
                         except:
                             try:
-                                valueMetadata = str(list(data_element))
+                                #valueMetadata = str(list(data_element))
+                                valueMetadata = str(data_element.value.decode('utf-8'))
                             except:
                                 valueMetadata = str(data_element.value)
                     else:
@@ -179,7 +205,9 @@ def buildTableView(self, dataset):
             header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
             header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
             header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(3, QHeaderView.ResizeMode(QHeaderView.AdjustToContentsOnFirstShow))
+            tableWidget.setWordWrap(True)
+            #tableWidget.resizeRowsToContents()
 
             return tableWidget
         except Exception as e:

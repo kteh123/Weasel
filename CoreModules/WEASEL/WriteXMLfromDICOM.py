@@ -5,7 +5,7 @@ import subprocess
 import re
 import datetime
 import numpy as np
-import pydicom
+from pydicom import Dataset, DataElement, dcmread, filewriter
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
@@ -13,7 +13,7 @@ import CoreModules.WEASEL.iBeatImport as iBeatImport
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 
-from PyQt5.QtWidgets import (QApplication, QFileDialog)
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox)
 
 import logging
 logger = logging.getLogger(__name__)
@@ -86,6 +86,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
         multiframe_files_list = list()
         msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
         fileCounter = 0
+        multiframeCounter = 0
         for filepath in file_list:
             try:
                 fileCounter += 1
@@ -94,22 +95,35 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
                              'StudyInstanceUID', 'SeriesInstanceUID']
-                dataset = pydicom.dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
+                dataset = dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 if not hasattr(dataset, 'SeriesDescription'):
-                    full_dataset = pydicom.dcmread(filepath)
+                    full_dataset = dcmread(filepath)
                     full_dataset.SeriesDescription = 'No Series Description'
                     saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
                     del full_dataset
+                    #elem = DataElement(0x0008103E, 'LO', 'No Series Description')
+                    #filewriter.write_DTvalue(filepath, elem)
                     dataset.SeriesDescription = 'No Series Description'
-                # If Multiframe, use dcm4ch to split into single-frame
+                # If Multiframe, use dcm4che to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                    multiframeCounter += 1
+                    if multiframeCounter == 1:
+                        buttonReply = QMessageBox.question(self, "Multiframe DICOM files found",
+                                      "WEASEL detected the existence of multiframe DICOM in the selected directory and will convert these. This operation requires overwriting the original files. Do you wish to proceed?", 
+                                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+                        if buttonReply == QMessageBox.Cancel:
+                            print("User chose not to convert Multiframe DICOM. Loading process halted.")
+                            msgWindow.hideProgressBar(self)
+                            msgWindow.closeMessageSubWindow(self)
+                            return None
                     if os.name =='nt':
                         multiframeScript = 'emf2sf.bat'
                     else:
                         multiframeScript = 'emf2sf'
-                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "CoreModules", "WEASEL", "dcm4che-5.23.1", "bin", multiframeScript)
-                    multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
-                    os.makedirs(multiframeDir, exist_ok=True)
+                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "External", "dcm4che-5.23.1", "bin", multiframeScript)
+                    multiframeDir = os.path.dirname(filepath)
+                    #multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
+                    #os.makedirs(multiframeDir, exist_ok=True)
                     fileBase = "SingleFrame_"
                     #if hasattr(dataset, 'SeriesDescription'):
                     fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
@@ -127,7 +141,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                             if new_file.startswith(fileBase):
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
                         # Discussion about removing the original file or not
-                        #os.remove(filepath)
+                        os.remove(filepath)
                         msgWindow.displayMessageSubWindow(self, progBarMsg)
                         msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
                         msgWindow.setMsgWindowProgBarValue(self, fileCounter)
@@ -155,7 +169,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
-                dataset = pydicom.dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
+                dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
                     and ('DIRFILE' not in singleframe) and ('DICOMDIR' not in singleframe)):
