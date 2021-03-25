@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (QApplication, QMessageBox, QFileDialog)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
-from CoreModules.DeveloperTools import UserInterfaceTools
 import CoreModules.WEASEL.MessageWindow as messageWindow
+import CoreModules.WEASEL.TreeView as treeView
 
 class WeaselDisplay():
     """
@@ -80,14 +80,6 @@ class WeaselDisplay():
         else:
             return 0
 
-    def refresh(self, new_series_name=None):
-        """
-        Refreshes the Weasel display.
-        """
-        self.close_progress_bar()
-        ui = UserInterfaceTools(self)
-        ui.refreshWeasel(new_series_name=new_series_name)
-
     def close_all_windows(self):
         """
         Closes all open windows.
@@ -101,5 +93,19 @@ class WeaselDisplay():
         return QFileDialog.getExistingDirectory(self,
             msg, 
             self.weaselDataFolder, 
-            QFileDialog.ShowDirsOnly
-        )
+            QFileDialog.ShowDirsOnly)
+
+    def refresh(self):
+        """
+        Displays the XML tree saved on disk
+        """  
+        xml = self.xml()     
+        treeView.makeDICOMStudiesTreeView(self, xml)
+
+    def close_project(self):
+        """
+        Closes the DICOM folder
+        """
+        if self.project_open():
+            treeView.closeTreeView(self)
+            self.DICOMFolder = ''
