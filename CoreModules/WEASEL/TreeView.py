@@ -289,8 +289,7 @@ def recursiveWholeTreeViewStateSave(self):
 
 
 def saveTreeViewCheckedState(self, item):
-    """This function uses recursion to set the state of child checkboxes to
-    match that of their parent.remove
+    """This function uses recursion to save the state of tree view item checkboxes 
     
     Input Parameters
     ****************
@@ -309,6 +308,33 @@ def saveTreeViewCheckedState(self, item):
     except Exception as e:
         print('Error in TreeView.saveTreeViewCheckedState: ' + str(e))
         logger.error('Error in TreeView.saveTreeViewCheckedState: ' + str(e))
+
+
+def saveTreeViewItemCheckedState(self, item):
+    if item.checkState(0)  == Qt.Checked:
+        checkedState = "True"
+    elif item.checkState(0)  == Qt.Unchecked:
+        checkedState = "False"
+    if isASubjectSelected(item):
+        subjectID = item.text(1).replace("Subject - ", "").strip()
+        #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
+        self.objXMLReader.setSubjectCheckedState( subjectID, checkedState)
+    elif isAStudySelected(item):
+        subjectID = item.parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.text(1).replace("Study - ", "").strip()
+        self.objXMLReader.setStudyCheckedState( subjectID, studyID, checkedState)
+    elif isASeriesSelected(item):
+        subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.parent().text(1).replace("Study - ", "").strip()
+        seriesID = item.text(1).replace("Series - ", "").strip()
+        self.objXMLReader.setSeriesCheckedState(subjectID, studyID, seriesID, checkedState)
+    elif isAnImageSelected(item):
+        subjectID = item.parent().parent().parent().text(1).replace("Subject - ", "").strip()
+        studyID = item.parent().parent().text(1).replace("Study - ", "").strip()
+        seriesID = item.parent().text(1).replace("Series - ", "").strip()
+        imageName = item.text(4)
+        #print("image name={}".format(imageName))
+        self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
 
 
 def checkChildItems(self, item):
@@ -559,33 +585,6 @@ def saveTreeViewExpandedState(self, item, expandedState='True'):
 #        imageName = item.text(4)
 #        #print("image name={}".format(imageName))
 #        self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, "False")
-
-
-def saveTreeViewItemCheckedState(self, item):
-    if item.checkState(0)  == Qt.Checked:
-        checkedState = "True"
-    elif item.checkState(0)  == Qt.Unchecked:
-        checkedState = "False"
-    if isASubjectSelected(item):
-        subjectID = item.text(1).replace("Subject - ", "").strip()
-        #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
-        self.objXMLReader.setSubjectCheckedState( subjectID, checkedState)
-    elif isAStudySelected(item):
-        subjectID = item.parent().text(1).replace("Subject - ", "").strip()
-        studyID = item.text(1).replace("Study - ", "").strip()
-        self.objXMLReader.setStudyCheckedState( subjectID, studyID, checkedState)
-    elif isASeriesSelected(item):
-        subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
-        studyID = item.parent().text(1).replace("Study - ", "").strip()
-        seriesID = item.text(1).replace("Series - ", "").strip()
-        self.objXMLReader.setSeriesCheckedState(subjectID, studyID, seriesID, checkedState)
-    elif isAnImageSelected(item):
-        subjectID = item.parent().parent().parent().text(1).replace("Subject - ", "").strip()
-        studyID = item.parent().parent().text(1).replace("Study - ", "").strip()
-        seriesID = item.parent().text(1).replace("Series - ", "").strip()
-        imageName = item.text(4)
-        #print("image name={}".format(imageName))
-        self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
 
 
 def toggleBlockSelectionCheckedState(self):
