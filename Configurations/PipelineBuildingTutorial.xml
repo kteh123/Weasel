@@ -170,52 +170,12 @@
         <tooltip>Performs binary operations on two images</tooltip>
         <module>BinaryOperationsOnImages</module>
       </item>
-		    <item>
+	  <item>
           <label>Threshold Series/Image</label>
           <shortcut>Ctrl+T</shortcut>
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
-        </item>
-		  <item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		      <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
-        </item>
-		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
-          <separator>yes</separator>
-        </item>
-        <item>
-          <label>Square Developer (Pipeline3D/GroupWise)</label>
-          <shortcut>Ctrl+S+3</shortcut>
-          <tooltip>Square a DICOM Image or series</tooltip>
-          <module>squareDICOM_Image_Developer</module>
-        </item>
-        <item>
-          <label>Gaussian Filter Developer (GroupWise)</label>
-          <shortcut>Ctrl+F+3</shortcut>
-          <tooltip>gaussian</tooltip>
-          <module>gaussianFilterDICOM_Image_GroupWise</module>
-        </item>
-        <item>
-          <label>Threshold Developer (SlicebySlice)</label>
-          <shortcut>Ctrl+L</shortcut>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image_Developer</module>
-        </item>
-        <item>
-          <label>Merge Series (Developer)</label>
-          <shortcut>Ctrl+M+E</shortcut>
-          <tooltip>Merge selected images or series into 1 series</tooltip>
-          <module>mergeDICOM_Developer</module>
-        </item>
-		<item>
-          <label>Edit DICOM Tag Developer</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Choose DICOM header and change the selected files</tooltip>
-          <module>editDICOM_Image_Developer</module>
-        </item>
+      </item>
   </menu>
   
 </menus>
