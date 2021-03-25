@@ -166,3 +166,9 @@ class OriginalPipelines():
         self.close_progress_bar()
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
+
+    def close_all_windows(self):
+        """
+        Closes all open windows.
+        """
+        self.mdiArea.closeAllSubWindows()
