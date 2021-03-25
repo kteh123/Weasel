@@ -1,136 +1,93 @@
-import CoreModules.WEASEL.TreeView as treeView
-from CoreModules.DeveloperTools import UserInterfaceTools
-from CoreModules.DeveloperTools import Study
-from CoreModules.DeveloperTools import Series
-from CoreModules.DeveloperTools import Image
-
-
-class ListOfDicomObjects(list):
-    """
-    A superclass for managing Lists of Subjects, Studies, Series or Images. 
-    """
-    def delete(self):
-        """
-        Deletes all items in the list
-        """
-        for item in self: 
-            item.delete()
-
-    def display(self):
-        """
-        Displays all items in the list.
-        """
-        for item in self: 
-            item.display()
-
-
-class ImagesList(ListOfDicomObjects):
-    """
-    A class containing a list of objects of class Image. 
-    """
-
-    def copy(self):
-        """
-        Returns a copy of the list of images.
-        """
-        copy = []
-        for image in self: 
-            copy.append(image.copy())
-        return ImagesList(copy)
-        
-    def merge(self, series_name='MergedSeries'):
-        """
-        Merges a list of images into a new series under the same study
-        """
-        if len(self) == 0: return
-        return self[0].merge(self, series_name=series_name, overwrite=True)
-
-    def new_parent(self, suffix="_Suffix"):
-        """
-        Creates a new parent series from the images in the list.
-        """
-        return self[0].newSeriesFrom(self, suffix=suffix)
-
-    def Item(self, *args):
-        """
-        Applies the Item method to all images in the list
-        """
-        return [image.Item(args) for image in self]
-
-    def display(self):
-        """
-        Displays all images as a series.
-        """
-        self[0].displayListImages(self)
-
-
-class SeriesList(ListOfDicomObjects):
-    """
-    A class containing a list of class Series. 
-    """  
-    def copy(self):
-        """
-        Returns a copy of the list of series.
-        """
-        copy = []
-        for series in self: 
-            copy.append(series.copy())
-        return SeriesList(copy)
-
-    def merge(self, series_name='MergedSeries'):
-        """
-        Merges a list of series into a new series under the same study
-        """
-        if len(self) == 0: return
-        return self[0].merge(self, series_name=series_name, overwrite=True)
-
-
-class StudyList(ListOfDicomObjects):
-    """
-    A class containing a list of class Study. 
-    """
-
+import pydicom
+import pandas
 
 class WeaselDicom():
     """
-    A collection of classes for handling DICOM data inside weasel scripts. 
+    Creates a pandas DataFrame instance.
     """
 
-    def images(self, msg='Please select one or more images'):
+    def dataframe(self, files, tags=[]):
         """
-        Returns a list of Images checked by the user.
+        Read specified DICOM tags from files and return a pandas dataframe
+        where each row corresponds to a valid DICOM file and 
+        the columns present values of tags requested.
+        If no tags are provided, a set of default tags is used.
         """
-        imagesList = [] 
-        imagesTreeViewList = treeView.returnCheckedImages(self)
-        if imagesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
-        else:
-            for images in imagesTreeViewList:
-                imagesList.append(Image.fromTreeView(self, images))
-        return ImagesList(imagesList)
+ 
+        if len(tags) == 0:
+            tags = [
+                'PatientID', 'StudyInstanceUID', 'SeriesInstanceUID', 'SOPInstanceUID', 
+                'PatientName', 'StudyDescription', 'SeriesDescription', 'SeriesNumber', 'InstanceNumber', 
+                'StudyDate', 'SeriesDate', 'AcquisitionDate',
+                'StudyTime', 'SeriesTime', 'AcquisitionTime' ]
 
-    def series(self, msg='Please select one or more series'):
-        """
-        Returns a list of Series checked by the user.
-        """
-        seriesList = []
-        seriesTreeViewList = treeView.returnCheckedSeries(self)
-        if seriesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
-        else:
-            for series in seriesTreeViewList:
-                seriesList.append(Series.fromTreeView(self, series))
-        return SeriesList(seriesList)
+        self.cursor_arrow_to_hourglass()
+        self.progress_bar(max=len(files), msg='Reading DICOM files')
 
-    def studies(self, msg='Please select one or more studies'):
+        dicom_files = []
+        array = []
+
+        for i, filepath in enumerate(files):
+            self.update_progress_bar(index=i+1)
+            dataset = pydicom.dcmread(filepath, specific_tags=tags, force=True) 
+            if dataset.__class__.__name__ == 'FileDataset':
+                if hasattr(dataset, 'StudyInstanceUID'):
+                    dicom_files.append(filepath)
+                    row = []
+                    for attribute in tags:
+                        if hasattr(dataset, attribute):
+                            row.append(dataset[attribute].value)
+                        else:
+                            row.append('Unknown')
+                    array.append(row)
+
+        self.close_progress_bar()  
+        self.cursor_hourglass_to_arrow()   
+
+        return pandas.DataFrame(array, index=dicom_files, columns=tags)
+
+    def read_folder(self):
         """
-        Returns a list of Studies checked by the user.
+        Reads default tags of all DICOM files in the project folder
+        Saves the results as a dataframe in the project attribute 
         """
-        studyList = []
-        studiesTreeViewList = treeView.returnCheckedStudies(self)
-        if studiesTreeViewList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
-        else:
-            for study in studiesTreeViewList:
-                studyList.append(Study.fromTreeView(self, study))
-        return StudyList(studyList)
+        files = self.files()
+        self.project = self.dataframe(files)
+        if not self.project.empty:
+            self.write_xml()
+
+    def write_csv(self):
+        """
+        Saves a DataFrame as a CSV file
+        """
+        self.message(msg="Writing CSV file")
+        file = self.csv()
+        self.project.to_csv(file)
+        self.close_message() 
+
+    def read_csv(self):
+        """
+        Reads a DataFrame from a CSV file
+        """ 
+        self.message(msg="Reading CSV file")
+        file = self.csv()  
+        self.project = pandas.read_csv(file, index_col=0)
+        self.close_message()
+
+    def copy_dicom_file(self, file):
+        """
+        Returns a copy of a dicom file in the same series
+        """ 
+        UID = pydicom.uid.generate_uid()
+        copy = self.derived_file(UID + '.dcm')
+
+        dataset = pydicom.dcmread(file)
+        dataset.SOPInstanceUID = UID
+        dataset.save_as(copy)
+
+        row = self.project.loc[file]
+        self.project.append(row, index=copy)
+        self.project.loc[copy].SOPInstanceUID = UID
+
+        return copy
+

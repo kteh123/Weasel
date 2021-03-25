@@ -1,17 +1,16 @@
+from Scripting.OriginalPipelines import OriginalPipelines
+
 from Scripting.WeaselUserInput import WeaselUserInput
 from Scripting.WeaselDisplay import WeaselDisplay
+from Scripting.WeaselClasses import WeaselClasses
 from Scripting.WeaselDicom import WeaselDicom
-from Scripting.WeaselDataFrame import WeaselDataFrame
 from Scripting.WeaselFiles import WeaselFiles
-from Scripting.WeaselElementTree import WeaselElementTree
+from Scripting.WeaselTree import WeaselTree
 
 class Pipelines(
-    WeaselUserInput, 
-    WeaselDisplay, 
-    WeaselDicom, 
-    WeaselDataFrame, 
-    WeaselFiles, 
-    WeaselElementTree):
+    WeaselUserInput, OriginalPipelines # The original scripting classes
+#   WeaselUserInput, WeaselClasses, WeaselDisplay, WeaselDicom, WeaselFiles, WeaselTree # The new scripting classes
+    ):
     """
     A collection of methods for weasel scripting. 
     Collected together to avoid multiple import statements 

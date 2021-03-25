@@ -142,7 +142,8 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.DICOM_XML_FilePath = XML_File_Path
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
-                self.objXMLReader.callResetXMLTree()
+                #set checked and expanded attributes to False
+                self.objXMLReader.callResetXMLTree()   
                 self.treeView = QTreeWidget()
                 
                 #Minimum width of the tree view has to be set
@@ -162,7 +163,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 collapseSeriesBranches(self.treeView.invisibleRootItem())
                 collapseStudiesBranches(self.treeView.invisibleRootItem())
 
-
+                #connect functions to events
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
@@ -923,3 +924,34 @@ def closeTreeView(self):
     except Exception as e:
         print('Error in TreeView.CloseTreeView: ' + str(e))
         logger.error('Error in TreeView.CloseTreeView: ' + str(e))
+
+
+def callUnCheckTreeViewItems(self):
+    root = self.treeView.invisibleRootItem()
+    unCheckTreeViewItems(self, root)
+
+
+def unCheckTreeViewItems(self, item):
+    """This function uses recursion to set the state of child checkboxes to
+    match that of their parent.
+    
+    Input Parameters
+    ****************
+    item  - A QTreeWidgetItem whose checkbox state has just changed
+    """
+    logger.info("TreeView.unCheckTreeViewItems called")
+    #print("TreeView.unCheckTreeViewItems called")
+    try:
+        if item.childCount() > 0:
+            itemCount = item.childCount()
+            for n in range(itemCount):
+                childItem = item.child(n)
+                #Give child checkboxes the same state as their 
+                #parent checkbox
+                item.treeWidget().blockSignals(True)
+                childItem.setCheckState(0, Qt.Unchecked)
+                item.treeWidget().blockSignals(False)
+                unCheckTreeViewItems(self, childItem)
+    except Exception as e:
+        print('Error in TreeView.unCheckTreeViewItems: ' + str(e))
+        logger.error('Error in TreeView.unCheckTreeViewItems: ' + str(e))

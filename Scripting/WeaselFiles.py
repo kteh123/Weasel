@@ -1,33 +1,84 @@
 import os
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
 
-def scan_tree(folder):
-    """Recursively yield DirEntry objects for given directory."""
+def folder_tree(folder):
+    """
+    Helper function
+    Recursively yield DirEntry objects for given directory.
+    """
     for entry in os.scandir(folder):
         if entry.is_dir(follow_symlinks=False):
-            yield from scan_tree(entry.path)
+            yield from folder_tree(entry.path)
         else:
             yield entry
+
 
 class WeaselFiles():
     """Some tools for handling files and folders.
     """
-    def files(self, folder):
-        """Returns all files in folder.
+    def project_open(self):
         """
-        files = [item.path for item in scan_tree(folder) if item.is_file()]
+        Returns True if a project is open and False otherwise.
+        """
+        return self.DICOMFolder !=  ''
+        
+    def folder_set(self, folder=''):
+        """
+        Sets weasel's working directory. 
+        If a folder is not provided, the user is asked to select one
+        returns True if the folder has been set
+        returns False if the user hits cancel
+        """
+        if folder == '':
+            folder = self.folder(msg='Please select a DICOM folder')
+            if not folder: return False
+        self.DICOMFolder = folder
+        return True
+
+    def derived_folder(self):
+        """
+        Returns the folder where all newly created DICOM files will be stored
+        """  
+        path = os.path.join(self.DICOMFolder, "derived_by_weasel")  
+        try: os.mkdir(path)
+        except: pass 
+        return path  
+
+    def derived_file(self, filename='weasel.dcm'):
+        """
+        Returns a new filepath in the derived data folder
+        """  
+        folder = self.derived_folder()
+        filepath = os.path.join(folder, filename)
+        return filepath
+
+    def files(self):
+        """
+        Returns all files in the current project folder.
+        """
+        folder = self.DICOMFolder 
+        files = [item.path for item in folder_tree(folder) if item.is_file()]
         return files
 
-    def xml(self, folder):
+    def xml(self):
         """
-        Returnts the file path of the xml file in folder
+        Returns the file path of the xml file in the current DICOM folder.
         """
+        folder = self.DICOMFolder 
         return folder + '//' + os.path.basename(folder) + '.xml'
 
-    def exists_xml(self, folder):
-        """This function returns True if an XML file of scan images already
-        exists in the scan directory."""
+    def csv(self):
+        """
+        Returns the file path of the csv file in the current DICOM folder.
+        """
+        folder = self.DICOMFolder 
+        return folder + '//' + os.path.basename(folder) + '.csv'
+
+    def exists_xml(self):
+        """
+        This function returns True if an XML file of scan images already
+        exists in the current DICOM folder.
+        """
+        folder = self.DICOMFolder 
         flag = False
         with os.scandir(folder) as entries:
             for entry in entries:
@@ -37,26 +88,10 @@ class WeaselFiles():
                         break
         return flag 
 
-    def save_as_xml(self, project, folder):
-        """
-        Saves an element tree as an XML file
-        """
-        self.message(msg="Saving XML file")
-        xmlstr = ET.tostring(project, encoding='utf-8')
-        xmlstr = minidom.parseString(xmlstr).toprettyxml(encoding="utf-8", indent="  ")
-        filepath = self.xml(folder)
-        with open(filepath, "wb") as f:
-            f.write(xmlstr) 
-        self.close_message() 
-        return filepath
 
-    def save_dataframe_as_xml(self, project, folder):
-        """
-        Saves a dataframe as an XML file
-        """   
-        project = self.element_tree(project)   
-        xml = self.save_as_xml(project, folder)  
-        return xml
+
+
+
 
 
 

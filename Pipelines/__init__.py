@@ -1,2 +1,2 @@
-import Pipelines.CloseAllSubWindows
+import CoreModules.WEASEL.CloseAllSubWindows
 import Pipelines.ToolsFunctions
