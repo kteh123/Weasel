@@ -380,40 +380,48 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.getImageDate: ' + str(e))
 
 
-    def insertNewSubjectinXML(self, newSubjectList, newStudyID, suffix):
-        newAttributes = {'id':newStudyID, 
-                            'typeID':suffix,
-                            'expanded':'True',
-                            'checked': 'False'}
-        #NOTE is 'uid':str(dataset.SeriesInstanceUID) relevant here?
-        #        
-        #Add new series to study to hold new images
-        newSubject = ET.SubElement(self.root, 'subject', newAttributes)           
-            
-        #Get image date & time from original image
-        for newSubject in newSubjectList: 
-            pass
+    def insertNewSubjectinXML(self, newStudiesList, newSubjectID, suffix):
+        newAttributes = {'id':newSubjectID, 
+                         'typeID':suffix,
+                         'expanded':'True',
+                         'checked': 'False'}
+
+        #Add new subject to project
+        newSubject = ET.SubElement(self.root, 'subject', newAttributes)
+        for newStudy in newStudiesList:
+            dataset = readDICOM_Image.getDicomDataset(newStudy[0][0])
+            newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + suffix
+            self.insertNewStudyinXML(newStudy, newSubjectID, newStudyID, suffix)
+            #pass
             #Add logic to copy across new subjects to the root of the xml tree
             #newSeries = ET.SubElement(newSubject,'study')
 
 
-    def insertNewStudyinXML(self, newSeriesList, subjectID, studyID, newStudyID, suffix):
+    def insertNewStudyinXML(self, newSeriesList, subjectID, newStudyID, suffix):
+        """
+        newSeriesList: This is a list of lists. Each nested list is a set of filenames belonging to same series.
+        """
         try:
+            dataset = readDICOM_Image.getDicomDataset(newSeriesList[0][0])
             currentSubject = self.getSubject(subjectID)
             newAttributes = {'id':newStudyID, 
                              'typeID':suffix,
                              'expanded':'False',
-                              'checked': 'False'}
-            
-            #Add new series to study to hold new images
-            newStudy = ET.SubElement(currentSubject, 'study', newAttributes)           
-            
-            #Get image date & time from original image
-            for newSeries in newSeriesList: 
-                pass
-                #Add logic to copy across new series to the new study
-                #newSeries = ET.SubElement(newStudy,'study')
- 
+                             'uid':str(dataset.StudyInstanceUID),
+                             'checked': 'False'}
+
+            if currentSubject:
+                #Add new study to subject to hold new series+images
+                newStudy = ET.SubElement(currentSubject, 'study', newAttributes)
+                for newSeries in newSeriesList:
+                    dataset = readDICOM_Image.getDicomDataset(newSeries[0])
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+                    self.insertNewSeriesInXML(newSeries, newSeries, subjectID, newStudyID, newSeriesID, newSeriesID, suffix)
+                    #pass
+                    #Add logic to copy across new series to the new study
+                    #newSeries = ET.SubElement(newStudy,'study')
+            else:
+                self.insertNewSubjectinXML([newSeriesList], subjectID, suffix)
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewStudyInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewStduyInXML: ' + str(e))
@@ -428,27 +436,29 @@ class WeaselXMLReader:
                              'typeID':suffix,
                              'expanded':'False',
                              'uid':str(dataset.SeriesInstanceUID),
-                              'checked': 'False'}
-                   
-            #Add new series to study to hold new images
-            newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
-            #comment = ET.Comment('This series holds a whole series of new images')
-            #newSeries.append(comment)
-            #Get image date & time from original image
-            for index, imageNewName in enumerate(newImageList): #origImageList
-                #imageLabel = self.getImageLabel(studyID, seriesID, imageName)
-                imageTime = self.getImageTime(subjectID, studyID, seriesID)# , imageName)
-                imageDate = self.getImageDate(subjectID, studyID, seriesID)#, imageName)
-                newImage = ET.SubElement(newSeries,'image')
-                #Add child nodes of the image element
-                labelNewImage = ET.SubElement(newImage, 'label')
-                labelNewImage.text = str(index + 1).zfill(6)
-                nameNewImage = ET.SubElement(newImage, 'name')
-                nameNewImage.text = imageNewName
-                timeNewImage = ET.SubElement(newImage, 'time')
-                timeNewImage.text = imageTime
-                dateNewImage = ET.SubElement(newImage, 'date')
-                dateNewImage.text = imageDate
+                             'checked': 'False'}
+            if currentStudy:
+                #Add new series to study to hold new images
+                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
+                #comment = ET.Comment('This series holds a whole series of new images')
+                #newSeries.append(comment)
+                #Get image date & time from original image
+                for index, imageNewName in enumerate(newImageList): #origImageList
+                    #imageLabel = self.getImageLabel(studyID, seriesID, imageName)
+                    imageTime = self.getImageTime(subjectID, studyID, seriesID)# , imageName)
+                    imageDate = self.getImageDate(subjectID, studyID, seriesID)#, imageName)
+                    newImage = ET.SubElement(newSeries,'image')
+                    #Add child nodes of the image element
+                    labelNewImage = ET.SubElement(newImage, 'label')
+                    labelNewImage.text = str(index + 1).zfill(6)
+                    nameNewImage = ET.SubElement(newImage, 'name')
+                    nameNewImage.text = imageNewName
+                    timeNewImage = ET.SubElement(newImage, 'time')
+                    timeNewImage.text = imageTime
+                    dateNewImage = ET.SubElement(newImage, 'date')
+                    dateNewImage.text = imageDate
+            else:
+                self.insertNewStudyinXML([newImageList], subjectID, studyID, suffix)
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e))
@@ -495,7 +505,8 @@ class WeaselXMLReader:
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
-                labelNewImage.text = imageLabel
+                labelNewImage.text = imageLabel + suffix
+                #labelNewImage.text = imageLabel
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
                 timeNewImage = ET.SubElement(newImage, 'time')

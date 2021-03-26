@@ -5,11 +5,10 @@ import subprocess
 import re
 import datetime
 import numpy as np
-from pydicom import Dataset, DataElement, dcmread, filewriter
+from pydicom import Dataset, DataElement, dcmread
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
-import CoreModules.WEASEL.iBeatImport as iBeatImport
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 
@@ -97,10 +96,6 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                              'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 if not hasattr(dataset, 'SeriesDescription'):
-                    #full_dataset = dcmread(filepath)
-                    #full_dataset.SeriesDescription = 'No Series Description'
-                    #saveDICOM_Image.saveDicomToFile(full_dataset, output_path=filepath)
-                    #del full_dataset
                     elem = DataElement(0x0008103E, 'LO', 'No Series Description')
                     with dcmread(filepath, force=True) as ds:
                         ds.add(elem)
@@ -127,8 +122,8 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     #multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
                     #os.makedirs(multiframeDir, exist_ok=True)
                     fileBase = "SingleFrame_"
-                    #if hasattr(dataset, 'SeriesDescription'):
                     fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
+                    #if hasattr(dataset, 'SeriesDescription'):
                     #elif hasattr(dataset, 'ProtocolName'):
                     #    fileBaseFlag = fileBase + "00_" + str(dataset.ProtocolName)
                     #elif hasattr(dataset, 'SequenceName'):
@@ -199,8 +194,8 @@ def get_study_series(dicom):
         else:
             subject = "No Subject Name"
         study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0]
-        #if hasattr(dicom, "SeriesDescription"):
         sequence = str(dicom.SeriesDescription)
+        #if hasattr(dicom, "SeriesDescription"):
         #elif hasattr(dicom, "SequenceName"):
         #    sequence = str(dicom.SequenceName)
         #elif hasattr(dicom, "ProtocolName"):
@@ -222,10 +217,10 @@ def build_dictionary(list_dicom, msgWindow, self):
         xml_dict = {}
         fileCounter = 0
         msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
-        for file in list_dicom:
+        for dicomfile in list_dicom:
             fileCounter += 1
             msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-            subject, study, sequence, series_number, _, _ = get_study_series(file)
+            subject, study, sequence, series_number, _, _ = get_study_series(dicomfile)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
             xml_dict[subject][study].append(series_number + "_" + sequence)
@@ -235,21 +230,6 @@ def build_dictionary(list_dicom, msgWindow, self):
         return xml_dict
     except Exception as e:
         print('Error in WriteXMLfromDICOM.build_dictionary: ' + str(e))
-
-
-def get_studies_series_iBEAT(list_dicom):
-    try:
-        logger.info("WriteXMLfromDICOM.get_studies_series_iBEAT called")
-        xml_dict = defaultdict(list)
-        for file in list_dicom:
-            individualStudy, individualSeries = iBeatImport.getScanInfo(file)
-            xml_dict[individualStudy].append(individualSeries)
-        for study in xml_dict:
-            xml_dict[study] = np.unique(xml_dict[study])
-
-        return xml_dict
-    except Exception as e:
-        print('Error in WriteXMLfromDICOM.get_studies_series_iBEAT: ' + str(e))
 
 
 def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
@@ -281,10 +261,10 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
                     series_element.set('checked', 'False')  #added by SS 16.03.21
         fileCounter = 0
         msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
-        for index, file in enumerate(list_dicom):
+        for index, dicomfile in enumerate(list_dicom):
             fileCounter += 1
             msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-            subject, study, sequence, series_number, study_uid, series_uid = get_study_series(file)
+            subject, study, sequence, series_number, study_uid, series_uid = get_study_series(dicomfile)
             subject_search_string = "./*[@id='" + subject + "']"
             study_root = DICOM_XML_object.find(subject_search_string)
             study_search_string = "./*[@id='" + study + "']"
@@ -300,78 +280,28 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
             time = ET.SubElement(image_element, 'time')
             date = ET.SubElement(image_element, 'date')
             label.text = str(len(list(image_root.iter('image')))).zfill(6)
-            name.text =  os.path.normpath(list_paths[index])
+            name.text = os.path.normpath(list_paths[index])
             
             # The next lines save the time and date to XML - They consider multiple/eventual formats
-            if len(file.dir("AcquisitionTime"))>0:
+            if len(dicomfile.dir("AcquisitionTime"))>0:
                 try:
-                    time.text = datetime.datetime.strptime(file.AcquisitionTime, '%H%M%S').strftime('%H:%M')
+                    time.text = datetime.datetime.strptime(dicomfile.AcquisitionTime, '%H%M%S').strftime('%H:%M')
                 except:
-                    time.text = datetime.datetime.strptime(file.AcquisitionTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(file.AcquisitionDate, '%Y%m%d').strftime('%d/%m/%Y')
-            elif len(file.dir("SeriesTime"))>0:
+                    time.text = datetime.datetime.strptime(dicomfile.AcquisitionTime, '%H%M%S.%f').strftime('%H:%M')
+                date.text = datetime.datetime.strptime(dicomfile.AcquisitionDate, '%Y%m%d').strftime('%d/%m/%Y')
+            elif len(dicomfile.dir("SeriesTime"))>0:
                 # It means it's Enhanced MRI
                 try:
-                    time.text = datetime.datetime.strptime(file.SeriesTime, '%H%M%S').strftime('%H:%M')
+                    time.text = datetime.datetime.strptime(dicomfile.SeriesTime, '%H%M%S').strftime('%H:%M')
                 except:
-                    time.text = datetime.datetime.strptime(file.SeriesTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(file.SeriesDate, '%Y%m%d').strftime('%d/%m/%Y')
+                    time.text = datetime.datetime.strptime(dicomfile.SeriesTime, '%H%M%S.%f').strftime('%H:%M')
+                date.text = datetime.datetime.strptime(dicomfile.SeriesDate, '%Y%m%d').strftime('%d/%m/%Y')
             else:
                 time.text = datetime.datetime.strptime('000000', '%H%M%S').strftime('%H:%M')
                 date.text = datetime.datetime.strptime('20000101', '%Y%m%d').strftime('%d/%m/%Y')
         return DICOM_XML_object
     except Exception as e:
         print('Error in WriteXMLfromDICOM.open_dicom_to_xml: ' + str(e))
-
-
-def open_dicom_to_xml_iBEAT(xml_dict, list_dicom, list_paths):
-    """This method opens all DICOM files in the given list and saves 
-        information from each file individually to an XML tree/structure.
-    """
-    try:    
-        logger.info("WriteXMLfromDICOM.open_dicom_to_xml_iBEAT called")
-        DICOM_XML_object = ET.Element('DICOM')
-        comment = ET.Comment('WARNING: PLEASE, DO NOT MODIFY THIS FILE \n This .xml file is automatically generated by a script that reads folders containing DICOM files. \n Any changes can affect the software\'s functionality, so do them at your own risk')
-        DICOM_XML_object.append(comment)
-
-        for study in xml_dict:
-            study_element = ET.SubElement(DICOM_XML_object, 'study')
-            study_element.set('id',study)
-            for series in xml_dict[study]:
-                series_element = ET.SubElement(study_element, 'series')
-                series_element.set('id', series)
-
-        for index, file in enumerate(list_dicom):
-            study_search_string, series_search_string = iBeatImport.getScanInfo(file)
-            study_search_string = "./*[@id='" + study_search_string + "']"
-            series_search_string = "./*[@id='" + series_search_string + "']"
-            series_root = DICOM_XML_object.find(study_search_string)
-            image_root = series_root.find(series_search_string)
-            image_element = ET.SubElement(image_root, 'image')
-            name = ET.SubElement(image_element, 'name')
-            time = ET.SubElement(image_element, 'time')
-            date = ET.SubElement(image_element, 'date')
-            name.text =  os.path.normpath(list_paths[index])
-            # The next lines save the time and date to XML - They consider multiple/eventual formats
-            if len(file.dir("AcquisitionTime"))>0:
-                try:
-                    time.text = datetime.datetime.strptime(file.AcquisitionTime, '%H%M%S').strftime('%H:%M')
-                except:
-                    time.text = datetime.datetime.strptime(file.AcquisitionTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(file.AcquisitionDate, '%Y%m%d').strftime('%d/%m/%Y')
-            elif len(file.dir("SeriesTime"))>0:
-                # It means it's Enhanced MRI
-                try:
-                    time.text = datetime.datetime.strptime(file.SeriesTime, '%H%M%S').strftime('%H:%M')
-                except:
-                    time.text = datetime.datetime.strptime(file.SeriesTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(file.SeriesDate, '%Y%m%d').strftime('%d/%m/%Y')
-            else:
-                time.text = datetime.datetime.strptime('000000', '%H%M%S').strftime('%H:%M')
-                date.text = datetime.datetime.strptime('20000101', '%Y%m%d').strftime('%d/%m/%Y')
-        return DICOM_XML_object
-    except Exception as e:
-        print('Error in WriteXMLfromDICOM.open_dicom_to_xml_iBEAT: ' + str(e))
 
 
 def create_XML_file(DICOM_XML_object, scan_directory):

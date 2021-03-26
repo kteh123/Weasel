@@ -5,19 +5,19 @@ logger = logging.getLogger(__name__)
 
 
 def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeriesName=None):
-        """This function inserts information regarding a new image 
-         in the DICOM XML file
-       """
-        try:
-            logger.info("InterfaceDICOMXMLFile insertNewImageInXMLFile called")
-            (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
-    
-            return self.objXMLReader.insertNewImageInXML(imagePath,
-                   newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
-            
-        except Exception as e:
-            print('Error in insertNewImageInXMLFile: ' + str(e))
-            logger.error('Error in insertNewImageInXMLFile: ' + str(e))
+    """This function inserts information regarding a new image 
+       in the DICOM XML file
+    """
+    try:
+        logger.info("InterfaceDICOMXMLFile insertNewImageInXMLFile called")
+        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
+
+        return self.objXMLReader.insertNewImageInXML(imagePath,
+               newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
+        
+    except Exception as e:
+        print('Error in insertNewImageInXMLFile: ' + str(e))
+        logger.error('Error in insertNewImageInXMLFile: ' + str(e))
 
 
 def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=None):
@@ -76,6 +76,30 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
         logger.error('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
 
 
+def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix):
+    """Creates a new study to hold the new series"""
+    try:
+        logger.info("InterfaceDICOMXMLFile insertNewStudyInXMLFile called")
+
+        self.statusBar.showMessage('New study created: - ' + newStudyID)
+        return newStudyID
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
+
+
+def insertNewSubjectInXMLFile(self, newSubjectID, suffix):
+    """Creates a new study to hold the new series"""
+    try:
+        logger.info("InterfaceDICOMXMLFile insertNewSubjectInXMLFile called")
+
+        self.statusBar.showMessage('New subject created: - ' + newSubjectID)
+        return newSubjectID
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
+
+
 def removeImageFromXMLFile(self, imageFileName):
     """Removes an image from the DICOM XML file"""
     try:
@@ -92,7 +116,7 @@ def removeImageFromXMLFile(self, imageFileName):
 
 
 def removeMultipleImagesFromXMLFile(self, origImageList):
-    """Removes a whole series from the DICOM XML file"""
+    """Removes a list of images from the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile removeOneSeriesFromStudy called")
         for image in origImageList:
@@ -113,8 +137,41 @@ def removeOneSeriesFromStudy(self, origImageList):
         logger.error('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
     
 
+def removeOneStudyFromSubject(self, subjectID, studyID):
+    """Removes a study from the given subject from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeOneStudyFromSubject called")
+        self.objXMLReader.removeOneStudyFromSubject(subjectID, studyID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeOneStudyFromSubject: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeOneStudyFromSubject: ' + str(e))
+    
+
+def removeAllStudiesFromSubject(self, subjectID):
+    """Removes all studies from a subject from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeAllStudiesFromSubject called")
+        subject = self.objXMLReader.getSubject(subjectID)
+        for study in subject:
+            studyID = study.attrib['id']
+            removeOneStudyFromSubject(subjectID, studyID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeAllStudiesFromSubject: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeAllStudiesFromSubject: ' + str(e))
+    
+
+def removeSubjectinXMLFile(self, subjectID):
+    """Removes a subject from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeSubject called")
+        self.objXMLReader.removeSubjectFromXMLFile(subjectID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeSubject: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeSubject: ' + str(e))
+
+
 def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
-    """Removes a whole series from the DICOM XML file"""
+    """Renames a whole series in the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile renameSeriesinXMLFile called")
         (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageList[0])
@@ -131,3 +188,23 @@ def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
+
+
+def renameStudyinXMLFile(self, subjectID, studyID, newStudyID, newSubject=None):
+    """Renames a whole series in the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile renameStudyinXMLFile called")
+        self.objXMLReader.renameStudyInXMLFile(subjectID, studyID, newStudyID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
+    
+
+def renameSubjectinXMLFile(self, subjectID, newSubjectID):
+    """Renames a whole series in the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile renameStudyinXMLFile called")
+        self.objXMLReader.renameSubjectInXMLFile(subjectID, newSubjectID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
