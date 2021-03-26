@@ -23,6 +23,8 @@ def main(self):
         if treeView.isAnItemChecked(self) == False:
             raise NoTreeViewItemSelected
 
+        treeView.buildListsCheckedItems(self)
+
         if self.isASeriesChecked:
             displayImageROI.displayManyMultiImageSubWindows(self)
         elif self.isAnImageChecked:

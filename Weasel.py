@@ -78,6 +78,7 @@ class Weasel(QMainWindow, Pipelines):
         self.isAnImageChecked = False
         self.isASeriesChecked = False
         self.isAStudyChecked = False
+        self.isASubjectChecked = False
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
         
          # XML reader object to process XML configuration file
