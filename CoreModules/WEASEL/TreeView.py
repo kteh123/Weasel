@@ -170,7 +170,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
                 self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
-                self.treeView.itemClicked.connect(lambda: returnCheckedItems(self))
+                #build lists of checked items on the fly
+                self.treeView.itemClicked.connect(lambda: buildListsCheckedItems(self))
+                #use lists of checked items to decide which menu items to enable
                 self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
                 self.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(self, item, "False"))
                 self.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(self, item, "True"))
@@ -203,8 +205,9 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
-
+            start_time=time.time()
             recursiveWholeTreeViewStateSave(self)
+            #iterativeWholeTreeViewStateSave(self)
 
             #store current column widths to be able
             #to restore them when the tree view is refreshed
@@ -230,6 +233,9 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
             #Save XML file to disc
             self.objXMLReader.saveXMLFile()
             #expandTreeViewBranch(self.treeView.invisibleRootItem(), newSeriesName=newSeriesName)
+            end_time=time.time()
+            refreshTreeViewTime = end_time - start_time 
+            print('refresh TreeView Time  = {}'.format(refreshTreeViewTime))
         except Exception as e:
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
             logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
@@ -302,7 +308,7 @@ def saveTreeViewCheckedState(self, item):
             itemCount = item.childCount()
             for n in range(itemCount):
                 childItem = item.child(n)
-                saveTreeViewItemCheckedState(self, childItem)
+                saveItemCheckedState(self, childItem)
 
                 saveTreeViewCheckedState(self, childItem)
     except Exception as e:
@@ -310,7 +316,7 @@ def saveTreeViewCheckedState(self, item):
         logger.error('Error in TreeView.saveTreeViewCheckedState: ' + str(e))
 
 
-def saveTreeViewItemCheckedState(self, item):
+def saveItemCheckedState(self, item):
     if item.checkState(0)  == Qt.Checked:
         checkedState = "True"
     elif item.checkState(0)  == Qt.Unchecked:
@@ -335,6 +341,37 @@ def saveTreeViewItemCheckedState(self, item):
         imageName = item.text(4)
         #print("image name={}".format(imageName))
         self.objXMLReader.setImageCheckedState(subjectID, studyID, seriesID, imageName, checkedState)
+
+
+def iterativeWholeTreeViewStateSave(self):
+    """This function saves tree view item checked state using iteration.  It is not used."""
+    logger.info("TreeView.iterativeWholeTreeViewStateSave called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        for i in range(subjectCount):
+            subject = root.child(i)
+            #save subject checked state
+            saveItemCheckedState(self, subject)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                #save study checked state
+                saveItemCheckedState(self, study)
+                seriesCount = study.childCount()
+                for k in range(seriesCount):
+                    series = study.child(k)
+                    #save series checked state
+                    saveItemCheckedState(self, series)
+                    imageCount = series.childCount()
+                    for n in range(imageCount):
+                        image = series.child(n)
+                        #save image checked state
+                        saveItemCheckedState(self, image)
+
+    except Exception as e:
+        print('Error in TreeView.iterativeWholeTreeViewStateSave: ' + str(e))
+        logger.error('Error in TreeView.iterativeWholeTreeViewStateSave: ' + str(e))
 
 
 def checkChildItems(self, item):
@@ -417,31 +454,31 @@ def areAllChildrenChecked(item):
             logger.error('Error in TreeView.areAllChildrenChecked: ' + str(e))
 
 
-#def expandTreeViewBranch(item, newSeriesName = ''):
-#        """TO DO"""
-#        try:
-#            logger.info("TreeView.expandTreeViewBranch called.")
-#            if item.childCount() > 0:
-#                itemCount = item.childCount()
-#                for n in range(itemCount):
-#                    childItem = item.child(n)
-#                    branchText = childItem.text(1).lower()
-#                    if 'study' in branchText:
-#                        childItem.setExpanded(True)
-#                    if 'series' in branchText:
-#                        seriesName = branchText.replace('series -', '').strip()
-#                        item.treeWidget().blockSignals(True)
-#                        if seriesName == newSeriesName.lower():
-#                            item.setExpanded(True)
-#                            childItem.setExpanded(True)
-#                        else:
-#                            childItem.setExpanded(False)
-#                        item.treeWidget().blockSignals(False)
-#                    else:
-#                        expandTreeViewBranch(childItem, newSeriesName)
-#        except Exception as e:
-#            print('Error in TreeView.expandTreeViewBranch: ' + str(e))
-#            logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
+def expandTreeViewBranch(item, newSeriesName = ''):
+        """This function is not used."""
+        try:
+            logger.info("TreeView.expandTreeViewBranch called.")
+            if item.childCount() > 0:
+                itemCount = item.childCount()
+                for n in range(itemCount):
+                    childItem = item.child(n)
+                    branchText = childItem.text(1).lower()
+                    if 'study' in branchText:
+                        childItem.setExpanded(True)
+                    if 'series' in branchText:
+                        seriesName = branchText.replace('series -', '').strip()
+                        item.treeWidget().blockSignals(True)
+                        if seriesName == newSeriesName.lower():
+                            item.setExpanded(True)
+                            childItem.setExpanded(True)
+                        else:
+                            childItem.setExpanded(False)
+                        item.treeWidget().blockSignals(False)
+                    else:
+                        expandTreeViewBranch(childItem, newSeriesName)
+        except Exception as e:
+            print('Error in TreeView.expandTreeViewBranch: ' + str(e))
+            logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
 
 
 def isAnItemChecked(self):
@@ -554,7 +591,7 @@ def saveTreeViewExpandedState(self, item, expandedState='True'):
 #            itemCount = item.childCount()
 #            for n in range(itemCount):
 #                childItem = item.child(n)
-#                saveTreeViewItemCheckedState(self, childItem)
+#                saveItemCheckedState(self, childItem)
 
 #                saveTreeViewCheckedState(self, childItem)
 #    except Exception as e:
@@ -612,7 +649,11 @@ def toggleBlockSelectionCheckedState(self):
 
 
 def toggleItemCheckedState(self, item, col):
-        """When a tree view item is selected, it is also checked"""
+        """When a tree view item is selected, it is also checked
+        and when a tree view item is checked, it is also selected.
+        This function also sets boolean flags that indicate if a 
+        subject, study, series or image is checked.
+        """
         try:
             logger.info("TreeView.toggleItemCheckedState called.")
             if col == 0:
@@ -627,7 +668,21 @@ def toggleItemCheckedState(self, item, col):
                     item.setCheckState(0, Qt.Unchecked) 
                elif item.checkState(0)  == Qt.Unchecked:
                     item.setCheckState(0, Qt.Checked)
-  
+            
+            self.isAnImageChecked = False
+            self.isASeriesChecked = False
+            self.isAStudyChecked = False
+            self.isASubjectChecked = False
+
+            if item.checkState(0)  == Qt.Checked:
+                if isASubjectSelected(item):
+                   self.isASubjectChecked = True  
+                elif isAStudySelected(item):
+                   self.isAStudyChecked = True    
+                elif isASeriesSelected(item):
+                   self.isASeriesChecked = True     
+                elif isAnImageSelected(item):
+                    self.isAnImageChecked = True
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             line_number = exception_traceback.tb_lineno
@@ -798,9 +853,9 @@ def returnImageName(self, subjectName, studyName, seriesName, imagePath):
             logger.error('Error in TreeView.returnImageName: ' + str(e))
 
 
-def returnCheckedItems(self):
+def buildListsCheckedItems(self):
     """This function generates and returns lists of checked items."""
-    logger.info("TreeView.returnCheckedItems called")
+    logger.info("TreeView.buildListsCheckedItems called")
     try:
         self.checkedImageList = []
         self.checkedSeriesList = []
@@ -855,8 +910,8 @@ def returnCheckedItems(self):
         if len(self.checkedStudyList) > 0:
             self.isAStudyChecked = True
     except Exception as e:
-        print('Error in TreeView.returnCheckedItems: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedItems: ' + str(e))
+        print('Error in TreeView.buildListsCheckedItems: ' + str(e))
+        logger.error('Error in TreeView.buildListsCheckedItems: ' + str(e))
 
 
 def getPathParentNode(self, inputPath):

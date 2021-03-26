@@ -18,6 +18,8 @@ def main(self):
             logger.info("viewImage.main called")
             if treeView.isAnItemChecked(self) == False:
                 raise NoTreeViewItemSelected
+            
+            treeView.buildListsCheckedItems(self)
 
             if self.isASeriesChecked:
                 displayImageColour.displayManyMultiImageSubWindows(self)

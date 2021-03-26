@@ -21,7 +21,9 @@ def main(self):
     try:
         logger.info("ViewMetaData.viewMetadata called")
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-        
+
+        treeView.buildListsCheckedItems(self)
+
         if self.isASeriesChecked:
             if len(self.checkedSeriesList)>0: 
                 for series in self.checkedSeriesList:
