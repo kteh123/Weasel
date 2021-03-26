@@ -60,6 +60,30 @@
           <label>Copy series</label>
           <module>Tutorial_CopySeries</module>
         </item>
+		
+		<item>
+          <separator>yes</separator>
+        </item>
+		
+		<item>
+          <label>Copy studies</label>
+          <module>Tutorial_CopyStudies</module>
+        </item>
+		
+		<item>
+          <label>Copy subjects</label>
+          <module>Tutorial_CopySubject</module>
+        </item>
+		
+		<item>
+          <label>Delete studies</label>
+          <module>Tutorial_DeleteStudies</module>
+        </item>
+		
+		<item>
+          <label>Delete subjects</label>
+          <module>Tutorial_DeleteSubject</module>
+        </item>
     
         <item>
           <separator>yes</separator>

@@ -76,11 +76,11 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
         logger.error('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
 
 
-def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix):
+def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix, seriesList = []):
     """Creates a new study to hold the new series"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewStudyInXMLFile called")
-
+        self.objXMLReader.insertNewStudyinXML(seriesList, subjectID, newStudyID, suffix)
         self.statusBar.showMessage('New study created: - ' + newStudyID)
         return newStudyID
     except Exception as e:
@@ -88,11 +88,11 @@ def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix):
         logger.error('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
 
 
-def insertNewSubjectInXMLFile(self, newSubjectID, suffix):
+def insertNewSubjectInXMLFile(self, newSubjectID, suffix, studyList = []):
     """Creates a new study to hold the new series"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSubjectInXMLFile called")
-
+        self.objXMLReader.insertNewSubjectinXML(studyList, subjectID, suffix)
         self.statusBar.showMessage('New subject created: - ' + newSubjectID)
         return newSubjectID
     except Exception as e:
