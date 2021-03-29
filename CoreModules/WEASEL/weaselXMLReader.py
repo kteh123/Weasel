@@ -563,11 +563,11 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.renameSubjectInXMLFile: ' + str(e))
 
 
-    def callResetXMLTree(self):
-        self.resetXMLTree(self.root)
+    def callResetXMLTree(self, resetExpanded=True):
+        self.resetXMLTree(self.root, resetExpanded)
 
 
-    def resetXMLTree(self, root):
+    def resetXMLTree(self, root, resetExpanded):
         """This function uses recursion to set the checked and expanded 
         attributes to False
 
@@ -584,8 +584,39 @@ class WeaselXMLReader:
             for elem in root.getchildren():
                 elem.attrib['checked'] = 'False'
                 if elem.tag != 'subject':
-                    elem.attrib['expanded'] = 'False'
-                self.resetXMLTree(elem)
+                    if resetExpanded:
+                        elem.attrib['expanded'] = 'False'
+                self.resetXMLTree(elem, resetExpanded)
         except Exception as e:
             print('Error in TreeView.resetXMLTree: ' + str(e))
             logger.error('Error in TreeView.resetXMLTree: ' + str(e))
+
+
+    def saveTreeViewCheckedStateToXML(self, checkedSubjectList, 
+                                      checkedStudyList, 
+                                      checkedSeriesList,
+                                      checkedImageList):
+        logger.info("TreeView.saveTreeViewCheckedStateToXML called")
+        try:
+            #set all checked attributes to False
+            self.resetXMLTree(self.root, resetExpanded=False)
+
+            #update subject checked attribute
+            for subject in checkedSubjectList:
+                self.setSubjectCheckedState(subject[0], "True")
+
+            #update study checked attribute
+            for study in checkedStudyList:
+                self.setStudyCheckedState(study[0], study[1], "True")
+
+            #upate series checked attribute
+            for series in checkedSeriesList:
+                self.setSeriesCheckedState( series[0], series[1], series[2], "True")
+
+            #upate image checked attribute
+            for image in checkedImageList:
+                self.setImageCheckedState(image[0], image[1], image[2], image[3], "True")
+
+        except Exception as e:
+            print('Error in TreeView.saveTreeViewCheckedStateToXML: ' + str(e))
+            logger.error('Error in TreeView.saveTreeViewCheckedStateToXML: ' + str(e))

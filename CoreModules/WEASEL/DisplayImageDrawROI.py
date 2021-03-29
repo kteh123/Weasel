@@ -65,10 +65,10 @@ class Slider(QSlider):
 def displayManySingleImageSubWindows(self):
     if len(self.checkedImageList)>0: 
         for image in self.checkedImageList:
-            studyName = image[0]
-            seriesName = image[1]
-            imagePath = image[2]
-            subjectID = image[3]
+            subjectID = image[0]
+            studyName = image[1]
+            seriesName = image[2]
+            imagePath = image[3]
             displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath)
 
 def displayManyMultiImageSubWindows(self):
