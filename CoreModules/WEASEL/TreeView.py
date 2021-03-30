@@ -143,7 +143,12 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
                 #set checked and expanded attributes to False
+                start_time=time.time()
                 self.objXMLReader.callResetXMLTree()   
+                end_time=time.time()
+                ResetXMLTreeTime = end_time - start_time 
+                print('Reset XML Tree Time  = {}'.format(ResetXMLTreeTime))
+
                 self.treeView = QTreeWidget()
                 
                 #Minimum width of the tree view has to be set
@@ -166,9 +171,13 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 #connect functions to events
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
+                #check/uncheck child items below current checked/unchecked item
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
+                #check/uncheck parent items above current checked/unchecked item
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
+                #check/uncheck item when the item label is selected
                 self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
+                #check/uncheck items when a block of items is selected/unselected
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 #build lists of checked items on the fly
                 self.treeView.itemClicked.connect(lambda: buildListsCheckedItems(self))
@@ -206,8 +215,14 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             start_time=time.time()
-            recursiveWholeTreeViewStateSave(self)
+            #recursiveWholeTreeViewStateSave(self)
             #iterativeWholeTreeViewStateSave(self)
+            #Save current tree view checked state to the xml tree in memory,
+            #so that the tree view can be rebuilt with that checked state
+            self.objXMLReader.saveTreeViewCheckedStateToXML(self.checkedSubjectList,
+                                                            self.checkedStudyList,
+                                                            self.checkedSeriesList,
+                                                            self.checkedImageList)
 
             #store current column widths to be able
             #to restore them when the tree view is refreshed
@@ -301,7 +316,7 @@ def saveTreeViewCheckedState(self, item):
     ****************
     item  - A QTreeWidgetItem whose checkbox state has just changed
     """
-    logger.info("TreeView.saveTreeViewCheckedState called")
+    #logger.info("TreeView.saveTreeViewCheckedState called")
     #print("TreeView.checkChildItems called")
     try:
         if item.childCount() > 0:
@@ -857,14 +872,17 @@ def buildListsCheckedItems(self):
     """This function generates and returns lists of checked items."""
     logger.info("TreeView.buildListsCheckedItems called")
     try:
+        start_time=time.time()
         self.checkedImageList = []
         self.checkedSeriesList = []
         self.checkedStudyList = []
-
+        self.checkedSubjectList = []
         root = self.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
+            if subject.checkState(0) == Qt.Checked:
+                self.checkedSubjectList.append(subject.text(1).replace("Subject - ", "").strip())
             studyCount = subject.childCount()
             for j in range(studyCount):
                 study = subject.child(j)
@@ -893,10 +911,10 @@ def buildListsCheckedItems(self):
                             series = image.parent()
                             study = series.parent()
                             subject = study.parent()
+                            checkedImagesData.append(subject.text(1).replace("Subject - ", "").strip())
                             checkedImagesData.append(study.text(1).replace("Study - ", "").strip())
                             checkedImagesData.append(series.text(1).replace("Series - ", "").strip())
                             checkedImagesData.append(image.text(4))
-                            checkedImagesData.append(subject.text(1).replace("Subject - ", "").strip())
                             self.checkedImageList.append(checkedImagesData)
 
         self.isAnImageChecked = False
@@ -909,6 +927,10 @@ def buildListsCheckedItems(self):
             self.isASeriesChecked = True
         if len(self.checkedStudyList) > 0:
             self.isAStudyChecked = True
+
+        end_time=time.time()
+        buildCheckedListTime = end_time - start_time 
+        print('buildCheckedListTime Time  = {}'.format(buildCheckedListTime))
     except Exception as e:
         print('Error in TreeView.buildListsCheckedItems: ' + str(e))
         logger.error('Error in TreeView.buildListsCheckedItems: ' + str(e))

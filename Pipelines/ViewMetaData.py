@@ -38,10 +38,10 @@ def main(self):
         elif self.isAnImageChecked:
             if len(self.checkedImageList)>0: 
                 for image in self.checkedImageList:
-                    studyName = image[0]
-                    seriesName = image[1]
-                    imagePath = image[2]
-                    subjectID = image[3]
+                    subjectID = image[0]
+                    studyName = image[1]
+                    seriesName = image[2]
+                    imagePath = image[3]
                     imageName = os.path.basename(imagePath)
                     dataset = readDICOM_Image.getDicomDataset(imagePath)
                     displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 

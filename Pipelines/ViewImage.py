@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class NoTreeViewItemSelected(Exception):
    """Raised when the name of the function corresponding 
-   to a model is not returned from the XML configuration file."""
+   to a module is not returned from the XML configuration file."""
    pass
 
 def main(self):
