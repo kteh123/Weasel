@@ -461,9 +461,9 @@ class GenericDICOMTools:
                     elif hasattr(dataset, "ProtocolName"):
                         saveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name + suffix)
                 newImagePathList = imagePathList
-                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, originalPathList)
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 originalPathList, newImagePathList, suffix, newSeriesName=series_name)
+                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, originalPathList)
             else:
                 for path in imagePathList:
                     newDataset = readDICOM_Image.getDicomDataset(path)
@@ -497,14 +497,14 @@ class GenericDICOMTools:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
                 if seriesNumber is None:
-                    #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath)
-                    (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
+                    #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
+                    (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath)
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 if seriesNumber is None:
-                    #seriesNumber = treeView.getSeriesNumberAfterLast(self, inputPath[0])
-                    (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
+                    #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
+                    (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
             seriesID = ids[0]
@@ -684,16 +684,14 @@ class Project:
         self.objWeasel = objWeasel
 
     @property
-    def children(self, index=None):
-        root = self.objWeasel.treeView.invisibleRootItem()
+    def children(self):
         children = []
-        for i in range(root.childCount()):
-            subjectItem = root.child(i)
-            children.append(Subject.fromTreeView(self.objWeasel, subjectItem))
-        if isinstance(index, int):
-            return children[index]
-        else:
-            return children
+        rootXML = self.objWeasel.objXMLReader.getXMLRoot()
+        for subjectXML in rootXML:
+            subjectID = subjectXML.attrib['id']
+            subject = Subject(self.objWeasel, subjectID)
+            children.append(subject)
+        return children
     
     @property
     def numberChildren(self):
@@ -701,24 +699,21 @@ class Project:
 
 
 class Subject:
-    def __init__(self, objWeasel, subjectID):
+    __slots__ = ('objWeasel', 'subjectID', 'suffix')
+    def __init__(self, objWeasel, subjectID, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
+        self.suffix = '' if suffix is None else suffix
     
     @property
     def children(self, index=None):
-        root = self.objWeasel.treeView.invisibleRootItem()
         children = []
-        for i in range(root.childCount()):
-            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                subjectItem = root.child(i)
-                for j in range(subjectItem.childCount()):
-                    studyItem = subjectItem.child(j)
-                    children.append(Study.fromTreeView(self.objWeasel, studyItem))
-        if isinstance(index, int):
-            return children[index]
-        else:
-            return children
+        subjectXML = self.objWeasel.objXMLReader.getSubject(self.subjectID)
+        for studyXML in subjectXML:
+            studyID = studyXML.attrib['id']
+            study = Study(self.objWeasel, self.subjectID, studyID)
+            children.append(study)
+        return children
 
     @property
     def numberChildren(self):
@@ -732,17 +727,44 @@ class Subject:
     def new(self, suffix="_Copy", subjectID=None):
         if subjectID is None:
             subjectID = self.subjectID + suffix
+        #interfaceDICOMXMLFile.insertNewSubjectInXMLFile(subjectID)
         return Subject(self.objWeasel, subjectID)
 
-    #def copy(self):
+    def copy(self, suffix="_Copy"):
+        newSubjectID = self.subjectID + suffix
+        for study in self.children:
+            study.copy(suffix=suffix, newSubjectID=newSubjectID)
+        return Subject(self.objWeasel, newSubjectID)
 
-    #def delete(self):
-    #    for studies in self.children:
-    #        studies.delete()
-    #    self.children = []
-    #    self.numberChildren = 0
-    #    self.subjectID = ''
-    #    # Delete the instance, such as del self???
+    def delete(self):
+        for study in self.children:
+            study.delete()
+        self.subjectID = ''
+        self.objWeasel.objXMLReader.removeSubjectinXMLFile(self.subjectID)
+
+    @staticmethod
+    def merge(listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False):
+        if newSubjectName:
+            outputSubject = Subject(listSubjects[0].objWeasel, newSubjectName)
+        else:
+            outputSubject = listSubjects[0].new(suffix=suffix)
+        # Add new subject (outputSubject) to XML
+        for subject in listSubjects:
+            if overwrite == False:
+                for study in subject:
+                    # Create a copy of the study into the new subject
+                    study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID)
+            else:
+                for study in subject:
+                    # Replace the (StudyUID and) PatientID in all files
+                    seriesPathsList = []
+                    for series in study:
+                        series.Item('PatientID', outputSubject.subjectID)
+                        seriesPathsList.append(series.images)
+                    interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputSubject.subjectID, study.studyID, seriesList=seriesPathsList) # Need new Study name situation
+                    # Add study to new subject in the XML
+                interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.subjectID)
+        return outputSubject
 
     #def add(self, Study):
     #    self.children.append(Study)
@@ -758,29 +780,26 @@ class Subject:
 
 
 class Study:
-    def __init__(self, objWeasel, subjectID, studyID):
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'studyUID', 'suffix')
+    def __init__(self, objWeasel, subjectID, studyID, studyUID=None, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
         self.studyID = studyID
-        # StudyUID???
+        self.studyUID = self.StudyUID if studyUID is None else studyUID
+        self.suffix = '' if suffix is None else suffix
 
     @property
     def children(self, index=None):
-        root = self.objWeasel.treeView.invisibleRootItem()
         children = []
-        for i in range(root.childCount()):
-            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                subjectItem = root.child(i)
-                for j in range(subjectItem.childCount()):
-                    if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
-                        studyItem = subjectItem.child(j)
-                        for k in range(studyItem.childCount()):
-                            seriesItem = studyItem.child(k)
-                            children.append(Series.fromTreeView(self.objWeasel, seriesItem))        
-        if isinstance(index, int):
-            return children[index]
-        else:
-            return children
+        studyXML = self.objWeasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+        for seriesXML in studyXML:
+            seriesID = seriesXML.attrib['id']
+            images = []
+            for imageXML in seriesXML:
+                images.append(imageXML.find('name').text)
+            series = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, listPaths=images)
+            children.append(series)
+        return children
 
     @property
     def numberChildren(self):
@@ -792,63 +811,108 @@ class Study:
         studyID = studyItem.text(1).replace('Study -', '').strip()
         return cls(objWeasel, subjectID, studyID)
 
-    def new(self):
-        studyID = time.strftime('%Y%m%d_%H%M%S')
-        #studyID = self.studyID + "_Copy"
-        # StudyUID???
-        return Study(self.objWeasel, self.subjectID, studyID)
+    def new(self, suffix="_Copy"):
+        #studyID = time.strftime('%Y%m%d_%H%M%S')
+        studyID = self.studyID + suffix
+        #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self.subjectID, studyID, suffix)
+        return Study(self.objWeasel, self.subjectID, studyID, suffix=suffix)
 
-    def copy(self, newStudy=False, newSeries=True):
-        if newStudy == True:
-            studyID = time.strftime('%Y%m%d_%H%M%S')
-            #studyID = self.studyID + "_Copy"
-            newStudyInstance = self.new(studyID=studyID)
-            for series in self.children:
-                copiedSeries = series.copy()
-                newStudyInstance.add(copiedSeries)
-                # This needs a function to add new study to XML
-        # Second option will mantain the study and duplicate the series
+    def copy(self, suffix="_Copy", newSubjectID=None):
+        if newSubjectID:
+            newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, suffix=suffix)
         else:
-            for series in self.children:
-                copiedSeries = series.copy(newSeries=newSeries)
+            newStudyInstance = self.new(suffix=suffix)
+        seriesPathsList = []
+        for series in self.children:
+            #series.subjectID = newStudyInstance.subjectID # PatientID and XML effect?
+            series.studyID = newStudyInstance.studyID
+            series.studyUID = newStudyInstance.studyUID
+            if newSubjectID: series.subjectID = newSubjectID
+            # Maybe create a copy approach here of our own"
+            copiedSeries = series.copy(suffix=suffix, series_id=series.seriesID.split('_', 1)[0], series_name=series.seriesID.split('_', 1)[1])
+            #interfaceDICOMXMLFile.removeSeries ...
+            # Iterate through series and use ItemList to replace StudyUID and PatientID in series - StudyID in InterfaceXML
+            #copiedSeries.Item('StudyInstanceUID', newStudyInstance.studyUID)
+            seriesPathsList.append(copiedSeries.images)
+        interfaceDICOMXMLFile.insertNewStudyInXMLFile(newStudyInstance.subjectID, newStudyInstance.studyID, seriesList=seriesPathsList)
+        return newStudyInstance
 
     def delete(self):
         for series in self.children:
             series.delete()
-        self.children = []
-        self.numberChildren = 0
-        # XML function to add and remove this
+        interfaceDICOMXMLFile.removeOneStudyFromSubject(self.subjectID, self.studyID)
         self.subjectID = self.studyID = ''
-        # Delete the instance, such as del self???
 
-    def add(self, Series):
-        self.children.append(Series)
-        # XML function to add and remove this
-        self.numberChildren = len(self.children)
-    
-    def remove(self, allSeries=False, Series=None):
-        if allSeries == True:
-            self.children = []
-            self.numberChildren = 0
-            # XML function to add and remove this
-        elif Series is not None:
-            self.children.remove(Series)
-            self.numberChildren = len(self.children)
+    @staticmethod
+    def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False):
+        if newStudyName:
+            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyName)
+        else:
+            outputStudy = listStudies[0].new(suffix=suffix)
+        # Add new study (outputStudy) to XML
+        seriesPathsList = []
+        if overwrite == False:
+            for study in listStudies:
+                seriesNumber = 1
+                for series in study:
+                    #outputStudy.studyUID
+                    # generate new series uid based on outputStudy.studyUID
+                     # Maybe create a copy approach here of our own"
+                    copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1]) # Add new Study UID and Name here somehow
+                    # Iterate through series and use ItemList to replace StudyUID and PatientID in series - StudyID in InterfaceXML
+                    # Remove the newly added series in XML and add it to the new study correctly later
+                    #interfaceDICOMXMLFile.removeSeries ...
+                    seriesPathsList.append(copiedSeries.images)
+                    seriesNumber =+ 1
+        else:
+            for study in listStudies:
+                seriesNumber = 1
+                for series in study:
+                    # Replace the StudyUID and SeriesNumber in all files
+                    # Add series to new study in the XML
+                    # How to overwrite the actual StudyID
+                    series.Item('StudyInstanceUID', outputStudy.studyUID)
+                    # generate new series uid based on outputStudy.studyUID
+                    #series.Item('SeriesInstanceUID', outputStudy.studyUID)
+                    series.Item('SeriesNumber', seriesNumber)
+                    seriesPathsList.append(series.images)
+                    seriesNumber =+ 1
+                interfaceDICOMXMLFile.removeOneStudyFromSubject(study.subjectID, study.studyID)
+        interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputStudy.subjectID, outputStudy.studyID, seriesList=seriesPathsList) # Need new Study name situation
+        return outputStudy
 
+    #def add(self, Series):
+    #    # XML function to add and remove this
+    #    self.children.append(Series)
+    #    self.numberChildren = len(self.children)
+    #
+    #def remove(self, allSeries=False, Series=None):
+    #    if allSeries == True:
+    #        self.children = []
+    #        self.numberChildren = 0
+    #        # XML function to add and remove this
+    #    elif Series is not None:
+    #        self.children.remove(Series)
+    #        self.numberChildren = len(self.children)
+        
     @property
-    def Dimensions(self):
-        return [np.shape(series.PixelArray) for series in self.children]
+    def StudyUID(self):
+        if len(self.children) > 0:
+            return self.children[0].studyUID
+        else:
+            return pydicom.uid.generate_uid(prefix=None)
 
 
 class Series:
-    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'seriesUID', 'images',
-                 'suffix', 'referencePathsList')
-    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, seriesUID=None, suffix=None):
+    __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'studyUID', 'seriesUID', 
+                 'images', 'suffix', 'referencePathsList')
+    def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, studyUID=None, seriesUID=None, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
         self.studyID = studyID
         self.seriesID = seriesID
         self.images = [] if listPaths is None else listPaths
+        self.studyUID = self.StudyUID if studyUID is None else studyUID
         self.seriesUID = self.SeriesUID if seriesUID is None else seriesUID
         self.suffix = '' if suffix is None else suffix
         self.referencePathsList = []
@@ -860,24 +924,12 @@ class Series:
 
     @property
     def children(self, index=None):
-        root = self.objWeasel.treeView.invisibleRootItem()
         children = []
-        for i in range(root.childCount()):
-            if root.child(i).text(1) == 'Subject -' + str(self.subjectID):
-                subjectItem = root.child(i)
-                for j in range(subjectItem.childCount()):
-                    if subjectItem.child(j).text(1) == 'Study -' + str(self.studyID):
-                        studyItem = subjectItem.child(j)
-                        for k in range(studyItem.childCount()):
-                            if studyItem.child(k).text(1) == 'Series -' + str(self.seriesID):
-                                seriesItem = studyItem.child(k)
-                                for n in range(seriesItem.childCount()):
-                                    imageItem = seriesItem.child(n)
-                                    children.append(Image.fromTreeView(self.objWeasel, imageItem))     
-        if isinstance(index, int):
-            return children[index]
-        else:
-            return children
+        seriesXML = self.objWeasel.objXMLReader.getSeries(self.subjectID, self.studyID, self.seriesID)
+        for imageXML in seriesXML:
+            image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
+            children.append(image)
+        return children
 
     @property
     def numberChildren(self):
@@ -923,7 +975,6 @@ class Series:
         #self.children = self.indices = []
         #self.numberChildren = 0
         self.subjectID = self.studyID = self.seriesID = self.seriesUID = ''
-        # Delete the instance, such as del self???
 
     def add(self, Image):
         self.images.append(Image.path)
@@ -1018,6 +1069,16 @@ class Series:
         else:
             self.seriesUID = None
         return self.seriesUID
+
+    @property
+    def StudyUID(self):
+        if not self.images:
+            self.studyUID = None
+        elif os.path.exists(self.images[0]):
+            self.studyUID = readDICOM_Image.getImageTagValue(self.images[0], 'StudyInstanceUID')
+        else:
+            self.studyUID = None
+        return self.studyUID
 
     @property
     def Magnitude(self):
@@ -1237,7 +1298,7 @@ class Series:
 
 class Image:
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path', 'seriesUID',
-                 'suffix', 'referencePath')
+                 'studyUID', 'suffix', 'referencePath')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, path, suffix=None):
         self.objWeasel = objWeasel
         self.subjectID = subjectID
@@ -1245,6 +1306,7 @@ class Image:
         self.seriesID = seriesID
         self.path = path
         self.seriesUID = self.SeriesUID
+        self.studyUID = self.StudyUID
         self.suffix = '' if suffix is None else suffix
         self.referencePath = ''
 
@@ -1352,6 +1414,16 @@ class Image:
         else:
             self.seriesUID = None
         return self.seriesUID
+    
+    @property
+    def StudyUID(self):
+        if not self.path:
+            self.studyUID = None
+        elif os.path.exists(self.path):
+            self.studyUID = readDICOM_Image.getImageTagValue(self.path, 'StudyInstanceUID')
+        else:
+            self.studyUID = None
+        return self.studyUID
     
     def Metadata(self):
         UserInterfaceTools(self.objWeasel).displayMetadata(self.path)

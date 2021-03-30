@@ -119,7 +119,7 @@
         </item>
     
         <item>
-          <label>Cope and merge series</label>
+          <label>Copy and merge series</label>
           <module>Tutorial_MergeSeriesCopy</module>
         </item>
 

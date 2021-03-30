@@ -10,8 +10,8 @@ def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeries
     """
     try:
         logger.info("InterfaceDICOMXMLFile insertNewImageInXMLFile called")
-        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
-
+        #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(imagePath)
         return self.objXMLReader.insertNewImageInXML(imagePath,
                newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
         
@@ -64,7 +64,8 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
     """Creates a new series to hold the series of New images"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSeriesInXMLFile called")
-        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
+        #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(origImageList[0])
         dataset = readDICOM_Image.getDicomDataset(newImageList[0])
         newSeriesID = getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName) # If developer sets seriesName
         self.objXMLReader.insertNewSeriesInXML(origImageList, 
@@ -104,7 +105,8 @@ def removeImageFromXMLFile(self, imageFileName):
     """Removes an image from the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile removeImageFromXMLFile called")
-        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageFileName)
+        #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageFileName)
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(imageFileName)
         images = self.objXMLReader.getImageList(subjectID, studyID, seriesID)
         if len(images) == 1:
             self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
@@ -130,7 +132,8 @@ def removeOneSeriesFromStudy(self, origImageList):
     """Removes a whole series from the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile removeOneSeriesFromStudy called")
-        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
+        #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(origImageList[0])
         self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
@@ -174,7 +177,8 @@ def renameSeriesinXMLFile(self, imageList, series_id=None, series_name=None):
     """Renames a whole series in the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile renameSeriesinXMLFile called")
-        (subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageList[0])
+        #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imageList[0])
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(imageList[0])
         seriesNumber = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesNumber) if series_id is None else str(series_id)
         try:
             newName = str(readDICOM_Image.getDicomDataset(imageList[0]).SeriesDescription) if series_name is None else str(series_name)

@@ -270,9 +270,9 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
             study_search_string = "./*[@id='" + study + "']"
             series_root = study_root.find(study_search_string)
             series_search_string = "./*[@id='"+ series_number + "_" + sequence + "']"
-            study_root.set('uid', study_uid)
-            series_root.set('uid', series_uid)
             image_root = series_root.find(series_search_string)
+            series_root.set('uid', study_uid)
+            image_root.set('uid', series_uid)
             image_element = ET.SubElement(image_root, 'image')
             image_element.set('checked', 'False')  #added by SS 16.03.21
             label = ET.SubElement(image_element, 'label')
