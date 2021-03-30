@@ -98,7 +98,7 @@ def resizeTreeViewColumns(self):
         self.treeView.resizeColumnToContents(0)
         self.treeView.resizeColumnToContents(1)
         self.treeView.resizeColumnToContents(2)
-        self.treeView.hideColumn(3)
+        self.treeView.hideColumn(4)
         self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
         self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
         self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
@@ -156,6 +156,9 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 #initially displays wide enough to show the tree view
                 self.treeView.setMinimumSize(300,500)
                 
+                #prevent tree view shifting to the left when an item is clicked.
+                self.treeView.setAutoScroll(False)
+                
                 #Enable multiple selection using up arrow and Ctrl keys
                 self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
                 self.treeView.setUniformRowHeights(True)
@@ -172,11 +175,12 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 #check/uncheck child items below current checked/unchecked item
+                #check/uncheck item when the item label is selected
+                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
                 #check/uncheck parent items above current checked/unchecked item
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
-                #check/uncheck item when the item label is selected
-                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
+                
                 #check/uncheck items when a block of items is selected/unselected
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 #build lists of checked items on the fly
