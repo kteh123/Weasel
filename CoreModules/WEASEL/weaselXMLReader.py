@@ -599,7 +599,7 @@ class WeaselXMLReader:
         logger.info("TreeView.saveTreeViewCheckedStateToXML called")
         try:
             #set all checked attributes to False
-            self.resetXMLTree(self.root, resetExpanded=False)
+            #self.resetXMLTree(self.root, resetExpanded=False)
 
             #update subject checked attribute
             for subject in checkedSubjectList:

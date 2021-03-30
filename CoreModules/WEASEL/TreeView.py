@@ -172,11 +172,12 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
                 self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
                 self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
                 #check/uncheck child items below current checked/unchecked item
+                #check/uncheck item when the item label is selected
+                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
                 self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
                 #check/uncheck parent items above current checked/unchecked item
                 self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
-                #check/uncheck item when the item label is selected
-                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
+                
                 #check/uncheck items when a block of items is selected/unselected
                 self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
                 #build lists of checked items on the fly
