@@ -16,35 +16,35 @@ import pydicom
 import logging
 logger = logging.getLogger(__name__)
 
-def main(self):
+def main(objWeasel):
     """Creates a subwindow that displays a DICOM image's metadata. """
     try:
         logger.info("ViewMetaData.viewMetadata called")
         QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
-        treeView.buildListsCheckedItems(self)
+        treeView.buildListsCheckedItems(objWeasel)
 
-        if self.isASeriesChecked:
-            if len(self.checkedSeriesList)>0: 
-                for series in self.checkedSeriesList:
+        if objWeasel.isASeriesChecked:
+            if len(objWeasel.checkedSeriesList)>0: 
+                for series in objWeasel.checkedSeriesList:
                     subjectName = series[0]
                     studyName = series[1]
                     seriesName = series[2]
-                    imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
+                    imageList = treeView.returnSeriesImageList(objWeasel, subjectName, studyName, seriesName)
                     firstImagePath = imageList[0]
                     dataset = readDICOM_Image.getDicomDataset(firstImagePath)
-                    displayMetaDataSubWindow(self, "Metadata for series {}".format(seriesName), 
+                    displayMetaDataSubWindow(objWeasel, "Metadata for series {}".format(seriesName), 
                                             dataset)
-        elif self.isAnImageChecked:
-            if len(self.checkedImageList)>0: 
-                for image in self.checkedImageList:
+        elif objWeasel.isAnImageChecked:
+            if len(objWeasel.checkedImageList)>0: 
+                for image in objWeasel.checkedImageList:
                     subjectID = image[0]
                     studyName = image[1]
                     seriesName = image[2]
                     imagePath = image[3]
                     imageName = os.path.basename(imagePath)
                     dataset = readDICOM_Image.getDicomDataset(imagePath)
-                    displayMetaDataSubWindow(self, "Metadata for image {}".format(imageName), 
+                    displayMetaDataSubWindow(objWeasel, "Metadata for image {}".format(imageName), 
                                             dataset)
 
         QApplication.restoreOverrideCursor()
@@ -59,7 +59,7 @@ def main(self):
         logger.error('Error in ViewMetaData.viewMetadata: ' + str(e))
 
 
-def displayMetaDataSubWindow(self, tableTitle, dataset):
+def displayMetaDataSubWindow(objWeasel, tableTitle, dataset):
     """
     Creates a subwindow that displays a DICOM image's metadata. 
     """
@@ -69,21 +69,21 @@ def displayMetaDataSubWindow(self, tableTitle, dataset):
                     
         widget = QWidget()
         widget.setLayout(QVBoxLayout()) 
-        metaDataSubWindow = QMdiSubWindow(self)
+        metaDataSubWindow = QMdiSubWindow(objWeasel)
         metaDataSubWindow.setAttribute(Qt.WA_DeleteOnClose)
         metaDataSubWindow.setWidget(widget)
         metaDataSubWindow.setObjectName("metaData_Window")
         metaDataSubWindow.setWindowTitle(title)
-        height, width = self.getMDIAreaDimensions()
+        height, width = objWeasel.getMDIAreaDimensions()
         metaDataSubWindow.setGeometry(width * 0.4,0,width*0.6,height)
         lblImageName = QLabel('<H4>' + tableTitle + '</H4>')
         widget.layout().addWidget(lblImageName)
 
-        DICOM_Metadata_Table_View = buildTableView(self, dataset) 
+        DICOM_Metadata_Table_View = buildTableView(objWeasel, dataset) 
             
         widget.layout().addWidget(DICOM_Metadata_Table_View)
 
-        self.mdiArea.addSubWindow(metaDataSubWindow)
+        objWeasel.mdiArea.addSubWindow(metaDataSubWindow)
         metaDataSubWindow.show()
     except Exception as e:
         print('Error in : ViewMetaData.displayMetaDataSubWindow' + str(e))
@@ -123,7 +123,7 @@ def iterateSequenceTag(table, dataset, level=">"):
         logger.error('Error in : ViewMetaData.iterateSequenceTag' + str(e))
 
 
-def buildTableView(self, dataset):
+def buildTableView(objWeasel, dataset):
         """Builds a Table View displaying DICOM image metadata
         as Tag, name, VR & Value"""
         try:

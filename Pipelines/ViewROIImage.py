@@ -11,24 +11,24 @@ class NoTreeViewItemSelected(Exception):
    pass
 
 
-def main(self):
+def main(objWeasel):
     """Creates a subwindow that displays a DICOM image with ROI creation functionality. 
     Executed using the 'View Image with ROI' Menu item in the Tools menu."""
     try:
         logger.info("Menus.viewROIImage called")
-        #print('treeView.isAnItemChecked(self)={}'.format(treeView.isAnItemChecked(self)))
-        #print('treeView.isAnImageSelected(self)={}'.format(treeView.isAnImageSelected(self)))
-        #print('self.isASeriesChecked={}'.format(self.isASeriesChecked))
+        #print('treeView.isAnItemChecked(objWeasel)={}'.format(treeView.isAnItemChecked(objWeasel)))
+        #print('treeView.isAnImageSelected(objWeasel)={}'.format(treeView.isAnImageSelected(objWeasel)))
+        #print('objWeasel.isASeriesChecked={}'.format(objWeasel.isASeriesChecked))
         
-        if treeView.isAnItemChecked(self) == False:
+        if treeView.isAnItemChecked(objWeasel) == False:
             raise NoTreeViewItemSelected
 
-        treeView.buildListsCheckedItems(self)
+        treeView.buildListsCheckedItems(objWeasel)
 
-        if self.isASeriesChecked:
-            displayImageROI.displayManyMultiImageSubWindows(self)
-        elif self.isAnImageChecked:
-            displayImageROI.displayManySingleImageSubWindows(self)
+        if objWeasel.isASeriesChecked:
+            displayImageROI.displayManyMultiImageSubWindows(objWeasel)
+        elif objWeasel.isAnImageChecked:
+            displayImageROI.displayManySingleImageSubWindows(objWeasel)
 
     except NoTreeViewItemSelected:
             msgBox = QMessageBox()
