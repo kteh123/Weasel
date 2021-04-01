@@ -1303,6 +1303,29 @@ class Image:
         return self.PydicomObject
 
     def save(self, PydicomObject):
+        changeXML = False
+        newSubjectID = self.subjectID
+        newStudyID = self.studyID
+        newSeriesID = self.seriesID
+        if PydicomObject.SeriesDescription != self.PydicomObject.SeriesDescription or PydicomObject.SeriesNumber != self.PydicomObject.SeriesNumber:
+            changeXML = True
+            newSeriesID = str(PydicomObject.SeriesNumber) + "_" + str(PydicomObject.SeriesDescription)
+            pass
+        if PydicomObject.StudyDate != self.PydicomObject.StudyDate or PydicomObject.StudyTime != self.PydicomObject.StudyTime or PydicomObject.StudyDescription != self.PydicomObject.StudyDescription:
+            changeXML = True
+            newStudyID = str(PydicomObject.StudyDate) + "_" + str(PydicomObject.StudyTime).split(".")[0] + "_" + str(PydicomObject.StudyDescription)
+            pass
+        if PydicomObject.PatientID != self.PydicomObject.PatientID:
+            changeXML = True
+            newSubjectID = str(PydicomObject.PatientID)
+        if changeXML == True:
+            pass
+            #Change self path to new series, study or/and subject
+        # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
+        self.objWeasel.objXMLReader.moveImageInXMLFile(self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path)
+        self.subjectID = newSubjectID
+        self.studyID = newStudyID
+        self.seriesID = newSeriesID
         saveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
 
     @staticmethod
