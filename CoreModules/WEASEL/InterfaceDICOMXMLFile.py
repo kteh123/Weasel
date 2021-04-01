@@ -109,7 +109,7 @@ def removeImageFromXMLFile(self, imageFileName):
         (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(imageFileName)
         images = self.objXMLReader.getImageList(subjectID, studyID, seriesID)
         if len(images) == 1:
-            self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
+            removeOneSeriesFromStudy(self, subjectID, studyID, seriesID)
         elif len(images) > 1:
             self.objXMLReader.removeOneImageFromSeries(subjectID, studyID, seriesID, imageFileName)
     except Exception as e:
@@ -134,17 +134,39 @@ def removeOneSeriesFromStudy(self, origImageList):
         logger.info("InterfaceDICOMXMLFile removeOneSeriesFromStudy called")
         #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
         (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(origImageList[0])
-        self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
+        seriesList = self.objXMLReader.getStudy(subjectID, studyID)
+        if len(seriesList) == 1:
+            removeOneStudyFromSubject(self, subjectID, studyID)
+        elif len(seriesList) > 1:
+            self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
-    
+
+
+def removeOneSeriesFromStudy(self, subjectID, studyID, seriesID):
+    """Removes a whole series from the DICOM XML file"""
+    try:
+        logger.info("InterfaceDICOMXMLFile removeOneSeriesFromStudy called")
+        seriesList = self.objXMLReader.getStudy(subjectID, studyID)
+        if len(seriesList) == 1:
+            removeOneStudyFromSubject(self, subjectID, studyID)
+        elif len(seriesList) > 1:
+            self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: ' + str(e))
+
 
 def removeOneStudyFromSubject(self, subjectID, studyID):
     """Removes a study from the given subject from the DICOM XML file"""
     try:
         logger.info("InterfaceDICOMXMLFile removeOneStudyFromSubject called")
-        self.objXMLReader.removeOneStudyFromSubject(subjectID, studyID)
+        studiesList = self.objXMLReader.getSubject(subjectID)
+        if len(studiesList) == 1:
+            removeSubjectinXMLFile(self, subjectID)
+        elif len(studiesList) > 1:
+            self.objXMLReader.removeOneStudyFromSubject(subjectID, studyID)
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile removeOneStudyFromSubject: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile removeOneStudyFromSubject: ' + str(e))

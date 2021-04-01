@@ -126,15 +126,16 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
         print('Error in function saveDICOM_Image.saveDicomNewSeries: ' + str(e))
  
     
-def generateUIDs(dataset, seriesNumber=None):
+def generateUIDs(dataset, seriesNumber=None, studyUID=None):
     """
     This function generates and returns a SeriesUID and an InstanceUID.
     It also returns SeriesNumber in the first index of the output list.
     The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
     The InstanceUID is generated based on SeriesUID.
     """
-    try:      
-        studyUID = dataset.StudyInstanceUID
+    try:
+        if studyUID is None:     
+            studyUID = dataset.StudyInstanceUID
         # See http://dicom.nema.org/dicom/2013/output/chtml/part05/chapter_B.html regarding UID creation rules
         prefix = studyUID.split(".", maxsplit=7)
         prefix = '.'.join(prefix[:6])

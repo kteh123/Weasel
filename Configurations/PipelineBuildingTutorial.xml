@@ -181,13 +181,7 @@
 
    </menu>
     
-    <menu name="Examples">  
-        <item>
-          <label>Square Series/Image</label>
-          <shortcut>Ctrl+S</shortcut>
-          <tooltip>Square a DICOM Image or series</tooltip>
-          <module>squareDICOM_Image</module>
-        </item>
+    <menu name="Examples">
       <item>
         <label>Binary Operations</label>
         <shortcut>Ctrl+B</shortcut>
@@ -200,6 +194,27 @@
           <tooltip>Threshold a DICOM Image or series</tooltip>
           <module>thresholdDICOM_Image</module>
       </item>
+  </menu>
+  
+  <menu name="XNAT">
+        <item>
+          <label>Download</label>
+          <tooltip>Prompts a window that allows to download images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>download</function>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+		<item>
+          <label>Upload</label>
+          <tooltip>Prompts a window that allows to upload images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>upload</function>
+        </item>
   </menu>
   
 </menus>

@@ -92,7 +92,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
-                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
+                             'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
                              'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
                 if not hasattr(dataset, 'SeriesDescription'):
@@ -101,6 +101,12 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                         ds.add(elem)
                         ds.save_as(filepath)
                     dataset.SeriesDescription = 'No Series Description'
+                if not hasattr(dataset, 'StudyDescription'):
+                    elem = DataElement(0x00081030, 'LO', 'No Study Description')
+                    with dcmread(filepath, force=True) as ds:
+                        ds.add(elem)
+                        ds.save_as(filepath)
+                    dataset.StudyDescription = 'No Study Description'
                 # If Multiframe, use dcm4che to split into single-frame
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                     multiframeCounter += 1
@@ -165,7 +171,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
-                             'SeriesDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
+                             'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
@@ -187,13 +193,13 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
 def get_study_series(dicom):
     try:
         logger.info("WriteXMLfromDICOM.get_study_series called")
-        if hasattr(dicom, 'PatientID'):
-            subject = str(dicom.PatientID)
-        elif hasattr(dicom, 'PatientName'):
-            subject = str(dicom.PatientName)
-        else:
-            subject = "No Subject Name"
-        study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0]
+        #if hasattr(dicom, 'PatientID'):
+        subject = str(dicom.PatientID)
+        #elif hasattr(dicom, 'PatientName'):
+        #    subject = str(dicom.PatientName)
+        #else:
+        #    subject = "No Subject Name"
+        study = str(dicom.StudyDate) + "_" + str(dicom.StudyTime).split(".")[0] + "_" + str(dicom.StudyDescription)
         sequence = str(dicom.SeriesDescription)
         #if hasattr(dicom, "SeriesDescription"):
         #elif hasattr(dicom, "SequenceName"):

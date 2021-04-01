@@ -30,84 +30,35 @@ class UserInterfaceTools:
     def __init__(self, objWeasel):
         self.objWeasel = objWeasel
 
+    # May be redundant
     def getCurrentSubject(self):
         """
         Returns the Subject ID of the latest item selected in the Treeview.
         """
-        # NEED TO GET GLOBAL VARIABLE FOR SUBJECT - WINDOW DISPLAYING
-        return self.objWeasel.selectedStudy
+        return self.objWeasel.selecteSubject
 
+    # May be redundant
     def getCurrentStudy(self):
         """
         Returns the Study ID of the latest item selected in the Treeview.
         """
         return self.objWeasel.selectedStudy
-    
 
+    # May be redundant
     def getCurrentSeries(self):
         """
         Returns the Series ID of the latest item selected in the Treeview.
         """
         return self.objWeasel.selectedSeries
     
-
+    # May be redundant
     def getCurrentImage(self):
         """
         Returns a string with the path of the latest selected image.
         """
         return self.objWeasel.selectedImagePath
-
-
-    def getSelectedStudies(self):
-        """
-        Returns a list with objects of class Study of the items selected in the Treeview.
-        """
-        studyList = []
-        studiesTreeViewList = treeView.returnSelectedStudies(self.objWeasel)
-        if studiesTreeViewList == []:
-            self.showMessageWindow(msg="Script didn't run successfully because"
-                              " no studies were selected in the Treeview.",
-                              title="No Studies Selected")
-            return
-        else:
-            for study in studiesTreeViewList:
-                studyList.append(Study.fromTreeView(self.objWeasel, study))
-        return studyList
-
-
-    def getSelectedSeries(self):
-        """
-        Returns a list with objects of class Series of the items selected in the Treeview.
-        """
-        seriesList = []
-        seriesTreeViewList = treeView.returnSelectedSeries(self.objWeasel)
-        if seriesTreeViewList == []:
-            self.showMessageWindow(msg="Script didn't run successfully because"
-                              " no series were selected in the Treeview.",
-                              title="No Series Selected")
-            return
-        else:
-            for series in seriesTreeViewList:
-                seriesList.append(Series.fromTreeView(self.objWeasel, series))
-        return seriesList
-
-
-    def getSelectedImages(self):
-        """
-        Returns a list with objects of class Image of the items selected in the Treeview.
-        """
-        imagesList = []
-        imagesTreeViewList = treeView.returnSelectedImages(self.objWeasel)
-        if imagesTreeViewList == []:
-            self.showMessageWindow(msg="Script didn't run successfully because"
-                              " no images were selected in the Treeview.",
-                              title="No Images Selected")
-            return
-        else:
-            for images in imagesTreeViewList:
-                imagesList.append(Image.fromTreeView(self.objWeasel, images))
-        return imagesList
     
+    # Need to do one for subjects and to include treeView.buildListsCheckedItems(self)
 
     def getCheckedStudies(self):
         """
@@ -331,7 +282,7 @@ class UserInterfaceTools:
         except Exception as e:
             print('displayImages: ' + str(e))
         
-    
+    # Consider removing this and make it default for any pipeline
     def refreshWeasel(self, new_series_name=None):
         """
         Refresh the user interface screen.
@@ -347,23 +298,29 @@ class UserInterfaceTools:
 
 class GenericDICOMTools:
 
-    def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, suffix="_Copy", output_dir=None):
+    def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, study_uid=None, study_name=None, patient_id=None, suffix="_Copy", output_dir=None):
         """
         Creates a DICOM copy of all files in "inputPath" (1 or more) into a new series.
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, studyUID=study_uid)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
                 newDataset = readDICOM_Image.getDicomDataset(inputPath)
                 derivedPath = saveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
                 saveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
                 # The next lines perform an overwrite operation over the copied images
-                instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                if patient_id:
+                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "PatientID", patient_id)
+                if study_uid:
+                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyInstanceUID", study_uid)
+                if study_name:
+                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyDescription", study_name)
+                instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SOPInstanceUID", instance_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
                 saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
@@ -380,9 +337,9 @@ class GenericDICOMTools:
                                              derivedPath, suffix, newSeriesName=series_name)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, studyUID=study_uid)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
                 derivedPath = []
@@ -392,7 +349,13 @@ class GenericDICOMTools:
                     saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     derivedPath.append(newFilePath)
                     # The next lines perform an overwrite operation over the copied images
-                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                    if patient_id:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
+                    if study_uid:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
+                    if study_name:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
+                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
@@ -410,7 +373,6 @@ class GenericDICOMTools:
             return derivedPath, newSeriesID
         except Exception as e:
             print('copyDICOM: ' + str(e))
-
 
     def deleteDICOM(self, inputPath):
         """
@@ -433,8 +395,7 @@ class GenericDICOMTools:
         except Exception as e:
             print('deleteDICOM: ' + str(e))
 
-
-    def mergeDicomIntoOneSeries(self, imagePathList, series_uid=None, series_id=None, series_name="New Series", suffix="_Merged", overwrite=False):
+    def mergeDicomIntoOneSeries(self, imagePathList, series_uid=None, series_id=None, series_name="New Series", study_uid=None, study_name=None, patient_id=None, suffix="_Merged", overwrite=False):
         """
         Merges all DICOM files in "imagePathList" into 1 series.
         It creates a copy if "overwrite=False" (default).
@@ -442,15 +403,21 @@ class GenericDICOMTools:
         try:
             if os.path.exists(imagePathList[0]):
                 if (series_id is None) and (series_uid is None):
-                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList)
+                    series_id, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList, studyUID=study_uid)
                 elif (series_id is not None) and (series_uid is None):
-                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList, seriesNumber=series_id)
+                    _, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             newImagePathList = []
             if overwrite:
                 originalPathList = imagePathList
                 for path in imagePathList:
+                    if patient_id:
+                        saveDICOM_Image.overwriteDicomFileTag(path, "PatientID", patient_id)
+                    if study_uid:
+                        saveDICOM_Image.overwriteDicomFileTag(path, "StudyInstanceUID", study_uid)
+                    if study_name:
+                        saveDICOM_Image.overwriteDicomFileTag(path, "StudyDescription", study_name)
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
                     dataset = readDICOM_Image.getDicomDataset(path)
@@ -470,7 +437,13 @@ class GenericDICOMTools:
                     newFilePath = saveDICOM_Image.returnFilePath(path, suffix)
                     saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     # The next lines perform an overwrite operation over the copied images
-                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id)[2]
+                    if patient_id:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
+                    if study_uid:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
+                    if study_name:
+                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
+                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
                     saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
@@ -486,8 +459,7 @@ class GenericDICOMTools:
         except Exception as e:
             print('mergeDicomIntoOneSeries: ' + str(e))
 
-
-    def generateSeriesIDs(self, inputPath, seriesNumber=None):
+    def generateSeriesIDs(self, inputPath, seriesNumber=None, studyUID=None):
         """
         This function generates and returns a SeriesUID and an InstanceUID.
         The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
@@ -506,13 +478,12 @@ class GenericDICOMTools:
                     #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
                     (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
-            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber)
+            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber, studyUID=studyUID)
             seriesID = ids[0]
             seriesUID = ids[1]
             return seriesID, seriesUID
         except Exception as e:
             print('Error in DeveloperTools.generateSeriesIDs: ' + str(e))
-
 
     @staticmethod
     def editDICOMTag(inputPath, dicomTag, newValue):
@@ -529,45 +500,6 @@ class GenericDICOMTools:
                     saveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
             print('Error in DeveloperTools.editDICOMTag: ' + str(e))
-
-
-    @staticmethod
-    def sortBySliceLocation(inputPath):
-        """
-        Sorts list of paths by SliceLocation and returns the sorted list of paths
-        and the list of slice locations per file path.
-        """
-        try:
-            imagePathListSorted, sliceListSorted, numberSlices, indecesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "SliceLocation")
-            return imagePathListSorted, sliceListSorted
-        except Exception as e:
-            print('Error in DeveloperTools.sortBySliceLocation: ' + str(e))
-
-
-    @staticmethod
-    def sortByEchoTime(inputPath):
-        """
-        Sorts list of paths by EchoTime and returns the sorted list of paths
-        and the list of echo times per file path.
-        """
-        try:
-            imagePathListSorted, echoListSorted, numberEchoes, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "EchoTime")
-            return imagePathListSorted, echoListSorted
-        except Exception as e:
-            print('Error in DeveloperTools.sortByEchoTime: ' + str(e))
-
-
-    @staticmethod
-    def sortByTimePoint(inputPath):
-        """
-        Sorts list of paths by AcquisitionNumber and returns the sorted list of paths
-        and the list of time points per file path.
-        """
-        try:
-            imagePathListSorted, timePointsListSorted, numberTimePoints, indicesSorted = readDICOM_Image.sortSequenceByTag(inputPath, "AcquisitionNumber")
-            return imagePathListSorted, timePointsListSorted
-        except Exception as e:
-            print('Error in DeveloperTools.sortByEchoTime: ' + str(e))
         
 
 class PixelArrayDICOMTools:
@@ -589,7 +521,6 @@ class PixelArrayDICOMTools:
         except Exception as e:
             print('Error in DeveloperTools.getPixelArrayFromDICOM: ' + str(e))
 
-
     @staticmethod
     def getDICOMobject(inputPath):
         """
@@ -606,7 +537,6 @@ class PixelArrayDICOMTools:
                 return None
         except Exception as e:
             print('Error in DeveloperTools.getDICOMobject: ' + str(e))
-
 
     def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, output_dir=None):
         """
@@ -657,7 +587,6 @@ class PixelArrayDICOMTools:
 
         except Exception as e:
             print('Error in DeveloperTools.writePixelArrayToDicom: ' + str(e))
-
 
     @staticmethod
     def overwritePixelArray(pixelArray, inputPath):
@@ -730,10 +659,10 @@ class Subject:
         #interfaceDICOMXMLFile.insertNewSubjectInXMLFile(subjectID)
         return Subject(self.objWeasel, subjectID)
 
-    def copy(self, suffix="_Copy"):
+    def copy(self, suffix="_Copy", output_dir=None):
         newSubjectID = self.subjectID + suffix
         for study in self.children:
-            study.copy(suffix=suffix, newSubjectID=newSubjectID)
+            study.copy(suffix=suffix, newSubjectID=newSubjectID, output_dir=output_dir)
         return Subject(self.objWeasel, newSubjectID)
 
     def delete(self):
@@ -743,7 +672,7 @@ class Subject:
         self.objWeasel.objXMLReader.removeSubjectinXMLFile(self.subjectID)
 
     @staticmethod
-    def merge(listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False):
+    def merge(listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False, output_dir=None):
         if newSubjectName:
             outputSubject = Subject(listSubjects[0].objWeasel, newSubjectName)
         else:
@@ -753,7 +682,7 @@ class Subject:
             if overwrite == False:
                 for study in subject:
                     # Create a copy of the study into the new subject
-                    study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID)
+                    study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=None)
             else:
                 for study in subject:
                     # Replace the (StudyUID and) PatientID in all files
@@ -817,22 +746,15 @@ class Study:
         #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self.subjectID, studyID, suffix)
         return Study(self.objWeasel, self.subjectID, studyID, suffix=suffix)
 
-    def copy(self, suffix="_Copy", newSubjectID=None):
+    def copy(self, suffix="_Copy", newSubjectID=None, output_dir=None):
         if newSubjectID:
             newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, suffix=suffix)
         else:
             newStudyInstance = self.new(suffix=suffix)
         seriesPathsList = []
         for series in self.children:
-            #series.subjectID = newStudyInstance.subjectID # PatientID and XML effect?
-            series.studyID = newStudyInstance.studyID
-            series.studyUID = newStudyInstance.studyUID
-            if newSubjectID: series.subjectID = newSubjectID
-            # Maybe create a copy approach here of our own"
-            copiedSeries = series.copy(suffix=suffix, series_id=series.seriesID.split('_', 1)[0], series_name=series.seriesID.split('_', 1)[1])
-            #interfaceDICOMXMLFile.removeSeries ...
-            # Iterate through series and use ItemList to replace StudyUID and PatientID in series - StudyID in InterfaceXML
-            #copiedSeries.Item('StudyInstanceUID', newStudyInstance.studyUID)
+            copiedSeries = series.copy(suffix=suffix, series_id=series.seriesID.split('_', 1)[0], series_name=series.seriesID.split('_', 1)[1], study_uid=newStudyInstance.studyUID,
+                                       study_name=newStudyInstance.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=newSubjectID, output_dir=output_dir)
             seriesPathsList.append(copiedSeries.images)
         interfaceDICOMXMLFile.insertNewStudyInXMLFile(newStudyInstance.subjectID, newStudyInstance.studyID, seriesList=seriesPathsList)
         return newStudyInstance
@@ -844,9 +766,10 @@ class Study:
         self.subjectID = self.studyID = ''
 
     @staticmethod
-    def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False):
+    def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False, output_dir=None):
         if newStudyName:
-            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyName)
+            newStudyID = self.studyID.split('_')[0] + "_" + self.studyID.split('_')[1] + "_" + newStudyName
+            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID)
         else:
             outputStudy = listStudies[0].new(suffix=suffix)
         # Add new study (outputStudy) to XML
@@ -855,26 +778,21 @@ class Study:
             for study in listStudies:
                 seriesNumber = 1
                 for series in study:
-                    #outputStudy.studyUID
-                    # generate new series uid based on outputStudy.studyUID
-                     # Maybe create a copy approach here of our own"
-                    copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1]) # Add new Study UID and Name here somehow
-                    # Iterate through series and use ItemList to replace StudyUID and PatientID in series - StudyID in InterfaceXML
-                    # Remove the newly added series in XML and add it to the new study correctly later
-                    #interfaceDICOMXMLFile.removeSeries ...
+                    copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
+                                               study_name=outputStudy.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=outputStudy.subjectID, output_dir=output_dir) # StudyID in InterfaceXML
                     seriesPathsList.append(copiedSeries.images)
                     seriesNumber =+ 1
         else:
             for study in listStudies:
                 seriesNumber = 1
                 for series in study:
-                    # Replace the StudyUID and SeriesNumber in all files
-                    # Add series to new study in the XML
-                    # How to overwrite the actual StudyID
+                    series.Item('PatientID', outputStudy.subjectID)
                     series.Item('StudyInstanceUID', outputStudy.studyUID)
-                    # generate new series uid based on outputStudy.studyUID
-                    #series.Item('SeriesInstanceUID', outputStudy.studyUID)
+                    series.Item('StudyDescription', outputStudy.studyID.split('_', 1)[1].split('_', 1)[1])
                     series.Item('SeriesNumber', seriesNumber)
+                    # Generate new series uid based on outputStudy.studyUID
+                    _, new_series_uid = GenericDICOMTools.generateSeriesIDs(series.objWeasel, series.images, seriesNumber=seriesNumber, studyUID=outputStudy.studyUID)
+                    series.Item('SeriesInstanceUID',new_series_uid)
                     seriesPathsList.append(series.images)
                     seriesNumber =+ 1
                 interfaceDICOMXMLFile.removeOneStudyFromSubject(study.subjectID, study.studyID)
@@ -955,16 +873,18 @@ class Series:
         newSeries.referencePathsList = self.images
         return newSeries
     
-    def copy(self, suffix="_Copy", newSeries=True, series_id=None, series_name=None, series_uid=None, output_dir=None):
+    def copy(self, suffix="_Copy", newSeries=True, series_id=None, series_name=None, series_uid=None, study_uid=None, study_name=None, patient_id=None, output_dir=None):
         if newSeries == True:
-            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
+            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name,
+                                                                    study_uid=study_uid, study_name=study_name, patient_id=patient_id, suffix=suffix, output_dir=output_dir)
             return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix=suffix)
         else:
             series_id = self.seriesID.split('_', 1)[0]
             series_name = self.seriesID.split('_', 1)[1]
             series_uid = self.seriesUID
             suffix = self.suffix
-            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
+            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, study_uid=study_uid,
+                                                          study_name=study_name, patient_id=patient_id,suffix=suffix, output_dir=output_dir) # StudyID in InterfaceXML
             for newCopiedImagePath in newPathsList:
                 newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
                 self.add(newImage)
@@ -1021,38 +941,38 @@ class Series:
         outputSeries.referencePathsList = outputPathList
         return outputSeries
     
-    def sort(self, tagDescription, *argv):
-        if self.Item(tagDescription) or self.Tag(tagDescription):
-            imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
-            self.images = imagePathList
-            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
-        for tag in argv:
-            if self.Item(tag) or self.Tag(tag):
-                imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tag)
-                self.images = imagePathList
-                #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
-    
-    #def sort(self, *argv):
-    #    tuple_to_sort = []
-    #    list_to_sort = []
-    #    list_to_sort.append(self.images)
+    #def sort(self, tagDescription, *argv):
+    #    if self.Item(tagDescription) or self.Tag(tagDescription):
+    #        imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
+    #        self.images = imagePathList
+    #        #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
     #    for tag in argv:
     #        if self.Item(tag) or self.Tag(tag):
-    #            if tag.startswith("("):
-    #                attributeList = self.Tag(tag)
-    #            else:
-    #                attributeList = self.Item(tag)
-    #            list_to_sort.append(attributeList)
-    #    for index, _ in enumerate(self.images):
-    #        individual_tuple = []
-    #        for individual_list in list_to_sort:
-    #            individual_tuple.append(individual_list[index])
-    #        tuple_to_sort.append(tuple(individual_tuple))
-    #    tuple_sorted = sorted(tuple_to_sort, key = lambda x: x[1:])
-    #    list_sorted_paths = []
-    #    for individual in tuple_sorted:
-    #        list_sorted_paths.append(individual[0])
-    #    return list_sorted_paths
+    #            imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tag)
+    #            self.images = imagePathList
+    #            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
+    
+    def sort(self, *argv):
+        tuple_to_sort = []
+        list_to_sort = []
+        list_to_sort.append(self.images)
+        for tag in argv:
+            if self.Item(tag) or self.Tag(tag):
+                if tag.startswith("("):
+                    attributeList = self.Tag(tag)
+                else:
+                    attributeList = self.Item(tag)
+                list_to_sort.append(attributeList)
+        for index, _ in enumerate(self.images):
+            individual_tuple = []
+            for individual_list in list_to_sort:
+                individual_tuple.append(individual_list[index])
+            tuple_to_sort.append(tuple(individual_tuple))
+        tuple_sorted = sorted(tuple_to_sort, key = lambda x: x[1:])
+        list_sorted_paths = []
+        for individual in tuple_sorted:
+            list_sorted_paths.append(individual[0])
+        return list_sorted_paths
 
     def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
