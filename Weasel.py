@@ -66,19 +66,12 @@ class Weasel(QMainWindow, Pipelines):
         self.centralwidget.layout().addWidget(self.mdiArea)
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
-        #self.selectedSubject = ''  SS 13.03.21  maybe redundant
-        #self.selectedStudy = '' maybe redundant
-        #self.selectedSeries = ''maybe redundant
-        #self.selectedImageName = ''maybe redundant
-        #self.selectedImagePath = ''maybe redundant
         self.DICOMFolder = ''
         self.checkedImageList = []
         self.checkedSeriesList = []
         self.checkedStudyList = []
-        self.isAnImageChecked = False
-        self.isASeriesChecked = False
-        self.isAStudyChecked = False
-        self.isASubjectChecked = False
+        self.treeView = None
+        
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
         
          # XML reader object to process XML configuration file
@@ -95,10 +88,69 @@ class Weasel(QMainWindow, Pipelines):
         #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")
-  
 
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
+
+
+    @property
+    def isAnImageChecked(self):
+        flag = False
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedImagesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                for n in range(seriesCount):
+                    series = study.child(n)
+                    imagesCount = series.childCount()
+                    for k in range(imagesCount):
+                        image = series.child(k)
+                        if image.checkState(0) == Qt.Checked:
+                            flag = True
+                            break
+        return flag
+
+
+    @property
+    def isASeriesChecked(self):
+        flag = False
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedSeriesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)
+                seriesCount = study.childCount()
+                for n in range(seriesCount):
+                    series = study.child(n)
+                    if series.checkState(0) == Qt.Checked:
+                        flag = True
+                        break
+        return flag
+     
+
+    @property
+    def isAStudyChecked(self):
+        flag = False
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedStudiesList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            studyCount = subject.childCount()
+            for j in range(studyCount):
+                study = subject.child(j)   
+                if study.checkState(0) == Qt.Checked:
+                    flag = True
+                    break
+        return flag
 
 
 def main():
