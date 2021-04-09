@@ -101,7 +101,8 @@ class WeaselXMLReader:
     def setSubjectExpandedState(self, subjectID, expandedState='True'):
         try:
             subjectElement = self.getSubject(subjectID)
-            subjectElement.set('expanded', expandedState)
+            if subjectElement:
+                subjectElement.set('expanded', expandedState)
         except Exception as e:
             print('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e))
@@ -110,7 +111,8 @@ class WeaselXMLReader:
     def setSubjectCheckedState(self, subjectID, checkedState='True'):
         try:
             subjectElement = self.getSubject(subjectID)
-            subjectElement.set('checked', checkedState)
+            if subjectElement:
+                subjectElement.set('checked', checkedState)
         except Exception as e:
             print('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setSubjectExpandedState: ' + str(e))
@@ -130,7 +132,8 @@ class WeaselXMLReader:
     def setStudyExpandedState(self, subjectID, studyID, expandedState='True'):
         try:
             studyElement = self.getStudy(subjectID, studyID)
-            studyElement.set('expanded', expandedState)
+            if studyElement:
+                studyElement.set('expanded', expandedState)
         except Exception as e:
             print('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setStudyExpandedState: ' + str(e))
@@ -139,7 +142,8 @@ class WeaselXMLReader:
     def setStudyCheckedState(self, subjectID, studyID, checkedState='True'):
         try:
             studyElement = self.getStudy(subjectID, studyID)
-            studyElement.set('checked', checkedState)
+            if studyElement:
+                studyElement.set('checked', checkedState)
         except Exception as e:
             print('Error in WeaselXMLReader.setStudyCheckedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setStudyCheckedState: ' + str(e))
@@ -160,7 +164,8 @@ class WeaselXMLReader:
     def setSeriesExpandedState(self, subjectID, studyID, seriesID, expandedState='True'):
         try:
             seriesElement = self.getSeries(subjectID, studyID, seriesID)
-            seriesElement.set('expanded', expandedState)
+            if seriesElement:
+                seriesElement.set('expanded', expandedState)
         except Exception as e:
             print('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.setSeriesExpandedState: ' + str(e))
@@ -169,7 +174,8 @@ class WeaselXMLReader:
     def setSeriesCheckedState(self, subjectID, studyID, seriesID, checkedState='True'):
         try:
             seriesElement = self.getSeries(subjectID, studyID, seriesID)
-            seriesElement.set('checked', checkedState)
+            if seriesElement:
+                seriesElement.set('checked', checkedState)
             #print("series {} checked {}".format(seriesElement, checkedState))
         except Exception as e:
             print('Error in WeaselXMLReader.setSeriesCheckedState: ' + str(e)) 
@@ -191,11 +197,20 @@ class WeaselXMLReader:
     def getImageParentIDs(self, imageName):
         try:
             xPathSubject = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/../../..'
-            subjectID = self.root.find(xPathSubject).attrib['id']
+            if self.root.find(xPathSubject):
+                subjectID = self.root.find(xPathSubject).attrib['id']
+            else:
+                subjectID = None
             xPathStudy = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/../..'
-            studyID = self.root.find(xPathStudy).attrib['id']
+            if self.root.find(xPathStudy):
+                studyID = self.root.find(xPathStudy).attrib['id']
+            else:
+                studyID = None
             xPathSeries = './/subject/study/series/image[name=' + chr(34) + imageName + chr(34) +']/..'
-            seriesID = self.root.find(xPathSeries).attrib['id']
+            if self.root.find(xPathSeries):
+                seriesID = self.root.find(xPathSeries).attrib['id']
+            else:
+                seriesID = None
             return (subjectID, studyID, seriesID)
         except Exception as e:
             print('Error in WeaselXMLReader.getImageParentIDs: ' + str(e)) 
@@ -390,11 +405,8 @@ class WeaselXMLReader:
         newSubject = ET.SubElement(self.root, 'subject', newAttributes)
         for newStudy in newStudiesList:
             dataset = readDICOM_Image.getDicomDataset(newStudy[0][0])
-            newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + suffix
-            self.insertNewStudyinXML(newStudy, newSubjectID, newStudyID, suffix)
-            #pass
-            #Add logic to copy across new subjects to the root of the xml tree
-            #newSeries = ET.SubElement(newSubject,'study')
+            newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + str(dataset.StudyDescription)
+            self.insertNewStudyinXML(newStudy, newSubjectID, newStudyID, '')
 
 
     def insertNewStudyinXML(self, newSeriesList, subjectID, newStudyID, suffix):
@@ -410,18 +422,17 @@ class WeaselXMLReader:
                              'uid':str(dataset.StudyInstanceUID),
                              'checked': 'False'}
 
-            if currentSubject:
+            if currentSubject is not None:
                 #Add new study to subject to hold new series+images
                 newStudy = ET.SubElement(currentSubject, 'study', newAttributes)
                 for newSeries in newSeriesList:
                     dataset = readDICOM_Image.getDicomDataset(newSeries[0])
-                    newSeriesID = str(dataset.SeriesNumber) + "_" + dataset.SeriesDescription
+                    newSeriesID = str(dataset.SeriesNumber) + "_" + str(dataset.SeriesDescription)
                     self.insertNewSeriesInXML(newSeries, newSeries, subjectID, newStudyID, newSeriesID, newSeriesID, suffix)
-                    #pass
-                    #Add logic to copy across new series to the new study
-                    #newSeries = ET.SubElement(newStudy,'study')
             else:
                 self.insertNewSubjectinXML([newSeriesList], subjectID, suffix)
+                #self.insertNewSubjectinXML([newSeriesList], subjectID, '')
+                #self.insertNewStudyinXML(newSeriesList, subjectID, newStudyID, suffix)
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewStudyInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewStduyInXML: ' + str(e))
@@ -437,20 +448,24 @@ class WeaselXMLReader:
                              'expanded':'False',
                              'uid':str(dataset.SeriesInstanceUID),
                              'checked': 'False'}
-            if currentStudy:
+
+            if currentStudy is not None:
                 #Add new series to study to hold new images
-                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)           
-                #comment = ET.Comment('This series holds a whole series of new images')
-                #newSeries.append(comment)
+                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
                 #Get image date & time from original image
-                for index, imageNewName in enumerate(newImageList): #origImageList
-                    #imageLabel = self.getImageLabel(studyID, seriesID, imageName)
-                    imageTime = self.getImageTime(subjectID, studyID, seriesID)# , imageName)
-                    imageDate = self.getImageDate(subjectID, studyID, seriesID)#, imageName)
+                for index, imageNewName in enumerate(newImageList):
+                    subjectID_Original, studyID_Original, seriesID_Original = self.getImageParentIDs(origImageList[index])
+                    if subjectID_Original is None or studyID_Original is None or seriesID_Original is None:
+                        imageLabel = str(index + 1).zfill(6) # + suffix
+                    else:
+                        imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, origImageList[index])
+                    imageTime = self.getImageTime(subjectID, studyID, seriesID)
+                    imageDate = self.getImageDate(subjectID, studyID, seriesID)
                     newImage = ET.SubElement(newSeries,'image')
                     #Add child nodes of the image element
                     labelNewImage = ET.SubElement(newImage, 'label')
-                    labelNewImage.text = str(index + 1).zfill(6)
+                    #labelNewImage.text = str(index + 1).zfill(6)
+                    labelNewImage.text = imageLabel # + suffix
                     nameNewImage = ET.SubElement(newImage, 'name')
                     nameNewImage.text = imageNewName
                     timeNewImage = ET.SubElement(newImage, 'time')
@@ -459,13 +474,15 @@ class WeaselXMLReader:
                     dateNewImage.text = imageDate
             else:
                 self.insertNewStudyinXML([newImageList], subjectID, studyID, suffix)
+                #self.insertNewStudyinXML([[]], subjectID, studyID, '')
+                #self.insertNewSeriesInXML(origImageList, newImageList, subjectID, studyID, newSeriesID, seriesID, suffix)
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.insertNewSeriesInXML: ' + str(e))
 
   
-    def insertNewImageInXML(self, imageName,
-                   newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=None):
+    def insertNewImageInXML(self, imageName, newImageFileName, subjectID, studyID, seriesID, suffix, 
+                            newSeriesName=None, newStudyName=None, newSubjectName=None):
         try:
             dataset = readDICOM_Image.getDicomDataset(newImageFileName)
             if newSeriesName:
@@ -482,38 +499,55 @@ class WeaselXMLReader:
             # Check if the newSeries exists or not
             series = self.getSeries(subjectID, studyID, newSeriesID)
             #Get image label, date & time of Original image in case it's needed.
-            imageLabel = self.getImageLabel(subjectID, studyID, seriesID, imageName)
-            imageTime = self.getImageTime(subjectID, studyID, seriesID)#, imageName)
-            imageDate = self.getImageDate(subjectID, studyID, seriesID)#, imageName)
+            subjectID_Original, studyID_Original, seriesID_Original = self.getImageParentIDs(imageName)
+            if subjectID_Original is None or studyID_Original is None or seriesID_Original is None:
+                imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original)
+            else:
+                imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, imageName)
+            imageTime = self.getImageTime(subjectID, studyID, seriesID)
+            imageDate = self.getImageDate(subjectID, studyID, seriesID)
             if series is None:
                 #Need to create a new series to hold this new image
                 #Get study branch
                 currentStudy = self.getStudy(subjectID, studyID)
+                if currentStudy is None:
+                    currentSubject = self.getSubject(subjectID)
+                    if currentSubject is None:
+                        if newSubjectName:
+                            newSubjectID = newSubjectName
+                        else:
+                            newSubjectID = str(dataset.PatientID)
+                        self.insertNewSubjectinXML([[[newImageFileName]]], newSubjectID, '')
+                        return newSeriesID
+                    else:
+                        newSubjectID = subjectID
+                        if newStudyName:
+                            newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + newStudyName
+                        else:
+                            newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + str(dataset.StudyDescription)
+                        self.insertNewStudyinXML([[newImageFileName]], newSubjectID, newStudyID, '')
+                        return newSeriesID
+                    #currentStudy = self.getStudy(newSubjectID, newStudyID)
                 newAttributes = {'id':newSeriesID, 
                                  'typeID':suffix,
                                  'uid':str(dataset.SeriesInstanceUID),
                                  'checked':'False'}
 
                 #Add new series to study to hold new images
-                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)
-                    
-                #comment = ET.Comment('This series holds new images')
-                #newSeries.append(comment)
-                    
+                newSeries = ET.SubElement(currentStudy, 'series', newAttributes)     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
                 labelNewImage.text = imageLabel + suffix
-                #labelNewImage.text = imageLabel
+                #labelNewImage.text = "000001"
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
                 timeNewImage = ET.SubElement(newImage, 'time')
                 timeNewImage.text = imageTime
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
-                #self.tree.write(self.fullFilePath)
                 return newSeriesID
             else:
                 #A series already exists to hold new images from
@@ -521,6 +555,7 @@ class WeaselXMLReader:
                 newImage = ET.SubElement(series,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
+                #imageLabel = self.getImageLabel(subjectID, studyID, seriesID, imageName)
                 labelNewImage.text = imageLabel + suffix
                 #labelNewImage.text = str(len(series)).zfill(6)
                 nameNewImage = ET.SubElement(newImage, 'name')
@@ -529,7 +564,6 @@ class WeaselXMLReader:
                 timeNewImage.text = imageTime
                 dateNewImage = ET.SubElement(newImage, 'date')
                 dateNewImage.text = imageDate
-                #self.tree.write(self.fullFilePath)
                 return series.attrib['id']
         except Exception as e:
             print('Error in WeaselXMLReader.insertNewImageInXML: ' + str(e)) 
@@ -599,7 +633,7 @@ class WeaselXMLReader:
         logger.info("TreeView.saveTreeViewCheckedStateToXML called")
         try:
             #set all checked attributes to False
-            #self.resetXMLTree(self.root, resetExpanded=False)
+            self.resetXMLTree(self.root, resetExpanded=False)
 
             #update subject checked attribute
             for subject in checkedSubjectList:

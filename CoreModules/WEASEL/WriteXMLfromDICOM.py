@@ -95,13 +95,22 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                              'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
                              'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(filepath, specific_tags=list_tags) # Check the force=True flag once in a while
-                if not hasattr(dataset, 'SeriesDescription'):
+                if not hasattr(dataset, 'SeriesDescription') and not hasattr(dataset, 'StudyDescription'):
+                    elemSeries = DataElement(0x0008103E, 'LO', 'No Series Description')
+                    elemStudy = DataElement(0x00081030, 'LO', 'No Study Description')
+                    with dcmread(filepath, force=True) as ds:
+                        ds.add(elemSeries)
+                        ds.add(elemStudy)
+                        ds.save_as(filepath)
+                    dataset.SeriesDescription = 'No Series Description'
+                    dataset.StudyDescription = 'No Study Description'
+                elif not hasattr(dataset, 'SeriesDescription'):
                     elem = DataElement(0x0008103E, 'LO', 'No Series Description')
                     with dcmread(filepath, force=True) as ds:
                         ds.add(elem)
                         ds.save_as(filepath)
                     dataset.SeriesDescription = 'No Series Description'
-                if not hasattr(dataset, 'StudyDescription'):
+                elif not hasattr(dataset, 'StudyDescription'):
                     elem = DataElement(0x00081030, 'LO', 'No Study Description')
                     with dcmread(filepath, force=True) as ds:
                         ds.add(elem)
@@ -294,14 +303,20 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
                     time.text = datetime.datetime.strptime(dicomfile.AcquisitionTime, '%H%M%S').strftime('%H:%M')
                 except:
                     time.text = datetime.datetime.strptime(dicomfile.AcquisitionTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(dicomfile.AcquisitionDate, '%Y%m%d').strftime('%d/%m/%Y')
+                try:
+                    date.text = datetime.datetime.strptime(dicomfile.AcquisitionDate, '%Y%m%d').strftime('%d/%m/%Y')
+                except:
+                    date.text = datetime.datetime.strptime(dicomfile.StudyDate, '%Y%m%d').strftime('%d/%m/%Y')
             elif len(dicomfile.dir("SeriesTime"))>0:
                 # It means it's Enhanced MRI
                 try:
                     time.text = datetime.datetime.strptime(dicomfile.SeriesTime, '%H%M%S').strftime('%H:%M')
                 except:
                     time.text = datetime.datetime.strptime(dicomfile.SeriesTime, '%H%M%S.%f').strftime('%H:%M')
-                date.text = datetime.datetime.strptime(dicomfile.SeriesDate, '%Y%m%d').strftime('%d/%m/%Y')
+                try:
+                    date.text = datetime.datetime.strptime(dicomfile.SeriesDate, '%Y%m%d').strftime('%d/%m/%Y')
+                except:
+                    date.text = datetime.datetime.strptime(dicomfile.StudyDate, '%Y%m%d').strftime('%d/%m/%Y')
             else:
                 time.text = datetime.datetime.strptime('000000', '%H%M%S').strftime('%H:%M')
                 date.text = datetime.datetime.strptime('20000101', '%Y%m%d').strftime('%d/%m/%Y')

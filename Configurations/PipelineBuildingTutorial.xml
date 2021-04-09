@@ -122,7 +122,17 @@
           <label>Copy and merge series</label>
           <module>Tutorial_MergeSeriesCopy</module>
         </item>
+		
+		<item>
+          <label>Merge studies</label>
+          <module>Tutorial_MergeStudies</module>
+        </item>
 
+		<item>
+          <label>Merge subjects</label>
+          <module>Tutorial_MergeSubjects</module>
+        </item>
+		
         <item>
           <separator>yes</separator>
         </item>

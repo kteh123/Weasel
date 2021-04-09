@@ -2,6 +2,7 @@ import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from CoreModules.DeveloperTools import UserInterfaceTools
+from CoreModules.DeveloperTools import Subject
 from CoreModules.DeveloperTools import Study
 from CoreModules.DeveloperTools import Series
 from CoreModules.DeveloperTools import Image
@@ -90,7 +91,42 @@ class StudyList(ListOfDicomObjects):
     """
     A class containing a list of class Study. 
     """
+    def copy(self):
+        """
+        Returns a copy of the list of studies.
+        """
+        copy = []
+        for study in self: 
+            copy.append(study.copy())
+        return StudyList(copy)
 
+    def merge(self, study_name='MergedStudies'):
+        """
+        Merges a list of series into a new series under the same study
+        """
+        if len(self) == 0: return
+        return self[0].merge(self, newStudyName=study_name, overwrite=True)
+
+
+class SubjectList(ListOfDicomObjects):
+    """
+    A class containing a list of class Subject. 
+    """
+    def copy(self):
+        """
+        Returns a copy of the list of subjects.
+        """
+        copy = []
+        for subject in self: 
+            copy.append(subject.copy())
+        return SubjectList(copy)
+
+    def merge(self, subject_name='MergedSubjects'):
+        """
+        Merges a list of series into a new series under the same study
+        """
+        if len(self) == 0: return
+        return self[0].merge(self, newSubjectName=subject_name, overwrite=True)
 
 class OriginalPipelines():
     """
@@ -102,6 +138,9 @@ class OriginalPipelines():
         """
         imagesList = [] 
         imagesTreeViewList = treeView.returnCheckedImages(self)
+        #imagesTreeViewList = []
+        #if len(treeView.buildListsCheckedItems(self)) > 0:
+        #    imagesTreeViewList = [listItems[3] for listItems in treeView.buildListsCheckedItems(self)]
         if imagesTreeViewList == []:
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
@@ -143,6 +182,19 @@ class OriginalPipelines():
         #studyList = UserInterfaceTools(self).getCheckedStudies()
         #if studyList is None: studyList = []
         return StudyList(studyList)
+
+    def subjects(self, msg='Please select one or more subjects'):
+        """
+        Returns a list of Subjects checked by the user.
+        """
+        subjectList = []
+        subjectsTreeViewList = treeView.returnCheckedSubjects(self)
+        if subjectsTreeViewList == []:
+            UserInterfaceTools(self).showMessageWindow(msg=msg)
+        else:
+            for subject in subjectsTreeViewList:
+                subjectList.append(Subject.fromTreeView(self, subject))
+        return SubjectList(subjectList)
  
     def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """

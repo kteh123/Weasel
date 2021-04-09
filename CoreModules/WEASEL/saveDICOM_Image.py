@@ -141,10 +141,10 @@ def generateUIDs(dataset, seriesNumber=None, studyUID=None):
         prefix = '.'.join(prefix[:6])
         if seriesNumber is None:
             seriesNumber = str(dataset.SeriesNumber) + str(random.randint(0, 999))
-        prefixSeries = prefix + "." + seriesNumber + "."
+        prefixSeries = prefix + "." + str(seriesNumber) + "."
         imageNumber = str(dataset.InstanceNumber).lstrip("0")
         if imageNumber == "": imageNumber = "999999" 
-        prefixImage = prefix + "." + seriesNumber + "." + imageNumber + "."
+        prefixImage = prefix + "." + str(seriesNumber) + "." + imageNumber + "."
         seriesUID = pydicom.uid.generate_uid(prefix=prefixSeries)
         imageUID = pydicom.uid.generate_uid(prefix=prefixImage)
         return [seriesNumber, seriesUID, imageUID]

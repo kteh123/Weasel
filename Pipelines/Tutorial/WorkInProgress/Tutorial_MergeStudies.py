@@ -6,8 +6,8 @@
 
 def main(weasel):
     
-    list_of_images = weasel.images() 
-    if len(list_of_images) <= 1: return
-    list_of_images.merge(series_name='MergedSeries')
+    list_of_studies = weasel.studies() 
+    if len(list_of_studies) <= 1: return
+    list_of_studies.merge(study_name='MergedStudyDescription')
     weasel.refresh()
     

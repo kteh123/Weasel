@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeriesName=None):
+def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeriesName=None, newStudyName=None, newSubjectName=None):
     """This function inserts information regarding a new image 
        in the DICOM XML file
     """
@@ -13,7 +13,7 @@ def insertNewImageInXMLFile(self, imagePath, newImageFileName, suffix, newSeries
         #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, imagePath)
         (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(imagePath)
         return self.objXMLReader.insertNewImageInXML(imagePath,
-               newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName)
+               newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=newSeriesName, newStudyName=newStudyName, newSubjectName=newSubjectName)
         
     except Exception as e:
         print('Error in insertNewImageInXMLFile: ' + str(e))
@@ -44,7 +44,7 @@ def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=No
             #new series ID
             if newSeriesName:
                 dataset.SeriesDescription = newSeriesName
-                return getNewSeriesName(subjectID, studyID, dataset, suffix, newSeriesName=None)
+                return getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=None)
             else:
                 if hasattr(dataset, "SeriesDescription"):
                     dataset.SeriesDescription = dataset.SeriesDescription + suffix
@@ -52,7 +52,7 @@ def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=No
                     dataset.SequenceName = dataset.SequenceName + suffix
                 elif hasattr(dataset, "ProtocolName"):
                     dataset.ProtocolName = dataset.ProtocolName + suffix
-                return getNewSeriesName(subjectID, studyID, dataset, suffix)
+                return getNewSeriesName(self, subjectID, studyID, dataset, suffix)
         else:
             logger.info("InterfaceDICOMXMLFile getNewSeriesName returns seriesID {}".format(seriesID))
             return seriesID
@@ -60,13 +60,15 @@ def getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=No
         print('Error in InterfaceDICOMXMLFile.getNewSeriesName: ' + str(e))
             
 
-def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSeriesName=None):
+def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSeriesName=None, newStudyName=None, newSubjectName=None):
     """Creates a new series to hold the series of New images"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSeriesInXMLFile called")
         #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, origImageList[0])
         (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(origImageList[0])
         dataset = readDICOM_Image.getDicomDataset(newImageList[0])
+        if newStudyName is not None: studyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + newStudyName
+        if newSubjectName is not None: subjectID = newSubjectName
         newSeriesID = getNewSeriesName(self, subjectID, studyID, dataset, suffix, newSeriesName=newSeriesName) # If developer sets seriesName
         self.objXMLReader.insertNewSeriesInXML(origImageList, 
                     newImageList, subjectID, studyID, newSeriesID, seriesID, suffix)
@@ -77,10 +79,11 @@ def insertNewSeriesInXMLFile(self, origImageList, newImageList, suffix, newSerie
         logger.error('Error in InterfaceDICOMXMLFile.insertNewSeriesInXMLFile: ' + str(e))
 
 
-def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix, seriesList = []):
+def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix, seriesList=[], newSubjectName=None):
     """Creates a new study to hold the new series"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewStudyInXMLFile called")
+        if newSubjectName is not None: subjectID = newSubjectName
         self.objXMLReader.insertNewStudyinXML(seriesList, subjectID, newStudyID, suffix)
         self.statusBar.showMessage('New study created: - ' + newStudyID)
         return newStudyID
@@ -89,7 +92,7 @@ def insertNewStudyInXMLFile(self, subjectID, newStudyID, suffix, seriesList = []
         logger.error('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
 
 
-def insertNewSubjectInXMLFile(self, newSubjectID, suffix, studyList = []):
+def insertNewSubjectInXMLFile(self, newSubjectID, suffix, studyList=[]):
     """Creates a new study to hold the new series"""
     try:
         logger.info("InterfaceDICOMXMLFile insertNewSubjectInXMLFile called")
@@ -97,8 +100,8 @@ def insertNewSubjectInXMLFile(self, newSubjectID, suffix, studyList = []):
         self.statusBar.showMessage('New subject created: - ' + newSubjectID)
         return newSubjectID
     except Exception as e:
-        print('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
-        logger.error('Error in InterfaceDICOMXMLFile.insertNewStudyInXMLFile: ' + str(e))
+        print('Error in InterfaceDICOMXMLFile.insertNewSubjectInXMLFile: ' + str(e))
+        logger.error('Error in InterfaceDICOMXMLFile.insertNewSubjectInXMLFile: ' + str(e))
 
 
 def removeImageFromXMLFile(self, imageFileName):
@@ -234,3 +237,42 @@ def renameSubjectinXMLFile(self, subjectID, newSubjectID):
     except Exception as e:
         print('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
         logger.error('Error in InterfaceDICOMXMLFile renameStudyinXMLFile: ' + str(e))
+
+
+def moveImageInXMLFile(self, subjectID, studyID, seriesID, newSubjectID, newStudyID, newSeriesID, imageName, suffix):
+    try:
+        self.objXMLReader.insertNewImageInXML(imageName, imageName, newSubjectID, newStudyID, newSeriesID, suffix)
+        images = self.objXMLReader.getImageList(subjectID, studyID, seriesID)
+        if len(images) == 1:
+            removeOneSeriesFromStudy(self, subjectID, studyID, seriesID)
+        elif len(images) > 1:
+            self.objXMLReader.removeOneImageFromSeries(subjectID, studyID, seriesID, imageName)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile.moveImageInXMLFile: ' + str(e)) 
+        logger.error('Error in InterfaceDICOMXMLFile.moveImageInXMLFile: ' + str(e))
+
+
+def moveSeriesInXMLFile(self, subjectID, studyID, seriesID, newSubjectID, newStudyID, newSeriesID, suffix):
+    try:
+        #self.objXMLReader.insertNewSeriesInXML()#(imageName, imageName, newSubjectID, newStudyID, newSeriesID, suffix)
+        series = self.objXMLReader.getStudy(subjectID, studyID)
+        if len(series) == 1:
+            removeOneStudyFromSubject(self, subjectID, studyID)
+        elif len(series) > 1:
+            self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyID, seriesID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile.moveSeriesInXMLFile: ' + str(e)) 
+        logger.error('Error in InterfaceDICOMXMLFile.moveSeriesInXMLFile: ' + str(e))
+
+
+def moveStudyInXMLFile(self, subjectID, studyID, newSubjectID, newStudyID, suffix):
+    try:
+        #self.objXMLReader.insertNewStudyInXML()
+        study = self.objXMLReader.getSubject(subjectID)
+        if len(study) == 1:
+            removeSubjectinXMLFile(self, subjectID)
+        elif len(study) > 1:
+            self.objXMLReader.removeOneStudyFromSubject(subjectID, studyID)
+    except Exception as e:
+        print('Error in InterfaceDICOMXMLFile.moveStudyInXMLFile: ' + str(e)) 
+        logger.error('Error in InterfaceDICOMXMLFile.moveStudyInXMLFile: ' + str(e))

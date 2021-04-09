@@ -591,6 +591,23 @@ def toggleMenuItems(self):
             logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
 
 
+def returnCheckedSubjects(self):
+    """This function generates and returns a list of checked series."""
+    logger.info("TreeView.returnCheckedSubjects called")
+    try:
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedSubjectsList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            if subject.checkState(0) == Qt.Checked:
+                checkedSubjectsList.append(subject)
+        return checkedSubjectsList
+    except Exception as e:
+        print('Error in TreeView.returnCheckedSubjects: ' + str(e))
+        logger.error('Error in TreeView.returnCheckedSubjects: ' + str(e))
+
+
 def returnCheckedStudies(self):
     """This function generates and returns a list of checked series."""
     logger.info("TreeView.returnCheckedStudies called")
