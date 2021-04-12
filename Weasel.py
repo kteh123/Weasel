@@ -70,6 +70,7 @@ class Weasel(QMainWindow, Pipelines):
         self.checkedImageList = []
         self.checkedSeriesList = []
         self.checkedStudyList = []
+        self.checkedSubjectList = []
         self.treeView = None
         
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
@@ -152,6 +153,19 @@ class Weasel(QMainWindow, Pipelines):
                     break
         return flag
 
+
+    @property
+    def isASubjectChecked(self):
+        flag = False
+        root = self.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        checkedSubjectsList = []
+        for i in range(subjectCount):
+            subject = root.child(i)
+            if subject.checkState(0) == Qt.Checked:
+                flag = True
+                break
+        return flag
 
 def main():
     app = QApplication(sys . argv )

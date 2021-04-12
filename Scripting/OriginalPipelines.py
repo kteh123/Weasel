@@ -213,7 +213,7 @@ class OriginalPipelines():
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for subject in self.checkedSubjectList:
-                subjectList.append(Subject(self, subject[0]))
+                subjectList.append(Subject(self, subject))
             
         return SubjectList(subjectList)
  
