@@ -211,6 +211,11 @@
           <module>Tutorial_AnonymiseCopy</module>
         </item>
 
+        <item>
+          <label>Anonymise Patient ID</label>
+          <module>Tutorial_AnonymiseID</module>
+        </item>
+
    </menu>
     
     <menu name="Examples">
