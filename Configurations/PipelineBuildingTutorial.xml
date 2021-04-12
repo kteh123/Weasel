@@ -165,6 +165,28 @@
           <separator>yes</separator>
         </item>
     
+	    <item>
+          <label>Threshold pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_ThresholdPixelValuesInNewSeries</module>
+        </item>
+		
+		<item>
+          <label>Square pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_SquarePixelValuesInNewSeries</module>
+        </item>
+		
+		<item>
+          <label>Apply Gaussian filter to pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_GaussianPixelValuesInNewSeries</module>
+        </item>
+		
+		<item>
+          <separator>yes</separator>
+        </item>
+		
         <item>
           <label>Filter images with a local filter</label>
           <module>Tutorial_LocalFilterImages</module>
@@ -197,12 +219,6 @@
         <shortcut>Ctrl+B</shortcut>
         <tooltip>Performs binary operations on two images</tooltip>
         <module>BinaryOperationsOnImages</module>
-      </item>
-	  <item>
-          <label>Threshold Series/Image</label>
-          <shortcut>Ctrl+T</shortcut>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image</module>
       </item>
   </menu>
   
