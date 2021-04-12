@@ -841,9 +841,10 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
         if inputDlg.closeInputDialog() == False:
             # for series ID in listParams[0]: # more than 1 ROI may be selected
             seriesID = listParams[0][0] # Temporary, only the first ROI
-            imagePathList = self.objXMLReader.getImagePathList(studyID, seriesID)
+            imagePathList = self.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
             if self.isASeriesChecked:
-                targetPath = self.imageList
+                targetPath = [i[3] for i in self.checkedImageList]
+                #targetPath = self.imageList
             else:
                 targetPath = [self.selectedImagePath]
             maskInput = readDICOM_Image.returnSeriesPixelArray(imagePathList)
@@ -933,7 +934,8 @@ def saveROI(self, regionName, graphicsView):
         maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
         suffix = str("_ROI_"+ regionName)
         if len(maskList) > 1:
-            inputPath = self.imageList
+            inputPath = [i[3] for i in self.checkedImageList]
+            #inputPath = self.imageList
         else:
             inputPath = [self.selectedImagePath]
         # Saving Progress message

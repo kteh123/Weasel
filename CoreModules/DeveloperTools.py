@@ -144,6 +144,15 @@ class UserInterfaceTools:
         QMessageBox.information(self.objWeasel, title, msg)
 
 
+    def showErrorWindow(self, msg="Please insert message in the function call"):
+        """
+        Displays an error window in the User Interface with the title in "title" and
+        with the message in "msg". The 2 strings in the arguments are the input by default.
+        The user has to click "OK" in order to continue using the interface.
+        """
+        QMessageBox.critical(self.objWeasel, title, msg)
+
+
     def showQuestionWindow(self, title="Message Window Title", question="You wish to proceed (OK) or not (Cancel)?"):
         """
         Displays a question window in the User Interface with the title in "title" and

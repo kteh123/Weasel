@@ -32,7 +32,7 @@ def main(weasel):
     for i, image in enumerate(list_of_images):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Filtering image {}")
         if filter_name['value'] == 0:
-            image.write(-ndimage.gaussian_filter(image.PixelArray, sigma=size['value']))
+            image.write(ndimage.gaussian_filter(image.PixelArray, sigma=size['value']))
         elif filter_name['value'] == 1:
             image.write(ndimage.uniform_filter(image.PixelArray, size=size['value']))
         elif filter_name['value'] == 2:
