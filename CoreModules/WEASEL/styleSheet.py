@@ -1,6 +1,5 @@
 
 TRISTAN_GREY = """
-                /* warm grey QWidget{background-color: rgb(215, 210, 203);} */
                 QPushButton {
                              background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #CCCCBB, stop: 1 #FFFFFF);
@@ -36,7 +35,7 @@ TRISTAN_GREY = """
                     background-color: rgb(175, 175, 175);
                     border-color: rgb(200, 51, 255);}
 
-                QGroupBox{
+                 QGroupBox{
                         background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #D9D9D9, stop: 1 #FFFFFF);
                         border: 2px solid gray;
@@ -62,19 +61,10 @@ TRISTAN_GREY = """
                         margin: 0.25em;
                         }
 
-                QDoubleSpinBox{
-                    min-width: 4.5em;
-                    margin: 0.5em;
-                    min-height: 1em;
-                    border-width: 5px;
-                    padding: 4px;
-                    spacing: 5px;
-                    font-size: 8pt;
+                QSpinBox{
+                    font-size: 9pt;
                     font-weight: bold;}
 
-                QDoubleSpinBox:hover{
-                                     background-color: rgb(230, 230, 230);
-                                     border-color: rgb(200, 51, 200);}
 
                 QCheckBox{
                     width: 5px;
