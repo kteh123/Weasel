@@ -18,30 +18,29 @@ def main(weasel):
     # Get user input: type of filter and size
 
     filters = ["Gaussian", "Uniform", "Median", "Maximum", "Wiener"]
-    cancel, filter, size = weasel.user_input(
+    cancel, filters_input = weasel.user_input(
         {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
         {"type":"integer", "label":"Filter size in pixels", "default":20, "minimum":1, "maximum":1000}, 
         title = "Filter settings")
     if cancel: return
 
-    # Apply the filter and save results in a new series
+    filter_name = filters_input[0]
+    size = filters_input[1]
 
-    # filtered = list_of_images.copy().merge(series_name='Filter') 
+    # Loop through the images and overwrite with filtered image
 
     for i, image in enumerate(list_of_images):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Filtering image {}")
-        if filter == 0:
-            image.write(-ndimage.gaussian_filter(image.PixelArray, sigma=size))
-        elif filter == 1:
-            image.write(ndimage.uniform_filter(image.PixelArray, size=size))
-        elif filter == 2:
-            image.write(ndimage.median_filter(image.PixelArray, size))
-        elif filter == 3:
-            image.write(ndimage.maximum_filter(image.PixelArray, size=size))
-        elif filter == 4:
-            image.write(wiener(image.PixelArray, (size, size)))
+        if filter_name['value'] == 0:
+            image.write(-ndimage.gaussian_filter(image.PixelArray, sigma=size['value']))
+        elif filter_name['value'] == 1:
+            image.write(ndimage.uniform_filter(image.PixelArray, size=size['value']))
+        elif filter_name['value'] == 2:
+            image.write(ndimage.median_filter(image.PixelArray, size['value']))
+        elif filter_name['value'] == 3:
+            image.write(ndimage.maximum_filter(image.PixelArray, size=size['value']))
+        elif filter_name['value'] == 4:
+            image.write(wiener(image.PixelArray, (size['value'], size['value'])))
 
-    # Display the new series and refresh weasel
-  
     list_of_images.display()            
     weasel.refresh()

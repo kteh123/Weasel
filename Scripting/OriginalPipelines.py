@@ -137,18 +137,20 @@ class OriginalPipelines():
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        imagesTreeViewList = treeView.returnCheckedImages(self)
-        #imagesTreeViewList = []
-        #if len(treeView.buildListsCheckedItems(self)) > 0:
-        #    imagesTreeViewList = [listItems[3] for listItems in treeView.buildListsCheckedItems(self)]
-        if imagesTreeViewList == []:
+        #imagesTreeViewList = treeView.returnCheckedImages(self)
+        #if imagesTreeViewList == []:
+        #    UserInterfaceTools(self).showMessageWindow(msg=msg)
+        #else:
+        #    for images in imagesTreeViewList:
+        #        imagesList.append(Image.fromTreeView(self, images))
+        
+        treeView.buildListsCheckedItems(self)
+        if self.checkedImageList == []:
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
-            for images in imagesTreeViewList:
-                imagesList.append(Image.fromTreeView(self, images))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #imagesList = UserInterfaceTools(self).getCheckedImages()
-        #if imagesList is None: imagesList = []
+            for image in self.checkedImageList:
+                imagesList.append(Image(self, image[0], image[1], image[2], image[3]))
+
         return ImagesList(imagesList)
 
     def series(self, msg='Please select one or more series'):
@@ -156,15 +158,21 @@ class OriginalPipelines():
         Returns a list of Series checked by the user.
         """
         seriesList = []
-        seriesTreeViewList = treeView.returnCheckedSeries(self)
-        if seriesTreeViewList == []:
+        #seriesTreeViewList = treeView.returnCheckedSeries(self)
+        #if seriesTreeViewList == []:
+        #    UserInterfaceTools(self).showMessageWindow(msg=msg)
+        #else:
+        #    for series in seriesTreeViewList:
+        #        seriesList.append(Series.fromTreeView(self, series))
+        
+        treeView.buildListsCheckedItems(self)
+        if self.checkedSeriesList == []:
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
-            for series in seriesTreeViewList:
-                seriesList.append(Series.fromTreeView(self, series))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #seriesList = UserInterfaceTools(self).getCheckedSeries()
-        #if seriesList is None: seriesList = []
+            for series in self.checkedSeriesList:
+                images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
+                seriesList.append(Series(self, series[0], series[1], series[2], listPaths=images))
+
         return SeriesList(seriesList)
 
     def studies(self, msg='Please select one or more studies'):
@@ -172,15 +180,20 @@ class OriginalPipelines():
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        studiesTreeViewList = treeView.returnCheckedStudies(self)
-        if studiesTreeViewList == []:
+        #studiesTreeViewList = treeView.returnCheckedStudies(self)
+        #if studiesTreeViewList == []:
+        #    UserInterfaceTools(self).showMessageWindow(msg=msg)
+        #else:
+        #    for study in studiesTreeViewList:
+        #        studyList.append(Study.fromTreeView(self, study))
+
+        treeView.buildListsCheckedItems(self)
+        if self.checkedStudyList == []:
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
-            for study in studiesTreeViewList:
-                studyList.append(Study.fromTreeView(self, study))
-        # When Tutorials is finished, the above can be replaced by the following 2 lines 
-        #studyList = UserInterfaceTools(self).getCheckedStudies()
-        #if studyList is None: studyList = []
+            for study in self.checkedStudyList:
+                studyList.append(Study(self, study[0], study[1]))
+
         return StudyList(studyList)
 
     def subjects(self, msg='Please select one or more subjects'):
@@ -188,12 +201,20 @@ class OriginalPipelines():
         Returns a list of Subjects checked by the user.
         """
         subjectList = []
-        subjectsTreeViewList = treeView.returnCheckedSubjects(self)
-        if subjectsTreeViewList == []:
+        #subjectsTreeViewList = treeView.returnCheckedSubjects(self)
+        #if subjectsTreeViewList == []:
+        #    UserInterfaceTools(self).showMessageWindow(msg=msg)
+        #else:
+        #    for subject in subjectsTreeViewList:
+        #        subjectList.append(Subject.fromTreeView(self, subject))
+
+        treeView.buildListsCheckedItems(self)
+        if self.checkedSubjectList == []:
             UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
-            for subject in subjectsTreeViewList:
-                subjectList.append(Subject.fromTreeView(self, subject))
+            for subject in self.checkedSubjectList:
+                subjectList.append(Subject(self, subject[0]))
+            
         return SubjectList(subjectList)
  
     def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):

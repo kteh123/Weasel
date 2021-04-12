@@ -917,15 +917,33 @@ class Series:
         return self.PydicomList
 
     def save(self, PydicomList):
+        newSubjectID = self.subjectID
+        newStudyID = self.studyID
+        newSeriesID = self.seriesID
         for index, dataset in enumerate(PydicomList):
+            changeXML = False
+            if dataset.SeriesDescription != self.PydicomList[index].SeriesDescription or dataset.SeriesNumber != self.PydicomList[index].SeriesNumber:
+                changeXML = True
+                newSeriesID = str(dataset.SeriesNumber) + "_" + str(dataset.SeriesDescription)
+            if dataset.StudyDate != self.PydicomList[index].StudyDate or dataset.StudyTime != self.PydicomList[index].StudyTime or dataset.StudyDescription != self.PydicomList[index].StudyDescription:
+                changeXML = True
+                newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + str(dataset.StudyDescription)
+            if dataset.PatientID != self.PydicomList[index].PatientID:
+                changeXML = True
+                newSubjectID = str(dataset.PatientID)
             saveDICOM_Image.saveDicomToFile(dataset, output_path=self.images[index])
+            if changeXML == True:
+                interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
+        # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
+        self.subjectID = newSubjectID
+        self.studyID = newStudyID
+        self.seriesID = newSeriesID
 
     @staticmethod
     def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
         outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
         pathsList = [image for series in listSeries for image in series.images]
         outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, suffix=suffix, overwrite=overwrite)
-        #UserInterfaceTools(listSeries[0].objWeasel).refreshWeasel(new_series_name=listSeries[0].seriesID)
         outputSeries.images = outputPathList
         outputSeries.referencePathsList = outputPathList
         return outputSeries
@@ -1299,22 +1317,19 @@ class Image:
         if PydicomObject.SeriesDescription != self.PydicomObject.SeriesDescription or PydicomObject.SeriesNumber != self.PydicomObject.SeriesNumber:
             changeXML = True
             newSeriesID = str(PydicomObject.SeriesNumber) + "_" + str(PydicomObject.SeriesDescription)
-            pass
         if PydicomObject.StudyDate != self.PydicomObject.StudyDate or PydicomObject.StudyTime != self.PydicomObject.StudyTime or PydicomObject.StudyDescription != self.PydicomObject.StudyDescription:
             changeXML = True
             newStudyID = str(PydicomObject.StudyDate) + "_" + str(PydicomObject.StudyTime).split(".")[0] + "_" + str(PydicomObject.StudyDescription)
-            pass
         if PydicomObject.PatientID != self.PydicomObject.PatientID:
             changeXML = True
             newSubjectID = str(PydicomObject.PatientID)
         saveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
         if changeXML == True:
-            interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path, self.suffix)
-            #Change self path to new series, study or/and subject
+            interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
         # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
         self.subjectID = newSubjectID
         self.studyID = newStudyID
-        self.seriesID = newSeriesID   
+        self.seriesID = newSeriesID
 
     @staticmethod
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, suffix='_Merged', overwrite=False):
