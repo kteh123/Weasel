@@ -34,6 +34,7 @@ def setupMenus(self, menuXMLFile):
         for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
             for individualFile in filenames:
                 if individualFile.endswith(".py"):
+                    sys.path.append(os.path.dirname(dirpath))
                     listPythonFiles.append(os.path.join(dirpath, individualFile))
         for item in menu:
             buildUserDefinedToolsMenuItem(self, self.topMenu, item, listPythonFiles)
@@ -72,6 +73,7 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item, pythonFiles):
             spec.loader.exec_module(module)
             objFunction = getattr(module, function)
             self.menuItem.triggered.connect(lambda : objFunction(self))
+            self.menuItem.triggered.connect(lambda : self.refresh())
 
             if hasattr(module, "isSeriesOnly"):
                 boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
@@ -112,6 +114,7 @@ def buildContextMenuItem(self, context, item, pythonFiles):
     spec.loader.exec_module(module)
     objFunction = getattr(module, function)
     menuItem.triggered.connect(lambda : objFunction(self))
+    menuItem.triggered.connect(lambda : self.refresh())
     
     if hasattr(module, "isSeriesOnly"):
         boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
@@ -182,6 +185,7 @@ def createFileMenuItem(label, shortcut, toolTip, enabled, module, self,
         thisFunction = "main"
     objFunction = getattr(module, thisFunction)
     menuItem.triggered.connect(lambda : objFunction(self))
+    menuItem.triggered.connect(lambda : self.refresh())
     if context:
         self.context.addAction(menuItem)
     else:
