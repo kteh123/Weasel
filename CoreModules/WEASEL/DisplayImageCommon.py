@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QFileDialog,
                             QVBoxLayout, 
                             QMdiSubWindow, 
                             QGroupBox, 
-                            QDoubleSpinBox,
+                            QSpinBox,
                             QPushButton,  
                             QLabel,  
                             QSlider, 
@@ -29,10 +29,10 @@ logger = logging.getLogger(__name__)
 
 def setUpLevelsSpinBoxes(imageLevelsLayout): 
     logger.info("DisplayImageCommon.setUpLevelsSpinBoxes called.")
-    spinBoxIntensity = QDoubleSpinBox()
+    spinBoxIntensity = QSpinBox()
     spinBoxIntensity.setToolTip("Adjust Image Intensity")
     spinBoxIntensity.setStyleSheet("padding-left:0;  margin-left:0;")
-    spinBoxContrast = QDoubleSpinBox()
+    spinBoxContrast = QSpinBox()
     spinBoxContrast.setToolTip("Adjust Image Contrast")
     spinBoxContrast.setStyleSheet("padding-left:0; margin-left:0;")
     

@@ -1,6 +1,7 @@
 import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
+from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from CoreModules.DeveloperTools import UserInterfaceTools
 from CoreModules.DeveloperTools import Subject
 from CoreModules.DeveloperTools import Study
@@ -216,6 +217,35 @@ class OriginalPipelines():
                 subjectList.append(Subject(self, subject))
             
         return SubjectList(subjectList)
+
+    def message(self, msg="Message in the box", title="Window Title"):
+        """
+        Displays a Message window with the text in "msg" and the title "title".
+        """
+        messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+    
+    def information(self, msg="Message in the box", title="Window Title"):
+        """
+        Display a Window with information message and the user must press 'OK' to continue.
+        """
+        QMessageBox.information(self, title, msg)
+
+    def error(self, msg="Message in the box", title="Window Title"):
+        QMessageBox.critical(self, title, msg)
+
+    def question(self, question="You wish to proceed (OK) or not (Cancel)?", title="Message Window Title"):
+        """
+        Displays a question window in the User Interface with the title in "title" and
+        with the question in "question". The 2 strings in the arguments are the input by default.
+        The user has to click either "OK" or "Cancel" in order to continue using the interface.
+        It returns 0 if reply is "Cancel" and 1 if reply is "OK".
+        """
+        buttonReply = QMessageBox.question(self, title, question, 
+                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+        if buttonReply == QMessageBox.Ok:
+            return 1
+        else:
+            return 0
  
     def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
         """

@@ -22,8 +22,6 @@ def main(self):
     try:
         logger.info("LoadDICOM.main called")
         closeAllSubWindows.main(self)
-        #self.selectedImageName = ''
-        #self.selectedImagePath = ''
         #browse to DICOM folder and get DICOM folder name
         scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
         self.DICOMFolder = scan_directory
