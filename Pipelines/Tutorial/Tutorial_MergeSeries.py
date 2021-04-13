@@ -9,4 +9,7 @@ def main(weasel):
     if len(list_of_series) <= 1: return
     list_of_series.merge(series_name='MergedSeries').display()
     weasel.refresh()
+
+
+
     
