@@ -54,12 +54,13 @@ TRISTAN_GREY = """
                 QLabel{ padding: 4px;
                         min-height: 1em;
                         text-align: centre;
-                        color: black;
                         font-weight: bold;
                         font-size: 9pt;
                         background: transparent;
                         margin: 0.25em;
                         }
+
+                QTableWidget{color: black;}
 
                 QSpinBox{
                     font-size: 9pt;
