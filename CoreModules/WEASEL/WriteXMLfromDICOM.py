@@ -294,7 +294,8 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
             name = ET.SubElement(image_element, 'name')
             time = ET.SubElement(image_element, 'time')
             date = ET.SubElement(image_element, 'date')
-            label.text = str(len(list(image_root.iter('image')))).zfill(6)
+            label.text = str(dicomfile.InstanceNumber).zfill(6)
+            #label.text = str(len(list(image_root.iter('image')))).zfill(6)
             name.text = os.path.normpath(list_paths[index])
             
             # The next lines save the time and date to XML - They consider multiple/eventual formats

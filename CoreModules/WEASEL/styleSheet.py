@@ -65,6 +65,13 @@ TRISTAN_GREY = """
                     font-size: 9pt;
                     font-weight: bold;}
 
+                QSpinBox::up-arrow{max-height: 16px;}
+
+                QSpinBox::down-arrow{max-height: 16px;}
+
+                QDoubleSpinBox::up-arrow{max-height: 16px;}
+
+                QDoubleSpinBox::down-arrow{max-height: 16px;}
 
                 QCheckBox{
                     width: 5px;

@@ -6,18 +6,20 @@ import numpy as np
 def main(weasel):
     list_of_images = weasel.images()    # get the list of images checked by the user
     if len(list_of_images) == 0: return   # if the user cancels then exit
-
-    cancel, input_list = weasel.user_input(
-        {"type":"integer", "label":"Lower Threshold", "value":30, "minimum":0, "maximum":100},
-        {"type":"integer", "label":"Upper Threshold", "value":70, "minimum":0, "maximum":100}, 
-        title = "Insert lower and upper thresholds")
-    if cancel: return
-
-    lower_thresh = input_list[0]['value']
-    upper_thresh = input_list[1]['value']
-    if lower_thresh >= upper_thresh:
-        weasel.error("Not possible to threshold the selected images. The upper threshold must be greater than the lower threshold.", "Threshold Input Error")
-        return
+    
+    cancel = 0
+    while cancel == 0:
+        cancel, input_list = weasel.user_input(
+            {"type":"integer", "label":"Lower Threshold", "value":30, "minimum":0, "maximum":100},
+            {"type":"integer", "label":"Upper Threshold", "value":70, "minimum":0, "maximum":100}, 
+            title = "Insert lower and upper thresholds")
+        if cancel: return
+        lower_thresh = input_list[0]['value']
+        upper_thresh = input_list[1]['value']
+        if lower_thresh >= upper_thresh:
+            weasel.error("Not possible to threshold the selected images. The upper threshold must be greater than the lower threshold.", "Threshold Input Error")
+        else:
+            cancel = 1
 
     series = list_of_images.new_parent(suffix="_Thresholded_"+str(lower_thresh)+"_"+str(upper_thresh))
     for i, image in enumerate(list_of_images): # Loop over images and display a progress Bar

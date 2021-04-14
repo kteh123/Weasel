@@ -931,7 +931,7 @@ def saveROI(self, regionName, graphicsView):
         # Save Current ROI
         logger.info("DisplayImageDrawROI.saveROI called")
         maskList = graphicsView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
-        maskList = [np.array(mask, dtype=np.int) for mask in maskList] # Convert each 2D boolean to 0s and 1s
+        maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
         suffix = str("_ROI_"+ regionName)
         if len(maskList) > 1:
             inputPath = [i[3] for i in self.checkedImageList]
@@ -943,9 +943,9 @@ def saveROI(self, regionName, graphicsView):
             "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
             "Export ROIs")
         messageWindow.setMsgWindowProgBarMaxValue(self, len(inputPath))
-        ids = saveDICOM_Image.generateUIDs(readDICOM_Image.getDicomDataset(inputPath[0]))
-        seriesID = ids[0]
-        seriesUID = ids[1]
+        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
+        seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
+        seriesUID = saveDICOM_Image.generateUIDs(readDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
         #outputPath = []
         #for image in inputPath:
         for index, path in enumerate(inputPath):

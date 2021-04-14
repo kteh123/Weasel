@@ -230,7 +230,16 @@ class OriginalPipelines():
         """
         QMessageBox.information(self, title, msg)
 
+    def warning(self, msg="Message in the box", title="Window Title"):
+        """
+        Display a Window with warning message and the user must press 'OK' to continue.
+        """
+        QMessageBox.warning(self, title, msg)
+
     def error(self, msg="Message in the box", title="Window Title"):
+        """
+        Display a Window with error message and the user must press 'OK' to continue.
+        """
         QMessageBox.critical(self, title, msg)
 
     def question(self, question="You wish to proceed (OK) or not (Cancel)?", title="Message Window Title"):

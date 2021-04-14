@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox,
                              QDoubleSpinBox, QLineEdit, QListWidget, QAbstractItemView )
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
+import CoreModules.WEASEL.styleSheet as styleSheet
 import sys
 import logging
 logger = logging.getLogger(__name__)
@@ -311,6 +312,7 @@ class ParameterInputDialog(QDialog):
         try:
             super(ParameterInputDialog, self).__init__()
             self.setWindowTitle(title)
+            self.setStyleSheet(styleSheet.TRISTAN_GREY)
             #Hide ? help button
             #self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
             self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)

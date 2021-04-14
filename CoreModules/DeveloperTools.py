@@ -756,11 +756,15 @@ class Study:
 
     def new(self, suffix="_Copy"):
         studyID = self.studyID + suffix
-        return Study(self.objWeasel, self.subjectID, studyID, suffix=suffix)
+        prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
+        study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
+        return Study(self.objWeasel, self.subjectID, studyID, studyUID=study_uid, suffix=suffix)
 
     def copy(self, suffix="_Copy", newSubjectID=None, output_dir=None):
         if newSubjectID:
-            newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, suffix=suffix)
+            prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
+            study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
+            newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, studyUID=study_uid, suffix=suffix)
         else:
             newStudyInstance = self.new(suffix=suffix)
         seriesPathsList = []
@@ -780,8 +784,10 @@ class Study:
     @staticmethod
     def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False, output_dir=None):
         if newStudyName:
+            prefixUID = '.'.join(listStudies[0].studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
+            study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
             newStudyID = listStudies[0].studyID.split('_')[0] + "_" + listStudies[0].studyID.split('_')[1] + "_" + newStudyName
-            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID)
+            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID, studyUID=study_uid)
         else:
             outputStudy = listStudies[0].new(suffix=suffix)
         # Add new study (outputStudy) to XML

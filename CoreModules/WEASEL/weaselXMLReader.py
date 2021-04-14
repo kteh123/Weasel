@@ -540,7 +540,7 @@ class WeaselXMLReader:
                 newImage = ET.SubElement(newSeries,'image')
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
-                labelNewImage.text = imageLabel + suffix
+                labelNewImage.text = imageLabel # + suffix
                 #labelNewImage.text = "000001"
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName
@@ -556,7 +556,7 @@ class WeaselXMLReader:
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
                 #imageLabel = self.getImageLabel(subjectID, studyID, seriesID, imageName)
-                labelNewImage.text = imageLabel + suffix
+                labelNewImage.text = imageLabel # + suffix
                 #labelNewImage.text = str(len(series)).zfill(6)
                 nameNewImage = ET.SubElement(newImage, 'name')
                 nameNewImage.text = newImageFileName

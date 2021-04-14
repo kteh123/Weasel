@@ -76,39 +76,47 @@ class ParametricClass(object):
         dicom.HighBit = 7
         #dicom.SmallestImagePixelValue = 0
         #dicom.LargestImagePixelValue = int(np.amax(imageArray)) # max 255
-        dicom.add_new('0x00280106', 'US', 0)
-        dicom.add_new('0x00280107', 'US', int(np.amax(imageArray)))
+        dicom.add_new('0x00280106', 'US', 0) # Minimum
+        dicom.add_new('0x00280107', 'US', int(np.amax(imageArray))) # Maximum
         dicom.PixelRepresentation = 0
         dicom.SamplesPerPixel = 1
         #dicom.WindowCenter = 0.5
         #dicom.WindowWidth = 1.1
         dicom.add_new('0x00281050', 'DS', 0.5) # WindowCenter
         dicom.add_new('0x00281051', 'DS', 1.1) # WindowWidth
+        #dicom.RescaleIntercept = 0
+        #dicom.RescaleSlope = 1
+        dicom.add_new('0x00281052', 'DS', 0) # RescaleIntercept
+        dicom.add_new('0x00281053', 'DS', 1) # RescaleSlope
         dicom.LossyImageCompression = '00'
-        pixelArray = imageArray.astype(np.uint8) # Should we multiply by 255?
+        pixelArray = np.transpose(imageArray.astype(np.uint8)) # Should we multiply by 255?
         dicom.PixelData = pixelArray.tobytes()
 
         dicom.Modality = 'SEG'
         dicom.SegmentationType = 'FRACTIONAL'
         dicom.MaximumFractionalValue = int(np.amax(imageArray)) # max 255
         dicom.SegmentationFractionalType = 'OCCUPANCY'
-        dicom.ContentDescription = dicom.ImageComments.split('_')[2] # 'Image segmentation'
 
         # Segment Labels
-        segment_numbers = np.unique(pixelArray)
-        segment_dictionary = dict(list(enumerate(segment_numbers)))
-        segment_label = dicom.ImageComments.split('_')[2]
-        segment_dictionary[0] = 'Background'
-        segment_dictionary[1] = segment_label
-        for key in segment_dictionary:
-           dicom.SegmentSequence = [Dataset(), Dataset(), Dataset(), Dataset(), Dataset(), Dataset()]
-           dicom.SegmentSequence[0].SegmentAlgorithmType = 'MANUAL'
-           dicom.SegmentSequence[1].SegmentNumber = key
-           dicom.SegmentSequence[2].SegmentDescription = str(segment_dictionary[key])
-           dicom.SegmentSequence[3].SegmentLabel = str(segment_dictionary[key])
-           dicom.SegmentSequence[4].SegmentAlgorithmName = "Weasel"
-           anatomyString = dicom.BodyPartExamined
-           saveAnatomicalInfo(anatomyString, dicom.SegmentSequence[5])
+        if hasattr(dicom, "ImageComments"):
+            dicom.ContentDescription = dicom.ImageComments.split('_')[2] # 'Image segmentation'
+            segment_numbers = np.unique(pixelArray)
+            segment_dictionary = dict(list(enumerate(segment_numbers)))
+            segment_label = dicom.ImageComments.split('_')[2]
+            segment_dictionary[0] = 'Background'
+            segment_dictionary[1] = segment_label
+            for key in segment_dictionary:
+                dicom.SegmentSequence = [Dataset(), Dataset(), Dataset(), Dataset(), Dataset(), Dataset()]
+                dicom.SegmentSequence[0].SegmentAlgorithmType = 'MANUAL'
+                dicom.SegmentSequence[1].SegmentNumber = key
+                dicom.SegmentSequence[2].SegmentDescription = str(segment_dictionary[key])
+                dicom.SegmentSequence[3].SegmentLabel = str(segment_dictionary[key])
+                dicom.SegmentSequence[4].SegmentAlgorithmName = "Weasel"
+                if hasattr(dicom, "BodyPartExamined"):
+                    anatomyString = dicom.BodyPartExamined
+                    saveAnatomicalInfo(anatomyString, dicom.SegmentSequence[5])
+        else:
+            dicom.ContentDescription = "Mask with no label"
 
         return
 

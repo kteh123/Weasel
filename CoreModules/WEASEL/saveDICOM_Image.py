@@ -116,7 +116,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
                         for individualRef in list_refs_path:
                             refs.append(individualRef[index])
 
-                saveNewSingleDicomImage(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, image_number=index, parametric_map=parametric_map, 
+                saveNewSingleDicomImage(newFilePath, imagePathList[index], pixelArrayList[index], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, image_number=index+1, parametric_map=parametric_map, 
                                       colourmap=colourmap, list_refs_path=refs)
             del series_id, series_uid, refs
             return
@@ -179,7 +179,11 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
 
 
 def createNewPixelArray(imageArray, dataset):
-    try:
+    try:        
+        # If the new array is a binary image / mask
+        if len(np.unique(imageArray)) == 2:
+            param.editDicom(dataset, imageArray, "SEG")
+            return dataset
         numberFrames = 1
         enhancedArrayInt = []
         numDimensions = len(np.shape(imageArray))

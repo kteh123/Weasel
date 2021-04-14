@@ -23,6 +23,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
 sys.path.append(os.path.join(sys.path[0],'External'))
 sys.path.append(os.path.join(sys.path[0],'Pipelines'))
+sys.path.append(os.path.join(sys.path[0],'Scripting'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.styleSheet as styleSheet
