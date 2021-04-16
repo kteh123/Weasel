@@ -1,17 +1,17 @@
 <menus>
-  
+
   <menu name="Tools">
         <item>
           <label>View Series/Image</label>
           <shortcut>Ctrl+V</shortcut>
-          <tooltip>View a DICOM Image or series with a colour table</tooltip>
+          <tooltip>View DICOM Image or series</tooltip>
           <module>ViewImage</module>
           <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
         </item>
         <item>
           <label>View Series/Image with ROI</label>
           <shortcut>Ctrl+R</shortcut>
-          <tooltip>View a DICOM Image or series with the freehand ROI drawing tool</tooltip>
+          <tooltip>View DICOM Image or series with the ROI tool</tooltip>
           <module>ViewROIImage</module>
           <context_menu>yes</context_menu>
         </item>
@@ -23,97 +23,214 @@
           <context_menu>yes</context_menu>  
         </item>
         <item>
-          <label>Delete Series/Image</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Delete a DICOM Image or series</tooltip>
-          <module>DeleteImage</module>
-        </item>
-        <item>
           <label>Copy Series</label>
           <shortcut>Ctrl+C</shortcut>
           <tooltip>Copy a DICOM series</tooltip>
           <module>copyDICOM_Image</module>
         </item>
+  </menu>
+  
+  <menu name="Tutorial">
+    
         <item>
-          <label>Binary Operations</label>
-          <shortcut>Ctrl+B</shortcut>
-          <tooltip>Performs binary operations on two images</tooltip>
-          <module>BinaryOperationsOnImages</module>
+          <label>Display images</label>
+          <module>Tutorial_DisplayImages</module>
         </item>
+
         <item>
-          <label>Invert Series/Image</label>
+          <label>Display series</label>
+          <module>Tutorial_DisplaySeries</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Copy images</label>
+          <module>Tutorial_CopyImages</module>
+        </item>
+    
+        <item>
+          <label>Copy images (without a progress bar)</label>
+          <module>Tutorial_CopyImagesDirect</module>
+        </item>
+    
+        <item>
+          <label>Copy series</label>
+          <module>Tutorial_CopySeries</module>
+        </item>
+		
+		<item>
+          <separator>yes</separator>
+        </item>
+		
+		<item>
+          <label>Copy studies</label>
+          <module>Tutorial_CopyStudies</module>
+        </item>
+		
+		<item>
+          <label>Copy subjects</label>
+          <module>Tutorial_CopySubject</module>
+        </item>
+		
+		<item>
+          <label>Delete studies</label>
+          <module>Tutorial_DeleteStudies</module>
+        </item>
+		
+		<item>
+          <label>Delete subjects</label>
+          <module>Tutorial_DeleteSubject</module>
+        </item>
+    
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Delete images</label>
+          <module>Tutorial_Delete</module>
+        </item>
+
+        <item>
+          <label>Delete series</label>
+          <module>Tutorial_DeleteSeries</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Merge images into a new series</label>
+          <module>Tutorial_MergeImages</module>
+        </item>
+    
+        <item>
+          <label>Copy and merge images</label>
+          <module>Tutorial_MergeImagesCopy</module>
+        </item>
+    
+        <item>
+          <label>Merge series into a new series</label>
+          <module>Tutorial_MergeSeries</module>
+        </item>
+    
+        <item>
+          <label>Copy and merge series</label>
+          <module>Tutorial_MergeSeriesCopy</module>
+        </item>
+		
+		<item>
+          <label>Merge studies</label>
+          <module>Tutorial_MergeStudies</module>
+        </item>
+
+		<item>
+          <label>Merge subjects</label>
+          <module>Tutorial_MergeSubjects</module>
+        </item>
+		
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Invert pixel values in place (image-by-image)</label>
            <shortcut>Ctrl+I</shortcut>
-          <module>invertDICOM_Image</module>
+          <module>Tutorial_InvertPixelValues</module>
         </item>
+
         <item>
-          <label>Square Series/Image</label>
-          <shortcut>Ctrl+S</shortcut>
-          <tooltip>Square a DICOM Image or series</tooltip>
-          <module>squareDICOM_Image</module>
+          <label>Invert pixel values in place (series-by-series)</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesSeries</module>
         </item>
-		<item>
-          <label>Threshold Series/Image</label>
-          <shortcut>Ctrl+T</shortcut>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image</module>
+
+        <item>
+          <label>Invert pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesInNewSeries</module>
         </item>
-		<item>
-          <label>Rename Series</label>
-          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
-		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
-          <module>renameSeries</module>
+
+        <item>
+          <label>Invert pixel values in a new series (series-by-series)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_InvertPixelValuesSeriesInNewSeries</module>
         </item>
-		<item>
-          <!--Inserts a separator, a horizontal line in the menu-->
+    
+        <item>
           <separator>yes</separator>
         </item>
-        <item>
-          <label>Square Developer (Pipeline3D/GroupWise)</label>
-          <shortcut>Ctrl+S+3</shortcut>
-          <tooltip>Square a DICOM Image or series</tooltip>
-          <module>squareDICOM_Image_Developer</module>
+    
+	    <item>
+          <label>Threshold pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_ThresholdPixelValuesInNewSeries</module>
         </item>
-        <item>
-          <label>Gaussian Filter Developer (GroupWise)</label>
-          <shortcut>Ctrl+F+3</shortcut>
-          <tooltip>gaussian</tooltip>
-          <module>gaussianFilterDICOM_Image_GroupWise</module>
-        </item>
-        <item>
-          <label>Threshold Developer (SlicebySlice)</label>
-          <shortcut>Ctrl+L</shortcut>
-          <tooltip>Threshold a DICOM Image or series</tooltip>
-          <module>thresholdDICOM_Image_Developer</module>
-        </item>
-        <item>
-          <label>Merge Series (Developer)</label>
-          <shortcut>Ctrl+M+E</shortcut>
-          <tooltip>Merge selected images or series into 1 series</tooltip>
-          <module>mergeDICOM_Developer</module>
-        </item>
+		
 		<item>
-          <label>Edit DICOM Tag Developer</label>
-          <shortcut>Ctrl+D</shortcut>
-          <tooltip>Choose DICOM header and change the selected files</tooltip>
-          <module>editDICOM_Image_Developer</module>
+          <label>Square pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_SquarePixelValuesInNewSeries</module>
         </item>
-  </menu>
-  <menu name="TRISTAN">
-        <item>
-          <label>MIP (Developer)</label>
-          <shortcut>Ctrl+M+I</shortcut>
-          <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
-          <module>calculateMIP_Developer</module>
+		
+		<item>
+          <label>Apply Gaussian filter to pixel values in a new series (image-by-image)</label>
+          <shortcut>Ctrl+I</shortcut>
+          <module>Tutorial_GaussianPixelValuesInNewSeries</module>
         </item>
-        <item>
-          <!--Inserts a separator, a horizontal line in the menu-->
+		
+		<item>
           <separator>yes</separator>
         </item>
+		
+        <item>
+          <label>Filter images with a local filter</label>
+          <module>Tutorial_LocalFilterImages</module>
+        </item>
+
+        <item>
+          <label>User input tutorial</label>
+          <module>Tutorial_UserInput</module>
+        </item>
+
+        <item>
+          <separator>yes</separator>
+        </item>
+
+        <item>
+          <label>Anonymise</label>
+          <module>Tutorial_Anonymise</module>
+        </item>
+
+        <item>
+          <label>Anonymise a copy</label>
+          <module>Tutorial_AnonymiseCopy</module>
+        </item>
+
+        <item>
+          <label>Anonymise Patient ID</label>
+          <module>Tutorial_AnonymiseID</module>
+        </item>
+
+   </menu>
+    
+    <menu name="Examples">
+      <item>
+        <label>Binary Operations</label>
+        <shortcut>Ctrl+B</shortcut>
+        <tooltip>Performs binary operations on two images</tooltip>
+        <module>BinaryOperationsOnImages</module>
+      </item>
   </menu>
+  
   <menu name="XNAT">
-    	<item>
+        <item>
           <label>Download</label>
-          <tooltip>Download images from XNAT</tooltip>
+          <tooltip>Prompts a window that allows to download images from XNAT</tooltip>
 		  <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>download</function>
@@ -124,23 +241,14 @@
         </item>
 		<item>
           <label>Upload</label>
-          <tooltip>Upload images from XNAT</tooltip>
+          <tooltip>Prompts a window that allows to upload images from XNAT</tooltip>
 		  <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>upload</function>
         </item>
   </menu>
+  
 </menus>
 
-<!--  Ferret Removed from Weasel
-<item>
-  <label>FERRET</label>
-  <icon>images\\FERRET_LOGO.png</icon>
-  <enabled>True</enabled>
-  <shortcut>Ctrl+F</shortcut>
-  <tooltip>Launches the FERRET application</tooltip>
-  <module>MenuToolBarCommon</module>
-  <function>displayFERRET</function>
-</item>
--->
+
 

@@ -4,7 +4,9 @@ import scipy.ndimage
 from skimage.transform import resize
 from skimage.restoration import unwrap_phase
 
-#INSERT A METHOD TO DEAL WITH MOSAIC PIXEL ARRAYS
+# AT THE MOMENT (16TH APRIL 2021) ONLY A COUPLE OF FUNCTIONS ARE BEING USED. THIS MAY BECOME EITHER REDUNDANT OR MORE RELEVANT IN THE FUTURE
+
+# IT CAN BECOME A STATS EXTRACTOR OR A SET OF HELPER FUNCTIONS FOR PLOTTING
 
 def unWrapPhase(pixelArray):
     """
@@ -58,21 +60,21 @@ def invertAlgorithm(pixelArray, dataset):
         totalBytes = dataset.BitsAllocated
         return np.invert(pixelArray.astype('int' + str(totalBytes)))
     except Exception as e:
-        print('Error in function imagingTools.invertAlgorithm: ' + str(e))
+        print('Error in function ImagingTools.invertAlgorithm: ' + str(e))
 
 
 def squareAlgorithm(pixelArray, dataset = None):
     try:
         return np.square(pixelArray)
     except Exception as e:
-        print('Error in function imagingTools.squareAlgorithm: ' + str(e))
+        print('Error in function ImagingTools.squareAlgorithm: ' + str(e))
 
 
 def gaussianFilter(pixelArray, sigma):
     try:
         return scipy.ndimage.gaussian_filter(pixelArray, sigma)
     except Exception as e:
-        print('Error in function imagingTools.gaussianFilter: ' + str(e))
+        print('Error in function ImagingTools.gaussianFilter: ' + str(e))
 
 
 def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):

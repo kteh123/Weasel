@@ -132,7 +132,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                         multiframeScript = 'emf2sf.bat'
                     else:
                         multiframeScript = 'emf2sf'
-                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "External", "dcm4che-5.23.1", "bin", multiframeScript)
+                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "External", "dcm4che", "bin", multiframeScript)
                     multiframeDir = os.path.dirname(filepath)
                     #multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
                     #os.makedirs(multiframeDir, exist_ok=True)

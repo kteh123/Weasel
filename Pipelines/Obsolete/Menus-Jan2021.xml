@@ -1,0 +1,146 @@
+<menus>
+  
+  <menu name="Tools">
+        <item>
+          <label>View Series/Image</label>
+          <shortcut>Ctrl+V</shortcut>
+          <tooltip>View a DICOM Image or series with a colour table</tooltip>
+          <module>ViewImage</module>
+          <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+        </item>
+        <item>
+          <label>View Series/Image with ROI</label>
+          <shortcut>Ctrl+R</shortcut>
+          <tooltip>View a DICOM Image or series with the freehand ROI drawing tool</tooltip>
+          <module>ViewROIImage</module>
+          <context_menu>yes</context_menu>
+        </item>
+        <item>
+          <label>View Metadata</label>
+          <shortcut>Ctrl+M</shortcut>
+          <tooltip>View DICOM Image or series metadata</tooltip>
+          <module>ViewMetaData</module>
+          <context_menu>yes</context_menu>  
+        </item>
+        <item>
+          <label>Delete Series/Image</label>
+          <shortcut>Ctrl+D</shortcut>
+          <tooltip>Delete a DICOM Image or series</tooltip>
+          <module>DeleteImage</module>
+        </item>
+        <item>
+          <label>Copy Series</label>
+          <shortcut>Ctrl+C</shortcut>
+          <tooltip>Copy a DICOM series</tooltip>
+          <module>copyDICOM_Image</module>
+        </item>
+        <item>
+          <label>Binary Operations</label>
+          <shortcut>Ctrl+B</shortcut>
+          <tooltip>Performs binary operations on two images</tooltip>
+          <module>BinaryOperationsOnImages</module>
+        </item>
+        <item>
+          <label>Invert Series/Image</label>
+           <shortcut>Ctrl+I</shortcut>
+          <module>invertDICOM_Image</module>
+        </item>
+        <item>
+          <label>Square Series/Image</label>
+          <shortcut>Ctrl+S</shortcut>
+          <tooltip>Square a DICOM Image or series</tooltip>
+          <module>squareDICOM_Image</module>
+        </item>
+		<item>
+          <label>Threshold Series/Image</label>
+          <shortcut>Ctrl+T</shortcut>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image</module>
+        </item>
+		<item>
+          <label>Rename Series</label>
+          <tooltip>Rename Selected Series in the UI and DICOM</tooltip>
+		  <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
+          <module>renameSeries</module>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+        <item>
+          <label>Square Developer (Pipeline3D/GroupWise)</label>
+          <shortcut>Ctrl+S+3</shortcut>
+          <tooltip>Square a DICOM Image or series</tooltip>
+          <module>squareDICOM_Image_Developer</module>
+        </item>
+        <item>
+          <label>Gaussian Filter Developer (GroupWise)</label>
+          <shortcut>Ctrl+F+3</shortcut>
+          <tooltip>gaussian</tooltip>
+          <module>gaussianFilterDICOM_Image_GroupWise</module>
+        </item>
+        <item>
+          <label>Threshold Developer (SlicebySlice)</label>
+          <shortcut>Ctrl+L</shortcut>
+          <tooltip>Threshold a DICOM Image or series</tooltip>
+          <module>thresholdDICOM_Image_Developer</module>
+        </item>
+        <item>
+          <label>Merge Series (Developer)</label>
+          <shortcut>Ctrl+M+E</shortcut>
+          <tooltip>Merge selected images or series into 1 series</tooltip>
+          <module>mergeDICOM_Developer</module>
+        </item>
+		<item>
+          <label>Edit DICOM Tag Developer</label>
+          <shortcut>Ctrl+D</shortcut>
+          <tooltip>Choose DICOM header and change the selected files</tooltip>
+          <module>editDICOM_Image_Developer</module>
+        </item>
+  </menu>
+  <menu name="TRISTAN">
+        <item>
+          <label>MIP (Developer)</label>
+          <shortcut>Ctrl+M+I</shortcut>
+          <tooltip>Calculate Maximum Intensity Projection of a series</tooltip>
+          <module>calculateMIP_Developer</module>
+        </item>
+        <item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+  </menu>
+  <menu name="XNAT">
+    	<item>
+          <label>Download</label>
+          <tooltip>Download images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>download</function>
+        </item>
+		<item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+		<item>
+          <label>Upload</label>
+          <tooltip>Upload images from XNAT</tooltip>
+		  <icon>docs/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		  <function>upload</function>
+        </item>
+  </menu>
+</menus>
+
+<!--  Ferret Removed from Weasel
+<item>
+  <label>FERRET</label>
+  <icon>images\\FERRET_LOGO.png</icon>
+  <enabled>True</enabled>
+  <shortcut>Ctrl+F</shortcut>
+  <tooltip>Launches the FERRET application</tooltip>
+  <module>MenuToolBarCommon</module>
+  <function>displayFERRET</function>
+</item>
+-->
+

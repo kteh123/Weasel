@@ -9,7 +9,7 @@ import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile
 #import CoreModules.WEASEL.InputDialog as inputDialog
 import Scripting.UserInput as inputDialog
-from CoreModules.imagingTools import thresholdPixelArray
+from CoreModules.WEASEL.ImagingTools import thresholdPixelArray
 FILE_SUFFIX = '_Thresholded'
 
 

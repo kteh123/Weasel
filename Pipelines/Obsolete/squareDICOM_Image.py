@@ -6,7 +6,7 @@ import Pipelines.ToolsFunctions  as toolFunctions
 #generic name, funcAlgorithm
 #uncomment and edit the following line of code to import the function 
 #containing your image processing algorith. 
-from CoreModules.imagingTools import squareAlgorithm as funcAlgorithm
+from CoreModules.WEASEL.ImagingTools import squareAlgorithm as funcAlgorithm
 FILE_SUFFIX = '_Square'
 #***************************************************************************
 
