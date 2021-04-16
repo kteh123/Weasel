@@ -71,6 +71,7 @@ def displayManySingleImageSubWindows(self):
             imagePath = image[3]
             displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath)
 
+
 def displayManyMultiImageSubWindows(self):
     if len(self.checkedSeriesList)>0: 
         for series in self.checkedSeriesList:
