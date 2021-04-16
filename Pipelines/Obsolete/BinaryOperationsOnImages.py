@@ -11,7 +11,7 @@ import os
 import numpy as np
 import pydicom
 from scipy.stats import iqr
-import CoreModules.pyqtgraph as pg
+import External.pyqtgraph as pg
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
