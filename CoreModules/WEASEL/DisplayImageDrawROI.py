@@ -111,7 +111,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
         spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(imageLevelsLayout, 
                                                                  graphicsView, cmbROIs)
            
-        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        pixelArray = readDICOM_Image.returnPixelArray(imagePath)
         if pixelArray is None:
             lblImageMissing.show()
             graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  

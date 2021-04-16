@@ -277,10 +277,10 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName,
 def displayManySingleImageSubWindows(self):
     if len(self.checkedImageList)>0: 
         for image in self.checkedImageList:
-            studyName = image[0]
-            seriesName = image[1]
-            imagePath = image[2]
-            subjectID = image[3]
+            subjectID = image[0]
+            studyName = image[1]
+            seriesName = image[2]
+            imagePath = image[3]
             displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
 
 
@@ -312,6 +312,7 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
             logger.info("DisplayImageColour.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
+            print("derivedImagePath={}".format(derivedImagePath))
             if derivedImagePath:
                 self.selectedImagePath = derivedImagePath
 
