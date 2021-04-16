@@ -22,7 +22,7 @@ import CoreModules.pyqtgraph as pg
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import numpy as np
 import logging
-import CoreModules.freeHandROI.Resources as icons
+import CoreModules.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 

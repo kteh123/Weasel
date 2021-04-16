@@ -33,9 +33,9 @@ import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InputDialog as inputDialog
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
-from CoreModules.freeHandROI.GraphicsView import GraphicsView
-from CoreModules.freeHandROI.ROI_Storage import ROIs 
-import CoreModules.freeHandROI.Resources as icons
+from CoreModules.FreeHandROI.GraphicsView import GraphicsView
+from CoreModules.FreeHandROI.ROI_Storage import ROIs 
+import CoreModules.FreeHandROI.Resources as icons
 import logging
 logger = logging.getLogger(__name__)
 

@@ -3,11 +3,11 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
 import numpy as np
-import CoreModules.freeHandROI.helperFunctions as fn
+import CoreModules.FreeHandROI.HelperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-import CoreModules.freeHandROI.Resources as icons
+import CoreModules.FreeHandROI.Resources as icons
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def updateImageLevels(self, intensity, contrast, roi):
-        logger.info("freeHandROI.GraphicsItem.updateImageLevels called")
+        logger.info("FreeHandROI.GraphicsItem.updateImageLevels called")
         try:
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
@@ -76,22 +76,22 @@ class GraphicsItem(QGraphicsObject):
 
             self.update()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.updateImageLevels: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.updateImageLevels: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.updateImageLevels: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.updateImageLevels: ' + str(e))
 
 
     def paint(self, painter, option, widget):
-        logger.info("freeHandROI.GraphicsItem.paint called")
+        logger.info("FreeHandROI.GraphicsItem.paint called")
         try:
             painter.setOpacity(1)
             painter.drawPixmap(0,0, self.width, self.height, self.pixMap)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.paint: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.paint: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.paint: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.paint: ' + str(e))
         
 
     def boundingRect(self): 
-        logger.info("freeHandROI.GraphicsItem.boundingRect called")
+        logger.info("FreeHandROI.GraphicsItem.boundingRect called")
         return QRectF(0,0,self.width, self.height)
 
 
@@ -99,7 +99,7 @@ class GraphicsItem(QGraphicsObject):
         """
         Estimate the min/max values of *data* by subsampling.
         """
-        logger.info("freeHandROI.GraphicsItem.__quickMinMax called")
+        logger.info("FreeHandROI.GraphicsItem.__quickMinMax called")
         try:
             while data.size > 1e6:
                 ax = np.argmax(data.shape)
@@ -108,12 +108,12 @@ class GraphicsItem(QGraphicsObject):
                 data = data[sl]
             return nanmin(data), nanmax(data)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.__quickMinMax: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.__quickMinMax: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.__quickMinMax: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.__quickMinMax: ' + str(e))
 
 
     def hoverEnterEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.hoverEnterEvent called")
+        logger.info("FreeHandROI.GraphicsItem.hoverEnterEvent called")
         try:
             if self.drawEnabled:
                 pm = QPixmap(icons.PEN_CURSOR)
@@ -128,22 +128,22 @@ class GraphicsItem(QGraphicsObject):
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
 
 
     def hoverLeaveEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.hoverLeaveEvent called")
+        logger.info("FreeHandROI.GraphicsItem.hoverLeaveEvent called")
         try:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.sigMouseHovered.emit(False)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
 
 
     def hoverMoveEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.hoverMoveEvent called")
+        logger.info("FreeHandROI.GraphicsItem.hoverMoveEvent called")
         try:
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
@@ -151,12 +151,12 @@ class GraphicsItem(QGraphicsObject):
             self.pixelValue = round(self.pixelArray[self.xMouseCoord, self.yMouseCoord], 3)
             self.sigMouseHovered.emit(True)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
        
 
     def mouseMoveEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.mouseMoveEvent called")
+        logger.info("FreeHandROI.GraphicsItem.mouseMoveEvent called")
         try:
             buttons = event.buttons()
             if (buttons == Qt.LeftButton):
@@ -190,12 +190,12 @@ class GraphicsItem(QGraphicsObject):
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
 
 
     def mouseReleaseEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.mouseReleaseEvent called")
+        logger.info("FreeHandROI.GraphicsItem.mouseReleaseEvent called")
         try:
             button = event.button()
             if (button == Qt.LeftButton):
@@ -258,12 +258,12 @@ class GraphicsItem(QGraphicsObject):
                             self.mask[yCoord, xCoord] = False
                             self.sigMaskEdited.emit()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
 
 
     def resetPixel(self, x, y):
-        logger.info("freeHandROI.GraphicsItem.resetPixel called")
+        logger.info("FreeHandROI.GraphicsItem.resetPixel called")
         try:
             pixelColour = self.origQimage.pixel(x, y) 
             pixelRGB =  QColor(pixelColour).getRgb()
@@ -276,12 +276,12 @@ class GraphicsItem(QGraphicsObject):
             self.pixMap = QPixmap.fromImage(self.qimage)
             self.update()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.resetPixel: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.resetPixel: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.resetPixel: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.resetPixel: ' + str(e))
     
 
     def setPixelToRed(self, x, y):
-        logger.info("freeHandROI.GraphicsItem.setPixelToRed called")
+        logger.info("FreeHandROI.GraphicsItem.setPixelToRed called")
         try:
             pixelColour = self.qimage.pixel(x, y) 
             pixelRGB =  QColor(pixelColour).getRgb()
@@ -299,12 +299,12 @@ class GraphicsItem(QGraphicsObject):
             self.pixMap = QPixmap.fromImage(self.qimage)
             self.update()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.setPixelToRed: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.setPixelToRed: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.setPixelToRed: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.setPixelToRed: ' + str(e))
 
 
     def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
-        logger.info("freeHandROI.GraphicsItem.drawStraightLine called")
+        logger.info("FreeHandROI.GraphicsItem.drawStraightLine called")
         try:
             objPainter = QPainter(self.pixMap)
             objPen = objPainter.pen()
@@ -320,11 +320,11 @@ class GraphicsItem(QGraphicsObject):
             self.qimage =  self.pixMap.toImage()
             self.update()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
 
     def reloadImage(self):
-        logger.info("freeHandROI.GraphicsItem.reloadImage called")
+        logger.info("FreeHandROI.GraphicsItem.reloadImage called")
         try:
             self.qimage = None
             self.pixMap = None
@@ -332,24 +332,24 @@ class GraphicsItem(QGraphicsObject):
             self.pixMap = QPixmap.fromImage(self.qimage)
             self.update()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.reloadImage: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.reloadImage: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.reloadImage: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.reloadImage: ' + str(e))
 
 
     def reloadMask(self, mask):
-        logger.info("freeHandROI.GraphicsItem.reloadMask called")
+        logger.info("FreeHandROI.GraphicsItem.reloadMask called")
         try:
             #redisplays the ROI represented by mask
             self.listROICoords = self.getListRoiInnerPoints(mask)
             self.fillFreeHandRoi()
             self.listROICoords = []
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.reloadMask: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.reloadMask: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.reloadMask: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.reloadMask: ' + str(e))
 
 
     def fillFreeHandRoi(self):
-        logger.info("freeHandROI.GraphicsItem.fillFreeHandRoi called")
+        logger.info("FreeHandROI.GraphicsItem.fillFreeHandRoi called")
         try:
             if self.listROICoords is not None:
                 for coords in self.listROICoords:
@@ -357,12 +357,12 @@ class GraphicsItem(QGraphicsObject):
                     y = coords[1]
                     self.setPixelToRed(x, y)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.fillFreeHandRoi: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.fillFreeHandRoi: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.fillFreeHandRoi: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.fillFreeHandRoi: ' + str(e))
 
 
     def addROItoImage(self, roi):
-        logger.info("freeHandROI.GraphicsItem.addROItoImage called")
+        logger.info("FreeHandROI.GraphicsItem.addROItoImage called")
         try:
             listROICoords = self.getListRoiInnerPoints(roi)
             if listROICoords is not None:
@@ -384,12 +384,12 @@ class GraphicsItem(QGraphicsObject):
                     value = qRgb(255, greenVal, blueVal)
                     self.qimage.setPixel(x, y, value)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.addROItoImage: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.addROItoImage: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.addROItoImage: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.addROItoImage: ' + str(e))
 
 
     def setROIPathColour(self, colour, listPathCoords):
-        logger.info("freeHandROI.GraphicsItem.setROIPathColour called")
+        logger.info("FreeHandROI.GraphicsItem.setROIPathColour called")
         try:
             if listPathCoords is not None:
                 for coords in listPathCoords:
@@ -421,23 +421,23 @@ class GraphicsItem(QGraphicsObject):
                         #so draw a straight line between start and end points
                         self.drawStraightLine(startX, startY, endX, endY, colour=colour)
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
 
     def getRoiMeanAndStd(self):
-        logger.info("freeHandROI.GraphicsItem.getRoiMeanAndStd called")
+        logger.info("FreeHandROI.GraphicsItem.getRoiMeanAndStd called")
         mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
         std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
         return mean, std
 
 
     def getMaskData(self):
-        logger.info("freeHandROI.GraphicsItem.getMaskData called")
+        logger.info("FreeHandROI.GraphicsItem.getMaskData called")
         return self.mask
 
 
     def getListRoiInnerPoints(self, roi):
-        logger.info("freeHandROI.GraphicsItem.getListRoiInnerPoints called")
+        logger.info("FreeHandROI.GraphicsItem.getListRoiInnerPoints called")
         try:
             if roi is not None:
                 result = np.where(roi == True)
@@ -445,17 +445,17 @@ class GraphicsItem(QGraphicsObject):
             else:
                 return None
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
 
     def createBlankMask(self):
-        logger.info("freeHandROI.GraphicsItem.createBlankMask called")
+        logger.info("FreeHandROI.GraphicsItem.createBlankMask called")
         ny, nx = np.shape(self.pixelArray)
         self.mask = np.full((nx, ny), False, dtype=bool)
 
 
     def createMask(self, roiBoundaryCoords):
-        logger.info("freeHandROI.GraphicsItem.createMask called")
+        logger.info("FreeHandROI.GraphicsItem.createMask called")
         try:
             self.mask = None
             nx, ny = np.shape(self.pixelArray)
@@ -473,12 +473,12 @@ class GraphicsItem(QGraphicsObject):
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
             self.sigMaskCreated.emit()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.createMask: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.createMask: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
             
 
     def mousePressEvent(self, event):
-        logger.info("freeHandROI.GraphicsItem.mousePressEven called")
+        logger.info("FreeHandROI.GraphicsItem.mousePressEven called")
         try:
             button = event.button()
             if (button == Qt.LeftButton):
@@ -486,8 +486,8 @@ class GraphicsItem(QGraphicsObject):
             elif (button == Qt.RightButton): 
               self.sigZoomOut.emit()
         except Exception as e:
-            print('Error in freeHandROI.GraphicsItem.createMask: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsItem.createMask: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
 
 
 

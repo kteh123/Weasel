@@ -37,7 +37,7 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection
-import CoreModules.freeHandROI.Resources as icons
+import CoreModules.FreeHandROI.Resources as icons
 
 import logging
 logger = logging.getLogger(__name__)
