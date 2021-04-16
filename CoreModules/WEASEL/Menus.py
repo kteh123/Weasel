@@ -12,7 +12,7 @@ import CoreModules.WEASEL.RefreshDICOM as refreshDICOM
 import CoreModules.WEASEL.TileAllSubWindows as tileAllSubWindows
 import CoreModules.WEASEL.CloseAllSubWindows as closeAllSubWindows
 import CoreModules.WEASEL.CloseTreeView as closeTreeView
-from CoreModules.WEASEL.weaselMenuXMLReader import WeaselMenuXMLReader
+from CoreModules.WEASEL.WeaselMenuXMLReader import WeaselMenuXMLReader
 import logging
 logger = logging.getLogger(__name__)
 
