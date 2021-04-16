@@ -1,3 +1,5 @@
+#This file is currently redundant but may be required in the future
+#***********************************************************************
 #from PyQt5.QtCore import  Qt
 #from PyQt5.QtWidgets import QMdiSubWindow
 #from PyQt5.QtGui import  QIcon
