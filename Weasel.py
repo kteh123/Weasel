@@ -26,7 +26,7 @@ sys.path.append(os.path.join(sys.path[0],'Pipelines'))
 sys.path.append(os.path.join(sys.path[0],'Scripting'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
-import CoreModules.WEASEL.styleSheet as styleSheet
+import CoreModules.WEASEL.StyleSheet as styleSheet
 from CoreModules.WEASEL.weaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.weaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.Menus as menus

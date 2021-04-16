@@ -25,7 +25,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, binary_closing
-import CoreModules.WEASEL.styleSheet as styleSheet
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
