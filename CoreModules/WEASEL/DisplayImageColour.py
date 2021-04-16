@@ -30,7 +30,7 @@ from matplotlib import cm
 import numpy as np
 import math
 from scipy.stats import iqr
-import CoreModules.pyqtgraph as pg 
+import External.pyqtgraph as pg 
 import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
 import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView 
