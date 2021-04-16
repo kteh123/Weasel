@@ -9,7 +9,7 @@ import logging
 import time
 from collections import defaultdict
 import CoreModules.WEASEL.Menus as menus
-import Pipelines.ViewImage as viewImage
+import CoreModules.WEASEL.ViewImage as viewImage
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
 
