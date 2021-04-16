@@ -223,7 +223,13 @@ class OriginalPipelines():
         Displays a Message window with the text in "msg" and the title "title".
         """
         messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
-    
+
+    def close_message(self):
+        """
+        Closes the message window 
+        """
+        self.msgSubWindow.close()
+
     def information(self, msg="Message in the box", title="Window Title"):
         """
         Display a Window with information message and the user must press 'OK' to continue.
@@ -252,16 +258,26 @@ class OriginalPipelines():
         buttonReply = QMessageBox.question(self, title, question, 
                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if buttonReply == QMessageBox.Ok:
-            return 1
+            return True
         else:
-            return 0
+            return False
  
-    def progress_bar(self, max=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
+    def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """
-        Displays a Progress Bar with the unit set in "index".
+        Displays a progress bar with the unit set in "index".
+        Note: launching a new progress bar at each iteration costs time, so this
+        should only be used in iterations where the progress bar is updated infrequently
+        For iterations with frequent updates, use progress_bar outside the iteration
+        and then update_progress_bar inside the iteration
         """
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
+        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(0), title)
         messageWindow.setMsgWindowProgBarMaxValue(self, max)
+        messageWindow.setMsgWindowProgBarValue(self, index)
+
+    def update_progress_bar(self, index=0):
+        """
+        Updates the progress bar with a new index.
+        """
         messageWindow.setMsgWindowProgBarValue(self, index)
 
     def close_progress_bar(self):
