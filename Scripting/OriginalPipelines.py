@@ -270,7 +270,7 @@ class OriginalPipelines():
         For iterations with frequent updates, use progress_bar outside the iteration
         and then update_progress_bar inside the iteration
         """
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(0), title)
+        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
         messageWindow.setMsgWindowProgBarMaxValue(self, max)
         messageWindow.setMsgWindowProgBarValue(self, index)
 
