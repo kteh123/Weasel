@@ -22,16 +22,10 @@
           <module>ViewMetaData</module>
           <context_menu>yes</context_menu>  
         </item>
-        <item>
-          <label>Copy Series</label>
-          <shortcut>Ctrl+C</shortcut>
-          <tooltip>Copy a DICOM series</tooltip>
-          <module>copyDICOM_Image</module>
-        </item>
   </menu>
   
   <menu name="Tutorial">
-    
+
         <item>
           <label>Display images</label>
           <module>Tutorial_DisplayImages</module>
@@ -61,26 +55,26 @@
           <module>Tutorial_CopySeries</module>
         </item>
 		
-		<item>
+		    <item>
           <separator>yes</separator>
         </item>
 		
-		<item>
+		    <item>
           <label>Copy studies</label>
           <module>Tutorial_CopyStudies</module>
         </item>
 		
-		<item>
+	      <item>
           <label>Copy subjects</label>
           <module>Tutorial_CopySubject</module>
         </item>
 		
-		<item>
+		    <item>
           <label>Delete studies</label>
           <module>Tutorial_DeleteStudies</module>
         </item>
 		
-		<item>
+		    <item>
           <label>Delete subjects</label>
           <module>Tutorial_DeleteSubject</module>
         </item>
@@ -123,12 +117,12 @@
           <module>Tutorial_MergeSeriesCopy</module>
         </item>
 		
-		<item>
+		    <item>
           <label>Merge studies</label>
           <module>Tutorial_MergeStudies</module>
         </item>
 
-		<item>
+		    <item>
           <label>Merge subjects</label>
           <module>Tutorial_MergeSubjects</module>
         </item>
@@ -139,13 +133,13 @@
 
         <item>
           <label>Invert pixel values in place (image-by-image)</label>
-           <shortcut>Ctrl+I</shortcut>
+          <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_InvertPixelValues</module>
         </item>
 
         <item>
           <label>Invert pixel values in place (series-by-series)</label>
-           <shortcut>Ctrl+I</shortcut>
+          <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_InvertPixelValuesSeries</module>
         </item>
 
@@ -165,25 +159,25 @@
           <separator>yes</separator>
         </item>
     
-	    <item>
+	      <item>
           <label>Threshold pixel values in a new series (image-by-image)</label>
           <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_ThresholdPixelValuesInNewSeries</module>
         </item>
 		
-		<item>
+		    <item>
           <label>Square pixel values in a new series (image-by-image)</label>
           <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_SquarePixelValuesInNewSeries</module>
         </item>
 		
-		<item>
+		    <item>
           <label>Apply Gaussian filter to pixel values in a new series (image-by-image)</label>
           <shortcut>Ctrl+I</shortcut>
           <module>Tutorial_GaussianPixelValuesInNewSeries</module>
         </item>
 		
-		<item>
+		    <item>
           <separator>yes</separator>
         </item>
 		
@@ -216,36 +210,40 @@
           <module>Tutorial_AnonymiseID</module>
         </item>
 
-   </menu>
+  </menu>
     
-    <menu name="Examples">
-      <item>
-        <label>Binary Operations</label>
-        <shortcut>Ctrl+B</shortcut>
-        <tooltip>Performs binary operations on two images</tooltip>
-        <module>BinaryOperationsOnImages</module>
-      </item>
+  <menu name="Examples">
+        <item>
+          <label>Binary Operations</label>
+          <shortcut>Ctrl+B</shortcut>
+          <tooltip>Performs binary operations on two images</tooltip>
+          <module>BinaryOperationsOnImages</module>
+        </item>
   </menu>
   
   <menu name="XNAT">
+
         <item>
           <label>Download</label>
           <tooltip>Prompts a window that allows to download images from XNAT</tooltip>
-		  <icon>docs/images/XNAT-LOGO.png</icon>
+		      <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
-		  <function>download</function>
+		      <function>download</function>
         </item>
-		<item>
+
+		    <item>
           <!--Inserts a separator, a horizontal line in the menu-->
           <separator>yes</separator>
         </item>
-		<item>
+
+		    <item>
           <label>Upload</label>
           <tooltip>Prompts a window that allows to upload images from XNAT</tooltip>
-		  <icon>docs/images/XNAT-LOGO.png</icon>
+		      <icon>docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
-		  <function>upload</function>
+		      <function>upload</function>
         </item>
+        
   </menu>
   
 </menus>
