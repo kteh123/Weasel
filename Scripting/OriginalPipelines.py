@@ -2,11 +2,11 @@ import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
-from CoreModules.DeveloperTools import UserInterfaceTools
-from CoreModules.DeveloperTools import Subject
-from CoreModules.DeveloperTools import Study
-from CoreModules.DeveloperTools import Series
-from CoreModules.DeveloperTools import Image
+from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
+from CoreModules.WEASEL.DeveloperTools import Subject
+from CoreModules.WEASEL.DeveloperTools import Study
+from CoreModules.WEASEL.DeveloperTools import Series
+from CoreModules.WEASEL.DeveloperTools import Image
 
 class ListOfDicomObjects(list):
     """

@@ -3,7 +3,7 @@ import datetime
 import zipfile
 import warnings
 import requests
-from CoreModules.DeveloperTools import UserInterfaceTools
+from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 import xnat
 
 def isEnabled(self):
