@@ -351,8 +351,8 @@ healthchecksdb
 # Configuration XML file
 
 #The following are for Joao's Python Environments and VS Code
-venv-windows/
-venv-linux/
+/venv-windows/
+/venv-linux/
 .vscode/
 *__pycache__/
 **.pyc
@@ -389,7 +389,6 @@ venv-linux/
 /WeaselData/Sample Data/output_Invert
 /WeaselData/Sample Data/output_Square
 /WeaselData/Sample Data/output_Thresholded
-/External/ukat
 /CoreModules/pyqtgraph/graphicsItems/ImageItem_old.py
 /WeaselData/SampleData/output_ROI_region1
 /Weasel.sln.txt
