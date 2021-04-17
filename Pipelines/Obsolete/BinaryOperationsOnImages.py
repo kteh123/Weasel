@@ -12,8 +12,8 @@ import numpy as np
 import pydicom
 from scipy.stats import iqr
 import External.pyqtgraph as pg
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
@@ -40,12 +40,12 @@ def returnPixelArray(imagePath1, imagePath2, binaryOperation):
     """returns the Image/Pixel array"""
     try:
         if os.path.exists(imagePath1):
-            dataset1 = readDICOM_Image.getDicomDataset(imagePath1)
-            pixelArray1 = readDICOM_Image.getPixelArray(dataset1)
+            dataset1 = ReadDICOM_Image.getDicomDataset(imagePath1)
+            pixelArray1 = ReadDICOM_Image.getPixelArray(dataset1)
         
         if os.path.exists(imagePath2):
-            dataset2 = readDICOM_Image.getDicomDataset(imagePath2)
-            pixelArray2 = readDICOM_Image.getPixelArray(dataset2)
+            dataset2 = ReadDICOM_Image.getDicomDataset(imagePath2)
+            pixelArray2 = ReadDICOM_Image.getPixelArray(dataset2)
             
         if binaryOperation == 'Add':
             pixelArray3 = np.add(pixelArray1, pixelArray2)
@@ -215,7 +215,7 @@ def saveNewDICOMFileFromBinOp(self):
                 newImageFileName + '.dcm'
             #print(newImageFilePath)
             #Save pixel array to a file
-            saveDICOM_Image.saveNewSingleDicomImage(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
+            SaveDICOM_Image.saveNewSingleDicomImage(newImageFilePath, imagePath1, self.binOpArray, "_"+binaryOperation+suffix, list_refs_path=[imagePath2])
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, imagePath1,
                                                             newImageFilePath, suffix)
             #print(newSeriesID)
@@ -276,7 +276,7 @@ def displayImageForBinOp(self, imageNumber, imageDict):
             #get name of selected image
             imageName = objComboBox.currentText()
             imagePath = imageDict[imageName]
-            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
             if pixelArray is None:
                 objImageMissingLabel.show()
                 objImage.setImage(np.array([[0,0,0],[0,0,0]])) 

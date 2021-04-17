@@ -2,7 +2,7 @@ import xml.etree.cElementTree as ET
 from pathlib import Path
 from datetime import datetime
 import logging
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 
 logger = logging.getLogger(__name__)
 
@@ -404,7 +404,7 @@ class WeaselXMLReader:
         #Add new subject to project
         newSubject = ET.SubElement(self.root, 'subject', newAttributes)
         for newStudy in newStudiesList:
-            dataset = readDICOM_Image.getDicomDataset(newStudy[0][0])
+            dataset = ReadDICOM_Image.getDicomDataset(newStudy[0][0])
             newStudyID = str(dataset.StudyDate) + "_" + str(dataset.StudyTime).split(".")[0] + "_" + str(dataset.StudyDescription)
             self.insertNewStudyinXML(newStudy, newSubjectID, newStudyID, '')
 
@@ -414,7 +414,7 @@ class WeaselXMLReader:
         newSeriesList: This is a list of lists. Each nested list is a set of filenames belonging to same series.
         """
         try:
-            dataset = readDICOM_Image.getDicomDataset(newSeriesList[0][0])
+            dataset = ReadDICOM_Image.getDicomDataset(newSeriesList[0][0])
             currentSubject = self.getSubject(subjectID)
             newAttributes = {'id':newStudyID, 
                              'typeID':suffix,
@@ -426,7 +426,7 @@ class WeaselXMLReader:
                 #Add new study to subject to hold new series+images
                 newStudy = ET.SubElement(currentSubject, 'study', newAttributes)
                 for newSeries in newSeriesList:
-                    dataset = readDICOM_Image.getDicomDataset(newSeries[0])
+                    dataset = ReadDICOM_Image.getDicomDataset(newSeries[0])
                     newSeriesID = str(dataset.SeriesNumber) + "_" + str(dataset.SeriesDescription)
                     self.insertNewSeriesInXML(newSeries, newSeries, subjectID, newStudyID, newSeriesID, newSeriesID, suffix)
             else:
@@ -441,7 +441,7 @@ class WeaselXMLReader:
     def insertNewSeriesInXML(self, origImageList, newImageList, subjectID,
                      studyID, newSeriesID, seriesID, suffix):
         try:
-            dataset = readDICOM_Image.getDicomDataset(newImageList[0])
+            dataset = ReadDICOM_Image.getDicomDataset(newImageList[0])
             currentStudy = self.getStudy(subjectID, studyID)
             newAttributes = {'id':newSeriesID, 
                              'typeID':suffix,
@@ -484,7 +484,7 @@ class WeaselXMLReader:
     def insertNewImageInXML(self, imageName, newImageFileName, subjectID, studyID, seriesID, suffix, 
                             newSeriesName=None, newStudyName=None, newSubjectName=None):
         try:
-            dataset = readDICOM_Image.getDicomDataset(newImageFileName)
+            dataset = ReadDICOM_Image.getDicomDataset(newImageFileName)
             if newSeriesName:
                 newSeriesID = str(dataset.SeriesNumber) + "_" + newSeriesName
             else:

@@ -15,7 +15,7 @@ def returnPixelArray(imagePath):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.returnPixelArray: ' + str(e))
+        print('Error in function ReadDICOM_Image.returnPixelArray: ' + str(e))
 
 
 def returnAffineArray(imagePath):
@@ -28,7 +28,7 @@ def returnAffineArray(imagePath):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.returnAffineArray: ' + str(e))
+        print('Error in function ReadDICOM_Image.returnAffineArray: ' + str(e))
 
 
 def returnSeriesPixelArray(imagePathList):
@@ -45,7 +45,7 @@ def returnSeriesPixelArray(imagePathList):
             del imageList
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
 
 
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
@@ -79,7 +79,7 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
         else:
             return None, None, None
     except Exception as e:
-        print('Error in function readDICOM_Image.getMultiframeBySlices: ' + str(e))
+        print('Error in function ReadDICOM_Image.getMultiframeBySlices: ' + str(e))
 
 
 def getImageTagValue(imagePath, dicomTag):
@@ -99,7 +99,7 @@ def getImageTagValue(imagePath, dicomTag):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getImageTagValue: ' + str(e))
+        print('Error in function ReadDICOM_Image.getImageTagValue: ' + str(e))
 
 
 def getSeriesTagValues(imagePathList, dicomTag):
@@ -159,7 +159,7 @@ def getSeriesTagValues(imagePathList, dicomTag):
         else:
             return None, None
     except Exception as e:
-        print('Error in function readDICOM_Image.getSeriesTagValues: ' + str(e))
+        print('Error in function ReadDICOM_Image.getSeriesTagValues: ' + str(e))
 
 
 def sortSequenceByTag(imagePathList, dicomTag):
@@ -188,7 +188,7 @@ def sortSequenceByTag(imagePathList, dicomTag):
         else:
             return None, None, None, None
     except Exception as e:
-        print('Error in function readDICOM_Image.sortSequenceByTag: ' + str(e))
+        print('Error in function ReadDICOM_Image.sortSequenceByTag: ' + str(e))
 
 
 def getSeriesDicomDataset(imagePathList):
@@ -206,7 +206,7 @@ def getSeriesDicomDataset(imagePathList):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
 
 
 def getDicomDataset(imagePath):
@@ -217,7 +217,7 @@ def getDicomDataset(imagePath):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
 
 
 def getPixelArray(dataset):
@@ -250,7 +250,7 @@ def getPixelArray(dataset):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getPixelArray: ' + str(e))
+        print('Error in function ReadDICOM_Image.getPixelArray: ' + str(e))
 
 
 def getAffineArray(dataset):
@@ -291,7 +291,7 @@ def getAffineArray(dataset):
         else:
             return None
     except Exception as e:
-        print('Error in function readDICOM_Image.getAffineArray: ' + str(e))
+        print('Error in function ReadDICOM_Image.getAffineArray: ' + str(e))
 
 
 def mapMaskToImage(mask, datasetMask, datasetTarget):
@@ -314,7 +314,7 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
             del temp_index
         return listIndexes
     except Exception as e:
-        print('Error in function readDICOM_Image.mapMaskToImage: ' + str(e))
+        print('Error in function ReadDICOM_Image.mapMaskToImage: ' + str(e))
 
 
 def applyAffine(affineReference, affineTarget, coordinates):
@@ -322,7 +322,7 @@ def applyAffine(affineReference, affineTarget, coordinates):
         maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
         return apply_affine(maskToTarget, coordinates)
     except Exception as e:
-        print('Error in function readDICOM_Image.applyAffine: ' + str(e))
+        print('Error in function ReadDICOM_Image.applyAffine: ' + str(e))
 
 
 
@@ -360,7 +360,7 @@ def getColourmap(imagePath):
             lut = None
         return colourmapName, lut
     except Exception as e:
-        print('Error in function readDICOM_Image.getColourmap: ' + str(e))
+        print('Error in function ReadDICOM_Image.getColourmap: ' + str(e))
     
 
 def checkImageType(dataset):
@@ -446,7 +446,7 @@ def checkImageType(dataset):
                     flagMap = list(set(mapsList).intersection(set(dataset.ImageType)))[0]
         return flagMagnitude, flagPhase, flagReal, flagImaginary, flagMap
     except Exception as e:
-        print('Error in function readDICOM_Image.checkImageType: ' + str(e))
+        print('Error in function ReadDICOM_Image.checkImageType: ' + str(e))
 
 
 def checkAcquisitionType(dataset):
@@ -487,4 +487,4 @@ def checkAcquisitionType(dataset):
                     flagOutPhase = True
         return flagWater, flagFat, flagInPhase, flagOutPhase
     except Exception as e:
-        print('Error in function readDICOM_Image.checkAcquisitionType: ' + str(e))
+        print('Error in function ReadDICOM_Image.checkAcquisitionType: ' + str(e))

@@ -31,8 +31,8 @@ import numpy as np
 import math
 from scipy.stats import iqr
 import External.pyqtgraph as pg 
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
@@ -366,8 +366,8 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
 def displayOneImage(self, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
                             graphicsView, cmbColours, SeriesName, imagePath):
-    pixelArray = readDICOM_Image.returnPixelArray(imagePath)
-    colourTable, lut = readDICOM_Image.getColourmap(imagePath)
+    pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
+    colourTable, lut = ReadDICOM_Image.getColourmap(imagePath)
     displayPixelArray(self, pixelArray, 0,lblImageMissing,
                             lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
@@ -884,7 +884,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                 imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
-                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+                pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 lut = None
                 #Get colour table of the image to be displayed
                 if obj.getSeriesUpdateStatus():
@@ -892,10 +892,10 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                 elif obj.getImageUpdateStatus():
                     colourTable, _, _ = obj.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
-                        colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+                        colourTable, lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
-                    colourTable, lut = readDICOM_Image.getColourmap(self.selectedImagePath)
+                    colourTable, lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
 
                 #display above colour table in colour table dropdown list
                 displayColourTableInComboBox(cmbColours, colourTable)
@@ -1314,7 +1314,7 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
                     if obj.getImageUpdateStatus():
                         updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName)
                 else:
-                    saveDICOM_Image.updateSingleDicomImage(self, 
+                    SaveDICOM_Image.updateSingleDicomImage(self, 
                                                            spinBoxIntensity,
                                                            spinBoxContrast,
                                                            imageName,
@@ -1355,10 +1355,10 @@ def updateWholeDicomSeries(self, subjectID, seriesID, studyID, colourTable, leve
         messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
         imageCounter = 0
         for imagePath in imagePathList:
-            dataset = readDICOM_Image.getDicomDataset(imagePath) 
+            dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
             # Update every DICOM file in the series                                     
-            updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=colourTable, levels=levels, lut=lut)
-            saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
+            updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=colourTable, levels=levels, lut=lut)
+            SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
         messageWindow.closeMessageSubWindow(self)
@@ -1404,10 +1404,10 @@ def updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName):
                 # Update an individual DICOM file in the series
                 #print('In If, imageCounter = {}, imagePath={}'.format(imageCounter, imagePath))
                 levels = [center, width]  
-                dataset = readDICOM_Image.getDicomDataset(imagePath)
-                updatedDataset = saveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
+                dataset = ReadDICOM_Image.getDicomDataset(imagePath)
+                updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                     levels=levels, lut=None)
-                saveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
+                SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             messageWindow.setMsgWindowProgBarValue(self, imageCounter)
         messageWindow.closeMessageSubWindow(self)
     except Exception as e:
@@ -1542,7 +1542,7 @@ def readLevelsFromDICOMImage(self, pixelArray):
             width = -1 
             maximumValue = -1  
             minimumValue = -1 
-            dataset = readDICOM_Image.getDicomDataset(self.selectedImagePath)
+            dataset = ReadDICOM_Image.getDicomDataset(self.selectedImagePath)
             if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
                 slope = float(getattr(dataset, 'RescaleSlope', 1))
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))

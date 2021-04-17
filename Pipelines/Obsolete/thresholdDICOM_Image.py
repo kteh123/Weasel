@@ -1,8 +1,8 @@
 import os
 import sys
 import numpy as np
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
@@ -17,7 +17,7 @@ def returnPixelArray(imagePath, *args):
     """Applies a low and high threshold on an image and returns the resulting maskArray"""
     try:
         if os.path.exists(imagePath):
-            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
             derivedImage = thresholdPixelArray(pixelArray, *args)
             return derivedImage
         else:
@@ -71,9 +71,9 @@ def displayImageThresholdDICOM(objWeasel, subjectID, studyID, seriesID, imagePat
         if inputDlg.closeInputDialog() == False: 
             #The OK button was clicked & the Cancel has not been clicked
             pixelArray = returnPixelArray(imagePath, *listParams)
-            derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+            derivedImageFileName = SaveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, 
+            SaveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, 
                                                     pixelArray, FILE_SUFFIX)
             #Record squared image in XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel, imagePath,
@@ -127,7 +127,7 @@ def displaySeriesThresholdDICOM(objWeasel, subjectID, studyID, seriesID):
             messageWindow.setMsgWindowProgBarMaxValue(objWeasel,numImages)
             imageCounter = 0
             for imagePath in imagePathList:
-                derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+                derivedImagePath = SaveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
                 derivedImage = returnPixelArray(imagePath, listParams[0], listParams[1])
                 derivedImagePathList.append(derivedImagePath)
                 derivedImageList.append(derivedImage)
@@ -139,7 +139,7 @@ def displaySeriesThresholdDICOM(objWeasel, subjectID, studyID, seriesID):
             messageWindow.setMsgWindowProgBarMaxValue(objWeasel,2)
             messageWindow.setMsgWindowProgBarValue(objWeasel,1)
             # Save new DICOM series locally
-            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
+            SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, FILE_SUFFIX)
             newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                                                     imagePathList,
                                                     derivedImagePathList, FILE_SUFFIX)

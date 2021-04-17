@@ -4,4 +4,4 @@ Each one has a folder allocated, which contains their own README.md file with th
 
 - dcm4che Version 5.23.1
 - elastix Version 5.0.1
-- pyqtgraph Version 0.10.0
+- pyqtgraph Version 0.9.11

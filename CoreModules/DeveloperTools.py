@@ -9,8 +9,8 @@ import itertools
 import warnings
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
@@ -334,30 +334,30 @@ class GenericDICOMTools:
                 elif (series_id is not None) and (series_uid is None):
                     _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
-                    series_id = int(str(readDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
-                newDataset = readDICOM_Image.getDicomDataset(inputPath)
-                derivedPath = saveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
-                saveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
+                    series_id = int(str(ReadDICOM_Image.getDicomDataset(inputPath).SeriesNumber) + str(random.randint(0, 9999)))
+                newDataset = ReadDICOM_Image.getDicomDataset(inputPath)
+                derivedPath = SaveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
+                SaveDICOM_Image.saveDicomToFile(newDataset, output_path=derivedPath)
                 # The next lines perform an overwrite operation over the copied images
                 if patient_id:
-                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "PatientID", patient_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "PatientID", patient_id)
                 if study_uid:
-                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyInstanceUID", study_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyInstanceUID", study_uid)
                 if study_name:
-                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyDescription", study_name)
-                instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
-                saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SOPInstanceUID", instance_uid)
-                saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
-                saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
+                    SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "StudyDescription", study_name)
+                instance_uid = SaveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
+                SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SOPInstanceUID", instance_uid)
+                SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesInstanceUID", series_uid)
+                SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesNumber", series_id)
                 if series_name:
-                    saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", series_name)
+                    SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", series_name)
                 else:
                     if hasattr(newDataset, "SeriesDescription"):
-                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                        SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
                     elif hasattr(newDataset, "SequenceName"):
-                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "SequenceName", str(newDataset.SequenceName + suffix))
+                        SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SequenceName", str(newDataset.SequenceName + suffix))
                     elif hasattr(newDataset, "ProtocolName"):
-                        saveDICOM_Image.overwriteDicomFileTag(derivedPath, "ProtocolName", str(newDataset.ProtocolName + suffix))
+                        SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "ProtocolName", str(newDataset.ProtocolName + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath,
                                              derivedPath, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
@@ -366,33 +366,33 @@ class GenericDICOMTools:
                 elif (series_id is not None) and (series_uid is None):
                     _, series_uid = GenericDICOMTools.generateSeriesIDs(self, inputPath, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
-                    series_id = int(str(readDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
+                    series_id = int(str(ReadDICOM_Image.getDicomDataset(inputPath[0]).SeriesNumber) + str(random.randint(0, 9999)))
                 derivedPath = []
                 for path in inputPath:
-                    newDataset = readDICOM_Image.getDicomDataset(path)
-                    newFilePath = saveDICOM_Image.returnFilePath(path, suffix, output_folder=output_dir)
-                    saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
+                    newDataset = ReadDICOM_Image.getDicomDataset(path)
+                    newFilePath = SaveDICOM_Image.returnFilePath(path, suffix, output_folder=output_dir)
+                    SaveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     derivedPath.append(newFilePath)
                     # The next lines perform an overwrite operation over the copied images
                     if patient_id:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
                     if study_uid:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
                     if study_name:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
-                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
+                    instance_uid = SaveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
                     if series_name:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)
                     else:
                         if hasattr(newDataset, "SeriesDescription"):
-                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
+                            SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", str(newDataset.SeriesDescription + suffix))
                         elif hasattr(newDataset, "SequenceName"):
-                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", str(newDataset.SequenceName + suffix))
+                            SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", str(newDataset.SequenceName + suffix))
                         elif hasattr(newDataset, "ProtocolName"):
-                            saveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", str(newDataset.ProtocolName + suffix))
+                            SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", str(newDataset.ProtocolName + suffix))
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 inputPath, derivedPath, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             return derivedPath, newSeriesID
@@ -432,52 +432,52 @@ class GenericDICOMTools:
                 elif (series_id is not None) and (series_uid is None):
                     _, series_uid = GenericDICOMTools.generateSeriesIDs(self, imagePathList, seriesNumber=series_id, studyUID=study_uid)
                 elif (series_id is None) and (series_uid is not None):
-                    series_id = int(str(readDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
+                    series_id = int(str(ReadDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             newImagePathList = []
             if overwrite:
                 originalPathList = imagePathList
                 for path in imagePathList:
                     if patient_id:
-                        saveDICOM_Image.overwriteDicomFileTag(path, "PatientID", patient_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "PatientID", patient_id)
                     if study_uid:
-                        saveDICOM_Image.overwriteDicomFileTag(path, "StudyInstanceUID", study_uid)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "StudyInstanceUID", study_uid)
                     if study_name:
-                        saveDICOM_Image.overwriteDicomFileTag(path, "StudyDescription", study_name)
-                    saveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
-                    saveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
-                    dataset = readDICOM_Image.getDicomDataset(path)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "StudyDescription", study_name)
+                    SaveDICOM_Image.overwriteDicomFileTag(path, "SeriesInstanceUID", series_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(path, "SeriesNumber", series_id)
+                    dataset = ReadDICOM_Image.getDicomDataset(path)
                     if hasattr(dataset, "SeriesDescription"):
-                        saveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "SeriesDescription", series_name)# + suffix)
                     elif hasattr(dataset, "SequenceName"):
-                        saveDICOM_Image.overwriteDicomFileTag(path, "SequenceName", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "SequenceName", series_name)# + suffix)
                     elif hasattr(dataset, "ProtocolName"):
-                        saveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name)# + suffix)
                 newImagePathList = imagePathList
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 originalPathList, newImagePathList, suffix, newSeriesName=series_name)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, originalPathList)
             else:
                 for path in imagePathList:
-                    newDataset = readDICOM_Image.getDicomDataset(path)
-                    newFilePath = saveDICOM_Image.returnFilePath(path, suffix)
-                    saveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
+                    newDataset = ReadDICOM_Image.getDicomDataset(path)
+                    newFilePath = SaveDICOM_Image.returnFilePath(path, suffix)
+                    SaveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
                     # The next lines perform an overwrite operation over the copied images
                     if patient_id:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "PatientID", patient_id)
                     if study_uid:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyInstanceUID", study_uid)
                     if study_name:
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
-                    instance_uid = saveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
-                    saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "StudyDescription", study_name)
+                    instance_uid = SaveDICOM_Image.generateUIDs(newDataset, seriesNumber=series_id, studyUID=study_uid)[2]
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SOPInstanceUID", instance_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesInstanceUID", series_uid)
+                    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesNumber", series_id)
                     if hasattr(newDataset, "SeriesDescription"):
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SeriesDescription", series_name)# + suffix)
                     elif hasattr(newDataset, "SequenceName"):
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", series_name)# + suffix)
                     elif hasattr(newDataset, "ProtocolName"):
-                        saveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name)# + suffix)
+                        SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name)# + suffix)
                     newImagePathList.append(newFilePath)
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, imagePathList, newImagePathList, suffix, newSeriesName=series_name)
             return newImagePathList
@@ -503,7 +503,7 @@ class GenericDICOMTools:
                     #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
                     (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
-            ids = saveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber, studyUID=studyUID)
+            ids = SaveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber, studyUID=studyUID)
             seriesID = ids[0]
             seriesUID = ids[1]
             return seriesID, seriesUID
@@ -519,10 +519,10 @@ class GenericDICOMTools:
         # CONSIDER THE CASES WHERE SERIES NUMBER, NAME AND UID ARE CHANGED - UPDATE XML
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                saveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
+                SaveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
-                    saveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
+                    SaveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
             print('Error in DeveloperTools.editDICOMTag: ' + str(e))
         
@@ -536,10 +536,10 @@ class PixelArrayDICOMTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                pixelArray = readDICOM_Image.returnPixelArray(inputPath)
+                pixelArray = ReadDICOM_Image.returnPixelArray(inputPath)
                 return np.squeeze(pixelArray)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                pixelArray = readDICOM_Image.returnSeriesPixelArray(inputPath)
+                pixelArray = ReadDICOM_Image.returnSeriesPixelArray(inputPath)
                 return np.squeeze(pixelArray)
             else:
                 return None
@@ -553,10 +553,10 @@ class PixelArrayDICOMTools:
         """
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
-                dataset = readDICOM_Image.getDicomDataset(inputPath)
+                dataset = ReadDICOM_Image.getDicomDataset(inputPath)
                 return dataset
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                dataset = readDICOM_Image.getSeriesDicomDataset(inputPath)
+                dataset = ReadDICOM_Image.getSeriesDicomDataset(inputPath)
                 return dataset
             else:
                 return None
@@ -572,15 +572,15 @@ class PixelArrayDICOMTools:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 numImages = 1
                 derivedImageList = [pixelArray]
-                derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
+                derivedImageFilePath = SaveDICOM_Image.returnFilePath(inputPath, suffix, output_folder=output_dir)
                 derivedImagePathList = [derivedImageFilePath]
 
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                if hasattr(readDICOM_Image.getDicomDataset(inputPath[0]), 'PerFrameFunctionalGroupsSequence'):
+                if hasattr(ReadDICOM_Image.getDicomDataset(inputPath[0]), 'PerFrameFunctionalGroupsSequence'):
                     # If it's Enhanced MRI
                     numImages = 1
                     derivedImageList = [pixelArray]
-                    derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[0], suffix, output_folder=output_dir)
+                    derivedImageFilePath = SaveDICOM_Image.returnFilePath(inputPath[0], suffix, output_folder=output_dir)
                     derivedImagePathList = [derivedImageFilePath]
                 else:
                     # Iterate through list of images (slices) and save the resulting Map for each DICOM image
@@ -588,7 +588,7 @@ class PixelArrayDICOMTools:
                     derivedImagePathList = []
                     derivedImageList = []
                     for index in range(numImages):
-                        derivedImageFilePath = saveDICOM_Image.returnFilePath(inputPath[index], suffix, output_folder=output_dir)
+                        derivedImageFilePath = SaveDICOM_Image.returnFilePath(inputPath[index], suffix, output_folder=output_dir)
                         derivedImagePathList.append(derivedImageFilePath)
                         if numImages==1:
                             derivedImageList.append(pixelArray)
@@ -600,11 +600,11 @@ class PixelArrayDICOMTools:
             if numImages == 1:
                 if isinstance(inputPath, list):
                     inputPath = inputPath[0]
-                saveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
+                SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
                 # Record derived image in XML file
                 interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
             else:
-                saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
+                SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
                 # Insert new series into the DICOM XML file
                 interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
                 
@@ -621,14 +621,14 @@ class PixelArrayDICOMTools:
         """
         try:
             if isinstance(inputPath, list) and len(inputPath) > 1:
-                datasetList = readDICOM_Image.getSeriesDicomDataset(inputPath)
+                datasetList = ReadDICOM_Image.getSeriesDicomDataset(inputPath)
                 for index, dataset in enumerate(datasetList):
-                    modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray[index], dataset)
-                    saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath[index])
+                    modifiedDataset = SaveDICOM_Image.createNewPixelArray(pixelArray[index], dataset)
+                    SaveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath[index])
             else:
-                dataset = readDICOM_Image.getDicomDataset(inputPath)
-                modifiedDataset = saveDICOM_Image.createNewPixelArray(pixelArray, dataset)
-                saveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath)
+                dataset = ReadDICOM_Image.getDicomDataset(inputPath)
+                modifiedDataset = SaveDICOM_Image.createNewPixelArray(pixelArray, dataset)
+                SaveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath)
         except Exception as e:
             print('overwritePixelArray: ' + str(e))
 
@@ -946,7 +946,7 @@ class Series:
             if dataset.PatientID != self.PydicomList[index].PatientID:
                 changeXML = True
                 newSubjectID = str(dataset.PatientID)
-            saveDICOM_Image.saveDicomToFile(dataset, output_path=self.images[index])
+            SaveDICOM_Image.saveDicomToFile(dataset, output_path=self.images[index])
             if changeXML == True:
                 interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
         # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
@@ -965,12 +965,12 @@ class Series:
     
     #def sort(self, tagDescription, *argv):
     #    if self.Item(tagDescription) or self.Tag(tagDescription):
-    #        imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tagDescription)
+    #        imagePathList, _, _, indicesSorted = ReadDICOM_Image.sortSequenceByTag(self.images, tagDescription)
     #        self.images = imagePathList
     #        #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
     #    for tag in argv:
     #        if self.Item(tag) or self.Tag(tag):
-    #            imagePathList, _, _, indicesSorted = readDICOM_Image.sortSequenceByTag(self.images, tag)
+    #            imagePathList, _, _, indicesSorted = ReadDICOM_Image.sortSequenceByTag(self.images, tag)
     #            self.images = imagePathList
     #            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
     
@@ -1007,7 +1007,7 @@ class Series:
         if not self.images:
             self.seriesUID = None
         elif os.path.exists(self.images[0]):
-            self.seriesUID = readDICOM_Image.getImageTagValue(self.images[0], 'SeriesInstanceUID')
+            self.seriesUID = ReadDICOM_Image.getImageTagValue(self.images[0], 'SeriesInstanceUID')
         else:
             self.seriesUID = None
         return self.seriesUID
@@ -1017,7 +1017,7 @@ class Series:
         if not self.images:
             self.studyUID = None
         elif os.path.exists(self.images[0]):
-            self.studyUID = readDICOM_Image.getImageTagValue(self.images[0], 'StudyInstanceUID')
+            self.studyUID = ReadDICOM_Image.getImageTagValue(self.images[0], 'StudyInstanceUID')
         else:
             self.studyUID = None
         return self.studyUID
@@ -1029,7 +1029,7 @@ class Series:
         magnitudeSeries.remove(allImages=True)
         magnitudeSeries.referencePathsList = self.images
         for index in range(len(self.images)):
-            flagMagnitude, _, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            flagMagnitude, _, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
             if isinstance(flagMagnitude, list) and flagMagnitude:
                 if len(flagMagnitude) > 1 and len(self.images) == 1:
                     magnitudeSeries.indices = flagMagnitude
@@ -1045,7 +1045,7 @@ class Series:
         phaseSeries.remove(allImages=True)
         phaseSeries.referencePathsList = self.images
         for index in range(len(self.images)):
-            _, flagPhase, _, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            _, flagPhase, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
             if isinstance(flagPhase, list) and flagPhase:
                 if len(flagPhase) > 1 and len(self.images) == 1:
                     phaseSeries.indices = flagPhase
@@ -1061,7 +1061,7 @@ class Series:
         realSeries.remove(allImages=True)
         realSeries.referencePathsList = self.images
         for index in range(len(self.images)):
-            _, _, flagReal, _, _ = readDICOM_Image.checkImageType(dicomList[index])
+            _, _, flagReal, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
             if isinstance(flagReal, list) and flagReal:
                 if len(flagReal) > 1 and len(self.images) == 1:
                     realSeries.indices = flagReal
@@ -1077,7 +1077,7 @@ class Series:
         imaginarySeries.remove(allImages=True)
         imaginarySeries.referencePathsList = self.images
         for index in range(len(self.images)):
-            _, _, _, flagImaginary, _ = readDICOM_Image.checkImageType(dicomList[index])
+            _, _, _, flagImaginary, _ = ReadDICOM_Image.checkImageType(dicomList[index])
             if isinstance(flagImaginary, list) and flagImaginary:
                 if len(flagImaginary) > 1 and len(self.images) == 1:
                     imaginarySeries.indices = flagImaginary
@@ -1109,7 +1109,7 @@ class Series:
 
     @property
     def ListAffines(self):
-        return [readDICOM_Image.returnAffineArray(image) for image in self.images]
+        return [ReadDICOM_Image.returnAffineArray(image) for image in self.images]
     
     @property
     def ROIindices(self):
@@ -1188,7 +1188,7 @@ class Series:
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
                 elif tagDescription == 'SeriesNumber':
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
-            itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, tagDescription)
+            itemList, _ = ReadDICOM_Image.getSeriesTagValues(self.images, tagDescription)
             #if self.Multiframe: 
             #    tempList = [itemList[index] for index in self.indices]
             #    itemList = tempList
@@ -1206,7 +1206,7 @@ class Series:
         if self.images:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
-            itemList, _ = readDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
+            itemList, _ = ReadDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
             #if self.Multiframe: 
             #    tempList = [itemList[index] for index in self.indices]
             #    itemList = tempList
@@ -1338,7 +1338,7 @@ class Image:
         if PydicomObject.PatientID != self.PydicomObject.PatientID:
             changeXML = True
             newSubjectID = str(PydicomObject.PatientID)
-        saveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
+        SaveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
         if changeXML == True:
             interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
         # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
@@ -1371,7 +1371,7 @@ class Image:
         if not self.path:
             self.seriesUID = None
         elif os.path.exists(self.path):
-            self.seriesUID = readDICOM_Image.getImageTagValue(self.path, 'SeriesInstanceUID')
+            self.seriesUID = ReadDICOM_Image.getImageTagValue(self.path, 'SeriesInstanceUID')
         else:
             self.seriesUID = None
         return self.seriesUID
@@ -1381,7 +1381,7 @@ class Image:
         if not self.path:
             self.studyUID = None
         elif os.path.exists(self.path):
-            self.studyUID = readDICOM_Image.getImageTagValue(self.path, 'StudyInstanceUID')
+            self.studyUID = ReadDICOM_Image.getImageTagValue(self.path, 'StudyInstanceUID')
         else:
             self.studyUID = None
         return self.studyUID
@@ -1412,7 +1412,7 @@ class Image:
 
     @property
     def Affine(self):
-        return readDICOM_Image.returnAffineArray(self.path)
+        return ReadDICOM_Image.returnAffineArray(self.path)
         
     @property
     def Dimensions(self):
@@ -1430,7 +1430,7 @@ class Image:
         if self.path:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.path, tagDescription, newValue)
-            item = readDICOM_Image.getImageTagValue(self.path, tagDescription)
+            item = ReadDICOM_Image.getImageTagValue(self.path, tagDescription)
         else:
             item = []
         return item
@@ -1440,7 +1440,7 @@ class Image:
         if self.path:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.path, literal_eval(hexTag), newValue)
-            item = readDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
+            item = ReadDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
         else:
             item = []
         return item

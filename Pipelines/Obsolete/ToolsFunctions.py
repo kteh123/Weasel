@@ -1,8 +1,8 @@
 
 import os
 import numpy as np
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
@@ -15,8 +15,8 @@ def returnPixelArray(imagePath, func):
    an image and returns the resulting PixelArray"""
     try:
         if os.path.exists(imagePath):
-            dataset = readDICOM_Image.getDicomDataset(imagePath)
-            pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+            dataset = ReadDICOM_Image.getDicomDataset(imagePath)
+            pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
             derivedImage = func(pixelArray, dataset)
             return derivedImage
         else:
@@ -35,10 +35,10 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
             studyID = objWeasel.selectedStudy
             pixelArray = returnPixelArray(imagePath, funcAlgorithm)
             
-            derivedImageFileName = saveDICOM_Image.returnFilePath(imagePath, fileSuffix)
+            derivedImageFileName = SaveDICOM_Image.returnFilePath(imagePath, fileSuffix)
            
             # Save the DICOM file in the new file path                                        
-            saveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, pixelArray, fileSuffix)#, parametric_map="ADC")
+            SaveDICOM_Image.saveNewSingleDicomImage(derivedImageFileName, imagePath, pixelArray, fileSuffix)#, parametric_map="ADC")
             #Record squared image in XML file
             seriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(objWeasel, imagePath,
                                          derivedImageFileName, fileSuffix)
@@ -58,7 +58,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
             derivedImagePathList = []
             derivedImageList = []
             for imagePath in imagePathList:
-                derivedImagePath = saveDICOM_Image.returnFilePath(imagePath, fileSuffix)
+                derivedImagePath = SaveDICOM_Image.returnFilePath(imagePath, fileSuffix)
                 derivedImage = returnPixelArray(imagePath, funcAlgorithm)
                 derivedImagePathList.append(derivedImagePath)
                 derivedImageList.append(derivedImage)
@@ -68,7 +68,7 @@ def main(objWeasel, fileSuffix, funcAlgorithm):
             
             # Save new DICOM series locally
             showSavingResultsMessageBox(objWeasel)
-            saveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, fileSuffix)#, parametric_map="ADC")
+            SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, imagePathList, derivedImageList, fileSuffix)#, parametric_map="ADC")
             #Insert new series into the DICOM XML file
             newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                             imagePathList,

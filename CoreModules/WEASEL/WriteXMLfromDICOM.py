@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
 import CoreModules.WEASEL.MessageWindow as messageWindow
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox)
 

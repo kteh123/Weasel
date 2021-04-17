@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import os
 import pydicom
 import logging
@@ -32,7 +32,7 @@ def main(objWeasel):
                     seriesName = series[2]
                     imageList = treeView.returnSeriesImageList(objWeasel, subjectName, studyName, seriesName)
                     firstImagePath = imageList[0]
-                    dataset = readDICOM_Image.getDicomDataset(firstImagePath)
+                    dataset = ReadDICOM_Image.getDicomDataset(firstImagePath)
                     displayMetaDataSubWindow(objWeasel, "Metadata for series {}".format(seriesName), 
                                             dataset)
         elif objWeasel.isAnImageChecked:
@@ -43,7 +43,7 @@ def main(objWeasel):
                     seriesName = image[2]
                     imagePath = image[3]
                     imageName = os.path.basename(imagePath)
-                    dataset = readDICOM_Image.getDicomDataset(imagePath)
+                    dataset = ReadDICOM_Image.getDicomDataset(imagePath)
                     displayMetaDataSubWindow(objWeasel, "Metadata for image {}".format(imageName), 
                                             dataset)
 

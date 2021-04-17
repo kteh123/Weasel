@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (QFileDialog,
                             QComboBox)
 
 from matplotlib import cm
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import numpy as np
 import logging
 import CoreModules.FreeHandROI.Resources as icons

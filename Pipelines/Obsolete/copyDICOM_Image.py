@@ -1,7 +1,7 @@
 import os
 import numpy as np
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
@@ -18,7 +18,7 @@ def returnCopiedFile(imagePath):
     """Returns the filepath of the new copied file."""
     try:
         if os.path.exists(imagePath):
-            newFileName = saveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
+            newFileName = SaveDICOM_Image.returnFilePath(imagePath, FILE_SUFFIX)
             return  newFileName
         else:
             return None
@@ -44,7 +44,7 @@ def main(objWeasel):
         imageCounter = 0
         for imagePath in imagePathList:
             copiedImageFilePath = returnCopiedFile(imagePath)
-            copiedImage = readDICOM_Image.returnPixelArray(imagePath)
+            copiedImage = ReadDICOM_Image.returnPixelArray(imagePath)
             copiedImagePathList.append(copiedImageFilePath)
             copiedImageList.append(copiedImage)
             imageCounter += 1
@@ -55,7 +55,7 @@ def main(objWeasel):
         messageWindow.setMsgWindowProgBarMaxValue(objWeasel, 2)
         messageWindow.setMsgWindowProgBarValue(objWeasel, 1)
         # Save new DICOM series locally
-        saveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
+        SaveDICOM_Image.saveDicomNewSeries(copiedImagePathList, imagePathList, copiedImageList, FILE_SUFFIX)
         newSeriesID= interfaceDICOMXMLFile.insertNewSeriesInXMLFile(objWeasel,
                                                imagePathList, 
                                                copiedImagePathList, 

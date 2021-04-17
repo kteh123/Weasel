@@ -25,8 +25,8 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, binary_closing
-import CoreModules.WEASEL.readDICOM_Image as readDICOM_Image
-import CoreModules.WEASEL.saveDICOM_Image as saveDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
@@ -111,7 +111,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
         spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(imageLevelsLayout, 
                                                                  graphicsView, cmbROIs)
            
-        pixelArray = readDICOM_Image.returnPixelArray(imagePath)
+        pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
         if pixelArray is None:
             lblImageMissing.show()
             graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
@@ -683,7 +683,7 @@ def displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, 
             imageNumber = imageSlider.value()
         else:
             imageNumber = 1
-        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         regionName = cmbROIs.currentText()
         mask = graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
@@ -737,7 +737,7 @@ def imageROISliderMoved(self, subjectName, studyName, seriesName,
                 imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = imageList[currentImageNumber]
                 #print("imageSliderMoved before={}".format(self.selectedImagePath))
-                pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+                pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 setButtonsToDefaultStyle(buttonList)
                 if pixelArray is None:
                     lblImageMissing.show()
@@ -778,7 +778,7 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
         else:
             imageNumber = 1
 
-        pixelArray = readDICOM_Image.returnPixelArray(self.selectedImagePath)
+        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
         graphicsView.setImage(pixelArray, mask)
         displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)  
@@ -847,12 +847,12 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
                 #targetPath = self.imageList
             else:
                 targetPath = [self.selectedImagePath]
-            maskInput = readDICOM_Image.returnSeriesPixelArray(imagePathList)
+            maskInput = ReadDICOM_Image.returnSeriesPixelArray(imagePathList)
             maskInput[maskInput != 0] = 1
             maskList = [] # Output Mask
             # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
-            if hasattr(readDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
-                region = readDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
+            if hasattr(ReadDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
+                region = ReadDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
             else:
                 region = "new_region_label"
             # Affine re-adjustment
@@ -862,15 +862,15 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
                 "Load ROIs")
                 messageWindow.setMsgWindowProgBarMaxValue(self, len(targetPath))
                 messageWindow.setMsgWindowProgBarValue(self, index + 1)
-                dataset_original = readDICOM_Image.getDicomDataset(dicomFile)
-                tempArray = np.zeros(np.shape(readDICOM_Image.getPixelArray(dataset_original)))
+                dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                 horizontalFlag = None
                 verticalFlag = None
                 for maskFile in imagePathList:
-                    dataset = readDICOM_Image.getDicomDataset(maskFile)
-                    maskArray = readDICOM_Image.getPixelArray(dataset)
+                    dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                    maskArray = ReadDICOM_Image.getPixelArray(dataset)
                     maskArray[maskArray != 0] = 1
-                    affineResults = readDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
+                    affineResults = ReadDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
                     if affineResults:
                         try:
                             coords = zip(*affineResults)
@@ -894,10 +894,10 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
             messageWindow.closeMessageSubWindow(self)
 
             # Faster approach - 3D and no dilation
-            #maskList = np.zeros(np.shape(readDICOM_Image.returnSeriesPixelArray(targetPath)))
-            #dataset_original = readDICOM_Image.getDicomDataset(targetPath)
-            #dataset = readDICOM_Image.getDicomDataset(imagePathList[0])
-            #affineResults = readDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
+            #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
+            #dataset_original = ReadDICOM_Image.getDicomDataset(targetPath)
+            #dataset = ReadDICOM_Image.getDicomDataset(imagePathList[0])
+            #affineResults = ReadDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
             #if affineResults:
                 #try:
                     #coords = zip(*affineResults)
@@ -945,16 +945,16 @@ def saveROI(self, regionName, graphicsView):
         messageWindow.setMsgWindowProgBarMaxValue(self, len(inputPath))
         (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
         seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
-        seriesUID = saveDICOM_Image.generateUIDs(readDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
+        seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
         #outputPath = []
         #for image in inputPath:
         for index, path in enumerate(inputPath):
-            #outputPath.append(saveDICOM_Image.returnFilePath(image, suffix))
+            #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
             messageWindow.setMsgWindowProgBarValue(self, index)
-            outputPath = saveDICOM_Image.returnFilePath(path, suffix)
-            saveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
+            outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
+            SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
             treeSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, path, outputPath, suffix)
-        #saveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
+        #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
         #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
         messageWindow.setMsgWindowProgBarValue(self, len(inputPath))
         messageWindow.closeMessageSubWindow(self)
