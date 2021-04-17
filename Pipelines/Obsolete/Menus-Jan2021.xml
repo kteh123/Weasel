@@ -114,7 +114,7 @@
     	<item>
           <label>Download</label>
           <tooltip>Download images from XNAT</tooltip>
-		  <icon>docs/images/XNAT-LOGO.png</icon>
+		  <icon>Docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>download</function>
         </item>
@@ -125,7 +125,7 @@
 		<item>
           <label>Upload</label>
           <tooltip>Upload images from XNAT</tooltip>
-		  <icon>docs/images/XNAT-LOGO.png</icon>
+		  <icon>Docs/images/XNAT-LOGO.png</icon>
           <module>XNATapp</module>
 		  <function>upload</function>
         </item>
