@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, binary_closing
+from scipy.stats import iqr
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
@@ -389,7 +390,7 @@ def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
 
 def setUpLevelsSpinBoxes(imageLevelsLayout, graphicsView, cmbROIs, imageSlider = None): 
     logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
-    spinBoxIntensity, spinBoxContrast = displayImageCommon. setUpLevelsSpinBoxes(imageLevelsLayout)
+    spinBoxIntensity, spinBoxContrast = displayImageCommon.setUpLevelsSpinBoxes(imageLevelsLayout)
     spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(graphicsView,
                 spinBoxIntensity.value(), spinBoxContrast.value(),  cmbROIs, imageSlider))
     spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(graphicsView,
@@ -749,6 +750,12 @@ def imageROISliderMoved(self, subjectName, studyName, seriesName,
                               zoomLabel, imageSlider) 
 
                     setInitialImageLevelValues(graphicsView, spinBoxIntensity, spinBoxContrast)
+
+                    spinBoxStep = int(0.01 * iqr(pixelArray, rng=(25, 75)))
+                    #spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+                    #print(spinBoxStep)
+                    spinBoxIntensity.setSingleStep(spinBoxStep)
+                    spinBoxContrast.setSingleStep(spinBoxStep)
 
                     setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt,

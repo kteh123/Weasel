@@ -434,9 +434,12 @@ class GenericDICOMTools:
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(ReadDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             newImagePathList = []
+            messageWindow.displayMessageSubWindow(self, ("<H4>Merging {} images</H4>").format(len(imagePathList)), "Progress Bar - Merging")
             if overwrite:
                 originalPathList = imagePathList
-                for path in imagePathList:
+                messageWindow.setMsgWindowProgBarMaxValue(self, len(imagePathList))
+                for index, path in enumerate(imagePathList):
+                    messageWindow.setMsgWindowProgBarValue(self, index+1)
                     if patient_id:
                         SaveDICOM_Image.overwriteDicomFileTag(path, "PatientID", patient_id)
                     if study_uid:
@@ -453,11 +456,13 @@ class GenericDICOMTools:
                     elif hasattr(dataset, "ProtocolName"):
                         SaveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name)# + suffix)
                 newImagePathList = imagePathList
+                #messageWindow.displayMessageSubWindow(self, "<H4>Updating the XML File ...</H4>", "Progress Bar - Merging")
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
                                 originalPathList, newImagePathList, suffix, newSeriesName=series_name)
                 interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, originalPathList)
             else:
-                for path in imagePathList:
+                for index, path in enumerate(imagePathList):
+                    messageWindow.setMsgWindowProgBarValue(self, index+1)
                     newDataset = ReadDICOM_Image.getDicomDataset(path)
                     newFilePath = SaveDICOM_Image.returnFilePath(path, suffix)
                     SaveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)
@@ -479,6 +484,7 @@ class GenericDICOMTools:
                     elif hasattr(newDataset, "ProtocolName"):
                         SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name)# + suffix)
                     newImagePathList.append(newFilePath)
+                #messageWindow.displayMessageSubWindow(self, "<H4>Updating the XML File ...</H4>", "Progress Bar - Merging")
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, imagePathList, newImagePathList, suffix, newSeriesName=series_name)
             return newImagePathList
         except Exception as e:
@@ -702,15 +708,32 @@ class Subject:
             outputSubject = Subject(listSubjects[0].objWeasel, newSubjectName)
         else:
             outputSubject = listSubjects[0].new(suffix=suffix)
+        # Setup Progress Bar
+        progressBarTitle = "Progress Bar - Merging " + str(len(listSubjects)) + " Subjects"
+        messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>Merging {} Subjects</H4>").format(len(listSubjects)), progressBarTitle)
+        messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
         # Add new subject (outputSubject) to XML
-        for subject in listSubjects:
+        for index, subject in enumerate(listSubjects):
+            # Increment progress bar
+            subjMsg = "Merging subject " + subject.subjectID
+            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + "</H4>"), progressBarTitle)
+            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+            # Overwrite or not?
             if overwrite == False:
                 for study in subject.children:
                     # Create a copy of the study into the new subject
+                    studyMsg = ", study " + study.studyID
+                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
+                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
                     study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=None)
             else:
                 for study in subject.children:
-                    # Replace the (StudyUID and) PatientID in all files
+                    studyMsg = ", study " + study.studyID
+                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
+                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
                     seriesPathsList = []
                     for series in study.children:
                         series.Item('PatientID', outputSubject.subjectID)
@@ -790,10 +813,17 @@ class Study:
             outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID, studyUID=study_uid)
         else:
             outputStudy = listStudies[0].new(suffix=suffix)
+        # Set up Progress Bar
+        progressBarTitle = "Progress Bar - Merging " + str(len(listStudies)) + " Studies"
+        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging {} Studies</H4>").format(len(listStudies)), progressBarTitle)
+        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
         # Add new study (outputStudy) to XML
         seriesPathsList = []
         if overwrite == False:
-            for study in listStudies:
+            for index, study in enumerate(listStudies):
+                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
+                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
                 seriesNumber = 1
                 for series in study.children:
                     copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
@@ -802,7 +832,10 @@ class Study:
                     seriesNumber =+ 1
         else:
             seriesNumber = 1
-            for study in listStudies:
+            for index, study in enumerate(listStudies):
+                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
+                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
                 for series in study.children:
                     series.Item('PatientID', outputStudy.subjectID)
                     series.Item('StudyInstanceUID', outputStudy.studyUID)

@@ -757,6 +757,13 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                      graphicsView.setImage(pixelArray, autoHistogramRange=True, levels=(minimumValue, maximumValue))
                 else:
                      graphicsView.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
+                
+                spinBoxStep = int(0.01 * iqr(pixelArray, rng=(25, 75)))
+                #spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+                #print(spinBoxStep)
+                spinBoxIntensity.setSingleStep(spinBoxStep)
+                spinBoxContrast.setSingleStep(spinBoxStep)
+
                 blockHistogramSignals( graphicsView, False)
         
                 #Add Colour Table or look up table To Image
