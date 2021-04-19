@@ -37,7 +37,6 @@ if platform == "win32" or platform == "win64" or os.name == 'nt':
 	os.system('rmdir venv /S /Q')
 # MacOS and Linux
 else:
-	os.system('rm -rf Weasel.egg-info')
 	os.system('mv dist/* .')
 	os.system('rm -rf build/ dist/')
 	os.system('rm Weasel.spec')

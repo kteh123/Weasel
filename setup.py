@@ -24,7 +24,7 @@ class CleanCommand(Command):
     def finalize_options(self):
         pass
     def run(self):
-        if platform == "win32" or "win64":
+        if platform == "win32" or platform == "win64" or os.name == 'nt':
             os.system('rmdir /S /Q Weasel.egg-info')
         else:
             os.system('rm -vrf Weasel.egg-info')
