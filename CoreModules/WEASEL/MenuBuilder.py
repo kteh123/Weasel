@@ -27,7 +27,7 @@ class MenuBuilder:
 
         except Exception as e:
             print('Error in MenuBuilder.__init__: ' + str(e)) 
-            logger.error('Error in MenuBuilder.__init__: ' + str(e)) 
+            logger.exception('Error in MenuBuilder.__init__: ' + str(e)) 
 
     
     def addItem(self, itemLabel = 'Label not defined',
@@ -79,7 +79,7 @@ class MenuBuilder:
     
         except Exception as e:
             print('Error in MenuBuilder.addItem: ' + str(e)) 
-            logger.error('Error in MenuBuilder.addItem: ' + str(e)) 
+            logger.exception('Error in MenuBuilder.addItem: ' + str(e)) 
 
 
     def addSeparator(self):

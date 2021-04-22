@@ -14,20 +14,28 @@ class WeaselConfigXMLReader:
 
         except Exception as e:
             print('Error in WeaselConfigXMLReader.__init__: ' + str(e)) 
-            logger.error('Error in WeaselConfigXMLReader.__init__: ' + str(e))
+            logger.exception('Error in WeaselConfigXMLReader.__init__: ' + str(e))
 
 
     def getMenuConfigFile(self):
-        menu = self.root.find('./menu_config_file')
-        if menu.text is None:
-            return None
-        else:
-            return menu.text
+        try:
+            menu = self.root.find('./menu_config_file')
+            if menu.text is None:
+                return None
+            else:
+                return menu.text
+        except Exception as e:
+            print('Error in WeaselConfigXMLReader.getMenuConfigFile: ' + str(e)) 
+            logger.exception('Error in WeaselConfigXMLReader.getMenuConfigFile: ' + str(e))
 
 
     def getWeaselDataFolder(self):
-        folder = self.root.find('./weasel_data_folder')
-        if folder.text is None:
-            return None
-        else:
-            return folder.text
+        try:
+            folder = self.root.find('./weasel_data_folder')
+            if folder.text is None:
+                return None
+            else:
+                return folder.text
+        except Exception as e:
+            print('Error in WeaselConfigXMLReader.getWeaselDataFolder: ' + str(e)) 
+            logger.exception('Error in WeaselConfigXMLReader.getWeaselDataFolder: ' + str(e))

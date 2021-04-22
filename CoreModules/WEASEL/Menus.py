@@ -19,24 +19,21 @@ logger = logging.getLogger(__name__)
 
 def setupMenus(pointerToWeasel, menuXMLFile):
     """Builds the menus in the menu bar of the MDI"""
-    logger.info("Menus.setupMenus")
-    mainMenu = pointerToWeasel.menuBar()
-    #setUpFileMenu(mainMenu, pointerToWeasel)
-    objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
-    menus = objXMLMenuReader.getMenus()
-    for menu in menus:
-        menuName = menu.attrib['name']
-        pointerToWeasel.topMenu = mainMenu.addMenu(menuName)
-        pointerToWeasel.topMenu.hovered.connect(_actionHovered)
-        pointerToWeasel.listMenus.append(pointerToWeasel.topMenu)
-        listPythonFiles = []
-        for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
-            for individualFile in filenames:
-                if individualFile.endswith(".py"):
-                    sys.path.append(os.path.dirname(dirpath))
-                    listPythonFiles.append(os.path.join(dirpath, individualFile))
-        for item in menu:
-            buildUserDefinedToolsMenuItem(pointerToWeasel, pointerToWeasel.topMenu, item, listPythonFiles)
+    try:
+        logger.info("Menus.setupMenus")
+        mainMenu = pointerToWeasel.menuBar()
+        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        menus = objXMLMenuReader.getMenus()
+        for menu in menus:
+            menuName = menu.attrib['name']
+            pointerToWeasel.topMenu = mainMenu.addMenu(menuName)
+            pointerToWeasel.topMenu.hovered.connect(_actionHovered)
+            pointerToWeasel.listMenus.append(pointerToWeasel.topMenu)
+            for item in menu:
+                buildUserDefinedToolsMenuItem(pointerToWeasel, pointerToWeasel.topMenu, item, pointerToWeasel.listPythonFiles)
+    except Exception as e:
+            print('Error in Menus.setupMenus: ' + str(e)) 
+            logger.exception('Error in Menus.setupMenus: ' + str(e)) 
 
 
 def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
@@ -92,36 +89,44 @@ def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
         print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e))
+        logger.exception('Error in Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e)) 
 
 
 def buildContextMenuItem(pointerToWeasel, context, item, pythonFiles):
-    menuItem = QAction(item.find('label').text, pointerToWeasel)
-    menuItem.setEnabled(True)
-    moduleName = item.find('module').text
+    try:
+        menuItem = QAction(item.find('label').text, pointerToWeasel)
+        menuItem.setEnabled(True)
+        moduleName = item.find('module').text
     
-    if item.find('function') is not None:
-        function = item.find('function').text
-    else:
-        function = "main"
+        if item.find('function') is not None:
+            function = item.find('function').text
+        else:
+            function = "main"
     
-    #moduleFileName = [os.path.join(dirpath, moduleName+".py") 
-    #    for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
-    moduleFileName = [pythonFilePath for pythonFilePath in pythonFiles if moduleName+".py" in pythonFilePath][0]
-    spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    objFunction = getattr(module, function)
-    menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-    menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+        #moduleFileName = [os.path.join(dirpath, moduleName+".py") 
+        #    for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
+        moduleFileName = [pythonFilePath for pythonFilePath in pythonFiles if moduleName+".py" in pythonFilePath][0]
+        spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        objFunction = getattr(module, function)
+        menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
+        menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
     
-    if hasattr(module, "isSeriesOnly"):
-        boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
-    else:
-        boolApplyBothImagesAndSeries = True
+        if hasattr(module, "isSeriesOnly"):
+            boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
+        else:
+            boolApplyBothImagesAndSeries = True
     
-    menuItem.setData(boolApplyBothImagesAndSeries)
-    context.addAction(menuItem)
-    
+        menuItem.setData(boolApplyBothImagesAndSeries)
+        context.addAction(menuItem)
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.buildContextMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e))
+        logger.exception('Error in Menus.buildContextMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e)) 
+
 
 def _actionHovered(action):
         tip = action.toolTip()
@@ -131,55 +136,61 @@ def _actionHovered(action):
 def buildContextMenu(pointerToWeasel, menuXMLFile):
     logger.info("Menus.buildContextMenu called")
     try:
-        #pointerToWeasel.context = QMenu(pointerToWeasel)
         pointerToWeasel.context.hovered.connect(_actionHovered)
-
-        #createFileMenuItem("Reset Tree View", "Ctrl+E", 
-        #"Uncheck all checkboxes on the tree view.",
-        #True, treeView, pointerToWeasel, "callUnCheckTreeViewItems", context=True)
 
         objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
-        listPythonFiles = []
-        for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
-            for individualFile in filenames:
-                if individualFile.endswith(".py"):
-                    listPythonFiles.append(os.path.join(dirpath, individualFile))
-
         for item in items:
-            buildContextMenuItem(pointerToWeasel, pointerToWeasel.context, item, listPythonFiles)
+            buildContextMenuItem(pointerToWeasel, pointerToWeasel.context, item, pointerToWeasel.listPythonFiles)
 
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
             line_number = exception_traceback.tb_lineno
             print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
+            logger.exception('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
 
 
 def setFileMenuItemEnabled(pointerToWeasel, itemText, state):
-    for menuItem in pointerToWeasel.fileMenu.actions():
-        if menuItem.text() == itemText:
-            menuItem.setEnabled(state)
-            break
+    try:
+        logger.info("Menus.setFileMenuItemEnabled called")
+        for menuItem in pointerToWeasel.fileMenu.actions():
+            if menuItem.text() == itemText:
+                menuItem.setEnabled(state)
+                break
+    except Exception as e:
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            #filename = exception_traceback.tb_frame.f_code.co_filename
+            line_number = exception_traceback.tb_lineno
+            print('Error in function Menus.setFileMenuItemEnabled at line number {}: '.format(line_number) + str(e))
+            logger.exception('Error in function Menus.setFileMenuItemEnabled at line number {}: '.format(line_number) + str(e))
 
 
 def createFileMenuItem(label, shortcut, toolTip, enabled, module, pointerToWeasel, 
                        function=None, context=False):
-    menuItem = QAction(label, pointerToWeasel)
-    menuItem.setShortcut(shortcut)
-    menuItem.setToolTip(toolTip)
-    menuItem.setEnabled(enabled)
-    if function:
-        thisFunction = function
-    else:
-        thisFunction = "main"
-    objFunction = getattr(module, thisFunction)
-    menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-    menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
-    if context:
-        pointerToWeasel.context.addAction(menuItem)
-    else:
-        pointerToWeasel.fileMenu.addAction(menuItem)
+    try:
+        logger.info("Menus.createFileMenuItem called")
+        menuItem = QAction(label, pointerToWeasel)
+        menuItem.setShortcut(shortcut)
+        menuItem.setToolTip(toolTip)
+        menuItem.setEnabled(enabled)
+        if function:
+            thisFunction = function
+        else:
+            thisFunction = "main"
+        objFunction = getattr(module, thisFunction)
+        menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
+        menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+        if context:
+            pointerToWeasel.context.addAction(menuItem)
+        else:
+            pointerToWeasel.fileMenu.addAction(menuItem)
+    except Exception as e:
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.createFileMenuItem at line number {} when label = {}: '.format(line_number, label) + str(e))
+        logger.exception('Error in function Menus.createFileMenuItem at line number {} when label = {}: '.format(line_number, label) + str(e))
 
 
 def setUpFileMenu(mainMenu, pointerToWeasel):
@@ -216,3 +227,4 @@ def setUpFileMenu(mainMenu, pointerToWeasel):
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
         print('Error in function Menus.setUpFileMenu at line number {}: '.format(line_number) + str(e))
+        logger.exception('Error in function Menus.setUpFileMenu at line number {}: '.format(line_number) + str(e))
