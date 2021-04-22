@@ -17,8 +17,8 @@ class WeaselConfigXMLReader:
             logger.error('Error in WeaselConfigXMLReader.__init__: ' + str(e))
 
 
-    def getMenuFile(self):
-        menu = self.root.find('./menu_file')
+    def getMenuConfigFile(self):
+        menu = self.root.find('./menu_config_file')
         if menu.text is None:
             return None
         else:

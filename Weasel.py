@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
-        QMdiSubWindow, QMainWindow,  
+        QMdiSubWindow, QMainWindow, QMenu,
         QStatusBar, QDockWidget, QLabel)
 from PyQt5.QtCore import  Qt
 import os
 import sys
+import pathlib
+import importlib
 import logging
 from multiprocessing import current_process
 
@@ -29,10 +31,10 @@ sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 import CoreModules.WEASEL.StyleSheet as styleSheet
 from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
+import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.Menus as menus
 import CoreModules.WEASEL.ToolBar as toolBar
 from Scripting.Scripting import Pipelines
-
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe & Joao Sousa'
@@ -50,7 +52,31 @@ logging.basicConfig(filename=LOG_FILE_NAME,
 logger = logging.getLogger(__name__)
 
 
+def returnListPythonFiles():
+    listPythonFiles = []
+    for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
+        for individualFile in filenames:
+            if individualFile.endswith(".py"):
+                sys.path.append(os.path.dirname(dirpath))
+                listPythonFiles.append(os.path.join(dirpath, individualFile))
+    return listPythonFiles
+
+
+def isPythonFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'py':
+            flag = True
+        return flag
+
+def isXMLFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'xml':
+            flag = True
+        return flag
+
+
 class Weasel(QMainWindow, Pipelines):
+
     def __init__(self): 
         """Creates the MDI container."""
         super (). __init__ () 
@@ -73,27 +99,60 @@ class Weasel(QMainWindow, Pipelines):
         self.checkedStudyList = []
         self.checkedSubjectList = []
         self.treeView = None
+        self.listMenus = []
+        self.listPythonFiles = returnListPythonFiles()
         
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
         
          # XML reader object to process XML configuration file
         self.objConfigXMLReader = WeaselConfigXMLReader()
-        menuXMLFile = self.objConfigXMLReader.getMenuFile()
-        #print("menuXMLFile = {}".format(menuXMLFile))
+
+        #build menus from either xml or python config file
+        self.buildMenus()
+
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         
          # XML reader object to process XML DICOM data file
         self.objXMLReader = WeaselXMLReader() 
-
-        menus.setupMenus(self, menuXMLFile)
-        menus.buildContextMenu(self, menuXMLFile)
+        
         #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")
 
+
+    def buildMenus(self):
+        menuConfigFile = self.objConfigXMLReader.getMenuConfigFile()
+        
+        #create context menu to display with the tree view
+        self.context = QMenu(self)
+        #add Reset Tree View to context menu
+        menus.createFileMenuItem("Reset Tree View", "Ctrl+E", 
+        "Uncheck all checkboxes on the tree view.",
+        True, treeView, self, "callUnCheckTreeViewItems", context=True)
+
+        #even if a menu config file is not defined, 
+        #create the default File menu
+        menus.setUpFileMenu(self.menuBar(), self)
+
+        if menuConfigFile:
+            #a menu config file has been defined
+            if isPythonFile(menuConfigFile):
+                moduleFileName = [pythonFilePath 
+                                  for pythonFilePath in self.listPythonFiles 
+                                  if menuConfigFile in pythonFilePath][0]
+                spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                objFunction = getattr(module, "main")
+            
+                objFunction(self)
+            elif isXMLFile(menuConfigFile):
+                menus.setupMenus(self, menuConfigFile)
+                menus.buildContextMenu(self, menuConfigFile)
+
+
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
-
 
     @property
     def isAnImageChecked(self):
@@ -167,6 +226,7 @@ class Weasel(QMainWindow, Pipelines):
                 flag = True
                 break
         return flag
+
 
 def main():
     app = QApplication(sys . argv )

@@ -93,38 +93,38 @@ def createImageLeaf(image, seriesBranch, refresh=False):
         logger.error('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
 
 
-def resizeTreeViewColumns(self):
+def resizeTreeViewColumns(pointerToWeasel):
     try:
-        self.treeView.resizeColumnToContents(0)
-        self.treeView.resizeColumnToContents(1)
-        self.treeView.resizeColumnToContents(2)
-        self.treeView.hideColumn(4)
-        self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
-        self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
-        self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
-        #print("self.treeViewColumnWidths={}".format(self.treeViewColumnWidths))
+        pointerToWeasel.treeView.resizeColumnToContents(0)
+        pointerToWeasel.treeView.resizeColumnToContents(1)
+        pointerToWeasel.treeView.resizeColumnToContents(2)
+        pointerToWeasel.treeView.hideColumn(4)
+        pointerToWeasel.treeViewColumnWidths[1] = pointerToWeasel.treeView.columnWidth(1)
+        pointerToWeasel.treeViewColumnWidths[2] = pointerToWeasel.treeView.columnWidth(2)
+        pointerToWeasel.treeViewColumnWidths[3] = pointerToWeasel.treeView.columnWidth(3)
+        #print("pointerToWeasel.treeViewColumnWidths={}".format(pointerToWeasel.treeViewColumnWidths))
     except Exception as e:
             print('Error in TreeView.resizeTreeViewColumns: ' + str(e))
             logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
-def buildTreeView(self, refresh=False):
+def buildTreeView(pointerToWeasel, refresh=False):
     try:
         logger.info("TreeView.buildTreeView called")
-        self.treeView.clear()
+        pointerToWeasel.treeView.clear()
         #block tree view signals to prevent recursive
         #searchs when each item is added to the tree view.
-        self.treeView.blockSignals(True)
-        subjects = self.objXMLReader.getSubjects()
+        pointerToWeasel.treeView.blockSignals(True)
+        subjects = pointerToWeasel.objXMLReader.getSubjects()
         for subject in subjects:
-            subjectBranch = createTreeBranch("Subject",  subject,  self.treeView, refresh)
+            subjectBranch = createTreeBranch("Subject",  subject,  pointerToWeasel.treeView, refresh)
             for study in subject:
                 studyBranch = createTreeBranch("Study",  study, subjectBranch, refresh)
                 for series in study:
                     seriesBranch = createTreeBranch("Series", series,  studyBranch, refresh)
                     for image in series:
                         createImageLeaf(image, seriesBranch, refresh)
-        self.treeView.blockSignals(False)   
+        pointerToWeasel.treeView.blockSignals(False)   
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -133,77 +133,85 @@ def buildTreeView(self, refresh=False):
         logger.error('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
 
 
-def makeDICOMStudiesTreeView(self, XML_File_Path):
+def displayContextMenu(pointerToWeasel, pos):
+    try:
+        if pointerToWeasel.isASeriesChecked or pointerToWeasel.isAnImageChecked:
+            pointerToWeasel.context.exec_(pointerToWeasel.treeView.mapToGlobal(pos))
+    except Exception as e:
+        print('Error in function TreeView.displayContextMenu: ' + str(e))
+
+
+def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("TreeView.makeDICOMStudiesTreeView called")
             if os.path.exists(XML_File_Path):
-                self.DICOM_XML_FilePath = XML_File_Path
-                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
-                self.objXMLReader.parseXMLFile(self.DICOM_XML_FilePath)
+                pointerToWeasel.DICOM_XML_FilePath = XML_File_Path
+                pointerToWeasel.DICOMfolderPath, _ = os.path.split(XML_File_Path)
+                pointerToWeasel.objXMLReader.parseXMLFile(pointerToWeasel.DICOM_XML_FilePath)
                 #set checked and expanded attributes to False
                 start_time=time.time()
-                self.objXMLReader.callResetXMLTree()   
+                pointerToWeasel.objXMLReader.callResetXMLTree()   
                 end_time=time.time()
                 ResetXMLTreeTime = end_time - start_time 
                 print('Reset XML Tree Time  = {}'.format(ResetXMLTreeTime))
 
-                self.treeView = QTreeWidget()
+                pointerToWeasel.treeView = QTreeWidget()
                 
                 #Minimum width of the tree view has to be set
                 #to 300 to ensure its parent, the docking widget 
                 #initially displays wide enough to show the tree view
-                self.treeView.setMinimumSize(300,500)
+                pointerToWeasel.treeView.setMinimumSize(300,500)
                 
                 #prevent tree view shifting to the left when an item is clicked.
-                self.treeView.setAutoScroll(False)
+                pointerToWeasel.treeView.setAutoScroll(False)
                 
                 #Enable multiple selection using up arrow and Ctrl keys
-                self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
-                self.treeView.setUniformRowHeights(True)
-                self.treeView.setColumnCount(4)
-                self.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
-                self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+                pointerToWeasel.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+                pointerToWeasel.treeView.setUniformRowHeights(True)
+                pointerToWeasel.treeView.setColumnCount(4)
+                pointerToWeasel.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
+                pointerToWeasel.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
-                buildTreeView(self)
-                resizeTreeViewColumns(self)
-                collapseSeriesBranches(self.treeView.invisibleRootItem())
-                collapseStudiesBranches(self.treeView.invisibleRootItem())
+                buildTreeView(pointerToWeasel)
+                resizeTreeViewColumns(pointerToWeasel)
+                collapseSeriesBranches(pointerToWeasel.treeView.invisibleRootItem())
+                collapseStudiesBranches(pointerToWeasel.treeView.invisibleRootItem())
 
                 #connect functions to events
-                self.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self, item, col))
-                self.treeView.customContextMenuRequested.connect(lambda pos: menus.displayContextMenu(self, pos))
+                pointerToWeasel.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(pointerToWeasel, item, col))
+                pointerToWeasel.treeView.customContextMenuRequested.connect(lambda pos: displayContextMenu(pointerToWeasel, pos))
                 #check/uncheck child items below current checked/unchecked item
                 #check/uncheck item when the item label is selected
-                self.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(self, item, col))
-                self.treeView.itemChanged.connect(lambda item: checkChildItems(self, item))
+                pointerToWeasel.treeView.itemClicked.connect(lambda item, col: toggleItemCheckedState(pointerToWeasel, item, col))
+                pointerToWeasel.treeView.itemChanged.connect(lambda item: checkChildItems(pointerToWeasel, item))
                 #check/uncheck parent items above current checked/unchecked item
-                self.treeView.itemChanged.connect(lambda item: checkParentItems(self, item))
+                pointerToWeasel.treeView.itemChanged.connect(lambda item: checkParentItems(pointerToWeasel, item))
                 
                 #check/uncheck items when a block of items is selected/unselected
-                self.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(self))
+                pointerToWeasel.treeView.itemSelectionChanged.connect(lambda: toggleBlockSelectionCheckedState(pointerToWeasel))
                 #build lists of checked items on the fly
-                self.treeView.itemClicked.connect(lambda: buildListsCheckedItems(self))
+                pointerToWeasel.treeView.itemClicked.connect(lambda: buildListsCheckedItems(pointerToWeasel))
                 #use lists of checked items to decide which menu items to enable
-                self.treeView.itemClicked.connect(lambda: toggleMenuItems(self))
-                self.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(self, item, "False"))
-                self.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(self, item, "True"))
+                pointerToWeasel.treeView.itemClicked.connect(lambda: toggleMenuItems(pointerToWeasel))
+                pointerToWeasel.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(pointerToWeasel, item, "False"))
+                pointerToWeasel.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(pointerToWeasel, item, "True"))
                 
 
                 #Display tree view in left-hand side docked widget
                 #If such a widget already exists remove it to allow
                 #a new tree view to be displayed
-                dockwidget = self.findChild(QDockWidget)
+                dockwidget = pointerToWeasel.findChild(QDockWidget)
                 if dockwidget:
-                    self.removeDockWidget(dockwidget)
+                    pointerToWeasel.removeDockWidget(dockwidget)
                     
-                dockwidget =  QDockWidget("DICOM Study Structure", self, Qt.SubWindow)
+                dockwidget =  QDockWidget("DICOM Study Structure", pointerToWeasel, Qt.SubWindow)
                 dockwidget.setAllowedAreas(Qt.LeftDockWidgetArea)
                 dockwidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
-                self.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
-                dockwidget.setWidget(self.treeView)
-                self.treeView.show()
+                pointerToWeasel.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
+                dockwidget.setWidget(pointerToWeasel.treeView)
+                pointerToWeasel.treeView.show()
                 
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -213,7 +221,7 @@ def makeDICOMStudiesTreeView(self, XML_File_Path):
             logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
 
 
-def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
+def refreshDICOMStudiesTreeView(pointerToWeasel, newSeriesName = ''):
         """Uses an XML file that describes a DICOM file structure to build a
         tree view showing a visual representation of that file structure."""
         try:
@@ -222,32 +230,32 @@ def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
       
             #Save current tree view checked state to the xml tree in memory,
             #so that the tree view can be rebuilt with that checked state
-            self.objXMLReader.saveTreeViewCheckedStateToXML(self.checkedSubjectList,
-                                                            self.checkedStudyList,
-                                                            self.checkedSeriesList,
-                                                            self.checkedImageList)
+            pointerToWeasel.objXMLReader.saveTreeViewCheckedStateToXML(pointerToWeasel.checkedSubjectList,
+                                                            pointerToWeasel.checkedStudyList,
+                                                            pointerToWeasel.checkedSeriesList,
+                                                            pointerToWeasel.checkedImageList)
 
             #store current column widths to be able
             #to restore them when the tree view is refreshed
-            self.treeViewColumnWidths[1] = self.treeView.columnWidth(1)
-            self.treeViewColumnWidths[2] = self.treeView.columnWidth(2)
-            self.treeViewColumnWidths[3] = self.treeView.columnWidth(3)
+            pointerToWeasel.treeViewColumnWidths[1] = pointerToWeasel.treeView.columnWidth(1)
+            pointerToWeasel.treeViewColumnWidths[2] = pointerToWeasel.treeView.columnWidth(2)
+            pointerToWeasel.treeViewColumnWidths[3] = pointerToWeasel.treeView.columnWidth(3)
             # Joao Sousa suggestion
-            self.treeView.hide()
-            buildTreeView(self, refresh=True)
-            self.treeView.setColumnWidth(1, self.treeViewColumnWidths[1])
-            self.treeView.setColumnWidth(2, self.treeViewColumnWidths[2])  
-            self.treeView.setColumnWidth(3, self.treeViewColumnWidths[3])
+            pointerToWeasel.treeView.hide()
+            buildTreeView(pointerToWeasel, refresh=True)
+            pointerToWeasel.treeView.setColumnWidth(1, pointerToWeasel.treeViewColumnWidths[1])
+            pointerToWeasel.treeView.setColumnWidth(2, pointerToWeasel.treeViewColumnWidths[2])  
+            pointerToWeasel.treeView.setColumnWidth(3, pointerToWeasel.treeViewColumnWidths[3])
 
             #If no tree view items are now selected,
             #disable items in the Tools menu.
-            toggleMenuItems(self)
+            toggleMenuItems(pointerToWeasel)
             
             # Joao Sousa suggestion
-            self.treeView.show()
+            pointerToWeasel.treeView.show()
 
             #Save XML file to disc
-            self.objXMLReader.saveXMLFile()
+            pointerToWeasel.objXMLReader.saveXMLFile()
             
             end_time=time.time()
             refreshTreeViewTime = end_time - start_time 
@@ -305,7 +313,7 @@ def collapseSeriesBranches(item):
             logger.error('Error in TreeView.collapseSeriesBranches: ' + str(e))
 
 
-def checkChildItems(self, item):
+def checkChildItems(pointerToWeasel, item):
     """This function uses recursion to set the state of child checkboxes to
     match that of their parent.
     
@@ -325,13 +333,13 @@ def checkChildItems(self, item):
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, item.checkState(0))
                 item.treeWidget().blockSignals(False)
-                checkChildItems(self, childItem)
+                checkChildItems(pointerToWeasel, childItem)
     except Exception as e:
         print('Error in TreeView.checkChildItems: ' + str(e))
         logger.error('Error in TreeView.checkChildItems: ' + str(e))
 
 
-def checkParentItems(self, item):
+def checkParentItems(pointerToWeasel, item):
     """This function uses recursion to set the state of Parent checkboxes to
     match collective state of their children.
     
@@ -349,7 +357,7 @@ def checkParentItems(self, item):
             else:
                 item.parent().setCheckState(0, Qt.Unchecked)
             item.treeWidget().blockSignals(False)
-            checkParentItems(self, item.parent())
+            checkParentItems(pointerToWeasel, item.parent())
     except Exception as e:
             print('Error in TreeView.checkParentItems: ' + str(e))
             logger.error('Error in TreeView.checkParentItems: ' + str(e))
@@ -412,12 +420,12 @@ def expandTreeViewBranch(item, newSeriesName = ''):
             logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
 
 
-def isAnItemChecked(self):
+def isAnItemChecked(pointerToWeasel):
     """Returns True is an item is selected in the DICOM
     tree view, else returns False"""
     try:
         logger.info("TreeView.isAnItemChecked called.")
-        if self.isAnImageChecked or self.isASeriesChecked:
+        if pointerToWeasel.isAnImageChecked or pointerToWeasel.isASeriesChecked:
             return True
         else:
             return False
@@ -491,30 +499,30 @@ def isASeriesSelected(item):
             logger.error('Error in isASeriesSelected: ' + str(e))
 
 
-def saveTreeViewExpandedState(self, item, expandedState='True'):
+def saveTreeViewExpandedState(pointerToWeasel, item, expandedState='True'):
     if isASubjectSelected(item):
         subjectID = item.text(1).replace("Subject - ", "").strip()
         #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
-        self.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
+        pointerToWeasel.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
     elif isAStudySelected(item):
         subjectID = item.parent().text(1).replace("Subject - ", "").strip()
         studyID = item.text(1).replace("Study - ", "").strip()
-        self.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
+        pointerToWeasel.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
     elif isASeriesSelected(item):
         subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
         studyID = item.parent().text(1).replace("Study - ", "").strip()
         seriesID = item.text(1).replace("Series - ", "").strip()
-        self.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
+        pointerToWeasel.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
 
 
-def toggleBlockSelectionCheckedState(self):
+def toggleBlockSelectionCheckedState(pointerToWeasel):
     try:
         logger.info("TreeView.toggleBlockSelectionCheckedState called.")
-        if self.treeView.selectedItems():
-            noSelectedItems = len(self.treeView.selectedItems())
+        if pointerToWeasel.treeView.selectedItems():
+            noSelectedItems = len(pointerToWeasel.treeView.selectedItems())
             if noSelectedItems > 1:
                 loopCounter = 0
-                for selectedItem in self.treeView.selectedItems():
+                for selectedItem in pointerToWeasel.treeView.selectedItems():
                     #selectedItem.setSelected(True)
                     #reverse checked status of each selected item
                     #skip the first iteration because this was covered
@@ -531,7 +539,7 @@ def toggleBlockSelectionCheckedState(self):
         logger.error('Error in TreeView.toggleBlockSelectionCheckedState: ' + str(e))  
 
 
-def toggleItemCheckedState(self, item, col):
+def toggleItemCheckedState(pointerToWeasel, item, col):
         """When a tree view item is selected, it is also checked
         and when a tree view item is checked, it is also selected.
         This function also sets boolean flags that indicate if a 
@@ -559,11 +567,11 @@ def toggleItemCheckedState(self, item, col):
             logger.error('Error in toggleItemCheckedState: ' + str(e))
 
 
-def toggleMenuItems(self):
+def toggleMenuItems(pointerToWeasel):
         """TO DO"""
         try:
             logger.info("TreeView.toggleMenuItems called.")
-            for menu in self.listMenus:
+            for menu in pointerToWeasel.listMenus:
                 if menu.title() == 'File':
                     #Do not apply this function to items in the
                     #File menu
@@ -579,9 +587,9 @@ def toggleMenuItems(self):
                             #case when all checkboxes are unchecked. 
                             #Then enable depending on what is checked.
                             menuItem.setEnabled(False)  
-                            if self.isASeriesChecked:
+                            if pointerToWeasel.isASeriesChecked:
                                  menuItem.setEnabled(True)
-                            elif self.isAnImageChecked:
+                            elif pointerToWeasel.isAnImageChecked:
                                 if menuItem.data():
                                     menuItem.setEnabled(True)
                                 else:
@@ -591,11 +599,11 @@ def toggleMenuItems(self):
             logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
 
 
-def returnCheckedSubjects(self):
+def returnCheckedSubjects(pointerToWeasel):
     """This function generates and returns a list of checked series."""
     logger.info("TreeView.returnCheckedSubjects called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         checkedSubjectsList = []
         for i in range(subjectCount):
@@ -608,11 +616,11 @@ def returnCheckedSubjects(self):
         logger.error('Error in TreeView.returnCheckedSubjects: ' + str(e))
 
 
-def returnCheckedStudies(self):
+def returnCheckedStudies(pointerToWeasel):
     """This function generates and returns a list of checked series."""
     logger.info("TreeView.returnCheckedStudies called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         checkedStudiesList = []
         for i in range(subjectCount):
@@ -628,11 +636,11 @@ def returnCheckedStudies(self):
         logger.error('Error in TreeView.returnCheckedStudies: ' + str(e))
 
 
-def returnCheckedSeries(self):
+def returnCheckedSeries(pointerToWeasel):
     """This function generates and returns a list of checked series."""
     logger.info("TreeView.returnCheckedSeries called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         checkedSeriesList = []
         for i in range(subjectCount):
@@ -651,11 +659,11 @@ def returnCheckedSeries(self):
         logger.error('Error in TreeView.returnCheckedSeries: ' + str(e))
 
 
-def returnCheckedImages(self):
+def returnCheckedImages(pointerToWeasel):
     """This function generates and returns a list of checked images."""
     logger.info("TreeView.returnCheckedImages called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         checkedImagesList = []
         for i in range(subjectCount):
@@ -677,11 +685,11 @@ def returnCheckedImages(self):
         logger.error('Error in TreeView.returnCheckedImages: ' + str(e))
     
 
-def returnSeriesImageList(self, subjectName, studyName, seriesName):
+def returnSeriesImageList(pointerToWeasel, subjectName, studyName, seriesName):
     try:
         imagePathList = []
         #get subject
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
@@ -709,9 +717,9 @@ def returnSeriesImageList(self, subjectName, studyName, seriesName):
             logger.error('Error in TreeView.returnSeriesImageList: ' + str(e))
 
 
-def returnImageName(self, subjectName, studyName, seriesName, imagePath):
+def returnImageName(pointerToWeasel, subjectName, studyName, seriesName, imagePath):
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
@@ -739,21 +747,21 @@ def returnImageName(self, subjectName, studyName, seriesName, imagePath):
             logger.error('Error in TreeView.returnImageName: ' + str(e))
 
 
-def buildListsCheckedItems(self):
+def buildListsCheckedItems(pointerToWeasel):
     """This function generates and returns lists of checked items."""
     logger.info("TreeView.buildListsCheckedItems called")
     try:
         start_time=time.time()
-        self.checkedImageList = []
-        self.checkedSeriesList = []
-        self.checkedStudyList = []
-        self.checkedSubjectList = []
-        root = self.treeView.invisibleRootItem()
+        pointerToWeasel.checkedImageList = []
+        pointerToWeasel.checkedSeriesList = []
+        pointerToWeasel.checkedStudyList = []
+        pointerToWeasel.checkedSubjectList = []
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
             if subject.checkState(0) == Qt.Checked:
-                self.checkedSubjectList.append(subject.text(1).replace("Subject - ", "").strip())
+                pointerToWeasel.checkedSubjectList.append(subject.text(1).replace("Subject - ", "").strip())
             studyCount = subject.childCount()
             for j in range(studyCount):
                 study = subject.child(j)
@@ -762,7 +770,7 @@ def buildListsCheckedItems(self):
                     parentStudy = study.parent()
                     checkedSubjectData.append(parentStudy.text(1).replace("Subject - ", "").strip())
                     checkedSubjectData.append(study.text(1).replace("Study - ", "").strip())
-                    self.checkedStudyList.append(checkedSubjectData)
+                    pointerToWeasel.checkedStudyList.append(checkedSubjectData)
                 seriesCount = study.childCount()
                 for k in range(seriesCount):
                     series = study.child(k)
@@ -773,7 +781,7 @@ def buildListsCheckedItems(self):
                         checkedSeriesData.append(grandParentSeries.text(1).replace("Subject - ", "").strip())
                         checkedSeriesData.append(parentSeries.text(1).replace("Study - ", "").strip())
                         checkedSeriesData.append(series.text(1).replace("Series - ", "").strip())
-                        self.checkedSeriesList.append(checkedSeriesData)
+                        pointerToWeasel.checkedSeriesList.append(checkedSeriesData)
                     imageCount = series.childCount()
                     for n in range(imageCount):
                         image = series.child(n)
@@ -786,7 +794,7 @@ def buildListsCheckedItems(self):
                             checkedImagesData.append(study.text(1).replace("Study - ", "").strip())
                             checkedImagesData.append(series.text(1).replace("Series - ", "").strip())
                             checkedImagesData.append(image.text(4))
-                            self.checkedImageList.append(checkedImagesData)
+                            pointerToWeasel.checkedImageList.append(checkedImagesData)
 
         end_time=time.time()
         buildCheckedListTime = end_time - start_time 
@@ -796,11 +804,11 @@ def buildListsCheckedItems(self):
         logger.error('Error in TreeView.buildListsCheckedItems: ' + str(e))
 
 
-def getPathParentNode(self, inputPath):
+def getPathParentNode(pointerToWeasel, inputPath):
     """This function returns a list of subjectID, studyID an seriesID based on the given filepath."""
     logger.info("TreeView.getPathParentNode called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
@@ -823,11 +831,11 @@ def getPathParentNode(self, inputPath):
         logger.error('Error in TreeView.getPathParentNode: ' + str(e))
 
 
-def getSeriesNumberAfterLast(self, inputPath):
+def getSeriesNumberAfterLast(pointerToWeasel, inputPath):
     """This function returns a list of subjectID, studyID an seriesID based on the given filepath."""
     logger.info("TreeView.getPathParentNode called")
     try:
-        root = self.treeView.invisibleRootItem()
+        root = pointerToWeasel.treeView.invisibleRootItem()
         subjectCount = root.childCount()
         for i in range(subjectCount):
             subject = root.child(i)
@@ -853,21 +861,21 @@ def getSeriesNumberAfterLast(self, inputPath):
         logger.error('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
 
 
-def closeTreeView(self):
+def closeTreeView(pointerToWeasel):
     try:
-        self.treeView.clear()
-        self.treeView.close()
+        pointerToWeasel.treeView.clear()
+        pointerToWeasel.treeView.close()
     except Exception as e:
         print('Error in TreeView.CloseTreeView: ' + str(e))
         logger.error('Error in TreeView.CloseTreeView: ' + str(e))
 
 
-def callUnCheckTreeViewItems(self):
-    root = self.treeView.invisibleRootItem()
-    unCheckTreeViewItems(self, root)
+def callUnCheckTreeViewItems(pointerToWeasel):
+    root = pointerToWeasel.treeView.invisibleRootItem()
+    unCheckTreeViewItems(pointerToWeasel, root)
 
 
-def unCheckTreeViewItems(self, item):
+def unCheckTreeViewItems(pointerToWeasel, item):
     """This function uses recursion to set the state of child checkboxes to
     match that of their parent.
     
@@ -887,7 +895,7 @@ def unCheckTreeViewItems(self, item):
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, Qt.Unchecked)
                 item.treeWidget().blockSignals(False)
-                unCheckTreeViewItems(self, childItem)
+                unCheckTreeViewItems(pointerToWeasel, childItem)
     except Exception as e:
         print('Error in TreeView.unCheckTreeViewItems: ' + str(e))
         logger.error('Error in TreeView.unCheckTreeViewItems: ' + str(e))

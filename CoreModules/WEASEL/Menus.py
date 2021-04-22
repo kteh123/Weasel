@@ -17,19 +17,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def setupMenus(self, menuXMLFile):
+def setupMenus(pointerToWeasel, menuXMLFile):
     """Builds the menus in the menu bar of the MDI"""
     logger.info("Menus.setupMenus")
-    self.listMenus = []
-    mainMenu = self.menuBar()
-    setUpFileMenu(mainMenu, self)
+    mainMenu = pointerToWeasel.menuBar()
+    #setUpFileMenu(mainMenu, pointerToWeasel)
     objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
     menus = objXMLMenuReader.getMenus()
     for menu in menus:
         menuName = menu.attrib['name']
-        self.topMenu = mainMenu.addMenu(menuName)
-        self.topMenu.hovered.connect(_actionHovered)
-        self.listMenus.append(self.topMenu)
+        pointerToWeasel.topMenu = mainMenu.addMenu(menuName)
+        pointerToWeasel.topMenu.hovered.connect(_actionHovered)
+        pointerToWeasel.listMenus.append(pointerToWeasel.topMenu)
         listPythonFiles = []
         for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
             for individualFile in filenames:
@@ -37,25 +36,25 @@ def setupMenus(self, menuXMLFile):
                     sys.path.append(os.path.dirname(dirpath))
                     listPythonFiles.append(os.path.join(dirpath, individualFile))
         for item in menu:
-            buildUserDefinedToolsMenuItem(self, self.topMenu, item, listPythonFiles)
+            buildUserDefinedToolsMenuItem(pointerToWeasel, pointerToWeasel.topMenu, item, listPythonFiles)
 
 
-def buildUserDefinedToolsMenuItem(self, topMenu, item, pythonFiles):
+def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
     try:
         #create action button on the fly
         logger.info("Menus.buildUserDefinedToolsMenuItem called.")
         if item.find('separator') is not None:
-            self.topMenu.addSeparator()
+            pointerToWeasel.topMenu.addSeparator()
         else:
             if item.find('icon') is not None:
                 icon = item.find('icon').text
-                self.menuItem = QAction(QIcon(icon), item.find('label').text, self)
+                pointerToWeasel.menuItem = QAction(QIcon(icon), item.find('label').text, pointerToWeasel)
             else:
-                self.menuItem = QAction(item.find('label').text, self)
+                pointerToWeasel.menuItem = QAction(item.find('label').text, pointerToWeasel)
             if item.find('shortcut') is not None:
-                self.menuItem.setShortcut(item.find('shortcut').text)
+                pointerToWeasel.menuItem.setShortcut(item.find('shortcut').text)
             if item.find('tooltip') is not None:
-                self.menuItem.setToolTip(item.find('tooltip').text)
+                pointerToWeasel.menuItem.setToolTip(item.find('tooltip').text)
 
             moduleName = item.find('module').text
 
@@ -72,23 +71,22 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item, pythonFiles):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             objFunction = getattr(module, function)
-            self.menuItem.triggered.connect(lambda : objFunction(self))
-            self.menuItem.triggered.connect(lambda : self.refresh())
+            pointerToWeasel.menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
+            pointerToWeasel.menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
 
             if hasattr(module, "isSeriesOnly"):
-                boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
+                boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
             else:
                 boolApplyBothImagesAndSeries = True
 
-            self.menuItem.setData(boolApplyBothImagesAndSeries)
+            pointerToWeasel.menuItem.setData(boolApplyBothImagesAndSeries)
 
             if hasattr(module, "isEnabled"):
-                self.menuItem.setEnabled(getattr(module, "isEnabled")(self))
+                pointerToWeasel.menuItem.setEnabled(getattr(module, "isEnabled")(pointerToWeasel))
             else:
-                self.menuItem.setEnabled(False)
-
+                pointerToWeasel.menuItem.setEnabled(False)
             
-            topMenu.addAction(self.menuItem)
+            topMenu.addAction(pointerToWeasel.menuItem)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -96,8 +94,8 @@ def buildUserDefinedToolsMenuItem(self, topMenu, item, pythonFiles):
         print('Error in function Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e))
 
 
-def buildContextMenuItem(self, context, item, pythonFiles):
-    menuItem = QAction(item.find('label').text, self)
+def buildContextMenuItem(pointerToWeasel, context, item, pythonFiles):
+    menuItem = QAction(item.find('label').text, pointerToWeasel)
     menuItem.setEnabled(True)
     moduleName = item.find('module').text
     
@@ -113,11 +111,11 @@ def buildContextMenuItem(self, context, item, pythonFiles):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     objFunction = getattr(module, function)
-    menuItem.triggered.connect(lambda : objFunction(self))
-    menuItem.triggered.connect(lambda : self.refresh())
+    menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
+    menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
     
     if hasattr(module, "isSeriesOnly"):
-        boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
+        boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
     else:
         boolApplyBothImagesAndSeries = True
     
@@ -125,28 +123,20 @@ def buildContextMenuItem(self, context, item, pythonFiles):
     context.addAction(menuItem)
     
 
-def displayContextMenu(self, pos):
-    try:
-        if self.isASeriesChecked or self.isAnImageChecked:
-            self.context.exec_(self.treeView.mapToGlobal(pos))
-    except Exception as e:
-        print('Error in function Menus.displayContextMenu: ' + str(e))
-
-
 def _actionHovered(action):
         tip = action.toolTip()
         QToolTip.showText(QCursor.pos(), tip)
 
 
-def buildContextMenu(self, menuXMLFile):
+def buildContextMenu(pointerToWeasel, menuXMLFile):
     logger.info("Menus.buildContextMenu called")
     try:
-        self.context = QMenu(self)
-        self.context.hovered.connect(_actionHovered)
+        #pointerToWeasel.context = QMenu(pointerToWeasel)
+        pointerToWeasel.context.hovered.connect(_actionHovered)
 
-        createFileMenuItem("Reset Tree View", "Ctrl+E", 
-        "Uncheck all checkboxes on the tree view.",
-        True, treeView, self, "callUnCheckTreeViewItems", context=True)
+        #createFileMenuItem("Reset Tree View", "Ctrl+E", 
+        #"Uncheck all checkboxes on the tree view.",
+        #True, treeView, pointerToWeasel, "callUnCheckTreeViewItems", context=True)
 
         objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
@@ -157,7 +147,7 @@ def buildContextMenu(self, menuXMLFile):
                     listPythonFiles.append(os.path.join(dirpath, individualFile))
 
         for item in items:
-            buildContextMenuItem(self, self.context, item, listPythonFiles)
+            buildContextMenuItem(pointerToWeasel, pointerToWeasel.context, item, listPythonFiles)
 
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -166,16 +156,16 @@ def buildContextMenu(self, menuXMLFile):
             print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
 
 
-def setFileMenuItemEnabled(self, itemText, state):
-    for menuItem in self.fileMenu.actions():
+def setFileMenuItemEnabled(pointerToWeasel, itemText, state):
+    for menuItem in pointerToWeasel.fileMenu.actions():
         if menuItem.text() == itemText:
             menuItem.setEnabled(state)
             break
 
 
-def createFileMenuItem(label, shortcut, toolTip, enabled, module, self, 
+def createFileMenuItem(label, shortcut, toolTip, enabled, module, pointerToWeasel, 
                        function=None, context=False):
-    menuItem = QAction(label, self)
+    menuItem = QAction(label, pointerToWeasel)
     menuItem.setShortcut(shortcut)
     menuItem.setToolTip(toolTip)
     menuItem.setEnabled(enabled)
@@ -184,42 +174,42 @@ def createFileMenuItem(label, shortcut, toolTip, enabled, module, self,
     else:
         thisFunction = "main"
     objFunction = getattr(module, thisFunction)
-    menuItem.triggered.connect(lambda : objFunction(self))
-    menuItem.triggered.connect(lambda : self.refresh())
+    menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
+    menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
     if context:
-        self.context.addAction(menuItem)
+        pointerToWeasel.context.addAction(menuItem)
     else:
-        self.fileMenu.addAction(menuItem)
+        pointerToWeasel.fileMenu.addAction(menuItem)
 
 
-def setUpFileMenu(mainMenu, self):
+def setUpFileMenu(mainMenu, pointerToWeasel):
     try:
-        self.fileMenu = mainMenu.addMenu("File")
-        self.fileMenu.hovered.connect(_actionHovered)
+        pointerToWeasel.fileMenu = mainMenu.addMenu("File")
+        pointerToWeasel.fileMenu.hovered.connect(_actionHovered)
 
         createFileMenuItem("Open DICOM folder", "Ctrl+O", 
         "If an XML file exists in the scan folder, open it. Otherwise create one and open it.",
-        True, loadDICOM, self)
+        True, loadDICOM, pointerToWeasel)
 
         createFileMenuItem("Refresh DICOM folder", "Ctrl+R", 
         "Create a new XML file for the DICOM images in the scan folder and open it.",
-        False, refreshDICOM,  self)
+        False, refreshDICOM,  pointerToWeasel)
 
         createFileMenuItem("Tile Subwindows", "Ctrl+T", 
         "Arranges subwindows to a tile pattern.",
-        True, tileAllSubWindows,  self)
+        True, tileAllSubWindows,  pointerToWeasel)
 
         createFileMenuItem("Close All Sub Windows", "Ctrl+X", 
         "Close All Sub Windows.",
-        True, closeAllSubWindows,  self)
+        True, closeAllSubWindows,  pointerToWeasel)
 
         createFileMenuItem("Reset Tree View", "Ctrl+E", 
         "Uncheck all checkboxes on the tree view.",
-        False, treeView, self, "callUnCheckTreeViewItems")
+        False, treeView, pointerToWeasel, "callUnCheckTreeViewItems")
 
         createFileMenuItem("Close DICOM folder", "Ctrl+C", 
         "Closes the tree view and removes reference to the DICOM folder.",
-        False, closeTreeView,  self)
+        False, closeTreeView,  pointerToWeasel)
 
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
