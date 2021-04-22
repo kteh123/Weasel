@@ -146,8 +146,6 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                                 sys.path.append(dirpath)
                                 multiframeProgram = os.path.join(dirpath, individualFile)
                     multiframeDir = os.path.dirname(filepath)
-                    #multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
-                    #os.makedirs(multiframeDir, exist_ok=True)
                     fileBase = "SingleFrame_"
                     fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
                     #if hasattr(dataset, 'SeriesDescription'):
@@ -185,7 +183,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     list_dicom.extend([dataset])
             except:
                 continue
-            
+        
         # The following segment is to deal with the multiframe images if there is any.
         # The np.unique removes files that might have appended more than once previously
         fileCounter = 0

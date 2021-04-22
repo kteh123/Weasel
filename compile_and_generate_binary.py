@@ -10,15 +10,14 @@ venv.create(venv_dir, with_pip=True)
 print("Activating the Python Virtual Environment created...")
 # Windows
 if platform == "win32" or platform == "win64" or os.name == 'nt':
-	#activation_command = "venv\\Scripts\\activate.bat"
 	activation_command = str(venv_dir) + "\\Scripts\\activate"
 # MacOS and Linux
 else:
-	#activation_command = "venv/bin/activate"
 	activation_command = ". " + venv_dir + "/bin/activate"
 
 print("Installing Python packages in the Virtual Environment...")
 os.system(activation_command + ' && pip install -e .')
+
 print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
