@@ -23,8 +23,7 @@ print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller --hidden-import requests --hidden-import xnat --onefile Weasel.py')
-#os.system('pyinstaller --hidden-import requests --hidden-import xnat --exclude-module External --onefile Weasel.py')
+os.system(activation_command + ' && pyinstaller --hidden-import requests --hidden-import xnat --add-data README.md --collect-datas External --onefile Weasel.py')
 
 print("Cleaning up compilation files...")
 # Windows

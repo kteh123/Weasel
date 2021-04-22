@@ -6,6 +6,7 @@ import pydicom
 import nibabel as nib
 import copy
 import itertools
+import logging
 import warnings
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
@@ -18,6 +19,7 @@ import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
 from CoreModules.WEASEL.ViewMetaData import displayMetaDataSubWindow
 
+logger = logging.getLogger(__name__)
 
 class UserInterfaceTools:
     """
@@ -1458,6 +1460,24 @@ class Image:
     @property
     def Columns(self):
         return self.Item("Columns")
+    
+    def get_tag(self, tag):
+        # If tuple()
+        # Consider the case where tag is a list
+        return ReadDICOM_Image.getImageTagValue(self.path, tag)
+
+    def set_tag(self, tag, newValue):
+        # If tuple()
+        # Consider the case where tag is a list
+        # Consider the case where other fields are changed
+        # Consider the case where the tags doesn't exist
+        GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
+    
+    def __getitem__(self, tag):
+        return self.get_tag(tag)
+
+    def __setitem__(self, tag, value):
+        self.set_tag(tag, value)
 
     def Item(self, tagDescription, newValue=None):
         if self.path:

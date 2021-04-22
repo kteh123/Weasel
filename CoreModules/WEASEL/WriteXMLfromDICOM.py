@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import pathlib
 import subprocess
@@ -132,7 +133,18 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                         multiframeScript = 'emf2sf.bat'
                     else:
                         multiframeScript = 'emf2sf'
-                    multiframeProgram = os.path.join(pathlib.Path().absolute(), "External", "dcm4che", "bin", multiframeScript)
+                    multiframeProgram = multiframeScript
+                    # If running Weasel as executable
+                    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+                        search_directory = pathlib.Path(sys._MEIPASS)
+                    # If running Weasel as normal Python script
+                    else:
+                        search_directory = pathlib.Path().absolute()
+                    for dirpath, _, filenames in os.walk(search_directory):
+                        for individualFile in filenames:
+                            if individualFile.endswith(multiframeScript):
+                                sys.path.append(dirpath)
+                                multiframeProgram = os.path.join(dirpath, individualFile)
                     multiframeDir = os.path.dirname(filepath)
                     #multiframeDir = os.path.join(os.path.dirname(filepath), "SingleFrames")
                     #os.makedirs(multiframeDir, exist_ok=True)
@@ -146,7 +158,12 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     # Run the dcm4che emf2sf
                     msgWindow.displayMessageSubWindow(self, "Multiframe DICOM detected. Converting to single frame ...")
                     multiframeCommand = [multiframeProgram, "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
-                    commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
+                    try:
+                        commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
+                    except Exception as e:
+                        commandResult = 1
+                        print('Error in ' + multiframeScript + ': ' + str(e)) 
+                        logger.exception('Error in ' + multiframeScript + ': ' + str(e))
                     # Get list of filenames with fileBase and add to multiframe_files_list
                     if commandResult == 0:
                         for new_file in os.listdir(multiframeDir):
