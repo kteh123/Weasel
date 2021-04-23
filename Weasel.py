@@ -121,38 +121,44 @@ class Weasel(QMainWindow, Pipelines):
 
 
     def buildMenus(self):
-        menuConfigFile = self.objConfigXMLReader.getMenuConfigFile()
+        try:
+            logger.info("Weasel.buildMenus called.")
+            menuConfigFile = self.objConfigXMLReader.getMenuConfigFile()
         
-        #create context menu to display with the tree view
-        self.context = QMenu(self)
-        #add Reset Tree View to context menu
-        menus.createFileMenuItem("Reset Tree View", "Ctrl+E", 
-        "Uncheck all checkboxes on the tree view.",
-        True, treeView, self, "callUnCheckTreeViewItems", context=True)
+            #create context menu to display with the tree view
+            self.context = QMenu(self)
+            #add Reset Tree View to context menu
+            menus.createFileMenuItem("Reset Tree View", "Ctrl+E", 
+            "Uncheck all checkboxes on the tree view.",
+            True, treeView, self, "callUnCheckTreeViewItems", context=True)
 
-        #even if a menu config file is not defined, 
-        #create the default File menu
-        menus.setUpFileMenu(self.menuBar(), self)
+            #even if a menu config file is not defined, 
+            #create the default File menu
+            menus.setUpFileMenu(self.menuBar(), self)
 
-        if menuConfigFile:
-            #a menu config file has been defined
-            if isPythonFile(menuConfigFile):
-                moduleFileName = [pythonFilePath 
-                                  for pythonFilePath in self.listPythonFiles 
-                                  if menuConfigFile in pythonFilePath][0]
-                spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                objFunction = getattr(module, "main")
-            
-                objFunction(self)
-            elif isXMLFile(menuConfigFile):
-                menus.setupMenus(self, menuConfigFile)
-                menus.buildContextMenu(self, menuConfigFile)
+            if menuConfigFile:
+                #a menu config file has been defined
+                if isPythonFile(menuConfigFile):
+                    moduleFileName = [pythonFilePath 
+                                      for pythonFilePath in self.listPythonFiles 
+                                      if menuConfigFile in pythonFilePath][0]
+                    spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    objFunction = getattr(module, "main")
+                    #execute python functions to build the menu and menu items
+                    objFunction(self)
+                elif isXMLFile(menuConfigFile):
+                    menus.setupMenus(self, menuConfigFile)
+                    menus.buildContextMenu(self, menuConfigFile)
+        except Exception as e:
+            print('Error in Weasel.buildMenus: ' + str(e)) 
+            logger.exception('Error in Weasel.buildMenus: ' + str(e)) 
 
 
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
+
 
     @property
     def isAnImageChecked(self):
