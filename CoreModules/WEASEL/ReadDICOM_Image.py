@@ -92,6 +92,8 @@ def getImageTagValue(imagePath, dicomTag):
             # This is not for Enhanced MRI. Only Classic DICOM
             if isinstance(dicomTag, str):
                 attribute = dataset.data_element(dicomTag).value
+            elif isinstance(dicomTag, tuple):
+                attribute = dataset[dicomTag].value
             else:
                 attribute = dataset[hex(dicomTag)].value
             del dataset

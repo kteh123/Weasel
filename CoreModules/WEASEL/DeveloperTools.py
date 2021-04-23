@@ -679,6 +679,10 @@ class Subject:
         return children
 
     @property
+    def parent(self):
+        return Project(self.objWeasel)
+
+    @property
     def numberChildren(self):
         return len(self.children)
 
@@ -768,6 +772,10 @@ class Study:
                 series = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, listPaths=images)
                 children.append(series)
         return children
+    
+    @property
+    def parent(self):
+        return Subject(self.objWeasel, self.subjectID)
 
     @property
     def numberChildren(self):
@@ -887,6 +895,10 @@ class Series:
             image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
             children.append(image)
         return children
+    
+    @property
+    def parent(self):
+        return Study(self.objWeasel, self.subjectID, self.studyID, studyUID=self.studyUID)
 
     @property
     def numberChildren(self):
@@ -1287,6 +1299,15 @@ class Image:
         self.suffix = '' if suffix is None else suffix
         self.referencePath = ''
 
+    def parent(self):
+        temp_series = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, studyUID=self.studyUID, seriesUID=self.seriesUID)
+        paths = []
+        images_of_series = temp_series.children
+        for image in images_of_series:
+            paths.append(image.path)
+        del temp_series, images_of_series
+        return Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=paths, studyUID=self.studyUID, seriesUID=self.seriesUID)
+
     @classmethod
     def fromTreeView(cls, objWeasel, imageItem):
         subjectID = imageItem.parent().parent().parent().text(1).replace('Subject -', '').strip()
@@ -1462,16 +1483,21 @@ class Image:
         return self.Item("Columns")
     
     def get_tag(self, tag):
-        # If tuple()
-        # Consider the case where tag is a list
-        return ReadDICOM_Image.getImageTagValue(self.path, tag)
+        if isinstance(tag, list):
+            outputValuesList = []
+            for ind_tag in tag:
+                outputValuesList.append(ReadDICOM_Image.getImageTagValue(self.path, ind_tag))
+            return outputValuesList
+        else:
+            return ReadDICOM_Image.getImageTagValue(self.path, tag)
 
     def set_tag(self, tag, newValue):
-        # If tuple()
-        # Consider the case where tag is a list
-        # Consider the case where other fields are changed
-        # Consider the case where the tags doesn't exist
-        GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
+        if isinstance(tag, list) and isinstance(newValue, list):
+            for index, ind_tag in enumerate(tag):
+                GenericDICOMTools.editDICOMTag(self.path, ind_tag, newValue[index])
+        else:
+            GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
+        # Consider the case where other XML fields are changed
     
     def __getitem__(self, tag):
         return self.get_tag(tag)

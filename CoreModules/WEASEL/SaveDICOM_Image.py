@@ -160,6 +160,9 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
                 if isinstance(dicomTag, str):
                     try: dataset.data_element(dicomTag).value = newValue
                     except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+                elif isinstance(dicomTag, tuple):
+                    try: dataset[dicomTag].value = newValue
+                    except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
                 else:
                     try: dataset[hex(dicomTag)].value = newValue
                     except: dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
@@ -168,6 +171,9 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
             dataset = ReadDICOM_Image.getDicomDataset(imagePath)
             if isinstance(dicomTag, str):
                 try: dataset.data_element(dicomTag).value = newValue
+                except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+            elif isinstance(dicomTag, tuple):
+                try: dataset[dicomTag].value = newValue
                 except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
             else:
                 try: dataset[hex(dicomTag)].value = newValue
