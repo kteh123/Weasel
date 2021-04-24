@@ -22,7 +22,8 @@ print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller --hidden-import requests --hidden-import xnat --collect-datas External --onefile Weasel.py')
+os.system(activation_command + ' && pyinstaller --hidden-import requests --hidden-import xnat --collect-datas External --clean --onefile Weasel.py')
+# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log
 
 print("Cleaning up compilation files...")
 # Windows

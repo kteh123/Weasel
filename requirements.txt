@@ -9,9 +9,8 @@ pandas>=1.0.0,<1.2
 pyautogui>=0.9.48
 pydicom>=2.0.0
 pyinstaller>=4.2
-PyQt5>=5.15.2
+PyQt5==5.12.1
 PyQt5-sip>=12.8.1
-scikit-image>=0.16.2
 scipy>=1.4.1
 setuptools>=53.0.0
 sip>=6.0.0

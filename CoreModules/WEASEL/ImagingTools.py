@@ -1,32 +1,10 @@
 import numpy as np
 import pydicom
 import scipy.ndimage
-from skimage.transform import resize
-from skimage.restoration import unwrap_phase
 
 # AT THE MOMENT (16TH APRIL 2021) ONLY A COUPLE OF FUNCTIONS ARE BEING USED. THIS MAY BECOME EITHER REDUNDANT OR MORE RELEVANT IN THE FUTURE
 
 # IT CAN BECOME A STATS EXTRACTOR OR A SET OF HELPER FUNCTIONS FOR PLOTTING
-
-def unWrapPhase(pixelArray):
-    """
-    From an image wrapped to lie in the interval [-pi, pi],
-    this function recovers the original, unwrapped image.
-    Read references in
-    https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
-
-    Parameters
-    ----------
-    pixelArray : np.ndarray
-        A 2D/3D array containing the phase image.
-
-    Returns
-    -------
-    np.ndarray with the phase of pixelArray unwrapped.
-    """
-    wrappedPhase = np.angle(np.exp(2j * pixelArray))
-    return unwrap_phase(wrappedPhase)
-
 
 def convertToPiRange(pixelArray):
     """
@@ -95,99 +73,7 @@ def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
     thresholdedArray[thresholdedArray > upper_value] = 0
     thresholdedArray[thresholdedArray != 0] = 1
     return thresholdedArray
-
-
-def resizeImage(pixelArray, factor=1, targetSize=None):
-    """
-    Resizes the given pixelArray, using target_size as the reference
-    of the resizing operation (if None, then there's no resizing).
-    This method applies a resizeFactor to the first 2 axes of the input array.
-    The remaining axes are left unchanged.
-    Example 1: (10, 10, 2) => (5, 5, 2) with resizeFactor = 0.5
-    Example 2: (10, 10, 10, 2) => (20, 20, 10, 2) with resizeFactor = 2
-
-    Parameters
-    ----------
-    pixelArray : np.ndarray
-
-    factor : boolean
-        Optional input argument. This is the resize factor defined by the user
-        and it is applied in the scipy.ndimage.zoom
-
-    targetSize : boolean
-        Optional input argument. By default, this script does not apply the
-        scipy wrap_around in the input image.
-
-    Returns
-    -------
-    resizedArray : np.ndarray where the size of the first 2 dimensions
-        is np.shape(pixelArray) * factor. The remaining dimensions (or axes)
-        will have a the same size as in pixelArray.
-    """
-    if targetSize is not None:
-        factor = targetSize / np.shape(pixelArray)[0]
-
-    resizeFactor = np.ones(len(np.shape(pixelArray)))
-    resizeFactor[0] = factor
-    resizeFactor[1] = factor
-    resizedArray = scipy.ndimage.zoom(pixelArray, resizeFactor)
-
-    return resizedArray
-
-
-def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
-    """Resizes the given array, using reconstPixel as reference of the resizing""" 
-    # Resample Data / Don't forget to resample the 128x128 of GE
-    # This is so that data shares the same resolution and sizing
-
-    if reconstPixel is not None:
-        fraction = reconstPixel / pixelSpacing
-    else:
-        fraction = 1
     
-    # What happens to SliceSpacing?!
-    if len(np.shape(pixelArray)) == 3:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1] // fraction, pixelArray.shape[2] // fraction), anti_aliasing=True)
-    elif len(np.shape(pixelArray)) == 4:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1] , pixelArray.shape[2] // fraction, pixelArray.shape[3] // fraction), anti_aliasing=True)
-    elif len(np.shape(pixelArray)) == 5:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1], pixelArray.shape[2], pixelArray.shape[3] // fraction, pixelArray.shape[4] // fraction), anti_aliasing=True)
-    elif len(np.shape(pixelArray)) == 6:
-        pixelArray = resize(pixelArray, (pixelArray.shape[0], pixelArray.shape[1], pixelArray.shape[2], pixelArray.shape[3], pixelArray.shape[4] // fraction, pixelArray.shape[5] // fraction), anti_aliasing=True)
-
-    return pixelArray
-
-
-def formatArrayForAnalysis(volumeArray, numAttribute, dataset, dimension='2D', transpose=False, invert=False, resize=None):
-    """Formats the given array in a structured manner according to the given flags"""
-
-    if dimension == '2D':
-        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute)))
-    elif dimension == '3D':
-        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1])))
-    elif dimension == '4D':
-        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2])))
-    elif dimension == '5D':
-        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2], np.shape(volumeArray)[3])))
-    elif dimension == '6D':
-        volumeArray = np.squeeze(np.reshape(volumeArray, (int(np.shape(volumeArray)[0]/numAttribute), numAttribute, np.shape(volumeArray)[1], np.shape(volumeArray)[2], np.shape(volumeArray)[3], np.shape(volumeArray)[4])))
-    
-    if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
-        pixelSpacing = dataset.PerFrameFunctionalGroupsSequence[0].PixelMeasuresSequence[0].PixelSpacing[0]
-    else: # For normal DICOM, slicelist is a list of slice locations in mm.
-        pixelSpacing = dataset.PixelSpacing[0]
-
-    pixelArray = resizePixelArray(volumeArray, pixelSpacing, reconstPixel=resize)
-
-    if transpose == True:
-        pixelArray = np.transpose(pixelArray)
-
-    if invert == True:
-        pixelArray = invertAlgorithm(pixelArray, dataset)
-
-    del volumeArray, pixelSpacing
-    return pixelArray
-
 
 def imageStats(pixelArray):
     """
