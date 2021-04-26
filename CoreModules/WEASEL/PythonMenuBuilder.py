@@ -29,7 +29,13 @@ class PythonMenuBuilder:
             print('Error in PythonMenuBuilder.__init__: ' + str(e)) 
             logger.exception('Error in PythonMenuBuilder.__init__: ' + str(e)) 
 
-    
+
+    def __repr__(self):
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.topMenu.title())
+
+
     def addItem(self, itemLabel = 'Label not defined',
                shortcut = None,
                tooltip = None,

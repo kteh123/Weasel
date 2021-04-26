@@ -17,6 +17,12 @@ class WeaselConfigXMLReader:
             logger.exception('Error in WeaselConfigXMLReader.__init__: ' + str(e))
 
 
+    def __repr__(self):
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.fullFilePath)
+
+
     def getMenuConfigFile(self):
         try:
             menu = self.root.find('./menu_config_file')

@@ -29,6 +29,12 @@ class WeaselMenuXMLReader:
             logger.error('Error in WeaselMenuXMLReader.__init__: ' + str(e))
 
 
+    def __repr__(self):
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.fullFilePath)
+
+
     def getMenus(self):
         return self.root.findall('./menu')
 
