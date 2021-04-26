@@ -8,7 +8,6 @@ import sys
 import logging
 import time
 from collections import defaultdict
-import CoreModules.WEASEL.Menus as menus
 import CoreModules.WEASEL.ViewImage as viewImage
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
@@ -49,7 +48,7 @@ def createTreeBranch(branchName, branch, parent, refresh=False):
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
         print('Error in TreeView.createTreeBranch at line {} when branch ID={}: '.format(line_number, branchID) + str(e)) 
-        logger.error('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
+        logger.exception('Error in TreeView.createTreeBranch at line {}: '.format(line_number) + str(e)) 
 
 
 def createImageLeaf(image, seriesBranch, refresh=False):
@@ -90,7 +89,7 @@ def createImageLeaf(image, seriesBranch, refresh=False):
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
         print('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
-        logger.error('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
+        logger.exception('Error in TreeView.createImageLeaf at line {}: '.format(line_number) + str(e)) 
 
 
 def resizeTreeViewColumns(pointerToWeasel):
@@ -105,7 +104,7 @@ def resizeTreeViewColumns(pointerToWeasel):
         #print("pointerToWeasel.treeViewColumnWidths={}".format(pointerToWeasel.treeViewColumnWidths))
     except Exception as e:
             print('Error in TreeView.resizeTreeViewColumns: ' + str(e))
-            logger.error('Error in TreeView.resizeTreeViewColumns: ' + str(e))
+            logger.exception('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
 
 def buildTreeView(pointerToWeasel, refresh=False):
@@ -130,11 +129,12 @@ def buildTreeView(pointerToWeasel, refresh=False):
         #filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
         print('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
-        logger.error('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
+        logger.exception('Error in TreeView.buildTreeView at line {}: '.format(line_number) + str(e)) 
 
 
 def displayContextMenu(pointerToWeasel, pos):
     try:
+        logger.info("TreeView.displayContextMenu called")
         if pointerToWeasel.isASeriesChecked or pointerToWeasel.isAnImageChecked:
             pointerToWeasel.context.exec_(pointerToWeasel.treeView.mapToGlobal(pos))
     except Exception as e:
@@ -147,6 +147,7 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
         try:
             logger.info("TreeView.makeDICOMStudiesTreeView called")
             if os.path.exists(XML_File_Path):
+                QApplication.setOverrideCursor(Qt.WaitCursor)
                 pointerToWeasel.DICOM_XML_FilePath = XML_File_Path
                 pointerToWeasel.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 pointerToWeasel.objXMLReader.parseXMLFile(pointerToWeasel.DICOM_XML_FilePath)
@@ -154,8 +155,8 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 start_time=time.time()
                 pointerToWeasel.objXMLReader.callResetXMLTree()   
                 end_time=time.time()
-                ResetXMLTreeTime = end_time - start_time 
-                print('Reset XML Tree Time  = {}'.format(ResetXMLTreeTime))
+                MakeXMLTreeTime = end_time - start_time 
+                print('Make XML Tree Time  = {}'.format(MakeXMLTreeTime))
 
                 pointerToWeasel.treeView = QTreeWidget()
                 
@@ -212,13 +213,14 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
                 dockwidget.setWidget(pointerToWeasel.treeView)
                 pointerToWeasel.treeView.show()
-                
+                QApplication.restoreOverrideCursor()
         except Exception as e:
+            QApplication.restoreOverrideCursor()
             exception_type, exception_object, exception_traceback = sys.exc_info()
             #filename = exception_traceback.tb_frame.f_code.co_filename
             line_number = exception_traceback.tb_lineno
             print('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
-            logger.error('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
+            logger.exception('Error in TreeView.makeDICOMStudiesTreeView at line {}: '.format(line_number) + str(e)) 
 
 
 def refreshDICOMStudiesTreeView(pointerToWeasel, newSeriesName = ''):
@@ -226,6 +228,7 @@ def refreshDICOMStudiesTreeView(pointerToWeasel, newSeriesName = ''):
         tree view showing a visual representation of that file structure."""
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
+            QApplication.setOverrideCursor(Qt.WaitCursor)
             start_time=time.time()
       
             #Save current tree view checked state to the xml tree in memory,
@@ -260,9 +263,11 @@ def refreshDICOMStudiesTreeView(pointerToWeasel, newSeriesName = ''):
             end_time=time.time()
             refreshTreeViewTime = end_time - start_time 
             print('refresh TreeView Time  = {}'.format(refreshTreeViewTime))
+            QApplication.restoreOverrideCursor()
         except Exception as e:
+            QApplication.restoreOverrideCursor()
             print('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
-            logger.error('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
+            logger.exception('Error in TreeView.refreshDICOMStudiesTreeView: ' + str(e))
 
 
 def collapseStudiesBranches(item):
@@ -286,7 +291,7 @@ def collapseStudiesBranches(item):
                     collapseStudiesBranches(childItem)
     except Exception as e:
             print('Error in TreeView.collapseStudiesBranches: ' + str(e))
-            logger.error('Error in TreeView.collapseStudiesBranches: ' + str(e))
+            logger.exception('Error in TreeView.collapseStudiesBranches: ' + str(e))
 
 
 def collapseSeriesBranches(item):
@@ -310,7 +315,7 @@ def collapseSeriesBranches(item):
                     collapseSeriesBranches(childItem)
     except Exception as e:
             print('Error in TreeView.collapseSeriesBranches: ' + str(e))
-            logger.error('Error in TreeView.collapseSeriesBranches: ' + str(e))
+            logger.exception('Error in TreeView.collapseSeriesBranches: ' + str(e))
 
 
 def checkChildItems(pointerToWeasel, item):
@@ -336,7 +341,7 @@ def checkChildItems(pointerToWeasel, item):
                 checkChildItems(pointerToWeasel, childItem)
     except Exception as e:
         print('Error in TreeView.checkChildItems: ' + str(e))
-        logger.error('Error in TreeView.checkChildItems: ' + str(e))
+        logger.exception('Error in TreeView.checkChildItems: ' + str(e))
 
 
 def checkParentItems(pointerToWeasel, item):
@@ -360,7 +365,7 @@ def checkParentItems(pointerToWeasel, item):
             checkParentItems(pointerToWeasel, item.parent())
     except Exception as e:
             print('Error in TreeView.checkParentItems: ' + str(e))
-            logger.error('Error in TreeView.checkParentItems: ' + str(e))
+            logger.exception('Error in TreeView.checkParentItems: ' + str(e))
 
 
 def areAllChildrenChecked(item):
@@ -390,7 +395,7 @@ def areAllChildrenChecked(item):
             return False
     except Exception as e:
             print('Error in TreeView.areAllChildrenChecked: ' + str(e))
-            logger.error('Error in TreeView.areAllChildrenChecked: ' + str(e))
+            logger.exception('Error in TreeView.areAllChildrenChecked: ' + str(e))
 
 
 def expandTreeViewBranch(item, newSeriesName = ''):
@@ -417,7 +422,7 @@ def expandTreeViewBranch(item, newSeriesName = ''):
                         expandTreeViewBranch(childItem, newSeriesName)
         except Exception as e:
             print('Error in TreeView.expandTreeViewBranch: ' + str(e))
-            logger.error('Error in TreeView.expandTreeViewBranch: ' + str(e))
+            logger.exception('Error in TreeView.expandTreeViewBranch: ' + str(e))
 
 
 def isAnItemChecked(pointerToWeasel):
@@ -431,7 +436,7 @@ def isAnItemChecked(pointerToWeasel):
             return False
     except Exception as e:
         print('Error in isAnItemChecked: ' + str(e))
-        logger.error('Error in isAnItemChecked: ' + str(e))
+        logger.exception('Error in isAnItemChecked: ' + str(e))
 
 
 def isAnImageSelected(item):
@@ -447,7 +452,7 @@ def isAnImageSelected(item):
               
         except Exception as e:
             print('Error in isAnImageSelected: ' + str(e))
-            logger.error('Error in isAnImageSelected: ' + str(e))
+            logger.exception('Error in isAnImageSelected: ' + str(e))
 
 
 def isASubjectSelected(item):
@@ -464,7 +469,7 @@ def isASubjectSelected(item):
             return False
     except Exception as e:
         print('Error in isASubjectSelected: ' + str(e))
-        logger.error('Error in isASubjectSelected: ' + str(e))
+        logger.exception('Error in isASubjectSelected: ' + str(e))
  
 
 def isAStudySelected(item):
@@ -480,7 +485,7 @@ def isAStudySelected(item):
                 
         except Exception as e:
             print('Error in isAStudySelected: ' + str(e))
-            logger.error('Error in isAStudySelected: ' + str(e))
+            logger.exception('Error in isAStudySelected: ' + str(e))
 
 
 def isASeriesSelected(item):
@@ -496,23 +501,28 @@ def isASeriesSelected(item):
                 
         except Exception as e:
             print('Error in isASeriesSelected: ' + str(e))
-            logger.error('Error in isASeriesSelected: ' + str(e))
+            logger.exception('Error in isASeriesSelected: ' + str(e))
 
 
 def saveTreeViewExpandedState(pointerToWeasel, item, expandedState='True'):
-    if isASubjectSelected(item):
-        subjectID = item.text(1).replace("Subject - ", "").strip()
-        #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
-        pointerToWeasel.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
-    elif isAStudySelected(item):
-        subjectID = item.parent().text(1).replace("Subject - ", "").strip()
-        studyID = item.text(1).replace("Study - ", "").strip()
-        pointerToWeasel.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
-    elif isASeriesSelected(item):
-        subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
-        studyID = item.parent().text(1).replace("Study - ", "").strip()
-        seriesID = item.text(1).replace("Series - ", "").strip()
-        pointerToWeasel.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
+    try:
+        logger.info("TreeView.saveTreeViewExpandedState called.")
+        if isASubjectSelected(item):
+            subjectID = item.text(1).replace("Subject - ", "").strip()
+            #print("subject selected subjectID={} state={}".format(subjectID, expandedState ))
+            pointerToWeasel.objXMLReader.setSubjectExpandedState( subjectID, expandedState)
+        elif isAStudySelected(item):
+            subjectID = item.parent().text(1).replace("Subject - ", "").strip()
+            studyID = item.text(1).replace("Study - ", "").strip()
+            pointerToWeasel.objXMLReader.setStudyExpandedState( subjectID, studyID, expandedState)
+        elif isASeriesSelected(item):
+            subjectID = item.parent().parent().text(1).replace("Subject - ", "").strip()
+            studyID = item.parent().text(1).replace("Study - ", "").strip()
+            seriesID = item.text(1).replace("Series - ", "").strip()
+            pointerToWeasel.objXMLReader.setSeriesExpandedState(subjectID, studyID, seriesID, expandedState)
+    except Exception as e:
+            print('Error in TreeView.saveTreeViewExpandedState: ' + str(e))
+            logger.exception('Error in TreeView.saveTreeViewExpandedState: ' + str(e))
 
 
 def toggleBlockSelectionCheckedState(pointerToWeasel):
@@ -536,7 +546,7 @@ def toggleBlockSelectionCheckedState(pointerToWeasel):
                         selectedItem.setCheckState(0, Qt.Checked)               
     except Exception as e:
         print('Error in TreeView.toggleBlockSelectionCheckedState: ' + str(e))
-        logger.error('Error in TreeView.toggleBlockSelectionCheckedState: ' + str(e))  
+        logger.exception('Error in TreeView.toggleBlockSelectionCheckedState: ' + str(e))  
 
 
 def toggleItemCheckedState(pointerToWeasel, item, col):
@@ -564,7 +574,7 @@ def toggleItemCheckedState(pointerToWeasel, item, col):
             exception_type, exception_object, exception_traceback = sys.exc_info()
             line_number = exception_traceback.tb_lineno
             print('Error in toggleItemCheckedState at line number {} when {}: '.format(line_number, e))
-            logger.error('Error in toggleItemCheckedState: ' + str(e))
+            logger.exception('Error in toggleItemCheckedState: ' + str(e))
 
 
 def toggleMenuItems(pointerToWeasel):
@@ -596,7 +606,7 @@ def toggleMenuItems(pointerToWeasel):
                                     menuItem.setEnabled(False) 
         except Exception as e:
             print('Error in TreeView.toggleMenuItems: ' + str(e))
-            logger.error('Error in TreeView.toggleMenuItems: ' + str(e))
+            logger.exception('Error in TreeView.toggleMenuItems: ' + str(e))
 
 
 def returnCheckedSubjects(pointerToWeasel):
@@ -613,7 +623,7 @@ def returnCheckedSubjects(pointerToWeasel):
         return checkedSubjectsList
     except Exception as e:
         print('Error in TreeView.returnCheckedSubjects: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedSubjects: ' + str(e))
+        logger.exception('Error in TreeView.returnCheckedSubjects: ' + str(e))
 
 
 def returnCheckedStudies(pointerToWeasel):
@@ -633,7 +643,7 @@ def returnCheckedStudies(pointerToWeasel):
         return checkedStudiesList
     except Exception as e:
         print('Error in TreeView.returnCheckedStudies: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedStudies: ' + str(e))
+        logger.exception('Error in TreeView.returnCheckedStudies: ' + str(e))
 
 
 def returnCheckedSeries(pointerToWeasel):
@@ -656,7 +666,7 @@ def returnCheckedSeries(pointerToWeasel):
         return checkedSeriesList
     except Exception as e:
         print('Error in TreeView.returnCheckedSeries: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedSeries: ' + str(e))
+        logger.exception('Error in TreeView.returnCheckedSeries: ' + str(e))
 
 
 def returnCheckedImages(pointerToWeasel):
@@ -682,7 +692,7 @@ def returnCheckedImages(pointerToWeasel):
         return checkedImagesList
     except Exception as e:
         print('Error in TreeView.returnCheckedImages: ' + str(e))
-        logger.error('Error in TreeView.returnCheckedImages: ' + str(e))
+        logger.exception('Error in TreeView.returnCheckedImages: ' + str(e))
     
 
 def returnSeriesImageList(pointerToWeasel, subjectName, studyName, seriesName):
@@ -714,7 +724,7 @@ def returnSeriesImageList(pointerToWeasel, subjectName, studyName, seriesName):
         return imagePathList
     except Exception as e:
             print('Error in TreeView.returnSeriesImageList: ' + str(e))
-            logger.error('Error in TreeView.returnSeriesImageList: ' + str(e))
+            logger.exception('Error in TreeView.returnSeriesImageList: ' + str(e))
 
 
 def returnImageName(pointerToWeasel, subjectName, studyName, seriesName, imagePath):
@@ -744,7 +754,7 @@ def returnImageName(pointerToWeasel, subjectName, studyName, seriesName, imagePa
         return ''
     except Exception as e:
             print('Error in TreeView.returnImageName: ' + str(e))
-            logger.error('Error in TreeView.returnImageName: ' + str(e))
+            logger.exception('Error in TreeView.returnImageName: ' + str(e))
 
 
 def buildListsCheckedItems(pointerToWeasel):
@@ -801,7 +811,7 @@ def buildListsCheckedItems(pointerToWeasel):
         print('buildCheckedListTime Time  = {}'.format(buildCheckedListTime))
     except Exception as e:
         print('Error in TreeView.buildListsCheckedItems: ' + str(e))
-        logger.error('Error in TreeView.buildListsCheckedItems: ' + str(e))
+        logger.exception('Error in TreeView.buildListsCheckedItems: ' + str(e))
 
 
 def getPathParentNode(pointerToWeasel, inputPath):
@@ -828,7 +838,7 @@ def getPathParentNode(pointerToWeasel, inputPath):
                             return (subjectID, studyID, seriesID)
     except Exception as e:
         print('Error in TreeView.getPathParentNode: ' + str(e))
-        logger.error('Error in TreeView.getPathParentNode: ' + str(e))
+        logger.exception('Error in TreeView.getPathParentNode: ' + str(e))
 
 
 def getSeriesNumberAfterLast(pointerToWeasel, inputPath):
@@ -858,7 +868,7 @@ def getSeriesNumberAfterLast(pointerToWeasel, inputPath):
                     return str(seriesList[-1] + 1)
     except Exception as e:
         print('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
-        logger.error('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
+        logger.exception('Error in TreeView.getSeriesNumberAfterLast: ' + str(e))
 
 
 def closeTreeView(pointerToWeasel):
@@ -867,35 +877,37 @@ def closeTreeView(pointerToWeasel):
         pointerToWeasel.treeView.close()
     except Exception as e:
         print('Error in TreeView.CloseTreeView: ' + str(e))
-        logger.error('Error in TreeView.CloseTreeView: ' + str(e))
+        logger.exception('Error in TreeView.CloseTreeView: ' + str(e))
 
 
 def callUnCheckTreeViewItems(pointerToWeasel):
+    logger.info("TreeView.callUnCheckTreeViewItems called")
+    QApplication.setOverrideCursor(Qt.WaitCursor)
     root = pointerToWeasel.treeView.invisibleRootItem()
     unCheckTreeViewItems(pointerToWeasel, root)
+    QApplication.restoreOverrideCursor()
 
 
 def unCheckTreeViewItems(pointerToWeasel, item):
-    """This function uses recursion to set the state of child checkboxes to
-    match that of their parent.
+    """This function uses recursion to set the state of child checkboxes 
+    of item to unchecked.
     
     Input Parameters
     ****************
-    item  - A QTreeWidgetItem whose checkbox state has just changed
+    item  - A QTreeWidgetItem 
     """
     logger.info("TreeView.unCheckTreeViewItems called")
     #print("TreeView.unCheckTreeViewItems called")
     try:
         if item.childCount() > 0:
             itemCount = item.childCount()
+            #print("itemCount ={}".format(itemCount))
             for n in range(itemCount):
                 childItem = item.child(n)
-                #Give child checkboxes the same state as their 
-                #parent checkbox
                 item.treeWidget().blockSignals(True)
                 childItem.setCheckState(0, Qt.Unchecked)
                 item.treeWidget().blockSignals(False)
                 unCheckTreeViewItems(pointerToWeasel, childItem)
     except Exception as e:
         print('Error in TreeView.unCheckTreeViewItems: ' + str(e))
-        logger.error('Error in TreeView.unCheckTreeViewItems: ' + str(e))
+        logger.exception('Error in TreeView.unCheckTreeViewItems: ' + str(e))

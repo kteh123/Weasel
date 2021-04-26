@@ -598,6 +598,7 @@ class WeaselXMLReader:
 
 
     def callResetXMLTree(self, resetExpanded=True):
+        logger.info("recursive WeaselXMLReader.resetXMLTree called")
         self.resetXMLTree(self.root, resetExpanded)
 
 
@@ -609,7 +610,6 @@ class WeaselXMLReader:
         ****************
         root - an element in the XML tree
                 """
-        logger.info("TreeView.resetXMLTree called")
         try:
             if root.tag == 'image':
                 root.attrib['checked'] = 'False'
@@ -622,15 +622,15 @@ class WeaselXMLReader:
                         elem.attrib['expanded'] = 'False'
                 self.resetXMLTree(elem, resetExpanded)
         except Exception as e:
-            print('Error in TreeView.resetXMLTree: ' + str(e))
-            logger.error('Error in TreeView.resetXMLTree: ' + str(e))
+            print('Error in WeaselXMLReader.resetXMLTree: ' + str(e))
+            logger.error('Error in WeaselXMLReader.resetXMLTree: ' + str(e))
 
 
     def saveTreeViewCheckedStateToXML(self, checkedSubjectList, 
                                       checkedStudyList, 
                                       checkedSeriesList,
                                       checkedImageList):
-        logger.info("TreeView.saveTreeViewCheckedStateToXML called")
+        logger.info("WeaselXMLReader.saveTreeViewCheckedStateToXML called")
         try:
             #set all checked attributes to False
             self.resetXMLTree(self.root, resetExpanded=False)
@@ -652,5 +652,5 @@ class WeaselXMLReader:
                 self.setImageCheckedState(image[0], image[1], image[2], image[3], "True")
 
         except Exception as e:
-            print('Error in TreeView.saveTreeViewCheckedStateToXML: ' + str(e))
-            logger.error('Error in TreeView.saveTreeViewCheckedStateToXML: ' + str(e))
+            print('Error in WeaselXMLReader.saveTreeViewCheckedStateToXML: ' + str(e))
+            logger.error('Error in WeaselXMLReader.saveTreeViewCheckedStateToXML: ' + str(e))

@@ -13,8 +13,8 @@ import CoreModules.WEASEL.TreeView as treeView
 
 __author__ = 'Steve Shillitoe'
 
-class MenuBuilder:
-    """description of class"""
+class PythonMenuBuilder:
+    """This class allows menus to be built using its member functions"""
 
     def __init__(self, pointerToWeasel, topMenuName): 
         try:
@@ -26,8 +26,8 @@ class MenuBuilder:
             logger.info('Created top menu {}'.format(topMenuName))
 
         except Exception as e:
-            print('Error in MenuBuilder.__init__: ' + str(e)) 
-            logger.exception('Error in MenuBuilder.__init__: ' + str(e)) 
+            print('Error in PythonMenuBuilder.__init__: ' + str(e)) 
+            logger.exception('Error in PythonMenuBuilder.__init__: ' + str(e)) 
 
     
     def addItem(self, itemLabel = 'Label not defined',
@@ -58,7 +58,6 @@ class MenuBuilder:
             spec.loader.exec_module(module)
             objFunction = getattr(module, functionName)
             self.menuItem.triggered.connect(lambda : objFunction(self.pointerToWeasel))
-            self.menuItem.triggered.connect(lambda : self.pointerToWeasel.refresh())
 
             if hasattr(module, "isSeriesOnly"):
                 boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
@@ -78,8 +77,8 @@ class MenuBuilder:
                 self.pointerToWeasel.context.addAction(self.menuItem)
     
         except Exception as e:
-            print('Error in MenuBuilder.addItem: ' + str(e)) 
-            logger.exception('Error in MenuBuilder.addItem: ' + str(e)) 
+            print('Error in PythonMenuBuilder.addItem: ' + str(e)) 
+            logger.exception('Error in PythonMenuBuilder.addItem: ' + str(e)) 
 
 
     def addSeparator(self):

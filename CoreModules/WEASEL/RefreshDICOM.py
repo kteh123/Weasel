@@ -6,7 +6,6 @@ from PyQt5.QtGui import QCursor
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.Menus as menus
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 import CoreModules.WEASEL.CloseAllSubWindows as closeAllSubWindows
 
@@ -22,8 +21,6 @@ def main(self):
     try:
         logger.info("RefreshDICOM.main called")
         closeAllSubWindows.main(self)
-        #self.selectedImageName = ''
-        #self.selectedImagePath = ''
         #browse to DICOM folder and get DICOM folder name
         #scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
         scan_directory = self.DICOMFolder

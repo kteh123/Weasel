@@ -1,7 +1,7 @@
 
 import logging
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.Menus as menus
+import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +16,9 @@ def main(self):
         logger.info("CloseTreeView.main called")
         treeView.closeTreeView(self)
 
-        menus.setFileMenuItemEnabled(self, "Refresh DICOM folder", False)
-        menus.setFileMenuItemEnabled(self, "Close DICOM folder", False)
-        menus.setFileMenuItemEnabled(self,"Reset Tree View", False)
+        xmlMenuBuilder.setFileMenuItemEnabled(self, "Refresh DICOM folder", False)
+        xmlMenuBuilder.setFileMenuItemEnabled(self, "Close DICOM folder", False)
+        xmlMenuBuilder.setFileMenuItemEnabled(self,"Reset Tree View", False)
     except Exception as e:
         print('Error in function CloseTreeView.main: ' + str(e))
         logger.error('Error in function CloseTreeView.main: ' + str(e))
