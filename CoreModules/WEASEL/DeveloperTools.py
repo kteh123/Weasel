@@ -685,6 +685,13 @@ class Subject:
     @property
     def numberChildren(self):
         return len(self.children)
+    
+    @property
+    def allImages(self):
+        listImages = []
+        for study in self.children:
+            listImages.extend(study.allImages)
+        return listImages
 
     @classmethod
     def fromTreeView(cls, objWeasel, subjectItem):
@@ -749,6 +756,26 @@ class Subject:
                 interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.objWeasel, subject.subjectID)
         return outputSubject
 
+    def get_tag(self, tag):
+        if len(self.children) > 0:
+            studyOutputValuesList = []
+            for study in self.children:
+                studyOutputValuesList.append(study.get_tag(tag)) # extend will allow long single list, while append creates list of lists
+            return studyOutputValuesList
+        else:
+            return []
+
+    def set_tag(self, tag, newValue):
+        if len(self.children) > 0:
+            for study in self.children:
+                study.set_tag(tag, newValue)
+    
+    def __getitem__(self, tag):
+        return self.get_tag(tag)
+
+    def __setitem__(self, tag, value):
+        self.set_tag(tag, value)
+
 
 class Study:
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'studyUID', 'suffix')
@@ -780,7 +807,14 @@ class Study:
     @property
     def numberChildren(self):
         return len(self.children)
-        
+
+    @property
+    def allImages(self):
+        listImages = []
+        for series in self.children:
+            listImages.extend(series.children)
+        return listImages
+    
     @classmethod
     def fromTreeView(cls, objWeasel, studyItem):
         subjectID = studyItem.parent().text(1).replace('Subject -', '').strip()
@@ -866,6 +900,26 @@ class Study:
             return self.children[0].studyUID
         else:
             return pydicom.uid.generate_uid(prefix=None)
+    
+    def get_tag(self, tag):
+        if len(self.children) > 0:
+            seriesOutputValuesList = []
+            for series in self.children:
+                seriesOutputValuesList.append(series.get_tag(tag)) # extend will allow long single list, while append creates list of lists
+            return seriesOutputValuesList
+        else:
+            return []
+
+    def set_tag(self, tag, newValue):
+        if len(self.children) > 0:
+            for series in self.children:
+                series.set_tag(tag, newValue)
+    
+    def __getitem__(self, tag):
+        return self.get_tag(tag)
+
+    def __setitem__(self, tag, value):
+        self.set_tag(tag, value)
 
 
 class Series:
@@ -1021,27 +1075,38 @@ class Series:
     #            self.images = imagePathList
     #            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
     
-    def sort(self, *argv):
+    def sort(self, *argv, reverse=False):
         tuple_to_sort = []
         list_to_sort = []
-        list_to_sort.append(self.images)
+        list_to_sort.append(self.images) # children? images?
         for tag in argv:
-            if self.Item(tag) or self.Tag(tag):
-                if tag.startswith("("):
-                    attributeList = self.Tag(tag)
-                else:
-                    attributeList = self.Item(tag)
+            if len(self.get_tag(tag)) > 0:
+                attributeList = self.get_tag(tag)
                 list_to_sort.append(attributeList)
         for index, _ in enumerate(self.images):
             individual_tuple = []
             for individual_list in list_to_sort:
                 individual_tuple.append(individual_list[index])
             tuple_to_sort.append(tuple(individual_tuple))
-        tuple_sorted = sorted(tuple_to_sort, key = lambda x: x[1:])
-        list_sorted_paths = []
+        tuple_sorted = sorted(tuple_to_sort, key=lambda x: x[1:], reverse=reverse)
+        list_sorted_images = []
         for individual in tuple_sorted:
-            list_sorted_paths.append(individual[0])
-        return list_sorted_paths
+            list_sorted_images.append(individual[0])
+        list_sorted_paths = [img.path for img in list_sorted_images]
+        self.images = list_sorted_paths
+        return list_sorted_images
+    
+    def where(self, tag, condition, target):
+        list_images = []
+        list_paths = []
+        for image in self.children:
+            value = image[tag]
+            statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
+            if eval(literal_eval(statement)) == True:
+                list_images.append(image)
+                list_paths.append(image.path)
+        self.images = list_paths
+        return list_images
 
     def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
@@ -1165,18 +1230,6 @@ class Series:
         return np.transpose(np.where(tempImage == 1))
 
     @property
-    def Dimensions(self):
-        return np.shape(self.PixelArray)
-
-    @property
-    def Rows(self):
-        return self.Item("Rows")
-
-    @property
-    def Columns(self):
-        return self.Item("Columns")
-
-    @property
     def NumberOfSlices(self):
         #numSlices = 0
         #if self.Multiframe:
@@ -1226,6 +1279,59 @@ class Series:
                 #for index in self.indices:
                     #inversionList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveInversionTime) # InversionTime
         return inversionList
+    
+    def get_tag(self, tag):
+        if self.images:
+            if isinstance(tag, list):
+                outputValuesList = []
+                for ind_tag in tag:
+                    outputValuesList.append(ReadDICOM_Image.getSeriesTagValues(self.images, ind_tag)[0])
+                return outputValuesList
+            else:
+                return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
+        else:
+            return []
+
+    def set_tag(self, tag, newValue):
+        if self.images:
+            comparisonDicom = self.PydicomList
+            oldSubjectID = self.subjectID
+            oldStudyID = self.studyID
+            oldSeriesID = self.seriesID
+            if isinstance(tag, list) and isinstance(newValue, list):
+                for index, ind_tag in enumerate(tag):
+                    GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
+            else:
+                GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
+            # Consider the case where other XML fields are changed
+            for index, dataset in enumerate(comparisonDicom):
+                changeXML = False
+                if dataset.SeriesDescription != self.PydicomList[index].SeriesDescription or dataset.SeriesNumber != self.PydicomList[index].SeriesNumber:
+                    changeXML = True
+                    newSeriesID = str(self.PydicomList[index].SeriesNumber) + "_" + str(self.PydicomList[index].SeriesDescription)
+                    self.seriesID = newSeriesID
+                else:
+                    newSeriesID = oldSeriesID
+                if dataset.StudyDate != self.PydicomList[index].StudyDate or dataset.StudyTime != self.PydicomList[index].StudyTime or dataset.StudyDescription != self.PydicomList[index].StudyDescription:
+                    changeXML = True
+                    newStudyID = str(self.PydicomList[index].StudyDate) + "_" + str(self.PydicomList[index].StudyTime).split(".")[0] + "_" + str(self.PydicomList[index].StudyDescription)
+                    self.studyID = newStudyID
+                else:
+                    newStudyID = oldStudyID
+                if dataset.PatientID != self.PydicomList[index].PatientID:
+                    changeXML = True
+                    newSubjectID = str(self.PydicomList[index].PatientID)
+                    self.subjectID = newSubjectID
+                else:
+                    newSubjectID = oldSubjectID
+                if changeXML == True:
+                    interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
+    
+    def __getitem__(self, tag):
+        return self.get_tag(tag)
+
+    def __setitem__(self, tag, value):
+        self.set_tag(tag, value)
 
     def Item(self, tagDescription, newValue=None):
         if self.images:
@@ -1419,7 +1525,7 @@ class Image:
         UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
 
     @property
-    def Name(self):
+    def name(self):
         return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
 
     @property
@@ -1469,18 +1575,6 @@ class Image:
     @property
     def Affine(self):
         return ReadDICOM_Image.returnAffineArray(self.path)
-        
-    @property
-    def Dimensions(self):
-        return np.shape(self.PixelArray)
-
-    @property
-    def Rows(self):
-        return self.Item("Rows")
-
-    @property
-    def Columns(self):
-        return self.Item("Columns")
     
     def get_tag(self, tag):
         if isinstance(tag, list):
@@ -1492,13 +1586,40 @@ class Image:
             return ReadDICOM_Image.getImageTagValue(self.path, tag)
 
     def set_tag(self, tag, newValue):
+        comparisonDicom = self.PydicomObject
+        changeXML = False
+        # Not necessary new IDs, but they may be new. The changeXML flag coordinates that.
+        oldSubjectID = self.subjectID
+        oldStudyID = self.studyID
+        oldSeriesID = self.seriesID
+        # Set tag commands
         if isinstance(tag, list) and isinstance(newValue, list):
             for index, ind_tag in enumerate(tag):
                 GenericDICOMTools.editDICOMTag(self.path, ind_tag, newValue[index])
         else:
             GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
-        # Consider the case where other XML fields are changed
-    
+        # Consider the case where XML fields are changed
+        if comparisonDicom.SeriesDescription != self.PydicomObject.SeriesDescription or comparisonDicom.SeriesNumber != self.PydicomObject.SeriesNumber:
+            changeXML = True
+            newSeriesID = str(self.PydicomObject.SeriesNumber) + "_" + str(self.PydicomObject.SeriesDescription)
+            self.seriesID = newSeriesID
+        else:
+            newSeriesID = oldSeriesID
+        if comparisonDicom.StudyDate != self.PydicomObject.StudyDate or comparisonDicom.StudyTime != self.PydicomObject.StudyTime or comparisonDicom.StudyDescription != self.PydicomObject.StudyDescription:
+            changeXML = True
+            newStudyID = str(self.PydicomObject.StudyDate) + "_" + str(self.PydicomObject.StudyTime).split(".")[0] + "_" + str(self.PydicomObject.StudyDescription)
+            self.studyID = newStudyID
+        else:
+            newStudyID = oldStudyID
+        if comparisonDicom.PatientID != self.PydicomObject.PatientID:
+            changeXML = True
+            newSubjectID = str(self.PydicomObject.PatientID)
+            self.subjectID = newSubjectID
+        else:
+            newSubjectID = oldSubjectID
+        if changeXML == True:
+            interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
+        
     def __getitem__(self, tag):
         return self.get_tag(tag)
 

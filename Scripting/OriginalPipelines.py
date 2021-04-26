@@ -2,6 +2,7 @@ import os
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
+from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 from CoreModules.WEASEL.DeveloperTools import Subject
 from CoreModules.WEASEL.DeveloperTools import Study
@@ -16,14 +17,14 @@ class ListOfDicomObjects(list):
         """
         Deletes all items in the list
         """
-        for item in self: 
+        for item in self:
             item.delete()
 
     def display(self):
         """
         Displays all items in the list.
         """
-        for item in self: 
+        for item in self:
             item.display()
 
 
@@ -37,7 +38,7 @@ class ImagesList(ListOfDicomObjects):
         Returns a copy of the list of images.
         """
         copy = []
-        for image in self: 
+        for image in self:
             copy.append(image.copy())
         return ImagesList(copy)
         
@@ -66,6 +67,55 @@ class ImagesList(ListOfDicomObjects):
         """
         self[0].displayListImages(self)
 
+    def sort(self, *argv, reverse=False):
+        """
+        Sort the list of images by the given DICOM tags.
+        """
+        tuple_to_sort = []
+        list_to_sort = []
+        list_to_sort.append(self)
+        for tag in argv:
+            if len(self.get_tag(tag)) > 0:
+                attributeList = self.get_tag(tag)
+                list_to_sort.append(attributeList)
+        for index, _ in enumerate(self):
+            individual_tuple = []
+            for individual_list in list_to_sort:
+                individual_tuple.append(individual_list[index])
+            tuple_to_sort.append(tuple(individual_tuple))
+        tuple_sorted = sorted(tuple_to_sort, key=lambda x: x[1:], reverse=reverse)
+        list_sorted_images = []
+        for individual in tuple_sorted:
+            list_sorted_images.append(individual[0])
+        self = ImagesList(list_sorted_images)
+        return self
+
+    def where(self, tag, condition, target):
+        list_images = []
+        for image in self:
+            value = image[tag]
+            statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
+            if eval(literal_eval(statement)) == True:
+                list_images.append(image)
+        self = ImagesList(list_images)
+        return self
+
+    def get_tag(self, tag):
+        """
+        Returns a list of values of the given DICOM tag in the list of images
+        """
+        attributes_list = []
+        for image in self:
+            attributes_list.append(image.get_tag(tag))
+        return attributes_list
+
+    def set_tag(self, tag, value):
+        """
+        Set the variable "value" to the given DICOM tag in the list of images
+        """
+        for image in self:
+            image.set_tag(tag, value)
+
 
 class SeriesList(ListOfDicomObjects):
     """
@@ -76,7 +126,7 @@ class SeriesList(ListOfDicomObjects):
         Returns a copy of the list of series.
         """
         copy = []
-        for series in self: 
+        for series in self:
             copy.append(series.copy())
         return SeriesList(copy)
 
@@ -97,7 +147,7 @@ class StudyList(ListOfDicomObjects):
         Returns a copy of the list of studies.
         """
         copy = []
-        for study in self: 
+        for study in self:
             copy.append(study.copy())
         return StudyList(copy)
 
@@ -118,7 +168,7 @@ class SubjectList(ListOfDicomObjects):
         Returns a copy of the list of subjects.
         """
         copy = []
-        for subject in self: 
+        for subject in self:
             copy.append(subject.copy())
         return SubjectList(copy)
 
@@ -137,7 +187,7 @@ class OriginalPipelines():
         """
         Returns a list of Images checked by the user.
         """
-        imagesList = [] 
+        imagesList = []
         #imagesTreeViewList = treeView.returnCheckedImages(self)
         #if imagesTreeViewList == []:
         #    UserInterfaceTools(self).showMessageWindow(msg=msg)

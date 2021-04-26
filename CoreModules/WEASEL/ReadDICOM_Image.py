@@ -120,6 +120,11 @@ def getSeriesTagValues(imagePathList, dicomTag):
                         attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
                     except:
                         return None, None
+                elif isinstance(dicomTag, tuple):
+                    try:
+                        attributeList = [dataset[dicomTag].value for dataset in datasetList]
+                    except:
+                        return None, None
                 else:
                     try:
                         attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
@@ -137,6 +142,11 @@ def getSeriesTagValues(imagePathList, dicomTag):
                     if isinstance(dicomTag, str):
                         try:
                             attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                        except:
+                            return None, None
+                    elif isinstance(dicomTag, tuple):
+                        try:
+                            attributeList = [dataset[dicomTag].value for dataset in datasetList]
                         except:
                             return None, None
                     else:
