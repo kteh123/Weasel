@@ -17,7 +17,7 @@ def displayMessageSubWindow(self, message, title="Loading DICOM files"):
         """
         try:
             
-            logger.info('LoadDICOM.displayMessageSubWindow called.')
+            logger.info('MessageWindow.displayMessageSubWindow called with title={}.'.format(title))
             for subWin in self.mdiArea.subWindowList():
                 if subWin.objectName() == "Msg_Window":
                     subWin.close()
@@ -44,8 +44,8 @@ def displayMessageSubWindow(self, message, title="Loading DICOM files"):
             self.msgSubWindow.show()
             QApplication.processEvents()
         except Exception as e:
-            print('Error in : Weasel.displayMessageSubWindow' + str(e))
-            logger.error('Error in : Weasel.displayMessageSubWindow' + str(e))
+            print('Error in MessageWindow.displayMessageSubWindow when title={}'.format(title) + str(e))
+            logger.exception('Error in  MessageWindow.displayMessageSubWindow when title={}'.format(title) + str(e))
 
 
 def setMsgWindowProgBarMaxValue(self, maxValue):
@@ -59,17 +59,25 @@ def setMsgWindowProgBarValue(self, value):
 
 def hideProgressBar(self):
     try:
-        if self.progBarMsg.isHidden() == False:
-            self.progBarMsg.hide()
+        logger.info('MessageWindow.hideProgressBar called.')
+        if self.progBarMsg:
+            if self.progBarMsg.isHidden() == False:
+                self.progBarMsg.hide()
+    except AttributeError as e:
+        logger.exception('Attribute Error in  MessageWindow.hideProgressBar: ' + str(e))
     except Exception as e:
-            #print('Error in : Weasel.hideProgressBar: ' + str(e))
-            logger.error('Error in : Weasel.hideProgressBar: ' + str(e))
+            print('Error in  MessageWindow.hideProgressBar: ' + str(e))
+            logger.exception('Error in  MessageWindow.hideProgressBar: ' + str(e))
 
 
 def closeMessageSubWindow(self):
     try:
-        if self.msgSubWindow.isEnabled() == True:
-            self.msgSubWindow.close()
+        logger.info('MessageWindow.closeMessageSubWindow called.')
+        if self.msgSubWindow:
+            if self.msgSubWindow.isEnabled() == True:
+                self.msgSubWindow.close()
+    except AttributeError as e:
+        logger.exception('Attribute Error in  MessageWindow.closeMessageSubWindow: ' + str(e))
     except Exception as e:
-            #print('Error in : Weasel.closeMessageSubWindow: ' + str(e))
-            logger.error('Error in : Weasel.closeMessageSubWindow: ' + str(e))
+            print('Error in MessageWindow.closeMessageSubWindow: ' + str(e))
+            logger.exception('Error in  MessageWindow.closeMessageSubWindow: ' + str(e))

@@ -6,7 +6,7 @@ from PyQt5.QtGui import QCursor
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.Menus as menus
+import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 import CoreModules.WEASEL.CloseAllSubWindows as closeAllSubWindows
 
@@ -26,9 +26,9 @@ def main(self):
         scan_directory = WriteXMLfromDICOM.getScanDirectory(self)
         self.DICOMFolder = scan_directory
 
-        menus.setFileMenuItemEnabled(self, "Refresh DICOM folder", True)
-        menus.setFileMenuItemEnabled(self, "Close DICOM folder", True)
-        menus.setFileMenuItemEnabled(self,"Reset Tree View", True)
+        xmlMenuBuilder.setFileMenuItemEnabled(self, "Refresh DICOM folder", True)
+        xmlMenuBuilder.setFileMenuItemEnabled(self, "Close DICOM folder", True)
+        xmlMenuBuilder.setFileMenuItemEnabled(self,"Reset Tree View", True)
 
         #print(" scan_directory = ",  scan_directory)
         if scan_directory:
@@ -41,9 +41,9 @@ def main(self):
                 XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, scan_directory)
                 QApplication.restoreOverrideCursor()
 
-            QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
+            #QApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
             treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
-            QApplication.restoreOverrideCursor()
+            #QApplication.restoreOverrideCursor()
     except Exception as e:
         print('Error in function LoadDICOM.main: ' + str(e))
         logger.error('Error in function LoadDICOM.main: ' + str(e))

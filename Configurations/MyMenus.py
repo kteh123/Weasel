@@ -1,4 +1,4 @@
-from CoreModules.WEASEL.MenuBuilder  import MenuBuilder as menuBuilder
+from CoreModules.WEASEL.PythonMenuBuilder  import PythonMenuBuilder as menuBuilder
 
 def main(pointerToWeasel):
     #Create Tools Menu

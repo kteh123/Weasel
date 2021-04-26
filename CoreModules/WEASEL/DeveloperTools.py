@@ -315,6 +315,7 @@ class UserInterfaceTools:
         Refresh the user interface screen.
         """
         try:
+            logger.info("DeveloperTool.refreshWeasel")
             if new_series_name:
                 treeView.refreshDICOMStudiesTreeView(self.objWeasel, newSeriesName=new_series_name)
             else:

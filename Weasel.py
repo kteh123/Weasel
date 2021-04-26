@@ -34,7 +34,7 @@ import CoreModules.WEASEL.StyleSheet as styleSheet
 from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.TreeView as treeView
-import CoreModules.WEASEL.Menus as menus
+import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 import CoreModules.WEASEL.ToolBar as toolBar
 from Scripting.Scripting import Pipelines
 
@@ -130,13 +130,13 @@ class Weasel(QMainWindow, Pipelines):
             #create context menu to display with the tree view
             self.context = QMenu(self)
             #add Reset Tree View to context menu
-            menus.createFileMenuItem("Reset Tree View", "Ctrl+E", 
+            xmlMenuBuilder.createFileMenuItem("Reset Tree View", "Ctrl+E", 
             "Uncheck all checkboxes on the tree view.",
             True, treeView, self, "callUnCheckTreeViewItems", context=True)
 
             #even if a menu config file is not defined, 
             #create the default File menu
-            menus.setUpFileMenu(self.menuBar(), self)
+            xmlMenuBuilder.setUpFileMenu(self.menuBar(), self)
 
             if menuConfigFile:
                 #a menu config file has been defined
@@ -151,8 +151,8 @@ class Weasel(QMainWindow, Pipelines):
                     #execute python functions to build the menu and menu items
                     objFunction(self)
                 elif isXMLFile(menuConfigFile):
-                    menus.setupMenus(self, menuConfigFile)
-                    menus.buildContextMenu(self, menuConfigFile)
+                    xmlMenuBuilder.setupMenus(self, menuConfigFile)
+                    xmlMenuBuilder.buildContextMenu(self, menuConfigFile)
         except Exception as e:
             print('Error in Weasel.buildMenus: ' + str(e)) 
             logger.exception('Error in Weasel.buildMenus: ' + str(e)) 

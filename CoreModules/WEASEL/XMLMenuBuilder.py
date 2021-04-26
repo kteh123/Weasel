@@ -69,7 +69,7 @@ def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
             spec.loader.exec_module(module)
             objFunction = getattr(module, function)
             pointerToWeasel.menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-            pointerToWeasel.menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+            #pointerToWeasel.menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
 
             if hasattr(module, "isSeriesOnly"):
                 boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
@@ -111,7 +111,7 @@ def buildContextMenuItem(pointerToWeasel, context, item, pythonFiles):
         spec.loader.exec_module(module)
         objFunction = getattr(module, function)
         menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-        menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+        #menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
     
         if hasattr(module, "isSeriesOnly"):
             boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
@@ -180,7 +180,7 @@ def createFileMenuItem(label, shortcut, toolTip, enabled, module, pointerToWease
             thisFunction = "main"
         objFunction = getattr(module, thisFunction)
         menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-        menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+        #menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
         if context:
             pointerToWeasel.context.addAction(menuItem)
         else:
