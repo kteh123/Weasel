@@ -61,6 +61,11 @@ class GraphicsItem(QGraphicsObject):
         self.setToolTip("Use the mouse wheel to zoom")
 
 
+    def __repr__(self):
+       return '{}'.format(
+           self.__class__.__name__)
+
+
     def updateImageLevels(self, intensity, contrast, roi):
         logger.info("FreeHandROI.GraphicsItem.updateImageLevels called")
         try:
