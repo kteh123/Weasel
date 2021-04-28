@@ -21,6 +21,12 @@ class WeaselXMLReader:
             logger.error('Error in WeaselXMLReader.__init__: ' + str(e)) 
             
 
+    def __repr__(self):
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.fullFilePath)
+
+
     def parseXMLFile(self, fullFilePath): 
         """Loads and parses the XML configuration file at fullFilePath.
        After successful parsing, the XML tree and its root node

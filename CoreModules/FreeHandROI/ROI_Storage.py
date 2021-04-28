@@ -15,6 +15,11 @@ class ROIs():
         logger.info("RIO_Storage object created")
 
 
+    def __repr__(self):
+       return '{}'.format(
+           self.__class__.__name__)
+
+
     def addRegion(self, regionName, mask, imageNumber = 1):
         logger.info("RIO_Storage.addRegion called")
         try:

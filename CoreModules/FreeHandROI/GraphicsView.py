@@ -46,6 +46,12 @@ class GraphicsView(QGraphicsView):
         #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.setDragMode(QGraphicsView.ScrollHandDrag)
 
+
+    def __repr__(self):
+       return '{}'.format(
+           self.__class__.__name__)
+
+
     def setZoomEnabled(self, boolValue):
         self.zoomEnabled = boolValue
         self.graphicsItem.zoomEnabled = boolValue

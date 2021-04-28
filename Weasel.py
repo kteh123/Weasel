@@ -122,6 +122,11 @@ class Weasel(QMainWindow, Pipelines):
         logger.info("WEASEL GUI created successfully.")
 
 
+    def __repr__(self):
+       return '{}'.format(
+           self.__class__.__name__)
+
+
     def buildMenus(self):
         try:
             logger.info("Weasel.buildMenus called.")

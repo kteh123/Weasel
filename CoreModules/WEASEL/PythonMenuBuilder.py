@@ -23,13 +23,19 @@ class PythonMenuBuilder:
             pointerToWeasel.context.hovered.connect(self._actionHovered)
             pointerToWeasel.listMenus.append(self.topMenu)
             self.pointerToWeasel = pointerToWeasel
-            logger.info('Created top menu {}'.format(topMenuName))
+            logger.info('PythonMenuBuilder Created top menu {}'.format(topMenuName))
 
         except Exception as e:
             print('Error in PythonMenuBuilder.__init__: ' + str(e)) 
             logger.exception('Error in PythonMenuBuilder.__init__: ' + str(e)) 
 
-    
+
+    def __repr__(self):
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.topMenu.title())
+
+
     def addItem(self, itemLabel = 'Label not defined',
                shortcut = None,
                tooltip = None,
