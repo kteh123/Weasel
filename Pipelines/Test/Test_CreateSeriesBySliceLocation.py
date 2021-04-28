@@ -5,7 +5,26 @@
 #****************************************************************
 
 def main(weasel):
+    images = weasel.images()
+    studies = images.parent.parent
+    for study in studies:
+        imgs = study.allImages
+        new_study_description = 'Sorted by slice location_' + study.studyID
+        new_study = study.new(studyID='Sorted by slice location')
+        #slices = np.unique([imag["SliceLocation"] for imag in imgs])
+        for loc in weasel.unique_elements(imgs.get_value("SliceLocation")):
+            imgs_loc = imgs.where("SliceLocation", "==", loc)
+            # This option?
+            #series = newSeriesFrom(imgs_loc)
+            #series["SeriesDescription"] = 'Slice location [' + str(loc) + ']'
+            # Or this option?
+            series = imgs_loc.merge(series_name='Slice location [' + str(loc) + ']') # overwrite=False
+            # New series is created from merge, so changing the Study Description should be enough
+            series["StudyDescription"] = new_study_description
+    weasel.refresh()
 
+
+def suggestion(weasel):
     # Get all images checked by the user
     images = weasel.images()
     # Loop over the studies that the images are part of

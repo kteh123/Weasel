@@ -1,4 +1,5 @@
 import os
+import itertools
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
@@ -32,6 +33,13 @@ class ImagesList(ListOfDicomObjects):
     """
     A class containing a list of objects of class Image. 
     """
+    @property
+    def names(self):
+        """
+        Returns a list of names of the list of images.
+        """
+        listNames = [image.name for image in self]
+        return listNames
 
     def copy(self):
         """
@@ -55,6 +63,24 @@ class ImagesList(ListOfDicomObjects):
         """
         return self[0].newSeriesFrom(self, suffix=suffix)
 
+    @property
+    def parent(self):
+        """
+        Returns a list of unique series to which the images belong to.
+        """
+        parentsList = []
+        listParentsAttribute = []
+        for image in self:
+            series = image.parent
+            listIndividualAttributes = [series.subjectID, series.studyID, series.seriesID,
+                                        series.images, series.studyUID, series.seriesUID, series.suffix]
+            listParentsAttribute.append(listIndividualAttributes)
+        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        for listAtt in listUniqueParentsAttribute:
+            series = Series(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3], listAtt[4], listAtt[5], listAtt[6])
+            parentsList.append(series)
+        return SeriesList(parentsList)
+
     def Item(self, *args):
         """
         Applies the Item method to all images in the list
@@ -75,8 +101,8 @@ class ImagesList(ListOfDicomObjects):
         list_to_sort = []
         list_to_sort.append(self)
         for tag in argv:
-            if len(self.get_tag(tag)) > 0:
-                attributeList = self.get_tag(tag)
+            if len(self.get_value(tag)) > 0:
+                attributeList = self.get_value(tag)
                 list_to_sort.append(attributeList)
         for index, _ in enumerate(self):
             individual_tuple = []
@@ -100,21 +126,21 @@ class ImagesList(ListOfDicomObjects):
         self = ImagesList(list_images)
         return self
 
-    def get_tag(self, tag):
+    def get_value(self, tag):
         """
         Returns a list of values of the given DICOM tag in the list of images
         """
         attributes_list = []
         for image in self:
-            attributes_list.append(image.get_tag(tag))
+            attributes_list.append(image.get_value(tag))
         return attributes_list
 
-    def set_tag(self, tag, value):
+    def set_value(self, tag, value):
         """
         Set the variable "value" to the given DICOM tag in the list of images
         """
         for image in self:
-            image.set_tag(tag, value)
+            image.set_value(tag, value)
 
 
 class SeriesList(ListOfDicomObjects):
@@ -136,6 +162,35 @@ class SeriesList(ListOfDicomObjects):
         """
         if len(self) == 0: return
         return self[0].merge(self, series_name=series_name, overwrite=True)
+    
+    @property
+    def parent(self):
+        """
+        Returns a list of unique studies to which the series belong to.
+        """
+        parentsList = []
+        listParentsAttribute = []
+        for series in self:
+            study = series.parent
+            listIndividualAttributes = [study.subjectID, study.studyID, study.studyUID, study.suffix]
+            listParentsAttribute.append(listIndividualAttributes)
+        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        for listAtt in listUniqueParentsAttribute:
+            study = Study(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3])
+            parentsList.append(study)
+        return StudyList(parentsList)
+
+    @property
+    def children(self):
+        """
+        Returns a list of lists of images where each list refers to the various images of a series.
+        """
+        childrenList = []
+        for series in self:
+            # We're returning list of lists by using append.
+            # If we want a flat list, we'll have to use extend instead.
+            childrenList.append(series.children)
+        return childrenList
 
 
 class StudyList(ListOfDicomObjects):
@@ -158,6 +213,35 @@ class StudyList(ListOfDicomObjects):
         if len(self) == 0: return
         return self[0].merge(self, newStudyName=study_name, overwrite=True)
 
+    @property
+    def parent(self):
+        """
+        Returns a list of unique subjects to which the studies belong to.
+        """
+        parentsList = []
+        listParentsAttribute = []
+        for study in self:
+            subject = study.parent
+            listIndividualAttributes = [subject.subjectID, subject.suffix]
+            listParentsAttribute.append(listIndividualAttributes)
+        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        for listAtt in listUniqueParentsAttribute:
+            subject = Subject(self[0].objWeasel, listAtt[0], listAtt[1])
+            parentsList.append(subject)
+        return SubjectList(parentsList)
+
+    @property
+    def children(self):
+        """
+        Returns a list of lists of series where each list refers to the various series of a study.
+        """
+        childrenList = []
+        for study in self:
+            # We're returning list of lists by using append.
+            # If we want a flat list, we'll have to use extend instead.
+            childrenList.append(study.children)
+        return childrenList
+
 
 class SubjectList(ListOfDicomObjects):
     """
@@ -178,6 +262,19 @@ class SubjectList(ListOfDicomObjects):
         """
         if len(self) == 0: return
         return self[0].merge(self, newSubjectName=subject_name, overwrite=True)
+
+    @property
+    def children(self):
+        """
+        Returns a list of lists of series where each list refers to the various series of a study.
+        """
+        childrenList = []
+        for subject in self:
+            # We're returning list of lists by using append.
+            # If we want a flat list, we'll have to use extend instead.
+            childrenList.append(study.subject)
+        return childrenList
+        
 
 class OriginalPipelines():
     """
@@ -350,3 +447,12 @@ class OriginalPipelines():
         Closes all open windows.
         """
         self.mdiArea.closeAllSubWindows()
+
+    @staticmethod
+    def unique_elements(inputList):
+        """
+        Returns unique elements of any list.
+        """
+        #output = list(set(inputList))
+        output = list(inp for inp,_ in itertools.groupby(inputList))
+        return output

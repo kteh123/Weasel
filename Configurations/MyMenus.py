@@ -137,8 +137,17 @@ def main(pointerToWeasel):
                moduleName = 'Tutorial_AnonymiseCopy') 
 
     tutorial.addItem(itemLabel = 'Anonymise Patient ID',
-               moduleName = 'Tutorial_AnonymiseID') 
+               moduleName = 'Tutorial_AnonymiseID')
+
+    #Create Examples Menu
+    examples = menuBuilder(pointerToWeasel, "Examples")
+    examples.addItem(itemLabel = 'Binary Operations',
+               moduleName = 'BinaryOperationsOnImages')
+    examples.addItem(itemLabel = 'Binary Operations (Tutorials Version)',
+               moduleName = 'Tutorial_BinaryOperations')
+    examples.addItem(itemLabel = 'Merge Series by Acquisition Time',
+               moduleName = 'Test_MergeSeriesByAcquisitionTime')
+    examples.addItem(itemLabel = 'Create New Series by Slice Location',
+               moduleName = 'Test_CreateSeriesBySliceLocation')
 
   
-
- 

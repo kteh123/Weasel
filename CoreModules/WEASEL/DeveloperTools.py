@@ -654,7 +654,7 @@ class Project:
             subjectID = subjectXML.attrib['id']
             subject = Subject(self.objWeasel, subjectID)
             children.append(subject)
-        return children
+        return SubjectList(children)
     
     @property
     def numberChildren(self):
@@ -677,7 +677,7 @@ class Subject:
                 studyID = studyXML.attrib['id']
                 study = Study(self.objWeasel, self.subjectID, studyID)
                 children.append(study)
-        return children
+        return StudyList(children)
 
     @property
     def parent(self):
@@ -692,7 +692,7 @@ class Subject:
         listImages = []
         for study in self.children:
             listImages.extend(study.allImages)
-        return listImages
+        return ImagesList(listImages)
 
     @classmethod
     def fromTreeView(cls, objWeasel, subjectItem):
@@ -715,6 +715,11 @@ class Subject:
             study.delete()
         self.subjectID = ''
         #interfaceDICOMXMLFile.removeSubjectinXMLFile(self.objWeasel, self.subjectID)
+
+    def add(self, study):
+        study.subjectID = self.subjectID
+        study["PatientID"] = series.subjectID
+        #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self, study.subjectID, study.studyID, study.suffix)
 
     @staticmethod
     def merge(listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False, output_dir=None):
@@ -757,25 +762,25 @@ class Subject:
                 interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.objWeasel, subject.subjectID)
         return outputSubject
 
-    def get_tag(self, tag):
+    def get_value(self, tag):
         if len(self.children) > 0:
             studyOutputValuesList = []
             for study in self.children:
-                studyOutputValuesList.append(study.get_tag(tag)) # extend will allow long single list, while append creates list of lists
+                studyOutputValuesList.append(study.get_value(tag)) # extend will allow long single list, while append creates list of lists
             return studyOutputValuesList
         else:
             return []
 
-    def set_tag(self, tag, newValue):
+    def set_value(self, tag, newValue):
         if len(self.children) > 0:
             for study in self.children:
-                study.set_tag(tag, newValue)
+                study.set_value(tag, newValue)
     
     def __getitem__(self, tag):
-        return self.get_tag(tag)
+        return self.get_value(tag)
 
     def __setitem__(self, tag, value):
-        self.set_tag(tag, value)
+        self.set_value(tag, value)
 
 
 class Study:
@@ -799,7 +804,7 @@ class Study:
                     images.append(imageXML.find('name').text)
                 series = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, listPaths=images)
                 children.append(series)
-        return children
+        return SeriesList(children)
     
     @property
     def parent(self):
@@ -814,7 +819,7 @@ class Study:
         listImages = []
         for series in self.children:
             listImages.extend(series.children)
-        return listImages
+        return ImagesList(listImages)
     
     @classmethod
     def fromTreeView(cls, objWeasel, studyItem):
@@ -822,8 +827,9 @@ class Study:
         studyID = studyItem.text(1).replace('Study -', '').strip()
         return cls(objWeasel, subjectID, studyID)
 
-    def new(self, suffix="_Copy"):
-        studyID = self.studyID + suffix
+    def new(self, suffix="_Copy", studyID=None):
+        if studyID is None:
+            studyID = self.studyID + suffix
         prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
         study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
         return Study(self.objWeasel, self.subjectID, studyID, studyUID=study_uid, suffix=suffix)
@@ -848,6 +854,20 @@ class Study:
             series.delete()
         #interfaceDICOMXMLFile.removeOneStudyFromSubject(self.objWeasel, self.subjectID, self.studyID)
         self.subjectID = self.studyID = ''
+    
+    def add(self, series):
+        series.subjectID = self.subjectID
+        series.studyID = self.studyID
+        series.studyUID = self.studyUID
+        series["PatientID"] = series.subjectID
+        series["StudyDate"] = series.studyID.split("_")[0]
+        series["StudyTime"] = series.studyID.split("_")[1]
+        series["StudyDescription"] = series.studyID.split("_")[2]
+        series["StudyInstanceUID"] = self.studyUID
+        #if len(series.referencePathsList) > 0:
+        #    interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self.objWeasel, series.referencePathsList, series.images, series.suffix)
+        #else:
+        #    interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self.objWeasel, series.images, series.images, series.suffix)
 
     @staticmethod
     def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False, output_dir=None):
@@ -902,25 +922,25 @@ class Study:
         else:
             return pydicom.uid.generate_uid(prefix=None)
     
-    def get_tag(self, tag):
+    def get_value(self, tag):
         if len(self.children) > 0:
             seriesOutputValuesList = []
             for series in self.children:
-                seriesOutputValuesList.append(series.get_tag(tag)) # extend will allow long single list, while append creates list of lists
+                seriesOutputValuesList.append(series.get_value(tag)) # extend will allow long single list, while append creates list of lists
             return seriesOutputValuesList
         else:
             return []
 
-    def set_tag(self, tag, newValue):
+    def set_value(self, tag, newValue):
         if len(self.children) > 0:
             for series in self.children:
-                series.set_tag(tag, newValue)
+                series.set_value(tag, newValue)
     
     def __getitem__(self, tag):
-        return self.get_tag(tag)
+        return self.get_value(tag)
 
     def __setitem__(self, tag, value):
-        self.set_tag(tag, value)
+        self.set_value(tag, value)
 
 
 class Series:
@@ -949,7 +969,7 @@ class Series:
         for imageXML in seriesXML:
             image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
             children.append(image)
-        return children
+        return ImagesList(children)
     
     @property
     def parent(self):
@@ -1081,8 +1101,8 @@ class Series:
         list_to_sort = []
         list_to_sort.append(self.images) # children? images?
         for tag in argv:
-            if len(self.get_tag(tag)) > 0:
-                attributeList = self.get_tag(tag)
+            if len(self.get_value(tag)) > 0:
+                attributeList = self.get_value(tag)
                 list_to_sort.append(attributeList)
         for index, _ in enumerate(self.images):
             individual_tuple = []
@@ -1095,7 +1115,7 @@ class Series:
             list_sorted_images.append(individual[0])
         list_sorted_paths = [img.path for img in list_sorted_images]
         self.images = list_sorted_paths
-        return list_sorted_images
+        return self
     
     def where(self, tag, condition, target):
         list_images = []
@@ -1107,7 +1127,7 @@ class Series:
                 list_images.append(image)
                 list_paths.append(image.path)
         self.images = list_paths
-        return list_images
+        return self
 
     def display(self):
         UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
@@ -1281,7 +1301,7 @@ class Series:
                     #inversionList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveInversionTime) # InversionTime
         return inversionList
     
-    def get_tag(self, tag):
+    def get_value(self, tag):
         if self.images:
             if isinstance(tag, list):
                 outputValuesList = []
@@ -1293,7 +1313,7 @@ class Series:
         else:
             return []
 
-    def set_tag(self, tag, newValue):
+    def set_value(self, tag, newValue):
         if self.images:
             comparisonDicom = self.PydicomList
             oldSubjectID = self.subjectID
@@ -1329,10 +1349,10 @@ class Series:
                     interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
     
     def __getitem__(self, tag):
-        return self.get_tag(tag)
+        return self.get_value(tag)
 
     def __setitem__(self, tag, value):
-        self.set_tag(tag, value)
+        self.set_value(tag, value)
 
     def Item(self, tagDescription, newValue=None):
         if self.images:
@@ -1406,6 +1426,7 @@ class Image:
         self.suffix = '' if suffix is None else suffix
         self.referencePath = ''
 
+    @property
     def parent(self):
         temp_series = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, studyUID=self.studyUID, seriesUID=self.seriesUID)
         paths = []
@@ -1577,7 +1598,7 @@ class Image:
     def Affine(self):
         return ReadDICOM_Image.returnAffineArray(self.path)
     
-    def get_tag(self, tag):
+    def get_value(self, tag):
         if isinstance(tag, list):
             outputValuesList = []
             for ind_tag in tag:
@@ -1586,7 +1607,7 @@ class Image:
         else:
             return ReadDICOM_Image.getImageTagValue(self.path, tag)
 
-    def set_tag(self, tag, newValue):
+    def set_value(self, tag, newValue):
         comparisonDicom = self.PydicomObject
         changeXML = False
         # Not necessary new IDs, but they may be new. The changeXML flag coordinates that.
@@ -1622,10 +1643,10 @@ class Image:
             interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
         
     def __getitem__(self, tag):
-        return self.get_tag(tag)
+        return self.get_value(tag)
 
     def __setitem__(self, tag, value):
-        self.set_tag(tag, value)
+        self.set_value(tag, value)
 
     def Item(self, tagDescription, newValue=None):
         if self.path:
@@ -1660,3 +1681,5 @@ class Image:
         niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.Affine)
         niftiObj.header.extensions.append(dicomHeader)
         nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+
+from Scripting.OriginalPipelines import ImagesList, SeriesList, StudyList, SubjectList

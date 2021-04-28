@@ -5,25 +5,32 @@
 #**************************************************************************
 
 def main(weasel):
-    images = weasel.images(msg = "Please select the images")     
-    if images.empty: return    
-    cancel, fields = weasel.user_input(title="Settings for binary operation", 
-        {"type":"list", "label":"Image A", "default":0,  "list": images.label()}
-        {"type":"list", "label":"Image B", "default":0,  "list": images.label()}
-        {"type":"list", "label":"operation", "default":0,  "list": ["A * B", "A / B", "A + B", "A - B"]}
-        )
+    images = weasel.images()
+    list_operations = ["A * B", "A / B", "A + B", "A - B"]
+    cancel, fields = weasel.user_input(
+        {"type":"dropdownlist", "label":"Image A", "list":images.names, "default":0},
+        {"type":"dropdownlist", "label":"Image B", "list":images.names, "default":0},
+        {"type":"dropdownlist", "label":"Operation", "list":list_operations, "default":0},
+        title="Settings for binary operation")
     if cancel: return
 
-    result = images[A].copy(series_name=operation) 
+    imageA = images[fields[0]['value']]
+    imageB = images[fields[1]['value']]
+    operation = list_operations[fields[2]['value']]
+    # fields[X]['value'] is the index of the chosen value in the input list that it refers to.
 
     if operation == "A * B":
-        result.write(images[A].PixelArray * Images[B].PixelArray)
+        result = imageA.new(suffix="_Multiplication_" + imageA.name + "_" + imageB.name)
+        result.write(imageA.PixelArray * imageB.PixelArray)
     elif operation == "A / B":
-        result.write(images[A].PixelArray / Images[B].PixelArray)
+        result = imageA.new(suffix="_Division_" + imageA.name + "_" + imageB.name)
+        result.write(imageA.PixelArray / imageB.PixelArray)
     elif operation == "A + B":
-        result.write(images[A].PixelArray + Images[B].PixelArray)
+        result = imageA.new(suffix="_Sum_" + imageA.name + "_" + imageB.name)
+        result.write(imageA.PixelArray + imageB.PixelArray)
     elif operation == "A - B":
-        result.write(images[A].PixelArray - Images[B].PixelArray)
+        result = imageA.new(suffix="_Subtraction" + imageA.name + "_" + imageB.name)
+        result.write(imageA.PixelArray - imageB.PixelArray)
         
-    result.display()            
+    result.display()
     weasel.refresh()

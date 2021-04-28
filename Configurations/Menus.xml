@@ -219,6 +219,21 @@
           <tooltip>Performs binary operations on two images</tooltip>
           <module>BinaryOperationsOnImages</module>
         </item>
+        <item>
+          <label>Binary Operations (Tutorials Version)</label>
+          <tooltip>Performs binary operations on two images</tooltip>
+          <module>Tutorial_BinaryOperations</module>
+        </item>
+        <item>
+          <label>Merge Series by Acquisition Time</label>
+          <tooltip>Merge Series by Acquisition Time</tooltip>
+          <module>Test_MergeSeriesByAcquisitionTime</module>
+        </item>
+        <item>
+          <label>Create New Series by Slice Location</label>
+          <tooltip>Create New Series by Slice Location</tooltip>
+          <module>Test_CreateSeriesBySliceLocation</module>
+        </item>
   </menu>
   
   <menu name="XNAT">
