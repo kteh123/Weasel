@@ -50,12 +50,12 @@ class ImagesList(ListOfDicomObjects):
             copy.append(image.copy())
         return ImagesList(copy)
         
-    def merge(self, series_name='MergedSeries'):
+    def merge(self, series_number=None,series_name='MergedSeries', study_name=None, patient_name=None, overwrite=True, progress_bar=True):
         """
         Merges a list of images into a new series under the same study
         """
         if len(self) == 0: return
-        return self[0].merge(self, series_name=series_name, overwrite=True)
+        return self[0].merge(self, series_id=series_number, series_name=series_name, study_name=study_name, patient_id=patient_name, overwrite=overwrite, progress_bar=progress_bar)
 
     def new_parent(self, suffix="_Suffix"):
         """
@@ -156,12 +156,12 @@ class SeriesList(ListOfDicomObjects):
             copy.append(series.copy())
         return SeriesList(copy)
 
-    def merge(self, series_name='MergedSeries'):
+    def merge(self, series_name='MergedSeries', study_name=None, patient_name=None, overwrite=True, progress_bar=True):
         """
         Merges a list of series into a new series under the same study
         """
         if len(self) == 0: return
-        return self[0].merge(self, series_name=series_name, overwrite=True)
+        return self[0].merge(self, series_name=series_name, study_name=study_name, patient_id=patient_name, overwrite=overwrite, progress_bar=progress_bar)
     
     @property
     def parent(self):
@@ -206,12 +206,12 @@ class StudyList(ListOfDicomObjects):
             copy.append(study.copy())
         return StudyList(copy)
 
-    def merge(self, study_name='MergedStudies'):
+    def merge(self, study_name='MergedStudies', overwrite=True, progress_bar=True):
         """
         Merges a list of series into a new series under the same study
         """
         if len(self) == 0: return
-        return self[0].merge(self, newStudyName=study_name, overwrite=True)
+        return self[0].merge(self, newStudyName=study_name, overwrite=overwrite, progress_bar=progress_bar)
 
     @property
     def parent(self):
@@ -256,12 +256,12 @@ class SubjectList(ListOfDicomObjects):
             copy.append(subject.copy())
         return SubjectList(copy)
 
-    def merge(self, subject_name='MergedSubjects'):
+    def merge(self, subject_name='MergedSubjects', overwrite=True, progress_bar=True):
         """
         Merges a list of series into a new series under the same study
         """
         if len(self) == 0: return
-        return self[0].merge(self, newSubjectName=subject_name, overwrite=True)
+        return self[0].merge(self, newSubjectName=subject_name, overwrite=overwrite, progress_bar=progress_bar)
 
     @property
     def children(self):
@@ -274,7 +274,7 @@ class SubjectList(ListOfDicomObjects):
             # If we want a flat list, we'll have to use extend instead.
             childrenList.append(study.subject)
         return childrenList
-        
+
 
 class OriginalPipelines():
     """

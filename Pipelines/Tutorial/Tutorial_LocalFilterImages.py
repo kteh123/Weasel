@@ -9,19 +9,17 @@ import scipy.ndimage as ndimage
 from scipy.signal import wiener
 
 def main(weasel):
-
     # Get images checked by the user
-
-    list_of_images = weasel.images(msg = "Please select the images to filter")     
+    list_of_images = weasel.images()
     if len(list_of_images) == 0: return 
 
     # Get user input: type of filter and size
 
     filters = ["Gaussian", "Uniform", "Median", "Maximum", "Wiener"]
     cancel, filters_input = weasel.user_input(
-        {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
-        {"type":"integer", "label":"Filter size in pixels", "default":20, "minimum":1, "maximum":1000}, 
-        title = "Filter settings")
+            {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
+            {"type":"integer", "label":"Filter size in pixels", "default":20, "minimum":1, "maximum":1000},
+            title = "Filter settings")
     if cancel: return
 
     filter_name = filters_input[0]
@@ -36,11 +34,11 @@ def main(weasel):
         elif filter_name['value'] == 1:
             image.write(ndimage.uniform_filter(image.PixelArray, size=size['value']))
         elif filter_name['value'] == 2:
-            image.write(ndimage.median_filter(image.PixelArray, size['value']))
+            image.write(ndimage.median_filter(image.PixelArray, size=size['value']))
         elif filter_name['value'] == 3:
             image.write(ndimage.maximum_filter(image.PixelArray, size=size['value']))
         elif filter_name['value'] == 4:
             image.write(wiener(image.PixelArray, (size['value'], size['value'])))
 
-    list_of_images.display()            
+    list_of_images.display()
     weasel.refresh()

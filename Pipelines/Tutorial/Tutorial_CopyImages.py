@@ -10,5 +10,3 @@ def main(weasel):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Copying images {}")
         image.copy()                # Copy the image
     weasel.refresh()                # Refresh weasel
-
-    

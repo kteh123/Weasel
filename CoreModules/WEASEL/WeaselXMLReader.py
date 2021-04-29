@@ -404,7 +404,7 @@ class WeaselXMLReader:
     def insertNewSubjectinXML(self, newStudiesList, newSubjectID, suffix):
         newAttributes = {'id':newSubjectID, 
                          'typeID':suffix,
-                         'expanded':'True',
+                         'expanded':'False',
                          'checked': 'False'}
 
         #Add new subject to project

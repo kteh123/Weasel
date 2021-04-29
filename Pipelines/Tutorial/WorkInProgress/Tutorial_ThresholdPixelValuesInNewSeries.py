@@ -26,6 +26,7 @@ def main(weasel):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Thresholding image {}")
         image.copy(series=series).write(Thresholded(image.PixelArray, lower_thresh, upper_thresh))
     series.display()            # Display all images in the list in a single display
+    weasel.refresh()
 
 
 def Thresholded(pixelArray, lower_threshold, upper_threshold):

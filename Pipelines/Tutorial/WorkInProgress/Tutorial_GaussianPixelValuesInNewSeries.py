@@ -18,4 +18,5 @@ def main(weasel):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Filtering image {} with gaussian filter")
         image.copy(series=series).write(ndimage.gaussian_filter(image.PixelArray, sigma=size))
     series.display()            # Display all images in the list in a single display
+    weasel.refresh()
     

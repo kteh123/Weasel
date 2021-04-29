@@ -11,4 +11,5 @@ def main(weasel):
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Squaring image {}")
         image.copy(series=series).write(np.square(image.PixelArray))
     series.display()            # Display all images in the list in a single display
+    weasel.refresh()
     
