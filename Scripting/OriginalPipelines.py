@@ -81,12 +81,6 @@ class ImagesList(ListOfDicomObjects):
             parentsList.append(series)
         return SeriesList(parentsList)
 
-    def Item(self, *args):
-        """
-        Applies the Item method to all images in the list
-        """
-        return [image.Item(args) for image in self]
-
     def display(self):
         """
         Displays all images as a series.

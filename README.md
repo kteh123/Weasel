@@ -76,24 +76,18 @@ If you're a developer, you may start Weasel by opening an IDE (Sublime Text, VS 
 
 # Generate the Executable
 
-If you wish to get one file that executes the whole software, you can compile the Python project into an executable of the operative system you're using by using `pyinstaller`.
+If you wish to get one file that executes the whole software, you can compile the Python project into an executable of the operative system you're using by using the `pyinstaller` package.
 
-First, you need to install it by running:
-
-`pip install pyinstaller`
-
-Then you have to navigate to your Weasel folder
+First, you have to navigate to your Weasel folder
 
 `cd <Weasel_folder_path>`
 
-and run the following command:
+and run the following python command:
 
-`pyinstaller --hidden-import requests --hidden-import xnat --exclude-module External --onefile Weasel.py`
+`python compile_and_generate_binary.py`
 
-If you wish to go forward with this procedure, it's highly recommended that you use a new and clean python virtual environment to install the relevant packages and make use of those only during compilation.
+You may use your IDE instead of the terminal during this process. The generated executable can be found in the `Weasel` folder.
 
-The generated executable can be found in the `dist` folder. You may delete the `build` folder and the `Weasel.spec` file which are created during this process.
+## Other Info
 
-## Multiframe Images
-
-Weasel runs the command `emf2sf` of [dcm4che](https://www.dcm4che.org/) on Multiframe DICOM. The authors will describe more details about this on the [website](https://weasel.pro).
+Weasel runs the command `emf2sf` of [dcm4che](https://www.dcm4che.org/) on Multiframe DICOM. Elastix will be integrated in the future.

@@ -12,13 +12,13 @@ import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.ParametricMapsDictionary as param
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import logging
-
 logger = logging.getLogger(__name__)
 
 
 def returnFilePath(imagePath, suffix, new_path=None, output_folder=None):
     """This method returns the new filepath of the object to be saved."""
     # Think of a way to choose a select a new FilePath
+    logger.info("SaveDICOM_Image.returnFilePath called")
     try:
         if os.path.exists(imagePath):
             # Need to think about what new name to give to the file and how to save multiple files for the same sequence
@@ -43,10 +43,12 @@ def returnFilePath(imagePath, suffix, new_path=None, output_folder=None):
             return None
     except Exception as e:
         print('Error in function SaveDICOM_Image.returnFilePath: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.returnFilePath: ' + str(e))
 
 
 def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_id=None, series_uid=None, series_name=None, image_number=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the new pixelArray into DICOM in the given newFilePath"""
+    logger.info("SaveDICOM_Image.saveNewSingleDicomImage called")
     try:
         if os.path.exists(imagePath):
             dataset = ReadDICOM_Image.getDicomDataset(imagePath)
@@ -65,13 +67,14 @@ def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_i
             return
         else:
             return None
-
     except Exception as e:
         print('Error in function SaveDICOM_Image.saveNewSingleDicomImage: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.saveNewSingleDicomImage: ' + str(e))
 
 
 def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
                 imagePath='', seriesID='', studyID='', colourmap=None, lut=None):
+    logger.info("SaveDICOM_Image.updateSingleDicomImage called")
     try:
         logger.info("In SaveDICOM_Image.updateSingleDicomImage")
         messageWindow.displayMessageSubWindow(objWeasel,
@@ -87,12 +90,14 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
         messageWindow.closeMessageSubWindow(objWeasel)
     except Exception as e:
         print('Error in SaveDICOM_Image.updateSingleDicomImage: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.updateSingleDicomImage: ' + str(e))
 
 
 def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suffix, series_id=None, series_uid=None, series_name=None, parametric_map=None, colourmap=None, list_refs_path=None):
     """This method saves the pixelArrayList into DICOM files with metadata pointing to the same series"""
     # What if it's a map with less files than original? Think about iterating the first elements and sort path list by SliceLocation - see T2* algorithm
     # Think of a way to choose a select a new FilePath or Folder
+    logger.info("SaveDICOM_Image.saveDicomNewSeries called")
     try:
         if os.path.exists(imagePathList[0]):
             # Series ID and UID
@@ -124,6 +129,7 @@ def saveDicomNewSeries(derivedImagePathList, imagePathList, pixelArrayList, suff
             return None
     except Exception as e:
         print('Error in function SaveDICOM_Image.saveDicomNewSeries: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.saveDicomNewSeries: ' + str(e))
  
     
 def generateUIDs(dataset, seriesNumber=None, studyUID=None):
@@ -133,6 +139,7 @@ def generateUIDs(dataset, seriesNumber=None, studyUID=None):
     The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
     The InstanceUID is generated based on SeriesUID.
     """
+    logger.info("SaveDICOM_Image.generateUIDs called")
     try:
         if studyUID is None:     
             studyUID = dataset.StudyInstanceUID
@@ -150,9 +157,11 @@ def generateUIDs(dataset, seriesNumber=None, studyUID=None):
         return [seriesNumber, seriesUID, imageUID]
     except Exception as e:
         print('Error in function SaveDICOM_Image.generateUIDs: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.generateUIDs: ' + str(e))
 
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
+    logger.info("SaveDICOM_Image.overwriteDicomFileTag called")
     try:
         if isinstance(imagePath, list):
             datasetList = ReadDICOM_Image.getSeriesDicomDataset(imagePath)
@@ -182,9 +191,11 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
         return
     except Exception as e:
         print('Error in SaveDICOM_Image.overwriteDicomFileTag: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.overwriteDicomFileTag: ' + str(e))
 
 
 def createNewPixelArray(imageArray, dataset):
+    logger.info("SaveDICOM_Image.createNewPixelArray called")
     try:        
         # If the new array is a binary image / mask
         if len(np.unique(imageArray)) == 2:
@@ -265,12 +276,14 @@ def createNewPixelArray(imageArray, dataset):
         return dataset
     except Exception as e:
         print('Error in SaveDICOM_Image.createNewPixelArray: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.createNewPixelArray: ' + str(e))
 
 
 def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None, series_name=None, comment=None, parametric_map=None, colourmap=None, list_refs=None):
     """This function takes a DICOM Object, copies most of the DICOM tags from the DICOM given in input
         and writes the imageArray into the new DICOM Object in PixelData. 
     """
+    logger.info("SaveDICOM_Image.createNewSingleDicom called")
     try:
         newDicom = copy.deepcopy(dicomData)
         imageArray = copy.deepcopy(imageArray)
@@ -413,12 +426,14 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         return newDicom
     except Exception as e:
         print('Error in function SaveDICOM_Image.createNewSingleDicom: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.createNewSingleDicom: ' + str(e))
 
 
 def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
     """This function takes a DICOM Object and changes it to include the
         new colourmap selected in the interface. It will have more features in the future.
     """
+    logger.info("SaveDICOM_Image.updateSingleDicom called")
     try:
         #and (colourmap != 'gray') removed from If statement below, so as to save gray colour tables
         if (colourmap == 'gray'):
@@ -472,12 +487,14 @@ def updateSingleDicom(dicomData, colourmap=None, levels=None, lut=None):
         return dicomData   
     except Exception as e:
         print('Error in function SaveDICOM_Image.updateSingleDicom: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.updateSingleDicom: ' + str(e))
 
     
 def saveDicomToFile(dicomData, output_path=None):
     """This method takes a DICOM object and saves it as a DICOM file 
         with the set filename in the input arguments.
     """
+    logger.info("SaveDICOM_Image.saveDicomToFile called")
     try:
         if output_path is None:
             try:
@@ -501,3 +518,4 @@ def saveDicomToFile(dicomData, output_path=None):
         return
     except Exception as e:
         print('Error in function SaveDICOM_Image.saveDicomToFile: ' + str(e))
+        logger.exception('Error in SaveDICOM_Image.saveDicomToFile: ' + str(e))

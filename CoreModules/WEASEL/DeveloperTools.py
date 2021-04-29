@@ -18,7 +18,6 @@ import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 import CoreModules.WEASEL.InputDialog as inputDialog
 from CoreModules.WEASEL.ViewMetaData import displayMetaDataSubWindow
-
 logger = logging.getLogger(__name__)
 
 class UserInterfaceTools:
@@ -31,6 +30,9 @@ class UserInterfaceTools:
 
     def __init__(self, objWeasel):
         self.objWeasel = objWeasel
+    
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
 
     # May be redundant
     def getCurrentSubject(self):
@@ -259,11 +261,11 @@ class UserInterfaceTools:
             natureList = ["Animals", "Plants", "Trees"]
             inputWindow(paramDict, lists=[algorithmList, natureList])
         """
+        logger.info("UserInterfaceTools.inputWindow called")
         try:
             inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
             # Return None if the user hits the Cancel button
-            if inputDlg.closeInputDialog() == True:
-                return None
+            if inputDlg.closeInputDialog() == True: return None
             listParams = inputDlg.returnListParameterValues()
             outputList = []
             # Sometimes the values parsed could be list or hexadecimals in strings
@@ -274,7 +276,8 @@ class UserInterfaceTools:
                     outputList.append(param)
             return outputList
         except Exception as e:
-            print('inputWindow: ' + str(e))
+            print('Error in function UserInterfaceTools.inputWindow: ' + str(e))
+            logger.exception('Error in UserInterfaceTools.inputWindow: ' + str(e))
 
 
     def displayMetadata(self, inputPath):
@@ -282,6 +285,7 @@ class UserInterfaceTools:
         Display the metadata in "inputPath" in the User Interface.
         If "inputPath" is a list, then it displays the metadata of the first image.
         """
+        logger.info("UserInterfaceTools.displayMetadata called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
@@ -290,13 +294,15 @@ class UserInterfaceTools:
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 displayMetaDataSubWindow(self.objWeasel, "Metadata for image {}".format(inputPath[0]), dataset)
         except Exception as e:
-            print('displayMetadata: ' + str(e))
+            print('Error in function UserInterfaceTools.displayMetadata: ' + str(e))
+            logger.exception('Error in UserInterfaceTools.displayMetadata: ' + str(e))
 
 
     def displayImages(self, inputPath, subjectID, studyID, seriesID):
         """
         Display the PixelArray in "inputPath" in the User Interface.
         """
+        logger.info("UserInterfaceTools.displayImages called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 displayImageColour.displayImageSubWindow(self.objWeasel, inputPath, subjectID, seriesID, studyID)
@@ -307,29 +313,35 @@ class UserInterfaceTools:
                     displayImageColour.displayMultiImageSubWindow(self.objWeasel, inputPath, subjectID, studyID, seriesID)
             return
         except Exception as e:
-            print('displayImages: ' + str(e))
+            print('Error in function UserInterfaceTools.displayImages: ' + str(e))
+            logger.exception('Error in UserInterfaceTools.displayImages: ' + str(e))
         
 
     def refreshWeasel(self, new_series_name=None):
         """
         Refresh the user interface screen.
         """
+        logger.info("UserInterfaceTools.refreshWeasel called")
         try:
-            logger.info("DeveloperTool.refreshWeasel")
             if new_series_name:
                 treeView.refreshDICOMStudiesTreeView(self.objWeasel, newSeriesName=new_series_name)
             else:
                 treeView.refreshDICOMStudiesTreeView(self.objWeasel)
         except Exception as e:
-            print('refreshWeasel: ' + str(e))
+            print('Error in function UserInterfaceTools.refreshWeasel: ' + str(e))
+            logger.exception('Error in UserInterfaceTools.refreshWeasel: ' + str(e))
 
 
 class GenericDICOMTools:
+
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
 
     def copyDICOM(self, inputPath, series_id=None, series_uid=None, series_name=None, study_uid=None, study_name=None, patient_id=None, suffix="_Copy", output_dir=None):
         """
         Creates a DICOM copy of all files in "inputPath" (1 or more) into a new series.
         """
+        logger.info("GenericDICOMTools.copyDICOM called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 if (series_id is None) and (series_uid is None):
@@ -402,12 +414,14 @@ class GenericDICOMTools:
                                 inputPath, derivedPath, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             return derivedPath, newSeriesID
         except Exception as e:
-            print('copyDICOM: ' + str(e))
+            print('Error in function GenericDICOMTools.copyDICOM: ' + str(e))
+            logger.exception('Error in GenericDICOMTools.copyDICOM: ' + str(e))
 
     def deleteDICOM(self, inputPath):
         """
         This functions remove all files in inputhPath and updates the XML file accordingly.
         """
+        logger.info("GenericDICOMTools.deleteDICOM called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 os.remove(inputPath)
@@ -423,13 +437,15 @@ class GenericDICOMTools:
                     if displayWindow.windowTitle().split(" - ")[-1] in list(map(os.path.basename, inputPath)):
                         displayWindow.close()
         except Exception as e:
-            print('deleteDICOM: ' + str(e))
+            print('Error in function GenericDICOMTools.deleteDICOM: ' + str(e))
+            logger.exception('Error in GenericDICOMTools.deleteDICOM: ' + str(e))
 
     def mergeDicomIntoOneSeries(self, imagePathList, series_id=None, series_name="New Series", series_uid=None, study_name=None, study_uid=None, patient_id=None, suffix="_Merged", overwrite=False, progress_bar=False):
         """
         Merges all DICOM files in "imagePathList" into 1 series.
         It creates a copy if "overwrite=False" (default).
         """
+        logger.info("GenericDICOMTools.mergeDicomIntoOneSeries called")
         try:
             if os.path.exists(imagePathList[0]):
                 if (series_id is None) and (series_uid is None):
@@ -494,7 +510,8 @@ class GenericDICOMTools:
                 newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, imagePathList, newImagePathList, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             return newImagePathList
         except Exception as e:
-            print('mergeDicomIntoOneSeries: ' + str(e))
+            print('Error in function GenericDICOMTools.mergeDicomIntoOneSeries: ' + str(e))
+            logger.exception('Error in GenericDICOMTools.mergeDicomIntoOneSeries: ' + str(e))
 
     def generateSeriesIDs(self, inputPath, seriesNumber=None, studyUID=None):
         """
@@ -502,17 +519,16 @@ class GenericDICOMTools:
         The SeriesUID is generated based on the StudyUID and on seriesNumber (if provided)
         The InstanceUID is generated based on SeriesUID.
         """
+        logger.info("GenericDICOMTools.generateSeriesIDs called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath)
                 if seriesNumber is None:
-                    #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath)
                     (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath)
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 dataset = PixelArrayDICOMTools.getDICOMobject(inputPath[0])
                 if seriesNumber is None:
-                    #(subjectID, studyID, seriesID) = treeView.getPathParentNode(self, inputPath[0])
                     (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
                     seriesNumber = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             ids = SaveDICOM_Image.generateUIDs(dataset, seriesNumber=seriesNumber, studyUID=studyUID)
@@ -520,7 +536,8 @@ class GenericDICOMTools:
             seriesUID = ids[1]
             return seriesID, seriesUID
         except Exception as e:
-            print('Error in DeveloperTools.generateSeriesIDs: ' + str(e))
+            print('Error in function GenericDICOMTools.generateSeriesIDs: ' + str(e))
+            logger.exception('Error in GenericDICOMTools.generateSeriesIDs: ' + str(e))
 
     @staticmethod
     def editDICOMTag(inputPath, dicomTag, newValue):
@@ -528,7 +545,7 @@ class GenericDICOMTools:
         Overwrites all "dicomTag" of the DICOM files in "inputPath"
         with "newValue".
         """
-        # CONSIDER THE CASES WHERE SERIES NUMBER, NAME AND UID ARE CHANGED - UPDATE XML
+        logger.info("GenericDICOMTools.editDICOMTag called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 SaveDICOM_Image.overwriteDicomFileTag(inputPath, dicomTag, newValue)
@@ -536,16 +553,21 @@ class GenericDICOMTools:
                 for path in inputPath:
                     SaveDICOM_Image.overwriteDicomFileTag(path, dicomTag, newValue)
         except Exception as e:
-            print('Error in DeveloperTools.editDICOMTag: ' + str(e))
+            print('Error in GenericDICOMTools.editDICOMTag: ' + str(e))
+            logger.exception('Error in GenericDICOMTools.editDICOMTag: ' + str(e))
         
 
 class PixelArrayDICOMTools:
+
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
     
     @staticmethod
     def getPixelArrayFromDICOM(inputPath):
         """
         Returns the PixelArray of the DICOM file(s) in "inputPath".
         """
+        logger.info("PixelArrayDICOMTools.getPixelArrayFromDICOM called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 pixelArray = ReadDICOM_Image.returnPixelArray(inputPath)
@@ -556,13 +578,15 @@ class PixelArrayDICOMTools:
             else:
                 return None
         except Exception as e:
-            print('Error in DeveloperTools.getPixelArrayFromDICOM: ' + str(e))
+            print('Error in PixelArrayDICOMTools.getPixelArrayFromDICOM: ' + str(e))
+            logger.exception('Error in PixelArrayDICOMTools.getPixelArrayFromDICOM: ' + str(e))
 
     @staticmethod
     def getDICOMobject(inputPath):
         """
         Returns the DICOM object (or list of DICOM objects) of the file(s) in "inputPath".
         """
+        logger.info("PixelArrayDICOMTools.getDICOMobject called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 dataset = ReadDICOM_Image.getDicomDataset(inputPath)
@@ -573,13 +597,15 @@ class PixelArrayDICOMTools:
             else:
                 return None
         except Exception as e:
-            print('Error in DeveloperTools.getDICOMobject: ' + str(e))
+            print('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
+            logger.exception('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
 
     def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, output_dir=None):
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
         """
+        logger.info("PixelArrayDICOMTools.writeNewPixelArray called")
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 numImages = 1
@@ -623,7 +649,8 @@ class PixelArrayDICOMTools:
             return derivedImagePathList
 
         except Exception as e:
-            print('Error in DeveloperTools.writePixelArrayToDicom: ' + str(e))
+            print('Error in PixelArrayDICOMTools.writeNewPixelArray: ' + str(e))
+            logger.exception('Error in PixelArrayDICOMTools.writeNewPixelArray: ' + str(e))
 
     @staticmethod
     def overwritePixelArray(pixelArray, inputPath):
@@ -631,6 +658,7 @@ class PixelArrayDICOMTools:
         Overwrites the DICOM files in the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
         """
+        logger.info("PixelArrayDICOMTools.overwritePixelArray called")
         try:
             if isinstance(inputPath, list) and len(inputPath) > 1:
                 datasetList = ReadDICOM_Image.getSeriesDicomDataset(inputPath)
@@ -642,25 +670,34 @@ class PixelArrayDICOMTools:
                 modifiedDataset = SaveDICOM_Image.createNewPixelArray(pixelArray, dataset)
                 SaveDICOM_Image.saveDicomToFile(modifiedDataset, output_path=inputPath)
         except Exception as e:
-            print('overwritePixelArray: ' + str(e))
+            print('Error in PixelArrayDICOMTools.overwritePixelArray: ' + str(e))
+            logger.exception('Error in PixelArrayDICOMTools.overwritePixelArray: ' + str(e))
 
 
 class Project:
     def __init__(self, objWeasel):
         self.objWeasel = objWeasel
+    
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
 
     @property
     def children(self):
-        children = []
-        rootXML = self.objWeasel.objXMLReader.getXMLRoot()
-        for subjectXML in rootXML:
-            subjectID = subjectXML.attrib['id']
-            subject = Subject(self.objWeasel, subjectID)
-            children.append(subject)
-        return SubjectList(children)
+        logger.info("Project.children called")
+        try:
+            children = []
+            rootXML = self.objWeasel.objXMLReader.getXMLRoot()
+            for subjectXML in rootXML:
+                subjectID = subjectXML.attrib['id']
+                subject = Subject(self.objWeasel, subjectID)
+                children.append(subject)
+            return SubjectList(children)
+        except Exception as e:
+            print('Error in Project.children: ' + str(e))
+            logger.exception('Error in Project.children: ' + str(e))
     
     @property
-    def numberChildren(self):
+    def number_children(self):
         return len(self.children)
 
 
@@ -670,32 +707,50 @@ class Subject:
         self.objWeasel = objWeasel
         self.subjectID = subjectID
         self.suffix = '' if suffix is None else suffix
+
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
     
     @property
     def children(self, index=None):
-        children = []
-        subjectXML = self.objWeasel.objXMLReader.getSubject(self.subjectID)
-        if subjectXML:
-            for studyXML in subjectXML:
-                studyID = studyXML.attrib['id']
-                study = Study(self.objWeasel, self.subjectID, studyID)
-                children.append(study)
-        return StudyList(children)
+        logger.info("Subject.children called")
+        try:
+            children = []
+            subjectXML = self.objWeasel.objXMLReader.getSubject(self.subjectID)
+            if subjectXML:
+                for studyXML in subjectXML:
+                    studyID = studyXML.attrib['id']
+                    study = Study(self.objWeasel, self.subjectID, studyID)
+                    children.append(study)
+            return StudyList(children)
+        except Exception as e:
+            print('Error in Subject.children: ' + str(e))
+            logger.exception('Error in Subject.children: ' + str(e))
 
     @property
     def parent(self):
-        return Project(self.objWeasel)
+        logger.info("Subject.parent called")
+        try:
+            return Project(self.objWeasel)
+        except Exception as e:
+            print('Error in Subject.parent: ' + str(e))
+            logger.exception('Error in Subject.parent: ' + str(e))
 
     @property
-    def numberChildren(self):
+    def number_children(self):
         return len(self.children)
     
     @property
-    def allImages(self):
-        listImages = []
-        for study in self.children:
-            listImages.extend(study.allImages)
-        return ImagesList(listImages)
+    def all_images(self):
+        logger.info("Subject.all_images called")
+        try:
+            listImages = []
+            for study in self.children:
+                listImages.extend(study.all_images)
+            return ImagesList(listImages)
+        except Exception as e:
+            print('Error in Subject.all_images: ' + str(e))
+            logger.exception('Error in Subject.all_images: ' + str(e))
 
     @classmethod
     def fromTreeView(cls, objWeasel, subjectItem):
@@ -703,85 +758,120 @@ class Subject:
         return cls(objWeasel, subjectID)
     
     def new(self, suffix="_Copy", subjectID=None):
-        if subjectID is None:
-            subjectID = self.subjectID + suffix
-        return Subject(self.objWeasel, subjectID)
+        logger.info("Subject.new called")
+        try:
+            if subjectID is None:
+                subjectID = self.subjectID + suffix
+            return Subject(self.objWeasel, subjectID)
+        except Exception as e:
+            print('Error in Subject.new: ' + str(e))
+            logger.exception('Error in Subject.new: ' + str(e))
 
     def copy(self, suffix="_Copy", output_dir=None):
-        newSubjectID = self.subjectID + suffix
-        for study in self.children:
-            study.copy(suffix='', newSubjectID=newSubjectID, output_dir=output_dir)
-        return Subject(self.objWeasel, newSubjectID)
+        logger.info("Subject.copy called")
+        try:
+            newSubjectID = self.subjectID + suffix
+            for study in self.children:
+                study.copy(suffix='', newSubjectID=newSubjectID, output_dir=output_dir)
+            return Subject(self.objWeasel, newSubjectID)
+        except Exception as e:
+            print('Error in Subject.copy: ' + str(e))
+            logger.exception('Error in Subject.copy: ' + str(e))
 
     def delete(self):
-        for study in self.children:
-            study.delete()
-        self.subjectID = ''
-        #interfaceDICOMXMLFile.removeSubjectinXMLFile(self.objWeasel, self.subjectID)
+        logger.info("Subject.delete called")
+        try:
+            for study in self.children:
+                study.delete()
+            self.subjectID = ''
+            #interfaceDICOMXMLFile.removeSubjectinXMLFile(self.objWeasel, self.subjectID)
+        except Exception as e:
+            print('Error in Subject.delete: ' + str(e))
+            logger.exception('Error in Subject.delete: ' + str(e))
 
     def add(self, study):
-        study.subjectID = self.subjectID
-        study["PatientID"] = series.subjectID
-        #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self, study.subjectID, study.studyID, study.suffix)
+        logger.info("Subject.add called")
+        try:
+            study.subjectID = self.subjectID
+            study["PatientID"] = series.subjectID
+            #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self, study.subjectID, study.studyID, study.suffix)
+        except Exception as e:
+            print('Error in Subject.add: ' + str(e))
+            logger.exception('Error in Subject.add: ' + str(e))
 
     @staticmethod
     def merge(listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False, progress_bar=False, output_dir=None):
-        if newSubjectName:
-            outputSubject = Subject(listSubjects[0].objWeasel, newSubjectName)
-        else:
-            outputSubject = listSubjects[0].new(suffix=suffix)
-        # Setup Progress Bar
-        progressBarTitle = "Progress Bar - Merging " + str(len(listSubjects)) + " Subjects"
-        if progress_bar == True: 
-            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>Merging {} Subjects</H4>").format(len(listSubjects)), progressBarTitle)
-            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-        # Add new subject (outputSubject) to XML
-        for index, subject in enumerate(listSubjects):
-            # Increment progress bar
-            subjMsg = "Merging subject " + subject.subjectID
-            if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + "</H4>"), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
-            # Overwrite or not?
-            if overwrite == False:
-                for study in subject.children:
-                    # Create a copy of the study into the new subject
-                    studyMsg = ", study " + study.studyID
-                    if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                        messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
-                    study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
+        logger.info("Subject.merge called")
+        try:
+            if newSubjectName:
+                outputSubject = Subject(listSubjects[0].objWeasel, newSubjectName)
             else:
-                for study in subject.children:
-                    studyMsg = ", study " + study.studyID
-                    if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                        messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
-                    seriesPathsList = []
-                    for series in study.children:
-                        series.Item('PatientID', outputSubject.subjectID)
-                        seriesPathsList.append(series.images)
-                    interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputSubject.objWeasel, outputSubject.subjectID, study.studyID, suffix, seriesList=seriesPathsList) # Need new Study name situation
-                    # Add study to new subject in the XML
-                interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.objWeasel, subject.subjectID)
-        return outputSubject
+                outputSubject = listSubjects[0].new(suffix=suffix)
+            # Setup Progress Bar
+            progressBarTitle = "Progress Bar - Merging " + str(len(listSubjects)) + " Subjects"
+            if progress_bar == True: 
+                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>Merging {} Subjects</H4>").format(len(listSubjects)), progressBarTitle)
+                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+            # Add new subject (outputSubject) to XML
+            for index, subject in enumerate(listSubjects):
+                # Increment progress bar
+                subjMsg = "Merging subject " + subject.subjectID
+                if progress_bar == True: 
+                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + "</H4>"), progressBarTitle)
+                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                # Overwrite or not?
+                if overwrite == False:
+                    for study in subject.children:
+                        # Create a copy of the study into the new subject
+                        studyMsg = ", study " + study.studyID
+                        if progress_bar == True: 
+                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
+                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                        study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
+                else:
+                    for study in subject.children:
+                        studyMsg = ", study " + study.studyID
+                        if progress_bar == True: 
+                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
+                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                        seriesPathsList = []
+                        for series in study.children:
+                            series.Item('PatientID', outputSubject.subjectID)
+                            seriesPathsList.append(series.images)
+                        interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputSubject.objWeasel, outputSubject.subjectID, study.studyID, suffix, seriesList=seriesPathsList) # Need new Study name situation
+                        # Add study to new subject in the XML
+                    interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.objWeasel, subject.subjectID)
+            return outputSubject
+        except Exception as e:
+            print('Error in Subject.merge: ' + str(e))
+            logger.exception('Error in Subject.merge: ' + str(e))
 
     def get_value(self, tag):
-        if len(self.children) > 0:
-            studyOutputValuesList = []
-            for study in self.children:
-                studyOutputValuesList.append(study.get_value(tag)) # extend will allow long single list, while append creates list of lists
-            return studyOutputValuesList
-        else:
-            return []
+        logger.info("Subject.get_value called")
+        try:
+            if len(self.children) > 0:
+                studyOutputValuesList = []
+                for study in self.children:
+                    studyOutputValuesList.append(study.get_value(tag)) # extend will allow long single list, while append creates list of lists
+                return studyOutputValuesList
+            else:
+                return []
+        except Exception as e:
+            print('Error in Subject.get_value: ' + str(e))
+            logger.exception('Error in Subject.get_value: ' + str(e))
 
     def set_value(self, tag, newValue):
-        if len(self.children) > 0:
-            for study in self.children:
-                study.set_value(tag, newValue)
+        logger.info("Subject.set_value called")
+        try:
+            if len(self.children) > 0:
+                for study in self.children:
+                    study.set_value(tag, newValue)
+        except Exception as e:
+            print('Error in Subject.set_value: ' + str(e))
+            logger.exception('Error in Subject.set_value: ' + str(e))
     
     def __getitem__(self, tag):
         return self.get_value(tag)
@@ -798,35 +888,53 @@ class Study:
         self.studyID = studyID
         self.studyUID = self.StudyUID if studyUID is None else studyUID
         self.suffix = '' if suffix is None else suffix
+    
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
 
     @property
     def children(self, index=None):
-        children = []
-        studyXML = self.objWeasel.objXMLReader.getStudy(self.subjectID, self.studyID)
-        if studyXML:
-            for seriesXML in studyXML:
-                seriesID = seriesXML.attrib['id']
-                images = []
-                for imageXML in seriesXML:
-                    images.append(imageXML.find('name').text)
-                series = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, listPaths=images)
-                children.append(series)
-        return SeriesList(children)
+        logger.info("Study.children called")
+        try:
+            children = []
+            studyXML = self.objWeasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+            if studyXML:
+                for seriesXML in studyXML:
+                    seriesID = seriesXML.attrib['id']
+                    images = []
+                    for imageXML in seriesXML:
+                        images.append(imageXML.find('name').text)
+                    series = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, listPaths=images)
+                    children.append(series)
+            return SeriesList(children)
+        except Exception as e:
+            print('Error in Study.children: ' + str(e))
+            logger.exception('Error in Study.children: ' + str(e))
     
     @property
     def parent(self):
-        return Subject(self.objWeasel, self.subjectID)
+        logger.info("Study.parent called")
+        try:
+            return Subject(self.objWeasel, self.subjectID)
+        except Exception as e:
+            print('Error in Study.parent: ' + str(e))
+            logger.exception('Error in Study.parent: ' + str(e))
 
     @property
-    def numberChildren(self):
+    def number_children(self):
         return len(self.children)
 
     @property
-    def allImages(self):
-        listImages = []
-        for series in self.children:
-            listImages.extend(series.children)
-        return ImagesList(listImages)
+    def all_images(self):
+        logger.info("Study.all_images called")
+        try:
+            listImages = []
+            for series in self.children:
+                listImages.extend(series.children)
+            return ImagesList(listImages)
+        except Exception as e:
+            print('Error in Study.all_images: ' + str(e))
+            logger.exception('Error in Study.all_images: ' + str(e))
     
     @classmethod
     def fromTreeView(cls, objWeasel, studyItem):
@@ -835,97 +943,122 @@ class Study:
         return cls(objWeasel, subjectID, studyID)
 
     def new(self, suffix="_Copy", studyID=None):
-        if studyID is None:
-            studyID = self.studyID + suffix
-        else:
-            dt = datetime.datetime.now()
-            time = dt.strftime('%H%M%S')
-            date = dt.strftime('%Y%m%d')
-            studyID = date + "_" + time + "_" + studyID + suffix
-        prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
-        study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
-        return Study(self.objWeasel, self.subjectID, studyID, studyUID=study_uid, suffix=suffix)
-
-    def copy(self, suffix="_Copy", newSubjectID=None, output_dir=None):
-        if newSubjectID:
+        logger.info("Study.new called")
+        try:
+            if studyID is None:
+                studyID = self.studyID + suffix
+            else:
+                dt = datetime.datetime.now()
+                time = dt.strftime('%H%M%S')
+                date = dt.strftime('%Y%m%d')
+                studyID = date + "_" + time + "_" + studyID + suffix
             prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
             study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
-            newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, studyUID=study_uid, suffix=suffix)
-        else:
-            newStudyInstance = self.new(suffix=suffix)
-        seriesPathsList = []
-        for series in self.children:
-            copiedSeries = series.copy(suffix=suffix, series_id=series.seriesID.split('_', 1)[0], series_name=series.seriesID.split('_', 1)[1], study_uid=newStudyInstance.studyUID,
-                                       study_name=newStudyInstance.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=newSubjectID, output_dir=output_dir)
-            seriesPathsList.append(copiedSeries.images)
-        #interfaceDICOMXMLFile.insertNewStudyInXMLFile(newStudyInstance.objWeasel, newStudyInstance.subjectID, newStudyInstance.studyID, suffix, seriesList=seriesPathsList)
-        return newStudyInstance
+            return Study(self.objWeasel, self.subjectID, studyID, studyUID=study_uid, suffix=suffix)
+        except Exception as e:
+            print('Error in Study.new: ' + str(e))
+            logger.exception('Error in Study.new: ' + str(e))
+
+    def copy(self, suffix="_Copy", newSubjectID=None, output_dir=None):
+        logger.info("Study.copy called")
+        try:
+            if newSubjectID:
+                prefixUID = '.'.join(self.studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
+                study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
+                newStudyInstance = Study(self.objWeasel, newSubjectID, self.studyID + suffix, studyUID=study_uid, suffix=suffix)
+            else:
+                newStudyInstance = self.new(suffix=suffix)
+            seriesPathsList = []
+            for series in self.children:
+                copiedSeries = series.copy(suffix=suffix, series_id=series.seriesID.split('_', 1)[0], series_name=series.seriesID.split('_', 1)[1], study_uid=newStudyInstance.studyUID,
+                                           study_name=newStudyInstance.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=newSubjectID, output_dir=output_dir)
+                seriesPathsList.append(copiedSeries.images)
+            #interfaceDICOMXMLFile.insertNewStudyInXMLFile(newStudyInstance.objWeasel, newStudyInstance.subjectID, newStudyInstance.studyID, suffix, seriesList=seriesPathsList)
+            return newStudyInstance
+        except Exception as e:
+            print('Error in Study.copy: ' + str(e))
+            logger.exception('Error in Study.copy: ' + str(e))
 
     def delete(self):
-        for series in self.children:
-            series.delete()
-        #interfaceDICOMXMLFile.removeOneStudyFromSubject(self.objWeasel, self.subjectID, self.studyID)
-        self.subjectID = self.studyID = ''
+        logger.info("Study.delete called")
+        try:
+            for series in self.children:
+                series.delete()
+            #interfaceDICOMXMLFile.removeOneStudyFromSubject(self.objWeasel, self.subjectID, self.studyID)
+            self.subjectID = self.studyID = ''
+        except Exception as e:
+            print('Error in Study.delete: ' + str(e))
+            logger.exception('Error in Study.delete: ' + str(e))
     
     def add(self, series):
-        series["PatientID"] = self.subjectID
-        series["StudyDate"] = self.studyID.split("_")[0]
-        series["StudyTime"] = self.studyID.split("_")[1]
-        series["StudyDescription"] = "".join(self.studyID.split("_")[2:])
-        series["StudyInstanceUID"] = self.studyUID
-        # Need to adapt the series to the new Study
-        seriesNewID, seriesNewUID = GenericDICOMTools.generateSeriesIDs(self.objWeasel, series.images, studyUID=self.studyUID)
-        series["SeriesNumber"] = seriesNewID
-        series["SeriesInstanceUID"] = seriesNewUID
+        logger.info("Study.add called")
+        try:
+            series["PatientID"] = self.subjectID
+            series["StudyDate"] = self.studyID.split("_")[0]
+            series["StudyTime"] = self.studyID.split("_")[1]
+            series["StudyDescription"] = "".join(self.studyID.split("_")[2:])
+            series["StudyInstanceUID"] = self.studyUID
+            # Need to adapt the series to the new Study
+            seriesNewID, seriesNewUID = GenericDICOMTools.generateSeriesIDs(self.objWeasel, series.images, studyUID=self.studyUID)
+            series["SeriesNumber"] = seriesNewID
+            series["SeriesInstanceUID"] = seriesNewUID
+        except Exception as e:
+            print('Error in Study.add: ' + str(e))
+            logger.exception('Error in Study.add: ' + str(e))
 
     @staticmethod
     def merge(listStudies, newStudyName=None, suffix='_Merged', overwrite=False, output_dir=None, progress_bar=True):
-        if newStudyName:
-            prefixUID = '.'.join(listStudies[0].studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
-            study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
-            newStudyID = listStudies[0].studyID.split('_')[0] + "_" + listStudies[0].studyID.split('_')[1] + "_" + newStudyName
-            outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID, studyUID=study_uid)
-        else:
-            outputStudy = listStudies[0].new(suffix=suffix)
-        # Set up Progress Bar
-        progressBarTitle = "Progress Bar - Merging " + str(len(listStudies)) + " Studies"
-        if progress_bar == True: 
-            messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging {} Studies</H4>").format(len(listStudies)), progressBarTitle)
-            messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-        # Add new study (outputStudy) to XML
-        seriesPathsList = []
-        if overwrite == False:
-            for index, study in enumerate(listStudies):
-                if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                    messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+        logger.info("Study.merge called")
+        try:
+            if newStudyName:
+                prefixUID = '.'.join(listStudies[0].studyUID.split(".", maxsplit=6)[:5]) + "." + str(random.randint(0, 9999)) + "."
+                study_uid = pydicom.uid.generate_uid(prefix=prefixUID)
+                newStudyID = listStudies[0].studyID.split('_')[0] + "_" + listStudies[0].studyID.split('_')[1] + "_" + newStudyName
+                outputStudy = Study(listStudies[0].objWeasel, listStudies[0].subjectID, newStudyID, studyUID=study_uid)
+            else:
+                outputStudy = listStudies[0].new(suffix=suffix)
+            # Set up Progress Bar
+            progressBarTitle = "Progress Bar - Merging " + str(len(listStudies)) + " Studies"
+            if progress_bar == True: 
+                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging {} Studies</H4>").format(len(listStudies)), progressBarTitle)
+                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+            # Add new study (outputStudy) to XML
+            seriesPathsList = []
+            if overwrite == False:
+                for index, study in enumerate(listStudies):
+                    if progress_bar == True: 
+                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
+                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                    seriesNumber = 1
+                    for series in study.children:
+                        copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
+                                                   study_name=outputStudy.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=outputStudy.subjectID, output_dir=output_dir)
+                        seriesPathsList.append(copiedSeries.images)
+                        seriesNumber =+ 1
+            else:
                 seriesNumber = 1
-                for series in study.children:
-                    copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
-                                               study_name=outputStudy.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=outputStudy.subjectID, output_dir=output_dir)
-                    seriesPathsList.append(copiedSeries.images)
-                    seriesNumber =+ 1
-        else:
-            seriesNumber = 1
-            for index, study in enumerate(listStudies):
-                if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                    messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
-                for series in study.children:
-                    series.Item('PatientID', outputStudy.subjectID)
-                    series.Item('StudyInstanceUID', outputStudy.studyUID)
-                    series.Item('StudyDescription', outputStudy.studyID.split('_', 1)[1].split('_', 1)[1])
-                    series.Item('SeriesNumber', seriesNumber)
-                    # Generate new series uid based on outputStudy.studyUID
-                    _, new_series_uid = GenericDICOMTools.generateSeriesIDs(series.objWeasel, series.images, seriesNumber=seriesNumber, studyUID=outputStudy.studyUID)
-                    series.Item('SeriesInstanceUID', new_series_uid)
-                    seriesPathsList.append(series.images)
-                    seriesNumber += 1
-                interfaceDICOMXMLFile.removeOneStudyFromSubject(study.objWeasel, study.subjectID, study.studyID)
-        interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputStudy.objWeasel, outputStudy.subjectID, outputStudy.studyID, suffix, seriesList=seriesPathsList)
-        return outputStudy
+                for index, study in enumerate(listStudies):
+                    if progress_bar == True: 
+                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
+                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                    for series in study.children:
+                        series.Item('PatientID', outputStudy.subjectID)
+                        series.Item('StudyInstanceUID', outputStudy.studyUID)
+                        series.Item('StudyDescription', outputStudy.studyID.split('_', 1)[1].split('_', 1)[1])
+                        series.Item('SeriesNumber', seriesNumber)
+                        # Generate new series uid based on outputStudy.studyUID
+                        _, new_series_uid = GenericDICOMTools.generateSeriesIDs(series.objWeasel, series.images, seriesNumber=seriesNumber, studyUID=outputStudy.studyUID)
+                        series.Item('SeriesInstanceUID', new_series_uid)
+                        seriesPathsList.append(series.images)
+                        seriesNumber += 1
+                    interfaceDICOMXMLFile.removeOneStudyFromSubject(study.objWeasel, study.subjectID, study.studyID)
+            interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputStudy.objWeasel, outputStudy.subjectID, outputStudy.studyID, suffix, seriesList=seriesPathsList)
+            return outputStudy
+        except Exception as e:
+            print('Error in Study.merge: ' + str(e))
+            logger.exception('Error in Study.merge: ' + str(e))
 
     @property
     def StudyUID(self):
@@ -935,18 +1068,29 @@ class Study:
             return pydicom.uid.generate_uid(prefix=None)
     
     def get_value(self, tag):
-        if len(self.children) > 0:
-            seriesOutputValuesList = []
-            for series in self.children:
-                seriesOutputValuesList.append(series.get_value(tag)) # extend will allow long single list, while append creates list of lists.
-            return seriesOutputValuesList
-        else:
-            return []
+        logger.info("Study.get_value called")
+        try:
+            if len(self.children) > 0:
+                seriesOutputValuesList = []
+                for series in self.children:
+                    seriesOutputValuesList.append(series.get_value(tag)) # extend will allow long single list, while append creates list of lists.
+                return seriesOutputValuesList
+            else:
+                return []
+        except Exception as e:
+            print('Error in Study.get_value: ' + str(e))
+            logger.exception('Error in Study.get_value: ' + str(e))
 
     def set_value(self, tag, newValue):
-        if len(self.children) > 0:
-            for series in self.children:
-                series.set_value(tag, newValue)
+        logger.info("Study.set_value called")
+        try:
+            if len(self.children) > 0:
+                for series in self.children:
+                    series.set_value(tag, newValue)
+        except Exception as e:
+            print('Error in Study.set_value: ' + str(e))
+            logger.exception('Error in Study.set_value: ' + str(e))
+
     
     def __getitem__(self, tag):
         return self.get_value(tag)
@@ -973,22 +1117,35 @@ class Series:
         #    self.indices = list(np.arange(len(self.PydicomList[0].PerFrameFunctionalGroupsSequence))) if hasattr(self.PydicomList[0], 'PerFrameFunctionalGroupsSequence') else []
         #else:
         #    self.indices = []
+    
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
 
     @property
     def children(self, index=None):
-        children = []
-        seriesXML = self.objWeasel.objXMLReader.getSeries(self.subjectID, self.studyID, self.seriesID)
-        for imageXML in seriesXML:
-            image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
-            children.append(image)
-        return ImagesList(children)
+        logger.info("Series.children called")
+        try:
+            children = []
+            seriesXML = self.objWeasel.objXMLReader.getSeries(self.subjectID, self.studyID, self.seriesID)
+            for imageXML in seriesXML:
+                image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
+                children.append(image)
+            return ImagesList(children)
+        except Exception as e:
+            print('Error in Series.children: ' + str(e))
+            logger.exception('Error in Series.children: ' + str(e))
     
     @property
     def parent(self):
-        return Study(self.objWeasel, self.subjectID, self.studyID, studyUID=self.studyUID)
+        logger.info("Series.parent called")
+        try:
+            return Study(self.objWeasel, self.subjectID, self.studyID, studyUID=self.studyUID)
+        except Exception as e:
+            print('Error in Series.parent: ' + str(e))
+            logger.exception('Error in Series.parent: ' + str(e))
 
     @property
-    def numberChildren(self):
+    def number_children(self):
         return len(self.children)
 
     @classmethod
@@ -1000,67 +1157,97 @@ class Series:
         return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images)
     
     def new(self, suffix="_Copy", series_id=None, series_name=None, series_uid=None):
-        if series_id is None:
-            series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
-        if series_name is None:
-            series_name = self.seriesID.split('_', 1)[1] + suffix
-        if series_uid is None:
-            _, series_uid = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images, seriesNumber=series_id)
-        seriesID = str(series_id) + '_' + series_name
-        newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
-        newSeries.referencePathsList = self.images
-        return newSeries
+        logger.info("Series.new called")
+        try:
+            if series_id is None:
+                series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
+            if series_name is None:
+                series_name = self.seriesID.split('_', 1)[1] + suffix
+            if series_uid is None:
+                _, series_uid = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images, seriesNumber=series_id)
+            seriesID = str(series_id) + '_' + series_name
+            newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
+            newSeries.referencePathsList = self.images
+            return newSeries
+        except Exception as e:
+            print('Error in Series.new: ' + str(e))
+            logger.exception('Error in Series.new: ' + str(e))
     
     def copy(self, suffix="_Copy", newSeries=True, series_id=None, series_name=None, series_uid=None, study_uid=None, study_name=None, patient_id=None, output_dir=None):
-        if newSeries == True:
-            newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name,
-                                                                    study_uid=study_uid, study_name=study_name, patient_id=patient_id, suffix=suffix, output_dir=output_dir)
-            return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix=suffix)
-        else:
-            series_id = self.seriesID.split('_', 1)[0]
-            series_name = self.seriesID.split('_', 1)[1]
-            series_uid = self.seriesUID
-            suffix = self.suffix
-            newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, study_uid=study_uid,
-                                                          study_name=study_name, patient_id=patient_id,suffix=suffix, output_dir=output_dir) # StudyID in InterfaceXML
-            for newCopiedImagePath in newPathsList:
-                newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
-                self.add(newImage)
+        logger.info("Series.copy called")
+        try:
+            if newSeries == True:
+                newPathsList, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name,
+                                                                        study_uid=study_uid, study_name=study_name, patient_id=patient_id, suffix=suffix, output_dir=output_dir)
+                return Series(self.objWeasel, self.subjectID, self.studyID, newSeriesID, listPaths=newPathsList, suffix=suffix)
+            else:
+                series_id = self.seriesID.split('_', 1)[0]
+                series_name = self.seriesID.split('_', 1)[1]
+                series_uid = self.seriesUID
+                suffix = self.suffix
+                newPathsList, _ = GenericDICOMTools.copyDICOM(self.objWeasel, self.images, series_id=series_id, series_uid=series_uid, series_name=series_name, study_uid=study_uid,
+                                                              study_name=study_name, patient_id=patient_id,suffix=suffix, output_dir=output_dir) # StudyID in InterfaceXML
+                for newCopiedImagePath in newPathsList:
+                    newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newCopiedImagePath)
+                    self.add(newImage)
+        except Exception as e:
+            print('Error in Series.copy: ' + str(e))
+            logger.exception('Error in Series.copy: ' + str(e))
 
     def delete(self):
-        GenericDICOMTools.deleteDICOM(self.objWeasel, self.images)
-        self.images = self.referencePathsList = []
-        #self.children = self.indices = []
-        #self.numberChildren = 0
-        self.subjectID = self.studyID = self.seriesID = self.seriesUID = ''
+        logger.info("Series.delete called")
+        try:
+            GenericDICOMTools.deleteDICOM(self.objWeasel, self.images)
+            self.images = self.referencePathsList = []
+            #self.children = self.indices = []
+            #self.number_children = 0
+            self.subjectID = self.studyID = self.seriesID = self.seriesUID = ''
+        except Exception as e:
+            print('Error in Series.delete: ' + str(e))
+            logger.exception('Error in Series.delete: ' + str(e))
 
     def add(self, Image):
-        self.images.append(Image.path)
-        # Might need XML functions
-        #self.children.append(Image)
-        #self.numberChildren = len(self.children)
+        logger.info("Series.add called")
+        try:
+            self.images.append(Image.path)
+            # Might need XML functions
+            #self.children.append(Image)
+            #self.number_children = len(self.children)
+        except Exception as e:
+            print('Error in Series.add: ' + str(e))
+            logger.exception('Error in Series.add: ' + str(e))
 
-    def remove(self, allImages=False, Image=None):
-        if allImages == True:
-            self.images = []
-            # Might need XML functions
-            #self.children = []
-            #self.numberChildren = 0
-        elif Image is not None:
-            self.images.remove(Image.path)
-            # Might need XML functions
-            #self.children.remove(Image)
-            #self.numberChildren = len(self.children)
+    def remove(self, all_images=False, Image=None):
+        logger.info("Series.remove called")
+        try:
+            if all_images == True:
+                self.images = []
+                # Might need XML functions
+                #self.children = []
+                #self.number_children = 0
+            elif Image is not None:
+                self.images.remove(Image.path)
+                # Might need XML functions
+                #self.children.remove(Image)
+                #self.number_children = len(self.children)
+        except Exception as e:
+            print('Error in Series.remove: ' + str(e))
+            logger.exception('Error in Series.remove: ' + str(e))
 
     def write(self, pixelArray, output_dir=None):
-        if self.images:
-            PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
-        else:
-            series_id = self.seriesID.split('_', 1)[0]
-            series_name = self.seriesID.split('_', 1)[1]
-            inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
-            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir)
-            self.images = outputPath
+        logger.info("Series.write called")
+        try:
+            if self.images:
+                PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
+            else:
+                series_id = self.seriesID.split('_', 1)[0]
+                series_name = self.seriesID.split('_', 1)[1]
+                inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir)
+                self.images = outputPath
+        except Exception as e:
+            print('Error in Series.write: ' + str(e))
+            logger.exception('Error in Series.write: ' + str(e))
     
     def read(self):
         return self.PydicomList
@@ -1090,13 +1277,19 @@ class Series:
 
     @staticmethod
     def merge(listSeries, series_id=None, series_name='NewSeries', series_uid=None, study_name=None, study_uid=None, patient_id=None, suffix='_Merged', overwrite=False, progress_bar=False):
-        outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
-        pathsList = [image for series in listSeries for image in series.images]
-        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, study_name=study_name, study_uid=study_uid, patient_id=patient_id, suffix=suffix, overwrite=overwrite, progress_bar=progress_bar)
-        outputSeries.images = outputPathList
-        outputSeries.referencePathsList = outputPathList
-        return outputSeries
+        logger.info("Series.merge called")
+        try:
+            outputSeries = listSeries[0].new(suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)
+            pathsList = [image for series in listSeries for image in series.images]
+            outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, pathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, study_name=study_name, study_uid=study_uid, patient_id=patient_id, suffix=suffix, overwrite=overwrite, progress_bar=progress_bar)
+            outputSeries.images = outputPathList
+            outputSeries.referencePathsList = outputPathList
+            return outputSeries
+        except Exception as e:
+            print('Error in Series.merge: ' + str(e))
+            logger.exception('Error in Series.merge: ' + str(e))
     
+    # Deprecated but might be useful in the future
     #def sort(self, tagDescription, *argv):
     #    if self.Item(tagDescription) or self.Tag(tagDescription):
     #        imagePathList, _, _, indicesSorted = ReadDICOM_Image.sortSequenceByTag(self.images, tagDescription)
@@ -1109,43 +1302,63 @@ class Series:
     #            #if self.Multiframe: self.indices = sorted(set(indicesSorted) & set(self.indices), key=indicesSorted.index)
     
     def sort(self, *argv, reverse=False):
-        tuple_to_sort = []
-        list_to_sort = []
-        list_to_sort.append(self.images) # children? images?
-        for tag in argv:
-            if len(self.get_value(tag)) > 0:
-                attributeList = self.get_value(tag)
-                list_to_sort.append(attributeList)
-        for index, _ in enumerate(self.images):
-            individual_tuple = []
-            for individual_list in list_to_sort:
-                individual_tuple.append(individual_list[index])
-            tuple_to_sort.append(tuple(individual_tuple))
-        tuple_sorted = sorted(tuple_to_sort, key=lambda x: x[1:], reverse=reverse)
-        list_sorted_images = []
-        for individual in tuple_sorted:
-            list_sorted_images.append(individual[0])
-        list_sorted_paths = [img.path for img in list_sorted_images]
-        self.images = list_sorted_paths
-        return self
+        logger.info("Series.sort called")
+        try:
+            tuple_to_sort = []
+            list_to_sort = []
+            list_to_sort.append(self.images) # children? images?
+            for tag in argv:
+                if len(self.get_value(tag)) > 0:
+                    attributeList = self.get_value(tag)
+                    list_to_sort.append(attributeList)
+            for index, _ in enumerate(self.images):
+                individual_tuple = []
+                for individual_list in list_to_sort:
+                    individual_tuple.append(individual_list[index])
+                tuple_to_sort.append(tuple(individual_tuple))
+            tuple_sorted = sorted(tuple_to_sort, key=lambda x: x[1:], reverse=reverse)
+            list_sorted_images = []
+            for individual in tuple_sorted:
+                list_sorted_images.append(individual[0])
+            list_sorted_paths = [img.path for img in list_sorted_images]
+            self.images = list_sorted_paths
+            return self
+        except Exception as e:
+            print('Error in Series.sort: ' + str(e))
+            logger.exception('Error in Series.sort: ' + str(e))
     
     def where(self, tag, condition, target):
-        list_images = []
-        list_paths = []
-        for image in self.children:
-            value = image[tag]
-            statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
-            if eval(literal_eval(statement)) == True:
-                list_images.append(image)
-                list_paths.append(image.path)
-        self.images = list_paths
-        return self
+        logger.info("Series.sort called")
+        try:
+            list_images = []
+            list_paths = []
+            for image in self.children:
+                value = image[tag]
+                statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
+                if eval(literal_eval(statement)) == True:
+                    list_images.append(image)
+                    list_paths.append(image.path)
+            self.images = list_paths
+            return self
+        except Exception as e:
+            print('Error in Series.where: ' + str(e))
+            logger.exception('Error in Series.where: ' + str(e))
 
     def display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
+        logger.info("Series.display called")
+        try:
+            UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
+        except Exception as e:
+            print('Error in Series.display: ' + str(e))
+            logger.exception('Error in Series.display: ' + str(e))
 
     def Metadata(self):
-        UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
+        logger.info("Series.Metadata called")
+        try:
+            UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
+        except Exception as e:
+            print('Error in Series.Metadata: ' + str(e))
+            logger.exception('Error in Series.Metadata: ' + str(e))
 
     @property
     def SeriesUID(self):
@@ -1169,203 +1382,198 @@ class Series:
 
     @property
     def Magnitude(self):
-        dicomList = self.PydicomList
-        magnitudeSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        magnitudeSeries.remove(allImages=True)
-        magnitudeSeries.referencePathsList = self.images
-        for index in range(len(self.images)):
-            flagMagnitude, _, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-            if isinstance(flagMagnitude, list) and flagMagnitude:
-                if len(flagMagnitude) > 1 and len(self.images) == 1:
-                    magnitudeSeries.indices = flagMagnitude
-                magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-            elif flagMagnitude == True:
-                magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return magnitudeSeries
+        logger.info("Series.Magnitude called")
+        try:
+            dicomList = self.PydicomList
+            magnitudeSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+            magnitudeSeries.remove(all_images=True)
+            magnitudeSeries.referencePathsList = self.images
+            for index in range(len(self.images)):
+                flagMagnitude, _, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
+                if isinstance(flagMagnitude, list) and flagMagnitude:
+                    if len(flagMagnitude) > 1 and len(self.images) == 1:
+                        magnitudeSeries.indices = flagMagnitude
+                    magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                elif flagMagnitude == True:
+                    magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            return magnitudeSeries
+        except Exception as e:
+            print('Error in Series.Magnitude: ' + str(e))
+            logger.exception('Error in Series.Magnitude: ' + str(e))
 
     @property
     def Phase(self):
-        dicomList = self.PydicomList
-        phaseSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        phaseSeries.remove(allImages=True)
-        phaseSeries.referencePathsList = self.images
-        for index in range(len(self.images)):
-            _, flagPhase, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-            if isinstance(flagPhase, list) and flagPhase:
-                if len(flagPhase) > 1 and len(self.images) == 1:
-                    phaseSeries.indices = flagPhase
-                phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-            elif flagPhase == True:
-                phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return phaseSeries
+        logger.info("Series.Phase called")
+        try:
+            dicomList = self.PydicomList
+            phaseSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+            phaseSeries.remove(all_images=True)
+            phaseSeries.referencePathsList = self.images
+            for index in range(len(self.images)):
+                _, flagPhase, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
+                if isinstance(flagPhase, list) and flagPhase:
+                    if len(flagPhase) > 1 and len(self.images) == 1:
+                        phaseSeries.indices = flagPhase
+                    phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                elif flagPhase == True:
+                    phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            return phaseSeries
+        except Exception as e:
+            print('Error in Series.Phase: ' + str(e))
+            logger.exception('Error in Series.Phase: ' + str(e))
 
     @property
     def Real(self):
-        dicomList = self.PydicomList
-        realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        realSeries.remove(allImages=True)
-        realSeries.referencePathsList = self.images
-        for index in range(len(self.images)):
-            _, _, flagReal, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-            if isinstance(flagReal, list) and flagReal:
-                if len(flagReal) > 1 and len(self.images) == 1:
-                    realSeries.indices = flagReal
-                realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-            elif flagReal:
-                realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return realSeries 
+        logger.info("Series.Real called")
+        try:
+            dicomList = self.PydicomList
+            realSeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+            realSeries.remove(all_images=True)
+            realSeries.referencePathsList = self.images
+            for index in range(len(self.images)):
+                _, _, flagReal, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
+                if isinstance(flagReal, list) and flagReal:
+                    if len(flagReal) > 1 and len(self.images) == 1:
+                        realSeries.indices = flagReal
+                    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                elif flagReal:
+                    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            return realSeries
+        except Exception as e:
+            print('Error in Series.Real: ' + str(e))
+            logger.exception('Error in Series.Real: ' + str(e))
 
     @property
     def Imaginary(self):
-        dicomList = self.PydicomList
-        imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
-        imaginarySeries.remove(allImages=True)
-        imaginarySeries.referencePathsList = self.images
-        for index in range(len(self.images)):
-            _, _, _, flagImaginary, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-            if isinstance(flagImaginary, list) and flagImaginary:
-                if len(flagImaginary) > 1 and len(self.images) == 1:
-                    imaginarySeries.indices = flagImaginary
-                imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-            elif flagImaginary:
-                imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-        return imaginarySeries 
+        logger.info("Series.Imaginary called")
+        try:
+            dicomList = self.PydicomList
+            imaginarySeries = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.images)
+            imaginarySeries.remove(all_images=True)
+            imaginarySeries.referencePathsList = self.images
+            for index in range(len(self.images)):
+                _, _, _, flagImaginary, _ = ReadDICOM_Image.checkImageType(dicomList[index])
+                if isinstance(flagImaginary, list) and flagImaginary:
+                    if len(flagImaginary) > 1 and len(self.images) == 1:
+                        imaginarySeries.indices = flagImaginary
+                    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                elif flagImaginary:
+                    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+            return imaginarySeries
+        except Exception as e:
+            print('Error in Series.Imaginary: ' + str(e))
+            logger.exception('Error in Series.Imaginary: ' + str(e))
 
     @property
     def PixelArray(self, ROI=None):
-        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
-        #if self.Multiframe:    
-        #    tempArray = []
-        #    for index in self.indices:
-        #        tempArray.append(pixelArray[index, ...])
-        #    pixelArray = np.array(tempArray)
-        #    del tempArray
-        if isinstance(ROI, Series):
-            mask = np.zeros(np.shape(pixelArray))
-            coords = ROI.ROIindices
-            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            #pixelArray = pixelArray * mask
-            pixelArray = np.extract(mask.astype(bool), pixelArray)
-        elif ROI == None:
-            pass
-        else:
-            warnings.warn("The input argument ROI should be a Series instance.") 
-        return pixelArray
+        logger.info("Series.PixelArray called")
+        try:
+            pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
+            #if self.Multiframe:    
+            #    tempArray = []
+            #    for index in self.indices:
+            #        tempArray.append(pixelArray[index, ...])
+            #    pixelArray = np.array(tempArray)
+            #    del tempArray
+            if isinstance(ROI, Series):
+                mask = np.zeros(np.shape(pixelArray))
+                coords = ROI.ROIindices
+                mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+                #pixelArray = pixelArray * mask
+                pixelArray = np.extract(mask.astype(bool), pixelArray)
+            elif ROI == None:
+                pass
+            else:
+                warnings.warn("The input argument ROI should be a Series instance.") 
+            return pixelArray
+        except Exception as e:
+            print('Error in Series.PixelArray: ' + str(e))
+            logger.exception('Error in Series.PixelArray: ' + str(e))
 
     @property
     def ListAffines(self):
-        return [ReadDICOM_Image.returnAffineArray(image) for image in self.images]
+        logger.info("Series.ListAffines called")
+        try:
+            return [ReadDICOM_Image.returnAffineArray(image) for image in self.images]
+        except Exception as e:
+            print('Error in Series.ListAffines: ' + str(e))
+            logger.exception('Error in Series.ListAffines: ' + str(e))
     
     @property
     def ROIindices(self):
-        tempImage = self.PixelArray
-        tempImage[tempImage != 0] = 1
-        return np.transpose(np.where(tempImage == 1))
-
-    @property
-    def NumberOfSlices(self):
-        #numSlices = 0
-        #if self.Multiframe:
-        #    numSlices = int(self.Item("NumberOfFrames"))
-        #else:
-        numSlices = len(np.unique(self.SliceLocations))
-        return numSlices
-
-    @property
-    def SliceLocations(self):
-        #slices = []
-        #if self.Multiframe:
-        #    #slices = self.indices
-        #    slices = self.Item("PerFrameFunctionalGroupsSequence.FrameContentSequence.InStackPositionNumber")
-        #else:
-        slices = self.Item("SliceLocation")
-        return slices
-    
-    @property
-    def EchoTimes(self):
-        echoList = []
-        #if not self.Multiframe:
-            #echoList = self.Item("EchoTime")
-        #else:
-            #for dataset in self.PydicomList:
-                #for index in self.indices:
-                    #echoList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveEchoTime)
-        if self.Item("PerFrameFunctionalGroupsSequence.MREchoSequence.EffectiveEchoTime"):
-            echoList = self.Item("PerFrameFunctionalGroupsSequence.MREchoSequence.EffectiveEchoTime")
-        elif self.Item("EchoTime"):
-            echoList = self.Item("EchoTime")
-        return echoList
-
-    @property
-    def InversionTimes(self):
-        inversionList = []
-        #if not self.Multiframe:
-        if self.Item("InversionTime"):
-            inversionList = self.Item("InversionTime")
-        elif self.Item(0x20051572):
-            inversionList = self.Item(0x20051572)
-        else:
-            inversionList = []
-        #else:
-            #inversionList = self.Item("InversionTime")
-            #for dataset in self.PydicomList:
-                #for index in self.indices:
-                    #inversionList.append(dataset.PerFrameFunctionalGroupsSequence[index].MREchoSequence[0].EffectiveInversionTime) # InversionTime
-        return inversionList
+        logger.info("Series.ROIindices called")
+        try:
+            tempImage = self.PixelArray
+            tempImage[tempImage != 0] = 1
+            return np.transpose(np.where(tempImage == 1))
+        except Exception as e:
+            print('Error in Series.ROIindices: ' + str(e))
+            logger.exception('Error in Series.ROIindices: ' + str(e))
     
     def get_value(self, tag):
-        if self.images:
-            if isinstance(tag, list):
-                outputValuesList = []
-                for ind_tag in tag:
-                    outputValuesList.append(ReadDICOM_Image.getSeriesTagValues(self.images, ind_tag)[0])
-                return outputValuesList
+        logger.info("Series.get_value called")
+        try:
+            if self.images:
+                if isinstance(tag, list):
+                    outputValuesList = []
+                    for ind_tag in tag:
+                        outputValuesList.append(ReadDICOM_Image.getSeriesTagValues(self.images, ind_tag)[0])
+                    return outputValuesList
+                else:
+                    return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
             else:
-                return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
-        else:
-            return []
+                return []
+        except Exception as e:
+            print('Error in Series.get_value: ' + str(e))
+            logger.exception('Error in Series.get_value: ' + str(e))
 
     def set_value(self, tag, newValue):
-        if self.images:
-            comparisonDicom = self.PydicomList
-            oldSubjectID = self.subjectID
-            oldStudyID = self.studyID
-            oldSeriesID = self.seriesID
-            if isinstance(tag, list) and isinstance(newValue, list):
-                for index, ind_tag in enumerate(tag):
-                    GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
-            else:
-                GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
-            # Consider the case where other XML fields are changed
-            for index, dataset in enumerate(comparisonDicom):
-                changeXML = False
-                if dataset.SeriesDescription != self.PydicomList[index].SeriesDescription or dataset.SeriesNumber != self.PydicomList[index].SeriesNumber:
-                    changeXML = True
-                    newSeriesID = str(self.PydicomList[index].SeriesNumber) + "_" + str(self.PydicomList[index].SeriesDescription)
-                    self.seriesID = newSeriesID
+        logger.info("Series.set_value called")
+        try:
+            if self.images:
+                comparisonDicom = self.PydicomList
+                oldSubjectID = self.subjectID
+                oldStudyID = self.studyID
+                oldSeriesID = self.seriesID
+                if isinstance(tag, list) and isinstance(newValue, list):
+                    for index, ind_tag in enumerate(tag):
+                        GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
                 else:
-                    newSeriesID = oldSeriesID
-                if dataset.StudyDate != self.PydicomList[index].StudyDate or dataset.StudyTime != self.PydicomList[index].StudyTime or dataset.StudyDescription != self.PydicomList[index].StudyDescription:
-                    changeXML = True
-                    newStudyID = str(self.PydicomList[index].StudyDate) + "_" + str(self.PydicomList[index].StudyTime).split(".")[0] + "_" + str(self.PydicomList[index].StudyDescription)
-                    self.studyID = newStudyID
-                else:
-                    newStudyID = oldStudyID
-                if dataset.PatientID != self.PydicomList[index].PatientID:
-                    changeXML = True
-                    newSubjectID = str(self.PydicomList[index].PatientID)
-                    self.subjectID = newSubjectID
-                else:
-                    newSubjectID = oldSubjectID
-                if changeXML == True:
-                    interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
-    
+                    GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
+                # Consider the case where other XML fields are changed
+                for index, dataset in enumerate(comparisonDicom):
+                    changeXML = False
+                    if dataset.SeriesDescription != self.PydicomList[index].SeriesDescription or dataset.SeriesNumber != self.PydicomList[index].SeriesNumber:
+                        changeXML = True
+                        newSeriesID = str(self.PydicomList[index].SeriesNumber) + "_" + str(self.PydicomList[index].SeriesDescription)
+                        self.seriesID = newSeriesID
+                    else:
+                        newSeriesID = oldSeriesID
+                    if dataset.StudyDate != self.PydicomList[index].StudyDate or dataset.StudyTime != self.PydicomList[index].StudyTime or dataset.StudyDescription != self.PydicomList[index].StudyDescription:
+                        changeXML = True
+                        newStudyID = str(self.PydicomList[index].StudyDate) + "_" + str(self.PydicomList[index].StudyTime).split(".")[0] + "_" + str(self.PydicomList[index].StudyDescription)
+                        self.studyID = newStudyID
+                    else:
+                        newStudyID = oldStudyID
+                    if dataset.PatientID != self.PydicomList[index].PatientID:
+                        changeXML = True
+                        newSubjectID = str(self.PydicomList[index].PatientID)
+                        self.subjectID = newSubjectID
+                    else:
+                        newSubjectID = oldSubjectID
+                    if changeXML == True:
+                        interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
+        except Exception as e:
+            print('Error in Series.set_value: ' + str(e))
+            logger.exception('Error in Series.set_value: ' + str(e))
+
     def __getitem__(self, tag):
         return self.get_value(tag)
 
     def __setitem__(self, tag, value):
         self.set_value(tag, value)
 
+    # Remove this function in the future - Careful with Subject.merge and Study.merge implications!
     def Item(self, tagDescription, newValue=None):
         if self.images:
             if newValue:
@@ -1375,24 +1583,6 @@ class Series:
                 elif tagDescription == 'SeriesNumber':
                     interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
             itemList, _ = ReadDICOM_Image.getSeriesTagValues(self.images, tagDescription)
-            #if self.Multiframe: 
-            #    tempList = [itemList[index] for index in self.indices]
-            #    itemList = tempList
-            #    del tempList
-        else:
-            itemList = []
-        return itemList
-
-    def Tag(self, tag, newValue=None):
-        try:
-            hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
-        except:
-            # Print message about how to provide tag
-            return []
-        if self.images:
-            if newValue:
-                GenericDICOMTools.editDICOMTag(self.images, literal_eval(hexTag), newValue)
-            itemList, _ = ReadDICOM_Image.getSeriesTagValues(self.images, literal_eval(hexTag))
             #if self.Multiframe: 
             #    tempList = [itemList[index] for index in self.indices]
             #    itemList = tempList
@@ -1416,12 +1606,17 @@ class Series:
     #        return False
 
     def export_as_nifti(self, directory=None, filename=None):
-        if directory is None: directory=os.path.dirname(self.images[0])
-        if filename is None: filename=self.seriesID
-        dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
-        niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.ListAffines[0])
-        niftiObj.header.extensions.append(dicomHeader)
-        nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+        logger.info("Series.export_as_nifti called")
+        try:
+            if directory is None: directory=os.path.dirname(self.images[0])
+            if filename is None: filename=self.seriesID
+            dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
+            niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.ListAffines[0])
+            niftiObj.header.extensions.append(dicomHeader)
+            nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+        except Exception as e:
+            print('Error in Series.export_as_nifti: ' + str(e))
+            logger.exception('Error in Series.export_as_nifti: ' + str(e))
 
 
 class Image:
@@ -1438,15 +1633,23 @@ class Image:
         self.suffix = '' if suffix is None else suffix
         self.referencePath = ''
 
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
+
     @property
     def parent(self):
-        temp_series = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, studyUID=self.studyUID, seriesUID=self.seriesUID)
-        paths = []
-        images_of_series = temp_series.children
-        for image in images_of_series:
-            paths.append(image.path)
-        del temp_series, images_of_series
-        return Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=paths, studyUID=self.studyUID, seriesUID=self.seriesUID)
+        logger.info("Image.parent called")
+        try:
+            temp_series = Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, studyUID=self.studyUID, seriesUID=self.seriesUID)
+            paths = []
+            images_of_series = temp_series.children
+            for image in images_of_series:
+                paths.append(image.path)
+            del temp_series, images_of_series
+            return Series(self.objWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=paths, studyUID=self.studyUID, seriesUID=self.seriesUID)
+        except Exception as e:
+            print('Error in Image.parent: ' + str(e))
+            logger.exception('Error in Image.parent: ' + str(e))
 
     @classmethod
     def fromTreeView(cls, objWeasel, imageItem):
@@ -1458,64 +1661,89 @@ class Image:
     
     @staticmethod
     def newSeriesFrom(listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None):
-        pathsList = [image.path for image in listImages]
-        if series_id is None:
-            series_id, _ = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList)
-        if series_name is None:
-            series_name = listImages[0].seriesID.split('_', 1)[1] + suffix
-        if series_uid is None:
-            _, series_uid = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList, seriesNumber=series_id)
-        seriesID = str(series_id) + '_' + series_name
-        newSeries = Series(listImages[0].objWeasel, listImages[0].subjectID, listImages[0].studyID, seriesID, seriesUID=series_uid, suffix=suffix)
-        newSeries.referencePathsList = pathsList
-        return newSeries
+        logger.info("Image.newSeriesFrom called")
+        try:
+            pathsList = [image.path for image in listImages]
+            if series_id is None:
+                series_id, _ = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList)
+            if series_name is None:
+                series_name = listImages[0].seriesID.split('_', 1)[1] + suffix
+            if series_uid is None:
+                _, series_uid = GenericDICOMTools.generateSeriesIDs(listImages[0].objWeasel, pathsList, seriesNumber=series_id)
+            seriesID = str(series_id) + '_' + series_name
+            newSeries = Series(listImages[0].objWeasel, listImages[0].subjectID, listImages[0].studyID, seriesID, seriesUID=series_uid, suffix=suffix)
+            newSeries.referencePathsList = pathsList
+            return newSeries
+        except Exception as e:
+            print('Error in Image.newSeriesFrom: ' + str(e))
+            logger.exception('Error in Image.newSeriesFrom: ' + str(e))
 
     def new(self, suffix='_Copy', series=None):
-        if series is None:
-            newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, '', suffix=suffix)
-        else:
-            newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, '', suffix=suffix)
-        newImage.referencePath = self.path
-        return newImage
+        logger.info("Image.new called")
+        try:
+            if series is None:
+                newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, '', suffix=suffix)
+            else:
+                newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, '', suffix=suffix)
+            newImage.referencePath = self.path
+            return newImage
+        except Exception as e:
+            print('Error in Image.new: ' + str(e))
+            logger.exception('Error in Image.new: ' + str(e))
 
     def copy(self, suffix='_Copy', series=None, output_dir=None):
-        if series is None:
-            series_id = self.seriesID.split('_', 1)[0]
-            series_name = self.seriesID.split('_', 1)[1]
-            series_uid = self.seriesUID
-            #suffix = self.suffix
-        else:
-            series_id = series.seriesID.split('_', 1)[0]
-            series_name = series.seriesID.split('_', 1)[1]
-            series_uid = series.seriesUID
-            suffix = series.suffix
-        newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
-        copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath, suffix=suffix)
-        if series: series.add(copiedImage)
-        return copiedImage
-
-    def delete(self):
-        GenericDICOMTools.deleteDICOM(self.objWeasel, self.path)
-        self.path = []
-        self.referencePath = []
-        self.subjectID = self.studyID = self.seriesID = ''
-        # Delete the instance, such as del self???
-
-    def write(self, pixelArray, series=None, output_dir=None):
-        if os.path.exists(self.path):
-            PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
-        else:
+        logger.info("Image.copy called")
+        try:
             if series is None:
                 series_id = self.seriesID.split('_', 1)[0]
                 series_name = self.seriesID.split('_', 1)[1]
                 series_uid = self.seriesUID
+                #suffix = self.suffix
             else:
                 series_id = series.seriesID.split('_', 1)[0]
                 series_name = series.seriesID.split('_', 1)[1]
                 series_uid = series.seriesUID
-            outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, output_dir=output_dir)
-            self.path = outputPath[0]
-            if series: series.add(self)
+                suffix = series.suffix
+            newPath, newSeriesID = GenericDICOMTools.copyDICOM(self.objWeasel, self.path, series_id=series_id, series_uid=series_uid, series_name=series_name, suffix=suffix, output_dir=output_dir)
+            copiedImage = Image(self.objWeasel, self.subjectID, self.studyID, newSeriesID, newPath, suffix=suffix)
+            if series: series.add(copiedImage)
+            return copiedImage
+        except Exception as e:
+            print('Error in Image.copy: ' + str(e))
+            logger.exception('Error in Image.copy: ' + str(e))
+
+    def delete(self):
+        logger.info("Image.delete called")
+        try:
+            GenericDICOMTools.deleteDICOM(self.objWeasel, self.path)
+            self.path = []
+            self.referencePath = []
+            self.subjectID = self.studyID = self.seriesID = ''
+            # Delete the instance, such as del self???
+        except Exception as e:
+            print('Error in Image.delete: ' + str(e))
+            logger.exception('Error in Image.delete: ' + str(e))
+
+    def write(self, pixelArray, series=None, output_dir=None):
+        logger.info("Image.write called")
+        try:
+            if os.path.exists(self.path):
+                PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
+            else:
+                if series is None:
+                    series_id = self.seriesID.split('_', 1)[0]
+                    series_name = self.seriesID.split('_', 1)[1]
+                    series_uid = self.seriesUID
+                else:
+                    series_id = series.seriesID.split('_', 1)[0]
+                    series_name = series.seriesID.split('_', 1)[1]
+                    series_uid = series.seriesUID
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, output_dir=output_dir)
+                self.path = outputPath[0]
+                if series: series.add(self)
+        except Exception as e:
+            print('Error in Image.write: ' + str(e))
+            logger.exception('Error in Image.write: ' + str(e))
         
     def read(self):
         return self.PydicomObject
@@ -1544,23 +1772,43 @@ class Image:
 
     @staticmethod
     def merge(listImages, series_id=None, series_name='NewSeries', series_uid=None, study_name=None, study_uid=None, patient_id=None, suffix='_Merged', overwrite=False, progress_bar=False):
-        outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
-        outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, study_name=study_name, study_uid=study_uid, patient_id=patient_id, suffix=suffix, overwrite=overwrite, progress_bar=progress_bar)
-        #UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
-        outputSeries.images = outputPathList
-        return outputSeries
+        logger.info("Image.merge called")
+        try:
+            outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
+            outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, study_name=study_name, study_uid=study_uid, patient_id=patient_id, suffix=suffix, overwrite=overwrite, progress_bar=progress_bar)
+            #UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
+            outputSeries.images = outputPathList
+            return outputSeries
+        except Exception as e:
+            print('Error in Image.merge: ' + str(e))
+            logger.exception('Error in Image.merge: ' + str(e))
     
     def display(self):
-        UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
+        logger.info("Image.display called")
+        try:
+            UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
+        except Exception as e:
+            print('Error in Image.display: ' + str(e))
+            logger.exception('Error in Image.display: ' + str(e))
 
     @staticmethod
     def displayListImages(listImages):
-        pathsList = [image.path for image in listImages]
-        UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
+        logger.info("Image.displayListImages called")
+        try:
+            pathsList = [image.path for image in listImages]
+            UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
+        except Exception as e:
+            print('Error in Image.displayListImages: ' + str(e))
+            logger.exception('Error in Image.displayListImages: ' + str(e))
 
     @property
     def name(self):
-        return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+        logger.info("Image.name called")
+        try:
+            return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+        except Exception as e:
+            print('Error in Image.name: ' + str(e))
+            logger.exception('Error in Image.name: ' + str(e))
 
     @property
     def SeriesUID(self):
@@ -1583,101 +1831,112 @@ class Image:
         return self.studyUID
     
     def Metadata(self):
-        UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
+        logger.info("Image.Metadata called")
+        try:
+            UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
+        except Exception as e:
+            print('Error in Image.Metadata: ' + str(e))
+            logger.exception('Error in Image.Metadata: ' + str(e))
 
     @property
     def PixelArray(self, ROI=None):
-        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
-        if isinstance(ROI, Image):
-            mask = np.zeros(np.shape(pixelArray))
-            coords = ROI.ROIindices
-            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-            #pixelArray = pixelArray * mask
-            pixelArray = np.extract(mask.astype(bool), pixelArray)
-        elif ROI == None:
-            pass
-        else:
-            warnings.warn("The input argument ROI should be an Image instance.") 
-        return pixelArray
+        logger.info("Image.PixelArray called")
+        try:
+            pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+            if isinstance(ROI, Image):
+                mask = np.zeros(np.shape(pixelArray))
+                coords = ROI.ROIindices
+                mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+                #pixelArray = pixelArray * mask
+                pixelArray = np.extract(mask.astype(bool), pixelArray)
+            elif ROI == None:
+                pass
+            else:
+                warnings.warn("The input argument ROI should be an Image instance.") 
+            return pixelArray
+        except Exception as e:
+            print('Error in Image.PixelArray: ' + str(e))
+            logger.exception('Error in Image.PixelArray: ' + str(e))
     
     @property
     def ROIindices(self):
-        tempImage = self.PixelArray
-        tempImage[tempImage != 0] = 1
-        return np.transpose(np.where(tempImage == 1))
+        logger.info("Image.ROIindices called")
+        try:
+            tempImage = self.PixelArray
+            tempImage[tempImage != 0] = 1
+            return np.transpose(np.where(tempImage == 1))
+        except Exception as e:
+            print('Error in Image.ROIindices: ' + str(e))
+            logger.exception('Error in Image.ROIindices: ' + str(e))
 
     @property
     def Affine(self):
-        return ReadDICOM_Image.returnAffineArray(self.path)
+        logger.info("Image.Affine called")
+        try:
+            return ReadDICOM_Image.returnAffineArray(self.path)
+        except Exception as e:
+            print('Error in Image.Affine: ' + str(e))
+            logger.exception('Error in Image.Affine: ' + str(e))
     
     def get_value(self, tag):
-        if isinstance(tag, list):
-            outputValuesList = []
-            for ind_tag in tag:
-                outputValuesList.append(ReadDICOM_Image.getImageTagValue(self.path, ind_tag))
-            return outputValuesList
-        else:
-            return ReadDICOM_Image.getImageTagValue(self.path, tag)
+        logger.info("Image.get_value called")
+        try:
+            if isinstance(tag, list):
+                outputValuesList = []
+                for ind_tag in tag:
+                    outputValuesList.append(ReadDICOM_Image.getImageTagValue(self.path, ind_tag))
+                return outputValuesList
+            else:
+                return ReadDICOM_Image.getImageTagValue(self.path, tag)
+        except Exception as e:
+            print('Error in Image.get_value: ' + str(e))
+            logger.exception('Error in Image.get_value: ' + str(e))
 
     def set_value(self, tag, newValue):
-        comparisonDicom = self.PydicomObject
-        changeXML = False
-        # Not necessary new IDs, but they may be new. The changeXML flag coordinates that.
-        oldSubjectID = self.subjectID
-        oldStudyID = self.studyID
-        oldSeriesID = self.seriesID
-        # Set tag commands
-        if isinstance(tag, list) and isinstance(newValue, list):
-            for index, ind_tag in enumerate(tag):
-                GenericDICOMTools.editDICOMTag(self.path, ind_tag, newValue[index])
-        else:
-            GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
-        # Consider the case where XML fields are changed
-        if comparisonDicom.SeriesDescription != self.PydicomObject.SeriesDescription or comparisonDicom.SeriesNumber != self.PydicomObject.SeriesNumber:
-            changeXML = True
-            newSeriesID = str(self.PydicomObject.SeriesNumber) + "_" + str(self.PydicomObject.SeriesDescription)
-            self.seriesID = newSeriesID
-        else:
-            newSeriesID = oldSeriesID
-        if comparisonDicom.StudyDate != self.PydicomObject.StudyDate or comparisonDicom.StudyTime != self.PydicomObject.StudyTime or comparisonDicom.StudyDescription != self.PydicomObject.StudyDescription:
-            changeXML = True
-            newStudyID = str(self.PydicomObject.StudyDate) + "_" + str(self.PydicomObject.StudyTime).split(".")[0] + "_" + str(self.PydicomObject.StudyDescription)
-            self.studyID = newStudyID
-        else:
-            newStudyID = oldStudyID
-        if comparisonDicom.PatientID != self.PydicomObject.PatientID:
-            changeXML = True
-            newSubjectID = str(self.PydicomObject.PatientID)
-            self.subjectID = newSubjectID
-        else:
-            newSubjectID = oldSubjectID
-        if changeXML == True:
-            interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
+        logger.info("Image.set_value called")
+        try:
+            comparisonDicom = self.PydicomObject
+            changeXML = False
+            # Not necessary new IDs, but they may be new. The changeXML flag coordinates that.
+            oldSubjectID = self.subjectID
+            oldStudyID = self.studyID
+            oldSeriesID = self.seriesID
+            # Set tag commands
+            if isinstance(tag, list) and isinstance(newValue, list):
+                for index, ind_tag in enumerate(tag):
+                    GenericDICOMTools.editDICOMTag(self.path, ind_tag, newValue[index])
+            else:
+                GenericDICOMTools.editDICOMTag(self.path, tag, newValue)
+            # Consider the case where XML fields are changed
+            if comparisonDicom.SeriesDescription != self.PydicomObject.SeriesDescription or comparisonDicom.SeriesNumber != self.PydicomObject.SeriesNumber:
+                changeXML = True
+                newSeriesID = str(self.PydicomObject.SeriesNumber) + "_" + str(self.PydicomObject.SeriesDescription)
+                self.seriesID = newSeriesID
+            else:
+                newSeriesID = oldSeriesID
+            if comparisonDicom.StudyDate != self.PydicomObject.StudyDate or comparisonDicom.StudyTime != self.PydicomObject.StudyTime or comparisonDicom.StudyDescription != self.PydicomObject.StudyDescription:
+                changeXML = True
+                newStudyID = str(self.PydicomObject.StudyDate) + "_" + str(self.PydicomObject.StudyTime).split(".")[0] + "_" + str(self.PydicomObject.StudyDescription)
+                self.studyID = newStudyID
+            else:
+                newStudyID = oldStudyID
+            if comparisonDicom.PatientID != self.PydicomObject.PatientID:
+                changeXML = True
+                newSubjectID = str(self.PydicomObject.PatientID)
+                self.subjectID = newSubjectID
+            else:
+                newSubjectID = oldSubjectID
+            if changeXML == True:
+                interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
+        except Exception as e:
+            print('Error in Image.set_value: ' + str(e))
+            logger.exception('Error in Image.set_value: ' + str(e))
         
     def __getitem__(self, tag):
         return self.get_value(tag)
 
     def __setitem__(self, tag, value):
         self.set_value(tag, value)
-
-    def Item(self, tagDescription, newValue=None):
-        if self.path:
-            if newValue:
-                GenericDICOMTools.editDICOMTag(self.path, tagDescription, newValue)
-            item = ReadDICOM_Image.getImageTagValue(self.path, tagDescription)
-        else:
-            item = []
-        return item
-
-    def Tag(self, tag, newValue=None):
-        hexTag = '0x' + tag.split(',')[0] + tag.split(',')[1]
-        if self.path:
-            if newValue:
-                GenericDICOMTools.editDICOMTag(self.path, literal_eval(hexTag), newValue)
-            item = ReadDICOM_Image.getImageTagValue(self.path, literal_eval(hexTag))
-        else:
-            item = []
-        return item
 
     @property
     def PydicomObject(self):
@@ -1687,11 +1946,16 @@ class Image:
             return []
 
     def export_as_nifti(self, directory=None, filename=None):
-        if directory is None: directory=os.path.dirname(self.path)
-        if filename is None: filename=self.seriesID
-        dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
-        niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.Affine)
-        niftiObj.header.extensions.append(dicomHeader)
-        nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+        logger.info("Image.export_as_nifti called")
+        try:
+            if directory is None: directory=os.path.dirname(self.path)
+            if filename is None: filename=self.seriesID
+            dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
+            niftiObj = nib.Nifti1Image(np.transpose(self.PixelArray), affine=self.Affine)
+            niftiObj.header.extensions.append(dicomHeader)
+            nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
+        except Exception as e:
+            print('Error in Image.export_as_nifti: ' + str(e))
+            logger.exception('Error in Image.export_as_nifti: ' + str(e))
 
 from Scripting.OriginalPipelines import ImagesList, SeriesList, StudyList, SubjectList

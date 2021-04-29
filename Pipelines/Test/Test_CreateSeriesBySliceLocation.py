@@ -8,7 +8,7 @@ def main(weasel):
     images = weasel.images()
     studies = images.parent.parent
     for study in studies:
-        imgs = study.allImages
+        imgs = study.all_images
         new_study_description = 'Sorted by slice location_' + study.studyID
         #new_study = study.new(studyID='Sorted by slice location')
         series_number = 1

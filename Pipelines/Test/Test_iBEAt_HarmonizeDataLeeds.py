@@ -133,7 +133,7 @@ def iBEAt_series_name(series):
         if ds.ImageType[2] == 'P': return sequence + '_phase'
 
     if ds.SequenceName[0:5] == '*ep_b':
-        if series.numberChildren < 1000:
+        if series.number_children < 1000:
             return 'IVIM_kidneys_cor-oblique_fb'
         else:
             return 'DTI_kidneys_cor-oblique_fb'

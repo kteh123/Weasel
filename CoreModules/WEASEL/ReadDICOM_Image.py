@@ -3,10 +3,13 @@ import struct
 import numpy as np
 import pydicom
 from nibabel.affines import apply_affine
+import logging
+logger = logging.getLogger(__name__)
 
 
 def returnPixelArray(imagePath):
     """This method reads the DICOM file in imagePath and returns the Image/Pixel array"""
+    logger.info("ReadDICOM_Image.returnPixelArray called")
     try:
         if os.path.exists(imagePath):
             dataset = getDicomDataset(imagePath)
@@ -16,10 +19,12 @@ def returnPixelArray(imagePath):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.returnPixelArray: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.returnPixelArray: ' + str(e))
 
 
 def returnAffineArray(imagePath):
     """This method reads the DICOM file in imagePath and returns the Affine/Orientation matrix"""
+    logger.info("ReadDICOM_Image.returnAffineArray called")
     try:
         if os.path.exists(imagePath):
             dataset = getDicomDataset(imagePath)
@@ -29,11 +34,13 @@ def returnAffineArray(imagePath):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.returnAffineArray: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.returnAffineArray: ' + str(e))
 
 
 def returnSeriesPixelArray(imagePathList):
     """This method reads the DICOM files in imagePathList and 
     returns a list where each element is a DICOM Dataset object/class"""
+    logger.info("ReadDICOM_Image.returnSeriesPixelArray called")
     try:
         datasetList = getSeriesDicomDataset(imagePathList)
         imageList = [getPixelArray(dataset) for dataset in datasetList]
@@ -45,8 +52,8 @@ def returnSeriesPixelArray(imagePathList):
             del imageList
             return None
     except Exception as e:
-        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
-
+        print('Error in function ReadDICOM_Image.returnSeriesPixelArray: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.returnSeriesPixelArray: ' + str(e))
 
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
     try:
@@ -80,12 +87,14 @@ def getMultiframeBySlices(dataset, sliceList=None, sort=False):
             return None, None, None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getMultiframeBySlices: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getMultiframeBySlices: ' + str(e))
 
 
 def getImageTagValue(imagePath, dicomTag):
     """This method reads the DICOM file in imagePath and returns the value in the given DICOM tag
         Output is : attribute
     """
+    logger.info("ReadDICOM_Image.getImageTagValue called")
     try:
         if os.path.exists(imagePath):
             dataset = getDicomDataset(imagePath)
@@ -102,6 +111,7 @@ def getImageTagValue(imagePath, dicomTag):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getImageTagValue: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getImageTagValue: ' + str(e))
 
 
 def getSeriesTagValues(imagePathList, dicomTag):
@@ -110,6 +120,7 @@ def getSeriesTagValues(imagePathList, dicomTag):
         The output attributeList may have repeated values. 
         Removing these repetitions will be up to the developer of the specific algorithm
     """
+    logger.info("ReadDICOM_Image.getSeriesTagValues called")
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
@@ -172,6 +183,7 @@ def getSeriesTagValues(imagePathList, dicomTag):
             return None, None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getSeriesTagValues: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getSeriesTagValues: ' + str(e))
 
 
 def sortSequenceByTag(imagePathList, dicomTag):
@@ -180,6 +192,7 @@ def sortSequenceByTag(imagePathList, dicomTag):
         The output attributeList may have repeated values. 
         Removing these repetitions will be up to the developer of the specific algorithm
     """
+    logger.info("ReadDICOM_Image.sortSequenceByTag called")
     try:
         if os.path.exists(imagePathList[0]):
             attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
@@ -201,11 +214,13 @@ def sortSequenceByTag(imagePathList, dicomTag):
             return None, None, None, None
     except Exception as e:
         print('Error in function ReadDICOM_Image.sortSequenceByTag: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.sortSequenceByTag: ' + str(e))
 
 
 def getSeriesDicomDataset(imagePathList):
     """This method reads the DICOM files in imagePathList and 
     returns a list where each element is a DICOM Dataset object/class"""
+    logger.info("ReadDICOM_Image.getSeriesDicomDataset called")
     try:
         #datasetList = [getDicomDataset(imagePath) for imagePath in imagePathList if getDicomDataset(imagePath) is not None]
         datasetList = []
@@ -218,11 +233,13 @@ def getSeriesDicomDataset(imagePathList):
         else:
             return None
     except Exception as e:
-        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function ReadDICOM_Image.getSeriesDicomDataset: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getSeriesDicomDataset: ' + str(e))
 
 
 def getDicomDataset(imagePath):
     """This method reads the DICOM file in imagePath and returns the DICOM Dataset object/class"""
+    logger.info("ReadDICOM_Image.getDicomDataset called")
     try:
         if os.path.exists(imagePath):
             return pydicom.dcmread(imagePath)
@@ -230,10 +247,12 @@ def getDicomDataset(imagePath):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getDicomDataset: ' + str(e))
 
 
 def getPixelArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Image/Pixel array"""
+    logger.info("ReadDICOM_Image.getPixelArray called")
     try:
         if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
@@ -263,10 +282,12 @@ def getPixelArray(dataset):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getPixelArray: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getPixelArray: ' + str(e))
 
 
 def getAffineArray(dataset):
     """This method reads the DICOM Dataset object/class and returns the Affine/Orientation matrix"""
+    logger.info("ReadDICOM_Image.getAffineArray called")
     try:
         if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
@@ -304,9 +325,11 @@ def getAffineArray(dataset):
             return None
     except Exception as e:
         print('Error in function ReadDICOM_Image.getAffineArray: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getAffineArray: ' + str(e))
 
 
 def mapMaskToImage(mask, datasetMask, datasetTarget):
+    logger.info("ReadDICOM_Image.mapMaskToImage called")
     try:
         affineTarget = getAffineArray(datasetTarget)
         affineMask = getAffineArray(datasetMask)
@@ -327,19 +350,22 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
         return listIndexes
     except Exception as e:
         print('Error in function ReadDICOM_Image.mapMaskToImage: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.mapMaskToImage: ' + str(e))
 
 
 def applyAffine(affineReference, affineTarget, coordinates):
+    logger.info("ReadDICOM_Image.applyAffine called")
     try:
         maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
         return apply_affine(maskToTarget, coordinates)
     except Exception as e:
         print('Error in function ReadDICOM_Image.applyAffine: ' + str(e))
-
+        logger.exception('Error in ReadDICOM_Image.applyAffine: ' + str(e))
 
 
 def getColourmap(imagePath):
     """This method reads the DICOM file in imagePath and returns the colourmap if there's any"""
+    logger.info("ReadDICOM_Image.getColourmap called")
     try:
         dataset = getDicomDataset(imagePath)
         if hasattr(dataset, 'ContentLabel'):
@@ -373,10 +399,12 @@ def getColourmap(imagePath):
         return colourmapName, lut
     except Exception as e:
         print('Error in function ReadDICOM_Image.getColourmap: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getColourmap: ' + str(e))
     
 
 def checkImageType(dataset):
     """This method reads the DICOM Dataset object/class and returns if it is a Magnitude, Phase, Real or Imaginary image or None"""
+    logger.info("ReadDICOM_Image.checkImageType called")
     try:
         mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
@@ -459,10 +487,12 @@ def checkImageType(dataset):
         return flagMagnitude, flagPhase, flagReal, flagImaginary, flagMap
     except Exception as e:
         print('Error in function ReadDICOM_Image.checkImageType: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.checkImageType: ' + str(e))
 
 
 def checkAcquisitionType(dataset):
     """This method reads the DICOM Dataset object/class and returns if it is a Water, Fat, In-Phase, Out-phase image or None"""
+    logger.info("ReadDICOM_Image.checkImageType called")
     try:
         flagWater = False
         flagFat = False
@@ -500,3 +530,4 @@ def checkAcquisitionType(dataset):
         return flagWater, flagFat, flagInPhase, flagOutPhase
     except Exception as e:
         print('Error in function ReadDICOM_Image.checkAcquisitionType: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.checkAcquisitionType: ' + str(e))
