@@ -156,7 +156,7 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.objXMLReader.callResetXMLTree()   
                 end_time=time.time()
                 MakeXMLTreeTime = end_time - start_time 
-                print('Make XML Tree Time  = {}'.format(MakeXMLTreeTime))
+                #print('Make XML Tree Time  = {}'.format(MakeXMLTreeTime))
 
                 pointerToWeasel.treeView = QTreeWidget()
                 
@@ -262,7 +262,7 @@ def refreshDICOMStudiesTreeView(pointerToWeasel, newSeriesName = ''):
             
             end_time=time.time()
             refreshTreeViewTime = end_time - start_time 
-            print('refresh TreeView Time  = {}'.format(refreshTreeViewTime))
+            #print('refresh TreeView Time  = {}'.format(refreshTreeViewTime))
             QApplication.restoreOverrideCursor()
         except Exception as e:
             QApplication.restoreOverrideCursor()
@@ -808,7 +808,7 @@ def buildListsCheckedItems(pointerToWeasel):
 
         end_time=time.time()
         buildCheckedListTime = end_time - start_time 
-        print('buildCheckedListTime Time  = {}'.format(buildCheckedListTime))
+        #print('buildCheckedListTime Time  = {}'.format(buildCheckedListTime))
     except Exception as e:
         print('Error in TreeView.buildListsCheckedItems: ' + str(e))
         logger.exception('Error in TreeView.buildListsCheckedItems: ' + str(e))
