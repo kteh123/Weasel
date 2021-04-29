@@ -6,7 +6,6 @@
 #***************************************************************************
 
 import scipy.ndimage as ndimage
-from scipy.signal import wiener
 
 def main(weasel):
     # Get images checked by the user
@@ -15,7 +14,7 @@ def main(weasel):
 
     # Get user input: type of filter and size
 
-    filters = ["Gaussian", "Uniform", "Median", "Maximum", "Wiener"]
+    filters = ["Gaussian", "Uniform", "Median", "Maximum"]
     cancel, filters_input = weasel.user_input(
             {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
             {"type":"integer", "label":"Filter size in pixels", "default":20, "minimum":1, "maximum":1000},
@@ -37,8 +36,6 @@ def main(weasel):
             image.write(ndimage.median_filter(image.PixelArray, size=size['value']))
         elif filter_name['value'] == 3:
             image.write(ndimage.maximum_filter(image.PixelArray, size=size['value']))
-        elif filter_name['value'] == 4:
-            image.write(wiener(image.PixelArray, (size['value'], size['value'])))
 
     list_of_images.display()
     weasel.refresh()
