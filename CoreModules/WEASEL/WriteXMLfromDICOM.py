@@ -418,7 +418,7 @@ def makeDICOM_XML_File(self, scan_directory):
             self.msgSubWindow.close()
             end_time=time.time()
             xmlCreationTime = end_time - start_time 
-            print('XML file creation time = {}'.format(xmlCreationTime))
+            #print('XML file creation time = {}'.format(xmlCreationTime))
             logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}."
                         .format(fullFilePath))
         return fullFilePath
