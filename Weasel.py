@@ -54,29 +54,6 @@ logging.basicConfig(filename=LOG_FILE_NAME,
 logger = logging.getLogger(__name__)
 
 
-def returnListPythonFiles():
-    listPythonFiles = []
-    for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
-        for individualFile in filenames:
-            if individualFile.endswith(".py"):
-                sys.path.append(os.path.dirname(dirpath))
-                listPythonFiles.append(os.path.join(dirpath, individualFile))
-    return listPythonFiles
-
-
-def isPythonFile(fileName):
-        flag = False
-        if fileName.split(".")[-1].lower()  == 'py':
-            flag = True
-        return flag
-
-def isXMLFile(fileName):
-        flag = False
-        if fileName.split(".")[-1].lower()  == 'xml':
-            flag = True
-        return flag
-
-
 class Weasel(QMainWindow, Pipelines):
 
     def __init__(self): 
@@ -102,7 +79,7 @@ class Weasel(QMainWindow, Pipelines):
         self.checkedSubjectList = []
         self.treeView = None
         self.listMenus = []
-        self.listPythonFiles = returnListPythonFiles()
+        self.listPythonFiles = self.returnListPythonFiles()
         
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
         
@@ -145,7 +122,7 @@ class Weasel(QMainWindow, Pipelines):
 
             if menuConfigFile:
                 #a menu config file has been defined
-                if isPythonFile(menuConfigFile):
+                if self.isPythonFile(menuConfigFile):
                     moduleFileName = [pythonFilePath 
                                       for pythonFilePath in self.listPythonFiles 
                                       if menuConfigFile in pythonFilePath][0]
@@ -153,9 +130,9 @@ class Weasel(QMainWindow, Pipelines):
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
                     objFunction = getattr(module, "main")
-                    #execute python functions to build the menu and menu items
+                    #execute python functions to build the menus and menu items
                     objFunction(self)
-                elif isXMLFile(menuConfigFile):
+                elif self.isXMLFile(menuConfigFile):
                     xmlMenuBuilder.setupMenus(self, menuConfigFile)
                     xmlMenuBuilder.buildContextMenu(self, menuConfigFile)
         except Exception as e:
@@ -166,6 +143,32 @@ class Weasel(QMainWindow, Pipelines):
     def getMDIAreaDimensions(self):
       return self.mdiArea.height(), self.mdiArea.width() 
 
+
+    @staticmethod
+    def isPythonFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'py':
+            flag = True
+        return flag
+
+
+    @staticmethod
+    def isXMLFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'xml':
+            flag = True
+        return flag
+
+
+    @staticmethod
+    def returnListPythonFiles():
+        listPythonFiles = []
+        for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
+            for individualFile in filenames:
+                if individualFile.endswith(".py"):
+                    sys.path.append(os.path.dirname(dirpath))
+                    listPythonFiles.append(os.path.join(dirpath, individualFile))
+        return listPythonFiles
 
     @property
     def isAnImageChecked(self):
