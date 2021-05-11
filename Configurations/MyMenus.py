@@ -155,5 +155,8 @@ def main(pointerToWeasel):
 
     ferret.addItem(itemLabel = 'Ferret',
                moduleName = 'Tutorial_Ferret')
+              
+    ferret.addItem(itemLabel = 'Signal/Mask to DICOM Joao',
+               moduleName = 'Tutorial_Ferret_Joao')
 
   

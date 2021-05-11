@@ -14,7 +14,6 @@ def main(weasel):
     if len(list_of_images) == 0: return 
 
     # Get user input: type of filter and size
-
     filters = ["Gaussian", "Uniform", "Median", "Maximum", "Wiener"]
     cancel, filters_input = weasel.user_input(
             {"type":"dropdownlist", "label":"Which filter?", "list":filters, "default": 2},
