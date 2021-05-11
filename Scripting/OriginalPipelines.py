@@ -1,5 +1,6 @@
 import os
-import itertools
+import re
+#import itertools
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
@@ -447,6 +448,16 @@ class OriginalPipelines():
         """
         Returns unique elements of any list.
         """
-        #output = list(set(inputList))
-        output = list(inp for inp,_ in itertools.groupby(inputList))
+        #output = list(inp for inp,_ in itertools.groupby(inputList))
+        output = []
+        for x in inputList:
+            if x not in output:
+                output.append(x)
         return output
+    
+    @staticmethod
+    def match_search(regex_string, target):
+        """
+        Returns True if the regex "expression" is in the string target. 
+        """
+        return re.search(regex_string, target, re.IGNORECASE)

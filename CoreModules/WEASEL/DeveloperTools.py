@@ -1320,15 +1320,16 @@ class Series:
             list_sorted_images = []
             for individual in tuple_sorted:
                 list_sorted_images.append(individual[0])
-            list_sorted_paths = [img.path for img in list_sorted_images]
-            self.images = list_sorted_paths
+            #list_sorted_paths = [img.path for img in list_sorted_images]
+            #self.images = list_sorted_paths
+            self.images = list_sorted_images
             return self
         except Exception as e:
             print('Error in Series.sort: ' + str(e))
             logger.exception('Error in Series.sort: ' + str(e))
     
     def where(self, tag, condition, target):
-        logger.info("Series.sort called")
+        logger.info("Series.where called")
         try:
             list_images = []
             list_paths = []
@@ -1390,11 +1391,11 @@ class Series:
             magnitudeSeries.referencePathsList = self.images
             for index in range(len(self.images)):
                 flagMagnitude, _, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-                if isinstance(flagMagnitude, list) and flagMagnitude:
-                    if len(flagMagnitude) > 1 and len(self.images) == 1:
-                        magnitudeSeries.indices = flagMagnitude
-                    magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-                elif flagMagnitude == True:
+                #if isinstance(flagMagnitude, list) and flagMagnitude:
+                #    if len(flagMagnitude) > 1 and len(self.images) == 1:
+                #        magnitudeSeries.indices = flagMagnitude
+                #    magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                if flagMagnitude == True:
                     magnitudeSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
             return magnitudeSeries
         except Exception as e:
@@ -1411,11 +1412,11 @@ class Series:
             phaseSeries.referencePathsList = self.images
             for index in range(len(self.images)):
                 _, flagPhase, _, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-                if isinstance(flagPhase, list) and flagPhase:
-                    if len(flagPhase) > 1 and len(self.images) == 1:
-                        phaseSeries.indices = flagPhase
-                    phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-                elif flagPhase == True:
+                #if isinstance(flagPhase, list) and flagPhase:
+                #    if len(flagPhase) > 1 and len(self.images) == 1:
+                #        phaseSeries.indices = flagPhase
+                #    phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                if flagPhase == True:
                     phaseSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
             return phaseSeries
         except Exception as e:
@@ -1432,11 +1433,11 @@ class Series:
             realSeries.referencePathsList = self.images
             for index in range(len(self.images)):
                 _, _, flagReal, _, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-                if isinstance(flagReal, list) and flagReal:
-                    if len(flagReal) > 1 and len(self.images) == 1:
-                        realSeries.indices = flagReal
-                    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-                elif flagReal:
+                #if isinstance(flagReal, list) and flagReal:
+                #    if len(flagReal) > 1 and len(self.images) == 1:
+                #        realSeries.indices = flagReal
+                #    realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                if flagReal:
                     realSeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
             return realSeries
         except Exception as e:
@@ -1453,11 +1454,11 @@ class Series:
             imaginarySeries.referencePathsList = self.images
             for index in range(len(self.images)):
                 _, _, _, flagImaginary, _ = ReadDICOM_Image.checkImageType(dicomList[index])
-                if isinstance(flagImaginary, list) and flagImaginary:
-                    if len(flagImaginary) > 1 and len(self.images) == 1:
-                        imaginarySeries.indices = flagImaginary
-                    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
-                elif flagImaginary:
+                #if isinstance(flagImaginary, list) and flagImaginary:
+                #    if len(flagImaginary) > 1 and len(self.images) == 1:
+                #        imaginarySeries.indices = flagImaginary
+                #    imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
+                if flagImaginary:
                     imaginarySeries.add(Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.images[index]))
             return imaginarySeries
         except Exception as e:
@@ -1489,6 +1490,15 @@ class Series:
         except Exception as e:
             print('Error in Series.PixelArray: ' + str(e))
             logger.exception('Error in Series.PixelArray: ' + str(e))
+
+    @property
+    def Affine(self):
+        logger.info("Series.Affine called")
+        try:
+            return ReadDICOM_Image.returnAffineArray(self.images[0])
+        except Exception as e:
+            print('Error in Series.Affine: ' + str(e))
+            logger.exception('Error in Series.Affine: ' + str(e))
 
     @property
     def ListAffines(self):
