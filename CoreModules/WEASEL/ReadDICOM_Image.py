@@ -246,7 +246,7 @@ def getDicomDataset(imagePath):
         else:
             return None
     except Exception as e:
-        print('Error in function ReadDICOM_Image.getDicomDataset: ' + str(e))
+        print('Error in function ReadDICOM_Image.getDicomDataset when imagePath = {}: '.format(imagePath) + str(e))
         logger.exception('Error in ReadDICOM_Image.getDicomDataset: ' + str(e))
 
 

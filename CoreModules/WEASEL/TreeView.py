@@ -11,7 +11,7 @@ from collections import defaultdict
 import CoreModules.WEASEL.ViewImage as viewImage
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
-
+__author__ = "Steve Shillitoe"
 
 def createTreeBranch(branchName, branch, parent, refresh=False):
     try:
@@ -911,3 +911,47 @@ def unCheckTreeViewItems(pointerToWeasel, item):
     except Exception as e:
         print('Error in TreeView.unCheckTreeViewItems: ' + str(e))
         logger.exception('Error in TreeView.unCheckTreeViewItems: ' + str(e))
+
+
+def returnSeriesLists(pointerToWeasel):
+    """This function is not used.
+        This function builds and returns:
+            1. a list of names of series that do not include masks
+            2. a list of names of series that only include masks.
+    """
+    logger.info("TreeView.returnSeriesLists called")
+    try:
+        listMaskSeries = []
+        listNonMaskSeries = []
+        root = pointerToWeasel.treeView.invisibleRootItem()
+        subjectCount = root.childCount()
+        #Subject loop
+        for i in range(subjectCount):
+            subject = root.child(i)
+            if subject.checkState(0) == Qt.Checked:
+                pointerToWeasel.checkedSubjectList.append(subject.text(1).replace("Subject - ", "").strip())
+            studyCount = subject.childCount()
+            #study loop
+            for j in range(studyCount):
+                study = subject.child(j)
+                if study.checkState(0) == Qt.Checked:
+                    checkedSubjectData = []
+                    parentStudy = study.parent()
+                    checkedSubjectData.append(parentStudy.text(1).replace("Subject - ", "").strip())
+                    checkedSubjectData.append(study.text(1).replace("Study - ", "").strip())
+                    pointerToWeasel.checkedStudyList.append(checkedSubjectData)
+                seriesCount = study.childCount()
+                #series loop
+                for k in range(seriesCount):
+                    series = study.child(k)
+                    seriesName = series.text(1).replace("Series - ", "").strip()
+                    if "_ROI_" in seriesName:
+                        listMaskSeries.append(seriesName)
+                    else:
+                        listNonMaskSeries.append(seriesName)
+
+        return listMaskSeries, listNonMaskSeries        
+
+    except Exception as e:
+        print('Error in TreeView.returnSeriesLists: ' + str(e))
+        logger.exception('Error in TreeView.returnSeriesLists: ' + str(e))
