@@ -139,6 +139,7 @@ def main(pointerToWeasel):
     tutorial.addItem(itemLabel = 'Anonymise Patient ID',
                moduleName = 'Tutorial_AnonymiseID')
 
+
     #Create Examples Menu
     examples = menuBuilder(pointerToWeasel, "Examples")
     examples.addItem(itemLabel = 'Binary Operations',
@@ -149,5 +150,10 @@ def main(pointerToWeasel):
                moduleName = 'Test_MergeSeriesByAcquisitionTime')
     examples.addItem(itemLabel = 'Create New Series by Slice Location',
                moduleName = 'Test_CreateSeriesBySliceLocation')
+
+    ferret = menuBuilder(pointerToWeasel, "Ferret")
+
+    ferret.addItem(itemLabel = 'Ferret',
+               moduleName = 'Tutorial_Ferret')
 
   

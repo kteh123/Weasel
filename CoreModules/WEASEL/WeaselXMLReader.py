@@ -6,6 +6,8 @@ import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+
 class WeaselXMLReader:
     def __init__(self): 
         try:
@@ -69,7 +71,63 @@ class WeaselXMLReader:
             print('Error in WeaselXMLReader.getSubjects: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getSubjects: ' + str(e))
 
-   
+
+    def getSubjectList(self):
+        try:
+            subjects = self.root.findall('.//subject')
+            subjectList = [subject.attrib['id'] for subject in subjects]
+            return subjectList
+        except Exception as e:
+            print('Error in WeaselXMLReader.getSubjectList: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getSubjectList: ' + str(e))
+
+    
+    def getStudyList(self, subjectID):
+        try:
+            xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
+                    ']/study'
+            studies =  self.root.findall(xPath)
+            studyList = [study.attrib['id'] for study in studies]
+            return studyList
+        except Exception as e:
+            print('Error in WeaselXMLReader.getStudyList: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getStudyList: ' + str(e))
+
+
+    def getNonMaskSeriesList(self, subjectID, studyID):
+        """Returns a list of the names of the non-mask series in specific 
+        study in a specific subject"""
+        try:
+            xPath = './/subject[@id='+ chr(34) + subjectID + chr(34) + \
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series'        
+            series = self.root.findall(xPath)
+            seriesList = [singleSeries.attrib['id'] 
+                          for singleSeries in series
+                          if "_ROI_" not in singleSeries.attrib['id']]
+            return seriesList
+        except Exception as e:
+            print('Error in WeaselXMLReader.getNonMaskSeriesList: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getNonMaskSeriesList: ' + str(e))
+
+
+    def getMaskList(self, subjectID, studyID):
+        """Returns a list of the names of the mask series in specific 
+        study in a specific subject"""
+        try:
+            xPath = './/subject[@id='+ chr(34) + subjectID + chr(34) + \
+                    ']/study[@id=' + chr(34) + studyID + chr(34) + \
+                    ']/series'        
+            masks = self.root.findall(xPath)
+            maskList = [mask.attrib['id']  
+                        for mask in masks
+                        if "_ROI_" in mask.attrib['id']]
+            return maskList
+        except Exception as e:
+            print('Error in WeaselXMLReader.getMaskList: ' + str(e)) 
+            logger.error('Error in WeaselXMLReader.getMaskList: ' + str(e))
+
+
     def getImageList(self, subjectID, studyID, seriesID):
         """Returns a list of image elements in a specific series"""
         try:
