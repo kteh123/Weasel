@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+def isEnabled(weasel):
+    return True
 
 def main(weasel):
     # Get series checked by the user
