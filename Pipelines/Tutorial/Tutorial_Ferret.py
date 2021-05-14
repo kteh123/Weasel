@@ -42,8 +42,8 @@ def main(pointerToWeasel):
         height, width = pointerToWeasel.getMDIAreaDimensions()
         subWindow.setGeometry(width * 0.4,0,width*0.6,height)
 
-        signalSeriesSelector = seriesSelector("Signal", pointerToWeasel)
-        maskSeriesSelector = seriesSelector("Mask", pointerToWeasel, mask=True)
+        signalSeriesSelector = seriesSelector(pointerToWeasel, "Signal")
+        maskSeriesSelector = seriesSelector(pointerToWeasel, "Mask")
         
         widget.layout().addWidget(signalSeriesSelector.createSeriesSelector())
         widget.layout().addWidget(maskSeriesSelector.createSeriesSelector())
