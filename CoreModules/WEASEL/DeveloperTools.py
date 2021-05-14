@@ -600,7 +600,7 @@ class PixelArrayDICOMTools:
             print('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
             logger.exception('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
 
-    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, output_dir=None):
+    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, parametric_map=None, output_dir=None):
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
@@ -638,11 +638,11 @@ class PixelArrayDICOMTools:
             if numImages == 1:
                 if isinstance(inputPath, list):
                     inputPath = inputPath[0]
-                SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))])
+                SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))], parametric_map=parametric_map)
                 # Record derived image in XML file
                 interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
             else:
-                SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath])
+                SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath], parametric_map=parametric_map)
                 # Insert new series into the DICOM XML file
                 interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
                 
@@ -1234,7 +1234,7 @@ class Series:
             print('Error in Series.remove: ' + str(e))
             logger.exception('Error in Series.remove: ' + str(e))
 
-    def write(self, pixelArray, output_dir=None):
+    def write(self, pixelArray, parametric_map=None, output_dir=None):
         logger.info("Series.write called")
         try:
             if self.images:
@@ -1243,7 +1243,7 @@ class Series:
                 series_id = self.seriesID.split('_', 1)[0]
                 series_name = self.seriesID.split('_', 1)[1]
                 inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
-                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir)
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, parametric_map=parametric_map, output_dir=output_dir)
                 self.images = outputPath
         except Exception as e:
             print('Error in Series.write: ' + str(e))
@@ -1466,30 +1466,40 @@ class Series:
             logger.exception('Error in Series.Imaginary: ' + str(e))
 
     @property
-    def PixelArray(self, ROI=None):
+    def PixelArray(self):
         logger.info("Series.PixelArray called")
         try:
             pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
-            #if self.Multiframe:    
-            #    tempArray = []
-            #    for index in self.indices:
-            #        tempArray.append(pixelArray[index, ...])
-            #    pixelArray = np.array(tempArray)
-            #    del tempArray
-            if isinstance(ROI, Series):
-                mask = np.zeros(np.shape(pixelArray))
-                coords = ROI.ROIindices
-                mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-                #pixelArray = pixelArray * mask
-                pixelArray = np.extract(mask.astype(bool), pixelArray)
-            elif ROI == None:
-                pass
-            else:
-                warnings.warn("The input argument ROI should be a Series instance.") 
             return pixelArray
         except Exception as e:
             print('Error in Series.PixelArray: ' + str(e))
             logger.exception('Error in Series.PixelArray: ' + str(e))
+
+    #@PixelArray.setter
+    #def PixelArray(self, ROI=None):
+    #    logger.info("Series.PixelArray called")
+    #    try:
+    #        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
+    #        #if self.Multiframe:    
+    #        #    tempArray = []
+    #        #    for index in self.indices:
+    #        #        tempArray.append(pixelArray[index, ...])
+    #        #    pixelArray = np.array(tempArray)
+    #        #    del tempArray
+    #        if isinstance(ROI, Series):
+    #            mask = np.zeros(np.shape(pixelArray))
+    #            coords = ROI.ROIindices
+    #            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+    #            #pixelArray = pixelArray * mask
+    #            pixelArray = np.extract(mask.astype(bool), pixelArray)
+    #        elif ROI == None:
+    #            pass
+    #        else:
+    #            warnings.warn("The input argument ROI should be a Series instance.") 
+    #        return pixelArray
+    #    except Exception as e:
+    #        print('Error in Series.PixelArray: ' + str(e))
+    #        logger.exception('Error in Series.PixelArray: ' + str(e))
 
     @property
     def Affine(self):
@@ -1734,7 +1744,7 @@ class Image:
             print('Error in Image.delete: ' + str(e))
             logger.exception('Error in Image.delete: ' + str(e))
 
-    def write(self, pixelArray, series=None, output_dir=None):
+    def write(self, pixelArray, series=None, parametric_map=None, output_dir=None):
         logger.info("Image.write called")
         try:
             if os.path.exists(self.path):
@@ -1748,7 +1758,7 @@ class Image:
                     series_id = series.seriesID.split('_', 1)[0]
                     series_name = series.seriesID.split('_', 1)[1]
                     series_uid = series.seriesUID
-                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, output_dir=output_dir)
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, parametric_map=parametric_map, output_dir=output_dir)
                 self.path = outputPath[0]
                 if series: series.add(self)
         except Exception as e:
@@ -1786,7 +1796,6 @@ class Image:
         try:
             outputSeries = Image.newSeriesFrom(listImages, suffix=suffix, series_id=series_id, series_name=series_name, series_uid=series_uid)    
             outputPathList = GenericDICOMTools.mergeDicomIntoOneSeries(outputSeries.objWeasel, outputSeries.referencePathsList, series_uid=series_uid, series_id=series_id, series_name=series_name, study_name=study_name, study_uid=study_uid, patient_id=patient_id, suffix=suffix, overwrite=overwrite, progress_bar=progress_bar)
-            #UserInterfaceTools(listImages[0].objWeasel).refreshWeasel(new_series_name=listImages[0].seriesID)
             outputSeries.images = outputPathList
             return outputSeries
         except Exception as e:
@@ -1853,20 +1862,30 @@ class Image:
         logger.info("Image.PixelArray called")
         try:
             pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
-            if isinstance(ROI, Image):
-                mask = np.zeros(np.shape(pixelArray))
-                coords = ROI.ROIindices
-                mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-                #pixelArray = pixelArray * mask
-                pixelArray = np.extract(mask.astype(bool), pixelArray)
-            elif ROI == None:
-                pass
-            else:
-                warnings.warn("The input argument ROI should be an Image instance.") 
             return pixelArray
         except Exception as e:
             print('Error in Image.PixelArray: ' + str(e))
             logger.exception('Error in Image.PixelArray: ' + str(e))
+    
+    #@property
+    #def PixelArray(self, ROI=None):
+    #    logger.info("Image.PixelArray called")
+    #    try:
+    #        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
+    #        if isinstance(ROI, Image):
+    #            mask = np.zeros(np.shape(pixelArray))
+    #            coords = ROI.ROIindices
+    #            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
+    #            #pixelArray = pixelArray * mask
+    #            pixelArray = np.extract(mask.astype(bool), pixelArray)
+    #        elif ROI == None:
+    #            pass
+    #        else:
+    #            warnings.warn("The input argument ROI should be an Image instance.") 
+    #        return pixelArray
+    #    except Exception as e:
+    #        print('Error in Image.PixelArray: ' + str(e))
+    #        logger.exception('Error in Image.PixelArray: ' + str(e))
     
     @property
     def ROIindices(self):

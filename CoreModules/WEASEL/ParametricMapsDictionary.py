@@ -124,6 +124,24 @@ class ParametricClass(object):
         dicom.Modality = "REG"
         return
 
+    def Signal(self, dicom, imageArray):
+        dicom.Modality = "RWV"
+        dicom.DerivedPixelContrast = "GraphPlot"
+        dicom.PhotometricInterpretation = "MONOCHROME2"
+        dicom.RescaleSlope = 1
+        dicom.RescaleIntercept = 0
+        imageArray = np.transpose(imageArray.astype(np.float32))
+        center = (np.amax(imageArray) + np.amin(imageArray)) / 2
+        width = np.amax(imageArray) - np.amin(imageArray)
+        dicom.add_new('0x00281050', 'DS', center)
+        dicom.add_new('0x00281051', 'DS', width)
+        dicom.BitsAllocated = 32
+        dicom.Rows = np.shape(imageArray)[0]
+        dicom.Columns = np.shape(imageArray)[1]
+        dicom.FloatPixelData = bytes(imageArray.flatten())
+        del dicom.PixelData, dicom.BitsStored, dicom.HighBit
+        return
+
 # Could insert a method regarding ROI colours, like in ITK-SNAP???
 def saveAnatomicalInfo(anatomyString, dicom):
     try:

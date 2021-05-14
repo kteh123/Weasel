@@ -10,6 +10,8 @@ from CoreModules.WEASEL.DeveloperTools import Subject
 from CoreModules.WEASEL.DeveloperTools import Study
 from CoreModules.WEASEL.DeveloperTools import Series
 from CoreModules.WEASEL.DeveloperTools import Image
+import logging
+logger = logging.getLogger(__name__)
 
 class ListOfDicomObjects(list):
     """
@@ -267,7 +269,7 @@ class SubjectList(ListOfDicomObjects):
         for subject in self:
             # We're returning list of lists by using append.
             # If we want a flat list, we'll have to use extend instead.
-            childrenList.append(study.subject)
+            childrenList.append(subject.subject)
         return childrenList
 
 
@@ -275,6 +277,9 @@ class OriginalPipelines():
     """
     A class for accessing GUI elements from within a pipeline script. 
     """
+    def log(self, message):
+        logger.exception(message)
+
     def images(self, msg='Please select one or more images'):
         """
         Returns a list of Images checked by the user.
