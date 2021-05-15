@@ -152,11 +152,8 @@ def main(pointerToWeasel):
                moduleName = 'Test_CreateSeriesBySliceLocation')
 
     ferret = menuBuilder(pointerToWeasel, "Ferret")
-
-    ferret.addItem(itemLabel = 'Ferret',
-               moduleName = 'Tutorial_Ferret')
               
-    ferret.addItem(itemLabel = 'Signal/Mask to DICOM Joao',
-               moduleName = 'Tutorial_Ferret_Joao')
+   # ferret.addItem(itemLabel = 'Signal/Mask to DICOM',
+#moduleName = 'Tutorial_Ferret_Joao')
 
   
