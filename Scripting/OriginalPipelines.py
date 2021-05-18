@@ -3,6 +3,7 @@ import re
 #import itertools
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
+from CoreModules.WEASEL.MeanROITimeCurveViewer import ROITimeCurveViewer
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
@@ -447,6 +448,10 @@ class OriginalPipelines():
         Closes all open windows.
         """
         self.mdiArea.closeAllSubWindows()
+
+    @staticmethod
+    def plot(x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
+        ROITimeCurveViewer(x, y, x_axis_label, y_axis_label, title=title)
 
     @staticmethod
     def unique_elements(inputList):

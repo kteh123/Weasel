@@ -897,7 +897,7 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
                         #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                         #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
-            messageWindow.setMsgWindowProgBarValue(self, index + 2)
+                messageWindow.setMsgWindowProgBarValue(self, index + 2)
             messageWindow.closeMessageSubWindow(self)
 
             # Faster approach - 3D and no dilation
