@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def displayTimeCurve(pointerToWeasel, signalName, maskName,
-                     ROI_time_values, ROI_signal_values, xLabel, yLabel,  title=""):
+                     ROI_time_values, ROI_signal_values, xLabel, yLabel,  title="Mean ROI Signal/Time Curve"):
     try:
         subWindow = QMdiSubWindow(pointerToWeasel)
         subWindow.setObjectName = 'Time_Curve_viewer'
