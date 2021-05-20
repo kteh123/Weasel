@@ -80,6 +80,8 @@ class Weasel(QMainWindow, Pipelines):
         self.treeView = None
         self.listMenus = []
         self.listPythonFiles = self.returnListPythonFiles()
+
+        #print("self.listPythonFiles={}".format(self.listPythonFiles))
         
         self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
         
