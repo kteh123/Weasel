@@ -83,7 +83,7 @@ class PythonMenuBuilder:
                 self.pointerToWeasel.context.addAction(self.menuItem)
     
         except Exception as e:
-            print('Error in PythonMenuBuilder.addItem: ' + str(e)) 
+            print('Error in PythonMenuBuilder.addItem when item={}: '.format(itemLabel) + str(e)) 
             logger.exception('Error in PythonMenuBuilder.addItem: ' + str(e)) 
 
 
