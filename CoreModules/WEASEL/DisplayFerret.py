@@ -22,7 +22,7 @@ def displayFerret(self):
                                       Qt.WindowCloseButtonHint | 
                                       Qt.WindowMinimizeButtonHint |
                                       Qt.WindowMaximizeButtonHint)
-            
+            #This statement causes problems
             #ferretWidget = ferret(self.subWindow, self.statusBar)
             #self.subWindow.setWidget(ferretWidget.returnFerretWidget())
             self.subWindow.setWidget(QLabel("Ferret")) #Test string
