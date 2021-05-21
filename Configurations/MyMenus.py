@@ -151,9 +151,9 @@ def main(pointerToWeasel):
     examples.addItem(itemLabel = 'Create New Series by Slice Location',
                moduleName = 'Test_CreateSeriesBySliceLocation')
 
-    ferret = menuBuilder(pointerToWeasel, "Ferret")
-              
-   # ferret.addItem(itemLabel = 'Signal/Mask to DICOM',
-#moduleName = 'Tutorial_Ferret_Joao')
-
+    ferret = menuBuilder(pointerToWeasel, "Ferret")      
+    ferret.addItem(itemLabel = 'Signal/Mask to DICOM',
+     moduleName = 'Tutorial_Ferret_Joao')
+    ferret.addItem(itemLabel = 'Launch Ferret',
+     moduleName = 'Tutorial_LaunchFerret')
   
