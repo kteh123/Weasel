@@ -70,7 +70,7 @@ class PlotGraph:
 
             self.subPlot.set_xlabel(self.xLabel, fontsize=xyAxisLabelSize)
             self.subPlot.set_ylabel(self.yLabel, fontsize=xyAxisLabelSize)
-            self.subPlot.set_title(self.title, fontsize=titleSize, pad=25)
+            self.subPlot.set_title(self.title, fontsize=titleSize)
             self.subPlot.grid()
 
             self.subPlot.plot(self.xValues, self.yValues, 'r.-', label= self.title)
