@@ -333,24 +333,34 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
     try:
         affineTarget = getAffineArray(datasetTarget)
         affineMask = getAffineArray(datasetMask)
-        listIndexes = []
         indexes = np.transpose(np.where(mask==1))
-        for index in indexes:
-            if len(index) == 2: 
-                temp_index = np.array([index[0], index[1], 0])
-            else:
-                temp_index = np.array([index[1], index[2], index[0]])
-            newMaskCoord = np.round(applyAffine(affineTarget, affineMask, np.array(temp_index)), 3)
-            newCoord = np.round(newMaskCoord).astype(int)
-            if (len(index) == 2) and (newCoord[-1] == 0):
-                listIndexes.append((newCoord[1], newCoord[0]))
-            elif len(index) == 3:
-                listIndexes.append((newCoord[-1], newCoord[1], newCoord[0]))
-            del temp_index
+        if np.shape(indexes) == (0,2):
+            listIndexes = []
+        else:
+            listIndexes = mapCoordinates(indexes, affineTarget, affineMask)
         return listIndexes
     except Exception as e:
         print('Error in function ReadDICOM_Image.mapMaskToImage: ' + str(e))
         logger.exception('Error in ReadDICOM_Image.mapMaskToImage: ' + str(e))
+
+def mapCoordinates(indexes, affineTarget, affineMask):
+    try:
+        coords = [[index[0], index[1], 0] for index in indexes]
+        newCoord = np.round(applyAffine(affineTarget, affineMask, np.array(coords)), 3).astype(int)
+        return [(coord[1], coord[0]) for coord in newCoord if coord[-1] == 0]
+
+        # Legacy code that might be needed if we move to 3D
+        #if len(index) == 2: 
+        #coords = [[index[0], index[1], 0] for index in indexes]
+        #else:
+        #temp_index = np.array([index[1], index[2], index[0]])
+        #if (len(index) == 2) and (newCoord[-1] == 0):
+        #    return (newCoord[1], newCoord[0])
+        #elif len(index) == 3:
+        #    return (newCoord[-1], newCoord[1], newCoord[0])
+    except Exception as e:
+        print('Error in function ReadDICOM_Image.mapCoordinates: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.mapCoordinates: ' + str(e))
 
 
 def applyAffine(affineReference, affineTarget, coordinates):

@@ -30,8 +30,7 @@ def returnFilePath(imagePath, suffix, new_path=None, output_folder=None):
                 else:
                     outputFolder = output_folder
                 fileName = os.path.splitext(os.path.basename(imagePath))[0]
-                try: os.mkdir(outputFolder)
-                except: pass
+                os.makedirs(outputFolder, exist_ok=True)
                 newFilePath = os.path.join(outputFolder, fileName + suffix + '.dcm')
                 counter = 1
                 if os.path.exists(newFilePath):
@@ -286,7 +285,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
     logger.info("SaveDICOM_Image.createNewSingleDicom called")
     try:
         newDicom = copy.deepcopy(dicomData)
-        imageArray = copy.deepcopy(imageArray)
+        #imageArray = copy.deepcopy(imageArray)
 
         # Series ID and UID
         if (series_id is None) and (series_uid is None):
@@ -498,12 +497,12 @@ def saveDicomToFile(dicomData, output_path=None):
     try:
         if output_path is None:
             try:
-                output_path = os.getcwd() + copy.deepcopy(dicomData.InstanceNumber).zfill(6) + ".dcm"
+                output_path = os.getcwd() + str(dicomData.InstanceNumber).zfill(6) + ".dcm"
             except:
                 try:
-                    output_path = os.getcwd() + copy.deepcopy(dicomData.ImageNumber).zfill(6) + ".dcm"
+                    output_path = os.getcwd() + str(dicomData.ImageNumber).zfill(6) + ".dcm"
                 except:
-                    output_path = os.getcwd() + copy.deepcopy(dicomData.SOPInstanceUID) + ".dcm"
+                    output_path = os.getcwd() + str(dicomData.SOPInstanceUID) + ".dcm"
 
         pydicom.filewriter.dcmwrite(output_path, dicomData, write_like_original=True)
         # Try to read the new generated file to check if it's corrupted
