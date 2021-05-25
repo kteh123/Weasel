@@ -452,7 +452,6 @@ class OriginalPipelines():
         self.mdiArea.closeAllSubWindows()
 
 
-    @staticmethod
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label)
         #subWindow = ROITimeCurveViewer(x, y, x_axis_label, y_axis_label, title=title)
