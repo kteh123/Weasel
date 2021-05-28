@@ -4,7 +4,6 @@ import re
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
-import CoreModules.WEASEL.DisplayFerret as ferret
 
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
@@ -457,11 +456,6 @@ class OriginalPipelines():
         #subWindow = ROITimeCurveViewer(x, y, x_axis_label, y_axis_label, title=title)
         #self.mdiArea.addSubWindow(subWindow)
         #subWindow.displaySubWindow(pointerToWeasel)
-
-
-    @staticmethod
-    def displayFerret(self):
-        ferret.displayFerret(self)
 
 
     @staticmethod
