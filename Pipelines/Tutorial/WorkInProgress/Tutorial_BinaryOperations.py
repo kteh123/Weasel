@@ -8,8 +8,8 @@ def main(weasel):
     images = weasel.images()
     list_operations = ["A * B", "A / B", "A + B", "A - B"]
     cancel, fields = weasel.user_input(
-        {"type":"dropdownlist", "label":"Image A", "list":images.names, "default":0},
-        {"type":"dropdownlist", "label":"Image B", "list":images.names, "default":0},
+        {"type":"dropdownlist", "label":"Image A", "list":images.label, "default":0},
+        {"type":"dropdownlist", "label":"Image B", "list":images.label, "default":0},
         {"type":"dropdownlist", "label":"Operation", "list":list_operations, "default":0},
         title="Settings for binary operation")
     if cancel: return
@@ -20,16 +20,16 @@ def main(weasel):
     # fields[X]['value'] is the index of the chosen value in the input list that it refers to.
 
     if operation == "A * B":
-        result = imageA.new(suffix="_Multiplication_" + imageA.name + "_" + imageB.name)
+        result = imageA.new(suffix="_Multiplication_" + imageA.label + "_" + imageB.label)
         result.write(imageA.PixelArray * imageB.PixelArray)
     elif operation == "A / B":
-        result = imageA.new(suffix="_Division_" + imageA.name + "_" + imageB.name)
+        result = imageA.new(suffix="_Division_" + imageA.label + "_" + imageB.label)
         result.write(imageA.PixelArray / imageB.PixelArray)
     elif operation == "A + B":
-        result = imageA.new(suffix="_Sum_" + imageA.name + "_" + imageB.name)
+        result = imageA.new(suffix="_Sum_" + imageA.label + "_" + imageB.label)
         result.write(imageA.PixelArray + imageB.PixelArray)
     elif operation == "A - B":
-        result = imageA.new(suffix="_Subtraction" + imageA.name + "_" + imageB.name)
+        result = imageA.new(suffix="_Subtraction" + imageA.label + "_" + imageB.label)
         result.write(imageA.PixelArray - imageB.PixelArray)
         
     result.display()

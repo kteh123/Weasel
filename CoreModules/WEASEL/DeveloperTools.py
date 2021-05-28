@@ -741,6 +741,15 @@ class Subject:
         return len(self.children)
     
     @property
+    def label(self):
+        logger.info("Subject.label called")
+        try:
+            return self.subjectID
+        except Exception as e:
+            print('Error in Subject.label: ' + str(e))
+            logger.exception('Error in Subject.label: ' + str(e))
+    
+    @property
     def all_images(self):
         logger.info("Subject.all_images called")
         try:
@@ -793,7 +802,7 @@ class Subject:
         logger.info("Subject.add called")
         try:
             study.subjectID = self.subjectID
-            study["PatientID"] = series.subjectID
+            study["PatientID"] = study.subjectID
             #interfaceDICOMXMLFile.insertNewStudyInXMLFile(self, study.subjectID, study.studyID, study.suffix)
         except Exception as e:
             print('Error in Subject.add: ' + str(e))
@@ -923,6 +932,15 @@ class Study:
     @property
     def number_children(self):
         return len(self.children)
+
+    @property
+    def label(self):
+        logger.info("Study.label called")
+        try:
+            return self.studyID
+        except Exception as e:
+            print('Error in Study.label: ' + str(e))
+            logger.exception('Error in Study.label: ' + str(e))
 
     @property
     def all_images(self):
@@ -1148,6 +1166,15 @@ class Series:
     def number_children(self):
         return len(self.children)
 
+    @property
+    def label(self):
+        logger.info("Series.label called")
+        try:
+            return self.seriesID
+        except Exception as e:
+            print('Error in Series.label: ' + str(e))
+            logger.exception('Error in Series.label: ' + str(e))
+
     @classmethod
     def fromTreeView(cls, objWeasel, seriesItem):
         subjectID = seriesItem.parent().parent().text(1).replace('Subject -', '').strip()
@@ -1305,23 +1332,15 @@ class Series:
         logger.info("Series.sort called")
         try:
             tuple_to_sort = []
-            list_to_sort = []
-            list_to_sort.append(self.images) # children? images?
+            list_to_sort = [self.images]
             for tag in argv:
                 if len(self.get_value(tag)) > 0:
-                    attributeList = self.get_value(tag)
-                    list_to_sort.append(attributeList)
-            for index, _ in enumerate(self.images):
-                individual_tuple = []
-                for individual_list in list_to_sort:
-                    individual_tuple.append(individual_list[index])
+                    list_to_sort.append(self.get_value(tag))
+            for index in range(len(self.images)):
+                individual_tuple = [individual_list[index] for individual_list in list_to_sort]
                 tuple_to_sort.append(tuple(individual_tuple))
             tuple_sorted = sorted(tuple_to_sort, key=lambda x: x[1:], reverse=reverse)
-            list_sorted_images = []
-            for individual in tuple_sorted:
-                list_sorted_images.append(individual[0])
-            #list_sorted_paths = [img.path for img in list_sorted_images]
-            #self.images = list_sorted_paths
+            list_sorted_images = [individual[0] for individual in tuple_sorted]
             self.images = list_sorted_images
             return self
         except Exception as e:
@@ -1352,6 +1371,16 @@ class Series:
         except Exception as e:
             print('Error in Series.display: ' + str(e))
             logger.exception('Error in Series.display: ' + str(e))
+
+    def plot(self, xlabel="X axis", ylabel="Y axis"):
+        logger.info("Series.plot called")
+        try:
+            for imagePath in self.images:
+                image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imagePath)
+                image.plot(xlabel, ylabel)
+        except Exception as e:
+            print('Error in Series.plot: ' + str(e))
+            logger.exception('Error in Series.plot: ' + str(e))
 
     def Metadata(self):
         logger.info("Series.Metadata called")
@@ -1474,6 +1503,44 @@ class Series:
         except Exception as e:
             print('Error in Series.PixelArray: ' + str(e))
             logger.exception('Error in Series.PixelArray: ' + str(e))
+        
+    def Mask(self, maskInstance):
+        """Returns the PixelArray masked."""
+        logger.info("Series.Mask called")
+        try:
+            dataset = maskInstance.PydicomList
+            mask_array = maskInstance.PixelArray
+            mask_array[mask_array != 0] = 1
+            mask_output = []
+            if isinstance(maskInstance, Image):
+                for dicomFile in self.images:
+                    dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                    tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                    affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                    if affine_results:
+                        coords = zip(*affine_results)
+                        tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                    mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
+                return mask_output
+            elif isinstance(maskInstance, Series):
+                listImages = self.images
+                listMaskImages = maskInstance.images
+                for dicomFile in listImages:
+                    dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                    tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                    for maskFile in listMaskImages:
+                        dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                        mask_array = ReadDICOM_Image.getPixelArray(dataset)
+                        mask_array[mask_array != 0] = 1
+                        affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                        if affine_results:
+                            coords = zip(*affine_results)
+                            tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                    mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
+                return mask_output
+        except Exception as e:
+            print('Error in Series.Mask: ' + str(e))
+            logger.exception('Error in Series.Mask: ' + str(e))
 
     #@PixelArray.setter
     #def PixelArray(self, ROI=None):
@@ -1697,6 +1764,15 @@ class Image:
         except Exception as e:
             print('Error in Image.newSeriesFrom: ' + str(e))
             logger.exception('Error in Image.newSeriesFrom: ' + str(e))
+        
+    @property
+    def label(self):
+        logger.info("Image.label called")
+        try:
+            return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+        except Exception as e:
+            print('Error in Image.label: ' + str(e))
+            logger.exception('Error in Image.label: ' + str(e))
 
     def new(self, suffix='_Copy', series=None):
         logger.info("Image.new called")
@@ -1820,14 +1896,13 @@ class Image:
             print('Error in Image.displayListImages: ' + str(e))
             logger.exception('Error in Image.displayListImages: ' + str(e))
 
-    @property
-    def name(self):
-        logger.info("Image.name called")
+    def plot(self, xlabel="X axis", ylabel="Y axis"):
+        logger.info("Image.plot called")
         try:
-            return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+            self.objWeasel.plot(self.path, self.seriesID, self.PixelArray[0], self.PixelArray[1], xlabel, ylabel)
         except Exception as e:
-            print('Error in Image.name: ' + str(e))
-            logger.exception('Error in Image.name: ' + str(e))
+            print('Error in Image.plot: ' + str(e))
+            logger.exception('Error in Image.plot: ' + str(e))
 
     @property
     def SeriesUID(self):
@@ -1858,7 +1933,7 @@ class Image:
             logger.exception('Error in Image.Metadata: ' + str(e))
 
     @property
-    def PixelArray(self, ROI=None):
+    def PixelArray(self):
         logger.info("Image.PixelArray called")
         try:
             pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
@@ -1866,6 +1941,38 @@ class Image:
         except Exception as e:
             print('Error in Image.PixelArray: ' + str(e))
             logger.exception('Error in Image.PixelArray: ' + str(e))
+
+    def Mask(self, maskInstance):
+        """Returns the PixelArray masked."""
+        logger.info("Image.Mask called")
+        try:
+            if isinstance(maskInstance, Image):
+                #for index, dicomFile in enumerate(targetPath):
+                tempArray = np.zeros(np.shape(self.PixelArray))
+                dataset_original = self.PydicomObject
+                dataset = maskInstance.PydicomObject
+                mask_array = maskInstance.PixelArray
+                mask_array[mask_array != 0] = 1
+                affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                if affine_results:
+                    coords = zip(*affine_results)
+                    tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                return np.transpose(tempArray) * self.PixelArray
+            elif isinstance(maskInstance, Series):
+                tempArray = np.zeros(np.shape(self.PixelArray))
+                for maskFile in maskInstance.images:
+                    dataset_original = self.PydicomObject
+                    dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                    mask_array = ReadDICOM_Image.getPixelArray(dataset)
+                    mask_array[mask_array != 0] = 1
+                    affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                    if affine_results:
+                        coords = zip(*affine_results)
+                        tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                return np.transpose(tempArray) * self.PixelArray
+        except Exception as e:
+            print('Error in Image.Mask: ' + str(e))
+            logger.exception('Error in Image.Mask: ' + str(e))
     
     #@property
     #def PixelArray(self, ROI=None):

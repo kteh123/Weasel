@@ -504,7 +504,8 @@ class WeaselXMLReader:
                     if subjectID_Original is None or studyID_Original is None or seriesID_Original is None:
                         imageLabel = str(index + 1).zfill(6) # + suffix
                     else:
-                        imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, origImageList[index])
+                        imageLabel = str(ReadDICOM_Image.getImageTagValue(newImageList[index], 'InstanceNumber')).zfill(6)
+                        #imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, origImageList[index])
                     imageTime = self.getImageTime(subjectID, studyID, seriesID)
                     imageDate = self.getImageDate(subjectID, studyID, seriesID)
                     newImage = ET.SubElement(newSeries,'image')
@@ -549,7 +550,8 @@ class WeaselXMLReader:
             if subjectID_Original is None or studyID_Original is None or seriesID_Original is None:
                 imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original)
             else:
-                imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, imageName)
+                imageLabel = str(ReadDICOM_Image.getImageTagValue(newImageFileName, 'InstanceNumber')).zfill(6)
+                #imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, imageName)
             imageTime = self.getImageTime(subjectID, studyID, seriesID)
             imageDate = self.getImageDate(subjectID, studyID, seriesID)
             if series is None:

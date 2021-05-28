@@ -40,11 +40,11 @@ class ImagesList(ListOfDicomObjects):
     A class containing a list of objects of class Image. 
     """
     @property
-    def names(self):
+    def label(self):
         """
         Returns a list of names of the list of images.
         """
-        listNames = [image.name for image in self]
+        listNames = [image.label for image in self]
         return listNames
 
     def copy(self):
@@ -453,7 +453,7 @@ class OriginalPipelines():
 
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
-        curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label)
+        curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
         #subWindow = ROITimeCurveViewer(x, y, x_axis_label, y_axis_label, title=title)
         #self.mdiArea.addSubWindow(subWindow)
         #subWindow.displaySubWindow(pointerToWeasel)
