@@ -16,5 +16,6 @@ setuptools>=53.0.0
 sip>=6.0.0
 Sphinx>=3.2.1
 sphinx-rtd-theme>=0.5.0
+uarray>=0.6.0
 xlrd>=1.2.0
 xnat>=0.3.25

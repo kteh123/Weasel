@@ -1,7 +1,7 @@
 
 from PyQt5 import QtCore 
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog,                            
+from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
         QMdiSubWindow, QGroupBox, QMainWindow, QHBoxLayout, QDoubleSpinBox,
         QPushButton, QStatusBar, QLabel, QAbstractSlider, QHeaderView,
@@ -81,6 +81,11 @@ def displayMetaDataSubWindow(objWeasel, tableTitle, dataset):
 
         DICOM_Metadata_Table_View = buildTableView(objWeasel, dataset) 
             
+        # Add search bar
+        search_field = QLineEdit()
+        search_field.textEdited.connect(lambda x=search_field.text(): search_table(DICOM_Metadata_Table_View, x))
+
+        widget.layout().addWidget(search_field)
         widget.layout().addWidget(DICOM_Metadata_Table_View)
 
         objWeasel.mdiArea.addSubWindow(metaDataSubWindow)
@@ -217,3 +222,13 @@ def buildTableView(objWeasel, dataset):
             logger.error('Error in : ViewMetaData.buildTableView' + str(e))
 
 
+def search_table(table, expression):
+    table.clearSelection()
+    if expression:
+        items = table.findItems(expression, Qt.MatchContains)
+        if items:  # we have found something
+            for item in items:
+                item.setSelected(True)
+                #table.item(item).setSelected(True)
+            #item = items[0]  # take the first
+            #table.table.setCurrentItem(item)
