@@ -503,3 +503,27 @@ class OriginalPipelines():
         Returns True if the regex "expression" is in the string target. 
         """
         return re.search(regex_string, target, re.IGNORECASE)
+
+
+    def TRISTAN_Preprocessing(self):
+        searchString = "No Series Description"
+        treeViewRefresh = False
+        subjects = self.objXMLReader.getSubjects()
+        for subject in subjects:
+            for study in subject:
+                for series in study:
+                    seriesID=series.attrib['id']
+                    if searchString in seriesID:
+                        #Get protocol name
+                        #replace SeriesID with protocol name
+                        treeViewRefresh = True
+
+        if treeViewRefresh:
+            self.refresh()
+            
+
+                        
+                        
+
+                    
+                   
