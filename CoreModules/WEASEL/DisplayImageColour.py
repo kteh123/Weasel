@@ -759,7 +759,10 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                      graphicsView.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
                 
                 #spinBoxStep = int(0.01 * iqr(pixelArray, rng=(25, 75)))
-                spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+                if (minimumValue < 1 and minimumValue > -1):
+                    spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+                else:
+                    spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
                 #print(spinBoxStep)
                 spinBoxIntensity.setSingleStep(spinBoxStep)
                 spinBoxContrast.setSingleStep(spinBoxStep)
@@ -1510,13 +1513,13 @@ def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, imageNumber=1):
                 and x_i >= 0 and x_i < pixelArray.shape [ 0 ]: 
                 lblPixelValue.setText(
                     "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
-                .format (round(pixelArray[ x_i, y_i ], 3), x_i, y_i, z_i))
+                .format (round(pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
             elif (len(np.shape(pixelArray)) == 3) and z_i >= 0 and z_i < pixelArray.shape [ 0 ] \
                 and x_i >= 0 and x_i < pixelArray.shape [ 1 ] \
                 and y_i >= 0 and y_i < pixelArray.shape [ 2 ]:
                 lblPixelValue.setText(
                     "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
-                .format (round(pixelArray[ z_i, x_i, y_i ], 3), x_i, y_i, z_i))
+                .format (round(pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i))
             else:
                 lblPixelValue.setText("")
         else:

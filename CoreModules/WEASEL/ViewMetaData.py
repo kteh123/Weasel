@@ -230,5 +230,6 @@ def search_table(table, expression):
             for item in items:
                 item.setSelected(True)
                 #table.item(item).setSelected(True)
+            table.scrollToItem(items[0])
             #item = items[0]  # take the first
             #table.table.setCurrentItem(item)

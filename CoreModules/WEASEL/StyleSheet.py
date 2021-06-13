@@ -70,6 +70,10 @@ TRISTAN_GREY = """
 
                 QSpinBox::down-arrow{max-height: 16px;}
 
+                QDoubleSpinBox{
+                    font-size: 9pt;
+                    font-weight: bold;}
+
                 QDoubleSpinBox::up-arrow{max-height: 16px;}
 
                 QDoubleSpinBox::down-arrow{max-height: 16px;}

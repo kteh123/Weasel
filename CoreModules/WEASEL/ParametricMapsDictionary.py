@@ -24,6 +24,21 @@ class ParametricClass(object):
         method = getattr(self, methodName, lambda: "No valid Parametric Map chosen")
         return method(dicom, imageArray)
 
+    def RGB(self, dicom, imageArray):
+        dicom.PhotometricInterpretation = 'RGB'
+        dicom.SamplesPerPixel = 3
+        dicom.BitsAllocated = 8
+        dicom.BitsStored = 8
+        dicom.HighBit = 7
+        dicom.add_new(0x00280006, 'US', 0) # Planar Configuration
+        dicom.RescaleSlope = 1
+        dicom.RescaleIntercept = 0
+        pixelArray = imageArray.astype(np.uint8) # Should we multiply by 255?
+        dicom.WindowCenter = int((np.amax(imageArray) - np.amin(imageArray)) / 2)
+        dicom.WindowWidth = np.absolute(int(np.amax(imageArray) - np.amin(imageArray)))
+        dicom.PixelData = pixelArray.tobytes()
+        return
+
     def ADC(self, dicom, imageArray):
         # The commented parts are to apply when we decide to include Parametric Map IOD. No readers can deal with this yet
         # dicom.SOPClassUID = '1.2.840.10008.5.1.4.1.1.67'
