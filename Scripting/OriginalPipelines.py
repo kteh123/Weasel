@@ -5,7 +5,9 @@ import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
 
-from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
+from PyQt5.QtWidgets import (QMessageBox, QFileDialog, QMdiSubWindow)
+from PyQt5.QtCore import  Qt
+from PyQt5.QtGui import  QIcon
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 from CoreModules.WEASEL.DeveloperTools import Subject
@@ -453,9 +455,34 @@ class OriginalPipelines():
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
-        #subWindow = ROITimeCurveViewer(x, y, x_axis_label, y_axis_label, title=title)
-        #self.mdiArea.addSubWindow(subWindow)
-        #subWindow.displaySubWindow(pointerToWeasel)
+        
+
+    def launchExternalApp(self, appWidget, title=None, icon=None):
+        """This method takes a composite widget created by an external 
+        application, makes it the central widget of an MDI subwindow
+        and displays that subwindow in the Weasel MDI"""
+        try:
+            logger.info("OriginalPipelines.launchExternalApp called")
+            subWindow = QMdiSubWindow()
+            subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
+                                      Qt.WindowCloseButtonHint | 
+                                      Qt.WindowMinimizeButtonHint |
+                                      Qt.WindowMaximizeButtonHint)
+            height, width = self.getMDIAreaDimensions()
+            subWindow.setGeometry(0, 0, width, height)
+            self.mdiArea.addSubWindow(subWindow)
+            
+            subWindow.setWidget(appWidget)
+
+            if title is not None:
+                subWindow.setWindowTitle(title)
+            if icon is not None:
+                subWindow.setWindowIcon(QIcon(icon))
+            
+            subWindow.show()
+        except Exception as e:
+            print('Error in OriginalPipelines.launchExternalApp: ' + str(e))
+            logger.error('OriginalPipelines.launchExternalApp: ' + str(e)) 
 
 
     @staticmethod
@@ -476,3 +503,27 @@ class OriginalPipelines():
         Returns True if the regex "expression" is in the string target. 
         """
         return re.search(regex_string, target, re.IGNORECASE)
+
+
+    def TRISTAN_Preprocessing(self):
+        searchString = "No Series Description"
+        treeViewRefresh = False
+        subjects = self.objXMLReader.getSubjects()
+        for subject in subjects:
+            for study in subject:
+                for series in study:
+                    seriesID=series.attrib['id']
+                    if searchString in seriesID:
+                        #Get protocol name
+                        #replace SeriesID with protocol name
+                        treeViewRefresh = True
+
+        if treeViewRefresh:
+            self.refresh()
+            
+
+                        
+                        
+
+                    
+                   
