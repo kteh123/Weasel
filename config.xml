@@ -1,7 +1,7 @@
 <!-- Put this file in .gitignore-->
 <config>
   <menu_config_file>MyMenus.py</menu_config_file>
-  <weasel_data_folder>C:\Users\Steve Shillitoe\source\repos\WEASEL\WeaselData</weasel_data_folder>
+  <weasel_data_folder>C:\TRISTAN Study\Day 1-20210427T141213Z-001</weasel_data_folder>
 </config>
   
 
