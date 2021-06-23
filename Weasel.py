@@ -8,7 +8,7 @@ import sys
 import pathlib
 import importlib
 import logging
-from multiprocessing import current_process
+from multiprocessing import current_process, freeze_support
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -21,7 +21,7 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
 #pathlib.Path().absolute() is the current directory where the script is located. 
 #It doesn't matter if it's Python SYS or Windows SYS
 
-#os.chdir(os.path.dirname(sys.argv[0]))
+os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
@@ -168,7 +168,6 @@ class Weasel(QMainWindow, Pipelines):
         for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
             for individualFile in filenames:
                 if individualFile.endswith(".py"):
-                    sys.path.append(os.path.dirname(dirpath))
                     listPythonFiles.append(os.path.join(dirpath, individualFile))
         return listPythonFiles
 
@@ -253,5 +252,6 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == '__main__':
+    freeze_support()
     main()
    

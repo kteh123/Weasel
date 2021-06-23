@@ -21,9 +21,14 @@ os.system(activation_command + ' && pip install -e .')
 print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
+print("Creating list of hidden-imports...")
+hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'skimage', 'ukat', 'lmfit', 'fpdf', 'joblib']
+string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
+
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller --hidden-import requests --hidden-import xnat --collect-datas External --clean --onefile Weasel.py')
-# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log
+os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile Weasel.py')
+# Add the "Scripting"/"Pipelines" folder when we make official release
+# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
 
 print("Cleaning up compilation files...")
 # Windows

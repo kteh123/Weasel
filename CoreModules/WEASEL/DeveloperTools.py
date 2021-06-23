@@ -1261,9 +1261,14 @@ class Series:
             print('Error in Series.remove: ' + str(e))
             logger.exception('Error in Series.remove: ' + str(e))
 
-    def write(self, pixelArray, parametric_map=None, output_dir=None):
+    def write(self, pixelArray, parametric_map=None, output_dir=None, value_range=None):
         logger.info("Series.write called")
         try:
+            if isinstance(value_range, list):
+                pixelArray = np.nan_to_num(pixelArray, posinf=value_range[1], neginf=value_range[0])
+                pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
+            else:
+                pixelArray = np.nan_to_num(pixelArray)
             if self.images:
                 PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
             else:
@@ -1820,9 +1825,14 @@ class Image:
             print('Error in Image.delete: ' + str(e))
             logger.exception('Error in Image.delete: ' + str(e))
 
-    def write(self, pixelArray, series=None, parametric_map=None, output_dir=None):
+    def write(self, pixelArray, series=None, parametric_map=None, output_dir=None, value_range=None):
         logger.info("Image.write called")
         try:
+            if isinstance(value_range, list):
+                pixelArray = np.nan_to_num(pixelArray, posinf=value_range[1], neginf=value_range[0])
+                pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
+            else:
+                pixelArray = np.nan_to_num(pixelArray)
             if os.path.exists(self.path):
                 PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
             else:

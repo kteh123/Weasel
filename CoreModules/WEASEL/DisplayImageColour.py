@@ -759,7 +759,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                      graphicsView.setImage(pixelArray, autoHistogramRange=True, xvals=np.arange(np.shape(pixelArray)[0] + 1), levels=(minimumValue, maximumValue))
                 
                 #spinBoxStep = int(0.01 * iqr(pixelArray, rng=(25, 75)))
-                if (minimumValue < 1 and minimumValue > -1):
+                if (minimumValue < 1 and minimumValue > -1) and (maximumValue < 1 and maximumValue > -1):
                     spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
                 else:
                     spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range

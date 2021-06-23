@@ -33,9 +33,14 @@ def returnFilePath(imagePath, suffix, new_path=None, output_folder=None):
                 os.makedirs(outputFolder, exist_ok=True)
                 newFilePath = os.path.join(outputFolder, fileName + suffix + '.dcm')
                 counter = 1
+                loop = 1
                 if os.path.exists(newFilePath):
-                    newFilePath = os.path.join(outputFolder, fileName + suffix + '(' + str(counter) + ')' + '.dcm')
-                    counter += 1
+                    while loop == 1:
+                        newFilePath = os.path.join(outputFolder, fileName + suffix + '(' + str(counter) + ')' + '.dcm')
+                        if os.path.exists(newFilePath):
+                            counter += 1
+                        else:
+                            loop = 0
             return newFilePath
 
         else:
