@@ -282,7 +282,9 @@ class OriginalPipelines():
     A class for accessing GUI elements from within a pipeline script. 
     """
     def log(self, message):
+        print(message)
         logger.exception(message)
+
 
     def images(self, msg='Please select one or more images'):
         """
@@ -425,11 +427,11 @@ class OriginalPipelines():
         messageWindow.setMsgWindowProgBarMaxValue(self, max)
         messageWindow.setMsgWindowProgBarValue(self, index)
 
-    def update_progress_bar(self, index=0):
+    def update_progress_bar(self, index=0, msg=None):
         """
         Updates the progress bar with a new index.
         """
-        messageWindow.setMsgWindowProgBarValue(self, index)
+        messageWindow.setMsgWindowProgBarValue(self, index, msg)
 
     def close_progress_bar(self):
         """
