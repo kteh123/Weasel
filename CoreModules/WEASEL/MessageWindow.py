@@ -31,8 +31,8 @@ def displayMessageSubWindow(self, message, title="Loading DICOM files"):
             self.msgSubWindow.setWindowTitle(title)
             height, width = self.getMDIAreaDimensions()
             self.msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
-            lblMsg = QLabel('<H4>' + message + '</H4>')
-            widget.layout().addWidget(lblMsg)
+            self.lblMsg = QLabel('<H4>' + message + '</H4>')
+            widget.layout().addWidget(self.lblMsg)
 
             self.progBarMsg = QProgressBar(self)
             widget.layout().addWidget(self.progBarMsg)
@@ -53,9 +53,14 @@ def setMsgWindowProgBarMaxValue(self, maxValue):
     self.progBarMsg.setMaximum(maxValue)
 
 
-def setMsgWindowProgBarValue(self, value):
-    self.progBarMsg.setValue(value)
-
+def setMsgWindowProgBarValue(self, value, msg=None):
+    try:
+        self.progBarMsg.setValue(value)
+        if msg is not None:
+            self.lblMsg.setText(msg)
+    except Exception as e:
+            print('Error in MessageWindow.setMsgWindowProgBarValue when message={}'.format(msg) + str(e))
+            logger.exception('Error in MessageWindow.setMsgWindowProgBarValue when message={}'.format(msg) + str(e))
 
 def hideProgressBar(self):
     try:
