@@ -712,7 +712,7 @@ class Subject:
        return '{}'.format(self.__class__.__name__)
     
     @property
-    def children(self, index=None):
+    def children(self):
         logger.info("Subject.children called")
         try:
             children = []
@@ -902,7 +902,7 @@ class Study:
        return '{}'.format(self.__class__.__name__)
 
     @property
-    def children(self, index=None):
+    def children(self):
         logger.info("Study.children called")
         try:
             children = []
@@ -1140,7 +1140,7 @@ class Series:
        return '{}'.format(self.__class__.__name__)
 
     @property
-    def children(self, index=None):
+    def children(self):
         logger.info("Series.children called")
         try:
             children = []
@@ -1265,10 +1265,19 @@ class Series:
         logger.info("Series.write called")
         try:
             if isinstance(value_range, list):
-                pixelArray = np.nan_to_num(pixelArray, posinf=value_range[1], neginf=value_range[0])
                 pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
             else:
-                pixelArray = np.nan_to_num(pixelArray)
+                list_values = np.unique(pixelArray).flatten()
+                list_values = [x for x in list_values if np.isnan(x) == False]
+                if np.isposinf(list_values[-1]) or np.isinf(list_values[-1]):
+                    upper_value = list_values[-2]
+                else:
+                    upper_value = None
+                if np.isneginf(list_values[0]) or np.isinf(list_values[0]):
+                    lower_value = list_values[1]
+                else:
+                    lower_value = None
+                pixelArray = np.nan_to_num(pixelArray, posinf=upper_value, neginf=lower_value)
             if self.images:
                 PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.images)
             else:
@@ -1632,24 +1641,25 @@ class Series:
                         GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
                 else:
                     GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
+                newDicom = self.PydicomList
                 # Consider the case where other XML fields are changed
                 for index, dataset in enumerate(comparisonDicom):
                     changeXML = False
-                    if dataset.SeriesDescription != self.PydicomList[index].SeriesDescription or dataset.SeriesNumber != self.PydicomList[index].SeriesNumber:
+                    if dataset.SeriesDescription != newDicom[index].SeriesDescription or dataset.SeriesNumber != newDicom[index].SeriesNumber:
                         changeXML = True
-                        newSeriesID = str(self.PydicomList[index].SeriesNumber) + "_" + str(self.PydicomList[index].SeriesDescription)
+                        newSeriesID = str(newDicom[index].SeriesNumber) + "_" + str(newDicom[index].SeriesDescription)
                         self.seriesID = newSeriesID
                     else:
                         newSeriesID = oldSeriesID
-                    if dataset.StudyDate != self.PydicomList[index].StudyDate or dataset.StudyTime != self.PydicomList[index].StudyTime or dataset.StudyDescription != self.PydicomList[index].StudyDescription:
+                    if dataset.StudyDate != newDicom[index].StudyDate or dataset.StudyTime != newDicom[index].StudyTime or dataset.StudyDescription != newDicom[index].StudyDescription:
                         changeXML = True
-                        newStudyID = str(self.PydicomList[index].StudyDate) + "_" + str(self.PydicomList[index].StudyTime).split(".")[0] + "_" + str(self.PydicomList[index].StudyDescription)
+                        newStudyID = str(newDicom[index].StudyDate) + "_" + str(newDicom[index].StudyTime).split(".")[0] + "_" + str(newDicom[index].StudyDescription)
                         self.studyID = newStudyID
                     else:
                         newStudyID = oldStudyID
-                    if dataset.PatientID != self.PydicomList[index].PatientID:
+                    if dataset.PatientID != newDicom[index].PatientID:
                         changeXML = True
-                        newSubjectID = str(self.PydicomList[index].PatientID)
+                        newSubjectID = str(newDicom[index].PatientID)
                         self.subjectID = newSubjectID
                     else:
                         newSubjectID = oldSubjectID
@@ -1829,10 +1839,19 @@ class Image:
         logger.info("Image.write called")
         try:
             if isinstance(value_range, list):
-                pixelArray = np.nan_to_num(pixelArray, posinf=value_range[1], neginf=value_range[0])
                 pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
             else:
-                pixelArray = np.nan_to_num(pixelArray)
+                list_values = np.unique(pixelArray).flatten()
+                list_values = [x for x in list_values if np.isnan(x) == False]
+                if np.isposinf(list_values[-1]) or np.isinf(list_values[-1]):
+                    upper_value = list_values[-2]
+                else:
+                    upper_value = None
+                if np.isneginf(list_values[0]) or np.isinf(list_values[0]):
+                    lower_value = list_values[1]
+                else:
+                    lower_value = None
+                pixelArray = np.nan_to_num(pixelArray, posinf=upper_value, neginf=lower_value)
             if os.path.exists(self.path):
                 PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
             else:
