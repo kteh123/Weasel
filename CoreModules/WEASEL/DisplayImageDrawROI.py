@@ -117,7 +117,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
             lblImageMissing.show()
             graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
         else:
-            graphicsView.setImage(pixelArray)
+            graphicsView.setImage(pixelArray, None, imagePath)
 
         setInitialImageLevelValues(graphicsView, spinBoxIntensity, spinBoxContrast)
             
@@ -787,7 +787,7 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
 
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
-        graphicsView.setImage(pixelArray, mask)
+        graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
         displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)  
         setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt, 

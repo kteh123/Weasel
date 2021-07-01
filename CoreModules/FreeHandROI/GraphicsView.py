@@ -57,14 +57,14 @@ class GraphicsView(QGraphicsView):
         self.graphicsItem.zoomEnabled = boolValue
 
 
-    def setImage(self, pixelArray, mask = None):
+    def setImage(self, pixelArray, mask = None, path = None):
         logger.info("freeHandROI.GraphicsView.setImage called")
         try:
             if self.graphicsItem is not None:
                 self.graphicsItem = None
                 self.scene.clear()
 
-            self.graphicsItem = GraphicsItem(pixelArray, mask)
+            self.graphicsItem = GraphicsItem(pixelArray, mask, path)
        
             #Give graphicsItem some time to adjust itself
             QApplication.processEvents()

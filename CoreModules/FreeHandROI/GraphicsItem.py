@@ -3,11 +3,13 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
 import numpy as np
+from scipy.stats import iqr
 import CoreModules.FreeHandROI.HelperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
 import CoreModules.FreeHandROI.Resources as icons
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -25,11 +27,14 @@ class GraphicsItem(QGraphicsObject):
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
 
-    def __init__(self, pixelArray, roi): 
+    def __init__(self, pixelArray, roi, path): 
         super(GraphicsItem, self).__init__()
         logger.info("GraphicsItem initialised")
-        self.pixelArray = pixelArray 
-        minValue, maxValue = self.__quickMinMax(self.pixelArray)
+        self.pixelArray = pixelArray
+        if path is not None:
+            minValue, maxValue = readLevels(path, self.pixelArray)
+        else:
+            minValue, maxValue = self.__quickMinMax(self.pixelArray)
         self.contrast = maxValue - minValue
         self.intensity = minValue + (maxValue - minValue)/2
         imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
@@ -495,7 +500,45 @@ class GraphicsItem(QGraphicsObject):
             logger.error('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
 
 
+def readLevels(path, pixelArray): 
+        """Reads levels directly from the DICOM image"""
+        try:
+            logger.info("GraphicsItem.readLevels called")
+            #set default values
+            centre = -1 
+            width = -1 
+            maximumValue = -1  
+            minimumValue = -1 
+            dataset = ReadDICOM_Image.getDicomDataset(path)
+            if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
+                slope = float(getattr(dataset, 'RescaleSlope', 1))
+                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                centre = dataset.WindowCenter # * slope + intercept
+                width = dataset.WindowWidth # * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2
+            elif dataset and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
+                slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
+                intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
+                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
+                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2 
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                width = maximumValue - abs(minimumValue)
 
+            return minimumValue, maximumValue
+        except Exception as e:
+            print('Error in GraphicsItem.readLevels: ' + str(e))
+            logger.error('Error in GraphicsItem.readLevels: ' + str(e))
+
+            
     #      def get_mask(img_frame, drawn_roi, row, col):
     #for i in np.arange(row):
     #    for j in np.arange(col):

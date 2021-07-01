@@ -285,7 +285,6 @@ class OriginalPipelines():
         print(message)
         logger.exception(message)
 
-
     def images(self, msg='Please select one or more images'):
         """
         Returns a list of Images checked by the user.

@@ -600,7 +600,7 @@ class PixelArrayDICOMTools:
             print('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
             logger.exception('Error in PixelArrayDICOMTools.getDICOMobject: ' + str(e))
 
-    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, parametric_map=None, output_dir=None):
+    def writeNewPixelArray(self, pixelArray, inputPath, suffix, series_id=None, series_uid=None, series_name=None, parametric_map=None, colourmap=None, output_dir=None):
         """
         Saves the "pixelArray" into new DICOM files with a new series, based
         on the "inputPath" and on the "suffix".
@@ -638,11 +638,11 @@ class PixelArrayDICOMTools:
             if numImages == 1:
                 if isinstance(inputPath, list):
                     inputPath = inputPath[0]
-                SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))], parametric_map=parametric_map)
+                SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))], parametric_map=parametric_map, colourmap=colourmap)
                 # Record derived image in XML file
                 interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
             else:
-                SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath], parametric_map=parametric_map)
+                SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath], parametric_map=parametric_map, colourmap=colourmap)
                 # Insert new series into the DICOM XML file
                 interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
                 
@@ -1261,7 +1261,7 @@ class Series:
             print('Error in Series.remove: ' + str(e))
             logger.exception('Error in Series.remove: ' + str(e))
 
-    def write(self, pixelArray, parametric_map=None, output_dir=None, value_range=None):
+    def write(self, pixelArray, output_dir=None, value_range=None, parametric_map=None, colourmap=None):
         logger.info("Series.write called")
         try:
             if isinstance(value_range, list):
@@ -1284,7 +1284,7 @@ class Series:
                 series_id = self.seriesID.split('_', 1)[0]
                 series_name = self.seriesID.split('_', 1)[1]
                 inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
-                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, parametric_map=parametric_map, output_dir=output_dir)
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir, parametric_map=parametric_map, colourmap=colourmap)
                 self.images = outputPath
         except Exception as e:
             print('Error in Series.write: ' + str(e))
@@ -1641,25 +1641,25 @@ class Series:
                         GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
                 else:
                     GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
-                newDicom = self.PydicomList
+                newDicomList = self.PydicomList
                 # Consider the case where other XML fields are changed
                 for index, dataset in enumerate(comparisonDicom):
                     changeXML = False
-                    if dataset.SeriesDescription != newDicom[index].SeriesDescription or dataset.SeriesNumber != newDicom[index].SeriesNumber:
+                    if dataset.SeriesDescription != newDicomList[index].SeriesDescription or dataset.SeriesNumber != newDicomList[index].SeriesNumber:
                         changeXML = True
-                        newSeriesID = str(newDicom[index].SeriesNumber) + "_" + str(newDicom[index].SeriesDescription)
+                        newSeriesID = str(newDicomList[index].SeriesNumber) + "_" + str(newDicomList[index].SeriesDescription)
                         self.seriesID = newSeriesID
                     else:
                         newSeriesID = oldSeriesID
-                    if dataset.StudyDate != newDicom[index].StudyDate or dataset.StudyTime != newDicom[index].StudyTime or dataset.StudyDescription != newDicom[index].StudyDescription:
+                    if dataset.StudyDate != newDicomList[index].StudyDate or dataset.StudyTime != newDicomList[index].StudyTime or dataset.StudyDescription != newDicomList[index].StudyDescription:
                         changeXML = True
-                        newStudyID = str(newDicom[index].StudyDate) + "_" + str(newDicom[index].StudyTime).split(".")[0] + "_" + str(newDicom[index].StudyDescription)
+                        newStudyID = str(newDicomList[index].StudyDate) + "_" + str(newDicomList[index].StudyTime).split(".")[0] + "_" + str(newDicomList[index].StudyDescription)
                         self.studyID = newStudyID
                     else:
                         newStudyID = oldStudyID
-                    if dataset.PatientID != newDicom[index].PatientID:
+                    if dataset.PatientID != newDicomList[index].PatientID:
                         changeXML = True
-                        newSubjectID = str(newDicom[index].PatientID)
+                        newSubjectID = str(newDicomList[index].PatientID)
                         self.subjectID = newSubjectID
                     else:
                         newSubjectID = oldSubjectID
@@ -1835,7 +1835,7 @@ class Image:
             print('Error in Image.delete: ' + str(e))
             logger.exception('Error in Image.delete: ' + str(e))
 
-    def write(self, pixelArray, series=None, parametric_map=None, output_dir=None, value_range=None):
+    def write(self, pixelArray, series=None, output_dir=None, value_range=None, parametric_map=None, colourmap=None):
         logger.info("Image.write called")
         try:
             if isinstance(value_range, list):
@@ -1853,7 +1853,7 @@ class Image:
                     lower_value = None
                 pixelArray = np.nan_to_num(pixelArray, posinf=upper_value, neginf=lower_value)
             if os.path.exists(self.path):
-                PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path)
+                PixelArrayDICOMTools.overwritePixelArray(pixelArray, self.path) # Include Colourmap and Parametric Map
             else:
                 if series is None:
                     series_id = self.seriesID.split('_', 1)[0]
@@ -1863,7 +1863,7 @@ class Image:
                     series_id = series.seriesID.split('_', 1)[0]
                     series_name = series.seriesID.split('_', 1)[1]
                     series_uid = series.seriesUID
-                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, parametric_map=parametric_map, output_dir=output_dir)
+                outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, self.referencePath, self.suffix, series_id=series_id, series_name=series_name, series_uid=series_uid, parametric_map=parametric_map, output_dir=output_dir, colourmap=colourmap)
                 self.path = outputPath[0]
                 if series: series.add(self)
         except Exception as e:

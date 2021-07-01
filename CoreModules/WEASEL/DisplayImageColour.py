@@ -23,8 +23,6 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QComboBox)
 
 import os
-import scipy
-from scipy.stats import iqr
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -44,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 #List of colour tables supported by matplotlib
 listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis', 
-                            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
             'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
             'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
             'binary', 'gist_yarg', 'gist_gray', 'bone', 'pink',
@@ -54,7 +52,7 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
             'twilight', 'twilight_shifted', 'hsv',
             'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
-            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
+            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'turbo',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
 #Global variable for this module
@@ -1514,12 +1512,13 @@ def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, imageNumber=1):
                 lblPixelValue.setText(
                     "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
                 .format (round(pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
-            elif (len(np.shape(pixelArray)) == 3) and z_i >= 0 and z_i < pixelArray.shape [ 0 ] \
+            elif (len(np.shape(pixelArray)) == 3) \
                 and x_i >= 0 and x_i < pixelArray.shape [ 1 ] \
                 and y_i >= 0 and y_i < pixelArray.shape [ 2 ]:
+                z_i = math.floor(graphicsView.timeIndex(graphicsView.timeLine)[1])
                 lblPixelValue.setText(
                     "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
-                .format (round(pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i))
+                .format (round(pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
             else:
                 lblPixelValue.setText("")
         else:
