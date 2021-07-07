@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QApplication,
 from PyQt5.QtCore import  Qt
 import os
 import sys
+import argparse
 import pathlib
 import importlib
 import logging
@@ -58,7 +59,8 @@ class Weasel(QMainWindow, Pipelines):
 
     def __init__(self): 
         """Creates the MDI container."""
-        super (). __init__ () 
+        super().__init__()
+        self.cmd = False
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
         self.centralwidget = QWidget(self)
@@ -102,8 +104,7 @@ class Weasel(QMainWindow, Pipelines):
 
 
     def __repr__(self):
-       return '{}'.format(
-           self.__class__.__name__)
+       return '{}'.format(self.__class__.__name__)
 
 
     def buildMenus(self):
@@ -244,14 +245,82 @@ class Weasel(QMainWindow, Pipelines):
                 break
         return flag
 
+class Weasel_CMD(Pipelines):
+
+    def __init__(self, arguments):
+        """Creates the WEASEL Command-line class."""
+        print("=====================================")
+        print("WEASEL Command-line Mode")
+        print("=====================================")
+        if arguments.xml_dicom and arguments.python_script:
+            if arguments.xml_dicom.endswith(".xml") and arguments.python_script.endswith(".py"):
+                super().__init__()
+                self.cmd = True
+                self.weaselDataFolder = os.path.dirname(sys.argv[0])
+                self.XMLDicomFile = arguments.xml_dicom
+                self.PythonFile = arguments.python_script
+
+                self.checkedImageList = []
+                self.checkedSeriesList = []
+                self.checkedStudyList = []
+                self.checkedSubjectList = []
+
+                # XML reader object to process XML DICOM data file
+                self.objXMLReader = WeaselXMLReader()
+                self.treeView = None
+                self.treeViewColumnWidths = {1: 0, 2: 0, 3: 0}
+                treeView.makeDICOMStudiesTreeView(self, arguments.xml_dicom)
+
+                logger.info("WEASEL CMD created successfully.")
+            else:
+                print("=====================================")
+                print("Invalid input arguments given.")
+                print("Running the GUI version of WEASEL.")
+                print("See --help flag for more information.")
+                print("=====================================")
+                self.objXMLReader = None
+                self.PythonFile = None
+                logger.info("WEASEL CMD not created due to invalid arguments.")
+        else:
+            print("=====================================")
+            print("Invalid input arguments given.")
+            print("Running the GUI version of WEASEL.")
+            print("See --help flag for more information.")
+            print("=====================================")
+            self.objXMLReader = None
+            self.PythonFile = None
+            logger.info("WEASEL CMD not created due to invalid arguments.")
+
+    def __repr__(self):
+       return '{}'.format(self.__class__.__name__)
+
+    def run(self):
+        if self.XMLDicomFile and self.PythonFile:
+            moduleName = os.path.basename(self.PythonFile)
+            spec = importlib.util.spec_from_file_location(moduleName, self.PythonFile)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            objFunction = getattr(module, 'main')
+            objFunction(self)
+        return
 
 def main():
-    app = QApplication(sys . argv )
-    winMDI = Weasel()
-    winMDI.showMaximized()
-    sys.exit(app.exec())
+    parser = argparse.ArgumentParser(description="WEASEL Command-line Mode")
+    parser.add_argument('-c', '--command-line', action='store_true', help='Start WEASEL in command-line mode')
+    parser.add_argument('-d', '--xml-dicom', type=str, metavar='', required=False, help='Path to the XML file with the DICOM filepaths')
+    parser.add_argument('-s', '--python-script', type=str, metavar='', required=False, help='Path to the Python file with the analysis script (menu) to process')
+    # Give an example of command-line to show a situation where the user gives both flags but they're not correct
+    args = parser.parse_args()
+    if args.command_line:
+        app = QApplication(sys.argv)
+        weaselCommandLine = Weasel_CMD(args)
+        weaselCommandLine.run()
+    else:
+        app = QApplication(sys.argv)
+        winMDI = Weasel()
+        winMDI.showMaximized()
+        sys.exit(app.exec())
 
 if __name__ == '__main__':
     freeze_support()
     main()
-   

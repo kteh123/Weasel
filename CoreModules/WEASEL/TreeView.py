@@ -153,7 +153,7 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.objXMLReader.parseXMLFile(pointerToWeasel.DICOM_XML_FilePath)
                 #set checked and expanded attributes to False
                 start_time=time.time()
-                pointerToWeasel.objXMLReader.callResetXMLTree()   
+                if pointerToWeasel.cmd == False: pointerToWeasel.objXMLReader.callResetXMLTree()   
                 end_time=time.time()
                 MakeXMLTreeTime = end_time - start_time 
                 #print('Make XML Tree Time  = {}'.format(MakeXMLTreeTime))
@@ -175,7 +175,10 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
                 pointerToWeasel.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
-                buildTreeView(pointerToWeasel)
+                if pointerToWeasel.cmd == False:
+                    buildTreeView(pointerToWeasel)
+                else:
+                    buildTreeView(pointerToWeasel, refresh=True)
                 resizeTreeViewColumns(pointerToWeasel)
                 collapseSeriesBranches(pointerToWeasel.treeView.invisibleRootItem())
                 collapseStudiesBranches(pointerToWeasel.treeView.invisibleRootItem())
@@ -199,20 +202,21 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.treeView.itemCollapsed.connect(lambda item: saveTreeViewExpandedState(pointerToWeasel, item, "False"))
                 pointerToWeasel.treeView.itemExpanded.connect(lambda item: saveTreeViewExpandedState(pointerToWeasel, item, "True"))
                 
+                if pointerToWeasel.cmd == False:
+                    #Display tree view in left-hand side docked widget
+                    #If such a widget already exists remove it to allow
+                    #a new tree view to be displayed
+                    dockwidget = pointerToWeasel.findChild(QDockWidget)
+                    if dockwidget:
+                        pointerToWeasel.removeDockWidget(dockwidget)
 
-                #Display tree view in left-hand side docked widget
-                #If such a widget already exists remove it to allow
-                #a new tree view to be displayed
-                dockwidget = pointerToWeasel.findChild(QDockWidget)
-                if dockwidget:
-                    pointerToWeasel.removeDockWidget(dockwidget)
-                    
-                dockwidget =  QDockWidget("DICOM Study Structure", pointerToWeasel, Qt.SubWindow)
-                dockwidget.setAllowedAreas(Qt.LeftDockWidgetArea)
-                dockwidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
-                pointerToWeasel.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
-                dockwidget.setWidget(pointerToWeasel.treeView)
-                pointerToWeasel.treeView.show()
+                    dockwidget =  QDockWidget("DICOM Study Structure", pointerToWeasel, Qt.SubWindow)
+                    dockwidget.setAllowedAreas(Qt.LeftDockWidgetArea)
+                    dockwidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
+                    pointerToWeasel.addDockWidget(Qt.LeftDockWidgetArea, dockwidget)
+                    dockwidget.setWidget(pointerToWeasel.treeView)
+                    pointerToWeasel.treeView.show()
+
                 QApplication.restoreOverrideCursor()
         except Exception as e:
             QApplication.restoreOverrideCursor()
