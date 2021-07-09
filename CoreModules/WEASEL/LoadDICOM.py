@@ -29,6 +29,7 @@ def main(self):
         xmlMenuBuilder.setFileMenuItemEnabled(self, "Refresh DICOM folder", True)
         xmlMenuBuilder.setFileMenuItemEnabled(self, "Close DICOM folder", True)
         xmlMenuBuilder.setFileMenuItemEnabled(self,"Reset Tree View", True)
+        xmlMenuBuilder.setFileMenuItemEnabled(self,"Save Tree View", True)
 
         #print(" scan_directory = ",  scan_directory)
         if scan_directory:

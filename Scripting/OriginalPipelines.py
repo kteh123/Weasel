@@ -1,6 +1,8 @@
-import os
+import os, sys
 import re
-#import itertools
+import subprocess
+import importlib
+from tqdm import trange, tqdm
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
@@ -283,6 +285,10 @@ class OriginalPipelines():
     """
     def log(self, message):
         print(message)
+        logger.info(message)
+
+    def log_error(self, message):
+        print(message)
         logger.exception(message)
 
     def images(self, msg='Please select one or more images'):
@@ -299,7 +305,12 @@ class OriginalPipelines():
         
         treeView.buildListsCheckedItems(self)
         if self.checkedImageList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
+            if self.cmd == True:
+                print("=====================================")
+                print(msg)
+                print("=====================================")
+            else:
+                UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for image in self.checkedImageList:
                 imagesList.append(Image(self, image[0], image[1], image[2], image[3]))
@@ -320,7 +331,12 @@ class OriginalPipelines():
         
         treeView.buildListsCheckedItems(self)
         if self.checkedSeriesList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
+            if self.cmd == True:
+                print("=====================================")
+                print(msg)
+                print("=====================================")
+            else:
+                UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for series in self.checkedSeriesList:
                 images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
@@ -342,7 +358,12 @@ class OriginalPipelines():
 
         treeView.buildListsCheckedItems(self)
         if self.checkedStudyList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
+            if self.cmd == True:
+                print("=====================================")
+                print(msg)
+                print("=====================================")
+            else:
+                UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for study in self.checkedStudyList:
                 studyList.append(Study(self, study[0], study[1]))
@@ -363,7 +384,12 @@ class OriginalPipelines():
 
         treeView.buildListsCheckedItems(self)
         if self.checkedSubjectList == []:
-            UserInterfaceTools(self).showMessageWindow(msg=msg)
+            if self.cmd == True:
+                print("=====================================")
+                print(msg)
+                print("=====================================")
+            else:
+                UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for subject in self.checkedSubjectList:
                 subjectList.append(Subject(self, subject))
@@ -374,31 +400,55 @@ class OriginalPipelines():
         """
         Displays a Message window with the text in "msg" and the title "title".
         """
-        messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+        if self.cmd == True:
+            print("=====================================")
+            print(title + ": " + msg)
+            print("=====================================")
+        else:
+            messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
 
     def close_message(self):
         """
         Closes the message window 
         """
-        self.msgSubWindow.close()
+        if self.cmd == False:
+            self.msgSubWindow.close()
 
     def information(self, msg="Message in the box", title="Window Title"):
         """
         Display a Window with information message and the user must press 'OK' to continue.
         """
-        QMessageBox.information(self, title, msg)
+        if self.cmd == True:
+            print("=====================================")
+            print("INFORMATION")
+            print(title + ": " + msg)
+            print("=====================================")
+        else:
+            QMessageBox.information(self, title, msg)
 
     def warning(self, msg="Message in the box", title="Window Title"):
         """
         Display a Window with warning message and the user must press 'OK' to continue.
         """
-        QMessageBox.warning(self, title, msg)
+        if self.cmd == True:
+            print("=====================================")
+            print("WARNING")
+            print(title + ": " + msg)
+            print("=====================================")
+        else:
+            QMessageBox.warning(self, title, msg)
 
     def error(self, msg="Message in the box", title="Window Title"):
         """
         Display a Window with error message and the user must press 'OK' to continue.
         """
-        QMessageBox.critical(self, title, msg)
+        if self.cmd == True:
+            print("=====================================")
+            print("ERROR")
+            print(title + ": " + msg)
+            print("=====================================")
+        else:
+            QMessageBox.critical(self, title, msg)
 
     def question(self, question="You wish to proceed (OK) or not (Cancel)?", title="Message Window Title"):
         """
@@ -407,12 +457,23 @@ class OriginalPipelines():
         The user has to click either "OK" or "Cancel" in order to continue using the interface.
         It returns 0 if reply is "Cancel" and 1 if reply is "OK".
         """
-        buttonReply = QMessageBox.question(self, title, question, 
-                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
-        if buttonReply == QMessageBox.Ok:
-            return True
+        if self.cmd == True:
+            print("=====================================")
+            print("QUESTION")
+            reply = input(question)
+            print("=====================================")
+            if reply == "OK" or reply == "Ok" or reply == "ok" or reply == "Y" or reply == "y" or reply == "YES" \
+                or reply == "yes" or reply == "Yes" or reply == "1" or reply == '':
+                return True
+            else:
+                return False
         else:
-            return False
+            buttonReply = QMessageBox.question(self, title, question, 
+                          QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            if buttonReply == QMessageBox.Ok:
+                return True
+            else:
+                return False
  
     def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """
@@ -422,22 +483,36 @@ class OriginalPipelines():
         For iterations with frequent updates, use progress_bar outside the iteration
         and then update_progress_bar inside the iteration
         """
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, max)
-        messageWindow.setMsgWindowProgBarValue(self, index)
+        if self.cmd == True:
+            print("=====================================")
+            print(title + ": " + msg)
+            print("=====================================")
+            self.tqdm_prog = tqdm(total=max)
+            self.tqdm_prog.update(index)
+        else:
+            messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
+            messageWindow.setMsgWindowProgBarMaxValue(self, max)
+            messageWindow.setMsgWindowProgBarValue(self, index)
 
     def update_progress_bar(self, index=0, msg=None):
         """
         Updates the progress bar with a new index.
         """
-        messageWindow.setMsgWindowProgBarValue(self, index, msg)
+        if self.cmd == True:
+            if msg is not None: print(msg)
+            self.tqdm_prog.update(index)
+        else:
+            messageWindow.setMsgWindowProgBarValue(self, index, msg)
 
     def close_progress_bar(self):
         """
         Closes the Progress Bar.
         """
-        messageWindow.hideProgressBar(self)
-        messageWindow.closeMessageSubWindow(self)
+        if self.cmd == True and self.tqdm_prog:
+            self.tqdm_prog.close()
+        else:
+            messageWindow.hideProgressBar(self)
+            messageWindow.closeMessageSubWindow(self)
 
     def refresh(self, new_series_name=None):
         """
@@ -451,8 +526,8 @@ class OriginalPipelines():
         """
         Closes all open windows.
         """
-        self.mdiArea.closeAllSubWindows()
-
+        if self.cmd == False:
+            self.mdiArea.closeAllSubWindows()
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
@@ -504,10 +579,21 @@ class OriginalPipelines():
         Returns True if the regex "expression" is in the string target. 
         """
         return re.search(regex_string, target, re.IGNORECASE)
-            
-
-                        
-                        
-
-                    
-                   
+    
+    @staticmethod
+    def pip_install_external_package(package_name, module_name=None):
+        # For example, "pip install ukat" and "import ukat"
+        # But "pip install opencv-python" and "import cv2"
+        try:
+            try:
+                subprocess.check_call(["pip", "install", package_name])
+            except:
+                subprocess.check_call(["pip3", "install", package_name])
+            if module_name:
+                module = importlib.import_module(module_name)
+            else:
+                module = importlib.import_module(package_name)
+            importlib.reload(module)
+        except Exception as e:
+            print('Error in OriginalPipelines.pip_install_external_package: ' + str(e))
+            logger.error('OriginalPipelines.pip_install_external_package: ' + str(e)) 

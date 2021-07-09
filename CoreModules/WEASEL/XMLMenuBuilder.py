@@ -218,6 +218,10 @@ def setUpFileMenu(mainMenu, pointerToWeasel):
         "Uncheck all checkboxes on the tree view.",
         False, treeView, pointerToWeasel, "callUnCheckTreeViewItems")
 
+        createFileMenuItem("Save Tree View", "Ctrl+P", 
+        "Saves the current state of the checkboxes on the tree view.",
+        False, treeView, pointerToWeasel, "refreshDICOMStudiesTreeView")
+
         createFileMenuItem("Close DICOM folder", "Ctrl+C", 
         "Closes the tree view and removes reference to the DICOM folder.",
         False, closeTreeView,  pointerToWeasel)

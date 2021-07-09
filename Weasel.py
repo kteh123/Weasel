@@ -22,7 +22,7 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
 #pathlib.Path().absolute() is the current directory where the script is located. 
 #It doesn't matter if it's Python SYS or Windows SYS
 
-os.chdir(os.path.dirname(sys.argv[0]))
+#os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
@@ -256,6 +256,7 @@ class Weasel_CMD(Pipelines):
             if arguments.xml_dicom.endswith(".xml") and arguments.python_script.endswith(".py"):
                 super().__init__()
                 self.cmd = True
+                self.tqdm_prog = None
                 self.weaselDataFolder = os.path.dirname(sys.argv[0])
                 self.XMLDicomFile = arguments.xml_dicom
                 self.PythonFile = arguments.python_script
@@ -278,7 +279,7 @@ class Weasel_CMD(Pipelines):
                 print("Running the GUI version of WEASEL.")
                 print("See --help flag for more information.")
                 print("=====================================")
-                self.objXMLReader = None
+                self.XMLDicomFile = None
                 self.PythonFile = None
                 logger.info("WEASEL CMD not created due to invalid arguments.")
         else:
@@ -287,7 +288,7 @@ class Weasel_CMD(Pipelines):
             print("Running the GUI version of WEASEL.")
             print("See --help flag for more information.")
             print("=====================================")
-            self.objXMLReader = None
+            self.XMLDicomFile = None
             self.PythonFile = None
             logger.info("WEASEL CMD not created due to invalid arguments.")
 
@@ -296,20 +297,32 @@ class Weasel_CMD(Pipelines):
 
     def run(self):
         if self.XMLDicomFile and self.PythonFile:
+            print("=====================================")
+            print("Script in " + self.PythonFile + " started ...")
+            print("=====================================")
             moduleName = os.path.basename(self.PythonFile)
             spec = importlib.util.spec_from_file_location(moduleName, self.PythonFile)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             objFunction = getattr(module, 'main')
             objFunction(self)
+        else:
+            print("=====================================")
+            print("No script was started")
+            print("=====================================")
         return
 
 def main():
-    parser = argparse.ArgumentParser(description="WEASEL Command-line Mode")
+    example_text = example_text = '''example usage:
+        python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"
+        Weasel.exe -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"'''
+    parser = argparse.ArgumentParser(prog='base_maker',
+                                 description='WEASEL Command-line Mode',
+                                 epilog=example_text,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-c', '--command-line', action='store_true', help='Start WEASEL in command-line mode')
     parser.add_argument('-d', '--xml-dicom', type=str, metavar='', required=False, help='Path to the XML file with the DICOM filepaths')
     parser.add_argument('-s', '--python-script', type=str, metavar='', required=False, help='Path to the Python file with the analysis script (menu) to process')
-    # Give an example of command-line to show a situation where the user gives both flags but they're not correct
     args = parser.parse_args()
     if args.command_line:
         app = QApplication(sys.argv)

@@ -19,6 +19,7 @@ def main(self):
         xmlMenuBuilder.setFileMenuItemEnabled(self, "Refresh DICOM folder", False)
         xmlMenuBuilder.setFileMenuItemEnabled(self, "Close DICOM folder", False)
         xmlMenuBuilder.setFileMenuItemEnabled(self,"Reset Tree View", False)
+        xmlMenuBuilder.setFileMenuItemEnabled(self,"Save Tree View", False)
     except Exception as e:
         print('Error in function CloseTreeView.main: ' + str(e))
         logger.error('Error in function CloseTreeView.main: ' + str(e))
