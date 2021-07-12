@@ -22,7 +22,7 @@ print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
 print("Creating list of hidden-imports...")
-hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'skimage', 'matplotlib', 'lmfit', 'fpdf', 'joblib', 'cv2']
+hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'joblib', 'cv2']
 string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
 
 print("Starting compilation...")
