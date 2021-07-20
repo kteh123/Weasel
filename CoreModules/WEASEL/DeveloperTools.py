@@ -148,7 +148,7 @@ class UserInterfaceTools:
         QMessageBox.information(self.objWeasel, title, msg)
 
 
-    def showErrorWindow(self, msg="Please insert message in the function call"):
+    def showErrorWindow(self, title="Message Window Title", msg="Please insert message in the function call"):
         """
         Displays an error window in the User Interface with the title in "title" and
         with the message in "msg". The 2 strings in the arguments are the input by default.
@@ -1618,9 +1618,11 @@ class Series:
                 if isinstance(tag, list):
                     outputValuesList = []
                     for ind_tag in tag:
+                        if (ind_tag == "SliceLocation" or ind_tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): ind_tag = (0x2001, 0x100a)
                         outputValuesList.append(ReadDICOM_Image.getSeriesTagValues(self.images, ind_tag)[0])
                     return outputValuesList
                 else:
+                    if (tag == "SliceLocation" or tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): tag = (0x2001, 0x100a)
                     return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
             else:
                 return []
@@ -2050,9 +2052,11 @@ class Image:
             if isinstance(tag, list):
                 outputValuesList = []
                 for ind_tag in tag:
+                    if (ind_tag == "SliceLocation" or ind_tag == (0x0020,0x1041)) and not hasattr(self.PydicomObject, "SliceLocation"): ind_tag = (0x2001, 0x100a)
                     outputValuesList.append(ReadDICOM_Image.getImageTagValue(self.path, ind_tag))
                 return outputValuesList
             else:
+                if (tag == "SliceLocation" or tag == (0x0020,0x1041)) and not hasattr(self.PydicomObject, "SliceLocation"): tag = (0x2001, 0x100a)
                 return ReadDICOM_Image.getImageTagValue(self.path, tag)
         except Exception as e:
             print('Error in Image.get_value: ' + str(e))

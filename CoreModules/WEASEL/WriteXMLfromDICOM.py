@@ -147,7 +147,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                                 multiframeProgram = os.path.join(dirpath, individualFile)
                     multiframeDir = os.path.dirname(filepath)
                     fileBase = "SingleFrame_"
-                    fileBaseFlag = fileBase + "00_" + str(dataset.SeriesDescription)
+                    fileBaseFlag = fileBase + "000000_" + str(dataset.SeriesDescription)
                     #if hasattr(dataset, 'SeriesDescription'):
                     #elif hasattr(dataset, 'ProtocolName'):
                     #    fileBaseFlag = fileBase + "00_" + str(dataset.ProtocolName)
@@ -155,7 +155,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     #    fileBaseFlag = fileBase + "00_" + str(dataset.SequenceName)
                     # Run the dcm4che emf2sf
                     msgWindow.displayMessageSubWindow(self, "Multiframe DICOM detected. Converting to single frame ...")
-                    multiframeCommand = [multiframeProgram, "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
+                    multiframeCommand = [multiframeProgram, "--inst-no", "'%s'", "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
                     try:
                         commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
                     except Exception as e:

@@ -141,7 +141,13 @@ def getSeriesTagValues(imagePathList, dicomTag):
                         attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
                     except:
                         return None, None
-                numAttribute = len(np.unique(attributeList))
+                attributeList = [0 if x is None else x for x in attributeList]
+                attributeListUnique = []
+                for x in attributeList:
+                    if x not in attributeListUnique:
+                        attributeListUnique.append(x)
+                numAttribute = len(attributeListUnique)
+                #numAttribute = len(np.unique(attributeList))
                 del datasetList
                 return attributeList, numAttribute
             else:
@@ -176,7 +182,13 @@ def getSeriesTagValues(imagePathList, dicomTag):
                 else:
                     # These seem to be the only options for now
                     return None, None
-                numAttribute = len(np.unique(attributeList))
+                attributeList = [0 if x is None else x for x in attributeList]
+                attributeListUnique = []
+                for x in attributeList:
+                    if x not in attributeListUnique:
+                        attributeListUnique.append(x)
+                numAttribute = len(attributeListUnique)
+                # numAttribute = len(np.unique(attributeList))
                 del dataset, datasetList, fields
                 return attributeList, numAttribute
         else:
@@ -196,7 +208,12 @@ def sortSequenceByTag(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             attributeList, numAttribute = getSeriesTagValues(imagePathList, dicomTag)
-            attributeListUnique = np.unique(attributeList) # sorted(np.unique(attributeList))
+            #attributeListUnique = np.unique(attributeList) # sorted(np.unique(attributeList))
+            attributeListUnique = [] # Works for strings as well, unlike np.unique
+            for x in attributeList:
+                if x not in attributeListUnique:
+                    attributeListUnique.append(x)
+            attributeListUnique = [0 if x is None else x for x in attributeListUnique]
             indicesSorted = list()
             for i in range(numAttribute):
                 indices = [index for index, value in enumerate(attributeList) if value == attributeListUnique[i]]
@@ -494,6 +511,16 @@ def checkImageType(dataset):
                     flagImaginary = True
                 elif set(mapsList).intersection(set(dataset.ImageType)):
                     flagMap = list(set(mapsList).intersection(set(dataset.ImageType)))[0]
+            if flagMagnitude == False and flagPhase == False and flagReal == False and \
+               flagImaginary == False and flagMap == False and hasattr(dataset, 'ComplexImageComponent'):
+                if dataset.ComplexImageComponent == 'MAGNITUDE':
+                    flagMagnitude = True
+                elif dataset.ComplexImageComponent == 'PHASE':
+                    flagPhase = True
+                elif dataset.ComplexImageComponent == 'REAL':
+                    flagReal = True
+                elif dataset.ComplexImageComponent == 'IMAGINARY':
+                    flagImaginary = True
         return flagMagnitude, flagPhase, flagReal, flagImaginary, flagMap
     except Exception as e:
         print('Error in function ReadDICOM_Image.checkImageType: ' + str(e))
