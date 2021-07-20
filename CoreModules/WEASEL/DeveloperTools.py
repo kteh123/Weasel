@@ -1381,7 +1381,8 @@ class Series:
     def display(self):
         logger.info("Series.display called")
         try:
-            UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
+            if self.objWeasel.cmd == False:
+                UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
         except Exception as e:
             print('Error in Series.display: ' + str(e))
             logger.exception('Error in Series.display: ' + str(e))
@@ -1913,7 +1914,8 @@ class Image:
     def display(self):
         logger.info("Image.display called")
         try:
-            UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
+            if self.objWeasel.cmd == False:
+                UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
         except Exception as e:
             print('Error in Image.display: ' + str(e))
             logger.exception('Error in Image.display: ' + str(e))
