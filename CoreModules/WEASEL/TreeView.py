@@ -29,7 +29,7 @@ def createTreeBranch(branchName, branch, parent, refresh=False):
             if 'expanded' in branch.attrib:
                 expand = branch.attrib['expanded']
             else:
-                expand = False
+                expand = "False"
             #print("expand={} when branch={}".format(expand, branchID))
             if expand == "False":
                 thisBranch.setExpanded(False)
@@ -152,10 +152,11 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.DICOMfolderPath, _ = os.path.split(XML_File_Path)
                 pointerToWeasel.objXMLReader.parseXMLFile(pointerToWeasel.DICOM_XML_FilePath)
                 #set checked and expanded attributes to False
-                start_time=time.time()
-                if pointerToWeasel.cmd == False: pointerToWeasel.objXMLReader.callResetXMLTree()   
-                end_time=time.time()
-                MakeXMLTreeTime = end_time - start_time 
+                # Joao commented on 23/07/2021 because it was decided to load the state in the XML file and not reset it.
+                #start_time=time.time()
+                #if pointerToWeasel.cmd == False: pointerToWeasel.objXMLReader.callResetXMLTree()   
+                #end_time=time.time()
+                #MakeXMLTreeTime = end_time - start_time 
                 #print('Make XML Tree Time  = {}'.format(MakeXMLTreeTime))
 
                 pointerToWeasel.treeView = QTreeWidget()
@@ -175,13 +176,11 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
                 pointerToWeasel.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
-                if pointerToWeasel.cmd == False:
-                    buildTreeView(pointerToWeasel)
-                else:
-                    buildTreeView(pointerToWeasel, refresh=True)
+                buildTreeView(pointerToWeasel, refresh=True)
                 resizeTreeViewColumns(pointerToWeasel)
-                collapseSeriesBranches(pointerToWeasel.treeView.invisibleRootItem())
-                collapseStudiesBranches(pointerToWeasel.treeView.invisibleRootItem())
+                # Comment these 2 lines since the purpose is to reload the XML and current state
+                #collapseSeriesBranches(pointerToWeasel.treeView.invisibleRootItem())
+                #collapseStudiesBranches(pointerToWeasel.treeView.invisibleRootItem())
 
                 #connect functions to events
                 pointerToWeasel.treeView.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(pointerToWeasel, item, col))

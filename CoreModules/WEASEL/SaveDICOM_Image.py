@@ -4,7 +4,7 @@ import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from pydicom.sequence import Sequence
 from pydicom.datadict import dictionary_VR
-import datetime
+from datetime import datetime, timedelta
 import copy
 import random
 from matplotlib import cm
@@ -183,26 +183,74 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
             datasetList = ReadDICOM_Image.getSeriesDicomDataset(imagePath)
             for index, dataset in enumerate(datasetList):
                 if isinstance(dicomTag, str):
-                    try: dataset.data_element(dicomTag).value = newValue
-                    except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+                    try: 
+                        if dataset.data_element(dicomTag).VR == "TM": 
+                            dataset.data_element(dicomTag).value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                        else:
+                            dataset.data_element(dicomTag).value = newValue
+                    except:
+                        if dictionary_VR(dicomTag) == "TM": 
+                            dataset.add_new(dicomTag, dictionary_VR(dicomTag), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                        else:
+                            dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue) 
                 elif isinstance(dicomTag, tuple):
-                    try: dataset[dicomTag].value = newValue
-                    except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+                    try:
+                        if dataset[dicomTag].VR == "TM":
+                            dataset[dicomTag].value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                        else:
+                            dataset[dicomTag].value = newValue
+                    except:
+                        if dataset[dicomTag].VR == "TM":
+                            dataset.add_new(dicomTag, dictionary_VR(dicomTag), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                        else:
+                            dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
                 else:
-                    try: dataset[hex(dicomTag)].value = newValue
-                    except: dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
+                    try:
+                        if dataset[hex(dicomTag)].VR == "TM":
+                            dataset[hex(dicomTag)].value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                        else:
+                            dataset[hex(dicomTag)].value = newValue
+                    except:
+                        if dataset[hex(dicomTag)].VR == "TM":
+                            dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                        else:
+                            dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
                 saveDicomToFile(dataset, output_path=imagePath[index])
         else:
             dataset = ReadDICOM_Image.getDicomDataset(imagePath)
             if isinstance(dicomTag, str):
-                try: dataset.data_element(dicomTag).value = newValue
-                except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+                try: 
+                    if dataset.data_element(dicomTag).VR == "TM": 
+                        dataset.data_element(dicomTag).value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                    else:
+                        dataset.data_element(dicomTag).value = newValue
+                except:
+                    if dictionary_VR(dicomTag) == "TM": 
+                        dataset.add_new(dicomTag, dictionary_VR(dicomTag), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                    else:
+                        dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue) 
             elif isinstance(dicomTag, tuple):
-                try: dataset[dicomTag].value = newValue
-                except: dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
+                try:
+                    if dataset[dicomTag].VR == "TM":
+                        dataset[dicomTag].value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                    else:
+                        dataset[dicomTag].value = newValue
+                except:
+                    if dataset[dicomTag].VR == "TM":
+                        dataset.add_new(dicomTag, dictionary_VR(dicomTag), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                    else:
+                        dataset.add_new(dicomTag, dictionary_VR(dicomTag), newValue)
             else:
-                try: dataset[hex(dicomTag)].value = newValue
-                except: dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
+                try:
+                    if dataset[hex(dicomTag)].VR == "TM":
+                        dataset[hex(dicomTag)].value = datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S")
+                    else:
+                        dataset[hex(dicomTag)].value = newValue
+                except:
+                    if dataset[hex(dicomTag)].VR == "TM":
+                        dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), datetime.strptime(str(timedelta(seconds=int(newValue))), "%H:%M:%S"))
+                    else:
+                        dataset.add_new(hex(dicomTag), dictionary_VR(hex(dicomTag)), newValue)
             saveDicomToFile(dataset, output_path=imagePath)
         return
     except Exception as e:
@@ -320,7 +368,7 @@ def createNewSingleDicom(dicomData, imageArray, series_id=None, series_uid=None,
         newDicom.SOPInstanceUID = generateUIDs(newDicom, seriesNumber=series_id)[2]
 
         # Date and Time of Creation
-        dt = datetime.datetime.now()
+        dt = datetime.now()
         timeStr = dt.strftime('%H%M%S')  # long format with micro seconds
         newDicom.ContentDate = dt.strftime('%Y%m%d')
         newDicom.ContentTime = timeStr

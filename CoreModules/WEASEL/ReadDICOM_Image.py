@@ -1,6 +1,7 @@
 import os
 import struct
 import numpy as np
+from datetime import datetime
 import pydicom
 from nibabel.affines import apply_affine
 import logging
@@ -55,6 +56,7 @@ def returnSeriesPixelArray(imagePathList):
         print('Error in function ReadDICOM_Image.returnSeriesPixelArray: ' + str(e))
         logger.exception('Error in ReadDICOM_Image.returnSeriesPixelArray: ' + str(e))
 
+
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
     try:
         if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']) and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
@@ -101,10 +103,13 @@ def getImageTagValue(imagePath, dicomTag):
             # This is not for Enhanced MRI. Only Classic DICOM
             if isinstance(dicomTag, str):
                 attribute = dataset.data_element(dicomTag).value
+                if dataset.data_element(dicomTag).VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
             elif isinstance(dicomTag, tuple):
                 attribute = dataset[dicomTag].value
+                if dataset[dicomTag].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
             else:
                 attribute = dataset[hex(dicomTag)].value
+                if dataset[hex(dicomTag)].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
             del dataset
             return attribute
         else:
@@ -129,16 +134,19 @@ def getSeriesTagValues(imagePathList, dicomTag):
                 if isinstance(dicomTag, str):
                     try:
                         attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                        if datasetList[0].data_element(dicomTag).VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 elif isinstance(dicomTag, tuple):
                     try:
                         attributeList = [dataset[dicomTag].value for dataset in datasetList]
+                        if datasetList[0][dicomTag].VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 else:
                     try:
                         attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                        if datasetList[0][hex(dicomTag)].VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 attributeList = [0 if x is None else x for x in attributeList]
@@ -159,16 +167,19 @@ def getSeriesTagValues(imagePathList, dicomTag):
                     if isinstance(dicomTag, str):
                         try:
                             attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                            if datasetList[0].data_element(dicomTag).VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                         except:
                             return None, None
                     elif isinstance(dicomTag, tuple):
                         try:
                             attributeList = [dataset[dicomTag].value for dataset in datasetList]
+                            if datasetList[0][dicomTag].VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                         except:
                             return None, None
                     else:
                         try:
                             attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                            if datasetList[0][hex(dicomTag)].VR == "TM": attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                         except:
                             return None, None
                 elif fields[0] == "PerFrameFunctionalGroupsSequence":
@@ -433,7 +444,7 @@ def checkImageType(dataset):
     """This method reads the DICOM Dataset object/class and returns if it is a Magnitude, Phase, Real or Imaginary image or None"""
     logger.info("ReadDICOM_Image.checkImageType called")
     try:
-        mapsList = ['ADC', 'FA', 'B0', 'T1', 'T2', 'T2_STAR', 'B0 MAP', 'T1 MAP', 'T2 MAP', 'T2_STAR MAP', 'MAP', 'FIELD_MAP']
+        mapsList = ['ADC', 'FA', 'B0', 'B0 MAP', 'B0_MAP', 'T1', 'T1 MAP', 'T1_MAP', 'T2', 'T2 MAP', 'T2_MAP', 'T2_STAR', 'T2_STAR MAP', 'T2_STAR_MAP', 'MAP', 'FIELD_MAP']
         if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             flagMagnitude = []
             flagPhase = []
