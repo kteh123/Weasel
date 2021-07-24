@@ -26,6 +26,7 @@ import CoreModules.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 
+listImageTypes = ["SliceLocation", "AcquisitionTime", "FlipAngle", "InversionTime"]
 
 def setUpLevelsSpinBoxes(imageLevelsLayout): 
     logger.info("DisplayImageCommon.setUpLevelsSpinBoxes called.")
@@ -70,50 +71,50 @@ def setUpLevelsSpinBoxes(imageLevelsLayout):
 
 
 
-def getDICOMFileData(self):
-        """When a DICOM image is selected in the tree view, this function
-        returns its description in the form - study number: series number: image name
+#def getDICOMFileData(self):
+#        """When a DICOM image is selected in the tree view, this function
+#        returns its description in the form - study number: series number: image name
         
-         Input Parameters
-        ****************
-            self - an object reference to the WEASEL interface.
+#         Input Parameters
+#        ****************
+#            self - an object reference to the WEASEL interface.
 
 
-        Output Parameters
-        *****************
-        fullImageName - string containing the full description of a DICOM image
-        """
-        try:
-            logger.info("DisplayImageCommon.getDICOMFileData called.")
-            selectedImage = self.treeView.selectedItems()
-            if selectedImage:
-                imageNode = selectedImage[0]
-                seriesNode  = imageNode.parent()
-                imageName = imageNode.text(0)
-                series = seriesNode.text(0)
-                studyNode = seriesNode.parent()
-                study = studyNode.text(0)
-                fullImageName = study + ': ' + series + ': '  + imageName 
-                return fullImageName
-            else:
-                return ''
-        except Exception as e:
-            print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
-            logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+#        Output Parameters
+#        *****************
+#        fullImageName - string containing the full description of a DICOM image
+#        """
+#        try:
+#            logger.info("DisplayImageCommon.getDICOMFileData called.")
+#            selectedImage = self.treeView.selectedItems()
+#            if selectedImage:
+#                imageNode = selectedImage[0]
+#                seriesNode  = imageNode.parent()
+#                imageName = imageNode.text(0)
+#                series = seriesNode.text(0)
+#                studyNode = seriesNode.parent()
+#                study = studyNode.text(0)
+#                fullImageName = study + ': ' + series + ': '  + imageName 
+#                return fullImageName
+#            else:
+#                return ''
+#        except Exception as e:
+#            print('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
+#            logger.error('Error in DisplayImageCommon.getDICOMFileData: ' + str(e))
 
 
-def closeSubWindow(self, objectName):
-        """Closes a particular sub window in the MDI
+#def closeSubWindow(self, objectName):
+#        """Closes a particular sub window in the MDI
         
-        Input Parmeters
-        ***************
-        self - an object reference to the WEASEL interface.
-        objectName - object name of the subwindow to be closed
-        """
-        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
-        for subWin in self.mdiArea.subWindowList():
-            if subWin.objectName() == objectName:
-                QApplication.processEvents()
-                subWin.close()
-                QApplication.processEvents()
-                break
+#        Input Parmeters
+#        ***************
+#        self - an object reference to the WEASEL interface.
+#        objectName - object name of the subwindow to be closed
+#        """
+#        logger.info("WEASEL closeSubWindow called for {}".format(objectName))
+#        for subWin in self.mdiArea.subWindowList():
+#            if subWin.objectName() == objectName:
+#                QApplication.processEvents()
+#                subWin.close()
+#                QApplication.processEvents()
+#                break

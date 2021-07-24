@@ -10,6 +10,12 @@ def main(pointerToWeasel):
                moduleName = 'ViewImage',
                context=True)
 
+    tools.addItem(itemLabel = 'View Series/Image with multiple sliders',
+               shortcut = 'Ctrl+M',
+               tooltip = 'View DICOM Image or series with multiple sliders',
+               moduleName = 'ViewImageMultiSlider',
+               context=True)
+
     tools.addItem(itemLabel = 'View Series/Image with ROI',
                shortcut = 'Ctrl+R',
                tooltip = 'View DICOM Image or series with the ROI tool',
