@@ -226,7 +226,7 @@ def setUpSubWindow(self, imageSeries = False):
         imageDataGroupBox = QGroupBox()
         imageDataGroupBox.setLayout(imageDataLayout)
         mainVerticalLayout.addWidget(imageDataGroupBox)
-
+        ####
         addSliderButtonLayout, sliderLayout = createSliderLayout(imageSeries, mainVerticalLayout)
 
         subWindow.show()
@@ -247,6 +247,32 @@ def addSlider(sliderLayout):
     sliderLayout.addWidget(imageTypeList, rowNumber, 0)
     sliderLayout.addWidget(imageSlider, rowNumber, 1)
     sliderLayout.addWidget(deleteSliderButton, rowNumber, 2)
+    ##Connect image slider to the image list and display those images
+    #imageSlider.valueChanged.connect(
+    #              lambda: imageSliderMoved(self, subjectID, studyName, seriesName, 
+    #                                            imageList, 
+    #                                            imageSlider.value(),
+    #                                            lblImageMissing,
+    #                                            lblPixelValue,
+    #                                            deleteButton,
+    #                                             graphicsView, 
+    #                                            spinBoxIntensity, spinBoxContrast,
+    #                                            cmbColours, imageNumberLabel,
+    #                                            subWindow))
+           
+    ##Display the first image in the viewer
+    #imageSliderMoved(self, subjectID, studyName, seriesName, 
+    #                        imageList,
+    #                        imageSlider.value(),
+    #                        lblImageMissing,
+    #                        lblPixelValue,
+    #                        deleteButton,
+    #                        graphicsView, 
+    #                        spinBoxIntensity, spinBoxContrast,
+    #                        cmbColours, imageNumberLabel,
+    #                        subWindow)
+
+
 
 
 def deleteSlider(rowNumber, sliderLayout):
@@ -341,7 +367,7 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
             logger.info("DisplayImageColour.displayImageSubWindow called")
             #self.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
-            print("derivedImagePath={}".format(derivedImagePath))
+            print("derivedImagePath={}".format(derivedisplayManyMultiImageSubWindowsdImagePath))
             if derivedImagePath:
                 self.selectedImagePath = derivedImagePath
 
@@ -416,6 +442,7 @@ def createImageSlider():
     imageSlider.setMinimum(1)
     return imageSlider
 
+
 def createImageTypeList():
     imageTypeList = QComboBox()
     #imageTypeList.setStyleSheet (
@@ -424,7 +451,16 @@ def createImageTypeList():
     imageTypeList.setFixedWidth(900)
     imageTypeList.addItems(displayImageCommon.listImageTypes)
     imageTypeList.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+    imageTypeList.currentIndexChanged.connect(lambda listIndex: getSubsetImages(listIndex))
     return imageTypeList
+
+
+def getSubsetImages(listIndex):
+#  select and return a subset of images according to the image type selected
+#return list of images to be displayed
+    print("index is {}".format(listIndex))
+
+
 
 def displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1):
@@ -487,41 +523,44 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                                                                      graphicsView, singleImageSelected=False)
            
 
-            imageSlider = createImageSlider()
+            mainImageSlider = createImageSlider()
+
+            ###
 
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
             cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, 
-                                                lblImageMissing, lblPixelValue, imageSlider)
+                                                lblImageMissing, lblPixelValue, mainImageSlider)
 
            
             maxNumberImages = len(imageList)
-            imageSlider.setMaximum(maxNumberImages)
+            mainImageSlider.setMaximum(maxNumberImages)
             if maxNumberImages < 4:
-                imageSlider.setFixedWidth(subWindow.width()*.2)
+                mainImageSlider.setFixedWidth(subWindow.width()*.2)
             elif maxNumberImages > 3 and maxNumberImages < 11:
-                imageSlider.setFixedWidth(subWindow.width()*.5)
+                mainImageSlider.setFixedWidth(subWindow.width()*.5)
             else:
-                imageSlider.setFixedWidth(subWindow.width()*.85)
+                mainImageSlider.setFixedWidth(subWindow.width()*.85)
             if sliderPosition == -1:
-                imageSlider.setValue(1)
+                mainImageSlider.setValue(1)
             else:
-                imageSlider.setValue(sliderPosition)
+                mainImageSlider.setValue(sliderPosition)
             imageNumberLabel = QLabel()
+
             imageTypeList = createImageTypeList()
             if maxNumberImages > 1:
                 sliderLayout.addWidget(imageTypeList, 0, 0)
-                sliderLayout.addWidget(imageSlider, 0, 1)
+                sliderLayout.addWidget(mainImageSlider, 0, 1)
                 sliderLayout.addWidget(imageNumberLabel, 0,2)
             if len(imageList) < 11:
                 sliderLayout.addStretch(1)
             
-            imageSlider.valueChanged.connect(
+            mainImageSlider.valueChanged.connect(
                   lambda: imageSliderMoved(self, subjectID, studyName, seriesName, 
                                                 imageList, 
-                                                imageSlider.value(),
+                                                mainImageSlider.value(),
                                                 lblImageMissing,
                                                 lblPixelValue,
                                                 deleteButton,
@@ -533,7 +572,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
             #Display the first image in the viewer
             imageSliderMoved(self, subjectID, studyName, seriesName, 
                                   imageList,
-                                  imageSlider.value(),
+                                  mainImageSlider.value(),
                                   lblImageMissing,
                                   lblPixelValue,
                                   deleteButton,
@@ -546,7 +585,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                                       self.selectedImagePath, imageList, subjectID, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
-                                      imageSlider.value(), subWindow))
+                                      mainImageSlider.value(), subWindow))
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -965,7 +1004,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                                        lut,
                                        multiImage=True,  
                                        deleteButton=deleteButton) 
-
+                self.selectedImagePath = imageList[currentImageNumber]
                 subWindow.setWindowTitle(subjectID + ' - ' + studyName + ' - '+ seriesName + ' - ' 
                          + os.path.basename(self.selectedImagePath))
         except TypeError as e: 

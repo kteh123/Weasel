@@ -1,5 +1,7 @@
 import CoreModules.WEASEL.DisplayImageMultiSliders  as displayImageColour
 import CoreModules.WEASEL.TreeView  as treeView
+
+from CoreModules.WEASEL.ImageViewer import ImageViewer as imageViewer
 import logging
 from PyQt5.QtWidgets import QMessageBox
 
@@ -21,6 +23,14 @@ def main(objWeasel):
             
             treeView.buildListsCheckedItems(objWeasel)
 
+            #if len(objWeasel.checkedSeriesList)>0: 
+            #    for series in objWeasel.checkedSeriesList:
+            #        subjectID = series[0]
+            #        studyName = series[1]
+            #        seriesName = series[2]
+            #        imageList = treeView.returnSeriesImageList(objWeasel, subjectID, studyName, seriesName)
+            #        imageViewer(objWeasel, subjectID, studyName, seriesName, imageList)
+            
             if objWeasel.isASeriesChecked:
                 displayImageColour.displayManyMultiImageSubWindows(objWeasel)
             elif objWeasel.isAnImageChecked:
