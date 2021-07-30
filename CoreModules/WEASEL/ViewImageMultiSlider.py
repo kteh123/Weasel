@@ -23,18 +23,18 @@ def main(objWeasel):
             
             treeView.buildListsCheckedItems(objWeasel)
 
-            #if len(objWeasel.checkedSeriesList)>0: 
-            #    for series in objWeasel.checkedSeriesList:
-            #        subjectID = series[0]
-            #        studyName = series[1]
-            #        seriesName = series[2]
-            #        imageList = treeView.returnSeriesImageList(objWeasel, subjectID, studyName, seriesName)
-            #        imageViewer(objWeasel, subjectID, studyName, seriesName, imageList)
+            if len(objWeasel.checkedSeriesList)>0: 
+                for series in objWeasel.checkedSeriesList:
+                    subjectID = series[0]
+                    studyName = series[1]
+                    seriesName = series[2]
+                    imageList = treeView.returnSeriesImageList(objWeasel, subjectID, studyName, seriesName)
+                    imageViewer(objWeasel, subjectID, studyName, seriesName, imageList)
             
-            if objWeasel.isASeriesChecked:
-                displayImageColour.displayManyMultiImageSubWindows(objWeasel)
-            elif objWeasel.isAnImageChecked:
-                displayImageColour.displayManySingleImageSubWindows(objWeasel)
+            #if objWeasel.isASeriesChecked:
+            #    displayImageColour.displayManyMultiImageSubWindows(objWeasel)
+            #elif objWeasel.isAnImageChecked:
+            #    displayImageColour.displayManySingleImageSubWindows(objWeasel)
 
         except NoTreeViewItemSelected:
             msgBox = QMessageBox()
