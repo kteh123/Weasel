@@ -35,10 +35,10 @@ def main(objWeasel):
             elif objWeasel.isAnImageChecked:
                 if len(objWeasel.checkedImageList)>0: 
                     for image in objWeasel.checkedImageList:
-                        studyID = image[0]
-                        seriesID = image[1]
-                        imagePath = image[2]
-                        subjectID = image[3]
+                        subjectID = image[0]
+                        studyID = image[1]
+                        seriesID = image[2]
+                        imagePath = image[3]
                         imageViewer(objWeasel, subjectID, studyID, 
                                     seriesID, imagePath, singleImageSelected=True)
                         
