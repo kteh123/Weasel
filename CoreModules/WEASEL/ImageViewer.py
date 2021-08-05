@@ -15,7 +15,10 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QComboBox,
                             QSizePolicy,
                             QSlider, 
-                            QComboBox)
+                            QComboBox,
+                            QListWidget,
+                            QListWidgetItem,
+                            QSplitter)
 
 import os
 import matplotlib.pyplot as plt
@@ -85,6 +88,7 @@ class ImageViewer(QMdiSubWindow):
                                           Qt.WindowMaximizeButtonHint)
         
             height, width = self.pointerToWeasel.getMDIAreaDimensions()
+            self.subWindowWidth = width
             #Set dimensions of the subwindow to fit the MDI area
             self.setGeometry(0, 0, width, height)
             #Add subwindow to MDI
@@ -124,47 +128,67 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpMainLayout(self):
-        self.mainVerticalLayout = QVBoxLayout()
-        self.widget = QWidget()
-        self.widget.setLayout(self.mainVerticalLayout)
-        self.setWidget(self.widget)
+        try:
+            self.mainVerticalLayout = QVBoxLayout()
+            self.widget = QWidget()
+            self.widget.setLayout(self.mainVerticalLayout)
+            self.setWidget(self.widget)
+        except Exception as e:
+            print('Error in ImageViewer.setUpMainLayout: ' + str(e))
+            logger.error('Error in ImageViewer.setUpMainLayout: ' + str(e))
 
 
     def setUpImageSlider(self):
-        self.sliderLayout = QGridLayout()
-        self.addSliderButtonLayout = QHBoxLayout()
-        self.mainVerticalLayout.addLayout(self.sliderLayout)
-        self.addSliderButton = QPushButton("Add Slider")
-        self.addSliderButton.clicked.connect(self.addSlider)
-        self.addSliderButtonLayout.addWidget(self.addSliderButton)
-        self.addSliderButtonLayout.addStretch(1)
-        self.mainVerticalLayout.addLayout(self.addSliderButtonLayout)
+        try:
+            self.overallSliderLayout = QVBoxLayout()
+            self.mainVerticalLayout.addLayout(self.overallSliderLayout)
+            self.mainSliderLayout = QHBoxLayout()
+            self.overallSortedSlidersLayout = QHBoxLayout()
+            self.listLayout = QVBoxLayout()
+            self.sortedSlidersLayout = QGridLayout()
+
+            self.overallSliderLayout.addLayout(self.mainSliderLayout)
+            self.overallSliderLayout.addLayout(self.overallSortedSlidersLayout)
+            self.overallSortedSlidersLayout.addLayout(self.listLayout, stretch=1)
+            self.overallSortedSlidersLayout.addLayout(self.sortedSlidersLayout)
         
-        self.mainImageSlider = self.createImageSlider()
+            #self.addSliderButtonLayout = QHBoxLayout()
+            #self.mainVerticalLayout.addLayout(self.sliderLayout)
+            #self.addSliderButton = QPushButton("Add Slider")
+            #self.addSliderButton.clicked.connect(self.addSlider)
+            #self.addSliderButtonLayout.addWidget(self.addSliderButton)
+            #self.addSliderButtonLayout.addStretch(1)
+            #self.mainVerticalLayout.addLayout(self.addSliderButtonLayout)
         
-        maxNumberImages = len(self.imagePathList)
-        self.mainImageSlider.setMaximum(maxNumberImages)
-        if maxNumberImages < 4:
-            self.mainImageSlider.setFixedWidth(self.width()*.2)
-        elif maxNumberImages > 3 and maxNumberImages < 11:
-            self.mainImageSlider.setFixedWidth(self.width()*.5)
-        else:
-            self.mainImageSlider.setFixedWidth(self.width()*.80)
+            self.mainImageSlider = self.createImageSlider()
         
-        self.imageNumberLabel = QLabel()
-        self.imageTypeList = self.createImageTypeList()
+            maxNumberImages = len(self.imagePathList)
+            self.mainImageSlider.setMaximum(maxNumberImages)
+            if maxNumberImages < 4:
+                self.mainImageSlider.setFixedWidth(self.width()*.2)
+            elif maxNumberImages > 3 and maxNumberImages < 11:
+                self.mainImageSlider.setFixedWidth(self.width()*.5)
+            else:
+                self.mainImageSlider.setFixedWidth(self.width()*.80)
         
-        if maxNumberImages > 1:
-            self.sliderLayout.addWidget(self.imageTypeList, 0, 0)
-            self.sliderLayout.addWidget(self.mainImageSlider, 0, 1)
-            self.sliderLayout.addWidget(self.imageNumberLabel, 0,2)
+            self.imageNumberLabel = QLabel()
+            self.imageTypeList = self.createImageTypeList()
+            self.listLayout.addWidget(self.imageTypeList, alignment=Qt.AlignLeft)
+            self.listLayout.addStretch(1)
+
+            if maxNumberImages > 1:
+                self.mainSliderLayout.addWidget(self.mainImageSlider)
+                self.mainSliderLayout.addWidget(self.imageNumberLabel)
         
-        if maxNumberImages < 11:
-            self.sliderLayout.addStretch(1)
+            if maxNumberImages < 11:
+                self.mainSliderLayout.addStretch(1)
         
-        self.mainImageSlider.valueChanged.connect(self.imageSliderMoved)        
-        #Display the first image in the viewer
-        self.imageSliderMoved()
+            self.mainImageSlider.valueChanged.connect(self.imageSliderMoved)        
+            #Display the first image in the viewer
+            self.imageSliderMoved()
+        except Exception as e:
+            print('Error in ImageViewer.setUpImageSlider: ' + str(e))
+            logger.error('Error in ImageViewer.setUpImageSlider: ' + str(e))
 
 
     def setUpColourTableDropDown(self):
@@ -290,12 +314,17 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpGraphicsViewLayout(self):
-        self.graphicsViewLayout = pg.GraphicsLayoutWidget()
-        self.plotItem = self.graphicsViewLayout.addPlot() 
-        self.plotItem.getViewBox().setAspectLocked() 
-        self.imgItem = pg.ImageItem(border='w')   
-        self.graphicsView = pg.ImageView(view=self.plotItem, imageItem=self.imgItem)
-        self.mainVerticalLayout.addWidget(self.graphicsView)
+        try:
+            self.graphicsViewLayout = pg.GraphicsLayoutWidget()
+            self.plotItem = self.graphicsViewLayout.addPlot() 
+            self.plotItem.getViewBox().setAspectLocked() 
+            self.imgItem = pg.ImageItem(border='w')   
+            self.graphicsView = pg.ImageView(view=self.plotItem, imageItem=self.imgItem)
+            self.mainVerticalLayout.addWidget(self.graphicsView, stretch=1)
+           
+        except Exception as e:
+            print('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
+            logger.error('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
 
 
     def setUpDeleteImageButton(self):
@@ -532,15 +561,21 @@ class ImageViewer(QMdiSubWindow):
 
 
     def createImageTypeList(self):
-        imageTypeList = QComboBox()
-        #imageTypeList.setStyleSheet (
-         #   "QComboBox::down-arrow {border-width: 0px;}")
-        #imageTypeList.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        imageTypeList.setFixedWidth(900)
-        imageTypeList.addItems(displayImageCommon.listImageTypes)
-        imageTypeList.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        imageTypeList.currentIndexChanged.connect(lambda listIndex: getSubsetImages(listIndex))
-        return imageTypeList
+        try:
+            imageTypeList = QListWidget()
+            imageTypeList.setMaximumWidth(self.subWindowWidth/5)
+            imageTypeList.setMaximumHeight(len(displayImageCommon.listImageTypes)*20)
+            for imageType in displayImageCommon.listImageTypes:
+                item = QListWidgetItem(imageType)
+                item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+                item.setCheckState(Qt.Unchecked)
+                imageTypeList.addItem(item)
+
+            #imageTypeList.currentIndexChanged.connect(lambda listIndex: getSubsetImages(listIndex))
+            return imageTypeList
+        except Exception as e:
+            print('Error in ImageViewer.createImageTypeList: ' + str(e))
+            logger.error('Error in ImageViewer.createImageTypeList: ' + str(e))
 
     
     def updateImageLevels(self):
