@@ -141,6 +141,8 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageSlider(self):
         try:
             self.sliderLayout = QGridLayout()
+            self.sliderLayout.setSpacing(0)
+            self.sliderLayout.setContentsMargins(0,0,0,0)
             self.mainVerticalLayout.addLayout(self.sliderLayout)
         
             self.mainImageSlider = self.createImageSlider()
