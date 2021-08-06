@@ -143,14 +143,17 @@ class ImageViewer(QMdiSubWindow):
             self.overallSliderLayout = QVBoxLayout()
             self.mainVerticalLayout.addLayout(self.overallSliderLayout)
             self.mainSliderLayout = QHBoxLayout()
-            self.overallSortedSlidersLayout = QHBoxLayout()
-            self.listLayout = QVBoxLayout()
+            #self.overallSortedSlidersLayout = QHBoxLayout()
+            #self.listLayout = QVBoxLayout()
             self.sortedSlidersLayout = QGridLayout()
+            self.sortedSlidersLayout.setContentsMargins(0,0,0,0)
+            self.sortedSlidersLayout.setHorizontalSpacing(0)
 
             self.overallSliderLayout.addLayout(self.mainSliderLayout)
-            self.overallSliderLayout.addLayout(self.overallSortedSlidersLayout)
-            self.overallSortedSlidersLayout.addLayout(self.listLayout, stretch=1)
-            self.overallSortedSlidersLayout.addLayout(self.sortedSlidersLayout)
+            #self.overallSliderLayout.addLayout(self.overallSortedSlidersLayout)
+            #self.overallSortedSlidersLayout.addLayout(self.listLayout)#, stretch=1
+            #self.overallSortedSlidersLayout.addLayout(self.sortedSlidersLayout)
+            self.overallSliderLayout.addLayout(self.sortedSlidersLayout)
         
             #self.addSliderButtonLayout = QHBoxLayout()
             #self.mainVerticalLayout.addLayout(self.sliderLayout)
@@ -173,8 +176,8 @@ class ImageViewer(QMdiSubWindow):
         
             self.imageNumberLabel = QLabel()
             self.imageTypeList = self.createImageTypeList()
-            self.listLayout.addWidget(self.imageTypeList, alignment=Qt.AlignLeft)
-            self.listLayout.addStretch(1)
+            self.sortedSlidersLayout.addWidget(self.imageTypeList, 0,0, 4, 1, alignment=Qt.AlignLeft)
+            #self.listLayout.addStretch(1)
 
             if maxNumberImages > 1:
                 self.mainSliderLayout.addWidget(self.mainImageSlider)
@@ -530,29 +533,51 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.exportImageViaMatplotlib: ' + str(e))
 
 
-    def addSlider(self):
-        rowNumber = self.sliderLayout.rowCount()
-        imageTypeList = self.createImageTypeList()
-        imageSlider = self.createImageSlider()
-        deleteSliderButton = QPushButton("Delete")
-        deleteSliderButton.clicked.connect(lambda: 
-             self.deleteSlider(rowNumber))
-        self.sliderLayout.addWidget(imageTypeList, rowNumber, 0)
-        self.sliderLayout.addWidget(imageSlider, rowNumber, 1)
-        self.sliderLayout.addWidget(deleteSliderButton, rowNumber, 2)
+    def addSlider(self, item):
+        if item.checkState() == Qt.Checked:
+           # print("item={} checked".format(item.text()))
+            #add slider
+            rowNumber = self.sortedSlidersLayout.rowCount() 
+            imageSlider = self.createImageSlider(item.text())
+            imageTypeLabel = QLabel(item.text())
+            self.sortedSlidersLayout.addWidget(imageTypeLabel, rowNumber, 1, alignment=Qt.AlignLeft)
+            self.sortedSlidersLayout.addWidget(imageSlider, rowNumber, 2, alignment=Qt.AlignLeft)
+        else:
+            #print("item={} unchecked".format(item.text()))
+            for rowNumber in range(0, self.sortedSlidersLayout.rowCount()):
+                widgetItem = self.sortedSlidersLayout.itemAtPosition(rowNumber, 0)
+                print("widgetItem={}".format(widgetItem))
+                #toolTip = widgetItem.widget().toolTip()
+                #if item.text() in toolTip:
+                #    self.sortedSlidersLayout.removeItem(widgetItem)
+                #    widgetItem.widget().deleteLater()
+
+            #remove slider
+        #rowNumber = self.sliderLayout.rowCount()
+        #imageTypeList = self.createImageTypeList()
+        #imageSlider = self.createImageSlider()
+        #deleteSliderButton = QPushButton("Delete")
+        #deleteSliderButton.clicked.connect(lambda: 
+        #     self.deleteSlider(rowNumber))
+        #self.sliderLayout.addWidget(imageTypeList, rowNumber, 0)
+        #self.sliderLayout.addWidget(imageSlider, rowNumber, 1)
+        #self.sliderLayout.addWidget(deleteSliderButton, rowNumber, 2)
 
 
-    def deleteSlider(self, rowNumber):
-        for colNumber in range(0, self.sliderLayout.columnCount()):
-            widgetItem = self.sliderLayout.itemAtPosition(rowNumber, colNumber)
-            self.sliderLayout.removeItem(widgetItem)
-            widgetItem.widget().deleteLater()
+    #def deleteSlider(self, rowNumber):
+    #    for colNumber in range(0, self.sliderLayout.columnCount()):
+    #        widgetItem = self.sliderLayout.itemAtPosition(rowNumber, colNumber)
+    #        self.sliderLayout.removeItem(widgetItem)
+    #        widgetItem.widget().deleteLater()
 
 
-    def createImageSlider(self):
+    def createImageSlider(self, toolTip=None):
         imageSlider = QSlider(Qt.Horizontal)
         imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
-        imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
+        if toolTip:
+            imageSlider.setToolTip("Images sorted according to {}".format(toolTip))
+        else:
+            imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
         imageSlider.setSingleStep(1)
         imageSlider.setTickPosition(QSlider.TicksBothSides)
         imageSlider.setTickInterval(1)
@@ -567,11 +592,12 @@ class ImageViewer(QMdiSubWindow):
             imageTypeList.setMaximumHeight(len(displayImageCommon.listImageTypes)*20)
             for imageType in displayImageCommon.listImageTypes:
                 item = QListWidgetItem(imageType)
+                item.setToolTip("Tick the check box to create a subset of images based on {}".format(imageType))
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
                 item.setCheckState(Qt.Unchecked)
                 imageTypeList.addItem(item)
-
-            #imageTypeList.currentIndexChanged.connect(lambda listIndex: getSubsetImages(listIndex))
+               
+            imageTypeList.itemClicked.connect(lambda item: self.addSlider( item))
             return imageTypeList
         except Exception as e:
             print('Error in ImageViewer.createImageTypeList: ' + str(e))
