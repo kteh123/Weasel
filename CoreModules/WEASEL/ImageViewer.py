@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QComboBox,
                             QListWidget,
                             QListWidgetItem,
-                            QSplitter)
+                            QListView)
 
 import os
 import matplotlib.pyplot as plt
@@ -140,28 +140,8 @@ class ImageViewer(QMdiSubWindow):
 
     def setUpImageSlider(self):
         try:
-            self.overallSliderLayout = QVBoxLayout()
-            self.mainVerticalLayout.addLayout(self.overallSliderLayout)
-            self.mainSliderLayout = QHBoxLayout()
-            #self.overallSortedSlidersLayout = QHBoxLayout()
-            #self.listLayout = QVBoxLayout()
-            self.sortedSlidersLayout = QGridLayout()
-            self.sortedSlidersLayout.setContentsMargins(0,0,0,0)
-            self.sortedSlidersLayout.setHorizontalSpacing(0)
-
-            self.overallSliderLayout.addLayout(self.mainSliderLayout)
-            #self.overallSliderLayout.addLayout(self.overallSortedSlidersLayout)
-            #self.overallSortedSlidersLayout.addLayout(self.listLayout)#, stretch=1
-            #self.overallSortedSlidersLayout.addLayout(self.sortedSlidersLayout)
-            self.overallSliderLayout.addLayout(self.sortedSlidersLayout)
-        
-            #self.addSliderButtonLayout = QHBoxLayout()
-            #self.mainVerticalLayout.addLayout(self.sliderLayout)
-            #self.addSliderButton = QPushButton("Add Slider")
-            #self.addSliderButton.clicked.connect(self.addSlider)
-            #self.addSliderButtonLayout.addWidget(self.addSliderButton)
-            #self.addSliderButtonLayout.addStretch(1)
-            #self.mainVerticalLayout.addLayout(self.addSliderButtonLayout)
+            self.sliderLayout = QGridLayout()
+            self.mainVerticalLayout.addLayout(self.sliderLayout)
         
             self.mainImageSlider = self.createImageSlider()
         
@@ -176,15 +156,13 @@ class ImageViewer(QMdiSubWindow):
         
             self.imageNumberLabel = QLabel()
             self.imageTypeList = self.createImageTypeList()
-            self.sortedSlidersLayout.addWidget(self.imageTypeList, 0,0, 4, 1, alignment=Qt.AlignLeft)
-            #self.listLayout.addStretch(1)
 
             if maxNumberImages > 1:
-                self.mainSliderLayout.addWidget(self.mainImageSlider)
-                self.mainSliderLayout.addWidget(self.imageNumberLabel)
-        
-            if maxNumberImages < 11:
-                self.mainSliderLayout.addStretch(1)
+                self.sliderLayout.addWidget(self.mainImageSlider, 0,0)
+                self.sliderLayout.addWidget(self.imageNumberLabel,0,1)
+                self.sliderLayout.addWidget(self.imageTypeList,1,0,1,2)
+            #if maxNumberImages < 11:
+             #   self.mainSliderLayout.addStretch(1)
         
             self.mainImageSlider.valueChanged.connect(self.imageSliderMoved)        
             #Display the first image in the viewer
@@ -537,15 +515,15 @@ class ImageViewer(QMdiSubWindow):
         if item.checkState() == Qt.Checked:
            # print("item={} checked".format(item.text()))
             #add slider
-            rowNumber = self.sortedSlidersLayout.rowCount() 
+            rowNumber = self.sliderLayout.rowCount() 
             imageSlider = self.createImageSlider(item.text())
             imageTypeLabel = QLabel(item.text())
-            self.sortedSlidersLayout.addWidget(imageTypeLabel, rowNumber, 1, alignment=Qt.AlignLeft)
-            self.sortedSlidersLayout.addWidget(imageSlider, rowNumber, 2, alignment=Qt.AlignLeft)
+            self.sliderLayout.addWidget(imageTypeLabel, rowNumber, 0, alignment=Qt.AlignLeft)
+            self.sliderLayout.addWidget(imageSlider, rowNumber, 1, alignment=Qt.AlignLeft)
         else:
             #print("item={} unchecked".format(item.text()))
-            for rowNumber in range(0, self.sortedSlidersLayout.rowCount()):
-                widgetItem = self.sortedSlidersLayout.itemAtPosition(rowNumber, 0)
+            for rowNumber in range(0, self.sliderLayout.rowCount()):
+                widgetItem = self.sliderLayout.itemAtPosition(rowNumber, 1)
                 print("widgetItem={}".format(widgetItem))
                 #toolTip = widgetItem.widget().toolTip()
                 #if item.text() in toolTip:
@@ -588,8 +566,9 @@ class ImageViewer(QMdiSubWindow):
     def createImageTypeList(self):
         try:
             imageTypeList = QListWidget()
-            imageTypeList.setMaximumWidth(self.subWindowWidth/5)
-            imageTypeList.setMaximumHeight(len(displayImageCommon.listImageTypes)*20)
+            imageTypeList.setFlow(QListView.Flow.LeftToRight)
+            imageTypeList.setWrapping(True)
+            imageTypeList.setMaximumHeight(25)
             for imageType in displayImageCommon.listImageTypes:
                 item = QListWidgetItem(imageType)
                 item.setToolTip("Tick the check box to create a subset of images based on {}".format(imageType))
