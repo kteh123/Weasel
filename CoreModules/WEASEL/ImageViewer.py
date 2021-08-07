@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QMessageBox, 
                             QWidget, 
                             QGridLayout, 
+                            QFormLayout,
                             QHBoxLayout,
                             QVBoxLayout, 
                             QMdiSubWindow, 
@@ -119,7 +120,7 @@ class ImageViewer(QMdiSubWindow):
                 self.displayOneImage()
             else:
                 #DICOM series selected
-                self.setUpImageSlider()
+                self.setUpImageSliders()
 
             self.show()
         except Exception as e:
@@ -138,40 +139,54 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.setUpMainLayout: ' + str(e))
 
 
-    def setUpImageSlider(self):
-        try:
-            self.sliderLayout = QGridLayout()
-            self.sliderLayout.setSpacing(0)
-            self.sliderLayout.setContentsMargins(0,0,0,0)
-            self.mainVerticalLayout.addLayout(self.sliderLayout)
+    def setUpMainImageSlider(self):
+        self.mainSliderLayout = QHBoxLayout()
+        self.mainVerticalLayout.addLayout(self.mainSliderLayout)
         
-            self.mainImageSlider = self.createImageSlider()
+        self.mainImageSlider = self.createImageSlider()
         
-            maxNumberImages = len(self.imagePathList)
-            self.mainImageSlider.setMaximum(maxNumberImages)
-            if maxNumberImages < 4:
-                self.mainImageSlider.setFixedWidth(self.width()*.2)
-            elif maxNumberImages > 3 and maxNumberImages < 11:
-                self.mainImageSlider.setFixedWidth(self.width()*.5)
-            else:
-                self.mainImageSlider.setFixedWidth(self.width()*.80)
+        maxNumberImages = len(self.imagePathList)
+        self.mainImageSlider.setMaximum(maxNumberImages)
+        if maxNumberImages < 4:
+            self.mainImageSlider.setFixedWidth(self.width()*.2)
+        elif maxNumberImages > 3 and maxNumberImages < 11:
+            self.mainImageSlider.setFixedWidth(self.width()*.5)
+        else:
+            self.mainImageSlider.setFixedWidth(self.width()*.80)
         
-            self.imageNumberLabel = QLabel()
-            self.imageTypeList = self.createImageTypeList()
+        self.imageNumberLabel = QLabel()
+        
+        if maxNumberImages > 1:
+            self.mainSliderLayout.addWidget(self.mainImageSlider)
+            self.mainSliderLayout.addWidget(self.imageNumberLabel)
+        
+        if maxNumberImages < 11:
+            self.mainSliderLayout.addStretch(1)
 
-            if maxNumberImages > 1:
-                self.sliderLayout.addWidget(self.mainImageSlider, 0,0)
-                self.sliderLayout.addWidget(self.imageNumberLabel,0,1)
-                self.sliderLayout.addWidget(self.imageTypeList,1,0,1,2)
-            #if maxNumberImages < 11:
-             #   self.mainSliderLayout.addStretch(1)
+        self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)        
+        #Display the first image in the viewer
+        self.mainImageSliderMoved()
+
+
+    def setUpImageTypeList(self):
+        self.imageTypeLayout = QHBoxLayout()
+        self.mainVerticalLayout.addLayout(self.imageTypeLayout)
         
-            self.mainImageSlider.valueChanged.connect(self.imageSliderMoved)        
-            #Display the first image in the viewer
-            self.imageSliderMoved()
+        self.imageTypeList = self.createImageTypeList()
+        self.imageTypeLayout.addWidget(self.imageTypeList, stretch=1)
+
+    def setUpImageSliders(self):
+        try:
+            self.setUpMainImageSlider()
+
+            self.setUpImageTypeList()
+
+            self.sortedImageSliderLayout = QFormLayout()
+            self.mainVerticalLayout.addLayout(self.sortedImageSliderLayout)
+           
         except Exception as e:
-            print('Error in ImageViewer.setUpImageSlider: ' + str(e))
-            logger.error('Error in ImageViewer.setUpImageSlider: ' + str(e))
+            print('Error in ImageViewer.setUpImageSliders: ' + str(e))
+            logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
 
 
     def setUpColourTableDropDown(self):
@@ -513,44 +528,18 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.exportImageViaMatplotlib: ' + str(e))
 
 
-    def addSlider(self, item):
+    def addRemoveSortedImageSlider(self, item):
         if item.checkState() == Qt.Checked:
-           # print("item={} checked".format(item.text()))
-            #add slider
-            rowNumber = self.sliderLayout.rowCount() 
             imageSlider = self.createImageSlider(item.text())
-            imageTypeLabel = QLabel(item.text())
-            self.sliderLayout.addWidget(imageTypeLabel, rowNumber, 0, alignment=Qt.AlignLeft)
-            self.sliderLayout.addWidget(imageSlider, rowNumber, 1, alignment=Qt.AlignLeft)
+            self.sortedImageSliderLayout.addRow(item.text(), imageSlider)
         else:
-            #print("item={} unchecked".format(item.text()))
-            for rowNumber in range(0, self.sliderLayout.rowCount()):
-                widgetItem = self.sliderLayout.itemAtPosition(rowNumber, 1)
-                print("widgetItem={}".format(widgetItem))
-                #toolTip = widgetItem.widget().toolTip()
-                #if item.text() in toolTip:
-                #    self.sortedSlidersLayout.removeItem(widgetItem)
-                #    widgetItem.widget().deleteLater()
+            for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
+                layoutItem= self.sortedImageSliderLayout.itemAt(rowNumber,QFormLayout.LabelRole)
+                if item.text() == layoutItem.widget().text():
+                    self.sortedImageSliderLayout.removeRow(rowNumber)
+                    break
 
-            #remove slider
-        #rowNumber = self.sliderLayout.rowCount()
-        #imageTypeList = self.createImageTypeList()
-        #imageSlider = self.createImageSlider()
-        #deleteSliderButton = QPushButton("Delete")
-        #deleteSliderButton.clicked.connect(lambda: 
-        #     self.deleteSlider(rowNumber))
-        #self.sliderLayout.addWidget(imageTypeList, rowNumber, 0)
-        #self.sliderLayout.addWidget(imageSlider, rowNumber, 1)
-        #self.sliderLayout.addWidget(deleteSliderButton, rowNumber, 2)
-
-
-    #def deleteSlider(self, rowNumber):
-    #    for colNumber in range(0, self.sliderLayout.columnCount()):
-    #        widgetItem = self.sliderLayout.itemAtPosition(rowNumber, colNumber)
-    #        self.sliderLayout.removeItem(widgetItem)
-    #        widgetItem.widget().deleteLater()
-
-
+          
     def createImageSlider(self, toolTip=None):
         imageSlider = QSlider(Qt.Horizontal)
         imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
@@ -578,7 +567,7 @@ class ImageViewer(QMdiSubWindow):
                 item.setCheckState(Qt.Unchecked)
                 imageTypeList.addItem(item)
                
-            imageTypeList.itemClicked.connect(lambda item: self.addSlider( item))
+            imageTypeList.itemClicked.connect(lambda item: self.addRemoveSortedImageSlider( item))
             return imageTypeList
         except Exception as e:
             print('Error in ImageViewer.createImageTypeList: ' + str(e))
@@ -629,7 +618,7 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxContrast.setValue(width)
 
 
-    def imageSliderMoved(self):
+    def mainImageSliderMoved(self):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
@@ -648,7 +637,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try: 
             obj = self.userSelectionDict[self.seriesID]
-            logger.info("ImageViewer.imageSliderMoved called")
+            logger.info("ImageViewer.mainImageSliderMoved called")
             self.imageNumber = self.mainImageSlider.value()
             currentImageNumber = self.imageNumber - 1
             if currentImageNumber >= 0:
@@ -656,7 +645,7 @@ class ImageViewer(QMdiSubWindow):
                 imageNumberString = "image {} of {}".format(self.imageNumber, maxNumberImages)
                 self.imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
-                #print("imageSliderMoved before={}".format(self.selectedImagePath))
+                #print("mainImageSliderMoved before={}".format(self.selectedImagePath))
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 self.lut = None
                 #Get colour table of the image to be displayed
@@ -678,11 +667,11 @@ class ImageViewer(QMdiSubWindow):
                 self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + os.path.basename(self.selectedImagePath))
         except TypeError as e: 
-            print('Type Error in ImageViewer.imageSliderMoved: ' + str(e))
-            logger.error('Type Error in ImageViewer.imageSliderMoved: ' + str(e))
+            print('Type Error in ImageViewer.mainImageSliderMoved: ' + str(e))
+            logger.error('Type Error in ImageViewer.mainImageSliderMoved: ' + str(e))
         except Exception as e:
-            print('Error in ImageViewer.imageSliderMoved: ' + str(e))
-            logger.error('Error in ImageViewer.imageSliderMoved: ' + str(e))
+            print('Error in ImageViewer.mainImageSliderMoved: ' + str(e))
+            logger.error('Error in ImageViewer.mainImageSliderMoved: ' + str(e))
 
 
     def displayPixelArray(self):
