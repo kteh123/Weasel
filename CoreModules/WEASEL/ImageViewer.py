@@ -175,6 +175,7 @@ class ImageViewer(QMdiSubWindow):
         self.imageTypeList = self.createImageTypeList()
         self.imageTypeLayout.addWidget(self.imageTypeList, stretch=1)
 
+
     def setUpImageSliders(self):
         try:
             self.setUpMainImageSlider()
@@ -544,8 +545,12 @@ class ImageViewer(QMdiSubWindow):
         imageSlider = QSlider(Qt.Horizontal)
         imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
         if toolTip:
+            #This is a sorted image slider
             imageSlider.setToolTip("Images sorted according to {}".format(toolTip))
+            #maxNumberImages =
+            #imageSlider.setMaximum(maxNumberImages)
         else:
+            #This is the main image slider
             imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
         imageSlider.setSingleStep(1)
         imageSlider.setTickPosition(QSlider.TicksBothSides)
@@ -561,13 +566,14 @@ class ImageViewer(QMdiSubWindow):
             imageTypeList.setWrapping(True)
             imageTypeList.setMaximumHeight(25)
             for imageType in displayImageCommon.listImageTypes:
+
                 item = QListWidgetItem(imageType)
                 item.setToolTip("Tick the check box to create a subset of images based on {}".format(imageType))
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
                 item.setCheckState(Qt.Unchecked)
                 imageTypeList.addItem(item)
                
-            imageTypeList.itemClicked.connect(lambda item: self.addRemoveSortedImageSlider( item))
+            imageTypeList.itemClicked.connect(lambda item: self.addRemoveSortedImageSlider(item))
             return imageTypeList
         except Exception as e:
             print('Error in ImageViewer.createImageTypeList: ' + str(e))
@@ -1223,6 +1229,8 @@ class ImageViewer(QMdiSubWindow):
 
     def displayOneImage(self):
         try:
+            self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
+                         + os.path.basename(self.imagePathList))
             self.pixelArray = ReadDICOM_Image.returnPixelArray(self.imagePathList)
             colourTable, lut = ReadDICOM_Image.getColourmap(self.imagePathList)
             self.displayPixelArray() 

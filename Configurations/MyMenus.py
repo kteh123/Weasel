@@ -162,6 +162,10 @@ def main(pointerToWeasel):
      moduleName = 'Tutorial_Ferret_Joao')
     ferret.addItem(itemLabel = 'Launch Ferret',
      moduleName = 'Tutorial_LaunchFerret')
+
+    help = menuBuilder(pointerToWeasel, "Help")      
+    help.addItem(itemLabel = 'Help',     moduleName = 'Help')
+    
   
     #TRISTAN_Rat = menuBuilder(pointerToWeasel, "TRISTAN Rat")      
     #TRISTAN_Rat.addItem(itemLabel = 'TRISTAN Preprocessing',
