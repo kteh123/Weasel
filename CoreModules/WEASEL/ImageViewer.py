@@ -566,7 +566,6 @@ class ImageViewer(QMdiSubWindow):
             imageTypeList.setWrapping(True)
             imageTypeList.setMaximumHeight(25)
             for imageType in displayImageCommon.listImageTypes:
-
                 item = QListWidgetItem(imageType)
                 item.setToolTip("Tick the check box to create a subset of images based on {}".format(imageType))
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
@@ -628,18 +627,6 @@ class ImageViewer(QMdiSubWindow):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
-        
-        self - object reference to the WEASEL GUI
-        seriesName - string variable containing the name of DICOM series of images to be displayed
-        lblImageMissing - Label widget that displays the text 'Missing Image'
-        lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
-                and the X,Y coordinates of the mouse pointer.
-        graphicsView - pyqtGraph imageView widget
-        imageList - list of image file paths of the images in the series to be displayed
-        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
-        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
-        cmbColours - A dropdown list of colour table names based on the QComboBox class
-        subWindow - object reference to the subwindow hosting the slider control
         """
         try: 
             obj = self.userSelectionDict[self.seriesID]
@@ -684,30 +671,7 @@ class ImageViewer(QMdiSubWindow):
             """Displays the an image's pixel array in a pyqtGraph imageView widget 
             & sets its colour table, contrast and intensity levels. 
             Also, sets the contrast and intensity in the associated histogram.
-        
-            Input Parmeters
-            ***************
-            self - an object reference to the WEASEL interface.
-            pixelArray - pixel array to be displayed in  graphicsView
-            currentImageNumber - ordinal number of the image to be displayed
-                    in the list of images forming the series.
-            lblImageMissing - Label widget that displays the text 'Missing Image'
-            lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
-                    and the X,Y coordinates of the mouse pointer.
-            spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
-            spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
-             graphicsView - pyqtGraph imageView widget
-            colourTable - String variable containing the name of a colour table
-            cmbColours - Name of the dropdown list of colour table names
-            seriesName - string variable containing the name of DICOM series 
-                of images to be displayed
-            self.lut - array holding a lookup table of colours. A custom colour map
-            multiImage - optional boolean variable, default False,
-                        set to True if a series of DICOM images is being viewed.
-            deleteButton - name of the button widget, which when 
-                    clicked causes an image to be deleted
             """
-
             try:
                 logger.info("ImageViewer.displayPixelArray called")
 
