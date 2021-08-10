@@ -1,4 +1,5 @@
 
+from pandas.io import excel
 from PyQt5 import QtCore 
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,                            
@@ -13,6 +14,7 @@ import CoreModules.WEASEL.TreeView  as treeView
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import os
 import pydicom
+import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
 
@@ -80,12 +82,20 @@ def displayMetaDataSubWindow(objWeasel, tableTitle, dataset):
         widget.layout().addWidget(lblImageName)
 
         DICOM_Metadata_Table_View = buildTableView(objWeasel, dataset) 
-            
-        # Add search bar
-        search_field = QLineEdit()
-        search_field.textEdited.connect(lambda x=search_field.text(): search_table(DICOM_Metadata_Table_View, x))
+        
+        # Add Search Bar
+        searchField = QLineEdit()
+        searchField.textEdited.connect(lambda x=searchField.text(): searchTable(DICOM_Metadata_Table_View, x))
+        # Add export to Excel/CSV buttons
+        export_excel_button = QPushButton('&Export To Excel', clicked=lambda: exportToFile(objWeasel, DICOM_Metadata_Table_View, excel=True))
+        export_csv_button = QPushButton('&Export To CSV', clicked=lambda: exportToFile(objWeasel, DICOM_Metadata_Table_View, csv=True))
 
-        widget.layout().addWidget(search_field)
+        horizontalBox = QHBoxLayout()
+        horizontalBox.addWidget(searchField)
+        horizontalBox.addWidget(export_excel_button)
+        horizontalBox.addWidget(export_csv_button)
+
+        widget.layout().addLayout(horizontalBox)
         widget.layout().addWidget(DICOM_Metadata_Table_View)
 
         objWeasel.mdiArea.addSubWindow(metaDataSubWindow)
@@ -222,14 +232,42 @@ def buildTableView(objWeasel, dataset):
             logger.error('Error in : ViewMetaData.buildTableView' + str(e))
 
 
-def search_table(table, expression):
-    table.clearSelection()
-    if expression:
-        items = table.findItems(expression, Qt.MatchContains)
-        if items:  # we have found something
-            for item in items:
-                item.setSelected(True)
-                #table.item(item).setSelected(True)
-            table.scrollToItem(items[0])
-            #item = items[0]  # take the first
-            #table.table.setCurrentItem(item)
+def searchTable(table, expression):
+    try:
+        table.clearSelection()
+        if expression:
+            items = table.findItems(expression, Qt.MatchContains)
+            if items:  # we have found something
+                for item in items:
+                    item.setSelected(True)
+                    #table.item(item).setSelected(True)
+                table.scrollToItem(items[0])
+                #item = items[0]  # take the first
+                #table.table.setCurrentItem(item)
+    except Exception as e:
+        print('Error in : ViewMetaData.searchTable: ' + str(e))
+        logger.error('Error in : ViewMetaData.searchTable: ' + str(e))
+
+
+def exportToFile(objWeasel, table, excel=False, csv=False):
+    try:
+        columHeaders = []
+        for i in range(table.model().columnCount()):
+            columHeaders.append(table.horizontalHeaderItem(i).text())
+        df = pd.DataFrame(columns=columHeaders)
+        for row in range(table.rowCount()):
+            for col in range(table.columnCount()):
+                df.at[row, columHeaders[col]] = table.item(row, col).text()
+        if excel:
+            filename, _ = QFileDialog.getSaveFileName(objWeasel, 'Save Excel file as ...', os.path.join(objWeasel.weaselDataFolder, 'Metadata.xlsx'), "Excel files (*.xlsx)")
+            if filename != '':
+                df.to_excel(filename, index=False)
+                QMessageBox.information(objWeasel, "Export to Excel", "File " + filename + " saved successfully")
+        if csv:
+            filename, _ = QFileDialog.getSaveFileName(objWeasel, 'Save CSV file as ...', os.path.join(objWeasel.weaselDataFolder, 'Metadata.csv'), "CSV files (*.csv)")
+            if filename != '':
+                df.to_csv(filename, index=False)
+                QMessageBox.information(objWeasel, "Export to CSV", "File " + filename + " saved successfully")
+    except Exception as e:
+        print('Error in : ViewMetaData.exportToFile: ' + str(e))
+        logger.error('Error in : ViewMetaData.exportToFile: ' + str(e))
