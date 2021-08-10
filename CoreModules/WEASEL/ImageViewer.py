@@ -30,7 +30,8 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView 
+from CoreModules.WEASEL.DeveloperTools import Series
+import CoreModules.WEASEL.TreeView as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection
@@ -54,6 +55,17 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'turbo',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
+
+def reshapePathsList(list1, list2):
+    """This is ann auxiliary function that reshapes the
+       list of paths to match the multisliders in the viewer.
+    """
+    last = 0
+    res = []
+    for ele in list1:
+        res.append(list2[last : last + len(ele)])
+        last += len(ele)
+    return res
 
 
 class ImageViewer(QMdiSubWindow):
@@ -103,6 +115,11 @@ class ImageViewer(QMdiSubWindow):
                                     for imageName in self.imagePathList]
                 #add user selection object to dictionary
                 self.userSelectionDict[self.seriesID] = UserSelection(userSelectionList)
+                # Global variables for the Multisliders
+                self.dynamicListImageType = []
+                self.shapeList = []
+                self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
+                self.seriesToFormat = Series(self.pointerToWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
         
             self.setUpMainLayout()
 
@@ -538,6 +555,8 @@ class ImageViewer(QMdiSubWindow):
                 layoutItem= self.sortedImageSliderLayout.itemAt(rowNumber,QFormLayout.LabelRole)
                 if item.text() == layoutItem.widget().text():
                     self.sortedImageSliderLayout.removeRow(rowNumber)
+                    self.dynamicListImageType.remove(item.text())
+                    # UPDATE MULTI-SLIDERS - MAYBE CREATE A FUNCTION THAT UPDATES THE SLIDERS
                     break
 
           
@@ -547,8 +566,27 @@ class ImageViewer(QMdiSubWindow):
         if toolTip:
             #This is a sorted image slider
             imageSlider.setToolTip("Images sorted according to {}".format(toolTip))
-            #maxNumberImages =
-            #imageSlider.setMaximum(maxNumberImages)
+            self.dynamicListImageType.append(toolTip)
+            # If there is more that 1 slider in the multi-slider layout
+            if len(self.dynamicListImageType) > 1:
+                self.shapeList = []
+                # UPDATE MULTI-SLIDERS - MAYBE CREATE A FUNCTION BECAUSE THE SAME MIGHT BE REQUIRED FOR REMOVING SLIDERS
+                # Need to loop through all the existing sliders at this stage and potentially modify the setMaximum of the slider
+                for index, tag in enumerate(self.dynamicListImageType[:-1]):
+                    _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
+                    self.shapeList.append(numAttr)
+                    self.sortedImageSliderLayout.itemAt(index+1).widget().setMaximum(numAttr)
+                _, maxNumberImages = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, toolTip)
+                self.shapeList.append(maxNumberImages)
+                # Sort according to the tags
+                self.seriesToFormat.sort(*self.dynamicListImageType)
+                # Reshape the self.arrayForMultiSlider list of paths
+                self.arrayForMultiSlider = reshapePathsList(list(np.arange(np.prod(self.shapeList)).reshape(self.shapeList)), self.seriesToFormat.images)
+            else:
+                sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, toolTip)
+                maxNumberImages = len(self.imagePathList)
+                self.arrayForMultiSlider = sortedSequencePath
+            imageSlider.setMaximum(maxNumberImages)
         else:
             #This is the main image slider
             imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
@@ -621,6 +659,19 @@ class ImageViewer(QMdiSubWindow):
         centre = minLevel + (width/2)
         self.spinBoxIntensity.setValue(centre)
         self.spinBoxContrast.setValue(width)
+
+
+    def multipleImageSliderMoved(self):
+        # Connect this function to the indexes moving in the multiple sliders
+        # Similar to mainImageSliderMoved(self) but it works exclusively on MultiSliders
+
+        # self.arrayForMultiSlider is a multidimensional list where each element is a filepath
+        #self.arrayForMultiSlider = [[], [], [], [], .... ]
+
+        # This function should be triggered when any of the multidimensional sliders is moved.
+        # if slider1.value() = 10, slider2.value() = 5 and slider3.value() = 2
+        #self.arrayForMultiSlider[10][5][2] => this will return correspondent filepath => "C://med1jgra//..."
+        return
 
 
     def mainImageSliderMoved(self):
