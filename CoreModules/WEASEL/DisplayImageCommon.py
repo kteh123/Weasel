@@ -26,7 +26,7 @@ import CoreModules.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 
-listImageTypes = ["SliceLocation", "AcquisitionTime", "FlipAngle", "InversionTime"]
+listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", "FlipAngle", "InversionTime"]
 
 def setUpLevelsSpinBoxes(imageLevelsLayout): 
     logger.info("DisplayImageCommon.setUpLevelsSpinBoxes called.")
