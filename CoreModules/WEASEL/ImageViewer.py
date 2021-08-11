@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QListWidgetItem,
                             QListView)
 
-import os
+import sys, os
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -68,14 +68,22 @@ def reshapePathsList(list1, list2):
     return res
 
 
+class SortedImageSlider(QSlider):
+    def __init__(self,  DicomAttribute): 
+       super().__init__(orientation=Qt.Horizontal)
+       self.attribute =  DicomAttribute
+       self.setToolTip("Images sorted according to {}".format(DicomAttribute))
+
+
 class ImageViewer(QMdiSubWindow):
-    """description of class"""
+    """This class creates a subwindow for viewing an image or series of images with
+    the facility to change the colour table applied to the image.  It also has multiple
+    sliders for browsing series of images."""
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList, singleImageSelected=False): 
         try:
             super().__init__()
-            #print("__init__ imagePath={}".format(imagePathList))
             self.subjectID = subjectID
             self.studyID = studyID
             self.seriesID = seriesID
@@ -86,6 +94,7 @@ class ImageViewer(QMdiSubWindow):
             self.cmbColours = QComboBox()  
             self.lut = ""
             self.pointerToWeasel = pointerToWeasel
+            self.listSortedImageSliders = []
 
             if singleImageSelected:
                 self.isSeries = False
@@ -131,7 +140,7 @@ class ImageViewer(QMdiSubWindow):
 
             self.setUpLevelsSpinBoxes()
     
-            self.setUpHistogram()
+            self.setUpHistogram() #At the right-hand side of the image, adjusts levels
         
             if singleImageSelected:
                 self.displayOneImage()
@@ -159,8 +168,7 @@ class ImageViewer(QMdiSubWindow):
     def setUpMainImageSlider(self):
         self.mainSliderLayout = QHBoxLayout()
         self.mainVerticalLayout.addLayout(self.mainSliderLayout)
-        
-        self.mainImageSlider = self.createImageSlider()
+        self.createMainImageSlider()
         
         maxNumberImages = len(self.imagePathList)
         self.mainImageSlider.setMaximum(maxNumberImages)
@@ -180,7 +188,7 @@ class ImageViewer(QMdiSubWindow):
         if maxNumberImages < 11:
             self.mainSliderLayout.addStretch(1)
 
-        self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)        
+        #self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)        
         #Display the first image in the viewer
         self.mainImageSliderMoved()
 
@@ -188,7 +196,6 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageTypeList(self):
         self.imageTypeLayout = QHBoxLayout()
         self.mainVerticalLayout.addLayout(self.imageTypeLayout)
-        
         self.imageTypeList = self.createImageTypeList()
         self.imageTypeLayout.addWidget(self.imageTypeList, stretch=1)
 
@@ -207,8 +214,7 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
 
 
-    def setUpColourTableDropDown(self):
-        #self.cmbColours = QComboBox()                                                    
+    def setUpColourTableDropDown(self):                                                  
         self.cmbColours.blockSignals(True)
         self.cmbColours.addItems(listColours)
         self.cmbColours.setCurrentIndex(0)
@@ -337,7 +343,6 @@ class ImageViewer(QMdiSubWindow):
             self.imgItem = pg.ImageItem(border='w')   
             self.graphicsView = pg.ImageView(view=self.plotItem, imageItem=self.imgItem)
             self.mainVerticalLayout.addWidget(self.graphicsView, stretch=1)
-           
         except Exception as e:
             print('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
             logger.error('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
@@ -380,7 +385,6 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxIntensity, self.spinBoxContrast = displayImageCommon.setUpLevelsSpinBoxes(self.imageLevelsLayout)
         self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
         self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
-        
         if self.isSeries: 
             self.spinBoxIntensity.valueChanged.connect(self.updateImageUserSelection)
             self.spinBoxContrast.valueChanged.connect(self.updateImageUserSelection)
@@ -397,18 +401,6 @@ class ImageViewer(QMdiSubWindow):
         """When the Delete button is clicked on the multi image viewer,
         this function deletes the physical image, removes the 
         reference to it in the XML file and removes it from the image viewer.
-    
-        Input Parmeters
-        ***************
-            self - an object reference to the WEASEL interface.
-            currentImagePath - file path to the image being viewed.
-            studyName - string variable containing name of the DICOMstudy 
-                    containing the DICOM series of images to be displayed
-            seriesName - string variable containing the name of DICOM series
-                    of images to be displayed
-            lastSliderPosition - integer variable holding the value of the 
-                        slider when the delete button is clicked; i.e., the
-                        number of the image being deleted.
         """
         try:
             logger.info("ImageViewer.deleteImageInMultiImageViewer called")
@@ -427,11 +419,6 @@ class ImageViewer(QMdiSubWindow):
                 #Remove deleted image from the list
                 self.imagePathList.remove(currentImagePath)
 
-                #Refresh the multi-image viewer to remove deleted image
-                #First close it
-                #subWindow.close()
-                #QApplication.processEvents()
-                
                 if len(self.imagePathList) == 0:
                     #Only redisplay the multi-image viewer if there
                     #are still images in the series to display
@@ -485,12 +472,6 @@ class ImageViewer(QMdiSubWindow):
         It launches a file dialog, so that the user can select the file path to 
         the png file in which the exported file will be stored. It also collects 
         the name of the image colour table and the image levels.
-    
-        Input Parmeters
-        ***************
-            self - an object reference to the WEASEL interface.
-             graphicsView - pyqtGraph imageView widget
-            cmbColours - A dropdown list of colour table names based on the QComboBox class
         """
         try:
             self.colourTable = self.cmbColours.currentText()
@@ -506,15 +487,13 @@ class ImageViewer(QMdiSubWindow):
 
             #Test if the user has selected a file name
             if fileName:
-                minValue, MaxValue = self.graphicsView.getLevels()
-                self.exportImageViaMatplotlib(self.graphicsView.getImageItem().image,
-                                                fileName,  minValue, MaxValue)
+                self.exportImageViaMatplotlib(fileName)
         except Exception as e:
             print('Error in ImageViewer.exportImage: ' + str(e))
             logger.error('Error in ImageViewer.exportImage: ' + str(e))
 
 
-    def exportImageViaMatplotlib(self, pixelArray, fileName, minimumValue, maximumValue):
+    def exportImageViaMatplotlib(self, fileName):
         """This function uses matplotlib.pyplot to save the DICOM image being viewed 
         and its colour table in a png file with the path+filename in fileName. 
     
@@ -535,7 +514,8 @@ class ImageViewer(QMdiSubWindow):
             pixelArray = np.transpose(self.pixelArray)
             cmap = plt.get_cmap(self.colourTable)
             pos = plt.imshow(pixelArray, cmap=cmap)
-            plt.clim(int(minimumValue), int(maximumValue))
+            minValue, maxValue = self.graphicsView.getLevels()
+            plt.clim(int(minValue), int(maxValue))
             cBar = plt.colorbar()
             cBar.minorticks_on()
             plt.savefig(fname=fileName)
@@ -547,26 +527,51 @@ class ImageViewer(QMdiSubWindow):
 
 
     def addRemoveSortedImageSlider(self, item):
-        if item.checkState() == Qt.Checked:
-            imageSlider = self.createImageSlider(item.text())
-            self.sortedImageSliderLayout.addRow(item.text(), imageSlider)
-        else:
-            for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
-                layoutItem= self.sortedImageSliderLayout.itemAt(rowNumber,QFormLayout.LabelRole)
-                if item.text() == layoutItem.widget().text():
-                    self.sortedImageSliderLayout.removeRow(rowNumber)
-                    self.dynamicListImageType.remove(item.text())
-                    # UPDATE MULTI-SLIDERS - MAYBE CREATE A FUNCTION THAT UPDATES THE SLIDERS
-                    break
-
+        try:
+            if item.checkState() == Qt.Checked:
+                imageSlider = self.createSortedImageSlider(item.text())
+                self.sortedImageSliderLayout.addRow(item.text(), imageSlider)
+            else:
+                for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
+                    layoutItem= self.sortedImageSliderLayout.itemAt(rowNumber, QFormLayout.LabelRole)
+                    if item.text() == layoutItem.widget().text():
+                        print("addRemoveSortedImageSlider unchecked after:")
+                        print("self.dynamicListImageType={}".format(self.dynamicListImageType))
+                        self.sortedImageSliderLayout.removeRow(rowNumber)
+                        self.dynamicListImageType.remove(item.text())
+                        for slider in self.listSortedImageSliders:
+                            if slider.attribute == item.text():
+                                self.listSortedImageSliders.remove(slider)
+                                break
+                        # UPDATE MULTI-SLIDERS - MAYBE CREATE A FUNCTION THAT UPDATES THE SLIDERS
+                        break
+        except Exception as e:
+            print('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
+            logger.error('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
           
-    def createImageSlider(self, toolTip=None):
-        imageSlider = QSlider(Qt.Horizontal)
-        imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
-        if toolTip:
-            #This is a sorted image slider
-            imageSlider.setToolTip("Images sorted according to {}".format(toolTip))
-            self.dynamicListImageType.append(toolTip)
+
+    def createMainImageSlider(self):
+        try:
+            self.mainImageSlider = QSlider(Qt.Horizontal)
+            self.mainImageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
+            self.mainImageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
+            self.mainImageSlider.setSingleStep(1)
+            self.mainImageSlider.setTickPosition(QSlider.TicksBothSides)
+            self.mainImageSlider.setTickInterval(1)
+            self.mainImageSlider.setMinimum(1)
+            self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)
+        except Exception as e:
+            print('Error in ImageViewer.createMainImageSlider: ' + str(e))
+            logger.error('Error in ImageViewer.createMainImageSlider: ' + str(e))
+
+
+    def createSortedImageSlider(self, DicomAttribute):
+        try:
+            imageSlider = SortedImageSlider(DicomAttribute)
+            self.listSortedImageSliders.append(imageSlider)
+            imageSlider.valueChanged.connect(lambda: self.multipleImageSliderMoved(DicomAttribute))
+            imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
+            self.dynamicListImageType.append(DicomAttribute)
             # If there is more that 1 slider in the multi-slider layout
             if len(self.dynamicListImageType) > 1:
                 self.shapeList = []
@@ -576,25 +581,27 @@ class ImageViewer(QMdiSubWindow):
                     _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
                     self.shapeList.append(numAttr)
                     self.sortedImageSliderLayout.itemAt(index+1).widget().setMaximum(numAttr)
-                _, maxNumberImages = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, toolTip)
+                _, maxNumberImages = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
                 self.shapeList.append(maxNumberImages)
                 # Sort according to the tags
                 self.seriesToFormat.sort(*self.dynamicListImageType)
                 # Reshape the self.arrayForMultiSlider list of paths
                 self.arrayForMultiSlider = reshapePathsList(list(np.arange(np.prod(self.shapeList)).reshape(self.shapeList)), self.seriesToFormat.images)
             else:
-                sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, toolTip)
+                sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, DicomAttribute)
                 maxNumberImages = len(self.imagePathList)
                 self.arrayForMultiSlider = sortedSequencePath
             imageSlider.setMaximum(maxNumberImages)
-        else:
-            #This is the main image slider
-            imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
-        imageSlider.setSingleStep(1)
-        imageSlider.setTickPosition(QSlider.TicksBothSides)
-        imageSlider.setTickInterval(1)
-        imageSlider.setMinimum(1)
-        return imageSlider
+     
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
+            imageSlider.setMinimum(1)
+            
+            return imageSlider
+        except Exception as e:
+            print('Error in ImageViewer.createSortedImageSlider: ' + str(e))
+            logger.error('Error in ImageViewer.createSortedImageSlider: ' + str(e))
 
 
     def createImageTypeList(self):
@@ -661,7 +668,29 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxContrast.setValue(width)
 
 
-    def multipleImageSliderMoved(self):
+    def multipleImageSliderMoved(self, DicomAttribute):
+        indexDict = {}
+        #Create a dictionary of DICOM attribute:slider index pairs
+        for slider in self.listSortedImageSliders:
+            indexDict[slider.attribute] = slider.value()
+        
+        print("multipleImageSliderMoved, indexDict={}".format(indexDict))
+
+        #identify the slider being moved and display the image it pionts to
+        for slider in self.listSortedImageSliders:
+            if slider.attribute == DicomAttribute:
+                #display the image selected by this slider
+                #self.selectedImagePath = self.arrayForMultiSlider[[], [], []]
+                #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+                #self.lut = None
+                ##Get colour table of the image to be displayed
+                #self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+
+                ##display above colour table in colour table dropdown list
+                #self.displayColourTableInComboBox()
+
+                #self.displayPixelArray() 
+                break
         # Connect this function to the indexes moving in the multiple sliders
         # Similar to mainImageSliderMoved(self) but it works exclusively on MultiSliders
 
@@ -755,7 +784,7 @@ class ImageViewer(QMdiSubWindow):
                     else:
                          self.graphicsView.setImage(self.pixelArray, 
                                                     autoHistogramRange=True, 
-                                                    xvals=np.arange(np.shape(pixelArray)[0] + 1), 
+                                                    xvals=np.arange(np.shape(self.pixelArray)[0] + 1), 
                                                     levels=(minimumValue, maximumValue))
                 
                     if (minimumValue < 1 and minimumValue > -1) and (maximumValue < 1 and maximumValue > -1):
@@ -792,16 +821,6 @@ class ImageViewer(QMdiSubWindow):
                 [2] - intensity level
                 [3] - contrast level
             userSelectionList is initialised with default values in the function displayMultiImageSubWindow
-        
-            Input Parmeters
-            ***************
-            self - an object reference to the WEASEL interface.
-            applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
-            cmbColours - A dropdown list of colour table names based on the QComboBox class 
-            spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
-            spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
-            seriesName - string variable containing the name of DICOM series of images to be displayed
-            firstImagePath - string variable containing the file path to the first image in the DICOM series
             """
         try:
             logger.info('updateImageUserSelection called')
@@ -841,15 +860,6 @@ class ImageViewer(QMdiSubWindow):
         """This function applies a user selected colour map to the current image.
         If the Apply checkbox is checked then the new colour map is also applied to 
         the whole series of DICOM images by setting a boolean flag to True.
-
-        Input Parmeters
-        ***************
-            self - an object reference to the WEASEL interface.
-             graphicsView - pyqtGraph imageView widget
-            cmbColours - A dropdown list of colour table names based on the QComboBox class
-            seriesName - string variable containing the name of 
-                DICOM series of images to be displayed
-            applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
         """
         try:
             self.applyColourTableToAnImage()
@@ -874,12 +884,6 @@ class ImageViewer(QMdiSubWindow):
         """This function removes the user selected colour tables, contrast & intensity values from
         the list of image lists that hold these values.  They are reset to the default values of
         'default' for the colour table and -1 for the contrast & intensity values
-    
-        Input Parmeters
-        ***************
-            self - an object reference to the WEASEL interface.
-            imageSlider - name of the slider widget used to scroll through the images.
-            seriesName - string variable containing the name of DICOM series of images to be displayed
         """
         obj = self.userSelectionDict[self.seriesID]
         obj.clearUserSelection()
@@ -904,13 +908,6 @@ class ImageViewer(QMdiSubWindow):
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
 
-        Input parameters
-        ****************
-        seriesName - string variable containing the name of DICOM series of images to be displayed
-        centre - Image intensity
-        width - Image contrast
-        currentImageNumber - The ordinal number of the image being viewed in the image list
-
         Output parameters
         *****************
         success - boolean, set to true if level values are successfully retrieved
@@ -919,6 +916,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.returnUserSelectedLevels called")
+            #The ordinal number of the image being viewed in the image list
             currentImageNumber = self.mainImageSlider.value() - 1
             centre = self.spinBoxIntensity.value()
             width = self.spinBoxContrast.value()
@@ -958,14 +956,6 @@ class ImageViewer(QMdiSubWindow):
         image and when it is, it determines the value of the pixel
         under the mouse pointer and displays this in the label
         lblPixelValue.
-
-        Input parameters
-        ****************
-        pos - X,Y coordinates of the mouse pointer
-         graphicsView - pyqtGraph imageView widget
-        pixelArray - pixel array to be displayed in  graphicsView
-        lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
-                    and the X,Y coordinates of the mouse pointer.
         """
         try:
             #print ("Image position: {}".format(pos))
@@ -1003,8 +993,6 @@ class ImageViewer(QMdiSubWindow):
         with input of intensity and contrast values. 
         Input Parmeters
         ***************
-            spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
-            spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
             block - boolean taking values True/False
         """
         self.spinBoxIntensity.blockSignals(block)
@@ -1014,15 +1002,7 @@ class ImageViewer(QMdiSubWindow):
     def setPgColourMap(self):
         """This function converts a matplotlib colour map into
         a colour map that can be used by the pyqtGraph imageView widget.
-    
-        Input Parmeters
-        ***************
-            colourTable - name of the colour map
-             graphicsView - name of the imageView widget
-            cmbColours - name of the dropdown lists of colour map names
-            self.lut - name of the look up table containing raw colour data
         """
-
         try:
             if self.colourTable == None or self.colourTable == "":
                 self.colourTable = 'gray'
@@ -1052,11 +1032,6 @@ class ImageViewer(QMdiSubWindow):
 
     def readLevelsFromDICOMImage(self): 
         """Reads levels directly from the DICOM image
-        
-        Input Parmeters
-        ***************
-        self - an object reference to the WEASEL interface.
-        pixelArray - pixel array to be displayed
 
         Output Parameters
         *****************
@@ -1107,19 +1082,6 @@ class ImageViewer(QMdiSubWindow):
         This function is executed when the Update button 
         is clicked and it coordinates the calling of the functions, 
         updateWholeDicomSeries & updateDicomSeriesImageByImage.
-        
-        Input Parmeters
-        ***************
-        self - an object reference to the WEASEL interface.
-        lblHiddenSeriesName - name of the hidden label widget whose text
-                    contains the name of the DICOM series whose images are 
-                    being viewed.
-        lblHiddenStudyName - name of the hidden label widget whose text
-                contains the name of the DICOM study containing the series
-                whose images are  being viewed.
-        cmbColours - A dropdown list of colour table names based on the QComboBox class
-        spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
-        spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
         """
         try:
             logger.info("ImageViewer.updateDICOM called")
@@ -1161,14 +1123,8 @@ class ImageViewer(QMdiSubWindow):
             
           Input Parmeters
           ***************
-            self - an object reference to the WEASEL interface.
-            seriesName - string variable containing the name of DICOM series of images to be updated
-            studyName - string variable containing name of the DICOMstudy 
-                    containing the DICOM series of images to be updated
-            colourTable - String variable containing the name of a colour table
             levels  - 2 item list containing the image contrast and intensity values as integers, 
                         [contrast, intensity]
-            lut - array holding a lookup table of colours. A custom colour map
             """
         try:
             logger.info("In ImageViewer.updateWholeDicomSeries")
@@ -1197,17 +1153,6 @@ class ImageViewer(QMdiSubWindow):
     def updateDicomSeriesImageByImage(self):
         """Updates one or more images in a DICOM series each with potentially
         a different table and set of levels
-    
-        Input Parmeters
-        ***************
-            self - an object reference to the WEASEL interface.
-            seriesName - string variable containing the name of DICOM series 
-            of images to be updated
-            studyName - string variable containing name of the DICOMstudy 
-                    containing the DICOM series of images to updated
-            colourTable - String variable containing the name of a colour table
-            lut - array holding a lookup table of colours. A custom colour map
-    
         """
         try:
             logger.info("In ImageViewer.updateDicomSeriesImageByImage")
@@ -1259,11 +1204,6 @@ class ImageViewer(QMdiSubWindow):
         This function causes the combobox widget cmbColours to 
         display the name of the colour table stored in the string
         variable colourTable. 
-
-         Input Parmeters
-         ****************
-        cmbColours - name of the dropdown lists of colour map names
-        colourTable - String variable containing the name of a colour table
         """
         try:
             self.cmbColours.blockSignals(True)
