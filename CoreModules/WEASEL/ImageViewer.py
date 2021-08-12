@@ -676,7 +676,9 @@ class ImageViewer(QMdiSubWindow):
         for slider in self.listSortedImageSliders:
             indexDict[slider.attribute] = slider.value()
         
-        print("multipleImageSliderMoved, indexDict={}".format(indexDict))
+        #Joao, we need to convert the slider values in the indexDict to
+        #array indices to locate the correct image in self.arrayForMultiSlider
+        #print("multipleImageSliderMoved, indexDict={}".format(indexDict))
 
         #identify the slider being moved and display the image it pionts to
         for slider in self.listSortedImageSliders:
