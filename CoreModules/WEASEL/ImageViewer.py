@@ -67,8 +67,10 @@ def reshapePathsList(list1, list2):
         last += len(ele)
     return res
 
-
+##New
 class SortedImageSlider(QSlider):
+    """Subclass of the QSlider class with the added property attribute 
+    which identifies what the image subset has been filtered for"""
     def __init__(self,  DicomAttribute): 
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute
@@ -94,7 +96,10 @@ class ImageViewer(QMdiSubWindow):
             self.cmbColours = QComboBox()  
             self.lut = ""
             self.pointerToWeasel = pointerToWeasel
-            self.listSortedImageSliders = []
+            #A list of the sorted image sliders, 
+            #updated as they are added and removed 
+            #from the subwindow
+            self.listSortedImageSliders = []  ##New
 
             if singleImageSelected:
                 self.isSeries = False
@@ -187,8 +192,7 @@ class ImageViewer(QMdiSubWindow):
         
         if maxNumberImages < 11:
             self.mainSliderLayout.addStretch(1)
-
-        #self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)        
+       
         #Display the first image in the viewer
         self.mainImageSliderMoved()
 
@@ -203,12 +207,9 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageSliders(self):
         try:
             self.setUpMainImageSlider()
-
             self.setUpImageTypeList()
-
             self.sortedImageSliderLayout = QFormLayout()
             self.mainVerticalLayout.addLayout(self.sortedImageSliderLayout)
-           
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
@@ -404,7 +405,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.deleteImageInMultiImageViewer called")
-            lastSliderPosition = mainImageSlider.value()
+            lastSliderPosition = self.mainImageSlider.value()
             currentImagePath = self.imagePathList[self.mainImageSlider.value()-1]
             imageName = os.path.basename(currentImagePath)
             #print ('study id {} series id {}'.format(studyName, seriesName))
@@ -529,19 +530,17 @@ class ImageViewer(QMdiSubWindow):
     def addRemoveSortedImageSlider(self, item):
         try:
             if item.checkState() == Qt.Checked:
-                imageSlider = self.createSortedImageSlider(item.text())
-                self.sortedImageSliderLayout.addRow(item.text(), imageSlider)
+                imageSlider = self.createSortedImageSlider(item.text()) ##New
+                self.sortedImageSliderLayout.addRow(item.text(), imageSlider)  ##New
             else:
                 for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
                     layoutItem= self.sortedImageSliderLayout.itemAt(rowNumber, QFormLayout.LabelRole)
                     if item.text() == layoutItem.widget().text():
-                        print("addRemoveSortedImageSlider unchecked after:")
-                        print("self.dynamicListImageType={}".format(self.dynamicListImageType))
                         self.sortedImageSliderLayout.removeRow(rowNumber)
                         self.dynamicListImageType.remove(item.text())
-                        for slider in self.listSortedImageSliders:
-                            if slider.attribute == item.text():
-                                self.listSortedImageSliders.remove(slider)
+                        for slider in self.listSortedImageSliders: ##New
+                            if slider.attribute == item.text(): ##New
+                                self.listSortedImageSliders.remove(slider) ##New
                                 break
                         # UPDATE MULTI-SLIDERS - MAYBE CREATE A FUNCTION THAT UPDATES THE SLIDERS
                         break
@@ -550,7 +549,7 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
           
 
-    def createMainImageSlider(self):
+    def createMainImageSlider(self): ##New
         try:
             self.mainImageSlider = QSlider(Qt.Horizontal)
             self.mainImageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
@@ -565,7 +564,7 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.createMainImageSlider: ' + str(e))
 
 
-    def createSortedImageSlider(self, DicomAttribute):
+    def createSortedImageSlider(self, DicomAttribute):  ##New
         try:
             imageSlider = SortedImageSlider(DicomAttribute)
             self.listSortedImageSliders.append(imageSlider)
@@ -668,7 +667,10 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxContrast.setValue(width)
 
 
-    def multipleImageSliderMoved(self, DicomAttribute):
+    def multipleImageSliderMoved(self, DicomAttribute):  ##New
+        """This function is attached to the slider moved event of each 
+       multiple slider.  The slider is identified by the DicomAttribute parameter. 
+       The slider being moved determines the image displayed in the image viewer"""
         indexDict = {}
         #Create a dictionary of DICOM attribute:slider index pairs
         for slider in self.listSortedImageSliders:
@@ -1096,7 +1098,7 @@ class ImageViewer(QMdiSubWindow):
             if buttonReply == QMessageBox.Ok:
                 colourTable = self.cmbColours.currentText()
                 if singleImage == False:
-                    obj = self.userSelectionDict[sel.seriesID]
+                    obj = self.userSelectionDict[self.seriesID]
                     if obj.getSeriesUpdateStatus():
                         levels = [self.spinBoxIntensity.value(), self.spinBoxContrast.value()]
                         self.updateWholeDicomSeries(levels)
