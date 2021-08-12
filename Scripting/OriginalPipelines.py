@@ -474,7 +474,43 @@ class OriginalPipelines():
                 return True
             else:
                 return False
- 
+    
+    def select_folder(self, title="Select Folder", initial_folder=None):
+        """
+        Prompts a native FileDialog window where the user can select the desired folder in the system's file explorer.
+        """
+        if initial_folder is None:
+            initial_folder = self.weaselDataFolder
+        scan_directory = QFileDialog.getExistingDirectory(self, title, initial_folder, QFileDialog.ShowDirsOnly)
+        if scan_directory == '':
+            return None
+        else:
+            return scan_directory
+    
+    def select_file_to_read(self, title='Save file as ...', initial_folder=None, extension="All files (*.*)"):
+        """
+        Prompts a native FileDialog window where the user can select the desired file to read in the system's file explorer.
+        """
+        if initial_folder is None:
+            initial_folder = self.weaselDataFolder
+        filename, _ = QFileDialog.getOpenFileName(self, title, initial_folder, extension)
+        if filename == '':
+            return None
+        else:
+            return filename
+
+    def select_file_to_save(self, title='Save file as ...', initial_folder=None, extension="All files (*.*)"):
+        """
+        Prompts a native FileDialog window where the user can select the desired file to save in the system's file explorer.
+        """
+        if initial_folder is None:
+            initial_folder = self.weaselDataFolder
+        filename, _ = QFileDialog.getSaveFileName(self, title, initial_folder, extension)
+        if filename == '':
+            return None
+        else:
+            return filename
+
     def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """
         Displays a progress bar with the unit set in "index".

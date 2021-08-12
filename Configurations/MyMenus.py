@@ -29,6 +29,12 @@ def main(pointerToWeasel):
                tooltip = 'View DICOM Image or series metadata',
                moduleName = 'ViewMetaData',
                context=True)
+    
+    tools.addItem(itemLabel = 'Export to NIfTI',
+               moduleName = 'ExportToNIfTI',
+               shortcut = 'Ctrl+S',
+               tooltip = 'Save selected series as NIfTI',
+               context=True)
 
     #Create Tutorial menu
     tutorial = menuBuilder(pointerToWeasel, "Tutorial")
@@ -101,7 +107,7 @@ def main(pointerToWeasel):
                moduleName = 'Tutorial_InvertPixelValues')
 
     tutorial.addItem(itemLabel = 'Invert pixel values in place (series-by-series)',
-               shortcut = 'Ctrl+S',
+               shortcut = 'Ctrl+P',
                moduleName = 'Tutorial_InvertPixelValuesSeries')
 
     tutorial.addItem(itemLabel = 'Invert pixel values in a new series (image-by-image)',
