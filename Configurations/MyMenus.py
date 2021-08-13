@@ -163,16 +163,13 @@ def main(pointerToWeasel):
     examples.addItem(itemLabel = 'Create New Series by Slice Location',
                moduleName = 'Test_CreateSeriesBySliceLocation')
 
-    ferret = menuBuilder(pointerToWeasel, "Ferret")      
-    ferret.addItem(itemLabel = 'Signal/Mask to DICOM',
+    tristan_rat = menuBuilder(pointerToWeasel, "TRISTAN Rat")      
+    tristan_rat.addItem(itemLabel = 'Preprocessing',
+     moduleName = 'TRISTAN_Preprocessing')
+    tristan_rat.addItem(itemLabel = 'Signal/Mask to DICOM',
      moduleName = 'Tutorial_Ferret_Joao')
-    ferret.addItem(itemLabel = 'Launch Ferret',
+    tristan_rat.addItem(itemLabel = 'Launch Ferret',
      moduleName = 'Tutorial_LaunchFerret')
 
     help = menuBuilder(pointerToWeasel, "Help")      
     help.addItem(itemLabel = 'Help',     moduleName = 'Help')
-    
-  
-    #TRISTAN_Rat = menuBuilder(pointerToWeasel, "TRISTAN Rat")      
-    #TRISTAN_Rat.addItem(itemLabel = 'TRISTAN Preprocessing',
-    # moduleName = 'TRISTAN_Preprocessing')

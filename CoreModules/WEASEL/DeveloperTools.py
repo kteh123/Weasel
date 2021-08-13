@@ -1144,10 +1144,15 @@ class Series:
         logger.info("Series.children called")
         try:
             children = []
-            seriesXML = self.objWeasel.objXMLReader.getSeries(self.subjectID, self.studyID, self.seriesID)
-            for imageXML in seriesXML:
-                image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
-                children.append(image)
+            if len(self.images) > 1:
+                for imagePath in self.images:
+                    image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imagePath)
+                    children.append(image)
+            else:
+                seriesXML = self.objWeasel.objXMLReader.getSeries(self.subjectID, self.studyID, self.seriesID)
+                for imageXML in seriesXML:
+                    image = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, imageXML.find('name').text)
+                    children.append(image)
             return ImagesList(children)
         except Exception as e:
             print('Error in Series.children: ' + str(e))
@@ -1622,6 +1627,13 @@ class Series:
                         if (ind_tag == "SliceLocation" or ind_tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): ind_tag = (0x2001, 0x100a)
                         outputValuesList.append(ReadDICOM_Image.getSeriesTagValues(self.images, ind_tag)[0])
                     return outputValuesList
+                elif isinstance(tag, str) and len(tag.split(' ')) == 3:
+                    dicom_tag = tag.split(' ')[0]
+                    if (dicom_tag == "SliceLocation" or dicom_tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): dicom_tag = (0x2001, 0x100a)
+                    logical_operator = tag.split(' ')[1]
+                    target_value = tag.split(' ')[2]
+                    series_to_return = self.where(dicom_tag, logical_operator, target_value)
+                    return series_to_return
                 else:
                     if (tag == "SliceLocation" or tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): tag = (0x2001, 0x100a)
                     return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
@@ -1676,7 +1688,12 @@ class Series:
         return self.get_value(tag)
 
     def __setitem__(self, tag, value):
-        self.set_value(tag, value)
+        if isinstance(tag, str) and len(tag.split(' ')) == 3:
+            subSeries = self.get_value(tag)
+            dicom_tag = tag.split(' ')[0]
+            subSeries.set_value(dicom_tag, value)
+        else:
+            self.set_value(tag, value)
 
     # Remove this function in the future - Careful with Subject.merge and Study.merge implications!
     def Item(self, tagDescription, newValue=None):

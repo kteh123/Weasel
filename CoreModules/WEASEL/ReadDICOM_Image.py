@@ -100,16 +100,27 @@ def getImageTagValue(imagePath, dicomTag):
     try:
         if os.path.exists(imagePath):
             dataset = getDicomDataset(imagePath)
+            # The following if statement is an exception for Multi-frame / Enhanced DICOM images (13/08/2021)
+            if (dicomTag == "SliceLocation" or dicomTag == (0x0020,0x1041)) and not hasattr(dataset, "SliceLocation"): dicomTag = (0x2001, 0x100a)
             # This is not for Enhanced MRI. Only Classic DICOM
             if isinstance(dicomTag, str):
-                attribute = dataset.data_element(dicomTag).value
-                if dataset.data_element(dicomTag).VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                try:
+                    attribute = dataset.data_element(dicomTag).value
+                    if dataset.data_element(dicomTag).VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                except:
+                    return None
             elif isinstance(dicomTag, tuple):
-                attribute = dataset[dicomTag].value
-                if dataset[dicomTag].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                try:
+                    attribute = dataset[dicomTag].value
+                    if dataset[dicomTag].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                except:
+                    return None
             else:
-                attribute = dataset[hex(dicomTag)].value
-                if dataset[hex(dicomTag)].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                try:
+                    attribute = dataset[hex(dicomTag)].value
+                    if dataset[hex(dicomTag)].VR == "TM": attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
+                except:
+                    return None
             del dataset
             return attribute
         else:
@@ -129,6 +140,8 @@ def getSeriesTagValues(imagePathList, dicomTag):
     try:
         if os.path.exists(imagePathList[0]):
             datasetList = getSeriesDicomDataset(imagePathList)
+            # The following if statement is an exception for Multi-frame / Enhanced DICOM images (13/08/2021)
+            if (dicomTag == "SliceLocation" or dicomTag == (0x0020,0x1041)) and not hasattr(datasetList[0], "SliceLocation"): dicomTag = (0x2001, 0x100a)
             if not hasattr(datasetList[0], 'PerFrameFunctionalGroupsSequence'):
                 # Classic DICOM
                 if isinstance(dicomTag, str):
@@ -155,11 +168,10 @@ def getSeriesTagValues(imagePathList, dicomTag):
                     if x not in attributeListUnique:
                         attributeListUnique.append(x)
                 numAttribute = len(attributeListUnique)
-                #numAttribute = len(np.unique(attributeList))
                 del datasetList
                 return attributeList, numAttribute
             else:
-                # Enhanced MRI
+                # Enhanced MRI => This else will probably never happen, because this type of DICOM is converted at Import (13/08/2021)
                 dataset = datasetList[0]
                 attributeList = []
                 fields = dicomTag.split('.')

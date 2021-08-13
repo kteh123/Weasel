@@ -558,6 +558,12 @@ class OriginalPipelines():
         ui = UserInterfaceTools(self)
         ui.refreshWeasel(new_series_name=new_series_name)
 
+    def reset_treeview(self):
+        """
+        Resets the Weasel treeview.
+        """
+        treeView.callUnCheckTreeViewItems(self)
+
     def close_all_windows(self):
         """
         Closes all open windows.
