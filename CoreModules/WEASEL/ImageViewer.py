@@ -680,7 +680,6 @@ class ImageViewer(QMdiSubWindow):
         """
         This function determines contrast and intensity from the image
         and set the contrast & intensity spinboxes to these values.
-
         Input Parameters
         *****************
             graphicsView - pyqtGraph imageView widget
@@ -920,7 +919,6 @@ class ImageViewer(QMdiSubWindow):
         """
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
-
         Output parameters
         *****************
         success - boolean, set to true if level values are successfully retrieved
@@ -1045,7 +1043,6 @@ class ImageViewer(QMdiSubWindow):
 
     def readLevelsFromDICOMImage(self): 
         """Reads levels directly from the DICOM image
-
         Output Parameters
         *****************
         centre - Image intensity
