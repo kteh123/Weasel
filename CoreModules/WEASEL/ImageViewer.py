@@ -3,8 +3,7 @@ from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
                             QMessageBox, 
-                            QWidget, 
-                            QGridLayout, 
+                            QWidget,
                             QFormLayout,
                             QHBoxLayout,
                             QVBoxLayout, 
@@ -14,7 +13,6 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QPushButton,  
                             QLabel, 
                             QComboBox,
-                            QSizePolicy,
                             QSlider, 
                             QComboBox,
                             QListWidget,
@@ -57,7 +55,16 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
 
-##New
+class OrderImageLabel(QLabel):
+    """Subclass of the QLabel class with the added property attribute 
+    which identifies what the image subset has been filtered for.
+    This widget is used to display the text 'image x of y' next to 
+    corresponding image slider."""
+    def __init__(self,  DicomAttribute): 
+       super().__init__()
+       self.attribute =  DicomAttribute
+
+
 class SortedImageSlider(QSlider):
     """Subclass of the QSlider class with the added property attribute 
     which identifies what the image subset has been filtered for"""
@@ -89,7 +96,7 @@ class ImageViewer(QMdiSubWindow):
             #A list of the sorted image sliders, 
             #updated as they are added and removed 
             #from the subwindow
-            self.listSortedImageSliders = []  ##New
+            self.listSortedImageSliders = []  
 
             if singleImageSelected:
                 self.isSeries = False
@@ -534,24 +541,27 @@ class ImageViewer(QMdiSubWindow):
     def addRemoveSortedImageSlider(self, item):
         try:
             if item.checkState() == Qt.Checked:
-                imageSlider = self.createSortedImageSlider(item.text()) ##New
-                self.sortedImageSliderLayout.addRow(item.text(), imageSlider)  ##New
+                imageSliderLayout = self.createSortedImageSliderLayout(item.text()) 
+                self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
             else:
                 for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
                     layoutItem = self.sortedImageSliderLayout.itemAt(rowNumber, QFormLayout.LabelRole)
                     if item.text() == layoutItem.widget().text():
                         self.sortedImageSliderLayout.removeRow(rowNumber)
                         self.dynamicListImageType.remove(item.text())
-                        for slider in self.listSortedImageSliders: ##New
-                            if slider.attribute == item.text(): ##New
-                                self.listSortedImageSliders.remove(slider) ##New
+                        for sliderImagePair in self.listSortedImageSliders: 
+                            if sliderImagePair[0].attribute == item.text(): 
+                                self.listSortedImageSliders.remove(sliderImagePair) 
                         self.shapeList = []
                         if len(self.dynamicListImageType) > 1:
                             # Loop through all the existing sliders at this stage and update the setMaximum of each slider
                             for index, tag in enumerate(self.dynamicListImageType):
                                 _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
                                 self.shapeList.append(numAttr)
-                                self.sortedImageSliderLayout.itemAt(2*index+1).widget().setMaximum(numAttr)
+                                self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().setMaximum(numAttr)
+                                currentImageNumber = self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().value()
+                                labelText = "image {} of {}".format(currentImageNumber, numAttr)
+                                self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(1).widget().setText(labelText)
                             # Sort according to the tags
                             self.seriesToFormat.sort(*self.dynamicListImageType)
                             # Reshape the self.arrayForMultiSlider list of paths
@@ -559,16 +569,24 @@ class ImageViewer(QMdiSubWindow):
                         elif len(self.dynamicListImageType) == 1:
                             sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, self.dynamicListImageType[0])
                             self.arrayForMultiSlider = sortedSequencePath
-                            self.sortedImageSliderLayout.itemAt(1).widget().setMaximum(len(sortedSequencePath))
+                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().setMaximum(len(sortedSequencePath))
+                            currentImageNumber = self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().value()
+                            labelText = "image {} of {}".format(currentImageNumber, len(sortedSequencePath))
+                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
                         else:
                             self.arrayForMultiSlider = self.imagePathList
-                            self.sortedImageSliderLayout.itemAt(1).widget().setMaximum(len(self.imagePathList))
+                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().setMaximum(len(self.imagePathList)) 
+                            currentImageNumber = self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().value()
+                            labelText = "image {} of {}".format(currentImageNumber, len(self.imagePathList))
+                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
         except Exception as e:
-            print('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
+            exc_tb = sys.exc_info()
+            print('Error in ImageViewer.addRemoveSortedImageSlider at line {}: '.format(exc_tb.tb_lineno) + str(e))
             logger.error('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
           
+        
 
-    def createMainImageSlider(self): ##New
+    def createMainImageSlider(self): 
         try:
             self.mainImageSlider = QSlider(Qt.Horizontal)
             self.mainImageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
@@ -583,10 +601,15 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.createMainImageSlider: ' + str(e))
 
 
-    def createSortedImageSlider(self, DicomAttribute):  ##New
+    def createSortedImageSliderLayout(self, DicomAttribute):  
         try:
             imageSlider = SortedImageSlider(DicomAttribute)
-            self.listSortedImageSliders.append(imageSlider)
+            imageLabel = QLabel()
+            layout = QHBoxLayout()
+            layout.addWidget(imageSlider)
+            layout.addWidget(imageLabel)
+            listSliderLabelPair = [imageSlider, imageLabel]
+            self.listSortedImageSliders.append(listSliderLabelPair)
             imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
             self.dynamicListImageType.append(DicomAttribute)
             # If there is more that 1 slider in the multi-slider layout
@@ -596,7 +619,10 @@ class ImageViewer(QMdiSubWindow):
                 for index, tag in enumerate(self.dynamicListImageType[:-1]):
                     _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
                     self.shapeList.append(numAttr)
-                    self.sortedImageSliderLayout.itemAt(2*index+1).widget().setMaximum(numAttr)
+                    self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().setMaximum(numAttr)
+                    currentImageNumber = self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().value()
+                    labelText = "image {} of {}".format(currentImageNumber, numAttr)
+                    self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(1).widget().setText(labelText)
                 _, maxNumberImages = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
                 self.shapeList.append(maxNumberImages)
                 # Sort according to the tags
@@ -604,7 +630,7 @@ class ImageViewer(QMdiSubWindow):
                 # Reshape the self.arrayForMultiSlider list of paths
                 if np.prod(self.shapeList) > len(self.imagePathList):
                     QMessageBox.warning(self, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
-                    self.listSortedImageSliders.remove(imageSlider)
+                    self.listSortedImageSliders.remove(listSliderLabelPair)
                     return 
                 else:
                     self.arrayForMultiSlider = self.reshapePathsList()
@@ -617,12 +643,13 @@ class ImageViewer(QMdiSubWindow):
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             imageSlider.setMinimum(1)
-            imageSlider.valueChanged.connect(lambda: self.multipleImageSliderMoved(DicomAttribute))
+            imageSlider.valueChanged.connect(self.multipleImageSliderMoved)
+            imageLabel.setText("image 1 of {}".format(maxNumberImages))
             
-            return imageSlider
+            return layout
         except Exception as e:
-            print('Error in ImageViewer.createSortedImageSlider: ' + str(e))
-            logger.exception('Error in ImageViewer.createSortedImageSlider: ' + str(e))
+            print('Error in ImageViewer.createSortedImageSliderLayout: ' + str(e))
+            logger.exception('Error in ImageViewer.createSortedImageSliderLayout: ' + str(e))
 
 
     def createImageTypeList(self):
@@ -680,7 +707,6 @@ class ImageViewer(QMdiSubWindow):
         """
         This function determines contrast and intensity from the image
         and set the contrast & intensity spinboxes to these values.
-
         Input Parameters
         *****************
             graphicsView - pyqtGraph imageView widget
@@ -694,15 +720,20 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxContrast.setValue(width)
 
 
-    def multipleImageSliderMoved(self, DicomAttribute):  ##New (JS Comment: there's no need for the DicomAttribute variable in this case)
+    def multipleImageSliderMoved(self):  
         """This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
         The slider being moved determines the image displayed in the image viewer"""
         indexDict = {}
         #Create a dictionary of DICOM attribute:slider index pairs
-        for slider in self.listSortedImageSliders:
-            indexDict[slider.attribute] = slider.value()
-        # Create a copy of self.arrayForMultiSlider and loop through indexDict to get the sliders values and map them to self.arrayForMultiSlider
+        for sliderImagePair in self.listSortedImageSliders:
+            indexDict[sliderImagePair[0].attribute] = sliderImagePair[0].value()
+            currentImageNumberThisSlider =  sliderImagePair[0].value()
+            maxNumberImagesThisSlider =  sliderImagePair[0].maximum()
+            labelText = "image {} of {}".format(currentImageNumberThisSlider, maxNumberImagesThisSlider)
+            sliderImagePair[1].setText(labelText)
+        # Create a copy of self.arrayForMultiSlider and loop through 
+        # indexDict to get the sliders values and map them to self.arrayForMultiSlider
         auxList = copy.copy(self.arrayForMultiSlider)
         for index in indexDict.values():
             auxList = auxList[index - 1]
@@ -920,7 +951,6 @@ class ImageViewer(QMdiSubWindow):
         """
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
-
         Output parameters
         *****************
         success - boolean, set to true if level values are successfully retrieved
@@ -1045,7 +1075,6 @@ class ImageViewer(QMdiSubWindow):
 
     def readLevelsFromDICOMImage(self): 
         """Reads levels directly from the DICOM image
-
         Output Parameters
         *****************
         centre - Image intensity
