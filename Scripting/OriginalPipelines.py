@@ -50,6 +50,14 @@ class ImagesList(ListOfDicomObjects):
         listNames = [image.label for image in self]
         return listNames
 
+    @property
+    def paths(self):
+        """
+        Returns a list of file paths of the list of images.
+        """
+        listPaths = [image.path for image in self]
+        return listPaths
+
     def copy(self):
         """
         Returns a copy of the list of images.
@@ -142,8 +150,33 @@ class ImagesList(ListOfDicomObjects):
         """
         Set the variable "value" to the given DICOM tag in the list of images
         """
-        for image in self:
-            image.set_value(tag, value)
+        if isinstance(value, list) and len(self) == len(value):
+            for index, image in enumerate(self):
+                image.set_value(tag, value[index])
+        else:
+            for image in self:
+                image.set_value(tag, value)
+    
+    def __getitem__(self, tag):
+        if isinstance(tag, int):
+            return self[tag]
+        else:
+            return self.get_value(tag)
+
+    def __setitem__(self, tag, value):
+        if isinstance(tag, str) and len(tag.split(' ')) == 3:
+            dicom_tag = tag.split(' ')[0]
+            logical_operator = tag.split(' ')[1]
+            target_value = tag.split(' ')[2]
+            listImages = self.where(dicom_tag, logical_operator, target_value)
+            listImages.set_value(dicom_tag, value)
+        elif isinstance(tag, str):
+            self.set_value(tag, value)
+        elif isinstance(tag, int) and isinstance(value, Image):
+            self[tag] = value
+        elif isinstance(tag, list) and isinstance(value, list):
+            for index, dicom_tag in enumerate(tag):
+                self.set_value(dicom_tag, value[index])
 
 
 class SeriesList(ListOfDicomObjects):

@@ -1632,8 +1632,10 @@ class Series:
                     if (dicom_tag == "SliceLocation" or dicom_tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): dicom_tag = (0x2001, 0x100a)
                     logical_operator = tag.split(' ')[1]
                     target_value = tag.split(' ')[2]
-                    series_to_return = self.where(dicom_tag, logical_operator, target_value)
-                    return series_to_return
+                    series_to_return = copy.copy(self)
+                    series_to_return.where(dicom_tag, logical_operator, target_value)
+                    list_of_images = series_to_return.children
+                    return list_of_images
                 else:
                     if (tag == "SliceLocation" or tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): tag = (0x2001, 0x100a)
                     return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
@@ -1653,7 +1655,11 @@ class Series:
                 oldSeriesID = self.seriesID
                 if isinstance(tag, list) and isinstance(newValue, list):
                     for index, ind_tag in enumerate(tag):
-                        GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
+                        self.set_value(ind_tag, newValue[index])
+                        #GenericDICOMTools.editDICOMTag(self.images, ind_tag, newValue[index])
+                elif isinstance(newValue, list):
+                    for value in newValue:
+                        GenericDICOMTools.editDICOMTag(self.images, tag, value)
                 else:
                     GenericDICOMTools.editDICOMTag(self.images, tag, newValue)
                 newDicomList = self.PydicomList
@@ -1689,9 +1695,9 @@ class Series:
 
     def __setitem__(self, tag, value):
         if isinstance(tag, str) and len(tag.split(' ')) == 3:
-            subSeries = self.get_value(tag)
+            listImages = self.get_value(tag)
             dicom_tag = tag.split(' ')[0]
-            subSeries.set_value(dicom_tag, value)
+            listImages.set_value(dicom_tag, value)
         else:
             self.set_value(tag, value)
 
