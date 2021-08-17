@@ -55,16 +55,6 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar', 'custom']
 
 
-class OrderImageLabel(QLabel):
-    """Subclass of the QLabel class with the added property attribute 
-    which identifies what the image subset has been filtered for.
-    This widget is used to display the text 'image x of y' next to 
-    corresponding image slider."""
-    def __init__(self,  DicomAttribute): 
-       super().__init__()
-       self.attribute =  DicomAttribute
-
-
 class SortedImageSlider(QSlider):
     """Subclass of the QSlider class with the added property attribute 
     which identifies what the image subset has been filtered for"""
@@ -580,8 +570,7 @@ class ImageViewer(QMdiSubWindow):
                             labelText = "image {} of {}".format(currentImageNumber, len(self.imagePathList))
                             self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
         except Exception as e:
-            exc_tb = sys.exc_info()
-            print('Error in ImageViewer.addRemoveSortedImageSlider at line {}: '.format(exc_tb.tb_lineno) + str(e))
+            print('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
             logger.error('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
           
         

@@ -131,6 +131,10 @@ TRISTAN_GREY = """
                     color: black;
                     }
 
+QListWidget {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, 
+                                            stop: 0 #CCCCBB, stop: 1 #FFFFFF);
+    }
 
 QListWidget {
 alternate-background-color: yellow;
