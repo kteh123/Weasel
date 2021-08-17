@@ -117,6 +117,7 @@ class ImageViewer(QMdiSubWindow):
                 #add user selection object to dictionary
                 self.userSelectionDict[self.seriesID] = UserSelection(userSelectionList)
                 # Global variables for the Multisliders
+                self.listSortedImageSliders = []
                 self.dynamicListImageType = []
                 self.shapeList = []
                 self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
@@ -193,8 +194,32 @@ class ImageViewer(QMdiSubWindow):
     def setUpSliderResetButton(self):
         self.resetButton = QPushButton("Reset")
         self.resetButton.setToolTip("Return this screen to the state that it had when first opened")
-        #self.resetButton.clicked.connect()
+        self.resetButton.clicked.connect(self.resetSliders)
         self.imageTypeLayout.addWidget(self.resetButton)
+
+
+    def resetSliders(self):
+        try:
+            ##Remove sorted image sliders
+            while self.sortedImageSliderLayout.rowCount() > 0:
+                rowNumber = self.sortedImageSliderLayout.rowCount() - 1
+                self.sortedImageSliderLayout.removeRow(rowNumber)
+
+            #Uncheck all checkboxes in image type list 
+            for index in xrange(self.imageTypeList.count()):
+                self.imageTypeList.item(index).setCheckState(Qt.Unchecked)
+            
+            #Reinialise Global variables for the Multisliders
+            self.listSortedImageSliders = []
+            self.dynamicListImageType = []
+            self.shapeList = []
+            self.arrayForMultiSlider = self.imagePathList
+
+            #Reset the main image slider
+            self.mainImageSliderMoved(1)
+        except Exception as e:
+            print('Error in ImageViewer.resetSliders: ' + str(e))
+            logger.error('Error in ImageViewer.resetSliders: ' + str(e))
 
 
     def setUpImageSliders(self):
@@ -744,7 +769,7 @@ class ImageViewer(QMdiSubWindow):
         self.displayPixelArray()
 
 
-    def mainImageSliderMoved(self):
+    def mainImageSliderMoved(self, imageNumber=None):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
@@ -752,7 +777,11 @@ class ImageViewer(QMdiSubWindow):
         try: 
             obj = self.userSelectionDict[self.seriesID]
             logger.info("ImageViewer.mainImageSliderMoved called")
-            self.imageNumber = self.mainImageSlider.value()
+            if imageNumber:
+                self.imageNumber = imageNumber
+                self.mainImageSlider.setValue(imageNumber)
+            else:
+                self.imageNumber = self.mainImageSlider.value()
             currentImageNumber = self.imageNumber - 1
             if currentImageNumber >= 0:
                 maxNumberImages = str(len(self.imagePathList))
