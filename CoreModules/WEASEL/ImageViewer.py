@@ -185,16 +185,24 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpImageTypeList(self):
-        self.imageTypeLayout = QHBoxLayout()
         self.mainVerticalLayout.addLayout(self.imageTypeLayout)
         self.imageTypeList = self.createImageTypeList()
-        self.imageTypeLayout.addWidget(self.imageTypeList, stretch=1)
+        self.imageTypeLayout.addWidget(self.imageTypeList)
+
+
+    def setUpSliderResetButton(self):
+        self.resetButton = QPushButton("Reset")
+        self.resetButton.setToolTip("Return this screen to the state that it had when first opened")
+        #self.resetButton.clicked.connect()
+        self.imageTypeLayout.addWidget(self.resetButton)
 
 
     def setUpImageSliders(self):
         try:
             self.setUpMainImageSlider()
+            self.imageTypeLayout = QHBoxLayout()
             self.setUpImageTypeList()
+            self.setUpSliderResetButton()
             self.sortedImageSliderLayout = QFormLayout()
             self.mainVerticalLayout.addLayout(self.sortedImageSliderLayout)
         except Exception as e:
