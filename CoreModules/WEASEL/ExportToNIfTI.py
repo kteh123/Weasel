@@ -7,7 +7,7 @@ def main(weasel):
         local_path = weasel.select_folder()
         if local_path is None: return
         for i, series in enumerate(seriesList):
-            weasel.progress_bar(max=len(seriesList), index=i+1, msg="Saving image " + series.label + " with gaussian filter")
+            weasel.progress_bar(max=len(seriesList), index=i+1, msg="Saving series " + series.label + " to NIfTI")
             series.export_as_nifti(directory=local_path)
         weasel.close_progress_bar()
         weasel.information(msg="Selected series successfully saved as NIfTI", title="Export to NIfTI")
