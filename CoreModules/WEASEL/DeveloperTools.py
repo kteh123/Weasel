@@ -1636,6 +1636,8 @@ class Series:
                     series_to_return.where(dicom_tag, logical_operator, target_value)
                     list_of_images = series_to_return.children
                     return list_of_images
+                elif isinstance(tag, int):
+                    return self.children[tag]
                 else:
                     if (tag == "SliceLocation" or tag == (0x0020,0x1041)) and not hasattr(self.PydicomList[0], "SliceLocation"): tag = (0x2001, 0x100a)
                     return ReadDICOM_Image.getSeriesTagValues(self.images, tag)[0]
@@ -1698,6 +1700,8 @@ class Series:
             listImages = self.get_value(tag)
             dicom_tag = tag.split(' ')[0]
             listImages.set_value(dicom_tag, value)
+        elif isinstance(tag, int) and isinstance(value, Image):
+            self.images[tag] = value.path
         else:
             self.set_value(tag, value)
 

@@ -159,7 +159,9 @@ class ImagesList(ListOfDicomObjects):
     
     def __getitem__(self, tag):
         if isinstance(tag, int):
-            return self[tag]
+            for index, image in enumerate(self):
+                if index == tag:
+                    return image
         else:
             return self.get_value(tag)
 
@@ -173,7 +175,14 @@ class ImagesList(ListOfDicomObjects):
         elif isinstance(tag, str):
             self.set_value(tag, value)
         elif isinstance(tag, int) and isinstance(value, Image):
-            self[tag] = value
+            newList = []
+            for index, image in enumerate(self):
+                if index == tag:
+                    newList.append(value)
+                else:
+                    newList.append(image)
+            self = newList
+            #self[tag] = value
         elif isinstance(tag, list) and isinstance(value, list):
             for index, dicom_tag in enumerate(tag):
                 self.set_value(dicom_tag, value[index])

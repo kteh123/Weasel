@@ -2,6 +2,7 @@ import os
 import struct
 import numpy as np
 from datetime import datetime
+from cv2 import data
 import pydicom
 from nibabel.affines import apply_affine
 import logging
@@ -298,7 +299,7 @@ def getPixelArray(dataset):
             if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                 imageList = list()
                 originalArray = dataset.pixel_array.astype(np.float32)
-                if len(np.shape(originalArray))==2:
+                if len(np.shape(originalArray)) == 2:
                     slope = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleSlope', 1)) * np.ones(originalArray.shape)
                     intercept = float(getattr(dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0], 'RescaleIntercept', 0)) * np.ones(originalArray.shape)
                     pixelArray = np.transpose(originalArray * slope + intercept)
@@ -313,6 +314,12 @@ def getPixelArray(dataset):
                     del sliceArray, tempArray, index
                 del originalArray, imageList
             else:
+                #if 'philips' in dataset.Manufacturer.lower():
+                #    a = dataset[(0x2005, 0x100E)].value * np.ones(dataset.pixel_array.shape)
+                #    b = dataset[(0x2005, 0x100D)].value * np.ones(dataset.pixel_array.shape)
+                #    pixelArray = np.transpose((dataset.pixel_array.astype(np.float32) - b) / a)
+                #    del a, b
+                #else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
                 pixelArray = np.transpose(dataset.pixel_array.astype(np.float32) * slope + intercept)
