@@ -103,8 +103,8 @@ class ImageSliders:
             self.mainImageSlider.setMinimum(1)
             self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)
         except Exception as e:
-            print('Error in ImageViewer.createMainImageSlider: ' + str(e))
-            logger.error('Error in ImageViewer.createMainImageSlider: ' + str(e))
+            print('Error in ImageSliders.createMainImageSlider: ' + str(e))
+            logger.error('Error in ImageSliders.createMainImageSlider: ' + str(e))
 
 
     def mainImageSliderMoved(self, imageNumber=None):
@@ -114,7 +114,7 @@ class ImageSliders:
         """
         try: 
             obj = self.userSelectionDict[self.seriesID]
-            logger.info("ImageViewer.mainImageSliderMoved called")
+            logger.info("ImageSliders.mainImageSliderMoved called")
             if imageNumber:
                 self.imageNumber = imageNumber
                 self.mainImageSlider.setValue(imageNumber)
@@ -148,11 +148,11 @@ class ImageSliders:
                 self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + os.path.basename(self.selectedImagePath))
         except TypeError as e: 
-            print('Type Error in ImageViewer.mainImageSliderMoved: ' + str(e))
-            logger.error('Type Error in ImageViewer.mainImageSliderMoved: ' + str(e))
+            print('Type Error in ImageSliders.mainImageSliderMoved: ' + str(e))
+            logger.error('Type Error in ImageSliders.mainImageSliderMoved: ' + str(e))
         except Exception as e:
-            print('Error in ImageViewer.mainImageSliderMoved: ' + str(e))
-            logger.error('Error in ImageViewer.mainImageSliderMoved: ' + str(e))
+            print('Error in ImageSliders.mainImageSliderMoved: ' + str(e))
+            logger.error('Error in ImageSliders.mainImageSliderMoved: ' + str(e))
 
 
     def setUpImageTypeList(self):
@@ -181,8 +181,8 @@ class ImageSliders:
             imageTypeList.itemClicked.connect(lambda item: self.addRemoveSortedImageSlider(item))
             return imageTypeList
         except Exception as e:
-            print('Error in ImageViewer.createImageTypeList: ' + str(e))
-            logger.error('Error in ImageViewer.createImageTypeList: ' + str(e))
+            print('Error in ImageSliders.createImageTypeList: ' + str(e))
+            logger.error('Error in ImageSliders.createImageTypeList: ' + str(e))
 
 
     def setUpSliderResetButton(self):
@@ -234,9 +234,10 @@ class ImageSliders:
                             labelText = "image {} of {}".format(currentImageNumber, len(self.imagePathList))
                             self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
         except Exception as e:
-            print('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
-            logger.error('Error in ImageViewer.addRemoveSortedImageSlider: ' + str(e))
+            print('Error in ImageSliders.addRemoveSortedImageSlider: ' + str(e))
+            logger.error('Error in ImageSliders.addRemoveSortedImageSlider: ' + str(e))
         
+
             
     def createSortedImageSliderLayout(self, DicomAttribute):  
         try:
@@ -285,5 +286,5 @@ class ImageSliders:
             
             return layout
         except Exception as e:
-            print('Error in ImageViewer.createSortedImageSliderLayout: ' + str(e))
-            logger.exception('Error in ImageViewer.createSortedImageSliderLayout: ' + str(e))
+            print('Error in ImageSliders.createSortedImageSliderLayout: ' + str(e))
+            logger.exception('Error in ImageSliders.createSortedImageSliderLayout: ' + str(e))
