@@ -1,5 +1,5 @@
 from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt
+from PyQt5.QtCore import  Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
                             QMessageBox, 
@@ -19,9 +19,10 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QListWidgetItem,
                             QListView)
 
+
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+
 
 listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", 
                   "FlipAngle", "InversionTime", "EchoTime", 
@@ -38,7 +39,7 @@ class SortedImageSlider(QSlider):
 
 class ImageSliders:
     """description of class"""
-    
+    sliderMoved = pyqtSignal(str)
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList, singleImageSelected=False):
@@ -48,12 +49,11 @@ class ImageSliders:
         self.setUpLayouts()
         self.createMainImageSlider()
         self.addMainImageSliderToLayout()
-        #Display the first image in the viewer
-        self.mainImageSliderMoved()
         self.setUpImageTypeList()
         self.setUpSliderResetButton()
 
-
+        #Display the first image in the viewer
+        self.mainImageSliderMoved()
 
 
     def getCustomSliderWidget(self):
