@@ -28,6 +28,7 @@ listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber",
                   "FlipAngle", "InversionTime", "EchoTime", 
                   (0x2005, 0x1572)] # This last element is a good example of private tag
 
+
 class SortedImageSlider(QSlider):
     """Subclass of the QSlider class with the added property attribute 
     which identifies what the image subset has been filtered for"""
@@ -143,7 +144,8 @@ class ImageSliders:
                 #display above colour table in colour table dropdown list
                 self.displayColourTableInComboBox()
 
-                self.displayPixelArray() 
+                #self.displayPixelArray() 
+                self.sliderMoved.emit(currentImageNumber)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
                 self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + os.path.basename(self.selectedImagePath))
