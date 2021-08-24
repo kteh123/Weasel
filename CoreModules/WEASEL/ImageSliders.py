@@ -1,26 +1,19 @@
-from PyQt5 import QtCore 
+#from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QIcon,  QCursor
-from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
-                            QMessageBox, 
-                            QWidget,
+#from PyQt5.QtGui import QPixmap, QIcon,  QCursor
+from PyQt5.QtWidgets import (QMessageBox, 
                             QFormLayout,
                             QHBoxLayout,
-                            QVBoxLayout, 
-                            QMdiSubWindow, 
-                            QGroupBox, 
-                            QDoubleSpinBox,
+                            QVBoxLayout,
                             QPushButton,  
                             QLabel, 
-                            QComboBox,
                             QSlider, 
-                            QComboBox,
                             QListWidget,
                             QListWidgetItem,
                             QListView)
 
 
-from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+#from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 
 import logging
@@ -227,9 +220,11 @@ class ImageSliders:
     def addRemoveSortedImageSlider(self, item):
         try:
             if item.checkState() == Qt.Checked:
-                imageSliderLayout = self.createSortedImageSliderLayout(item.text()) 
+                #add a slider-label pair
+                imageSliderLayout = self.createSortedImageSlider(item.text()) 
                 self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
             else:
+                #remove a slider-label pair
                 for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
                     layoutItem = self.sortedImageSliderLayout.itemAt(rowNumber, QFormLayout.LabelRole)
                     if item.text() == layoutItem.widget().text():
@@ -270,7 +265,21 @@ class ImageSliders:
             logger.error('Error in ImageSliders.addRemoveSortedImageSlider: ' + str(e))
 
 
-    def createSortedImageSliderLayout(self, DicomAttribute):  
+    def reshapePathsList(self): 
+        """This is ann auxiliary function that reshapes the
+           list of paths to match the multisliders in the viewer.
+        """
+        list1 = list(np.arange(np.prod(self.shapeList)).reshape(self.shapeList))
+        list2 = self.seriesToFormat.images
+        last = 0
+        res = []
+        for ele in list1:
+            res.append(list2[last : last + len(ele)])
+            last += len(ele)
+        return res
+
+
+    def createSortedImageSlider(self, DicomAttribute):  
         try:
             imageSlider = SortedImageSlider(DicomAttribute)
             imageLabel = QLabel()
@@ -318,15 +327,67 @@ class ImageSliders:
             
             return layout
         except Exception as e:
-            print('Error in ImageSliders.createSortedImageSliderLayout: ' + str(e))
-            logger.exception('Error in ImageSliders.createSortedImageSliderLayout: ' + str(e))
+            print('Error in ImageSliders.createSortedImageSlider: ' + str(e))
+            logger.exception('Error in ImageSliders.createSortedImageSlider: ' + str(e))
     
+
+    def multipleImageSliderMoved(self):  
+        """This function is attached to the slider moved event of each 
+        multiple slider.  The slider is identified by the DicomAttribute parameter. 
+        The slider being moved determines the image displayed in the image viewer"""
+        indexDict = {}
+        #Create a dictionary of DICOM attribute:slider index pairs
+        for sliderImagePair in self.listSortedImageSliders:
+            #update the text of the image x of y label
+            indexDict[sliderImagePair[0].attribute] = sliderImagePair[0].value()
+            currentImageNumberThisSlider =  sliderImagePair[0].value()
+            maxNumberImagesThisSlider =  sliderImagePair[0].maximum()
+            labelText = "image {} of {}".format(currentImageNumberThisSlider, maxNumberImagesThisSlider)
+            sliderImagePair[1].setText(labelText)
+        # Create a copy of self.arrayForMultiSlider and loop through 
+        # indexDict to get the sliders values and map them to self.arrayForMultiSlider
+        auxList = copy.copy(self.arrayForMultiSlider)
+        for index in indexDict.values():
+            auxList = auxList[index - 1]
+        self.selectedImagePath = auxList
+        self.sliderMoved.emit(self.selectedImagePath)
+        #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        #self.lut = None
+        #Get colour table of the image to be displayed
+        #self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+        #display above colour table in colour table dropdown list
+        #self.displayColourTableInComboBox()
+        #self.displayPixelArray()
 
     def setUpSliderResetButton(self):
         self.resetButton = QPushButton("Reset")
         self.resetButton.setToolTip("Return this screen to the state that it had when first opened")
         self.resetButton.clicked.connect(self.resetSliders)
         self.imageTypeLayout.addWidget(self.resetButton)
+
+
+    def resetSliders(self):
+        try:
+            ##Remove sorted image sliders
+            while self.sortedImageSliderLayout.rowCount() > 0:
+                rowNumber = self.sortedImageSliderLayout.rowCount() - 1
+                self.sortedImageSliderLayout.removeRow(rowNumber)
+
+            #Uncheck all checkboxes in image type list 
+            for index in xrange(self.imageTypeList.count()):
+                self.imageTypeList.item(index).setCheckState(Qt.Unchecked)
+            
+            #Reinialise Global variables for the Multisliders
+            self.listSortedImageSliders = []
+            self.dynamicListImageType = []
+            self.shapeList = []
+            self.arrayForMultiSlider = self.imagePathList
+
+            #Reset the main image slider
+            self.mainImageSliderMoved(1)
+        except Exception as e:
+            print('Error in ImageSliders.resetSliders: ' + str(e))
+            logger.error('Error in ImageSliders.resetSliders: ' + str(e))
 
 
     
