@@ -172,4 +172,4 @@ def main(pointerToWeasel):
      moduleName = 'Tutorial_LaunchFerret')
 
     help = menuBuilder(pointerToWeasel, "Help")      
-    help.addItem(itemLabel = 'Help',     moduleName = 'Help')
+    help.addItem(itemLabel = 'Help', iconFilePath='Documents/images/question-mark.png', moduleName = 'Help')

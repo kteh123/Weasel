@@ -1,7 +1,7 @@
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemView,
-                             QMdiSubWindow, QMenu, QAction, QDockWidget,
+                             QMdiSubWindow, QMenu, QAction, QHeaderView, QDockWidget,
                             QLabel, QProgressBar, QTreeWidget, QTreeWidgetItem)
 import os
 import sys
@@ -173,6 +173,10 @@ def makeDICOMStudiesTreeView(pointerToWeasel, XML_File_Path):
                 pointerToWeasel.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
                 pointerToWeasel.treeView.setUniformRowHeights(True)
                 pointerToWeasel.treeView.setColumnCount(4)
+                pointerToWeasel.treeView.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+                pointerToWeasel.treeView.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+                pointerToWeasel.treeView.header().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+                pointerToWeasel.treeView.header().setSectionResizeMode(3, QHeaderView.ResizeToContents)
                 pointerToWeasel.treeView.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
                 pointerToWeasel.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
 
