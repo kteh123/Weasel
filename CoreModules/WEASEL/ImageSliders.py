@@ -1,5 +1,5 @@
 #from PyQt5 import QtCore 
-from PyQt5.QtCore import  Qt, pyqtSignal
+from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 #from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QMessageBox, 
                             QFormLayout,
@@ -12,9 +12,10 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QListWidgetItem,
                             QListView)
 
-
+import numpy as np
 #from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+from CoreModules.WEASEL.DeveloperTools import Series
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class SortedImageSlider(QSlider):
        self.setToolTip("Images sorted according to {}".format(DicomAttribute))
 
 
-class ImageSliders:
+class ImageSliders(QObject):
     """Creates a custom, composite widget composed of one or more sliders for 
     navigating a DICOM series of images."""
 
@@ -41,37 +42,44 @@ class ImageSliders:
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList):
-
-        self.imagePathList = imagePathList
-        self.subjectID = subjectID
-        self.studyID = studyID
-        self.seriesID = seriesID
-        ##set up list of lists to hold user selected colour table and level data
-        #self.userSelectionDict = {}
-        #userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
-        #                    for imageName in self.imagePathList]
-        ##add user selection object to dictionary
-        #self.userSelectionDict[self.seriesID] = UserSelection(userSelectionList)
+        try:
+            #Super class QObject to provide support for pyqtSignal
+            super().__init__()
+            self.imagePathList = imagePathList
+            self.subjectID = subjectID
+            self.studyID = studyID
+            self.seriesID = seriesID
+            self.pointerToWeasel = pointerToWeasel
+            self.selectedImagePath = imagePathList[0]
+            ##set up list of lists to hold user selected colour table and level data
+            #self.userSelectionDict = {}
+            #userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
+            #                    for imageName in self.imagePathList]
+            ##add user selection object to dictionary
+            #self.userSelectionDict[self.seriesID] = UserSelection(userSelectionList)
         
-        # Global variables for the Multisliders
-        self.dynamicListImageType = []
-        self.shapeList = []
-        self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
-        self.seriesToFormat = Series(self.pointerToWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
-        #A list of the sorted image sliders, 
-        #updated as they are added and removed 
-        #from the subwindow
-        self.listSortedImageSliders = []  
+            # Global variables for the Multisliders
+            self.dynamicListImageType = []
+            self.shapeList = []
+            self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
+            self.seriesToFormat = Series(self.pointerToWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
+            #A list of the sorted image sliders, 
+            #updated as they are added and removed 
+            #from the subwindow
+            self.listSortedImageSliders = []  
 
-        #Create the custom, composite sliders widget
-        self.setUpLayouts()
-        self.createMainImageSlider()
-        self.addMainImageSliderToLayout()
-        self.setUpImageTypeList()
-        self.setUpSliderResetButton()
+            #Create the custom, composite sliders widget
+            self.setUpLayouts()
+            self.createMainImageSlider()
+            self.addMainImageSliderToLayout()
+            self.setUpImageTypeList()
+            self.setUpSliderResetButton()
 
-        #Display the first image in the viewer
-        self.mainImageSliderMoved()
+            #Display the first image in the viewer
+            self.mainImageSliderMoved(1)
+        except Exception as e:
+            print('Error in ImageSliders.__init__: ' + str(e))
+            logger.error('Error in ImageSliders.__init__: ' + str(e))
 
 
     def getCustomSliderWidget(self):
@@ -167,12 +175,13 @@ class ImageSliders:
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
+            widthSubWindow = self.pointerToWeasel.mdiArea.width()
             if maxNumberImages < 4:
-                self.mainImageSlider.setFixedWidth(self.width()*.2)
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
             elif maxNumberImages > 3 and maxNumberImages < 11:
-                self.mainImageSlider.setFixedWidth(self.width()*.5)
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
             else:
-                self.mainImageSlider.setFixedWidth(self.width()*.80)
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
