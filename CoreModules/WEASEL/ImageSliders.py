@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QListView)
 
 import numpy as np
+import copy
 #from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 from CoreModules.WEASEL.DeveloperTools import Series
@@ -38,7 +39,8 @@ class ImageSliders(QObject):
     """Creates a custom, composite widget composed of one or more sliders for 
     navigating a DICOM series of images."""
 
-    sliderMoved = pyqtSignal(str)
+    sliderMoved = pyqtSignal(int, str)
+
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList):
@@ -75,8 +77,6 @@ class ImageSliders(QObject):
             self.setUpImageTypeList()
             self.setUpSliderResetButton()
 
-            #Display the first image in the viewer
-            self.mainImageSliderMoved(1)
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -134,11 +134,12 @@ class ImageSliders(QObject):
             currentImageNumber = imageNumber - 1
             if currentImageNumber >= 0:
                 maxNumberImages = str(len(self.imagePathList))
-                imageNumberString = "image {} of {}".format(currentImageNumber, maxNumberImages)
+                imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
                 self.imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
-                #Send the current image to the parent application
-                self.sliderMoved.emit(self.selectedImagePath)
+                #Send the image number and current image to the parent application
+                self.sliderMoved.emit(imageNumber, self.selectedImagePath)
+
                 #print("mainImageSliderMoved before={}".format(self.selectedImagePath))
                 #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 #self.lut = None
@@ -359,7 +360,7 @@ class ImageSliders(QObject):
         for index in indexDict.values():
             auxList = auxList[index - 1]
         self.selectedImagePath = auxList
-        self.sliderMoved.emit(self.selectedImagePath)
+        self.sliderMoved.emit(currentImageNumberThisSlider, self.selectedImagePath)
         #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         #self.lut = None
         #Get colour table of the image to be displayed
