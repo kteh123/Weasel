@@ -1,7 +1,6 @@
 """This class module provides the class variables and functions needed
 to store and retrieve the data associated with changing the colour table, 
 intensity and contrast levels in individual images in a DICOM series of images."""
-
 class UserSelection:
     def __init__(this, listImageLists):
         #List of sublists, where each sublist represents an image
@@ -55,7 +54,7 @@ class UserSelection:
         try:
             this._applyUserSelectionToAnImage = True 
             imageNumber = this.returnImageNumber(imageName)
-             
+            #print("image number ={} when image name={}".format(imageNumber, imageName))
             #Associate the levels with the image being viewed
             this.listImageLists[imageNumber][1] = colourTable
             this.listImageLists[imageNumber][2] = intensity
@@ -92,7 +91,7 @@ class UserSelection:
         """
         try:
             imageNumber = -1
-            for count, image in enumerate(this.listImageLists, 0):
+            for count, image in enumerate(this.listImageLists, 1):
                 if image[0] == imageName:
                     imageNumber = count
                     break

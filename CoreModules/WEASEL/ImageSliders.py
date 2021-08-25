@@ -1,6 +1,4 @@
-#from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
-#from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QMessageBox, 
                             QFormLayout,
                             QHBoxLayout,
@@ -14,7 +12,6 @@ from PyQt5.QtWidgets import (QMessageBox,
 
 import numpy as np
 import copy
-#from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 from CoreModules.WEASEL.DeveloperTools import Series
 
@@ -39,7 +36,7 @@ class ImageSliders(QObject):
     """Creates a custom, composite widget composed of one or more sliders for 
     navigating a DICOM series of images."""
 
-    sliderMoved = pyqtSignal(int, str)
+    sliderMoved = pyqtSignal(str)
 
 
     def __init__(self,  pointerToWeasel, subjectID, 
@@ -53,12 +50,6 @@ class ImageSliders(QObject):
             self.seriesID = seriesID
             self.pointerToWeasel = pointerToWeasel
             self.selectedImagePath = imagePathList[0]
-            ##set up list of lists to hold user selected colour table and level data
-            #self.userSelectionDict = {}
-            #userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
-            #                    for imageName in self.imagePathList]
-            ##add user selection object to dictionary
-            #self.userSelectionDict[self.seriesID] = UserSelection(userSelectionList)
         
             # Global variables for the Multisliders
             self.dynamicListImageType = []
@@ -76,7 +67,6 @@ class ImageSliders(QObject):
             self.addMainImageSliderToLayout()
             self.setUpImageTypeList()
             self.setUpSliderResetButton()
-
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -86,6 +76,14 @@ class ImageSliders(QObject):
         """Passes the composite slider widget to the
         parent layout on the subwindow"""
         return self.mainVerticalLayout
+
+
+    def getMainSlider(self):
+        return self.mainImageSlider
+
+
+    def displayFirstImage(self):
+        self._mainImageSliderMoved(1)
 
 
     def setUpLayouts(self):
@@ -118,16 +116,13 @@ class ImageSliders(QObject):
             print('Error in ImageSliders.createMainImageSlider: ' + str(e))
             logger.error('Error in ImageSliders.createMainImageSlider: ' + str(e))
 
-    def displayFirstImage(self):
-        self._mainImageSliderMoved(1)
-
+    
     def _mainImageSliderMoved(self, imageNumber=None):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
         """
         try: 
-            #obj = self.userSelectionDict[self.seriesID]
             logger.info("ImageSliders._mainImageSliderMoved called")
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
@@ -140,29 +135,7 @@ class ImageSliders(QObject):
                 self.imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
                 #Send the image number and current image to the parent application
-                self.sliderMoved.emit(imageNumber, self.selectedImagePath)
-
-                #print("_mainImageSliderMoved before={}".format(self.selectedImagePath))
-                #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-                #self.lut = None
-                #Get colour table of the image to be displayed
-                #if obj.getSeriesUpdateStatus():
-                #    self.colourTable = self.cmbColours.currentText()
-                #elif obj.getImageUpdateStatus():
-                #    self.colourTable, _, _ = obj.returnUserSelection(currentImageNumber)  
-                #    if self.colourTable == 'default':
-                #        self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
-                #    #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
-                #else:
-                #    self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
-
-                ##display above colour table in colour table dropdown list
-                #self.displayColourTableInComboBox()
-
-                #self.displayPixelArray() 
-                
-                #self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
-                #         + os.path.basename(self.selectedImagePath))
+                self.sliderMoved.emit(self.selectedImagePath)
         except TypeError as e: 
             print('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
             logger.error('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
@@ -362,14 +335,8 @@ class ImageSliders(QObject):
         for index in indexDict.values():
             auxList = auxList[index - 1]
         self.selectedImagePath = auxList
-        self.sliderMoved.emit(currentImageNumberThisSlider, self.selectedImagePath)
-        #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        #self.lut = None
-        #Get colour table of the image to be displayed
-        #self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
-        #display above colour table in colour table dropdown list
-        #self.displayColourTableInComboBox()
-        #self.displayPixelArray()
+        self.sliderMoved.emit(self.selectedImagePath)
+        
 
     def setUpSliderResetButton(self):
         self.resetButton = QPushButton("Reset")
