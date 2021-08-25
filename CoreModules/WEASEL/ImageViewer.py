@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QListWidgetItem,
                             QListView)
 
-import sys, os
+import os
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -101,22 +101,10 @@ class ImageViewer(QMdiSubWindow):
             #Add subwindow to MDI
             self.pointerToWeasel.mdiArea.addSubWindow(self)
              
-            if self.isSeries:
-                #DICOM series selected.
-                #Set up list of lists to hold user selected colour table and level data.
-                #When the colour table & levels associated with an image are changed, their values
-                #are associated with that image in the list of lists userSelectionList, where each sublist 
-                #represents an image thus:
-                    #[0] - Image name (used as key to search the list of lists)
-                    #[1] - colour table name
-                    #[2] - intensity level
-                    #[3] - contrast level
-                userSelectionList = [[os.path.basename(imageName), 'default', -1, -1]
-                                    for imageName in self.imagePathList]
-                #create user selection object to store, manipulate and retrieve
-                #colour table and level data selected by the user for images
-                #and whole series of images
-                self.userSelection= UserSelection(userSelectionList)
+            if self.isSeries: #DICOM series selected.
+                #Create data structure for storing user selected
+                #colour table and levels data
+                self.userSelection= UserSelection(self.imagePathList)
                 
                 # Global variables for the Multisliders
                 self.listSortedImageSliders = []
@@ -175,9 +163,9 @@ class ImageViewer(QMdiSubWindow):
             #This is how an object created from the ImageSliders class communicates
             #with an object created from the ImageViewer class via the former's
             #sliderMoved event, which passes the image path of the image being viewed
-            #to ImageViewer's displayPixelArray function for display.
+            #to ImageViewer's displayPixelArrayOfImageInSeries function for display.
             self.slidersWidget.sliderMoved.connect(lambda imagePath: 
-                                                   self.displayPixelArray(imagePath))
+                                                   self.displayPixelArrayOfImageInSeries(imagePath))
             #Display the first image in the viewer
             self.slidersWidget.displayFirstImage()
         except Exception as e:
@@ -239,7 +227,7 @@ class ImageViewer(QMdiSubWindow):
 
         self.setUpApplyUserSelectionButton()
 
-        self.setUpUpdateUserSelectionToDICOMButton()
+        self.setUpUpdateUserSelectionToDICOMButton()  #To Do
   
         self.setUpExportImageButton()
 
@@ -541,10 +529,7 @@ class ImageViewer(QMdiSubWindow):
             success, minimumValue, maximumValue = self.returnUserSelectedLevels()
             if not success:
                 centre, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
-        
-        elif self.isImage:
-            centre, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
-        
+            
         self.blockLevelsSpinBoxSignals(True)
         self.spinBoxIntensity.setValue(centre)
         self.spinBoxContrast.setValue(width)
@@ -561,19 +546,86 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxIntensity.setSingleStep(spinBoxStep)
         self.spinBoxContrast.setSingleStep(spinBoxStep)
 
-
-    def displayPixelArray(self, imagePath=None):
+    
+    def displayPixelArrayOfSingleImage(self, imagePath):
             """Displays an image's pixel array in a pyqtGraph imageView widget 
             & sets its colour table, contrast and intensity levels. 
             Also, sets the contrast and intensity in the associated histogram.
             """
             try:
-                logger.info("ImageViewer.displayPixelArray called")
+                logger.info("ImageViewer.ddisplayPixelArrayOfSingleImage called")
 
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
-                imageNumber = self.userSelection.returnImageNumber(imageName)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+
+                imageNumber = 1
+                
+                self.lut = None
+
+                #Get colour table of the image to be displayed
+                self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+
+                #display above colour table in colour table dropdown list
+                self.displayColourTableInComboBox()
+
+                self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
+                         + imageName)
+
+                #Check that pixel array holds an image & display it
+                if self.pixelArray is None:
+                    #the image is missing, so show a black screen
+                    self.lblImageMissing.show()
+                    self.deleteButton.hide()
+                    self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
+                else:
+                    self.lblImageMissing.hide() 
+                    center, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
+                    self.blockLevelsSpinBoxSignals(True)
+                    self.spinBoxIntensity.setValue(center)
+                    self.spinBoxContrast.setValue(width)
+                    self.blockLevelsSpinBoxSignals(False)
+                    
+                    if len(np.shape(self.pixelArray)) < 3:
+                         self.graphicsView.setImage(self.pixelArray, 
+                                                    autoHistogramRange=True, 
+                                                    levels=(minimumValue, maximumValue))
+                    else:
+                         self.graphicsView.setImage(self.pixelArray, 
+                                                    autoHistogramRange=True, 
+                                                    xvals=np.arange(np.shape(self.pixelArray)[0] + 1), 
+                                                    levels=(minimumValue, maximumValue))
+                
+                    self.getAndSetLevelsSpinBoxStepSize(maximumValue, minimumValue)
+        
+                    #Add Colour Table or look up table To Image
+                    self.setPgColourMap()  
+  
+                    self.graphicsView.getView().scene().sigMouseMoved.connect(
+                           lambda pos: self.getPixelValue(pos))
+
+            except Exception as e:
+                print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+                logger.error('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+
+
+    def displayPixelArrayOfImageInSeries(self, imagePath):
+            """Displays an image's pixel array in a pyqtGraph imageView widget 
+            & sets its colour table, contrast and intensity levels. 
+            Also, sets the contrast and intensity in the associated histogram.
+            """
+            try:
+                logger.info("ImageViewer.displayPixelArrayOfImageInSeries called")
+
+                self.selectedImagePath = imagePath
+                imageName = os.path.basename(self.selectedImagePath)
+                self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+
+                if self.isSeries:
+                    imageNumber = self.userSelection.returnImageNumber(imageName)
+                else:
+                    imageNumber = 1
+                
                 self.lut = None
 
                 #Get colour table of the image to be displayed
@@ -610,16 +662,12 @@ class ImageViewer(QMdiSubWindow):
                     #Add Colour Table or look up table To Image
                     self.setPgColourMap()  
   
-                    if self.isSeries:
-                        self.graphicsView.getView().scene().sigMouseMoved.connect(
+                    self.graphicsView.getView().scene().sigMouseMoved.connect(
                            lambda pos: self.getPixelValue(pos, imageNumber))
-                    elif self.isImage:
-                        self.graphicsView.getView().scene().sigMouseMoved.connect(
-                           lambda pos: self.getPixelValue(pos))
 
             except Exception as e:
-                print('Error in ImageViewer.displayPixelArray: ' + str(e))
-                logger.error('Error in ImageViewer.displayPixelArray: ' + str(e))
+                print('Error in ImageViewer.displayPixelArrayOfImageInSeries: ' + str(e))
+                logger.error('Error in ImageViewer.displayPixelArrayOfImageInSeries: ' + str(e))
 
 
     def updateImageUserSelection(self):
@@ -990,8 +1038,8 @@ class ImageViewer(QMdiSubWindow):
         try:
             self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + os.path.basename(self.imagePathList))
-            self.displayPixelArray(self.imagePathList ) 
-            self.displayColourTableInComboBox()
+            self.displayPixelArrayOfSingleImage(self.imagePathList ) 
+            #self.displayColourTableInComboBox()
         except Exception as e:
             print('Error in ImageViewer.displayOneImage: ' + str(e))
 
