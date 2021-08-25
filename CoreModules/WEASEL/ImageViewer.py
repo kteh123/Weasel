@@ -172,6 +172,10 @@ class ImageViewer(QMdiSubWindow):
             self.mainVerticalLayout.addLayout(
                     self.slidersWidget.getCustomSliderWidget())
 
+            #This is how an object created from the ImageSliders class communicates
+            #with an object created from the ImageViewer class via the former's
+            #sliderMoved event, which passes the image path of the image being viewed
+            #to ImageViewer's displayPixelArray function for display.
             self.slidersWidget.sliderMoved.connect(lambda imagePath: 
                                                    self.displayPixelArray(imagePath))
             #Display the first image in the viewer
