@@ -235,7 +235,7 @@ class ImageViewer(QMdiSubWindow):
             self.slidersWidget.sliderMoved.connect(lambda imageNumber, imagePath: 
                                                    self.displayPixelArray(imageNumber, imagePath))
             #Display the first image in the viewer
-            self.slidersWidget.mainImageSliderMoved(1)
+            self.slidersWidget.displayFirstImage()
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))

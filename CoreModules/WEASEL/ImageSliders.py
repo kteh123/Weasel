@@ -113,20 +113,22 @@ class ImageSliders(QObject):
             self.mainImageSlider.setTickPosition(QSlider.TicksBothSides)
             self.mainImageSlider.setTickInterval(1)
             self.mainImageSlider.setMinimum(1)
-            self.mainImageSlider.valueChanged.connect(self.mainImageSliderMoved)
+            self.mainImageSlider.valueChanged.connect(self._mainImageSliderMoved)
         except Exception as e:
             print('Error in ImageSliders.createMainImageSlider: ' + str(e))
             logger.error('Error in ImageSliders.createMainImageSlider: ' + str(e))
 
-    
-    def mainImageSliderMoved(self, imageNumber=None):
+    def displayFirstImage(self):
+        self._mainImageSliderMoved(1)
+
+    def _mainImageSliderMoved(self, imageNumber=None):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
         """
         try: 
             #obj = self.userSelectionDict[self.seriesID]
-            logger.info("ImageSliders.mainImageSliderMoved called")
+            logger.info("ImageSliders._mainImageSliderMoved called")
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
             else:
@@ -140,7 +142,7 @@ class ImageSliders(QObject):
                 #Send the image number and current image to the parent application
                 self.sliderMoved.emit(imageNumber, self.selectedImagePath)
 
-                #print("mainImageSliderMoved before={}".format(self.selectedImagePath))
+                #print("_mainImageSliderMoved before={}".format(self.selectedImagePath))
                 #self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 #self.lut = None
                 #Get colour table of the image to be displayed
@@ -162,11 +164,11 @@ class ImageSliders(QObject):
                 #self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                 #         + os.path.basename(self.selectedImagePath))
         except TypeError as e: 
-            print('Type Error in ImageSliders.mainImageSliderMoved: ' + str(e))
-            logger.error('Type Error in ImageSliders.mainImageSliderMoved: ' + str(e))
+            print('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
+            logger.error('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
         except Exception as e:
-            print('Error in ImageSliders.mainImageSliderMoved: ' + str(e))
-            logger.error('Error in ImageSliders.mainImageSliderMoved: ' + str(e))
+            print('Error in ImageSliders._mainImageSliderMoved: ' + str(e))
+            logger.error('Error in ImageSliders._mainImageSliderMoved: ' + str(e))
 
 
     def addMainImageSliderToLayout(self):
@@ -394,7 +396,7 @@ class ImageSliders(QObject):
             self.arrayForMultiSlider = self.imagePathList
 
             #Reset the main image slider
-            self.mainImageSliderMoved(1)
+            self._mainImageSliderMoved(1)
         except Exception as e:
             print('Error in ImageSliders.resetSliders: ' + str(e))
             logger.error('Error in ImageSliders.resetSliders: ' + str(e))
