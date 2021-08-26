@@ -1,16 +1,27 @@
+import  os
+import logging
+logger = logging.getLogger(__name__)
 """This class module provides the class variables and functions needed
 to store and retrieve the data associated with changing the colour table, 
 intensity and contrast levels in individual images in a DICOM series of images."""
-
 class UserSelection:
-    def __init__(this, listImageLists):
-        #List of sublists, where each sublist represents an image
-        #in the DICOM series.
-        this.listImageLists = listImageLists
+    def __init__(this, imageList):
+        #Set up list of lists to hold user selected colour table and level data.
+        #When the colour table & levels associated with an image are changed, their values
+        #are associated with that image in the list of lists userSelectionList, where each sublist 
+        #represents an image thus:
+            #[0] - Image name (used as key to search the list of lists)
+            #[1] - colour table name
+            #[2] - intensity level
+            #[3] - contrast level
+        this.listImageLists = [[os.path.basename(imageName), 'default', -1, -1]
+                            for imageName in imageList]
+        
         #When this boolean is true the same colour table
         #and intensity and contrast levels are applied
         #to the whole DICOM series.
         this._overRideSeriesSavedColourmapAndLevels = False
+
         #When this boolean is true, colour table name
         #and intensity and contrast levels selected by the user are
         #applied to individual images in the DICOM series. 
@@ -55,7 +66,7 @@ class UserSelection:
         try:
             this._applyUserSelectionToAnImage = True 
             imageNumber = this.returnImageNumber(imageName)
-             
+            #print("image number ={} when image name={}".format(imageNumber, imageName))
             #Associate the levels with the image being viewed
             this.listImageLists[imageNumber][1] = colourTable
             this.listImageLists[imageNumber][2] = intensity
@@ -92,7 +103,7 @@ class UserSelection:
         """
         try:
             imageNumber = -1
-            for count, image in enumerate(this.listImageLists, 0):
+            for count, image in enumerate(this.listImageLists, 1):
                 if image[0] == imageName:
                     imageNumber = count
                     break
