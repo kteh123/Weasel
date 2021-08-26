@@ -200,7 +200,10 @@ class ImageViewer(QMdiSubWindow):
         self.btnUpdate = QPushButton() 
         self.btnUpdate.setIcon(QIcon(QPixmap(icons.SAVE_ICON)))
         self.btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
-        self.btnUpdate.clicked.connect(self.updateDICOM)
+        if self.isImage:
+            self.btnUpdate.clicked.connect(self.updateSingleDicomImage)
+        elif self.isSeries:
+            self.btnUpdate.clicked.connect(self.updateDicomSeries)
 
 
     def setUpExportImageButton(self):
@@ -926,42 +929,51 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.readLevelsFromDICOMImage: ' + str(e))
 
 
-    def updateDICOM(self, singleImage=False):
+    def updateSingleDicomImage(self):
         """
         This function is executed when the Update button 
-        is clicked and it coordinates the calling of the functions, 
+        is clicked and the user is viewing a singe DICOM image.
+        """
+        try:
+            buttonReply = QMessageBox.question(self, 
+                'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
+                QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            if buttonReply == QMessageBox.Ok:
+                SaveDICOM_Image.updateSingleDicomImage(self, 
+                                                    self.spinBoxIntensity,
+                                                    self.spinBoxContrast,
+                                                    self.imagePathList,
+                                                    self.seriesID,
+                                                    self.studyID,
+                                                    self.colourTable,
+                                                    lut=None)
+        except Exception as e:
+            print('Error in ImageViewer.updateSingleDicomImage: ' + str(e))
+            logger.error('Error in ImageViewer.updateSingleDicomImage: ' + str(e))
+
+
+    def updateDicomSeries(self):
+        """
+        This function is executed when the Update button 
+        is clicked and the user is viewing a series of DICOM images.
+        It coordinates the calling of the functions, 
         updateWholeDicomSeries & updateDicomSeriesImageByImage.
         """
         try:
             logger.info("ImageViewer.updateDICOM called")
-            if singleImage:
-                buttonReply = QMessageBox.question(self, 
-                          'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
-                          QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
-            else:
-                buttonReply = QMessageBox.question(self, 
+            buttonReply = QMessageBox.question(self, 
                           'Update DICOM', "You are about to overwrite this series of DICOM Files. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
                 colourTable = self.cmbColours.currentText()
-                if singleImage == False:
-                    if self.userSelection.getSeriesUpdateStatus():
-                        levels = [self.spinBoxIntensity.value(), self.spinBoxContrast.value()]
-                        self.updateWholeDicomSeries(levels)
-                    if self.userSelection.getImageUpdateStatus():
-                        self.updateDicomSeriesImageByImage()
-                else:
-                    SaveDICOM_Image.updateSingleDicomImage(self, 
-                                                           self.spinBoxIntensity,
-                                                           self.spinBoxContrast,
-                                                           self.imagePathList,
-                                                           self.seriesID,
-                                                           self.studyID,
-                                                           self.colourTable,
-                                                           lut=None)
+                if self.userSelection.getSeriesUpdateStatus():
+                    levels = [self.spinBoxIntensity.value(), self.spinBoxContrast.value()]
+                    self.updateWholeDicomSeries(levels)
+                if self.userSelection.getImageUpdateStatus():
+                    self.updateDicomSeriesImageByImage() 
         except Exception as e:
-            print('Error in ImageViewer.updateDICOM: ' + str(e))
-            logger.error('Error in ImageViewer.updateDICOM: ' + str(e))
+            print('Error in ImageViewer.updateDicomSeries: ' + str(e))
+            logger.error('Error in ImageViewer.updateDicomSeries: ' + str(e))
 
 
     def updateWholeDicomSeries(self, levels):
@@ -980,10 +992,10 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self,
+            messageWindow.displayMessageSubWindow(self.pointerToWeasel,
                 "<H4>Updating {} DICOM files</H4>".format(numImages),
                 "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(self.pointerToWeasel, numImages)
             imageCounter = 0
             for imagePath in self.imagePathList:
                 dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -992,8 +1004,8 @@ class ImageViewer(QMdiSubWindow):
                                                                    levels=levels, lut=self.lut)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(self, imageCounter)
-            messageWindow.closeMessageSubWindow(self)
+                messageWindow.setMsgWindowProgBarValue(self.pointerToWeasel, imageCounter)
+            messageWindow.closeMessageSubWindow(self.pointerToWeasel)
         except Exception as e:
             print('Error in ImageViewer.updateWholeDicomSeries: ' + str(e))
 
@@ -1009,10 +1021,10 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self,
+            messageWindow.displayMessageSubWindow(self.pointerToWeasel,
                 "<H4>Updating {} DICOM files</H4>".format(numImages),
                 "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(self.pointerToWeasel, numImages)
             imageCounter = 0
        
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -1028,8 +1040,8 @@ class ImageViewer(QMdiSubWindow):
                     updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                         levels=levels, lut=None)
                     SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-                messageWindow.setMsgWindowProgBarValue(self, imageCounter)
-            messageWindow.closeMessageSubWindow(self)
+                messageWindow.setMsgWindowProgBarValue(self.pointerToWeasel, imageCounter)
+            messageWindow.closeMessageSubWindow(self.pointerToWeasel)
         except Exception as e:
             print('Error in ImageViewer.updateDicomSeriesImageByImage: ' + str(e))
 
