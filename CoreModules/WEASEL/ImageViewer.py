@@ -339,7 +339,6 @@ class ImageViewer(QMdiSubWindow):
         self.imageDataGroupBox = QGroupBox()
         self.imageDataGroupBox.setLayout(self.imageDataLayout)
         self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-        #self.setUpDeleteImageButton()
         self.setUpPixelValueLabels()
 
 
@@ -930,11 +929,11 @@ class ImageViewer(QMdiSubWindow):
         is clicked and the user is viewing a singe DICOM image.
         """
         try:
-            buttonReply = QMessageBox.question(self, 
+            buttonReply = QMessageBox.question(self.pointerToWeasel, 
                 'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
-                SaveDICOM_Image.updateSingleDicomImage(self, 
+                SaveDICOM_Image.updateSingleDicomImage(self.pointerToWeasel, 
                                                     self.spinBoxIntensity,
                                                     self.spinBoxContrast,
                                                     self.imagePathList,
@@ -956,7 +955,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.updateDICOM called")
-            buttonReply = QMessageBox.question(self, 
+            buttonReply = QMessageBox.question(self.pointerToWeasel, 
                           'Update DICOM', "You are about to overwrite this series of DICOM Files. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:

@@ -1,32 +1,16 @@
 """This module contains helper functions used by functions in modules 
 DisplayImageColour.py & DisplayImageROI.py"""
-from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (QFileDialog,                            
-                            QMessageBox, 
-                            QWidget, 
-                            QGridLayout, 
-                            QVBoxLayout, 
-                            QMdiSubWindow, 
-                            QGroupBox, 
-                            QSpinBox,
-                            QDoubleSpinBox,
-                            QPushButton,  
-                            QLabel,  
-                            QSlider, 
-                            QCheckBox,  
-                            QComboBox)
+from PyQt5.QtWidgets import (QDoubleSpinBox, QLabel)
 
-from matplotlib import cm
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import numpy as np
+
 import logging
 import CoreModules.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 
-listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", "FlipAngle", "InversionTime", "EchoTime", (0x2005, 0x1572)] # This last element is a good example of private tag
+#listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", "FlipAngle", "InversionTime", "EchoTime", (0x2005, 0x1572)] # This last element is a good example of private tag
 
 def setUpLevelsSpinBoxes(imageLevelsLayout): 
     logger.info("DisplayImageCommon.setUpLevelsSpinBoxes called.")
