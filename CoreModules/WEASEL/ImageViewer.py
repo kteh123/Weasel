@@ -31,7 +31,6 @@ import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 from CoreModules.WEASEL.DeveloperTools import Series
 import CoreModules.WEASEL.TreeView as treeView 
-#import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection
@@ -373,8 +372,8 @@ class ImageViewer(QMdiSubWindow):
         try:
             logger.info("ImageViewer.deleteImageInMultiImageViewer called")
             lastSliderPosition = self.mainImageSlider.value()
-            currentImagePath = self.imagePathList[self.mainImageSlider.value()-1]
-            imageName = os.path.basename(currentImagePath)
+            #currentImagePath = self.imagePathList[self.mainImageSlider.value()-1]
+            imageName = os.path.basename(self.selectedImagePath)
             #print ('study id {} series id {}'.format(studyName, seriesName))
             buttonReply = QMessageBox.question(self.pointerToWeasel, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
@@ -382,10 +381,10 @@ class ImageViewer(QMdiSubWindow):
 
             if buttonReply == QMessageBox.Ok:
                 #Delete physical file
-                if os.path.exists(currentImagePath):
-                    os.remove(currentImagePath)
+                if os.path.exists(self.selectedImagePath):
+                    os.remove(self.selectedImagePath)
                 #Remove deleted image from the list
-                self.imagePathList.remove(currentImagePath)
+                self.imagePathList.remove(self.selectedImagePath)
 
                 if len(self.imagePathList) == 0:
                     #Only redisplay the multi-image viewer if there
@@ -426,7 +425,7 @@ class ImageViewer(QMdiSubWindow):
                     #1 or more images in the series, 
                     #so just remove the image from its series in the xml file
                     self.pointerToWeasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
-                        self.studyID, self.seriesID, currentImagePath)
+                        self.studyID, self.seriesID, self.selectedImagePath)
                 #Update tree view with xml file modified above
                 treeView.refreshDICOMStudiesTreeView(self.pointerToWeasel)
         except Exception as e:
