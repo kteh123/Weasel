@@ -380,7 +380,7 @@ class ImageViewer(QMdiSubWindow):
                 #Advance the image sliders by one image unless we are
                 #deleting the last image, then move the slider to the
                 #first image in the list.
-                self.slidersWidget.imageDeleted(self.selectedImagePath)
+                
 
                 #Delete physical file
                 if os.path.exists(self.selectedImagePath):
@@ -388,6 +388,10 @@ class ImageViewer(QMdiSubWindow):
 
                 #Remove deleted image from the list
                 self.imagePathList.remove(self.selectedImagePath)
+
+                #Pass the new imagePathList to the sliders widget and
+                #display the next image
+                self.slidersWidget.imageDeleted(self.imagePathList)
 
                 #Remove deleted image from the user selection 
                 #data structure

@@ -207,7 +207,8 @@ class ImageSliders(QObject):
             if item.checkState() == Qt.Checked:
                 #add a slider-label pair
                 imageSliderLayout = self.createSortedImageSlider(item.text()) 
-                self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
+                if imageSliderLayout is not None:
+                    self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
             else:
                 #remove a slider-label pair
                 for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
@@ -293,9 +294,9 @@ class ImageSliders(QObject):
                 self.seriesToFormat.sort(*self.dynamicListImageType)
                 # Reshape the self.arrayForMultiSlider list of paths
                 if np.prod(self.shapeList) > len(self.imagePathList):
-                    QMessageBox.warning(self, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
+                    QMessageBox.warning(self.pointerToWeasel, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
                     self.listSortedImageSliders.remove(listSliderLabelPair)
-                    return 
+                    return None
                 else:
                     self.arrayForMultiSlider = self.reshapePathsList()
             else:
@@ -378,31 +379,20 @@ class ImageSliders(QObject):
             logger.error('Error in ImageSliders.resetSliders: ' + str(e))
 
 
-    def imageDeleted(self, imagePath):
+    def imageDeleted(self, newImagePathList):
         try:
-            lastSliderPosition = self.mainImageSlider.value()
-            indexImageInMainList = self.imagePathList.index(imagePath)
-            print("indexImageInMainList ={} imagePath={}".format(indexImageInMainList, imagePath))
-            #self.imagePathList.remove(imagePath)
-            self.imagePathList.pop(indexImageInMainList)
-            numberImagesRemaining = len(self.imagePathList)
-            print("numberImagesRemaining ={}".format(numberImagesRemaining))
-            if numberImagesRemaining == 0:
-                pass   
-            elif numberImagesRemaining == 1:
-                #There is only one image left in the display
-                self.mainImageSlider.setValue(1)
-            elif numberImagesRemaining + 1 == lastSliderPosition:    
-                #we are deleting the last image in the series of images
-                #so move the slider back to the penultimate image in list 
-                self.mainImageSlider.setValue(numberImagesRemaining)
-            else:
-                #We are deleting an image at the start of the list
-                #or in the body of the list. Move slider forwards to 
-                #the next image in the list.
-                self.mainImageSlider.setValue(lastSliderPosition)
-            #update the image path list belonging to an object of this 
-            #class
+            self.imagePathList = newImagePathList
+            self.mainImageSlider.setMaximum(len(newImagePathList))
+            imageNumber = self.mainImageSlider.value()
+            imageIndex = imageNumber - 1
+            self.selectedImagePath = self.imagePathList[imageIndex]
+            #Send the image number and current image to the parent application
+            self.sliderMoved.emit(self.selectedImagePath)
+            
+            #To Do 
+            #adjust the lists attached to sorted image list sliders
+            #by removing the deleted image from the slider if present
+            #and calling setMaximum(len(image list)) for each slider
         except Exception as e:
             print('Error in ImageSliders.imageDeleted: ' + str(e))
         
