@@ -513,11 +513,12 @@ class ImageViewer(QMdiSubWindow):
         self.spinBoxContrast.setValue(width)
 
 
-    def getColourTableForThisImage(self, imageNumber):
+    def getColourTableForThisImage(self):
         if self.userSelection.getSeriesUpdateStatus():
             self.colourTable = self.cmbColours.currentText()
         elif self.userSelection.getImageUpdateStatus():
-            self.colourTable, _, _ = self.userSelection.returnUserSelection(imageNumber)  
+            imageName = os.path.basename(self.selectedImagePath)
+            self.colourTable, _, _ = self.userSelection.returnUserSelection(imageName)  
             if self.colourTable == 'default':
                 self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
             #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
@@ -624,15 +625,15 @@ class ImageViewer(QMdiSubWindow):
                 imageName = os.path.basename(self.selectedImagePath)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
-                if self.isSeries:
-                    imageNumber = self.userSelection.returnImageNumber(imageName)
-                else:
-                    imageNumber = 1
+                #if self.isSeries:
+                #    imageNumber = self.userSelection.returnImageNumber(imageName)
+                #else:
+                #    imageNumber = 1
                 
                 self.lut = None
 
                 #Get colour table of the image to be displayed
-                self.getColourTableForThisImage(imageNumber)
+                self.getColourTableForThisImage()
 
                 #display above colour table in colour table dropdown list
                 self.displayColourTableInComboBox()
@@ -666,7 +667,7 @@ class ImageViewer(QMdiSubWindow):
                     self.setPgColourMap()  
   
                     self.graphicsView.getView().scene().sigMouseMoved.connect(
-                           lambda pos: self.getPixelValue(pos, imageNumber))
+                           lambda pos: self.getPixelValue( pos))
 
             except Exception as e:
                 print('Error in ImageViewer.displayPixelArrayOfImageInSeries: ' + str(e))
@@ -674,14 +675,7 @@ class ImageViewer(QMdiSubWindow):
 
 
     def updateImageUserSelection(self):
-        """When the colour table & levels associated with an image are changed, their values
-            are associated with that image in the list of lists userSelectionList, where each sublist 
-            represents an image thus:
-                [0] - Image name (used as key to search the list of lists)
-                [1] - colour table name
-                [2] - intensity level
-                [3] - contrast level
-            userSelectionList is initialised with default values in __init__.py
+        """
             """
         try:
             logger.info('updateImageUserSelection called')
@@ -790,7 +784,8 @@ class ImageViewer(QMdiSubWindow):
                 #the user has opted to change the levels of individual images
                 #in a series.
                 #if user selected levels exist for this image, retrieve them
-                _, centre, width = self.userSelection.returnUserSelection(currentImageNumber) 
+                imageName = os.path.basename(self.selectedImagePath)
+                _, centre, width = self.userSelection.returnUserSelection(imageName) 
                 if centre != -1:
                     #saved values exist, so use them
                     minimumValue = centre - (width/2)
@@ -1030,7 +1025,8 @@ class ImageViewer(QMdiSubWindow):
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
                 #print('In updateDicomSeriesImageByImage, series name={}'.format(seriesName))
                 # Apply user selected colour table & levels to individual images in the series
-                selectedColourMap, center, width = self.userSelection.returnUserSelection(imageCounter)
+                imageName = os.path.basename(imagePath)
+                selectedColourMap, center, width = self.userSelection.returnUserSelection(imageName)
                 #print('selectedColourMap, center, width = {}, {}, {}'.format(selectedColourMap, center, width))
                 if selectedColourMap != 'default' and center != -1 and width != -1:
                     # Update an individual DICOM file in the series

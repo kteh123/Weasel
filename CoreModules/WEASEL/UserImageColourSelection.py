@@ -5,123 +5,82 @@ logger = logging.getLogger(__name__)
 to store and retrieve the data associated with changing the colour table, 
 intensity and contrast levels in individual images in a DICOM series of images."""
 class UserSelection:
-    def __init__(this, imageList):
-        #Set up list of lists to hold user selected colour table and level data.
-        #When the colour table & levels associated with an image are changed, their values
-        #are associated with that image in the list of lists userSelectionList, where each sublist 
-        #represents an image thus:
-            #[0] - Image name (used as key to search the list of lists)
-            #[1] - colour table name
-            #[2] - intensity level
-            #[3] - contrast level
-        this.listImageLists = [[os.path.basename(imageName), 'default', -1, -1]
-                            for imageName in imageList]
+    def __init__(self, imageList):
+        #Set up a dictionary of lists to hold user selected colour table and level data,
+        #where the key is the image name and the value a list of the form.
+        #    [colour table name, intensity level, contrast level]
+
+        self.imageDict = {}
+        imageDataList = ['default', -1, -1]
+        for imagePath in imageList:
+            imageName = os.path.basename(imagePath)
+            self.imageDict[imageName] = imageDataList
         
-        #When this boolean is true the same colour table
+        #When self boolean is true the same colour table
         #and intensity and contrast levels are applied
         #to the whole DICOM series.
-        this._overRideSeriesSavedColourmapAndLevels = False
+        self._overRideSeriesSavedColourmapAndLevels = False
 
-        #When this boolean is true, colour table name
+        #When self boolean is true, colour table name
         #and intensity and contrast levels selected by the user are
         #applied to individual images in the DICOM series. 
         #These user selected values are stored in listImageLists
-        this._applyUserSelectionToAnImage = False
+        self._applyUserSelectionToAnImage = False
 
 
-    def getSeriesUpdateStatus(this):
-        return this._overRideSeriesSavedColourmapAndLevels
+    def getSeriesUpdateStatus(self):
+        return self._overRideSeriesSavedColourmapAndLevels
 
 
-    def setSeriesUpdateStatus(this, boolValue):
-        this._overRideSeriesSavedColourmapAndLevels = boolValue
+    def setSeriesUpdateStatus(self, boolValue):
+        self._overRideSeriesSavedColourmapAndLevels = boolValue
 
 
-    def getImageUpdateStatus(this):
-        return this._applyUserSelectionToAnImage
+    def getImageUpdateStatus(self):
+        return self._applyUserSelectionToAnImage
 
 
-    def setImageUpdateStatus(this, boolValue):
-        this._applyUserSelectionToAnImage = boolValue
+    def setImageUpdateStatus(self, boolValue):
+        self._applyUserSelectionToAnImage = boolValue
 
 
-    def clearUserSelection(this):
+    def clearUserSelection(self):
         """Resets the colour table name,  intensity and contrast 
         levels to their default values.
         Also, sets applyUserSelectionToAnImage to False to show that
         the user has not selected a new colour table etc for one or
         more images in the series
         """
-        this._applyUserSelectionToAnImage = False
-        for image in this.listImageLists:
-            image[1] = 'default'
-            image[2] = -1
-            image[3] = -1 
+        self._applyUserSelectionToAnImage = False
+        imageDataList = ['default', -1, -1]
+        for key in self.imageDict:
+            key = imageDataList
 
 
-    def updateUserSelection(this, imageName, colourTable, intensity, contrast):
+    def updateUserSelection(self, imageName, colourTable, intensity, contrast):
         """Saves the new colour table name,  intensity and contrast levels the user has
         selected for the image called imageName in the list of lists
         called listImageLists"""
         try:
-            this._applyUserSelectionToAnImage = True 
-            imageNumber = this.returnImageNumber(imageName)
-            #print("image number ={} when image name={}".format(imageNumber, imageName))
-            #Associate the levels with the image being viewed
-            this.listImageLists[imageNumber][1] = colourTable
-            this.listImageLists[imageNumber][2] = intensity
-            this.listImageLists[imageNumber][3] = contrast    
+            self._applyUserSelectionToAnImage = True 
+            tempList =[colourTable, intensity,  contrast]
+            self.imageDict[imageName] = tempList
+              
         except Exception as e:
             print('Error in UserImageColourSelection.updateUserSelection: ' + str(e))
             logger.error('Error in UserImageColourSelection.updateUserSelection: ' + str(e)) 
 
 
-    def updateLevels(this, imageName, intensity, contrast):
-        """Saves the new intensity and contrast levels the user has
-        selected for the image called imageName in the list of lists
-        called listImageLists"""
-        this._applyUserSelectionToAnImage = True 
-        imageNumber = this.returnImageNumber(imageName)
-        #Associate the levels with the image being viewed
-        this.listImageLists[imageNumber][2] = intensity
-        this.listImageLists[imageNumber][3] = contrast       
-
-
-    def updateColourTable(this, imageName, colourTable):
-        """Updates the name of the colour table belonging to an image"""
-        this._applyUserSelectionToAnImage = True
-        #print("in updateColourTable apply={}".format(this._applyUserSelectionToAnImage))
-        imageNumber = this.returnImageNumber(imageName)
-        #print("in updateColourTable name={}, number={}".format(imageName,imageNumber))
-        this.listImageLists[imageNumber][1] =  colourTable
-
-
-    def returnImageNumber(this, imageName):
-        """Returns the ordinal number of the selected image in the list of lists,
-        userSelectionList, that stores the user's selected colour table, contrast level
-        and intensity level for each image.
-        """
-        try:
-            imageNumber = -1
-            for count, image in enumerate(this.listImageLists, 1):
-                if image[0] == imageName:
-                    imageNumber = count
-                    break
-            return imageNumber
-        except Exception as e:
-            print('Error in UserImageColourSelection.returnImageNumber: ' + str(e))
-            logger.error('Error in UserImageColourSelection.returnImageNumber: ' + str(e)) 
-
-
-    def returnUserSelection(this, imageNumber):
+    def returnUserSelection(self, imageName):
         """Returns the colour table name, intensity and contrast values 
         selected by the user for the image that has ordinal position 
         imageNumber in userSelectionList, a list of lists where 
         each sublist represents an image in the series being viewed."""
         try:
-            colourTable = this.listImageLists[imageNumber][1] 
-            intensity = this.listImageLists[imageNumber][2]
-            contrast = this.listImageLists[imageNumber][3] 
+            tempList = self.imageDict.get(imageName)
+            colourTable = tempList[0]
+            intensity = tempList[1]
+            contrast = tempList[2] 
             return colourTable, intensity, contrast
         except Exception as e:
                 print('Error in DisplayImageColour.UserSelection.returnUserSelection: ' + str(e))
