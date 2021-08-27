@@ -320,23 +320,32 @@ class ImageSliders(QObject):
         """This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
         The slider being moved determines the image displayed in the image viewer"""
-        indexDict = {}
-        #Create a dictionary of DICOM attribute:slider index pairs
-        for sliderImagePair in self.listSortedImageSliders:
-            #update the text of the image x of y label
-            indexDict[sliderImagePair[0].attribute] = sliderImagePair[0].value()
-            currentImageNumberThisSlider =  sliderImagePair[0].value()
-            maxNumberImagesThisSlider =  sliderImagePair[0].maximum()
-            labelText = "image {} of {}".format(currentImageNumberThisSlider, maxNumberImagesThisSlider)
-            sliderImagePair[1].setText(labelText)
-        # Create a copy of self.arrayForMultiSlider and loop through 
-        # indexDict to get the sliders values and map them to self.arrayForMultiSlider
-        auxList = copy.copy(self.arrayForMultiSlider)
-        for index in indexDict.values():
-            auxList = auxList[index - 1]
-        self.selectedImagePath = auxList
-        self.sliderMoved.emit(self.selectedImagePath)
-        
+        try:
+            indexDict = {}
+            #Create a dictionary of DICOM attribute:slider index pairs
+            for sliderImagePair in self.listSortedImageSliders:
+                #update the text of the image x of y label
+                indexDict[sliderImagePair[0].attribute] = sliderImagePair[0].value()
+                currentImageNumberThisSlider =  sliderImagePair[0].value()
+                maxNumberImagesThisSlider =  sliderImagePair[0].maximum()
+                labelText = "image {} of {}".format(currentImageNumberThisSlider, maxNumberImagesThisSlider)
+                sliderImagePair[1].setText(labelText)
+            # Create a copy of self.arrayForMultiSlider and loop through 
+            # indexDict to get the sliders values and map them to self.arrayForMultiSlider
+            auxList = copy.copy(self.arrayForMultiSlider)
+            for index in indexDict.values():
+                auxList = auxList[index - 1]
+            self.selectedImagePath = auxList
+            self.sliderMoved.emit(self.selectedImagePath)
+
+            #update the position of the main slider so that it points to the
+            #same image as the sorted image sliders.
+            indexImageInMainList = self.imagePathList.index(self.selectedImagePath)
+            self.mainImageSlider.setValue(indexImageInMainList+1)
+        except Exception as e:
+            print('Error in ImageSliders.multipleImageSliderMoved: ' + str(e))
+            logger.exception('Error in ImageSliders.multipleImageSliderMoved: ' + str(e))
+    
 
     def setUpSliderResetButton(self):
         self.resetButton = QPushButton("Reset")
@@ -369,7 +378,33 @@ class ImageSliders(QObject):
             logger.error('Error in ImageSliders.resetSliders: ' + str(e))
 
 
-    
+    def imageDeleted(self, imagePath):
+        try:
+            lastSliderPosition = self.mainImageSlider.value()
+            indexImageInMainList = self.imagePathList.index(imagePath)
+            print("indexImageInMainList ={} imagePath={}".format(indexImageInMainList, imagePath))
+            #self.imagePathList.remove(imagePath)
+            self.imagePathList.pop(indexImageInMainList)
+            numberImagesRemaining = len(self.imagePathList)
+            print("numberImagesRemaining ={}".format(numberImagesRemaining))
+            if numberImagesRemaining == 0:
+                pass   
+            elif numberImagesRemaining == 1:
+                #There is only one image left in the display
+                self.mainImageSlider.setValue(1)
+            elif numberImagesRemaining + 1 == lastSliderPosition:    
+                #we are deleting the last image in the series of images
+                #so move the slider back to the penultimate image in list 
+                self.mainImageSlider.setValue(numberImagesRemaining)
+            else:
+                #We are deleting an image at the start of the list
+                #or in the body of the list. Move slider forwards to 
+                #the next image in the list.
+                self.mainImageSlider.setValue(lastSliderPosition)
+            #update the image path list belonging to an object of this 
+            #class
+        except Exception as e:
+            print('Error in ImageSliders.imageDeleted: ' + str(e))
         
 
             

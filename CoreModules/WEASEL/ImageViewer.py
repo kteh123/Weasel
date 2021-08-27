@@ -363,8 +363,62 @@ class ImageViewer(QMdiSubWindow):
         self.graphicsView.ui.roiBtn.hide()
         self.graphicsView.ui.menuBtn.hide()
 
-
+    
     def deleteImageInMultiImageViewer(self):
+        """When the Delete button is clicked on the multi image viewer,
+        this function deletes the physical image, removes the 
+        reference to it in the XML file and removes it from the image viewer.
+        """
+        try:
+            logger.info("ImageViewer.deleteImageInMultiImageViewer called")
+            imageName = os.path.basename(self.selectedImagePath)
+            buttonReply = QMessageBox.question(self.pointerToWeasel, 
+                'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+                QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+
+            if buttonReply == QMessageBox.Ok:
+                #Advance the image sliders by one image unless we are
+                #deleting the last image, then move the slider to the
+                #first image in the list.
+                self.slidersWidget.imageDeleted(self.selectedImagePath)
+
+                #Delete physical file
+                if os.path.exists(self.selectedImagePath):
+                    os.remove(self.selectedImagePath)
+
+                #Remove deleted image from the list
+                self.imagePathList.remove(self.selectedImagePath)
+
+                #Remove deleted image from the user selection 
+                #data structure
+                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
+
+                #Update the XML file
+                #Get the series containing this image and count the images it contains
+                #If it is the last image in a series then remove the
+                #whole series from XML file
+                #If it is not the last image in a series
+                #just remove the image from the XML file 
+                if len(self.imagePathList) == 0:
+                    #no images left in the series, so remove it from the xml file
+                    self.pointerToWeasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
+                                                                               self.studyID, 
+                                                                               self.seriesID)
+                elif len(self.imagePathList) > 0:
+                    #1 or more images in the series, 
+                    #so just remove the image from its series in the xml file
+                    self.pointerToWeasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
+                        self.studyID, self.seriesID, self.selectedImagePath)
+
+                #Update tree view with xml file modified above
+                treeView.refreshDICOMStudiesTreeView(self.pointerToWeasel)
+
+        except Exception as e:
+            print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
+            logger.error('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
+
+
+    def deleteImageInMultiImageViewer_old(self):
         """When the Delete button is clicked on the multi image viewer,
         this function deletes the physical image, removes the 
         reference to it in the XML file and removes it from the image viewer.

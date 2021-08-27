@@ -57,6 +57,10 @@ class UserSelection:
             key = imageDataList
 
 
+    def deleteOneImageInUserSelection(self, imageName):
+        del self.imageDict[imageName]
+
+
     def updateUserSelection(self, imageName, colourTable, intensity, contrast):
         """Saves the new colour table name,  intensity and contrast levels the user has
         selected for the image called imageName in the list of lists
