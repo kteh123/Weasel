@@ -623,11 +623,6 @@ class ImageViewer(QMdiSubWindow):
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-
-                #if self.isSeries:
-                #    imageNumber = self.userSelection.returnImageNumber(imageName)
-                #else:
-                #    imageNumber = 1
                 
                 self.lut = None
 
@@ -1046,7 +1041,6 @@ class ImageViewer(QMdiSubWindow):
             self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + os.path.basename(self.imagePathList))
             self.displayPixelArrayOfSingleImage(self.imagePathList ) 
-            #self.displayColourTableInComboBox()
         except Exception as e:
             print('Error in ImageViewer.displayOneImage: ' + str(e))
 
