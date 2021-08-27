@@ -31,12 +31,13 @@ import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 from CoreModules.WEASEL.DeveloperTools import Series
 import CoreModules.WEASEL.TreeView as treeView 
-import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
+#import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection
 import CoreModules.FreeHandROI.Resources as icons
-from ImageSliders import ImageSliders as imageSliders
+from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
+from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
 import logging
 logger = logging.getLogger(__name__)
@@ -343,12 +344,18 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpLevelsSpinBoxes(self):
-        self.spinBoxIntensity, self.spinBoxContrast = displayImageCommon.setUpLevelsSpinBoxes(self.imageLevelsLayout)
-        self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
-        self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
-        if self.isSeries: 
-            self.spinBoxIntensity.valueChanged.connect(self.updateImageUserSelection)
-            self.spinBoxContrast.valueChanged.connect(self.updateImageUserSelection)
+        try:
+            spinBoxObject = imageLevelsSpinBoxes()
+            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
+            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+            self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
+            self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
+            if self.isSeries: 
+                self.spinBoxIntensity.valueChanged.connect(self.updateImageUserSelection)
+                self.spinBoxContrast.valueChanged.connect(self.updateImageUserSelection)
+        except Exception as e:
+            print('Error in ImageViewer.setUpLevelsSpinBoxes: ' + str(e))
+            logger.error('Error in ImageViewer.setUpLevelsSpinBoxes: ' + str(e))
 
 
     def setUpHistogram(self):
@@ -492,7 +499,7 @@ class ImageViewer(QMdiSubWindow):
             halfWidth = width/2
             minimumValue = centre - halfWidth
             maximumValue = centre + halfWidth
-            #print("centre{}, width{},  minimumValue{}, maximumValue{}".format(centre, width,  minimumValue, maximumValue))
+            print("centre{}, width{},  minimumValue{}, maximumValue{}".format(centre, width,  minimumValue, maximumValue))
             self.graphicsView.setLevels( minimumValue, maximumValue)
             self.graphicsView.show()
         except Exception as e:
