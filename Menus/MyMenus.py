@@ -3,216 +3,216 @@ def main(weasel):
 
     tools = weasel.menu(label = "Tools")
 
-    tools.addItem(
-        itemLabel = 'View Series/Image',
+    tools.item(
+        label = 'View Series/Image',
         shortcut = 'Ctrl+V',
         tooltip = 'View DICOM Image or series',
-        moduleName = 'ViewImage',
-        context=True)
+        pipeline = 'ViewImage',
+        context = True)
 
-    tools.addItem(
-        itemLabel = 'View Series/Image with multiple sliders',
+    tools.item(
+        label = 'View Series/Image with multiple sliders',
         shortcut = 'Ctrl+M',
         tooltip = 'View DICOM Image or series with multiple sliders',
-        moduleName = 'ViewImageMultiSlider',
-        context=True)
+        pipeline = 'ViewImageMultiSlider',
+        context = True)
 
-    tools.addItem(
-        itemLabel = 'View Series/Image with ROI',
+    tools.item(
+        label = 'View Series/Image with ROI',
         shortcut = 'Ctrl+R',
         tooltip = 'View DICOM Image or series with the ROI tool',
-        moduleName = 'ViewROIImage',
-        context=True)
+        pipeline = 'ViewROIImage',
+        context = True)
 
-    tools.addSeparator()
+    tools.separator()
 
-    tools.addItem(
-        itemLabel = 'View Metadata',
+    tools.item(
+        label = 'View Metadata',
         shortcut = 'Ctrl+M',
         tooltip = 'View DICOM Image or series metadata',
-        moduleName = 'ViewMetaData',
-        context=True)
+        pipeline = 'ViewMetaData',
+        context = True)
 
-    tools.addItem(
-        itemLabel = 'Export to NIfTI',
-        moduleName = 'ExportToNIfTI',
+    tools.item(
+        label = 'Export to NIfTI',
+        pipeline = 'ExportToNIfTI',
         shortcut = 'Ctrl+S',
         tooltip = 'Save selected series as NIfTI',
-        context=True)
+        context = True)
 
 
 
     tutorial = weasel.menu(label = "Tutorial")
 
-    tutorial.addItem(
-        itemLabel = 'Display images',
-        moduleName = 'Tutorial_DisplayImages')
+    tutorial.item(
+        label = 'Display images',
+        pipeline = 'Tutorial_DisplayImages')
 
-    tutorial.addItem(
-        itemLabel = 'Display series',
-        moduleName = 'Tutorial_DisplaySeries')
+    tutorial.item(
+        label = 'Display series',
+        pipeline = 'Tutorial_DisplaySeries')
 
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Copy images',
-        moduleName = 'Tutorial_CopyImages')
+    tutorial.item(
+        label = 'Copy images',
+        pipeline = 'Tutorial_CopyImages')
         
-    tutorial.addItem(
-        itemLabel = 'Copy images (without a progress bar)',
-        moduleName = 'Tutorial_CopyImagesDirect')
+    tutorial.item(
+        label = 'Copy images (without a progress bar)',
+        pipeline = 'Tutorial_CopyImagesDirect')
 
-    tutorial.addItem(
-        itemLabel = 'Copy series',
-        moduleName = 'Tutorial_CopySeries')
+    tutorial.item(
+        label = 'Copy series',
+        pipeline = 'Tutorial_CopySeries')
 
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Copy studies', 
-        moduleName = 'Tutorial_CopyStudies')
+    tutorial.item(
+        label = 'Copy studies', 
+        pipeline = 'Tutorial_CopyStudies')
 
-    tutorial.addItem(
-        itemLabel = 'Copy subjects', 
-        moduleName = 'Tutorial_CopySubject')	
+    tutorial.item(
+        label = 'Copy subjects', 
+        pipeline = 'Tutorial_CopySubject')	
 	
-    tutorial.addItem(
-        itemLabel = 'Delete studies', 
-        moduleName = 'Tutorial_DeleteStudies')		
+    tutorial.item(
+        label = 'Delete studies', 
+        pipeline = 'Tutorial_DeleteStudies')		
 		    
-    tutorial.addItem(
-        itemLabel = 'Delete subjects',
-        moduleName = 'Tutorial_DeleteSubject')    
+    tutorial.item(
+        label = 'Delete subjects',
+        pipeline = 'Tutorial_DeleteSubject')    
 	
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Delete subjects',
-        moduleName = 'Tutorial_DeleteSubject') 
+    tutorial.item(
+        label = 'Delete subjects',
+        pipeline = 'Tutorial_DeleteSubject') 
     
-    tutorial.addItem(
-        itemLabel = 'Delete series',
-        moduleName = 'Tutorial_DeleteSeries') 
+    tutorial.item(
+        label = 'Delete series',
+        pipeline = 'Tutorial_DeleteSeries') 
 
-    tutorial.addItem(
-        itemLabel = 'Delete images',
-        moduleName = 'Tutorial_Delete') 
+    tutorial.item(
+        label = 'Delete images',
+        pipeline = 'Tutorial_Delete') 
         
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Merge images into a new series',
-        moduleName = 'Tutorial_MergeImages')
+    tutorial.item(
+        label = 'Merge images into a new series',
+        pipeline = 'Tutorial_MergeImages')
 
-    tutorial.addItem(
-        itemLabel = 'Copy and merge images',
-        moduleName = 'Tutorial_MergeImagesCopy')
+    tutorial.item(
+        label = 'Copy and merge images',
+        pipeline = 'Tutorial_MergeImagesCopy')
 
-    tutorial.addItem(
-        itemLabel = 'Copy and merge images',
-        moduleName = 'Tutorial_MergeImagesCopy')
+    tutorial.item(
+        label = 'Copy and merge images',
+        pipeline = 'Tutorial_MergeImagesCopy')
 
-    tutorial.addItem(
-        itemLabel = 'Merge series into a new series',
-        moduleName = 'Tutorial_MergeSeries')
+    tutorial.item(
+        label = 'Merge series into a new series',
+        pipeline = 'Tutorial_MergeSeries')
 
-    tutorial.addItem(
-        itemLabel = 'Copy and merge series',
-        moduleName = 'Tutorial_MergeSeriesCopy')
+    tutorial.item(
+        label = 'Copy and merge series',
+        pipeline = 'Tutorial_MergeSeriesCopy')
     
-    tutorial.addItem(
-        itemLabel = 'Merge studies',
-        moduleName = 'Tutorial_MergeStudies')
+    tutorial.item(
+        label = 'Merge studies',
+        pipeline = 'Tutorial_MergeStudies')
 
-    tutorial.addItem(
-        itemLabel = 'Merge subjects',
-        moduleName = 'Tutorial_MergeSubjects')
+    tutorial.item(
+        label = 'Merge subjects',
+        pipeline = 'Tutorial_MergeSubjects')
 		
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Invert pixel values in place (image-by-image)',
+    tutorial.item(
+        label = 'Invert pixel values in place (image-by-image)',
         shortcut = 'Ctrl+R',
-        moduleName = 'Tutorial_InvertPixelValues')
+        pipeline = 'Tutorial_InvertPixelValues')
 
-    tutorial.addItem(
-        itemLabel = 'Invert pixel values in place (series-by-series)',
+    tutorial.item(
+        label = 'Invert pixel values in place (series-by-series)',
         shortcut = 'Ctrl+P',
-        moduleName = 'Tutorial_InvertPixelValuesSeries')
+        pipeline = 'Tutorial_InvertPixelValuesSeries')
 
-    tutorial.addItem(
-        itemLabel = 'Invert pixel values in a new series (image-by-image)',
+    tutorial.item(
+        label = 'Invert pixel values in a new series (image-by-image)',
         shortcut = 'Ctrl+T',
-        moduleName = 'Tutorial_InvertPixelValuesInNewSeries')
+        pipeline = 'Tutorial_InvertPixelValuesInNewSeries')
         
-    tutorial.addItem(
-        itemLabel = 'Invert pixel values in a new series (series-by-series)',
+    tutorial.item(
+        label = 'Invert pixel values in a new series (series-by-series)',
         shortcut = 'Ctrl+U',
-        moduleName = 'Tutorial_InvertPixelValuesSeriesInNewSeries')
+        pipeline = 'Tutorial_InvertPixelValuesSeriesInNewSeries')
     
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Threshold pixel values in a new series (image-by-image)',
+    tutorial.item(
+        label = 'Threshold pixel values in a new series (image-by-image)',
         shortcut = 'Ctrl+V',
-        moduleName = 'Tutorial_ThresholdPixelValuesInNewSeries')
+        pipeline = 'Tutorial_ThresholdPixelValuesInNewSeries')
     
-    tutorial.addItem(
-        itemLabel = 'Square pixel values in a new series (image-by-image)',
+    tutorial.item(
+        label = 'Square pixel values in a new series (image-by-image)',
         shortcut = 'Ctrl+W',
-        moduleName = 'Tutorial_SquarePixelValuesInNewSeries') 
+        pipeline = 'Tutorial_SquarePixelValuesInNewSeries') 
 	
-    tutorial.addItem(
-        itemLabel = 'Apply Gaussian filter to pixel values in a new series (image-by-image)',
+    tutorial.item(
+        label = 'Apply Gaussian filter to pixel values in a new series (image-by-image)',
         shortcut = 'Ctrl+X',
-        moduleName = 'Tutorial_GaussianPixelValuesInNewSeries') 
+        pipeline = 'Tutorial_GaussianPixelValuesInNewSeries') 
 	
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Filter images with a local filter',
-        moduleName = 'Tutorial_LocalFilterImages') 
+    tutorial.item(
+        label = 'Filter images with a local filter',
+        pipeline = 'Tutorial_LocalFilterImages') 
 
-    tutorial.addItem(
-        itemLabel = 'User input tutorial',
-        moduleName = 'Tutorial_UserInput') 
+    tutorial.item(
+        label = 'User input tutorial',
+        pipeline = 'Tutorial_UserInput') 
 		
-    tutorial.addSeparator()
+    tutorial.separator()
 
-    tutorial.addItem(
-        itemLabel = 'Anonymise',
-        moduleName = 'Tutorial_Anonymise') 
+    tutorial.item(
+        label = 'Anonymise',
+        pipeline = 'Tutorial_Anonymise') 
 
-    tutorial.addItem(
-        itemLabel = 'Anonymise a copy',
-        moduleName = 'Tutorial_AnonymiseCopy') 
+    tutorial.item(
+        label = 'Anonymise a copy',
+        pipeline = 'Tutorial_AnonymiseCopy') 
 
-    tutorial.addItem(
-        itemLabel = 'Anonymise Patient ID',
-        moduleName = 'Tutorial_AnonymiseID')
+    tutorial.item(
+        label = 'Anonymise Patient ID',
+        pipeline = 'Tutorial_AnonymiseID')
 
 
 
     examples = weasel.menu("Examples")
 
-    examples.addItem(
-        itemLabel = 'Binary Operations',
-        moduleName = 'BinaryOperationsOnImages')
-    examples.addItem(
-        itemLabel = 'Binary Operations (Tutorials Version)',
-        moduleName = 'Tutorial_BinaryOperations')
-    examples.addItem(
-        itemLabel = 'Merge Series by Acquisition Time',
-        moduleName = 'Test_MergeSeriesByAcquisitionTime')
-    examples.addItem(
-        itemLabel = 'Create New Series by Slice Location',
-        moduleName = 'Test_CreateSeriesBySliceLocation')
+    examples.item(
+        label = 'Binary Operations',
+        pipeline = 'BinaryOperationsOnImages')
+    examples.item(
+        label = 'Binary Operations (Tutorials Version)',
+        pipeline = 'Tutorial_BinaryOperations')
+    examples.item(
+        label = 'Merge Series by Acquisition Time',
+        pipeline = 'Test_MergeSeriesByAcquisitionTime')
+    examples.item(
+        label = 'Create New Series by Slice Location',
+        pipeline = 'Test_CreateSeriesBySliceLocation')
 
 
 
     help = weasel.menu(label = "Help")  
         
-    help.addItem(
-        itemLabel = 'Help', 
-        iconFilePath='Documents/images/question-mark.png', 
-        moduleName = 'Help')
+    help.item(
+        label = 'Help', 
+        icon = 'Documents/images/question-mark.png', 
+        pipeline = 'Help')

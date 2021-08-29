@@ -9,8 +9,6 @@ import importlib
 import logging
 logger = logging.getLogger(__name__)
 
-import CoreModules.WEASEL.TreeView as treeView
-
 __author__ = 'Steve Shillitoe'
 
 class PythonMenuBuilder:
@@ -36,18 +34,18 @@ class PythonMenuBuilder:
            self.topMenu.title())
 
 
-    def addItem(self, itemLabel = 'Label not defined',
+    def item(self, label = 'Pipeline',
                shortcut = None,
                tooltip = None,
-               moduleName = None,
+               pipeline = None,
                functionName = 'main', 
-               context=False,
-               iconFilePath = None):
+               context = False,
+               icon = None):
         try:
-            if iconFilePath is not None:
-                self.menuItem = QAction(QIcon(iconFilePath), itemLabel, self.pointerToWeasel)
+            if icon is not None:
+                self.menuItem = QAction(QIcon(icon), label, self.pointerToWeasel)
             else:
-                self.menuItem = QAction(itemLabel, self.pointerToWeasel)
+                self.menuItem = QAction(label, self.pointerToWeasel)
 
             if shortcut is not None:
                 self.menuItem.setShortcut(shortcut)
@@ -58,8 +56,8 @@ class PythonMenuBuilder:
             #Walk the directory structure until the module defined above is found
             moduleFileName = [pythonFilePath 
                               for pythonFilePath in self.pointerToWeasel.listPythonFiles 
-                              if moduleName+".py" in pythonFilePath][0]
-            spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
+                              if pipeline + ".py" in pythonFilePath][0]
+            spec = importlib.util.spec_from_file_location(pipeline, moduleFileName)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             objFunction = getattr(module, functionName)
@@ -83,11 +81,11 @@ class PythonMenuBuilder:
                 self.pointerToWeasel.context.addAction(self.menuItem)
     
         except Exception as e:
-            print('Error in PythonMenuBuilder.addItem when item={}: '.format(itemLabel) + str(e)) 
+            print('Error in PythonMenuBuilder.addItem when item={}: '.format(label) + str(e)) 
             logger.exception('Error in PythonMenuBuilder.addItem: ' + str(e)) 
 
 
-    def addSeparator(self):
+    def separator(self):
         self.topMenu.addSeparator()
 
 
