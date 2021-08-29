@@ -34,3 +34,4 @@ def main(objWeasel):
         except Exception as e:
             print('Error in ViewImage.main: ' + str(e))
             logger.error('Error in ViewImage.main: ' + str(e))
+

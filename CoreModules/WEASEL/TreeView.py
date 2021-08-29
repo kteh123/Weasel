@@ -8,7 +8,6 @@ import sys
 import logging
 import time
 from collections import defaultdict
-import CoreModules.WEASEL.ViewImage as viewImage
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 logger = logging.getLogger(__name__)
 __author__ = "Steve Shillitoe"

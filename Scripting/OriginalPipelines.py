@@ -334,7 +334,7 @@ class OriginalPipelines():
         print(message)
         logger.exception(message)
 
-    def images(self, msg='Please select one or more images'):
+    def images(self, msg=None):
         """
         Returns a list of Images checked by the user.
         """
@@ -352,7 +352,7 @@ class OriginalPipelines():
                 print("=====================================")
                 print(msg)
                 print("=====================================")
-            else:
+            elif msg is not None:
                 UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for image in self.checkedImageList:
@@ -360,7 +360,7 @@ class OriginalPipelines():
 
         return ImagesList(imagesList)
 
-    def series(self, msg='Please select one or more series'):
+    def series(self, msg=None):
         """
         Returns a list of Series checked by the user.
         """
@@ -378,7 +378,7 @@ class OriginalPipelines():
                 print("=====================================")
                 print(msg)
                 print("=====================================")
-            else:
+            elif msg is not None:
                 UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for series in self.checkedSeriesList:
@@ -387,7 +387,7 @@ class OriginalPipelines():
 
         return SeriesList(seriesList)
 
-    def studies(self, msg='Please select one or more studies'):
+    def studies(self, msg=None):
         """
         Returns a list of Studies checked by the user.
         """
@@ -405,7 +405,7 @@ class OriginalPipelines():
                 print("=====================================")
                 print(msg)
                 print("=====================================")
-            else:
+            elif msg is not None:
                 UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for study in self.checkedStudyList:
@@ -413,7 +413,7 @@ class OriginalPipelines():
 
         return StudyList(studyList)
 
-    def subjects(self, msg='Please select one or more subjects'):
+    def subjects(self, msg=None):
         """
         Returns a list of Subjects checked by the user.
         """
@@ -431,7 +431,7 @@ class OriginalPipelines():
                 print("=====================================")
                 print(msg)
                 print("=====================================")
-            else:
+            elif msg is not None:
                 UserInterfaceTools(self).showMessageWindow(msg=msg)
         else:
             for subject in self.checkedSubjectList:
