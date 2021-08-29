@@ -2,10 +2,11 @@ import os, sys
 import re
 import subprocess
 import importlib
-from tqdm import trange, tqdm
+# from tqdm import trange, tqdm
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
+from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
 
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog, QMdiSubWindow)
 from PyQt5.QtCore import  Qt
@@ -615,7 +616,14 @@ class OriginalPipelines():
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
+
+    def menu(self, label = "Menu"):
+        """
+        Interface for Python menu builder
+        """
+        return menuBuilder(self, label)
         
+# replace by lower case notation "launch_external_app"
 
     def launchExternalApp(self, appWidget, title=None, icon=None):
         """This method takes a composite widget created by an external 
