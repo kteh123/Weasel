@@ -2,7 +2,7 @@ import os
 import struct
 import numpy as np
 from datetime import datetime
-from cv2 import data
+# from cv2 import data
 import pydicom
 from nibabel.affines import apply_affine
 import logging
