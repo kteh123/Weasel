@@ -36,7 +36,7 @@ from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
-import CoreModules.WEASEL.ToolBar as toolBar
+#import Trash.ToolBar as toolBar
 from Scripting.Scripting import Pipelines
 
 __version__ = '1.0'
@@ -114,14 +114,6 @@ class Weasel(QMainWindow, Pipelines):
         
             #create context menu to display with the tree view
             self.context = QMenu(self)
-            #add Reset Tree View to context menu
-            xmlMenuBuilder.createFileMenuItem("Reset Tree View", "Ctrl+E", 
-            "Uncheck all checkboxes on the tree view.",
-            True, treeView, self, "callUnCheckTreeViewItems", context=True)
-
-            #even if a menu config file is not defined, 
-            #create the default File menu
-            xmlMenuBuilder.setUpFileMenu(self.menuBar(), self)
 
             if menuConfigFile:
                 #a menu config file has been defined
