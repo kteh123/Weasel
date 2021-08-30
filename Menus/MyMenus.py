@@ -1,8 +1,10 @@
+from Menus.File import main as menu_file
 from Menus.View import main as menu_view
 from Menus.Edit import main as menu_edit
 
 def main(weasel):
 
+    menu_file(weasel)
     menu_view(weasel)
     menu_edit(weasel)
 

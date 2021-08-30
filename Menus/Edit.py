@@ -5,62 +5,34 @@ def main(weasel):
 
     edit.item(
         label = 'Copy images',
-        pipeline = 'Tutorial_CopyImages')
-
+        pipeline = 'Edit__CopyImages')
     edit.item(
         label = 'Copy series',
-        pipeline = 'Tutorial_CopySeries')
+        pipeline = 'Edit__CopySeries')
 
-    edit.item(
-        label = 'Copy studies',
-        pipeline = 'Tutorial_CopyStudies')
-
-    edit.item(
-        label = 'Copy subjects',
-        pipeline = 'Tutorial_CopySubject')	 
-	
     edit.separator()
 
     edit.item(
         label = 'Delete images',
-        pipeline = 'Tutorial_Delete')
-    
+        pipeline = 'Edit__DeleteImages')
     edit.item(
         label = 'Delete series',
-        pipeline = 'Tutorial_DeleteSeries')
-    
-    edit.item(
-        label = 'Delete studies',
-        pipeline = 'Tutorial_DeleteStudies') 
-    
-    edit.item(
-        label = 'Delete subjects',
-        pipeline = 'Tutorial_DeleteSubject') 
-    
+        pipeline = 'Edit__DeleteSeries')
+
     edit.separator()
 
     edit.item(
-        label = 'Merge images into a new series',
-        pipeline = 'Tutorial_MergeImages')
-
+        label = 'Merge images',
+        pipeline = 'Edit__MergeImages')
     edit.item(
-        label = 'Merge series into a new series',
-        pipeline = 'Tutorial_MergeSeries')
-
-    edit.item(
-        label = 'Merge studies',
-        pipeline = 'Tutorial_MergeStudies')
-
-    edit.item(
-        label = 'Merge subjects',
-        pipeline = 'Tutorial_MergeSubjects')
+        label = 'Merge series',
+        pipeline = 'Edit__MergeSeries')
 
     edit.separator()
 
     edit.item(
         label = 'Copy and merge images',
-        pipeline = 'Tutorial_MergeImagesCopy')
-
+        pipeline = 'Edit__MergeImagesCopy')
     edit.item(
         label = 'Copy and merge series',
-        pipeline = 'Tutorial_MergeSeriesCopy')
+        pipeline = 'Edit__MergeSeriesCopy')

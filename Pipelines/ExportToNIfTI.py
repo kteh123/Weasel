@@ -1,4 +1,4 @@
-def isSeriesOnly(self):
+def isSeriesOnly(weasel):
     return True
 
 def main(weasel):

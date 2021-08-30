@@ -1,5 +1,58 @@
 <menus>
 
+  <menu name="File">
+    <item>
+      <label>Open DICOM folder</label>
+      <shortcut>Ctrl+O</shortcut>
+      <tooltip>If an XML file exists in the scan folder, open it. Otherwise create one and open it.</tooltip>
+      <module>File__LoadDICOM</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Refresh DICOM folder</label>
+      <shortcut>Ctrl+R</shortcut>
+      <tooltip>Create a new XML file for the DICOM images in the scan folder and open it.</tooltip>
+      <module>File__RefreshDICOM</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Tile subwindows</label>
+      <shortcut>Ctrl+T</shortcut>
+      <tooltip>Arranges subwindows to a tile pattern.</tooltip>
+      <module>File__TileAllSubWindows</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Close all subindows</label>
+      <shortcut>Ctrl+X</shortcut>
+      <tooltip>Close all subwindows.</tooltip>
+      <module>File__CloseAllSubWindows</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Reset Tree View</label>
+      <shortcut>Ctrl+E</shortcut>
+      <tooltip>Uncheck all checkboxes on the tree view.</tooltip>
+      <module>File__CallUnCheckTreeViewItems</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Save Tree View</label>
+      <shortcut>Ctrl+P</shortcut>
+      <tooltip>Saves the current state of the checkboxes on the tree view.</tooltip>
+      <module>File__RefreshDICOMStudiesTreeView</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Close DICOM folder</label>
+      <shortcut>Ctrl+C</shortcut>
+      <tooltip>Closes the tree view and removes reference to the DICOM folder.</tooltip>
+      <module>File__CloseTreeView</module>
+      <context_menu>yes</context_menu>
+    </item>
+  </menu>
+
+
   <menu name="View">
         <item>
           <label>View Series/Image</label>
@@ -28,7 +81,7 @@
 
         <item>
           <label>Copy images</label>
-          <module>Tutorial_CopyImages</module>
+          <module>Edit__CopyImages</module>
         </item>
     
         <item>
@@ -38,17 +91,7 @@
     
         <item>
           <label>Copy series</label>
-          <module>Tutorial_CopySeries</module>
-        </item>
-		
-		    <item>
-          <label>Copy studies</label>
-          <module>Tutorial_CopyStudies</module>
-        </item>
-		
-	      <item>
-          <label>Copy subjects</label>
-          <module>Tutorial_CopySubject</module>
+          <module>Edit__CopySeries</module>
         </item>
         		
 		    <item>
@@ -57,22 +100,12 @@
 
         <item>
           <label>Delete images</label>
-          <module>Tutorial_Delete</module>
+          <module>Edit__DeleteImages</module>
         </item>
 
         <item>
           <label>Delete series</label>
-          <module>Tutorial_DeleteSeries</module>
-        </item>
-		
-		    <item>
-          <label>Delete studies</label>
-          <module>Tutorial_DeleteStudies</module>
-        </item>
-		
-		    <item>
-          <label>Delete subjects</label>
-          <module>Tutorial_DeleteSubject</module>
+          <module>Edit__DeleteSeries</module>
         </item>
 
         <item>
@@ -80,23 +113,13 @@
         </item>
 
         <item>
-          <label>Merge images into a new series</label>
-          <module>Tutorial_MergeImages</module>
+          <label>Merge images</label>
+          <module>Edit__MergeImages</module>
         </item>
     
         <item>
-          <label>Merge series into a new series</label>
-          <module>Tutorial_MergeSeries</module>
-        </item>
-		
-		    <item>
-          <label>Merge studies</label>
-          <module>Tutorial_MergeStudies</module>
-        </item>
-
-		    <item>
-          <label>Merge subjects</label>
-          <module>Tutorial_MergeSubjects</module>
+          <label>Merge series</label>
+          <module>Edit__MergeSeries</module>
         </item>
 
   </menu>
