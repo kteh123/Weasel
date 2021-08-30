@@ -34,7 +34,7 @@ import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView  as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
-from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+from CoreModules.WEASEL.UserImageColourSelection_Original import UserSelection
 import CoreModules.FreeHandROI.Resources as icons
 
 import logging
@@ -410,6 +410,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
             #add user selection object to dictionary
             global userSelectionDict
             userSelectionDict[seriesName] = UserSelection(userSelectionList)
+            
             
             #file path of the first image, 
             #Study ID & Series ID are stored locally on the
