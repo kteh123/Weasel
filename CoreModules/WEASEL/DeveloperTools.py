@@ -16,7 +16,6 @@ import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
-import CoreModules.WEASEL.InputDialog as inputDialog
 from CoreModules.WEASEL.ViewMetaData import displayMetaDataSubWindow
 logger = logging.getLogger(__name__)
 
@@ -197,87 +196,6 @@ class UserInterfaceTools:
         user to select afolder """
         scan_directory = QFileDialog.getExistingDirectory(self.objWeasel, title, self.objWeasel.weaselDataFolder, QFileDialog.ShowDirsOnly)
         return scan_directory
-
-
-    @staticmethod
-    def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
-        """
-        Display a window and prompts the user to insert input values in the fields of the prompted window.
-        The user has the option to choose what fields and variables are present in this input window.
-        The input window variables and respective types are defined in "paramDict". See below for examples.
-        Variable "title" is the title of the window and "helpText" is the text
-        displayed inside the window. It should be used to give important notes or 
-        tips regarding the input process.
-
-        The user may add extra validation of the parameters. Read the file
-        thresholdDICOM_Image.py as it contains a good example of validation of the input parameters.
-
-        This function is a wrap of function "ParameterInputDialog" and you can consult it's detailed documentation
-        in CoreModules/WEASEL/InputDialog.py.
-
-        Parameters
-        ----------
-        paramDict: Dictionary containing the input variables. The key is the field/variable name and the value is the
-                   type of the variable. There are 5 possible variable types - [int, float, string, dropdownlist, listview].
-                   The dictionary doesn't have any limit of number of fields, the developer can insert as many as wished.
-                   The order of the fields displayed in the window is the order set in the dictionary.
-                   Eg. paramDict = {"NumberStaff":"int", "Password":"string", "Course":"dropdownlist"}.
-                   "NumberStaff" comes first in the window and only accepts integers, then "Password" and then "Course", which is
-                   a dropdown where the user can select an option from a set of options, which is given in the parameter "lists".
-                   It's possible to assign default values to the input variables. Eg.paramDict = {"NumberStaff":"int,100"} sets the
-                   variable "NumberStaff" value to 100.
-                   
-        title: String that contains the title of the input window that is prompted.
-
-        helpText: String that contains any text that the developer finds useful. 
-                  It's the introductory text that comes before the input fields.
-                  This is a good variable to write instructions of what to do and how to fill in the fields.
-
-        lists: If the values "dropdownlist" or/and "listview" are given in paramDict, then the developer provides the list of
-               options to select in this parameter. This becomes a list of lists if there is more than one of "dropdownlist" or/and "listview".
-               The order of the lists in this parameter should be respective to the order of the variables in paramDict. See examples below for
-               more details.
-
-        Output
-        ------
-        outputList: List with the values typed or selected by the user in the prompted window.
-                    It returns "None" if the Cancel button or close window are pressed.
-                    Eg: if param paramDict = {"Age":"int", "Name":"string"} and the user types 
-                    "30" for Age and "Weasel" for Name, then the outputList will be [30, "Weasel"].
-                    If "30" and "Weasel" are the default values, then paramDict = {"Age":"int,30", "Name":"string,Weasel"}
-
-        Eg. of paramDict using string:
-            paramDict = {"Threshold":"float,0.5", "Age":"int,30"}
-            The variable types are float and int. "0.5" and "30" are the default values.
-
-        Eg. of paramDict using string:
-            paramDict = {"DicomTag":"string", "TagValue":"string"}
-            This a good example where "helpText" can make a difference. 
-            For eg., "DicomTag" should be written in the format (XXXX,YYYY).
-
-        Eg. of paramDict using dropdownlist and listview:
-            inputDict = {"Algorithm":"dropdownlist", "Nature":"listview"}
-            algorithmList = ["B0", "T2*", "T1 Molli"]
-            natureList = ["Animals", "Plants", "Trees"]
-            inputWindow(paramDict, lists=[algorithmList, natureList])
-        """
-        logger.info("UserInterfaceTools.inputWindow called")
-        try:
-            inputDlg = inputDialog.ParameterInputDialog(paramDict, title=title, helpText=helpText, lists=lists)
-            # Return None if the user hits the Cancel button
-            if inputDlg.closeInputDialog() == True: return None
-            listParams = inputDlg.returnListParameterValues()
-            outputList = []
-            # Sometimes the values parsed could be list or hexadecimals in strings
-            for param in listParams:
-                try:
-                    outputList.append(literal_eval(param))
-                except:
-                    outputList.append(param)
-            return outputList
-        except Exception as e:
-            print('Error in function UserInterfaceTools.inputWindow: ' + str(e))
-            logger.exception('Error in UserInterfaceTools.inputWindow: ' + str(e))
 
 
     def displayMetadata(self, inputPath):

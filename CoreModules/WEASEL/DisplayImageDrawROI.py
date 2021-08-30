@@ -31,7 +31,7 @@ import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
-import CoreModules.WEASEL.InputDialog as inputDialog
+import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.FreeHandROI.GraphicsView import GraphicsView
 from CoreModules.FreeHandROI.ROI_Storage import ROIs 
