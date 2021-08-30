@@ -48,14 +48,14 @@ class ImageSliders(QObject):
             self.subjectID = subjectID
             self.studyID = studyID
             self.seriesID = seriesID
-            self.pointerToWeasel = pointerToWeasel
+            self.weasel = pointerToWeasel
             self.selectedImagePath = imagePathList[0]
         
             # Global variables for the Multisliders
             self.dynamicListImageType = []
             self.shapeList = []
             self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
-            self.seriesToFormat = Series(self.pointerToWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
+            self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
             #A list of the sorted image sliders, 
             #updated as they are added and removed 
             #from the subwindow
@@ -151,7 +151,7 @@ class ImageSliders(QObject):
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            widthSubWindow = self.pointerToWeasel.mdiArea.width()
+            widthSubWindow = self.weasel.mdiArea.width()
             if maxNumberImages < 4:
                 self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
             elif maxNumberImages > 3 and maxNumberImages < 11:
@@ -294,7 +294,7 @@ class ImageSliders(QObject):
                 self.seriesToFormat.sort(*self.dynamicListImageType)
                 # Reshape the self.arrayForMultiSlider list of paths
                 if np.prod(self.shapeList) > len(self.imagePathList):
-                    QMessageBox.warning(self.pointerToWeasel, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
+                    QMessageBox.warning(self.weasel, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
                     self.listSortedImageSliders.remove(listSliderLabelPair)
                     return None
                 else:

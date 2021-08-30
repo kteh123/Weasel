@@ -75,7 +75,7 @@ class ImageViewer(QMdiSubWindow):
             self.colourTable = ""
             self.cmbColours = QComboBox()  
             self.lut = ""
-            self.pointerToWeasel = pointerToWeasel
+            self.weasel = pointerToWeasel
             #A list of the sorted image sliders, 
             #updated as they are added and removed 
             #from the subwindow
@@ -94,12 +94,12 @@ class ImageViewer(QMdiSubWindow):
                                           Qt.WindowMinimizeButtonHint |
                                           Qt.WindowMaximizeButtonHint)
         
-            height, width = self.pointerToWeasel.getMDIAreaDimensions()
+            height, width = self.weasel.getMDIAreaDimensions()
             self.subWindowWidth = width
             #Set dimensions of the subwindow to fit the MDI area
             self.setGeometry(0, 0, width, height)
             #Add subwindow to MDI
-            self.pointerToWeasel.mdiArea.addSubWindow(self)
+            self.weasel.mdiArea.addSubWindow(self)
              
             if self.isSeries: #DICOM series selected.
                 #Create data structure for storing user selected
@@ -111,7 +111,7 @@ class ImageViewer(QMdiSubWindow):
                 self.dynamicListImageType = []
                 self.shapeList = []
                 self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
-                self.seriesToFormat = Series(self.pointerToWeasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
+                self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
         
             self.setUpMainLayout()
 
@@ -151,7 +151,7 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageSliders(self):
         try:
             #create an instance of the ImageSliders class
-            self.slidersWidget = imageSliders(self.pointerToWeasel, 
+            self.slidersWidget = imageSliders(self.weasel, 
                                              self.subjectID, 
                                              self.studyID, 
                                              self.seriesID, 
@@ -372,7 +372,7 @@ class ImageViewer(QMdiSubWindow):
         try:
             logger.info("ImageViewer.deleteImageInMultiImageViewer called")
             imageName = os.path.basename(self.selectedImagePath)
-            buttonReply = QMessageBox.question(self.pointerToWeasel, 
+            buttonReply = QMessageBox.question(self.weasel, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
 
@@ -405,17 +405,17 @@ class ImageViewer(QMdiSubWindow):
                 #just remove the image from the XML file 
                 if len(self.imagePathList) == 0:
                     #no images left in the series, so remove it from the xml file
-                    self.pointerToWeasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
+                    self.weasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
                                                                                self.studyID, 
                                                                                self.seriesID)
                 elif len(self.imagePathList) > 0:
                     #1 or more images in the series, 
                     #so just remove the image from its series in the xml file
-                    self.pointerToWeasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
+                    self.weasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
                         self.studyID, self.seriesID, self.selectedImagePath)
 
                 #Update tree view with xml file modified above
-                treeView.refreshDICOMStudiesTreeView(self.pointerToWeasel)
+                treeView.refreshDICOMStudiesTreeView(self.weasel)
 
         except Exception as e:
             print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
@@ -433,7 +433,7 @@ class ImageViewer(QMdiSubWindow):
             #currentImagePath = self.imagePathList[self.mainImageSlider.value()-1]
             imageName = os.path.basename(self.selectedImagePath)
             #print ('study id {} series id {}'.format(studyName, seriesName))
-            buttonReply = QMessageBox.question(self.pointerToWeasel, 
+            buttonReply = QMessageBox.question(self.weasel, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
 
@@ -476,16 +476,16 @@ class ImageViewer(QMdiSubWindow):
                 #just remove the image from the XML file 
                 if len(self.imagePathList) == 0:
                     #no images left in the series, so remove it from the xml file
-                    self.pointerToWeasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
+                    self.weasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
                                                                                self.studyID, 
                                                                                self.seriesID)
                 elif len(self.imagePathList) > 0:
                     #1 or more images in the series, 
                     #so just remove the image from its series in the xml file
-                    self.pointerToWeasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
+                    self.weasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
                         self.studyID, self.seriesID, self.selectedImagePath)
                 #Update tree view with xml file modified above
-                treeView.refreshDICOMStudiesTreeView(self.pointerToWeasel)
+                treeView.refreshDICOMStudiesTreeView(self.weasel)
         except Exception as e:
             print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
             logger.error('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
@@ -988,11 +988,11 @@ class ImageViewer(QMdiSubWindow):
         is clicked and the user is viewing a singe DICOM image.
         """
         try:
-            buttonReply = QMessageBox.question(self.pointerToWeasel, 
+            buttonReply = QMessageBox.question(self.weasel, 
                 'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
                 QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
-                SaveDICOM_Image.updateSingleDicomImage(self.pointerToWeasel, 
+                SaveDICOM_Image.updateSingleDicomImage(self.weasel, 
                                                     self.spinBoxIntensity,
                                                     self.spinBoxContrast,
                                                     self.imagePathList,
@@ -1014,7 +1014,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.updateDICOM called")
-            buttonReply = QMessageBox.question(self.pointerToWeasel, 
+            buttonReply = QMessageBox.question(self.weasel, 
                           'Update DICOM', "You are about to overwrite this series of DICOM Files. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
@@ -1045,10 +1045,10 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.pointerToWeasel,
+            messageWindow.displayMessageSubWindow(self.weasel,
                 "<H4>Updating {} DICOM files</H4>".format(numImages),
                 "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self.pointerToWeasel, numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
             imageCounter = 0
             for imagePath in self.imagePathList:
                 dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -1057,8 +1057,8 @@ class ImageViewer(QMdiSubWindow):
                                                                    levels=levels, lut=self.lut)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(self.pointerToWeasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.pointerToWeasel)
+                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
+            messageWindow.closeMessageSubWindow(self.weasel)
         except Exception as e:
             print('Error in ImageViewer.updateWholeDicomSeries: ' + str(e))
 
@@ -1074,10 +1074,10 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.pointerToWeasel,
+            messageWindow.displayMessageSubWindow(self.weasel,
                 "<H4>Updating {} DICOM files</H4>".format(numImages),
                 "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self.pointerToWeasel, numImages)
+            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
             imageCounter = 0
        
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -1094,8 +1094,8 @@ class ImageViewer(QMdiSubWindow):
                     updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                         levels=levels, lut=None)
                     SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-                messageWindow.setMsgWindowProgBarValue(self.pointerToWeasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.pointerToWeasel)
+                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
+            messageWindow.closeMessageSubWindow(self.weasel)
         except Exception as e:
             print('Error in ImageViewer.updateDicomSeriesImageByImage: ' + str(e))
 

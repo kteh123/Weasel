@@ -1,4 +1,6 @@
-"""This class module provides the class variables and functions needed
+"""This class is superseded by UserImageColourSelection and it should be 
+retired when the multislider viewers begin to be used.
+This class module provides the class variables and functions needed
 to store and retrieve the data associated with changing the colour table, 
 intensity and contrast levels in individual images in a DICOM series of images."""
 
