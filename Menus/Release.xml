@@ -5,14 +5,21 @@
       <label>Open DICOM folder</label>
       <shortcut>Ctrl+O</shortcut>
       <tooltip>If an XML file exists in the scan folder, open it. Otherwise create one and open it.</tooltip>
-      <module>File__LoadDICOM</module>
+      <module>File__OpenDICOM</module>
       <context_menu>yes</context_menu>
     </item>
     <item>
       <label>Refresh DICOM folder</label>
       <shortcut>Ctrl+R</shortcut>
       <tooltip>Create a new XML file for the DICOM images in the scan folder and open it.</tooltip>
-      <module>File__RefreshDICOM</module>
+      <module>File__ReadDICOM</module>
+      <context_menu>yes</context_menu>
+    </item>
+    <item>
+      <label>Close DICOM folder</label>
+      <shortcut>Ctrl+C</shortcut>
+      <tooltip>Closes the tree view and removes reference to the DICOM folder.</tooltip>
+      <module>File__CloseDICOM</module>
       <context_menu>yes</context_menu>
     </item>
     <item>
@@ -33,27 +40,19 @@
       <label>Reset Tree View</label>
       <shortcut>Ctrl+E</shortcut>
       <tooltip>Uncheck all checkboxes on the tree view.</tooltip>
-      <module>File__CallUnCheckTreeViewItems</module>
+      <module>File__ResetTreeView</module>
       <context_menu>yes</context_menu>
     </item>
     <item>
       <label>Save Tree View</label>
       <shortcut>Ctrl+P</shortcut>
       <tooltip>Saves the current state of the checkboxes on the tree view.</tooltip>
-      <module>File__RefreshDICOMStudiesTreeView</module>
+      <module>File__SaveTreeView</module>
       <context_menu>yes</context_menu>
     </item>
-    <item>
-      <label>Close DICOM folder</label>
-      <shortcut>Ctrl+C</shortcut>
-      <tooltip>Closes the tree view and removes reference to the DICOM folder.</tooltip>
-      <module>File__CloseTreeView</module>
-      <context_menu>yes</context_menu>
-    </item>
-  </menu>
 
 
-  <menu name="View">
+    <menu name="View">
         <item>
           <label>View Series/Image</label>
           <shortcut>Ctrl+V</shortcut>

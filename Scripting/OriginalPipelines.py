@@ -1,4 +1,4 @@
-import os, sys
+import os
 import re
 import subprocess
 import importlib
@@ -6,11 +6,12 @@ import importlib
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
+import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
 
-from PyQt5.QtWidgets import (QMessageBox, QFileDialog, QMdiSubWindow)
+from PyQt5.QtGui import (QCursor, QIcon)
+from PyQt5.QtWidgets import (QApplication, QMessageBox, QFileDialog, QMdiSubWindow)
 from PyQt5.QtCore import  Qt
-from PyQt5.QtGui import  QIcon
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 from CoreModules.WEASEL.DeveloperTools import Subject
@@ -439,6 +440,52 @@ class OriginalPipelines():
             
         return SubjectList(subjectList)
 
+    def cursor_arrow_to_hourglass(self):
+        """
+        Turns the arrow shape for the cursor into an hourglass. 
+        """   
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+
+    def cursor_hourglass_to_arrow(self):
+        """
+        Restores the cursor into an arrow after it was set to hourglass 
+        """   
+        QApplication.restoreOverrideCursor()
+
+    def read_dicom_folder(self):
+        """
+        Read a DICOM folder, create XML and refresh display.
+        """
+        if self.DICOMFolder:
+            self.close_subwindows()
+            self.cursor_arrow_to_hourglass()
+            XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, self.DICOMFolder)
+            self.cursor_hourglass_to_arrow()
+            treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
+              
+    def open_dicom_folder(self): 
+        """
+        Open a DICOM folder and update display.
+        """ 
+        self.DICOMFolder = WriteXMLfromDICOM.getScanDirectory(self)
+        if self.DICOMFolder:
+            self.close_subwindows()
+            self.cursor_arrow_to_hourglass()
+            if WriteXMLfromDICOM.existsDICOMXMLFile(self.DICOMFolder):
+                XML_File_Path = self.DICOMFolder + '//' + os.path.basename(self.DICOMFolder) + '.xml'
+            else:
+                XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, self.DICOMFolder)
+            self.cursor_hourglass_to_arrow() 
+            treeView.makeDICOMStudiesTreeView(self, XML_File_Path) 
+             
+    def close_dicom_folder(self):
+        """
+        Closes the DICOM folder and updates display.
+        """  
+        self.save_treeview()
+        treeView.closeTreeView(self)  
+        self.DICOMFolder = ''    
+
     def message(self, msg="Message in the box", title="Window Title"):
         """
         Displays a Message window with the text in "msg" and the title "title".
@@ -607,12 +654,25 @@ class OriginalPipelines():
         """
         treeView.callUnCheckTreeViewItems(self)
 
-    def close_all_windows(self):
+    def save_treeview(self):
+        """
+        Saves the treeview selections.
+        """
+        treeView.refreshDICOMStudiesTreeView(self)
+
+    def close_subwindows(self):
         """
         Closes all open windows.
         """
         if self.cmd == False:
             self.mdiArea.closeAllSubWindows()
+
+    def tile_subwindows(self):
+        """
+        Tiles all open windows.
+        """
+        if self.cmd == False:
+            self.mdiArea.tileSubWindows()
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
