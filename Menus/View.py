@@ -6,7 +6,7 @@ def main(weasel):
         label = 'View Series/Image',
         shortcut = 'Ctrl+V',
         tooltip = 'View DICOM Image or series',
-        pipeline = 'view__DisplayImages',
+        pipeline = 'View__DisplayImages',
         context = True)
 
     view.item(

@@ -3,6 +3,9 @@ import re
 import subprocess
 import importlib
 from tqdm import trange, tqdm
+
+from Library.UserInput import userInput 
+
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
@@ -484,7 +487,13 @@ class OriginalPipelines():
         """  
         self.save_treeview()
         treeView.closeTreeView(self)  
-        self.DICOMFolder = ''    
+        self.DICOMFolder = ''  
+
+    def user_input(self, *fields, title="User input window"):
+        """
+        Launches a window to get user input.
+        """ 
+        return userInput(*fields, title=title)       
 
     def message(self, msg="Message in the box", title="Window Title"):
         """
@@ -689,7 +698,6 @@ class OriginalPipelines():
         """
         return menuBuilder(self, label)
         
-
     def add_subwindow(self, subWindow):
         """
         Returns a subwindow for weasel

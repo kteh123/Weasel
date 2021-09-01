@@ -1,9 +1,6 @@
 from Scripting.OriginalPipelines import OriginalPipelines
-from Scripting.UserInput import UserInput
 
-
-class Pipelines(
-    UserInput,  
+class Pipelines( 
     OriginalPipelines 
     ):
     """

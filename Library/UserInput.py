@@ -9,160 +9,155 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UserInput:
+def userInput(*fields, title="User input window"):
     """
-    Generating user input from the weasel object directly 
+    Creates a pop-up window to get user input.
+    
+    Calling sequence
+    ----------------
+    cancel, fields = user_input(fields, title="My title")
+
+    Parameters
+    ----------
+    fields: 
+        a list of dictionaries of one of the following types:
+
+        {"type":"float", "label":"Name of the field", "value":1.0, "minimum": 0.0, "maximum": 1.0}
+        {"type":"integer", "label":"Name of the field", "value":1, "minimum": 0, "maximum": 100}
+        {"type":"string", "label":"Name of the field", "value":"My string"}
+        {"type":"dropdownlist", "label":"Name of the field", "list":["item 1",...,"item n" ], "value":2}
+        {"type":"listview", "label":"Name of the field", "list":["item 1",...,"item n"]}
+
+        The type, label and list keys are required, the others are .
+
+    title: 
+        title shown to the user above the pop-up
+
+    Return values
+    -------------
+    cancel: 
+        True (False) if the user clicked Cancel (OK)
+    fields:
+        The same list of fields but the value key now holds
+        the value selected by the user.
+
+    Example
+    -------
+    See Tutorial_UserInput.py
+
     """
 
-    def user_input(self, *fields, title="User input window"):
-        """
-        Creates a pop-up window to get user input.
-        
-        Calling sequence
-        ----------------
-        cancel, fields = user_input(fields, title="My title")
+    # set default values for items that are not provided by the caller
 
-        Parameters
-        ----------
-        fields: 
-            a list of dictionaries of one of the following types:
+    for field in fields:
 
-            {"type":"float", "label":"Name of the field", "value":1.0, "minimum": 0.0, "maximum": 1.0}
-            {"type":"integer", "label":"Name of the field", "value":1, "minimum": 0, "maximum": 100}
-            {"type":"string", "label":"Name of the field", "value":"My string"}
-            {"type":"dropdownlist", "label":"Name of the field", "list":["item 1",...,"item n" ], "value":2}
-            {"type":"listview", "label":"Name of the field", "list":["item 1",...,"item n"]}
+        if field["type"] == "listview": 
+            field["value"] = [0]
 
-            The type, label and list keys are required, the others are .
+        elif field["type"] == "dropdownlist":
+            if "value" not in field: field["value"] = 0
 
-        title: 
-            title shown to the user above the pop-up
+        elif field["type"] == "string":
+            if "value" not in field: field["value"] = "Hello"
 
-        Return values
-        -------------
-        cancel: 
-            True (False) if the user clicked Cancel (OK)
-        fields:
-            The same list of fields but the value key now holds
-            the value selected by the user.
+        elif field["type"] == "integer":
+            if "minimum" not in field: 
+                field["minimum"] = -2147483648
+            if "maximum" not in field: 
+                field["maximum"] = +2147483647
+            if "value" not in field: 
+                field["value"] = field["minimum"] 
+                field["value"] += 0.5*(field["maximum"]-field["minimum"])
+                field["value"] = int(field["value"])
+            if field["value"] < field["minimum"]: 
+                field["value"] = field["minimum"]
+            if field["value"] > field["maximum"]: 
+                field["value"] = field["maximum"]
 
-        Example
-        -------
-        See Tutorial_UserInput.py
+        elif field["type"] == "float":
+            if "minimum" not in field: 
+                field["minimum"] = -1.0e+18
+            if "maximum" not in field: 
+                field["maximum"] = +1.0e+18
+            if "value" not in field: 
+                field["value"] = field["minimum"] 
+                field["value"] += 0.5*(field["maximum"]-field["minimum"])              
+            if field["value"] < field["minimum"]: 
+                field["value"] = field["minimum"]
+            if field["value"] > field["maximum"]: 
+                field["value"] = field["maximum"]
 
-        """
+    # since this function is a wrapper for ui.inputWindow
+    # need to convert to format required in ui.inputWindow
 
-        # set default values for items that are not provided by the caller
+    # first ensure each label is unique 
 
-        for field in fields:
+    for f, field in enumerate(fields):
+        for field_next in fields[f+1:]:
+            if field_next["label"] == field["label"]:
+                field_next["label"] += '_'
 
-            if field["type"] == "listview": 
-                field["value"] = [0]
+    # next build a single dictionary
 
-            elif field["type"] == "dropdownlist":
-                if "value" not in field: field["value"] = 0
+    Dict = {}
+    for field in fields:
+        Dict[field["label"]] = field["type"]
 
-            elif field["type"] == "string":
-                if "value" not in field: field["value"] = "Hello"
+        if field["type"] == "dropdownlist":
+            Dict[field["label"]] += ", " + str(field["value"])
 
-            elif field["type"] == "integer":
-                if "minimum" not in field: 
-                    field["minimum"] = -2147483648
-                if "maximum" not in field: 
-                    field["maximum"] = +2147483647
-                if "value" not in field: 
-                    field["value"] = field["minimum"] 
-                    field["value"] += 0.5*(field["maximum"]-field["minimum"])
-                    field["value"] = int(field["value"])
-                if field["value"] < field["minimum"]: 
-                    field["value"] = field["minimum"]
-                if field["value"] > field["maximum"]: 
-                    field["value"] = field["maximum"]
+        elif field["type"] == "string":
+            Dict[field["label"]] += ", " + str(field["value"])
 
-            elif field["type"] == "float":
-                if "minimum" not in field: 
-                    field["minimum"] = -1.0e+18
-                if "maximum" not in field: 
-                    field["maximum"] = +1.0e+18
-                if "value" not in field: 
-                    field["value"] = field["minimum"] 
-                    field["value"] += 0.5*(field["maximum"]-field["minimum"])              
-                if field["value"] < field["minimum"]: 
-                    field["value"] = field["minimum"]
-                if field["value"] > field["maximum"]: 
-                    field["value"] = field["maximum"]
+        elif field["type"] == "integer":
+            Dict[field["label"]] += ", " + str(field["value"])
+            Dict[field["label"]] += ", " + str(field["minimum"])
+            Dict[field["label"]] += ", " + str(field["maximum"])
 
-        # since this function is a wrapper for ui.inputWindow
-        # need to convert to format required in ui.inputWindow
+        elif field["type"] == "float":
+            Dict[field["label"]] += ", " + str(field["value"])
+            Dict[field["label"]] += ", " + str(field["minimum"])
+            Dict[field["label"]] += ", " + str(field["maximum"])
 
-        # first ensure each label is unique 
-
-        for f, field in enumerate(fields):
-            for field_next in fields[f+1:]:
-                if field_next["label"] == field["label"]:
-                    field_next["label"] += '_'
-
-        # next build a single dictionary
-
-        Dict = {}
-        for field in fields:
-            Dict[field["label"]] = field["type"]
-
-            if field["type"] == "dropdownlist":
-                Dict[field["label"]] += ", " + str(field["value"])
-
-            elif field["type"] == "string":
-                Dict[field["label"]] += ", " + str(field["value"])
-
-            elif field["type"] == "integer":
-                Dict[field["label"]] += ", " + str(field["value"])
-                Dict[field["label"]] += ", " + str(field["minimum"])
-                Dict[field["label"]] += ", " + str(field["maximum"])
-
-            elif field["type"] == "float":
-                Dict[field["label"]] += ", " + str(field["value"])
-                Dict[field["label"]] += ", " + str(field["minimum"])
-                Dict[field["label"]] += ", " + str(field["maximum"])
-
-        # then build a single list of lists
-                   
-        lists = []
-        for field in fields:
-            if field["type"] == "listview":
-                lists.append(field["list"])
-            elif field["type"] == "dropdownlist":
-                lists.append(field["list"])
-
-        # call the inputWindow
+    # then build a single list of lists
                 
-        paramList = inputWindow(Dict, title=title, lists=lists)
-        if paramList is None: 
-            return 1, fields
+    lists = []
+    for field in fields:
+        if field["type"] == "listview":
+            lists.append(field["list"])
+        elif field["type"] == "dropdownlist":
+            lists.append(field["list"])
 
-        # Overwrite the value key with the returned parameter
+    # call the inputWindow
+            
+    paramList = inputWindow(Dict, title=title, lists=lists)
+    if paramList is None: 
+        return 1, fields
 
-        for f, field in enumerate(fields):
+    # Overwrite the value key with the returned parameter
 
-            if field["type"] == "listview":
-                value_list = paramList[f]
-                for v, value in enumerate(value_list):
-                    value_list[v] = field["list"].index(value) 
-                field["value"] = value_list
-                
-            elif field["type"] == "dropdownlist":
-                value = paramList[f]
-                field["value"] = field["list"].index(value) 
+    for f, field in enumerate(fields):
 
-            elif field["type"] == "string":
-                field["value"] = paramList[f]
+        if field["type"] == "listview":
+            value_list = paramList[f]
+            for v, value in enumerate(value_list):
+                value_list[v] = field["list"].index(value) 
+            field["value"] = value_list
+            
+        elif field["type"] == "dropdownlist":
+            value = paramList[f]
+            field["value"] = field["list"].index(value) 
 
-            elif field["type"] == "integer":
-                field["value"] = paramList[f]
+        elif field["type"] == "string":
+            field["value"] = paramList[f]
 
-            elif field["type"] == "float":
-                field["value"] = paramList[f]
+        elif field["type"] == "integer":
+            field["value"] = paramList[f]
 
-        return 0, fields
+        elif field["type"] == "float":
+            field["value"] = paramList[f]
+
+    return 0, fields
 
 
 def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
