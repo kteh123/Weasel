@@ -16,7 +16,7 @@ import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
-from CoreModules.WEASEL.ViewMetaData import displayMetaDataSubWindow
+from Displays.ViewMetaData import displayMetaDataSubWindow
 logger = logging.getLogger(__name__)
 
 class UserInterfaceTools:

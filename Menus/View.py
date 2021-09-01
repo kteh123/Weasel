@@ -6,7 +6,7 @@ def main(weasel):
         label = 'View Series/Image',
         shortcut = 'Ctrl+V',
         tooltip = 'View DICOM Image or series',
-        pipeline = 'DisplayImages',
+        pipeline = 'View__DisplayImages',
         context = True)
 
     view.item(
@@ -24,10 +24,10 @@ def main(weasel):
         context = True)
 
     view.item(
-        label = 'View Metadata',
+        label = 'View DICOM header',
         shortcut = 'Ctrl+M',
-        tooltip = 'View DICOM Image or series metadata',
-        pipeline = 'ViewMetaData',
+        tooltip = 'View DICOM Image or series header',
+        pipeline = 'View__DICOMheader',
         context = True)
 
     view.separator()

@@ -9,6 +9,12 @@ def main(weasel):
     edit.item(
         label = 'Copy series',
         pipeline = 'Edit__CopySeries')
+    edit.item(
+        label = 'Copy studies',
+        pipeline = 'Edit__CopyStudies')
+    edit.item(
+        label = 'Copy subjects',
+        pipeline = 'Edit__CopySubject')
 
     edit.separator()
 
@@ -18,6 +24,12 @@ def main(weasel):
     edit.item(
         label = 'Delete series',
         pipeline = 'Edit__DeleteSeries')
+    edit.item(
+        label = 'Delete studies',
+        pipeline = 'Edit__DeleteStudies')
+    edit.item(
+        label = 'Delete subjects',
+        pipeline = 'Edit__DeleteSubject')
 
     edit.separator()
 
