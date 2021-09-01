@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 import importlib
-# from tqdm import trange, tqdm
+from tqdm import trange, tqdm
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
