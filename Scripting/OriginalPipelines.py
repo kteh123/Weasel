@@ -564,13 +564,19 @@ class OriginalPipelines():
                 return True
             else:
                 return False
+
+    def data_folder(self):
+        """
+        Returns the default folder for saving & loading data
+        """
+        return self.weaselDataFolder
     
     def select_folder(self, title="Select Folder", initial_folder=None):
         """
         Prompts a native FileDialog window where the user can select the desired folder in the system's file explorer.
         """
         if initial_folder is None:
-            initial_folder = self.weaselDataFolder
+            initial_folder = self.data_folder()
         scan_directory = QFileDialog.getExistingDirectory(self, title, initial_folder, QFileDialog.ShowDirsOnly)
         if scan_directory == '':
             return None
@@ -582,7 +588,7 @@ class OriginalPipelines():
         Prompts a native FileDialog window where the user can select the desired file to read in the system's file explorer.
         """
         if initial_folder is None:
-            initial_folder = self.weaselDataFolder
+            initial_folder = self.data_folder()
         filename, _ = QFileDialog.getOpenFileName(self, title, initial_folder, extension)
         if filename == '':
             return None
@@ -594,7 +600,7 @@ class OriginalPipelines():
         Prompts a native FileDialog window where the user can select the desired file to save in the system's file explorer.
         """
         if initial_folder is None:
-            initial_folder = self.weaselDataFolder
+            initial_folder = self.data_folder()
         filename, _ = QFileDialog.getSaveFileName(self, title, initial_folder, extension)
         if filename == '':
             return None
@@ -683,7 +689,20 @@ class OriginalPipelines():
         """
         return menuBuilder(self, label)
         
-# replace by lower case notation "launch_external_app"
+
+    def add_subwindow(self, subWindow):
+        """
+        Returns a subwindow for weasel
+        """
+        return self.mdiArea.addSubWindow(subWindow)
+
+    def dimensions(self):
+        """
+        Returns the Dimensions (height, width) of the weasel window
+        """
+        return self.getMDIAreaDimensions()
+
+    # replace by lower case notation "launch_external_app"
 
     def launchExternalApp(self, appWidget, title=None, icon=None):
         """This method takes a composite widget created by an external 
@@ -696,9 +715,9 @@ class OriginalPipelines():
                                       Qt.WindowCloseButtonHint | 
                                       Qt.WindowMinimizeButtonHint |
                                       Qt.WindowMaximizeButtonHint)
-            height, width = self.getMDIAreaDimensions()
+            height, width = self.dimensions()
             subWindow.setGeometry(0, 0, width, height)
-            self.mdiArea.addSubWindow(subWindow)
+            self.add_subwindow(subWindow)
             
             subWindow.setWidget(appWidget)
 
