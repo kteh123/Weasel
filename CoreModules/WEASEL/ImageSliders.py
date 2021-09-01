@@ -54,7 +54,7 @@ class ImageSliders(QObject):
             # Global variables for the Multisliders
             self.dynamicListImageType = []
             self.shapeList = []
-            self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
+            self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at __multipleImageSliderMoved(self)
             self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
             #A list of the sorted image sliders, 
             #updated as they are added and removed 
@@ -62,31 +62,36 @@ class ImageSliders(QObject):
             self.listSortedImageSliders = []  
 
             #Create the custom, composite sliders widget
-            self.setUpLayouts()
-            self.createMainImageSlider()
-            self.addMainImageSliderToLayout()
-            self.setUpImageTypeList()
-            self.setUpSliderResetButton()
+            self.__setUpLayouts()
+            self.__createMainImageSlider()
+            self.__addMainImageSliderToLayout()
+            self.__setUpImageTypeList()
+            self.__setUpSliderResetButton()
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
 
 
     def getCustomSliderWidget(self):
-        """Passes the composite slider widget to the
+        """A public function that passes the 
+        composite slider widget to the
         parent layout on the subwindow"""
         return self.mainVerticalLayout
 
 
     def getMainSlider(self):
+        """A public function that passes the main image 
+        slider to Weasel"""
         return self.mainImageSlider
 
 
     def displayFirstImage(self):
-        self._mainImageSliderMoved(1)
+        """A public function that displays the first image 
+        in Weasel"""
+        self.__mainImageSliderMoved(1)
 
 
-    def setUpLayouts(self):
+    def __setUpLayouts(self):
         try:
             self.mainVerticalLayout = QVBoxLayout()
         
@@ -98,11 +103,11 @@ class ImageSliders(QObject):
             self.mainVerticalLayout.addLayout(self.imageTypeLayout)
             self.mainVerticalLayout.addLayout(self.sortedImageSliderLayout)
         except Exception as e:
-            print('Error in ImageSliders.setUpLayouts: ' + str(e))
-            logger.error('Error in ImageSliders.setUpLayouts: ' + str(e))
+            print('Error in ImageSliders.__setUpLayouts: ' + str(e))
+            logger.error('Error in ImageSliders.__setUpLayouts: ' + str(e))
 
     
-    def createMainImageSlider(self): 
+    def __createMainImageSlider(self): 
         try:
             self.mainImageSlider = QSlider(Qt.Horizontal)
             self.mainImageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
@@ -111,19 +116,19 @@ class ImageSliders(QObject):
             self.mainImageSlider.setTickPosition(QSlider.TicksBothSides)
             self.mainImageSlider.setTickInterval(1)
             self.mainImageSlider.setMinimum(1)
-            self.mainImageSlider.valueChanged.connect(self._mainImageSliderMoved)
+            self.mainImageSlider.valueChanged.connect(self.__mainImageSliderMoved)
         except Exception as e:
-            print('Error in ImageSliders.createMainImageSlider: ' + str(e))
-            logger.error('Error in ImageSliders.createMainImageSlider: ' + str(e))
+            print('Error in ImageSliders.__createMainImageSlider: ' + str(e))
+            logger.error('Error in ImageSliders.__createMainImageSlider: ' + str(e))
 
     
-    def _mainImageSliderMoved(self, imageNumber=None):
+    def __mainImageSliderMoved(self, imageNumber=None):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
         """
         try: 
-            logger.info("ImageSliders._mainImageSliderMoved called")
+            logger.info("ImageSliders.__mainImageSliderMoved called")
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
             else:
@@ -134,17 +139,43 @@ class ImageSliders(QObject):
                 imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
                 self.imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
-                #Send the image number and current image to the parent application
+
+                #Send the file path of  current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
+
+                #SS 31 Aug. Synchronising main and sorted image sliders attempt
+                if len(self.listSortedImageSliders)>0:
+                    np_array = np.array(self.arrayForMultiSlider)
+                    item_index = np.where(np_array == self.selectedImagePath) 
+                    if np_array.ndim == 1:
+                        firstSliderValue = item_index[0][0]
+                        #print("firstSliderValue ={}".format(firstSliderValue))
+                        self.listSortedImageSliders[0][0].blockSignals(True)
+                        self.listSortedImageSliders[0][0].setValue(firstSliderValue)
+                        #Need to update image x of y text for this slider
+                        self.listSortedImageSliders[0][0].blockSignals(False)
+                    elif np_array.ndim == 2:
+                        firstSliderValue = item_index[0][0]
+                        secondSliderValue = item_index[1][0]
+                        #print("firstSliderValue ={}".format(firstSliderValue))
+                        #print("secondSliderValue ={}".format(secondSliderValue))
+                        self.listSortedImageSliders[0][0].blockSignals(True)
+                        self.listSortedImageSliders[0][0].setValue(firstSliderValue)
+                        self.listSortedImageSliders[0][0].blockSignals(False)
+                        self.listSortedImageSliders[1][0].blockSignals(True)
+                        self.listSortedImageSliders[1][0].setValue(secondSliderValue)
+                        self.listSortedImageSliders[1][0].blockSignals(False)
+                        #Need to update image x of y text for these sliders
+
         except TypeError as e: 
-            print('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
-            logger.error('Type Error in ImageSliders._mainImageSliderMoved: ' + str(e))
+            print('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
+            logger.error('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
         except Exception as e:
-            print('Error in ImageSliders._mainImageSliderMoved: ' + str(e))
-            logger.error('Error in ImageSliders._mainImageSliderMoved: ' + str(e))
+            print('Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
+            logger.error('Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
 
 
-    def addMainImageSliderToLayout(self):
+    def __addMainImageSliderToLayout(self):
         """Configures the width of the slider according to the number of images
         it must navigate and adds it and its associated label to the main slider
         layout"""
@@ -168,16 +199,16 @@ class ImageSliders(QObject):
             if maxNumberImages < 11:
                 self.mainSliderLayout.addStretch(1)
         except Exception as e:
-            print('Error in ImageSliders.addMainImageSliderToLayout: ' + str(e))
-            logger.error('Error in ImageSliders.addMainImageSliderToLayout: ' + str(e))
+            print('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
+            logger.error('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
 
     
-    def setUpImageTypeList(self):
-        self.imageTypeList = self.createImageTypeList()
+    def __setUpImageTypeList(self):
+        self.imageTypeList = self.__createImageTypeList()
         self.imageTypeLayout.addWidget(self.imageTypeList)
 
 
-    def createImageTypeList(self):
+    def __createImageTypeList(self):
         try:
             imageTypeList = QListWidget()
             imageTypeList.setFlow(QListView.Flow.LeftToRight)
@@ -195,18 +226,18 @@ class ImageSliders(QObject):
                         item.setCheckState(Qt.Unchecked)
                         imageTypeList.addItem(item)
                
-            imageTypeList.itemClicked.connect(lambda item: self.addRemoveSortedImageSlider(item))
+            imageTypeList.itemClicked.connect(lambda item: self.__addRemoveSortedImageSlider(item))
             return imageTypeList
         except Exception as e:
-            print('Error in ImageSliders.createImageTypeList: ' + str(e))
-            logger.error('Error in ImageSliders.createImageTypeList: ' + str(e))
+            print('Error in ImageSliders.__createImageTypeList: ' + str(e))
+            logger.error('Error in ImageSliders.__createImageTypeList: ' + str(e))
 
 
-    def addRemoveSortedImageSlider(self, item):
+    def __addRemoveSortedImageSlider(self, item):
         try:
             if item.checkState() == Qt.Checked:
                 #add a slider-label pair
-                imageSliderLayout = self.createSortedImageSlider(item.text()) 
+                imageSliderLayout = self.__createSortedImageSlider(item.text()) 
                 if imageSliderLayout is not None:
                     self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
             else:
@@ -232,7 +263,7 @@ class ImageSliders(QObject):
                             # Sort according to the tags
                             self.seriesToFormat.sort(*self.dynamicListImageType)
                             # Reshape the self.arrayForMultiSlider list of paths
-                            self.arrayForMultiSlider = self.reshapePathsList()
+                            self.arrayForMultiSlider = self.__reshapePathsList()
                         elif len(self.dynamicListImageType) == 1:
                             sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, self.dynamicListImageType[0])
                             self.arrayForMultiSlider = sortedSequencePath
@@ -247,11 +278,11 @@ class ImageSliders(QObject):
                             labelText = "image {} of {}".format(currentImageNumber, len(self.imagePathList))
                             self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
         except Exception as e:
-            print('Error in ImageSliders.addRemoveSortedImageSlider: ' + str(e))
-            logger.error('Error in ImageSliders.addRemoveSortedImageSlider: ' + str(e))
+            print('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
+            logger.error('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
 
 
-    def reshapePathsList(self): 
+    def __reshapePathsList(self): 
         """This is ann auxiliary function that reshapes the
            list of paths to match the multisliders in the viewer.
         """
@@ -265,7 +296,7 @@ class ImageSliders(QObject):
         return res
 
 
-    def createSortedImageSlider(self, DicomAttribute):  
+    def __createSortedImageSlider(self, DicomAttribute):  
         try:
             imageSlider = SortedImageSlider(DicomAttribute)
             imageLabel = QLabel()
@@ -298,26 +329,28 @@ class ImageSliders(QObject):
                     self.listSortedImageSliders.remove(listSliderLabelPair)
                     return None
                 else:
-                    self.arrayForMultiSlider = self.reshapePathsList()
+                    self.arrayForMultiSlider = self.__reshapePathsList()
             else:
                 sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, DicomAttribute)
                 maxNumberImages = len(self.imagePathList)
                 self.arrayForMultiSlider = sortedSequencePath
+                
             imageSlider.setMaximum(maxNumberImages)
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             imageSlider.setMinimum(1)
-            imageSlider.valueChanged.connect(self.multipleImageSliderMoved)
+            
+            imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
             imageLabel.setText("image 1 of {}".format(maxNumberImages))
             
             return layout
         except Exception as e:
-            print('Error in ImageSliders.createSortedImageSlider: ' + str(e))
-            logger.exception('Error in ImageSliders.createSortedImageSlider: ' + str(e))
+            print('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
+            logger.exception('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
     
 
-    def multipleImageSliderMoved(self):  
+    def __multipleImageSliderMoved(self):  
         """This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
         The slider being moved determines the image displayed in the image viewer"""
@@ -338,24 +371,24 @@ class ImageSliders(QObject):
                 auxList = auxList[index - 1]
             self.selectedImagePath = auxList
             self.sliderMoved.emit(self.selectedImagePath)
-
+            
             #update the position of the main slider so that it points to the
             #same image as the sorted image sliders.
             indexImageInMainList = self.imagePathList.index(self.selectedImagePath)
             self.mainImageSlider.setValue(indexImageInMainList+1)
         except Exception as e:
-            print('Error in ImageSliders.multipleImageSliderMoved: ' + str(e))
-            logger.exception('Error in ImageSliders.multipleImageSliderMoved: ' + str(e))
+            print('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
+            logger.exception('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
     
 
-    def setUpSliderResetButton(self):
+    def __setUpSliderResetButton(self):
         self.resetButton = QPushButton("Reset")
         self.resetButton.setToolTip("Return this screen to the state that it had when first opened")
-        self.resetButton.clicked.connect(self.resetSliders)
+        self.resetButton.clicked.connect(self.__resetSliders)
         self.imageTypeLayout.addWidget(self.resetButton)
 
 
-    def resetSliders(self):
+    def __resetSliders(self):
         try:
             ##Remove sorted image sliders
             while self.sortedImageSliderLayout.rowCount() > 0:
@@ -373,28 +406,37 @@ class ImageSliders(QObject):
             self.arrayForMultiSlider = self.imagePathList
 
             #Reset the main image slider
-            self._mainImageSliderMoved(1)
+            self.__mainImageSliderMoved(1)
         except Exception as e:
-            print('Error in ImageSliders.resetSliders: ' + str(e))
-            logger.error('Error in ImageSliders.resetSliders: ' + str(e))
+            print('Error in ImageSliders.__resetSliders: ' + str(e))
+            logger.error('Error in ImageSliders.__resetSliders: ' + str(e))
 
 
-    def imageDeleted(self, newImagePathList):
+    def __imageDeleted(self, newImagePathList):
         try:
+            #newImagePathList is the original image file path list
+            #but with the file path of the deleted image removed.
             self.imagePathList = newImagePathList
             self.mainImageSlider.setMaximum(len(newImagePathList))
             imageNumber = self.mainImageSlider.value()
             imageIndex = imageNumber - 1
             self.selectedImagePath = self.imagePathList[imageIndex]
-            #Send the image number and current image to the parent application
+            #Send the new current image to the parent application
             self.sliderMoved.emit(self.selectedImagePath)
             
             #To Do 
             #adjust the lists attached to sorted image list sliders
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
+
+            #if deleted image in self.arrayForMultiSlider
+            # remove image from self.arrayForMultiSlider
+
+            if len(self.listSortedImageSliders) > 0:
+                print("self.arrayForMultiSlider={}".format(self.arrayForMultiSlider))
+            
         except Exception as e:
-            print('Error in ImageSliders.imageDeleted: ' + str(e))
+            print('Error in ImageSliders.__imageDeleted: ' + str(e))
         
 
             
