@@ -65,6 +65,17 @@ class Display():
         """
         self.mdiArea.addSubWindow(subWindow)
 
+    def closeSubWindow(self, objectName):
+        """
+        Closes all subwindows with a given name
+
+        objectName (string): the value set by setObjectName(objectName)
+            when the SubWindow was created
+        """   
+        for subWin in self.mdiArea.subWindowList():
+            if subWin.objectName() == objectName:
+                subWin.close()   
+
     # replace by lower case notation "launch_external_app"
     def launchExternalApp(self, appWidget, title=None, icon=None):
         """This method takes a composite widget created by an external 

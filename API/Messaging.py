@@ -24,24 +24,6 @@ class Messaging():
         """   
         QApplication.restoreOverrideCursor()     
 
-    def message(self, msg="Message in the box", title="Window Title"):
-        """
-        Displays a Message window with the text in "msg" and the title "title".
-        """
-        if self.cmd == True:
-            print("=====================================")
-            print(title + ": " + msg)
-            print("=====================================")
-        else:
-            messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
-
-    def close_message(self):
-        """
-        Closes the message window 
-        """
-        if self.cmd == False:
-            self.msgSubWindow.close()
-
     def information(self, msg="Message in the box", title="Window Title"):
         """
         Display a Window with information message and the user must press 'OK' to continue.
@@ -102,6 +84,24 @@ class Messaging():
                 return True
             else:
                 return False
+
+    def message(self, msg="Message in the box", title="Window Title"):
+        """
+        Displays a Message window with the text in "msg" and the title "title".
+        """
+        if self.cmd == True:
+            print("=====================================")
+            print(title + ": " + msg)
+            print("=====================================")
+        else:
+            messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+
+    def close_message(self):
+        """
+        Closes the message window 
+        """
+        if self.cmd == False:
+            self.msgSubWindow.close()
 
     def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """

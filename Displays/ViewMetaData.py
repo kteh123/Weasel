@@ -26,7 +26,6 @@ def displayMetaDataSubWindow(weasel, tableTitle, dataset):
                     
         widget = QWidget()
         widget.setLayout(QVBoxLayout()) 
-    #    metaDataSubWindow = QMdiSubWindow(weasel)
         metaDataSubWindow = QMdiSubWindow()
         metaDataSubWindow.setAttribute(Qt.WA_DeleteOnClose)
         metaDataSubWindow.setWidget(widget)
