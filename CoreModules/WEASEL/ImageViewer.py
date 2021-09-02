@@ -29,7 +29,7 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-from CoreModules.WEASEL.DeveloperTools import Series
+from DICOM.Classes import Series
 import CoreModules.WEASEL.TreeView as treeView 
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 

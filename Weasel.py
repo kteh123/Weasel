@@ -106,7 +106,6 @@ class Weasel(QMainWindow, Pipelines):
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
 
-
     def buildMenus(self):
         try:
             logger.info("Weasel.buildMenus called.")
@@ -133,11 +132,6 @@ class Weasel(QMainWindow, Pipelines):
         except Exception as e:
             print('Error in Weasel.buildMenus: ' + str(e)) 
             logger.exception('Error in Weasel.buildMenus: ' + str(e)) 
-
-
-    def getMDIAreaDimensions(self):
-      return self.mdiArea.height(), self.mdiArea.width() 
-
 
     @staticmethod
     def isPythonFile(fileName):
