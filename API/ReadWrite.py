@@ -1,13 +1,9 @@
 import os
-
 from PyQt5.QtWidgets import QFileDialog
-
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
-
 from Displays.UserInput import userInput 
 from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
-from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 
 import logging
 logger = logging.getLogger(__name__)
@@ -36,7 +32,7 @@ class ReadWrite():
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                UserInterfaceTools(self).showMessageWindow(msg=msg)
+                self.showMessageWindow(msg=msg)
         else:
             for image in self.checkedImageList:
                 newImage = Image(self, image[0], image[1], image[2], image[3])
@@ -55,7 +51,7 @@ class ReadWrite():
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                UserInterfaceTools(self).showMessageWindow(msg=msg)
+                self.showMessageWindow(msg=msg)
         else:
             for series in self.checkedSeriesList:
                 images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
@@ -75,7 +71,7 @@ class ReadWrite():
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                UserInterfaceTools(self).showMessageWindow(msg=msg)
+                self.showMessageWindow(msg=msg)
         else:
             for study in self.checkedStudyList:
                 newStudy = Study(self, study[0], study[1])
@@ -94,7 +90,7 @@ class ReadWrite():
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                UserInterfaceTools(self).showMessageWindow(msg=msg)
+                self.showMessageWindow(msg=msg)
         else:
             for subject in self.checkedSubjectList:
                 newSubject = Subject(self, subject)

@@ -6,7 +6,7 @@ import pydicom
 import nibabel as nib
 import copy
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
-from CoreModules.WEASEL.DeveloperTools import (UserInterfaceTools, PixelArrayDICOMTools, GenericDICOMTools)
+from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
@@ -1030,7 +1030,7 @@ class Series:
         logger.info("Series.display called")
         try:
             if self.objWeasel.cmd == False:
-                UserInterfaceTools(self.objWeasel).displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
+                self.objWeasel.displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
         except Exception as e:
             print('Error in Series.display: ' + str(e))
             logger.exception('Error in Series.display: ' + str(e))
@@ -1048,7 +1048,7 @@ class Series:
     def Metadata(self):
         logger.info("Series.Metadata called")
         try:
-            UserInterfaceTools(self.objWeasel).displayMetadata(self.images)
+            self.objWeasel.displayMetadata(self.images)
         except Exception as e:
             print('Error in Series.Metadata: ' + str(e))
             logger.exception('Error in Series.Metadata: ' + str(e))
@@ -1585,7 +1585,7 @@ class Image:
         logger.info("Image.display called")
         try:
             if self.objWeasel.cmd == False:
-                UserInterfaceTools(self.objWeasel).displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
+                self.objWeasel.displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
         except Exception as e:
             print('Error in Image.display: ' + str(e))
             logger.exception('Error in Image.display: ' + str(e))
@@ -1595,7 +1595,7 @@ class Image:
         logger.info("Image.displayListImages called")
         try:
             pathsList = [image.path for image in listImages]
-            UserInterfaceTools(listImages[0].objWeasel).displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
+            listImages[0].objWeasel.displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
         except Exception as e:
             print('Error in Image.displayListImages: ' + str(e))
             logger.exception('Error in Image.displayListImages: ' + str(e))
@@ -1631,7 +1631,7 @@ class Image:
     def Metadata(self):
         logger.info("Image.Metadata called")
         try:
-            UserInterfaceTools(self.objWeasel).displayMetadata(self.path)
+            self.objWeasel.displayMetadata(self.path)
         except Exception as e:
             print('Error in Image.Metadata: ' + str(e))
             logger.exception('Error in Image.Metadata: ' + str(e))

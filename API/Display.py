@@ -1,7 +1,6 @@
 import CoreModules.WEASEL.TreeView as treeView
 import Displays.MeanROITimeCurveViewer as curveViewer
 from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
-from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 
 from PyQt5.QtGui import (QIcon)
 from PyQt5.QtWidgets import QMdiSubWindow
@@ -21,8 +20,7 @@ class Display():
         Refreshes the Weasel display.
         """
         self.close_progress_bar()
-        ui = UserInterfaceTools(self)
-        ui.refreshWeasel(new_series_name=new_series_name)
+        self.refreshWeasel(new_series_name=new_series_name)
 
     def reset_treeview(self):
         """
