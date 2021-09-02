@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 
-from Library.UserInput import userInput 
+from Displays.UserInput import userInput 
 from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 

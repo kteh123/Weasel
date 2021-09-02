@@ -5,17 +5,17 @@ from PyQt5.QtCore import Qt
 #from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 #import matplotlib.pyplot as plt
 
-from CoreModules.WEASEL.GraphPlotter import PlotGraph as plotGraph
+from Displays.GraphPlotter import PlotGraph as plotGraph
 #import CoreModules.WEASEL.StyleSheet as styleSheet
 #import sys
 import logging
 logger = logging.getLogger(__name__)
 
 
-def displayTimeCurve(pointerToWeasel, signalName, maskName,
+def displayTimeCurve(weasel, signalName, maskName,
                      ROI_time_values, ROI_signal_values, xLabel, yLabel,  title="Mean ROI Signal/Time Curve"):
     try:
-        subWindow = QMdiSubWindow(pointerToWeasel)
+        subWindow = QMdiSubWindow(weasel)
         subWindow.setObjectName = 'Time_Curve_viewer'
         subWindow.setWindowTitle(title)
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
@@ -23,9 +23,9 @@ def displayTimeCurve(pointerToWeasel, signalName, maskName,
                                           Qt.WindowMinimizeButtonHint |
                                           Qt.WindowMaximizeButtonHint)
        
-        height, width = pointerToWeasel.getMDIAreaDimensions()
+        height, width = weasel.getMDIAreaDimensions()
         subWindow.setGeometry(0, 0, width, height)
-        pointerToWeasel.mdiArea.addSubWindow(subWindow)
+        weasel.addSubWindow(subWindow)
 
         layout = QVBoxLayout()
         formLayout = QFormLayout()
@@ -97,8 +97,8 @@ def displayTimeCurve(pointerToWeasel, signalName, maskName,
 #            logger.exception('Error in class ROITimeCurveViewer.__init__: ' + str(e)) 
 
     
-#    def displaySubWindow(self, pointerToWeasel):
+#    def displaySubWindow(self, weasel):
 #        self.show()
-#        height, width = pointerToWeasel.getMDIAreaDimensions()
+#        height, width = weasel.getMDIAreaDimensions()
 #        self.setGeometry(0, 0, width, height)
-#        pointerToWeasel.mdiArea.addSubWindow(self)
+#        weasel.mdiArea.addSubWindow(self)
