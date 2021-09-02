@@ -1,50 +1,55 @@
-
 def main(weasel):
     
-    edit = weasel.menu(label = "Edit")
+    menu = weasel.menu("Edit")
 
-    edit.item(
+    menu.item(
         label = 'Copy images',
         pipeline = 'Edit__CopyImages')
-    edit.item(
+    menu.item(
         label = 'Copy series',
         pipeline = 'Edit__CopySeries')
-    edit.item(
+    menu.item(
         label = 'Copy studies',
         pipeline = 'Edit__CopyStudies')
-    edit.item(
+    menu.item(
         label = 'Copy subjects',
         pipeline = 'Edit__CopySubject')
 
-    edit.separator()
+    menu.separator()
 
-    edit.item(
+    menu.item(
         label = 'Delete images',
         pipeline = 'Edit__DeleteImages')
-    edit.item(
+    menu.item(
         label = 'Delete series',
         pipeline = 'Edit__DeleteSeries')
-    edit.item(
+    menu.item(
         label = 'Delete studies',
         pipeline = 'Edit__DeleteStudies')
-    edit.item(
+    menu.item(
         label = 'Delete subjects',
         pipeline = 'Edit__DeleteSubject')
 
-    edit.separator()
+    menu.separator()
 
-    edit.item(
-        label = 'Merge images',
+    menu.item(
+        label = 'Merge images (overwrite)',
         pipeline = 'Edit__MergeImages')
-    edit.item(
-        label = 'Merge series',
-        pipeline = 'Edit__MergeSeries')
-
-    edit.separator()
-
-    edit.item(
-        label = 'Copy and merge images',
+    menu.item(
+        label = 'Merge images (copy)',
         pipeline = 'Edit__MergeImagesCopy')
-    edit.item(
-        label = 'Copy and merge series',
+    menu.item(
+        label = 'Merge series (overwrite)',
+        pipeline = 'Edit__MergeSeries')
+    menu.item(
+        label = 'Merge series (copy)',
         pipeline = 'Edit__MergeSeriesCopy')
+
+    menu.separator()
+
+    menu.item(
+        label = 'Anonymise (overwrite)',
+        pipeline = 'Edit__Anonymise')
+    menu.item(
+        label = 'Anonymise (copy)',
+        pipeline = 'Edit__AnonymiseCopy')

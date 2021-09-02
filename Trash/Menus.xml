@@ -226,6 +226,30 @@
         </item>
   </menu>
   
+  <menu name="XNAT">
+
+        <item>
+          <label>Download</label>
+          <tooltip>Prompts a window that allows to download images from XNAT</tooltip>
+		      <icon>Documents/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		      <function>download</function>
+        </item>
+
+		    <item>
+          <!--Inserts a separator, a horizontal line in the menu-->
+          <separator>yes</separator>
+        </item>
+
+		    <item>
+          <label>Upload</label>
+          <tooltip>Prompts a window that allows to upload images from XNAT</tooltip>
+		      <icon>Documents/images/XNAT-LOGO.png</icon>
+          <module>XNATapp</module>
+		      <function>upload</function>
+        </item>
+        
+  </menu>
   
 </menus>
 
