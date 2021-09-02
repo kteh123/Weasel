@@ -6,7 +6,6 @@ from PyQt5.QtCore import  Qt
 import os
 import sys
 import argparse
-import pathlib
 import importlib
 import logging
 from multiprocessing import current_process, freeze_support
@@ -28,7 +27,7 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
 sys.path.append(os.path.join(sys.path[0],'External'))
 sys.path.append(os.path.join(sys.path[0],'Pipelines'))
-sys.path.append(os.path.join(sys.path[0],'Scripting'))
+sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.StyleSheet as styleSheet
@@ -37,7 +36,7 @@ from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 #import Trash.ToolBar as toolBar
-from Scripting.Scripting import Pipelines
+from API.Main import WeaselProgrammingInterface
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe & Joao Sousa'
@@ -55,7 +54,7 @@ logging.basicConfig(filename=LOG_FILE_NAME,
 logger = logging.getLogger(__name__)
 
 
-class Weasel(QMainWindow, Pipelines):
+class Weasel(QMainWindow, WeaselProgrammingInterface):
 
     def __init__(self): 
         """Creates the MDI container."""
@@ -133,105 +132,7 @@ class Weasel(QMainWindow, Pipelines):
             print('Error in Weasel.buildMenus: ' + str(e)) 
             logger.exception('Error in Weasel.buildMenus: ' + str(e)) 
 
-    @staticmethod
-    def isPythonFile(fileName):
-        flag = False
-        if fileName.split(".")[-1].lower()  == 'py':
-            flag = True
-        return flag
-
-
-    @staticmethod
-    def isXMLFile(fileName):
-        flag = False
-        if fileName.split(".")[-1].lower()  == 'xml':
-            flag = True
-        return flag
-
-
-    @staticmethod
-    def returnListPythonFiles():
-        listPythonFiles = []
-        for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
-            for individualFile in filenames:
-                if individualFile.endswith(".py"):
-                    listPythonFiles.append(os.path.join(dirpath, individualFile))
-        return listPythonFiles
-
-    @property
-    def isAnImageChecked(self):
-        flag = False
-        root = self.treeView.invisibleRootItem()
-        subjectCount = root.childCount()
-        checkedImagesList = []
-        for i in range(subjectCount):
-            subject = root.child(i)
-            studyCount = subject.childCount()
-            for j in range(studyCount):
-                study = subject.child(j)
-                seriesCount = study.childCount()
-                for n in range(seriesCount):
-                    series = study.child(n)
-                    imagesCount = series.childCount()
-                    for k in range(imagesCount):
-                        image = series.child(k)
-                        if image.checkState(0) == Qt.Checked:
-                            flag = True
-                            break
-        return flag
-
-
-    @property
-    def isASeriesChecked(self):
-        flag = False
-        root = self.treeView.invisibleRootItem()
-        subjectCount = root.childCount()
-        checkedSeriesList = []
-        for i in range(subjectCount):
-            subject = root.child(i)
-            studyCount = subject.childCount()
-            for j in range(studyCount):
-                study = subject.child(j)
-                seriesCount = study.childCount()
-                for n in range(seriesCount):
-                    series = study.child(n)
-                    if series.checkState(0) == Qt.Checked:
-                        flag = True
-                        break
-        return flag
-     
-
-    @property
-    def isAStudyChecked(self):
-        flag = False
-        root = self.treeView.invisibleRootItem()
-        subjectCount = root.childCount()
-        checkedStudiesList = []
-        for i in range(subjectCount):
-            subject = root.child(i)
-            studyCount = subject.childCount()
-            for j in range(studyCount):
-                study = subject.child(j)   
-                if study.checkState(0) == Qt.Checked:
-                    flag = True
-                    break
-        return flag
-
-
-    @property
-    def isASubjectChecked(self):
-        flag = False
-        root = self.treeView.invisibleRootItem()
-        subjectCount = root.childCount()
-        checkedSubjectsList = []
-        for i in range(subjectCount):
-            subject = root.child(i)
-            if subject.checkState(0) == Qt.Checked:
-                flag = True
-                break
-        return flag
-
-class Weasel_CMD(Pipelines):
+class Weasel_CMD(WeaselProgrammingInterface):
 
     def __init__(self, arguments):
         """Creates the WEASEL Command-line class."""

@@ -3,7 +3,6 @@
 # as siblings in the same study
 # showing progress with a status bar 
 # and displaying the copied series
-# ISSUE 77: bug in Save DICOM
 #***************************************************************************
 
 def main(weasel):

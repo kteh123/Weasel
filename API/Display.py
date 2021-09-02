@@ -1,5 +1,5 @@
 import CoreModules.WEASEL.TreeView as treeView
-import CoreModules.WEASEL.MeanROITimeCurveViewer as curveViewer
+import Displays.MeanROITimeCurveViewer as curveViewer
 from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
 from CoreModules.WEASEL.DeveloperTools import UserInterfaceTools
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Display():
     """
-    A class for accessing GUI elements from within a pipeline script. 
+    Programming interfaces for modifying the Weasel GUI elements. 
     """
 
     def refresh(self, new_series_name=None):
@@ -58,12 +58,6 @@ class Display():
         Interface for Python menu builder
         """
         return menuBuilder(self, label)
-
-    def getMDIAreaDimensions(self):
-        """
-        Dimensions of the weasel canvas
-        """
-        return self.mdiArea.height(), self.mdiArea.width() 
 
     def addSubWindow(self, subWindow):
         """

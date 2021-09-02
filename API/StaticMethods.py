@@ -1,12 +1,13 @@
+import os
 import re
 import subprocess
 import importlib
-
+import pathlib
 import logging
 logger = logging.getLogger(__name__)
 
 
-class Statics():
+class StaticMethods():
     """
     A temporary class for some static methods that need to move to Library. 
     """
@@ -47,3 +48,26 @@ class Statics():
         except Exception as e:
             print('Error in OriginalPipelines.pip_install_external_package: ' + str(e))
             logger.error('OriginalPipelines.pip_install_external_package: ' + str(e)) 
+
+    @staticmethod
+    def isPythonFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'py':
+            flag = True
+        return flag
+
+    @staticmethod
+    def isXMLFile(fileName):
+        flag = False
+        if fileName.split(".")[-1].lower()  == 'xml':
+            flag = True
+        return flag
+
+    @staticmethod
+    def returnListPythonFiles():
+        listPythonFiles = []
+        for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
+            for individualFile in filenames:
+                if individualFile.endswith(".py"):
+                    listPythonFiles.append(os.path.join(dirpath, individualFile))
+        return listPythonFiles
