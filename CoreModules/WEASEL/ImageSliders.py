@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (QMessageBox,
 import numpy as np
 import copy
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-from CoreModules.WEASEL.DeveloperTools import Series
+from DICOM.Classes import Series
 
 import logging
 logger = logging.getLogger(__name__)

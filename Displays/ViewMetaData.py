@@ -26,12 +26,13 @@ def displayMetaDataSubWindow(weasel, tableTitle, dataset):
                     
         widget = QWidget()
         widget.setLayout(QVBoxLayout()) 
-        metaDataSubWindow = QMdiSubWindow(weasel)
+    #    metaDataSubWindow = QMdiSubWindow(weasel)
+        metaDataSubWindow = QMdiSubWindow()
         metaDataSubWindow.setAttribute(Qt.WA_DeleteOnClose)
         metaDataSubWindow.setWidget(widget)
         metaDataSubWindow.setObjectName("metaData_Window")
         metaDataSubWindow.setWindowTitle(title)
-        height, width = weasel.dimensions()
+        height, width = weasel.getMDIAreaDimensions()
         metaDataSubWindow.setGeometry(width * 0.4,0,width*0.6,height)
         lblImageName = QLabel('<H4>' + tableTitle + '</H4>')
         widget.layout().addWidget(lblImageName)
@@ -53,7 +54,7 @@ def displayMetaDataSubWindow(weasel, tableTitle, dataset):
         widget.layout().addLayout(horizontalBox)
         widget.layout().addWidget(DICOM_Metadata_Table_View)
 
-        weasel.add_subwindow(metaDataSubWindow)
+        weasel.addSubWindow(metaDataSubWindow)
         metaDataSubWindow.show()
     except Exception as e:
         print('Error in : ViewMetaData.displayMetaDataSubWindow' + str(e))

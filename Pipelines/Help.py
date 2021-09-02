@@ -4,5 +4,5 @@ import webbrowser
 def isEnabled(weasel):
     return True
 
-def main(pointerToWeasel):
+def main(weasel):
     webbrowser.open("Weasel.pro")
