@@ -314,15 +314,11 @@ def getPixelArray(dataset):
                     del sliceArray, tempArray, index
                 del originalArray, imageList
             else:
-                #if 'philips' in dataset.Manufacturer.lower():
-                #    a = dataset[(0x2005, 0x100E)].value * np.ones(dataset.pixel_array.shape)
-                #    b = dataset[(0x2005, 0x100D)].value * np.ones(dataset.pixel_array.shape)
-                #    pixelArray = np.transpose((dataset.pixel_array.astype(np.float32) - b) / a)
-                #    del a, b
-                #else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
                 pixelArray = np.transpose(dataset.pixel_array.astype(np.float32) * slope + intercept)
+            if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
+                pixelArray = pixelArray / (slope * dataset[(0x2005, 0x100E)].value)
             del slope, intercept
             return pixelArray
         else:

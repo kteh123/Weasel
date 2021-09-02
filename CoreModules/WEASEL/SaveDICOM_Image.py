@@ -260,7 +260,10 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
 
 def createNewPixelArray(imageArray, dataset):
     logger.info("SaveDICOM_Image.createNewPixelArray called")
-    try:        
+    try:
+        # Delete 'Philips Rescale Slope' tag if it exists
+        if [0x2005, 0x100E] in dataset:
+            del dataset[0x2005, 0x100E]
         # If the new array is a binary image / mask
         if len(np.unique(imageArray)) == 2:
             param.editDicom(dataset, imageArray, "SEG")
