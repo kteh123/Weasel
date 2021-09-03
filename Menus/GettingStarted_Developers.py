@@ -3,7 +3,7 @@ Template menu illustrating the different approaches
 to building menus through the Weasel Programming Interface
 """
 
-# Insert a menu from a local menu library Menus
+# Insert a menu from a local menu library
 # In external applications, do not import from WEASEL/Menus
 # as this can evolve. Only import your own menus library.
 from Menus.Tutorial import main as menu_tutorial

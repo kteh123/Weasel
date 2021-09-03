@@ -5,7 +5,7 @@ from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
 from Menus.Help import main as menuHelp
 
-class Menus():
+class BuildMenus():
     """
     Programming interfaces for the Weasel menus. 
     """

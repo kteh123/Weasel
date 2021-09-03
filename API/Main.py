@@ -1,6 +1,6 @@
 from API.StaticMethods import StaticMethods
 from API.Display import Display
-from API.Menus import Menus
+from API.BuildMenus import BuildMenus
 from API.Messaging import Messaging
 from API.ReadWrite import ReadWrite
 from API.State import State
@@ -9,7 +9,7 @@ from API.UserInterfaceTools import UserInterfaceTools
 class WeaselProgrammingInterface( 
     StaticMethods, # Temporary - these need to move to the library
     Display, 
-    Menus, 
+    BuildMenus, 
     Messaging, 
     ReadWrite,
     State,
