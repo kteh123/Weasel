@@ -122,6 +122,12 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpImageDataWidgets()
 
+            self.setUpROIButtons()
+
+            self.graphicsView.dictROIs = ROIs(NumImages=len(imageList))
+
+            self.setUpLevelsSpinBoxes()
+
 
     def setUpMainLayout(self):
         try:
@@ -164,20 +170,40 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbROIs.currentIndexChanged.connect(
-            lambda: self.reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,                          
-                                   roiMeanTxt, roiStdDevTxt, self, buttonList, 
-                                   btnDraw, btnErase, 
-                                  zoomSlider, zoomLabel, imageSlider))
-        
-        self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(cmbROIs, graphicsView, text))
+        self.cmbROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
+
+
+    def roiNameChanged( newText):
+        try:
+            logger.info("ImageViewerROI.roiNameChanged called")
+            currentIndex = self.cmbROIs.currentIndex()
+            #Prevent spaces in new ROI name
+            if ' ' in newText:
+                newText = newText.replace(" ", "")
+                self.cmbROIs.setItemText(currentIndex, newText)
+                self.cmbROIs.setCurrentText(newText)
+            index = self.cmbROIs.findText(newText);
+            if index == -1:
+                self.cmbROIs.setItemText(currentIndex, newText);
+                nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
+                #dictROIs.printContentsDictMasks()
+                if nameChangedOK == False:
+                    msgBox = QMessageBox()
+                    msgBox.setWindowTitle("ROI Name Change")
+                    msgBox.setText("This name is already in use")
+                    msgBox.exec()
+                    cmbROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+        except Exception as e:
+                print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
+                logger.error('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
 
 
     def saveROI(self):
         try:
             # Save Current ROI
             regionName = self.cmbROIs.currentText()
-            logger.info("DisplayImageDrawROI.saveROI called")
+            logger.info("ImageViewerROI.saveROI called")
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
             suffix = str("_ROI_"+ regionName)
@@ -209,13 +235,13 @@ class ImageViewerROI(QMdiSubWindow):
             treeView.refreshDICOMStudiesTreeView(self.weasel, newSeriesName=treeSeriesID)
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
-                print('Error in DisplayImageDrawROI.saveROI: ' + str(e))
-                logger.error('Error in DisplayImageDrawROI.saveROI: ' + str(e)) 
+                print('Error in ImageViewerROI.saveROI: ' + str(e))
+                logger.error('Error in ImageViewerROI.saveROI: ' + str(e)) 
 
 
     def loadROI(self):
         try:
-            logger.info("DisplayImageDrawROI.loadROI called")
+            logger.info("ImageViewerROI.loadROI called")
             # The following workflow is assumed:
             #   1. The user first loads a series of DICOM images
             #   2. Then the user loads the series of ROIs that are superimposed upon the images
@@ -313,12 +339,12 @@ class ImageViewerROI(QMdiSubWindow):
                 #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
         except Exception as e:
-                print('Error in DisplayImageDrawROI.loadROI: ' + str(e))
-                logger.error('Error in DisplayImageDrawROI.loadROI: ' + str(e)) 
+                print('Error in ImageViewerROI.loadROI: ' + str(e))
+                logger.error('Error in ImageViewerROI.loadROI: ' + str(e)) 
 
 
     def eraseROI(self, checked):
-        logger.info("DisplayImageDrawROI.eraseROI called.")
+        logger.info("ImageViewerROI.eraseROI called.")
         if checked:
             self.setButtonsToDefaultStyle(self.buttonList)
             self.graphicsView.eraseROI()
@@ -334,7 +360,7 @@ class ImageViewerROI(QMdiSubWindow):
     def setButtonsToDefaultStyle(self):
         logger.info("DisplayImageDrawRIO.setButtonsToDefaultStyle called")
         try:
-            logger.info("DisplayImageDrawROI.setButtonsToDefaultStyle called.")
+            logger.info("ImageViewerROI.setButtonsToDefaultStyle called.")
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             if len(self.buttonList) > 0:
                 for button in self.buttonList:
@@ -342,12 +368,12 @@ class ImageViewerROI(QMdiSubWindow):
                      "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
                      )
         except Exception as e:
-                print('Error in DisplayImageDrawROI.setButtonsToDefaultStyle: ' + str(e))
-                logger.error('Error in DisplayImageDrawROI.setButtonsToDefaultStyle: ' + str(e))  
+                print('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))
+                logger.error('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))  
 
     
     def drawROI(self, checked):
-        logger.info("DisplayImageDrawROI.drawROI called.")
+        logger.info("ImageViewerROI.drawROI called.")
         if checked:
             self.setButtonsToDefaultStyle()
             self.graphicsView.drawROI()
@@ -361,7 +387,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def zoomImage(self, checked):
-        logger.info("DisplayImageDrawROI.zoomImage called.")
+        logger.info("ImageViewerROI.zoomImage called.")
         if checked:
             self.setButtonsToDefaultStyle()
             self.graphicsView.setZoomEnabled(True)
@@ -376,41 +402,15 @@ class ImageViewerROI(QMdiSubWindow):
              )
 
     
-    def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,  
-                                roiMeanTxt, roiStdDevTxt, self, buttonList, 
-                              btnDraw, btnErase, zoomSlider, zoomLabel,
-                              imageSlider=None ):
-        try:
-            logger.info("DisplayImageDrawROI.reloadImageInNewImageItem called")
-            self.graphicsView.dictROIs.setPreviousRegionName(cmbROIs.currentText())
-
-            #if imageSlider:  to do
-         #       imageNumber = imageSlider.value()
-          #  else:
-            imageNumber = 1
-
-            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
-            self.graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
-            self.displayROIMeanAndStd()  
-            self.setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
-                                    roiMeanTxt, roiStdDevTxt, 
-                                    btnDraw, btnErase, 
-                                    cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
-        except Exception as e:
-               print('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
-               logger.error('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
-
-
     def getRoiMeanAndStd(self, mask, pixelArray):
-        logger.info("DisplayImageDrawROI.getRoiMeanAndStd called")
+        logger.info("ImageViewerROI.getRoiMeanAndStd called")
         mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 6)
         std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 6)
         return mean, std
 
 
     def displayROIMeanAndStd(self):
-        logger.info("DisplayImageDrawROI.displayROIMeanAndStd called")
+        logger.info("ImageViewerROI.displayROIMeanAndStd called")
         #if imageSlider:
         #    imageNumber = imageSlider.value()
         #else:
@@ -428,7 +428,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpImageEventHandlers(self):
-        logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
+        logger.info("ImageViewerROI.setUpImageEventHandlers called.")
         try:
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
             lambda mouseOverImage:displayImageDataUnderMouse(mouseOverImage))
@@ -443,32 +443,70 @@ class ImageViewerROI(QMdiSubWindow):
 
             graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
 
-            graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, 
-                                                pixelValueTxt,  
-                                                roiMeanTxt, roiStdDevTxt, self, buttonList, 
-                                                btnDraw, btnErase, zoomSlider, 
-                                        zoomLabel, imageSlider ))
+            graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
-            graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
-                        pixelValueTxt,  
-                    roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase,  
-                        zoomSlider, zoomLabel, imageSlider))
+            graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
-            graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed, btnDraw, btnErase))
+            graphicsView.sigSetDrawButtonRed.connect(lambda setRed:setDrawButtonColour(setRed))
 
-            graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed, btnDraw, btnErase))
+            graphicsView.sigSetEraseButtonRed.connect(lambda setRed:setEraseButtonColour(setRed))
 
             graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
-            graphicsView.sigROIChanged.connect(lambda:updateROIName(graphicsView, cmbROIs))
-            graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName, cmbROIs))
-            graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(zoomSlider, zoomLabel, increment))
+            graphicsView.sigROIChanged.connect(self.updateROIName)
+            graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName))
+            graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(increment))
         except Exception as e:
-                print('Error in DisplayImageDrawROI.setUpImageEventHandlers: ' + str(e))
-                logger.error('Error in DisplayImageDrawROI.setUpImageEventHandlers: ' + str(e)) 
+                print('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e))
+                logger.error('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
 
-    
+
+    def updateZoomSlider(self, increment):
+        """This function updates the position of the slider on the image
+        zoom slider and calculates the % zoom for display in the label zoomLabel.
+        Although, the zoom slider widget is not displayed on the screen,
+        this function is a convenient way to keep track of the current image
+        zoom value"""
+        try:
+            logger.info("DisplayImageDrawRIO.updateZoomSlider called")
+            self.zoomSlider.blockSignals(True)
+            if increment == 0:
+                self.zoomSlider.setValue(0)
+                self.zoomLabel.setText("<H4>100%</H4>")
+            else:
+                newValue = self.zoomSlider.value() + increment
+                newZoomValue = 100 + (newValue * 25)
+                self.zoomLabel.setText("<H4>" + str(newZoomValue) + "%</H4>")
+                if self.zoomSlider.value() < self.zoomSlider.maximum() and increment > 0:
+                    self.zoomSlider.setValue(newValue)
+                elif self.zoomSlider.value() > self.zoomSlider.minimum() and increment < 0:
+                    self.zoomSlider.setValue(newValue)
+            self.zoomSlider.blockSignals(False)
+        except Exception as e:
+                print('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
+                logger.error('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
+
+
+    def addNewROItoDropDownList(newRegio):
+        logger.info("ImageViewerROI.addNewROItoDropDownList called.")
+        noDuplicate = True
+        for count in range(self.cmbROIs.count()):
+             if self.cmbROIs.itemText(count) == newRegion:
+                 noDuplicate = False
+                 break
+        if noDuplicate:
+            self.cmbROIs.blockSignals(True)
+            self.cmbROIs.addItem(newRegion)
+            self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
+            self.cmbROIs.blockSignals(False)
+
+
+    def updateROIName(self):
+        .info("ImageViewerROI.updateROIName called.")
+        self.graphicsView.currentROIName = self.cmbROIs.currentText()
+
+
     def displayImageDataUnderMouse(mouseOverImage):
-        logger.info("DisplayImageDrawROI.displayImageDataUnderMouse called")
+        logger.info("ImageViewerROI.displayImageDataUnderMouse called")
         #print("mousePointerOverImage={}".format(mousePointerOverImage))
         if mouseOverImage:
             xCoord = self.graphicsView.graphicsItem.xMouseCoord
@@ -486,7 +524,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def storeMaskData(self):
-        logger.info("DisplayImageDrawROI.storeMaskData called")
+        logger.info("ImageViewerROI.storeMaskData called")
         regionName = self.cmbROIs.currentText()
         #if imageSlider:
         #    imageNumber = imageSlider.value()
@@ -497,7 +535,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def replaceMask(self):
-        logger.info("DisplayImageDrawROI.replaceMask called")
+        logger.info("ImageViewerROI.replaceMask called")
         regionName = self.cmbROIs.currentText()
         #if imageSlider:
         #    imageNumber = imageSlider.value()
@@ -509,7 +547,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpROIButtons(self):
         try:
-            logger.info("DisplayImageDrawROI.setUpPixelDataWidget called.")
+            logger.info("ImageViewerROI.setUpPixelDataWidget called.")
             self.buttonList = []
             self.setUpROIDropDownList()
 
@@ -564,30 +602,52 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addStretch(20)
             
         except Exception as e:
-               print('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e))
-               logger.error('Error in DisplayImageDrawROI.setUpROIButtons: ' + str(e)) 
+               print('Error in ImageViewerROI.setUpROIButtons: ' + str(e))
+               logger.error('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
 
             
+    def reloadImageInNewImageItem(self):
+        try:
+            logger.info("ImageViewerROI.reloadImageInNewImageItem called")
+            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
 
+            #if imageSlider:
+            #    imageNumber = imageSlider.value()
+            #else:
+            imageNumber = 1
 
+            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
+            self.displayROIMeanAndStd()  
+            self.setUpImageEventHandlers()
+        except Exception as e:
+               print('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
+               logger.error('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
+    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def deleteROITidyUp(self):
+        logger.info("ImageViewerROI.deleteROITidyUp called")
+    
+        self.reloadImageInNewImageItem() 
+        self.displayROIMeanAndStd()
+        if self.cmbROIs.currentIndex() == 0 and self.cmbROIs.count() == 1: 
+            self.cmbROIs.clear()
+            self.cmbROIs.addItem("region1")
+            self..setCurrentIndex(0) 
+            self.roiMeanTxt.clear()
+            self.roiStdDevTxt.clear()
+            self.pixelValueTxt.clear()
+        else:
+            #if imageSlider:
+            #    imageNumber = imageSlider.value()
+            #else:
+            imageNumber = 1
+            self.cmbROIs.blockSignals(True)
+            self.cmbROIs.removeItem(cmbROIs.currentIndex())
+            self.cmbROIs.blockSignals(False)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.graphicsView.graphicsItem.reloadMask(mask)
 
 
     def setUpImageLevelsLayout(self):
@@ -674,7 +734,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.imageDataLayout.addWidget(zoomLabel, Qt.AlignLeft)
             self.imageDataLayout.addWidget(zoomValueLabel, Qt.AlignLeft)
             self.imageDataLayout.addStretch(10)
-    
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
                 logger.error('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
@@ -747,3 +806,58 @@ class ImageViewerROI(QMdiSubWindow):
         except Exception as e:
                 print('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))
                 logger.error('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))  
+
+
+    def setEraseButtonColour(setRed):
+        logger.info("DisplayImageDrawRIO.setEraseButtonColour called")
+        if setRed:
+               self.btnErase.setStyleSheet("background-color: red")
+               self.btnDraw.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+        else:
+               self.btnErase.setStyleSheet(
+                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+
+
+    def setDrawButtonColour(setRed):
+        logger.info("DisplayImageDrawRIO.setDrawButtonColour called")
+        if setRed:
+               self.btnDraw.setStyleSheet("background-color: red")
+               self.btnErase.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+        else:
+               self.btnDraw.setStyleSheet(
+                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+
+
+    def setUpLevelsSpinBoxes(self):
+        try:
+            spinBoxObject = imageLevelsSpinBoxes()
+            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
+            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+            self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
+            self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
+        except Exception as e:
+            print('Error in ImageViewer.setUpLevelsSpinBoxes: ' + str(e))
+            logger.error('Error in ImageViewer.setUpLevelsSpinBoxes: ' + str(e))
+
+
+    def updateImageLevels(self):
+        logger.info("ImageViewerROI.updateImageLevels called.")
+        try:
+            intensity = self.spinBoxIntensity.value()
+            contrast = self.spinBoxContrast.value()
+            #if imageSlider:
+            #    imageNumber = imageSlider.value()
+            #else:
+            imageNumber = 1
+            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
+        except Exception as e:
+                print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
+                logger.error('Error in ImageViewerROI.updateImageLevels: ' + str(e))
+
