@@ -1,17 +1,27 @@
-from Menus.File import main as menu_file
-from Menus.View import main as menu_view
-from Menus.Edit import main as menu_edit
+""" 
+Template menu illustrating the different approaches 
+to building menus through the Weasel Programming Interface
+"""
+
+# Insert a menu from a local menu library Menus
+# In external applications, do not import from WEASEL/Menus
+# as this can evolve. Only import your own menus library.
 from Menus.Tutorial import main as menu_tutorial
-from Menus.Help import main as menu_help
 
 def main(weasel):
    
-    menu_file(weasel)
-    menu_view(weasel)
-    menu_edit(weasel)
+    # Include the default Weasel menus File, View, Edit
+    weasel.menu_file()
+    weasel.menu_view()
+    weasel.menu_edit()
+
+    # Include a user-defined menu imported from a local Library
     menu_tutorial(weasel)
     
+    # Create a new menu with Favourite Pipelines
     menu = weasel.menu("Favourites")
+
+    # List the pipelines that should go under Favourites
     menu.item(
         label = 'Hello World!',
         pipeline = 'Tutorial__HelloWorld')
@@ -19,7 +29,11 @@ def main(weasel):
         label = 'DICOM header',
         tooltip = 'View DICOM Image or series header',
         pipeline = 'View__DICOMheader')
+
+    # Draw a line in the menu to separate different parts
     menu.separator()
+
+    # Continue adding pipelines
     menu.item(
         label = 'Gaussian filter (copy)',
         tooltip = 'Filter images with user-defined settings',
@@ -34,8 +48,10 @@ def main(weasel):
         tooltip = "Save the current selections of images",
         pipeline = 'File__SaveTreeView')
 
-    menu_help(weasel)
+    # Insert the default Help menu
+    weasel.menu_help()
 
+    # Create another user defined menu WIP
     menu = weasel.menu("WIP")
     menu.item(
         label = 'Merge Series by Acquisition Time',

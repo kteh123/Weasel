@@ -1,6 +1,5 @@
 import CoreModules.WEASEL.TreeView as treeView
 import Displays.MeanROITimeCurveViewer as curveViewer
-from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
 
 from PyQt5.QtGui import (QIcon)
 from PyQt5.QtWidgets import QMdiSubWindow
@@ -50,12 +49,6 @@ class Display():
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
-
-    def menu(self, label = "Menu"):
-        """
-        Interface for Python menu builder
-        """
-        return menuBuilder(self, label)
 
     def addSubWindow(self, subWindow):
         """
