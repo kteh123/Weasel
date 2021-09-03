@@ -107,11 +107,13 @@ class ImageViewer(QMdiSubWindow):
                 self.userSelection= UserSelection(self.imagePathList)
                 
                 # Global variables for the Multisliders
-                self.listSortedImageSliders = []
-                self.dynamicListImageType = []
-                self.shapeList = []
-                self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
-                self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
+                #commented out the following because they are
+                #initiated in class ImageSliders.py
+                #self.listSortedImageSliders = []
+                #self.dynamicListImageType = []
+                #self.shapeList = []
+                #self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at multipleImageSliderMoved(self)
+                #self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
         
             self.setUpMainLayout()
 
