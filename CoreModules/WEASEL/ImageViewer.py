@@ -960,6 +960,9 @@ class ImageViewer(QMdiSubWindow):
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))
                 centre = dataset.WindowCenter # * slope + intercept
                 width = dataset.WindowWidth # * slope
+                if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
+                    centre = centre / dataset[(0x2005, 0x100E)].value
+                    width = width / dataset[(0x2005, 0x100E)].value
                 maximumValue = centre + width/2
                 minimumValue = centre - width/2
             elif dataset and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
@@ -968,6 +971,9 @@ class ImageViewer(QMdiSubWindow):
                 intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
                 centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
                 width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
+                if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
+                    centre = centre / dataset[(0x2005, 0x100E)].value
+                    width = width / dataset[(0x2005, 0x100E)].value
                 maximumValue = centre + width/2
                 minimumValue = centre - width/2 
             else:
