@@ -28,7 +28,6 @@ from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
@@ -62,28 +61,28 @@ class Slider(QSlider):
         return self._direction
 
 
-def displayManySingleImageSubWindows(self):
-    if len(self.checkedImageList)>0: 
-        for image in self.checkedImageList:
+def displayManySingleImageSubWindows(weasel):
+    if len(weasel.treeView.checkedImageList)>0: 
+        for image in weasel.treeView.checkedImageList:
             subjectID = image[0]
             studyName = image[1]
             seriesName = image[2]
             imagePath = image[3]
-            displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath)
+            displayImageROISubWindow(weasel, subjectID, studyName, seriesName, imagePath)
 
 
-def displayManyMultiImageSubWindows(self):
-    if len(self.checkedSeriesList)>0: 
-        for series in self.checkedSeriesList:
+def displayManyMultiImageSubWindows(weasel):
+    if len(weasel.treeView.checkedSeriesList)>0: 
+        for series in weasel.treeView.checkedSeriesList:
             subjectName = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
+            imageList = weasel.treeView.returnSeriesImageList(subjectName, studyName, seriesName)
+            displayMultiImageROISubWindow(weasel, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
+def displayImageROISubWindow(weasel, subjectID, studyName, seriesName, imagePath):
     """
     Creates a subwindow that displays one DICOM image and allows an ROI 
     to be drawn on it 
@@ -93,7 +92,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
         
         (graphicsView, roiToolsLayout, imageLevelsLayout, 
         graphicsViewLayout, sliderLayout, 
-        imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self)
+        imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(weasel)
         imageName = os.path.basename(imagePath)
         windowTitle = subjectID + "-" + studyName + "-" + seriesName + "-" + imageName
         subWindow.setWindowTitle(windowTitle)
@@ -105,7 +104,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
                                                         graphicsView, 
                                                         zoomValueLabel)
         
-        cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, 
+        cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(weasel, 
                               roiToolsLayout, pixelValueTxt, roiMeanTxt, roiStdDevTxt, graphicsView, 
                              zoomSlider, zoomValueLabel, subjectID, studyName)
         
@@ -121,7 +120,7 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
 
         setInitialImageLevelValues(graphicsView, spinBoxIntensity, spinBoxContrast)
             
-        setUpImageEventHandlers(self, graphicsView, pixelValueTxt,         
+        setUpImageEventHandlers(weasel, graphicsView, pixelValueTxt,         
                                     roiMeanTxt, roiStdDevTxt, 
                                         btnDraw, btnErase,
                                          cmbROIs, buttonList,
@@ -139,18 +138,18 @@ def displayImageROISubWindow(self, subjectID, studyName, seriesName, imagePath):
         logger.error('Error in DisplayImageDrawROI.displayImageROISubWindow: ' + str(e))  
 
 
-def displayManyMultiImageSubWindows(self):
-    if len(self.checkedSeriesList)>0: 
-        for series in self.checkedSeriesList:
+def displayManyMultiImageSubWindows(weasel):
+    if len(weasel.treeView.checkedSeriesList)>0: 
+        for series in weasel.treeView.checkedSeriesList:
             subjectName = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = treeView.returnSeriesImageList(self, subjectName, studyName, seriesName)
-            displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
+            imageList = weasel.treeView.returnSeriesImageList(subjectName, studyName, seriesName)
+            displayMultiImageROISubWindow(weasel, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayMultiImageROISubWindow(self, imageList, subjectName, studyName, 
+def displayMultiImageROISubWindow(weasel, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1 ):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
@@ -161,7 +160,7 @@ def displayMultiImageROISubWindow(self, imageList, subjectName, studyName,
             logger.info("DisplayImageDrawROI.displayMultiImageROISubWindow called")
             (graphicsView, roiToolsLayout, imageLevelsLayout, 
             graphicsViewLayout, sliderLayout, 
-            imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
+            imageDataLayout, lblImageMissing, subWindow) = setUpSubWindow(weasel, imageSeries=True)
             #subWindow.setStyleSheet("background-color:#737373;")
             imageSlider, imageNumberLabel = setUpImageSlider(sliderLayout, sliderPosition, imageList, subWindow)
            
@@ -171,7 +170,7 @@ def displayMultiImageROISubWindow(self, imageList, subjectName, studyName,
                                                                graphicsView, 
                                                         zoomValueLabel)
         
-            cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(self, 
+            cmbROIs, buttonList, btnDraw, btnErase = setUpROIButtons(weasel, 
                               roiToolsLayout, pixelValueTxt, roiMeanTxt, roiStdDevTxt, 
                              graphicsView, zoomSlider, zoomValueLabel, subjectName, studyName)
         
@@ -181,7 +180,7 @@ def displayMultiImageROISubWindow(self, imageList, subjectName, studyName,
             graphicsView.dictROIs = ROIs(NumImages=len(imageList))
             
             imageSlider.valueChanged.connect(
-                  lambda: imageROISliderMoved(self, subjectName, studyName, seriesName, 
+                  lambda: imageROISliderMoved(weasel, subjectName, studyName, seriesName, 
                                                    imageList, 
                                                    imageSlider,
                                                    lblImageMissing, pixelValueTxt, 
@@ -192,7 +191,7 @@ def displayMultiImageROISubWindow(self, imageList, subjectName, studyName,
                                                    graphicsView, subWindow, buttonList, zoomSlider,
                                                    zoomValueLabel, imageNumberLabel))
           
-            imageROISliderMoved(self, subjectName, studyName, seriesName, 
+            imageROISliderMoved(weasel, subjectName, studyName, seriesName, 
                                     imageList, 
                                     imageSlider,
                                     lblImageMissing, 
@@ -215,14 +214,14 @@ def displayMultiImageROISubWindow(self, imageList, subjectName, studyName,
             logger.error('Error in displayMultiImageROISubWindow: ' + str(e))
 
 
-def setUpSubWindow(self, imageSeries=False):
+def setUpSubWindow(weasel, imageSeries=False):
     """
     This function creates a subwindow with a vertical mainVerticalLayout &
     a missing image label.
 
     Input Parameters
     ****************
-    self - an object reference to the WEASEL interface.
+    weasel - an object reference to the WEASEL interface.
 
     Output Parameters
     *****************
@@ -233,7 +232,7 @@ def setUpSubWindow(self, imageSeries=False):
     """
     try:
         logger.info("DisplayImageDrawRIO.setUpSubWindow called")
-        subWindow = QMdiSubWindow(self)
+        subWindow = QMdiSubWindow(weasel)
         subWindow.setObjectName = 'image_viewer'
         subWindow.setWindowFlags(Qt.CustomizeWindowHint | 
                                       Qt.WindowCloseButtonHint | 
@@ -241,9 +240,9 @@ def setUpSubWindow(self, imageSeries=False):
                                       Qt.WindowMaximizeButtonHint)
         
         
-        height, width = self.getMDIAreaDimensions()
+        height, width = weasel.getMDIAreaDimensions()
         subWindow.setGeometry(0, 0, width, height)
-        self.mdiArea.addSubWindow(subWindow)
+        weasel.mdiArea.addSubWindow(subWindow)
         
         mainVerticalLayout = QVBoxLayout()
         widget = QWidget()
@@ -295,7 +294,7 @@ def setUpSubWindow(self, imageSeries=False):
             logger.error('Error in DisplayImageDrawRIO.setUpSubWindow: ' + str(e))
 
 
-def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
+def setUpROIButtons(weasel, roiToolsLayout, pixelValueTxt,
          roiMeanTxt, roiStdDevTxt, graphicsView, 
          zoomSlider, zoomLabel, subjectID, studyID, imageSlider=None):
     try:
@@ -325,12 +324,12 @@ def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
 
         btnSaveROI = QPushButton()
         btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-        btnSaveROI.clicked.connect(lambda: saveROI(self, cmbROIs.currentText(), graphicsView))
+        btnSaveROI.clicked.connect(lambda: saveROI(weasel, cmbROIs.currentText(), graphicsView))
         btnSaveROI.setIcon(QIcon(QPixmap(icons.SAVE_ICON)))
 
         btnLoad = QPushButton()
         btnLoad.setToolTip('Loads existing ROIs')
-        btnLoad.clicked.connect(lambda: loadROI(self, cmbROIs, 
+        btnLoad.clicked.connect(lambda: loadROI(weasel, cmbROIs, 
                                             graphicsView, subjectID, studyID))
         btnLoad.setIcon(QIcon(QPixmap(icons.LOAD_ICON)))
 
@@ -363,7 +362,7 @@ def setUpROIButtons(self, roiToolsLayout, pixelValueTxt,
 
         cmbROIs.currentIndexChanged.connect(
             lambda: reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,                          
-                                   roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                   roiMeanTxt, roiStdDevTxt, weasel, buttonList, 
                                    btnDraw, btnErase, 
                                   zoomSlider, zoomLabel, imageSlider))
 
@@ -600,7 +599,7 @@ def eraseROI(btn, checked, graphicsView, buttonList):
          )
 
 
-def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,  
+def setUpImageEventHandlers(weasel, graphicsView, pixelValueTxt,  
                             roiMeanTxt, roiStdDevTxt, btnDraw, btnErase,
                             cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider=None):
     logger.info("DisplayImageDrawROI.setUpImageEventHandlers called.")
@@ -613,7 +612,7 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
             lambda:storeMaskData(graphicsView, cmbROIs.currentText(), imageSlider))
 
         graphicsView.graphicsItem.sigMaskCreated.connect(
-            lambda: displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider))
+            lambda: displayROIMeanAndStd(weasel, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider))
 
         graphicsView.graphicsItem.sigMaskEdited.connect(
             lambda:replaceMask(graphicsView, cmbROIs.currentText(), imageSlider))
@@ -625,11 +624,11 @@ def setUpImageEventHandlers(self, graphicsView, pixelValueTxt,
 
         graphicsView.sigReloadImage.connect(lambda:reloadImageInNewImageItem(cmbROIs, graphicsView, 
                                             pixelValueTxt,  
-                                            roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                            roiMeanTxt, roiStdDevTxt, weasel, buttonList, 
                                             btnDraw, btnErase, zoomSlider, 
                                     zoomLabel, imageSlider ))
 
-        graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(self, cmbROIs, graphicsView, 
+        graphicsView.sigROIDeleted.connect(lambda:deleteROITidyUp(weasel, cmbROIs, graphicsView, 
                     pixelValueTxt,  
                 roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase,  
                     zoomSlider, zoomLabel, imageSlider))
@@ -678,13 +677,13 @@ def getRoiMeanAndStd(mask, pixelArray):
     return mean, std
 
 
-def displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider=None):
+def displayROIMeanAndStd(weasel, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider=None):
         logger.info("DisplayImageDrawROI.displayROIMeanAndStd called")
         if imageSlider:
             imageNumber = imageSlider.value()
         else:
             imageNumber = 1
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        pixelArray = ReadDICOM_Image.returnPixelArray(weasel.selectedImagePath)
         regionName = cmbROIs.currentText()
         mask = graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
@@ -716,7 +715,7 @@ def replaceMask(graphicsView, regionName, imageSlider=None):
         graphicsView.dictROIs.replaceMask(regionName, mask, imageNumber)
         
 
-def imageROISliderMoved(self, subjectName, studyName, seriesName, 
+def imageROISliderMoved(weasel, subjectName, studyName, seriesName, 
                         imageList, imageSlider,
                         lblImageMissing, pixelValueTxt,  
                         roiMeanTxt, roiStdDevTxt,
@@ -736,16 +735,16 @@ def imageROISliderMoved(self, subjectName, studyName, seriesName,
                 maxNumberImages = str(len(imageList))
                 imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
                 imageNumberLabel.setText(imageNumberString)
-                self.selectedImagePath = imageList[currentImageNumber]
-                #print("imageSliderMoved before={}".format(self.selectedImagePath))
-                pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+                weasel.selectedImagePath = imageList[currentImageNumber]
+                #print("imageSliderMoved before={}".format(weasel.selectedImagePath))
+                pixelArray = ReadDICOM_Image.returnPixelArray(weasel.selectedImagePath)
                 setButtonsToDefaultStyle(buttonList)
                 if pixelArray is None:
                     lblImageMissing.show()
                     graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
                 else:
                     reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt, 
-                            roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                            roiMeanTxt, roiStdDevTxt, weasel, buttonList, 
                             btnDraw, btnErase, zoomSlider, 
                               zoomLabel, imageSlider) 
 
@@ -757,7 +756,7 @@ def imageROISliderMoved(self, subjectName, studyName, seriesName,
                     spinBoxIntensity.setSingleStep(spinBoxStep)
                     spinBoxContrast.setSingleStep(spinBoxStep)
 
-                    setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+                    setUpImageEventHandlers(weasel, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt,
                                 btnDraw, btnErase,
                                 cmbROIs, buttonList,
@@ -765,15 +764,15 @@ def imageROISliderMoved(self, subjectName, studyName, seriesName,
                                 imageSlider)
 
                 subWindow.setWindowTitle(subjectName + '-' + studyName + '-' + seriesName + '-' 
-                         + os.path.basename(self.selectedImagePath))
-               # print("imageSliderMoved after={}".format(self.selectedImagePath))
+                         + os.path.basename(weasel.selectedImagePath))
+               # print("imageSliderMoved after={}".format(weasel.selectedImagePath))
         except Exception as e:
             print('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
 
 
 def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,  
-                                roiMeanTxt, roiStdDevTxt, self, buttonList, 
+                                roiMeanTxt, roiStdDevTxt, weasel, buttonList, 
                               btnDraw, btnErase, zoomSlider, zoomLabel,
                               imageSlider=None ):
     try:
@@ -785,11 +784,11 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
         else:
             imageNumber = 1
 
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        pixelArray = ReadDICOM_Image.returnPixelArray(weasel.selectedImagePath)
         mask = graphicsView.dictROIs.getMask(cmbROIs.currentText(), imageNumber)
-        graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
-        displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)  
-        setUpImageEventHandlers(self, graphicsView, pixelValueTxt, 
+        graphicsView.setImage(pixelArray, mask, weasel.selectedImagePath)
+        displayROIMeanAndStd(weasel, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)  
+        setUpImageEventHandlers(weasel, graphicsView, pixelValueTxt, 
                                 roiMeanTxt, roiStdDevTxt, 
                                 btnDraw, btnErase, 
                                 cmbROIs, buttonList, zoomSlider, zoomLabel, imageSlider)
@@ -798,7 +797,7 @@ def reloadImageInNewImageItem(cmbROIs, graphicsView, pixelValueTxt,
            logger.error('Error in DisplayImageDrawROI.reloadImageInNewImageItem: ' + str(e))
     
 
-def deleteROITidyUp(self, cmbROIs, graphicsView, 
+def deleteROITidyUp(weasel, cmbROIs, graphicsView, 
               pixelValueTxt,  
               roiMeanTxt, roiStdDevTxt, buttonList, btnDraw, btnErase, zoomSlider,
               zoomLabel, imageSlider=None):
@@ -808,9 +807,9 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
                               pixelValueTxt, 
                                
                               roiMeanTxt, roiStdDevTxt, 
-                              self, buttonList, btnDraw, btnErase, zoomSlider,
+                              weasel, buttonList, btnDraw, btnErase, zoomSlider,
                              zoomLabel, imageSlider) 
-    displayROIMeanAndStd(self, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)
+    displayROIMeanAndStd(weasel, roiMeanTxt, roiStdDevTxt, graphicsView, cmbROIs, imageSlider)
     if cmbROIs.currentIndex() == 0 and cmbROIs.count() == 1: 
         cmbROIs.clear()
         cmbROIs.addItem("region1")
@@ -830,7 +829,7 @@ def deleteROITidyUp(self, cmbROIs, graphicsView,
         graphicsView.graphicsItem.reloadMask(mask)
  
         
-def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
+def loadROI(weasel, cmbROIs, graphicsView, subjectID, studyID):
     try:
         logger.info("DisplayImageDrawROI.loadROI called")
         # The following workflow is assumed:
@@ -840,20 +839,20 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
         # Prompt Windows to select Series
         paramDict = {"Series":"listview"}
         helpMsg = "Select a Series with ROI"
-        #studyID = self.selectedStudy
-        study = self.objXMLReader.getStudy(subjectID, studyID)
+        #studyID = weasel.selectedStudy
+        study = weasel.objXMLReader.getStudy(subjectID, studyID)
         listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()
         if inputDlg.closeInputDialog() == False:
             # for series ID in listParams[0]: # more than 1 ROI may be selected
             seriesID = listParams[0][0] # Temporary, only the first ROI
-            imagePathList = self.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
-            if self.isASeriesChecked:
-                targetPath = [i[3] for i in self.checkedImageList]
-                #targetPath = self.imageList
+            imagePathList = weasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
+            if weasel.treeView.isASeriesChecked:
+                targetPath = [i[3] for i in weasel.checkedImageList]
+                #targetPath = weasel.imageList
             else:
-                targetPath = [self.selectedImagePath]
+                targetPath = [weasel.selectedImagePath]
             maskInput = ReadDICOM_Image.returnSeriesPixelArray(imagePathList)
             maskInput[maskInput != 0] = 1
             maskList = [] # Output Mask
@@ -864,11 +863,11 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
                 region = "new_region_label"
             # Affine re-adjustment
             for index, dicomFile in enumerate(targetPath):
-                messageWindow.displayMessageSubWindow(self,
+                messageWindow.displayMessageSubWindow(weasel,
                 "<H4>Loading selected ROI into target image {}</H4>".format(index + 1),
                 "Load ROIs")
-                messageWindow.setMsgWindowProgBarMaxValue(self, len(targetPath))
-                messageWindow.setMsgWindowProgBarValue(self, index + 1)
+                messageWindow.setMsgWindowProgBarMaxValue(weasel, len(targetPath))
+                messageWindow.setMsgWindowProgBarValue(weasel, index + 1)
                 dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                 horizontalFlag = None
@@ -897,8 +896,8 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
                         #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                         #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
-                messageWindow.setMsgWindowProgBarValue(self, index + 2)
-            messageWindow.closeMessageSubWindow(self)
+                messageWindow.setMsgWindowProgBarValue(weasel, index + 2)
+            messageWindow.closeMessageSubWindow(weasel)
 
             # Faster approach - 3D and no dilation
             #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
@@ -933,7 +932,7 @@ def loadROI(self, cmbROIs, graphicsView, subjectID, studyID):
             logger.error('Error in DisplayImageDrawROI.loadROI: ' + str(e)) 
 
 
-def saveROI(self, regionName, graphicsView):
+def saveROI(weasel, regionName, graphicsView):
     try:
         # Save Current ROI
         logger.info("DisplayImageDrawROI.saveROI called")
@@ -941,32 +940,32 @@ def saveROI(self, regionName, graphicsView):
         maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
         suffix = str("_ROI_"+ regionName)
         if len(maskList) > 1:
-            inputPath = [i[3] for i in self.checkedImageList]
-            #inputPath = self.imageList
+            inputPath = [i[3] for i in weasel.checkedImageList]
+            #inputPath = weasel.imageList
         else:
-            inputPath = [self.selectedImagePath]
+            inputPath = [weasel.selectedImagePath]
         # Saving Progress message
-        messageWindow.displayMessageSubWindow(self,
+        messageWindow.displayMessageSubWindow(weasel,
             "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
             "Export ROIs")
-        messageWindow.setMsgWindowProgBarMaxValue(self, len(inputPath))
-        (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
-        seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
+        messageWindow.setMsgWindowProgBarMaxValue(weasel, len(inputPath))
+        (subjectID, studyID, seriesID) = weasel.objXMLReader.getImageParentIDs(inputPath[0])
+        seriesID = str(int(weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
         seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
         #outputPath = []
         #for image in inputPath:
         for index, path in enumerate(inputPath):
             #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
-            messageWindow.setMsgWindowProgBarValue(self, index)
+            messageWindow.setMsgWindowProgBarValue(weasel, index)
             outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
             SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
-            treeSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, path, outputPath, suffix)
+            treeSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(weasel, path, outputPath, suffix)
         #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
-        #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-        messageWindow.setMsgWindowProgBarValue(self, len(inputPath))
-        messageWindow.closeMessageSubWindow(self)
-        treeView.refreshDICOMStudiesTreeView(self, newSeriesName=treeSeriesID)
-        QMessageBox.information(self, "Export ROIs", "Image Saved")
+        #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(weasel, inputPath, outputPath, suffix)
+        messageWindow.setMsgWindowProgBarValue(weasel, len(inputPath))
+        messageWindow.closeMessageSubWindow(weasel)
+        weasel.treeView.refreshDICOMStudiesTreeView(newSeriesName=treeSeriesID)
+        QMessageBox.information(weasel, "Export ROIs", "Image Saved")
     except Exception as e:
             print('Error in DisplayImageDrawROI.saveROI: ' + str(e))
             logger.error('Error in DisplayImageDrawROI.saveROI: ' + str(e)) 

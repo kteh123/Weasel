@@ -1,7 +1,6 @@
 import os
 import logging
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from Displays.ViewMetaData import displayMetaDataSubWindow
@@ -55,7 +54,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Subject of the items checked in the Treeview.
         """
         subjectList = []
-        subjectsTreeViewList = treeView.returnCheckedSubjects(self)
+        subjectsTreeViewList = self.treeView.returnCheckedSubjects()
         if subjectsTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no subjects were checked in the Treeview.",
@@ -71,7 +70,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Study of the items checked in the Treeview.
         """
         studyList = []
-        studiesTreeViewList = treeView.returnCheckedStudies(self)
+        studiesTreeViewList = self.treeView.returnCheckedStudies()
         if studiesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were checked in the Treeview.",
@@ -88,7 +87,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Series of the items checked in the Treeview.
         """
         seriesList = []
-        seriesTreeViewList = treeView.returnCheckedSeries(self)
+        seriesTreeViewList = self.treeView.returnCheckedSeries()
         if seriesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
@@ -105,7 +104,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Image of the items checked in the Treeview.
         """
         imagesList = []
-        imagesTreeViewList = treeView.returnCheckedImages(self)
+        imagesTreeViewList = self.treeView.returnCheckedImages()
         if imagesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were checked in the Treeview.",
@@ -229,9 +228,9 @@ class UserInterfaceTools():
         logger.info("UserInterfaceTools.refreshWeasel called")
         try:
             if new_series_name:
-                treeView.refreshDICOMStudiesTreeView(self, newSeriesName=new_series_name)
+                self.treeView.refreshDICOMStudiesTreeView(newSeriesName=new_series_name)
             else:
-                treeView.refreshDICOMStudiesTreeView(self)
+                self.treeView.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in function UserInterfaceTools.refreshWeasel: ' + str(e))
             logger.exception('Error in UserInterfaceTools.refreshWeasel: ' + str(e))

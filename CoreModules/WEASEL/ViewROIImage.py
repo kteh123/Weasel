@@ -1,5 +1,4 @@
 import CoreModules.WEASEL.DisplayImageDrawROI as displayImageROI
-import CoreModules.WEASEL.TreeView  as treeView
 from PyQt5.QtWidgets import QMessageBox
 import logging
 logger = logging.getLogger(__name__)
@@ -20,14 +19,14 @@ def main(objWeasel):
         #print('treeView.isAnImageSelected(objWeasel)={}'.format(treeView.isAnImageSelected(objWeasel)))
         #print('objWeasel.isASeriesChecked={}'.format(objWeasel.isASeriesChecked))
         
-        if treeView.isAnItemChecked(objWeasel) == False:
+        if objWeasel.treeView.isAnItemChecked() == False:
             raise NoTreeViewItemSelected
 
-        treeView.buildListsCheckedItems(objWeasel)
+        objWeasel.treeView.buildListsCheckedItems()
 
-        if objWeasel.isASeriesChecked:
+        if objWeasel.treeView.isASeriesChecked:
             displayImageROI.displayManyMultiImageSubWindows(objWeasel)
-        elif objWeasel.isAnImageChecked:
+        elif objWeasel.treeView.isAnImageChecked:
             displayImageROI.displayManySingleImageSubWindows(objWeasel)
 
     except NoTreeViewItemSelected:

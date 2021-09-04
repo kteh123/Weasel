@@ -1,5 +1,4 @@
 import CoreModules.WEASEL.DisplayImageMultiSliders  as displayImageColour
-import CoreModules.WEASEL.TreeView  as treeView
 
 from CoreModules.WEASEL.ImageViewer import ImageViewer as imageViewer
 import logging
@@ -19,22 +18,22 @@ def main(objWeasel):
         in the DICOM studies tree view."""
         try:
             logger.info("viewImage.main called")
-            if treeView.isAnItemChecked(objWeasel) == False:
+            if objWeasel.treeView.isAnItemChecked() == False:
                 raise NoTreeViewItemSelected
             
-            treeView.buildListsCheckedItems(objWeasel)
+            objWeasel.treeView.buildListsCheckedItems()
 
-            if objWeasel.isASeriesChecked:
-                if len(objWeasel.checkedSeriesList)>0: 
-                    for series in objWeasel.checkedSeriesList:
+            if objWeasel.treeView.isASeriesChecked:
+                if len(objWeasel.treeView.checkedSeriesList)>0: 
+                    for series in objWeasel.treeView.checkedSeriesList:
                         subjectID = series[0]
                         studyID = series[1]
                         seriesID = series[2]
-                        imageList = treeView.returnSeriesImageList(objWeasel, subjectID, studyID, seriesID)
+                        imageList = objWeasel.treeView.returnSeriesImageList(subjectID, studyID, seriesID)
                         imageViewer(objWeasel, subjectID, studyID, seriesID, imageList)
-            elif objWeasel.isAnImageChecked:
-                if len(objWeasel.checkedImageList)>0: 
-                    for image in objWeasel.checkedImageList:
+            elif objWeasel.treeView.isAnImageChecked:
+                if len(objWeasel.treeView.checkedImageList)>0: 
+                    for image in objWeasel.treeView.checkedImageList:
                         subjectID = image[0]
                         studyID = image[1]
                         seriesID = image[2]

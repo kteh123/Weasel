@@ -9,7 +9,6 @@ from ast import literal_eval # Convert strings to their actual content. Eg. "[a,
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
@@ -1458,7 +1457,7 @@ class Image:
     def label(self):
         logger.info("Image.label called")
         try:
-            return treeView.returnImageName(self.objWeasel, self.subjectID, self.studyID, self.seriesID, self.path)
+            return self.objWeasel.treeView.returnImageName(self.subjectID, self.studyID, self.seriesID, self.path)
         except Exception as e:
             print('Error in Image.label: ' + str(e))
             logger.exception('Error in Image.label: ' + str(e))

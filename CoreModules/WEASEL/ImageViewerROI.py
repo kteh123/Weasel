@@ -28,7 +28,6 @@ from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
@@ -232,7 +231,7 @@ class ImageViewerROI(QMdiSubWindow):
             #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
             messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
             messageWindow.closeMessageSubWindow(self.weasel)
-            treeView.refreshDICOMStudiesTreeView(self.weasel, newSeriesName=treeSeriesID)
+            self.weasel.treeView.refreshDICOMStudiesTreeView(newSeriesName=treeSeriesID)
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
                 print('Error in ImageViewerROI.saveROI: ' + str(e))

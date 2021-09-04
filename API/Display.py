@@ -1,4 +1,3 @@
-import CoreModules.WEASEL.TreeView as treeView
 import Displays.MeanROITimeCurveViewer as curveViewer
 
 from PyQt5.QtGui import (QIcon)
@@ -25,13 +24,13 @@ class Display():
         """
         Resets the Weasel treeview.
         """
-        treeView.callUnCheckTreeViewItems(self)
+        self.treeView.callUnCheckTreeViewItems()
 
     def save_treeview(self):
         """
         Saves the treeview selections.
         """
-        treeView.refreshDICOMStudiesTreeView(self)
+        self.treeView.refreshDICOMStudiesTreeView()
 
     def close_subwindows(self):
         """
@@ -49,6 +48,12 @@ class Display():
 
     def plot(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title="Time/Curve Plot"):
         curveViewer.displayTimeCurve(self, signalName, maskName, x, y, x_axis_label, y_axis_label, title=title)
+
+    def getMDIAreaDimensions(self):
+        """
+        Dimensions of the weasel canvas
+        """
+        return self.mdiArea.height(), self.mdiArea.width() 
 
     def addSubWindow(self, subWindow):
         """

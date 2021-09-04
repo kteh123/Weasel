@@ -1,7 +1,7 @@
 import os
 from PyQt5.QtWidgets import QFileDialog
-import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
+from CoreModules.WEASEL.TreeView import TreeView
 from Displays.UserInput import userInput 
 from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
 
@@ -25,8 +25,8 @@ class ReadWrite():
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        treeView.buildListsCheckedItems(self)
-        if self.checkedImageList == []:
+        self.treeView.buildListsCheckedItems()
+        if self.treeView.checkedImageList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -34,7 +34,7 @@ class ReadWrite():
             elif msg is not None:
                 self.showMessageWindow(msg=msg)
         else:
-            for image in self.checkedImageList:
+            for image in self.treeView.checkedImageList:
                 newImage = Image(self, image[0], image[1], image[2], image[3])
                 imagesList.append(newImage)
         return ImagesList(imagesList)
@@ -44,8 +44,8 @@ class ReadWrite():
         Returns a list of Series checked by the user.
         """
         seriesList = []       
-        treeView.buildListsCheckedItems(self)
-        if self.checkedSeriesList == []:
+        self.treeView.buildListsCheckedItems()
+        if self.treeView.checkedSeriesList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -53,7 +53,7 @@ class ReadWrite():
             elif msg is not None:
                 self.showMessageWindow(msg=msg)
         else:
-            for series in self.checkedSeriesList:
+            for series in self.treeView.checkedSeriesList:
                 images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
                 newSeries = Series(self, series[0], series[1], series[2], listPaths=images)
                 seriesList.append(newSeries)
@@ -64,8 +64,8 @@ class ReadWrite():
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        treeView.buildListsCheckedItems(self)
-        if self.checkedStudyList == []:
+        self.treeView.buildListsCheckedItems()
+        if self.treeView.checkedStudyList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -73,7 +73,7 @@ class ReadWrite():
             elif msg is not None:
                 self.showMessageWindow(msg=msg)
         else:
-            for study in self.checkedStudyList:
+            for study in self.treeView.checkedStudyList:
                 newStudy = Study(self, study[0], study[1])
                 studyList.append(newStudy)
         return StudyList(studyList)
@@ -83,8 +83,8 @@ class ReadWrite():
         Returns a list of Subjects checked by the user.
         """
         subjectList = []
-        treeView.buildListsCheckedItems(self)
-        if self.checkedSubjectList == []:
+        self.treeView.buildListsCheckedItems()
+        if self.treeView.checkedSubjectList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -92,7 +92,7 @@ class ReadWrite():
             elif msg is not None:
                 self.showMessageWindow(msg=msg)
         else:
-            for subject in self.checkedSubjectList:
+            for subject in self.treeView.checkedSubjectList:
                 newSubject = Subject(self, subject)
                 subjectList.append(newSubject)    
         return SubjectList(subjectList)
@@ -106,7 +106,7 @@ class ReadWrite():
             self.cursor_arrow_to_hourglass()
             XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, self.DICOMFolder)
             self.cursor_hourglass_to_arrow()
-            treeView.makeDICOMStudiesTreeView(self, XML_File_Path)
+            self.treeView = TreeView(self, XML_File_Path)
               
     def open_dicom_folder(self): 
         """
@@ -121,14 +121,14 @@ class ReadWrite():
             else:
                 XML_File_Path = WriteXMLfromDICOM.makeDICOM_XML_File(self, self.DICOMFolder)
             self.cursor_hourglass_to_arrow() 
-            treeView.makeDICOMStudiesTreeView(self, XML_File_Path) 
+            self.treeView = TreeView(self, XML_File_Path) 
              
     def close_dicom_folder(self):
         """
         Closes the DICOM folder and updates display.
         """  
         self.save_treeview()
-        treeView.closeTreeView(self)  
+        self.treeView.closeTreeView()  
         self.DICOMFolder = ''  
 
     def user_input(self, *fields, title="User input window"):

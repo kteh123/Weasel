@@ -31,7 +31,6 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView 
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 from CoreModules.WEASEL.UserImageColourSelection_Original import UserSelection
@@ -71,70 +70,70 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 #to manipulate userSelectionList. 
 userSelectionDict = {}
 
-def displayManySingleImageSubWindows(self):
+def displayManySingleImageSubWindows(weasel):
     try:
         logger.info("DisplayImageColour.displayManySingleImageSubWindows")
-        if len(self.checkedImageList)>0: 
-            for image in self.checkedImageList:
+        if len(weasel.treeView.checkedImageList)>0: 
+            for image in weasel.treeView.checkedImageList:
                 studyName = image[0]
                 seriesName = image[1]
                 imagePath = image[2]
                 subjectID = image[3]
-                displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
+                displayImageSubWindow(weasel, imagePath, subjectID, seriesName, studyName)
     except Exception as e:
         print('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
         logger.error('Error in DisplayImageColour.displayManySingleImageSubWindows: ' + str(e))
 
 
-def displayManyMultiImageSubWindows(self):
+def displayManyMultiImageSubWindows(weasel):
     try:
         logger.info("DisplayImageColour.displayManyMultiImageSubWindows")
-        if len(self.checkedSeriesList)>0: 
-            for series in self.checkedSeriesList:
+        if len(weasel.treeView.checkedSeriesList)>0: 
+            for series in weasel.treeView.checkedSeriesList:
                 subjectID = series[0]
                 studyName = series[1]
                 seriesName = series[2]
-                imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
+                imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+                displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
         print('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
         logger.error('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
 
 
-def displayImageFromTreeView(self, item, col):
+def displayImageFromTreeView(weasel, item, col):
     #only display an image if the series or image name in column 1
     #(second column) of the tree view is double clicked.
     try:
         logger.info("DisplayImageColour.displayImageFromTreeView")
         if col == 1:
             #Has an image or a series been double-clicked?
-            if treeView.isAnImageSelected(item):
+            if weasel.treeView.isAnImageSelected(item):
                 subjectID = item.parent().parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().parent().text(1).replace('Study -', '').strip()
                 seriesName = item.parent().text(1).replace('Series -', '').strip()
                 imagePath = item.text(4)
-                displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
-            elif treeView.isASeriesSelected(item):
+                displayImageSubWindow(weasel, imagePath, subjectID, seriesName, studyName)
+            elif weasel.treeView.isASeriesSelected(item):
                 subjectID = item.parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().text(1).replace('Study -', '').strip()
                 seriesName = item.text(1).replace('Series -', '').strip()
-                imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
-                displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
+                imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+                displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
             print('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
             logger.error('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
 
 
-def setUpSubWindow(self, imageSeries = False):
+def setUpSubWindow(weasel, imageSeries = False):
     """
     This function creates a subwindow with a vertical layout &
     a missing image label.
 
     Input Parameters
     ****************
-    self - an object reference to the WEASEL interface.
+    weasel - an object reference to the WEASEL interface.
 
     Output Parameters
     *****************
@@ -145,7 +144,7 @@ def setUpSubWindow(self, imageSeries = False):
     """
     try:
         logger.info("DisplayImageColour.setUpSubWindow")
-        subWindow = QMdiSubWindow(self)
+        subWindow = QMdiSubWindow(weasel)
         if imageSeries:
             subWindow.setObjectName = imageSeries
         else:
@@ -157,9 +156,9 @@ def setUpSubWindow(self, imageSeries = False):
                                       Qt.WindowMaximizeButtonHint)
         
         
-        height, width = self.getMDIAreaDimensions()
+        height, width = weasel.getMDIAreaDimensions()
         subWindow.setGeometry(0, 0, width, height)
-        self.mdiArea.addSubWindow(subWindow)
+        weasel.mdiArea.addSubWindow(subWindow)
         
         mainVerticalLayout = QVBoxLayout()
         widget = QWidget()
@@ -253,7 +252,7 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName,
         #These values will used when updating an image with a
         #new colour table & intensity & contrast values. This
         #is done because several of these windows may be open
-        #at once and the global self.selectedImagePath maybe
+        #at once and the global weasel.selectedImagePath maybe
         #points to an image in a window other than the one
         #the user is working on
         imageLayout.addWidget(deleteButton)
@@ -272,34 +271,34 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName,
         logger.error('Error in DisplayImageColour.setUpImageGroupBox: ' + str(e))
 
 
-def displayManySingleImageSubWindows(self):
-    if len(self.checkedImageList)>0: 
-        for image in self.checkedImageList:
+def displayManySingleImageSubWindows(weasel):
+    if len(weasel.treeView.checkedImageList)>0: 
+        for image in weasel.treeView.checkedImageList:
             subjectID = image[0]
             studyName = image[1]
             seriesName = image[2]
             imagePath = image[3]
-            displayImageSubWindow(self, imagePath, subjectID, seriesName, studyName)
+            displayImageSubWindow(weasel, imagePath, subjectID, seriesName, studyName)
 
 
-def displayManyMultiImageSubWindows(self):
-    if len(self.checkedSeriesList)>0: 
-        for series in self.checkedSeriesList:
+def displayManyMultiImageSubWindows(weasel):
+    if len(weasel.treeView.checkedSeriesList)>0: 
+        for series in weasel.treeView.checkedSeriesList:
             subjectID = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = treeView.returnSeriesImageList(self, subjectID, studyName, seriesName)
-            displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
+            imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+            displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1)
 
 
-def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesName=None, studyName=None):
+def displayImageSubWindow(weasel, derivedImagePath=None, subjectID=None, seriesName=None, studyName=None):
         """
         Creates a subwindow that displays a single DICOM image. 
 
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be displayed
         seriesName - string variable containing the name of DICOM series of images to be displayed
@@ -308,32 +307,32 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
         """
         try:
             logger.info("DisplayImageColour.displayImageSubWindow called")
-            #self.selectedImagePath is populated when the image in the
+            #weasel.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
             print("derivedImagePath={}".format(derivedImagePath))
             if derivedImagePath:
-                self.selectedImagePath = derivedImagePath
+                weasel.selectedImagePath = derivedImagePath
 
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
                 pixelDataLayout, graphicsViewLayout, sliderLayout, 
-                lblImageMissing, subWindow) = setUpSubWindow(self)
-            imageName = os.path.basename(self.selectedImagePath)
+                lblImageMissing, subWindow) = setUpSubWindow(weasel)
+            imageName = os.path.basename(weasel.selectedImagePath)
             windowTitle = subjectID + " - " + studyName + " - " + seriesName + " - " + imageName
             subWindow.setWindowTitle(windowTitle)
             #subWindow.setStyleSheet("background-color:#ccccff;")
             (deleteButton, lblHiddenImagePath, 
              lblHiddenStudyName, 
              lblHiddenSeriesName, 
-             lblHiddenSubjectID) = setUpImageGroupBox(imageLayout, self.selectedImagePath, studyName, seriesName, subjectID)
+             lblHiddenSubjectID) = setUpImageGroupBox(imageLayout, weasel.selectedImagePath, studyName, seriesName, subjectID)
             btnApply = QPushButton() 
             cmbColours = QComboBox()
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply, cmbColours, 
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(weasel, btnApply, cmbColours, 
                                                                      lblHiddenSeriesName, lblHiddenImagePath,
                                                                      imageLevelsLayout, graphicsView, singleImageSelected=True)
             
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
 
-            cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, True,  
+            cmbColours = setUpColourTools(weasel, colourTableLayout, graphicsView, True,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, 
@@ -341,13 +340,13 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
 
             
 
-            displayOneImage(self, lblImageMissing, lblPixelValue,
+            displayOneImage(weasel, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
                             graphicsView, cmbColours, lblHiddenSeriesName.text(), lblHiddenImagePath.text())
 
             
             deleteButton.clicked.connect(lambda:
-                                         deleteSingleImage(self, lblHiddenImagePath.text(), 
+                                         deleteSingleImage(weasel, lblHiddenImagePath.text(), 
                                       subjectID, studyName, seriesName, subWindow))
 
         except (IndexError, AttributeError):
@@ -361,12 +360,12 @@ def displayImageSubWindow(self, derivedImagePath=None, subjectID=None, seriesNam
             logger.error('Error in  DisplayImageColour.displayImageSubWindow: ' + str(e)) 
 
 
-def displayOneImage(self, lblImageMissing, lblPixelValue,
+def displayOneImage(weasel, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
                             graphicsView, cmbColours, SeriesName, imagePath):
     pixelArray = ReadDICOM_Image.returnPixelArray(imagePath)
     colourTable, lut = ReadDICOM_Image.getColourmap(imagePath)
-    displayPixelArray(self, pixelArray, 0,lblImageMissing,
+    displayPixelArray(weasel, pixelArray, 0,lblImageMissing,
                             lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
                             graphicsView,
@@ -375,7 +374,7 @@ def displayOneImage(self, lblImageMissing, lblPixelValue,
     displayColourTableInComboBox(cmbColours, colourTable)
 
 
-def displayMultiImageSubWindow(self, imageList, subjectID, studyName, 
+def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
@@ -389,7 +388,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
 
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         imageList - list of image file paths of the images in the series to be displayed
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be displayed
@@ -401,7 +400,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
             pixelDataLayout, graphicsViewLayout, sliderLayout, 
-            lblImageMissing, subWindow) = setUpSubWindow(self, imageSeries=True)
+            lblImageMissing, subWindow) = setUpSubWindow(weasel, imageSeries=True)
             #subWindow.setStyleSheet("background-color:#6666ff;")
 
             #set up list of lists to hold user selected colour table and level data
@@ -430,7 +429,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
 
             btnApply = QPushButton() 
             cmbColours = QComboBox()
-            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(self, btnApply,
+            spinBoxIntensity, spinBoxContrast = setUpLevelsSpinBoxes(weasel, btnApply,
                                                                      cmbColours, lblHiddenSeriesName, 
                                                                      lblHiddenImagePath,
                                                                      imageLevelsLayout, 
@@ -441,7 +440,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
             imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
             imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
-            cmbColours = setUpColourTools(self, colourTableLayout, graphicsView, False,  
+            cmbColours = setUpColourTools(weasel, colourTableLayout, graphicsView, False,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, 
@@ -472,7 +471,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                 sliderLayout.addStretch(1)
             
             imageSlider.valueChanged.connect(
-                  lambda: imageSliderMoved(self, subjectID, studyName, seriesName, 
+                  lambda: imageSliderMoved(weasel, subjectID, studyName, seriesName, 
                                                 imageList, 
                                                 imageSlider.value(),
                                                 lblImageMissing,
@@ -484,7 +483,7 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                                                 subWindow))
            
             #Display the first image in the viewer
-            imageSliderMoved(self, subjectID, studyName, seriesName, 
+            imageSliderMoved(weasel, subjectID, studyName, seriesName, 
                                   imageList,
                                   imageSlider.value(),
                                   lblImageMissing,
@@ -495,8 +494,8 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
                                   cmbColours, imageNumberLabel,
                                   subWindow)
             
-            deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(self,
-                                      self.selectedImagePath, imageList, subjectID, 
+            deleteButton.clicked.connect(lambda: deleteImageInMultiImageViewer(weasel,
+                                      weasel.selectedImagePath, imageList, subjectID, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
                                       imageSlider.value(), subWindow))
@@ -512,25 +511,25 @@ def displayMultiImageSubWindow(self, imageList, subjectID, studyName,
             logger.error('Error in DisplayImageColour.displayMultiImageSubWindow: ' + str(e))
 
 
-def setUpLevelsSpinBoxes(self, applyButton, cmbColours, lblHiddenSeriesName, lblHiddenImagePath,
+def setUpLevelsSpinBoxes(weasel, applyButton, cmbColours, lblHiddenSeriesName, lblHiddenImagePath,
                          imageLevelsLayout, graphicsView, singleImageSelected=True): 
     try:
         logger.info("DisplayImageDrawROI.setUpLevelsSpinBoxes called.")
         spinBoxIntensity, spinBoxContrast = displayImageCommon.setUpLevelsSpinBoxes(imageLevelsLayout)
 
-        spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(self,
+        spinBoxIntensity.valueChanged.connect(lambda: updateImageLevels(weasel,
                 graphicsView,spinBoxIntensity, spinBoxContrast))
-        spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(self,
+        spinBoxContrast.valueChanged.connect(lambda: updateImageLevels(weasel,
         graphicsView,spinBoxIntensity, spinBoxContrast))
             
         if not singleImageSelected: #series selected
             spinBoxIntensity.valueChanged.connect(lambda: updateImageUserSelection(
-                                                    self,  applyButton, cmbColours,
+                                                    weasel,  applyButton, cmbColours,
                                                     spinBoxIntensity, spinBoxContrast,
                                                     lblHiddenSeriesName.text(),
                                                     lblHiddenImagePath.text()))
             spinBoxContrast.valueChanged.connect(lambda: updateImageUserSelection(
-                                                    self,  applyButton, cmbColours,
+                                                    weasel,  applyButton, cmbColours,
                                                     spinBoxIntensity, spinBoxContrast,
                                                     lblHiddenSeriesName.text(),
                                                     lblHiddenImagePath.text()))
@@ -565,7 +564,7 @@ def getHistogramLevels( graphicsView, spinBoxIntensity, spinBoxContrast):
         spinBoxContrast.setValue(width)
 
 
-def setUpColourTools(self, layout,  graphicsView,
+def setUpColourTools(weasel, layout,  graphicsView,
             singleImageSelected,
             lblHiddenImagePath,
             lblHiddenSeriesName,
@@ -578,7 +577,7 @@ def setUpColourTools(self, layout,  graphicsView,
 
             Input Parmeters
             ***************
-            self - an object reference to the WEASEL interface.
+            weasel - an object reference to the WEASEL interface.
             layout - a QVBoxLayout widget that lines up widgets vertically.
                     The parent layout on the subwindow.
              graphicsView - pyqtGraph imageView widget
@@ -610,7 +609,7 @@ def setUpColourTools(self, layout,  graphicsView,
             btnApply.setToolTip(
                     "Click to apply colour table and levels selected by the user to the whole series")
             
-            btnApply.clicked.connect(lambda:applyColourTableToSeries(self, btnApply, graphicsView, 
+            btnApply.clicked.connect(lambda:applyColourTableToSeries(weasel, btnApply, graphicsView, 
                                                                          cmbColours, 
                                                                         lblHiddenSeriesName.text()
                                                                         ))
@@ -630,7 +629,7 @@ def setUpColourTools(self, layout,  graphicsView,
                 cmbColours.currentIndexChanged.connect(lambda:
                          applyColourTableToAnImage(cmbColours, graphicsView))
                 #Viewing and potentially updating a single DICOM images
-                btnUpdate.clicked.connect(lambda:updateDICOM(self, 
+                btnUpdate.clicked.connect(lambda:updateDICOM(weasel, 
                                                 lblHiddenImagePath,
                                                 lblHiddenSeriesName,
                                                 lblHiddenStudyName, lblHiddenSubjectID,
@@ -640,8 +639,8 @@ def setUpColourTools(self, layout,  graphicsView,
             else:
                 #Viewing and potentially updating a series of DICOM images
                 cmbColours.currentIndexChanged.connect(lambda:
-                        applyColourTableToSeries(self, btnApply,  graphicsView, cmbColours, lblHiddenSeriesName.text()))
-                btnUpdate.clicked.connect(lambda:updateDICOM(self, 
+                        applyColourTableToSeries(weasel, btnApply,  graphicsView, cmbColours, lblHiddenSeriesName.text()))
+                btnUpdate.clicked.connect(lambda:updateDICOM(weasel, 
                                                                 lblHiddenImagePath,
                                                                 lblHiddenSeriesName,
                                                                 lblHiddenStudyName, lblHiddenSubjectID,
@@ -653,7 +652,7 @@ def setUpColourTools(self, layout,  graphicsView,
             btnExport = QPushButton() 
             btnExport.setIcon(QIcon(QPixmap(icons.EXPORT_ICON)))
             btnExport.setToolTip('Exports the image to an external graphic file.')
-            btnExport.clicked.connect(lambda:exportImage(self,  graphicsView, cmbColours))
+            btnExport.clicked.connect(lambda:exportImage(weasel,  graphicsView, cmbColours))
             btnReset = QPushButton() 
             btnReset.setIcon(QIcon(QPixmap(icons.RESET_ICON)))
             btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
@@ -662,7 +661,7 @@ def setUpColourTools(self, layout,  graphicsView,
                 layout.addWidget(btnReset)
                 layout.addWidget(btnUpdate)
                 layout.addWidget(btnExport)
-                btnReset.clicked.connect(lambda: displayOneImage(self, lblImageMissing, lblPixelValue,
+                btnReset.clicked.connect(lambda: displayOneImage(weasel, lblImageMissing, lblPixelValue,
                             spinBoxIntensity, spinBoxContrast,
                             graphicsView, cmbColours, lblHiddenSeriesName.text(), lblHiddenImagePath.text()))                                                     
             else:
@@ -672,13 +671,13 @@ def setUpColourTools(self, layout,  graphicsView,
                 
                 #Clicking Reset button deletes user selected colour table and contrast 
                 #and intensity levelts and returns images to values in the original DICOM file.
-                btnReset.clicked.connect(lambda: clearUserSelection(self, imageSlider,
+                btnReset.clicked.connect(lambda: clearUserSelection(weasel, imageSlider,
                                                                    lblHiddenSeriesName.text()))
                 layout.addWidget(btnReset)
                 layout.addWidget(btnUpdate)
                 layout.addWidget(btnExport)
                 cmbColours.activated.connect(lambda:
-                        updateImageUserSelection(self,  btnApply, cmbColours,
+                        updateImageUserSelection(weasel,  btnApply, cmbColours,
                                                       spinBoxIntensity, spinBoxContrast,
                                                       lblHiddenSeriesName.text(),
                                                       lblHiddenImagePath.text()))
@@ -690,7 +689,7 @@ def setUpColourTools(self, layout,  graphicsView,
             logger.error('Error in displayImageColour.setUpColourTools: ' + str(e))
 
 
-def displayPixelArray(self, pixelArray, currentImageNumber,
+def displayPixelArray(weasel, pixelArray, currentImageNumber,
                           lblImageMissing, lblPixelValue,
                           spinBoxIntensity, spinBoxContrast,
                            graphicsView, colourTable, cmbColours, 
@@ -703,7 +702,7 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
         
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         pixelArray - pixel array to be displayed in  graphicsView
         currentImageNumber - ordinal number of the image to be displayed
                 in the list of images forming the series.
@@ -742,10 +741,10 @@ def displayPixelArray(self, pixelArray, currentImageNumber,
                                                                                width, 
                                                                                currentImageNumber)
                     if not success:
-                        centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
+                        centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(weasel, pixelArray)
 
                 else:  #single image 
-                    centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(self, pixelArray)
+                    centre, width, maximumValue, minimumValue = readLevelsFromDICOMImage(weasel, pixelArray)
 
                 blockLevelsSpinBoxSignals(spinBoxIntensity, spinBoxContrast, True)
                 spinBoxIntensity.setValue(centre)
@@ -857,7 +856,7 @@ def blockHistogramSignals(imgView, block):
         histogramObject.blockSignals(block)
 
 
-def imageSliderMoved(self, subjectID, studyName, seriesName, 
+def imageSliderMoved(weasel, subjectID, studyName, seriesName, 
                         imageList, imageNumber,
                         lblImageMissing, lblPixelValue, 
                         deleteButton,  graphicsView, 
@@ -869,7 +868,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
         
-        self - object reference to the WEASEL GUI
+        weasel - object reference to the WEASEL GUI
         seriesName - string variable containing the name of DICOM series of images to be displayed
         lblImageMissing - Label widget that displays the text 'Missing Image'
         lblPixelValue - Label widget that displays the value of the pixel under the mouse pointer
@@ -891,9 +890,9 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                 maxNumberImages = str(len(imageList))
                 imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
                 imageNumberLabel.setText(imageNumberString)
-                self.selectedImagePath = imageList[currentImageNumber]
-                #print("imageSliderMoved before={}".format(self.selectedImagePath))
-                pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+                weasel.selectedImagePath = imageList[currentImageNumber]
+                #print("imageSliderMoved before={}".format(weasel.selectedImagePath))
+                pixelArray = ReadDICOM_Image.returnPixelArray(weasel.selectedImagePath)
                 lut = None
                 #Get colour table of the image to be displayed
                 if obj.getSeriesUpdateStatus():
@@ -901,15 +900,15 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                 elif obj.getImageUpdateStatus():
                     colourTable, _, _ = obj.returnUserSelection(currentImageNumber)  
                     if colourTable == 'default':
-                        colourTable, lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+                        colourTable, lut = ReadDICOM_Image.getColourmap(weasel.selectedImagePath)
                     #print('apply User Selection, colour table {}, image number {}'.format(colourTable,currentImageNumber ))
                 else:
-                    colourTable, lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+                    colourTable, lut = ReadDICOM_Image.getColourmap(weasel.selectedImagePath)
 
                 #display above colour table in colour table dropdown list
                 displayColourTableInComboBox(cmbColours, colourTable)
 
-                displayPixelArray(self, pixelArray, currentImageNumber, 
+                displayPixelArray(weasel, pixelArray, currentImageNumber, 
                                        lblImageMissing,
                                        lblPixelValue,
                                        spinBoxIntensity, spinBoxContrast,
@@ -920,7 +919,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
                                        deleteButton=deleteButton) 
 
                 subWindow.setWindowTitle(subjectID + ' - ' + studyName + ' - '+ seriesName + ' - ' 
-                         + os.path.basename(self.selectedImagePath))
+                         + os.path.basename(weasel.selectedImagePath))
         except TypeError as e: 
             print('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
             logger.error('Type Error in DisplayImageColour.imageSliderMoved: ' + str(e))
@@ -929,7 +928,7 @@ def imageSliderMoved(self, subjectID, studyName, seriesName,
             logger.error('Error in DisplayImageColour.imageSliderMoved: ' + str(e))
 
 
-def deleteSingleImage(self, currentImagePath, subjectID, 
+def deleteSingleImage(weasel, currentImagePath, subjectID, 
                                       studyName, seriesName, subWindow):
     """When the Delete button is clicked on the single image viewer,
     this function deletes the physical image, removes the 
@@ -937,7 +936,7 @@ def deleteSingleImage(self, currentImagePath, subjectID,
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         currentImagePath - file path to the image being viewed.
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be displayed
@@ -951,7 +950,7 @@ def deleteSingleImage(self, currentImagePath, subjectID,
         logger.info("DisplayImageColour.deleteSingleImage called")
         imageName = os.path.basename(currentImagePath)
         #print ('study id {} series id {}'.format(studyName, seriesName))
-        buttonReply = QMessageBox.question(self, 
+        buttonReply = QMessageBox.question(weasel, 
             'Delete DICOM image', "You are about to delete image {}".format(imageName), 
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
 
@@ -962,18 +961,18 @@ def deleteSingleImage(self, currentImagePath, subjectID,
             QApplication.processEvents()
             os.remove(currentImagePath)
             #Remove deleted image from the list
-            self.objXMLReader.removeOneImageFromSeries(subjectID,
+            weasel.objXMLReader.removeOneImageFromSeries(subjectID,
                     studyName, seriesName, currentImagePath)
             QApplication.processEvents()
             #Update tree view with xml file modified above
-            treeView.refreshDICOMStudiesTreeView(self)
+            weasel.treeView.refreshDICOMStudiesTreeView()
             QApplication.restoreOverrideCursor()
     except Exception as e:
         print('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
         logger.error('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
 
 
-def deleteImageInMultiImageViewer(self, currentImagePath, imageList, 
+def deleteImageInMultiImageViewer(weasel, currentImagePath, imageList, 
                                    subjectID, studyName, seriesName,
                                       lastSliderPosition, subWindow):
     """When the Delete button is clicked on the multi image viewer,
@@ -982,7 +981,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         currentImagePath - file path to the image being viewed.
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be displayed
@@ -996,7 +995,7 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
         logger.info("DisplayImageColour.deleteImageInMultiImageViewer called")
         imageName = os.path.basename(currentImagePath)
         #print ('study id {} series id {}'.format(studyName, seriesName))
-        buttonReply = QMessageBox.question(self, 
+        buttonReply = QMessageBox.question(weasel, 
             'Delete DICOM image', "You are about to delete image {}".format(imageName), 
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
 
@@ -1020,17 +1019,17 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
                 pass   
             elif len(imageList) == 1:
                 #There is only one image left in the display
-                displayMultiImageSubWindow(self, imageList, subjectID, studyName, seriesName)
+                displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, seriesName)
             elif len(imageList) + 1 == lastSliderPosition:    
                     #we are deleting the last image in the series of images
                     #so move the slider back to the penultimate image in list 
-                displayMultiImageSubWindow(self, imageList, subjectID,
+                displayMultiImageSubWindow(weasel, imageList, subjectID,
                                     studyName, seriesName, len(imageList))
             else:
                 #We are deleting an image at the start of the list
                 #or in the body of the list. Move slider forwards to 
                 #the next image in the list.
-                displayMultiImageSubWindow(self, imageList, subjectID,
+                displayMultiImageSubWindow(weasel, imageList, subjectID,
                                     studyName, seriesName, lastSliderPosition)
      
             #Now update XML file
@@ -1041,20 +1040,20 @@ def deleteImageInMultiImageViewer(self, currentImagePath, imageList,
             #just remove the image from the XML file 
             if len(imageList) == 0:
                 #no images left in the series, so remove it from the xml file
-                self.objXMLReader.removeOneSeriesFromStudy(subjectID, studyName, seriesName)
+                weasel.objXMLReader.removeOneSeriesFromStudy(subjectID, studyName, seriesName)
             elif len(imageList) > 0:
                 #1 or more images in the series, 
                 #so just remove the image from its series in the xml file
-                self.objXMLReader.removeOneImageFromSeries(subjectID, 
+                weasel.objXMLReader.removeOneImageFromSeries(subjectID, 
                     studyName, seriesName, currentImagePath)
             #Update tree view with xml file modified above
-            treeView.refreshDICOMStudiesTreeView(self)
+            weasel.treeView.refreshDICOMStudiesTreeView()
     except Exception as e:
         print('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
         logger.error('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
 
 
-def exportImage(self,  graphicsView, cmbColours):
+def exportImage(weasel,  graphicsView, cmbColours):
     """Function executed when the Export button is clicked.  
     It exports the DICOM image and its colour table to a png graphics file.
     It launches a file dialog, so that the user can select the file path to 
@@ -1063,14 +1062,14 @@ def exportImage(self,  graphicsView, cmbColours):
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
          graphicsView - pyqtGraph imageView widget
         cmbColours - A dropdown list of colour table names based on the QComboBox class
     """
     try:
         colourTable = cmbColours.currentText()
         #Default file name is derived from the DICOM image name
-        defaultImageName = os.path.basename(self.selectedImagePath) 
+        defaultImageName = os.path.basename(weasel.selectedImagePath) 
         #remove .dcm extension
         defaultImageName = os.path.splitext(defaultImageName)[0] + '.png'
         #Display a save file dialog to get the full file path and name of
@@ -1082,7 +1081,7 @@ def exportImage(self,  graphicsView, cmbColours):
 
         #Test if the user has selected a file name
         if fileName:
-            exportImageViaMatplotlib(self,  graphicsView.getImageItem().image,
+            exportImageViaMatplotlib(weasel,  graphicsView.getImageItem().image,
                                             fileName, 
                                             colourTable,
                                              minimumValue,
@@ -1092,13 +1091,13 @@ def exportImage(self,  graphicsView, cmbColours):
         logger.error('Error in DisplayImageColour.exportImage: ' + str(e))
 
 
-def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumValue, maximumValue):
+def exportImageViaMatplotlib(weasel, pixelArray, fileName, colourTable,  minimumValue, maximumValue):
     """This function uses matplotlib.pyplot to save the DICOM image being viewed 
     and its colour table in a png file with the path+filename in fileName. 
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         pixelArray - pixel array to be exported as a png file
         fileName - file path to the png file in which the exported file will be stored.
         colourTable - String variable containing the name of a colour table
@@ -1118,7 +1117,7 @@ def exportImageViaMatplotlib(self, pixelArray, fileName, colourTable,  minimumVa
         cBar.minorticks_on()
         plt.savefig(fname=fileName)
         plt.close()
-        QMessageBox.information(self, "Export Image", "Image Saved")
+        QMessageBox.information(weasel, "Export Image", "Image Saved")
     except Exception as e:
         print('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
         logger.error('Error in DisplayImageColour.exportImageViaMatplotlib: ' + str(e))
@@ -1132,14 +1131,14 @@ def applyColourTableToAnImage(cmbColours, graphicsView):
     setPgColourMap(colourTable,  graphicsView)
 
 
-def applyColourTableToSeries(self, button, graphicsView, cmbColours, seriesName): 
+def applyColourTableToSeries(weasel, button, graphicsView, cmbColours, seriesName): 
     """This function applies a user selected colour map to the current image.
     If the Apply checkbox is checked then the new colour map is also applied to 
     the whole series of DICOM images by setting a boolean flag to True.
 
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
          graphicsView - pyqtGraph imageView widget
         cmbColours - A dropdown list of colour table names based on the QComboBox class
         seriesName - string variable containing the name of 
@@ -1167,14 +1166,14 @@ def applyColourTableToSeries(self, button, graphicsView, cmbColours, seriesName)
         logger.error('Error in DisplayImageColour.applyColourTableToSeries: ' + str(e))              
         
 
-def clearUserSelection(self, imageSlider, seriesName):
+def clearUserSelection(weasel, imageSlider, seriesName):
     """This function removes the user selected colour tables, contrast & intensity values from
     the list of image lists that hold these values.  They are reset to the default values of
     'default' for the colour table and -1 for the contrast & intensity values
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         imageSlider - name of the slider widget used to scroll through the images.
         seriesName - string variable containing the name of DICOM series of images to be displayed
     """
@@ -1197,7 +1196,7 @@ def clearUserSelection(self, imageSlider, seriesName):
         imageSlider.setValue(imageNumber)
                     
 
-def updateImageUserSelection(self, applyButton, 
+def updateImageUserSelection(weasel, applyButton, 
                              cmbColours,
                              spinBoxIntensity, spinBoxContrast,
                              seriesName, 
@@ -1213,7 +1212,7 @@ def updateImageUserSelection(self, applyButton,
         
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         applySeriesCheckBox - Name of the apply user selection to the whole series checkbox widget
         cmbColours - A dropdown list of colour table names based on the QComboBox class 
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
@@ -1231,31 +1230,31 @@ def updateImageUserSelection(self, applyButton,
             intensity = spinBoxIntensity.value()
             contrast = spinBoxContrast.value()
 
-            if self.selectedImagePath:
-                self.selectedImageName = os.path.basename(self.selectedImagePath)
+            if weasel.selectedImagePath:
+                weasel.selectedImageName = os.path.basename(weasel.selectedImagePath)
             else:
                 #Workaround for the fact that when the first image is displayed,
-                #somehow self.selectedImageName looses its value.
-                self.selectedImageName = os.path.basename(firstImagePath)
+                #somehow weasel.selectedImageName looses its value.
+                weasel.selectedImageName = os.path.basename(firstImagePath)
             
-            #print("self.selectedImageName ={}".format(self.selectedImageName))
+            #print("weasel.selectedImageName ={}".format(weasel.selectedImageName))
             #print("colourTable = {}".format(colourTable))
             global userSelectionDict
             obj = userSelectionDict[seriesName]
-            obj.updateUserSelection(self.selectedImageName, colourTable, intensity, contrast)
+            obj.updateUserSelection(weasel.selectedImageName, colourTable, intensity, contrast)
             
     except Exception as e:
         print('Error in DisplayImageColour.updateImageUserSelection: ' + str(e))
         logger.error('Error in DisplayImageColour.updateImageUserSelection: ' + str(e))
 
 
-def updateImageLevels(self,  graphicsView, spinBoxIntensity, spinBoxContrast):
+def updateImageLevels(weasel,  graphicsView, spinBoxIntensity, spinBoxContrast):
     """When the contrast and intensity values are adjusted using the spinboxes, 
     this function sets the corresponding values in the image being viewed. 
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
          graphicsView - pyqtGraph imageView widget
         spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
         spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
@@ -1275,7 +1274,7 @@ def updateImageLevels(self,  graphicsView, spinBoxIntensity, spinBoxContrast):
         logger.error('Error in DisplayImageColour.updateImageLevels: ' + str(e))
         
 
-def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, lblHiddenSubjectID,
+def updateDICOM(weasel, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyName, lblHiddenSubjectID,
                 cmbColours, spinBoxIntensity, spinBoxContrast, singleImage=False):
         """
         This function is executed when the Update button 
@@ -1284,7 +1283,7 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
         
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         lblHiddenSeriesName - name of the hidden label widget whose text
                     contains the name of the DICOM series whose images are 
                     being viewed.
@@ -1298,11 +1297,11 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
         try:
             logger.info("DisplayImageColour.updateDICOM called")
             if singleImage:
-                buttonReply = QMessageBox.question(self, 
+                buttonReply = QMessageBox.question(weasel, 
                           'Update DICOM', "You are about to overwrite this DICOM File. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             else:
-                buttonReply = QMessageBox.question(self, 
+                buttonReply = QMessageBox.question(weasel, 
                           'Update DICOM', "You are about to overwrite this series of DICOM Files. Please click OK to proceed.", 
                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
             if buttonReply == QMessageBox.Ok:
@@ -1319,11 +1318,11 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
                     #print("obj.getImageUpdateStatus() = {}".format(obj.getImageUpdateStatus()))
                     if obj.getSeriesUpdateStatus():
                         levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
-                        updateWholeDicomSeries(self, subjectID, seriesName, studyName, colourTable, levels)
+                        updateWholeDicomSeries(weasel, subjectID, seriesName, studyName, colourTable, levels)
                     if obj.getImageUpdateStatus():
-                        updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName)
+                        updateDicomSeriesImageByImage(weasel, subjectID, seriesName, studyName)
                 else:
-                    SaveDICOM_Image.updateSingleDicomImage(self, 
+                    SaveDICOM_Image.updateSingleDicomImage(weasel, 
                                                            spinBoxIntensity,
                                                            spinBoxContrast,
                                                            imageName,
@@ -1336,14 +1335,14 @@ def updateDICOM(self, lblHiddenImagePath, lblHiddenSeriesName, lblHiddenStudyNam
             logger.error('Error in DisplayImageColour.updateDICOM: ' + str(e))
 
 
-def updateWholeDicomSeries(self, subjectID, seriesID, studyID, colourTable, levels, lut=None):
+def updateWholeDicomSeries(weasel, subjectID, seriesID, studyID, colourTable, levels, lut=None):
     """
     Updates every image in a DICOM series with one colour table and
             one set of levels
             
       Input Parmeters
       ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         seriesName - string variable containing the name of DICOM series of images to be updated
         studyName - string variable containing name of the DICOMstudy 
                 containing the DICOM series of images to be updated
@@ -1354,14 +1353,14 @@ def updateWholeDicomSeries(self, subjectID, seriesID, studyID, colourTable, leve
         """
     try:
         logger.info("In DisplayImageColour.updateWholeDicomSeries")
-        imagePathList = self.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
+        imagePathList = weasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
 
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
-        messageWindow.displayMessageSubWindow(self,
+        messageWindow.displayMessageSubWindow(weasel,
             "<H4>Updating {} DICOM files</H4>".format(numImages),
             "Updating DICOM images")
-        messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
+        messageWindow.setMsgWindowProgBarMaxValue(weasel, numImages)
         imageCounter = 0
         for imagePath in imagePathList:
             dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -1369,19 +1368,19 @@ def updateWholeDicomSeries(self, subjectID, seriesID, studyID, colourTable, leve
             updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=colourTable, levels=levels, lut=lut)
             SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
-            messageWindow.setMsgWindowProgBarValue(self, imageCounter)
-        messageWindow.closeMessageSubWindow(self)
+            messageWindow.setMsgWindowProgBarValue(weasel, imageCounter)
+        messageWindow.closeMessageSubWindow(weasel)
     except Exception as e:
         print('Error in DisplayImageColour.updateWholeDicomSeries: ' + str(e))
 
 
-def updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName):
+def updateDicomSeriesImageByImage(weasel, subjectID, seriesName, studyName):
     """Updates one or more images in a DICOM series each with potentially
     a different table and set of levels
     
     Input Parmeters
     ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         seriesName - string variable containing the name of DICOM series 
         of images to be updated
         studyName - string variable containing name of the DICOMstudy 
@@ -1393,14 +1392,14 @@ def updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName):
     try:
         logger.info("In DisplayImageColour.updateDicomSeriesImageByImage")
        
-        imagePathList = self.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
+        imagePathList = weasel.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
 
         #Iterate through list of images and update each image
         numImages = len(imagePathList)
-        messageWindow.displayMessageSubWindow(self,
+        messageWindow.displayMessageSubWindow(weasel,
             "<H4>Updating {} DICOM files</H4>".format(numImages),
             "Updating DICOM images")
-        messageWindow.setMsgWindowProgBarMaxValue(self, numImages)
+        messageWindow.setMsgWindowProgBarMaxValue(weasel, numImages)
         imageCounter = 0
         global userSelectionDict
         obj = userSelectionDict[seriesName]
@@ -1417,8 +1416,8 @@ def updateDicomSeriesImageByImage(self, subjectID, seriesName, studyName):
                 updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                     levels=levels, lut=None)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-            messageWindow.setMsgWindowProgBarValue(self, imageCounter)
-        messageWindow.closeMessageSubWindow(self)
+            messageWindow.setMsgWindowProgBarValue(weasel, imageCounter)
+        messageWindow.closeMessageSubWindow(weasel)
     except Exception as e:
         print('Error in DisplayImageColour.updateDicomSeriesImageByImage: ' + str(e))
 
@@ -1530,12 +1529,12 @@ def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, imageNumber=1):
         logger.error('Error in DisplayImageColour.getPixelValue: ' + str(e))
 
 
-def readLevelsFromDICOMImage(self, pixelArray): 
+def readLevelsFromDICOMImage(weasel, pixelArray): 
         """Reads levels directly from the DICOM image
         
         Input Parmeters
         ***************
-        self - an object reference to the WEASEL interface.
+        weasel - an object reference to the WEASEL interface.
         pixelArray - pixel array to be displayed
 
         Output Parameters
@@ -1552,7 +1551,7 @@ def readLevelsFromDICOMImage(self, pixelArray):
             width = -1 
             maximumValue = -1  
             minimumValue = -1 
-            dataset = ReadDICOM_Image.getDicomDataset(self.selectedImagePath)
+            dataset = ReadDICOM_Image.getDicomDataset(weasel.selectedImagePath)
             if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
                 slope = float(getattr(dataset, 'RescaleSlope', 1))
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0))

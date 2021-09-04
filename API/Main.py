@@ -3,7 +3,6 @@ from API.Display import Display
 from API.BuildMenus import BuildMenus
 from API.Messaging import Messaging
 from API.ReadWrite import ReadWrite
-from API.State import State
 from API.UserInterfaceTools import UserInterfaceTools
 
 class WeaselProgrammingInterface( 
@@ -12,7 +11,6 @@ class WeaselProgrammingInterface(
     BuildMenus, 
     Messaging, 
     ReadWrite,
-    State,
     UserInterfaceTools):
     """
     A collection of methods for weasel scripting. 

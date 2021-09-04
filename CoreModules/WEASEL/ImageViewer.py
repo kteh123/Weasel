@@ -30,7 +30,6 @@ import External.pyqtgraph as pg
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 from DICOM.Classes import Series
-import CoreModules.WEASEL.TreeView as treeView 
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 from CoreModules.WEASEL.UserImageColourSelection import UserSelection

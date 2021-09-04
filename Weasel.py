@@ -31,10 +31,10 @@ sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.StyleSheet as styleSheet
-from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
-import CoreModules.WEASEL.TreeView as treeView
+from CoreModules.WEASEL.TreeView import TreeView
 import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
+from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 #import Trash.ToolBar as toolBar
 from API.Main import WeaselProgrammingInterface
 
@@ -74,27 +74,15 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.statusBar = QStatusBar()
         self.centralwidget.layout().addWidget(self.statusBar)
         self.DICOMFolder = ''
-        self.checkedImageList = []
-        self.checkedSeriesList = []
-        self.checkedStudyList = []
-        self.checkedSubjectList = []
         self.treeView = None
         self.listMenus = []
         self.listPythonFiles = self.returnListPythonFiles()
 
-        #print("self.listPythonFiles={}".format(self.listPythonFiles))
-        
-        self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0}
-        
          # XML reader object to process XML configuration file
         self.objConfigXMLReader = WeaselConfigXMLReader()
-
         #build menus from either xml or python config file
         self.buildMenus()
-
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
-        
-         # XML reader object to process XML DICOM data file
         self.objXMLReader = WeaselXMLReader() 
         
         #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
@@ -148,16 +136,10 @@ class Weasel_CMD(WeaselProgrammingInterface):
                 self.XMLDicomFile = arguments.xml_dicom
                 self.PythonFile = arguments.python_script
 
-                self.checkedImageList = []
-                self.checkedSeriesList = []
-                self.checkedStudyList = []
-                self.checkedSubjectList = []
+                self.objXMLReader = WeaselXMLReader() 
 
                 # XML reader object to process XML DICOM data file
-                self.objXMLReader = WeaselXMLReader()
-                self.treeView = None
-                self.treeViewColumnWidths = {1: 0, 2: 0, 3: 0}
-                treeView.makeDICOMStudiesTreeView(self, arguments.xml_dicom)
+                self.treeView = TreeView(self, arguments.xml_dicom)
 
                 logger.info("WEASEL CMD created successfully.")
             else:
