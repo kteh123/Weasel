@@ -262,6 +262,10 @@ class TreeView():
                     for menuItem in menuItems:
                         if not menuItem.isSeparator():
                             if not(menuItem.data() is None):
+                                # Set to always enable until a robust solution is found
+                                menuItem.setEnabled(True)
+                                return 
+
                                 #Assume not all tools will act on an image
                                 #Assume all tools act on a series 
                                 #
@@ -279,6 +283,7 @@ class TreeView():
             except Exception as e:
                 print('Error in TreeView.toggleMenuItems: ' + str(e))
                 logger.exception('Error in TreeView.toggleMenuItems: ' + str(e))
+
 
     def closeTreeView(self):
         try:
