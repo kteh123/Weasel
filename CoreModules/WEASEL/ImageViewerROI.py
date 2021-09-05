@@ -70,7 +70,7 @@ class ImageViewerROI(QMdiSubWindow):
     sliders for browsing series of images."""
 
     def __init__(self,  pointerToWeasel, subjectID, 
-                 studyID, seriesID, imagePathList): 
+                 studyID, seriesID, imagePathList, singleImageSelected=False): 
         try:
             super().__init__()
             self.subjectID = subjectID
@@ -123,9 +123,15 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpROIButtons()
 
-            self.graphicsView.dictROIs = ROIs(NumImages=len(imageList))
+            self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(imageList))
 
             self.setUpLevelsSpinBoxes()
+
+            if singleImageSelected:
+                self.displayOneImage()
+            else:
+                #DICOM series selected
+                self.setUpImageSliders()
 
 
     def setUpMainLayout(self):
@@ -173,7 +179,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
-    def roiNameChanged( newText):
+    def roiNameChanged(self, newText):
         try:
             logger.info("ImageViewerROI.roiNameChanged called")
             currentIndex = self.cmbROIs.currentIndex()
@@ -452,8 +458,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             graphicsView.sigROIChanged.connect(self.updateROIName)
-            graphicsView.sigNewROI.connect(lambda newROIName:addNewROItoDropDownList(newROIName))
-            graphicsView.sigUpdateZoom.connect(lambda increment:updateZoomSlider(increment))
+            graphicsView.sigNewROI.connect(lambda newROIName:self.addNewROItoDropDownList(newROIName))
+            graphicsView.sigUpdateZoom.connect(lambda increment:self.updateZoomSlider(increment))
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e))
                 logger.error('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
@@ -485,7 +491,7 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.error('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
 
 
-    def addNewROItoDropDownList(newRegio):
+    def addNewROItoDropDownList(self, newRegion):
         logger.info("ImageViewerROI.addNewROItoDropDownList called.")
         noDuplicate = True
         for count in range(self.cmbROIs.count()):
@@ -860,3 +866,64 @@ class ImageViewerROI(QMdiSubWindow):
                 print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
                 logger.error('Error in ImageViewerROI.updateImageLevels: ' + str(e))
 
+
+    def setInitialImageLevelValues(self):
+        self.spinBoxIntensity.blockSignals(True)
+        self.spinBoxIntensity.setValue(self.graphicsView.graphicsItem.intensity)
+        self.spinBoxIntensity.blockSignals(False)
+        self.spinBoxContrast.blockSignals(True)
+        self.spinBoxContrast.setValue(self.graphicsView.graphicsItem.contrast)
+        self.spinBoxContrast.blockSignals(False)
+
+
+    #def imageROISliderMoved(weasel, subjectName, studyName, seriesName, 
+    #                    imageList, imageSlider,
+    #                    lblImageMissing, pixelValueTxt,  
+    #                    roiMeanTxt, roiStdDevTxt,
+    #                    cmbROIs,  btnDraw, btnErase,
+    #                    spinBoxIntensity, spinBoxContrast,  
+    #                    graphicsView, subWindow, 
+    #                    buttonList, zoomSlider, 
+    #                    zoomLabel, imageNumberLabel):
+    #    """On the Multiple Image with ROI Display sub window, this
+    #    function is called when the image slider is moved. 
+    #    It causes the next image in imageList to be displayed"""
+    #    try:
+    #        logger.info("DisplayImageDrawROI.imageROISliderMoved called")
+    #        imageNumber = self.imageSlider.value()
+    #        currentImageNumber = imageNumber - 1
+    #        if currentImageNumber >= 0:
+    #            maxNumberImages = str(len(imageList))
+    #            imageNumberString = "image {} of {}".format(imageNumber, maxNumberImages)
+    #            imageNumberLabel.setText(imageNumberString)
+    #            weasel.selectedImagePath = imageList[currentImageNumber]
+    #            #print("imageSliderMoved before={}".format(weasel.selectedImagePath))
+    #            pixelArray = ReadDICOM_Image.returnPixelArray(weasel.selectedImagePath)
+    #            setButtonsToDefaultStyle(buttonList)
+    #            if pixelArray is None:
+    #                lblImageMissing.show()
+    #                self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))
+    #            else:
+    #                self.reloadImageInNewImageItem() 
+
+    #                setInitialImageLevelValues(graphicsView, spinBoxIntensity, spinBoxContrast)
+
+    #                spinBoxStep = int(0.01 * iqr(pixelArray, rng=(25, 75)))
+    #                #spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+    #                #print(spinBoxStep)
+    #                spinBoxIntensity.setSingleStep(spinBoxStep)
+    #                spinBoxContrast.setSingleStep(spinBoxStep)
+
+    #                setUpImageEventHandlers(weasel, graphicsView, pixelValueTxt, 
+    #                            roiMeanTxt, roiStdDevTxt,
+    #                            btnDraw, btnErase,
+    #                            cmbROIs, buttonList,
+    #                            zoomSlider, zoomLabel,
+    #                            imageSlider)
+
+    #            subWindow.setWindowTitle(subjectName + '-' + studyName + '-' + seriesName + '-' 
+    #                     + os.path.basename(weasel.selectedImagePath))
+    #           # print("imageSliderMoved after={}".format(weasel.selectedImagePath))
+    #    except Exception as e:
+    #        print('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
+    #        logger.error('Error in DisplayImageDrawROI.imageROISliderMoved: ' + str(e))
