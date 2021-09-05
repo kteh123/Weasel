@@ -13,12 +13,12 @@ class Display():
     Programming interfaces for modifying the Weasel GUI elements. 
     """
 
-    def refresh(self, new_series_name=None):
+    def refresh(self):
         """
         Refreshes the Weasel display.
         """
         self.close_progress_bar()
-        self.refreshWeasel(new_series_name=new_series_name)
+        self.treeView.refreshDICOMStudiesTreeView()
 
     def reset_treeview(self):
         """

@@ -162,7 +162,7 @@ class TreeView():
             print('Error in function TreeView.displayContextMenu: ' + str(e))
 
 
-    def refreshDICOMStudiesTreeView(self, newSeriesName = ''):
+    def refreshDICOMStudiesTreeView(self):
         """Refreshed the Tree View and saves the checked state."""
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
@@ -760,7 +760,6 @@ def createTreeBranch(branchName, branch, parent, refresh=False):
             #print("expand={} when branch={}".format(expand, branchID))
             if expand == "False":
                 thisBranch.setExpanded(False)
-            
             if 'checked' in branch.attrib:
                 checked = branch.attrib['checked']
             else:

@@ -31,7 +31,6 @@ import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
-import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 from CoreModules.FreeHandROI.GraphicsView import GraphicsView
 from CoreModules.FreeHandROI.ROI_Storage import ROIs 
 import CoreModules.FreeHandROI.Resources as icons
@@ -959,7 +958,7 @@ def saveROI(weasel, regionName, graphicsView):
             messageWindow.setMsgWindowProgBarValue(weasel, index)
             outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
             SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
-            treeSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(weasel, path, outputPath, suffix)
+            treeSeriesID = weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
         #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
         #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(weasel, inputPath, outputPath, suffix)
         messageWindow.setMsgWindowProgBarValue(weasel, len(inputPath))

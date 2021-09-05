@@ -1,4 +1,3 @@
-import CoreModules.WEASEL.InterfaceDICOMXMLFile
 import CoreModules.WEASEL.WriteXMLfromDICOM
 import DICOM.DeveloperTools
 #import CoreModules.WEASEL.DisplayImageDrawROI

@@ -141,3 +141,9 @@ class Messaging():
         else:
             messageWindow.hideProgressBar(self)
             messageWindow.closeMessageSubWindow(self)
+
+    def set_status(self, msg="I'm done with this!"):
+        """
+        Displays a message in the status bar.
+        """
+        self.statusBar.showMessage(msg)

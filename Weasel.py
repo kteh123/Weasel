@@ -83,7 +83,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         #build menus from either xml or python config file
         self.buildMenus()
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
-        self.objXMLReader = WeaselXMLReader() 
+        self.objXMLReader = WeaselXMLReader(self) 
         
         #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
         self.setStyleSheet(styleSheet.TRISTAN_GREY)

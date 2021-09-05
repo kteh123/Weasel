@@ -5,7 +5,6 @@ import logging
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.MessageWindow as messageWindow
-import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +51,7 @@ class GenericDICOMTools:
                     #    SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "SequenceName", str(newDataset.SequenceName + suffix))
                     #elif hasattr(newDataset, "ProtocolName"):
                     #    SaveDICOM_Image.overwriteDicomFileTag(derivedPath, "ProtocolName", str(newDataset.ProtocolName + suffix))
-                newSeriesID = interfaceDICOMXMLFile.insertNewImageInXMLFile(self, inputPath,
+                newSeriesID = self.objXMLReader.insertNewImageInXMLFile(inputPath,
                                              derivedPath, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 if (series_id is None) and (series_uid is None):
@@ -88,7 +87,7 @@ class GenericDICOMTools:
                         #    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "SequenceName", str(newDataset.SequenceName + suffix))
                         #elif hasattr(newDataset, "ProtocolName"):
                         #    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", str(newDataset.ProtocolName + suffix))
-                newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
+                newSeriesID = self.objXMLReader.insertNewSeriesInXMLFile(
                                 inputPath, derivedPath, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             return derivedPath, newSeriesID
         except Exception as e:
@@ -103,14 +102,14 @@ class GenericDICOMTools:
         try:
             if isinstance(inputPath, str) and os.path.exists(inputPath):
                 os.remove(inputPath)
-                interfaceDICOMXMLFile.removeImageFromXMLFile(self, inputPath)
+                self.objXMLReader.removeImageFromXMLFile(inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
                     if displayWindow.windowTitle().split(" - ")[-1] == os.path.basename(inputPath):
                         displayWindow.close()
             elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
                 for path in inputPath:
                     os.remove(path)
-                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, inputPath)
+                self.objXMLReader.removeMultipleImagesFromXMLFile(inputPath)
                 for displayWindow in self.mdiArea.subWindowList():
                     if displayWindow.windowTitle().split(" - ")[-1] in list(map(os.path.basename, inputPath)):
                         displayWindow.close()
@@ -156,9 +155,9 @@ class GenericDICOMTools:
                     #elif hasattr(dataset, "ProtocolName"):
                     #    SaveDICOM_Image.overwriteDicomFileTag(path, "ProtocolName", series_name)
                 newImagePathList = imagePathList
-                newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self,
+                self.objXMLReader.insertNewSeriesInXMLFile(
                                 originalPathList, newImagePathList, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
-                interfaceDICOMXMLFile.removeMultipleImagesFromXMLFile(self, originalPathList)
+                self.objXMLReader.removeMultipleImagesFromXMLFile(originalPathList)
             else:
                 if progress_bar == True: messageWindow.setMsgWindowProgBarMaxValue(self, len(imagePathList))
                 for index, path in enumerate(imagePathList):
@@ -185,7 +184,7 @@ class GenericDICOMTools:
                     #elif hasattr(newDataset, "ProtocolName"):
                     #    SaveDICOM_Image.overwriteDicomFileTag(newFilePath, "ProtocolName", series_name)
                     newImagePathList.append(newFilePath)
-                newSeriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, imagePathList, newImagePathList, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
+                self.objXMLReader.insertNewSeriesInXMLFile(imagePathList, newImagePathList, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
             return newImagePathList
         except Exception as e:
             print('Error in function GenericDICOMTools.mergeDicomIntoOneSeries: ' + str(e))
@@ -318,11 +317,11 @@ class PixelArrayDICOMTools:
                     inputPath = inputPath[0]
                 SaveDICOM_Image.saveNewSingleDicomImage(derivedImagePathList[0], (''.join(inputPath)), derivedImageList[0], suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[(''.join(inputPath))], parametric_map=parametric_map, colourmap=colourmap)
                 # Record derived image in XML file
-                interfaceDICOMXMLFile.insertNewImageInXMLFile(self, (''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
+                self.objXMLReader.insertNewImageInXMLFile((''.join(inputPath)), derivedImagePathList[0], suffix, newSeriesName=series_name)
             else:
                 SaveDICOM_Image.saveDicomNewSeries(derivedImagePathList, inputPath, derivedImageList, suffix, series_id=series_id, series_uid=series_uid, series_name=series_name, list_refs_path=[inputPath], parametric_map=parametric_map, colourmap=colourmap)
                 # Insert new series into the DICOM XML file
-                interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
+                self.objXMLReader.insertNewSeriesInXMLFile(inputPath, derivedImagePathList, suffix, newSeriesName=series_name)            
                 
             return derivedImagePathList
 

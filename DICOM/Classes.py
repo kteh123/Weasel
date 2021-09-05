@@ -10,7 +10,6 @@ from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.MessageWindow as messageWindow
-import CoreModules.WEASEL.InterfaceDICOMXMLFile as interfaceDICOMXMLFile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -492,9 +491,10 @@ class Subject:
                         for series in study.children:
                             series.Item('PatientID', outputSubject.subjectID)
                             seriesPathsList.append(series.images)
-                        interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputSubject.objWeasel, outputSubject.subjectID, study.studyID, suffix, seriesList=seriesPathsList) # Need new Study name situation
+                        outputSubject.objWeasel.objXMLReader.insertNewStudyInXMLFile(
+                                    outputSubject.subjectID, study.studyID, suffix, seriesList=seriesPathsList) # Need new Study name situation
                         # Add study to new subject in the XML
-                    interfaceDICOMXMLFile.removeSubjectinXMLFile(subject.objWeasel, subject.subjectID)
+                    subject.objWeasel.objXMLReader.removeSubjectFromXMLFile(subject.subjectID)
             return outputSubject
         except Exception as e:
             print('Error in Subject.merge: ' + str(e))
@@ -713,8 +713,8 @@ class Study:
                         series.Item('SeriesInstanceUID', new_series_uid)
                         seriesPathsList.append(series.images)
                         seriesNumber += 1
-                    interfaceDICOMXMLFile.removeOneStudyFromSubject(study.objWeasel, study.subjectID, study.studyID)
-            interfaceDICOMXMLFile.insertNewStudyInXMLFile(outputStudy.objWeasel, outputStudy.subjectID, outputStudy.studyID, suffix, seriesList=seriesPathsList)
+                    study.objWeasel.objXMLReader.removeOneStudyFromSubject(study.subjectID, study.studyID)
+            outputStudy.objWeasel.objXMLReader.insertNewStudyInXMLFile(outputStudy.subjectID, outputStudy.studyID, suffix, seriesList=seriesPathsList)
             return outputStudy
         except Exception as e:
             print('Error in Study.merge: ' + str(e))
@@ -957,7 +957,7 @@ class Series:
                 newSubjectID = str(dataset.PatientID)
             SaveDICOM_Image.saveDicomToFile(dataset, output_path=self.images[index])
             if changeXML == True:
-                interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
+                self.objWeasel.objXMLReader.moveImageInXMLFile(self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
         # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
         self.subjectID = newSubjectID
         self.studyID = newStudyID
@@ -1329,7 +1329,7 @@ class Series:
                     else:
                         newSubjectID = oldSubjectID
                     if changeXML == True:
-                        interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
+                        self.objWeasel.objXMLReader.moveImageInXMLFile(oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.images[index], '')
         except Exception as e:
             print('Error in Series.set_value: ' + str(e))
             logger.exception('Error in Series.set_value: ' + str(e))
@@ -1353,9 +1353,9 @@ class Series:
             if newValue:
                 GenericDICOMTools.editDICOMTag(self.images, tagDescription, newValue)
                 if (tagDescription == 'SeriesDescription') or (tagDescription == 'SequenceName') or (tagDescription == 'ProtocolName'):
-                    interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_name=newValue)
+                    self.objWeasel.objXMLreader.renameSeriesinXMLFile(self.images, series_name=newValue)
                 elif tagDescription == 'SeriesNumber':
-                    interfaceDICOMXMLFile.renameSeriesinXMLFile(self.objWeasel, self.images, series_id=newValue)
+                    self.objWeasel.objXMLreader.renameSeriesinXMLFile(self.images, series_id=newValue)
             itemList, _ = ReadDICOM_Image.getSeriesTagValues(self.images, tagDescription)
             #if self.Multiframe: 
             #    tempList = [itemList[index] for index in self.indices]
@@ -1562,7 +1562,7 @@ class Image:
             newSubjectID = str(PydicomObject.PatientID)
         SaveDICOM_Image.saveDicomToFile(PydicomObject, output_path=self.path)
         if changeXML == True:
-            interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
+            self.objWeasel.objXMLReader.moveImageInXMLFile(self.subjectID, self.studyID, self.seriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
         # Only after updating the Element Tree (XML), we can change the instance values and save the DICOM file
         self.subjectID = newSubjectID
         self.studyID = newStudyID
@@ -1768,7 +1768,7 @@ class Image:
             else:
                 newSubjectID = oldSubjectID
             if changeXML == True:
-                interfaceDICOMXMLFile.moveImageInXMLFile(self.objWeasel, oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
+                self.objWeasel.objXMLReader.moveImageInXMLFile(oldSubjectID, oldStudyID, oldSeriesID, newSubjectID, newStudyID, newSeriesID, self.path, '')
         except Exception as e:
             print('Error in Image.set_value: ' + str(e))
             logger.exception('Error in Image.set_value: ' + str(e))

@@ -220,17 +220,3 @@ class UserInterfaceTools():
             print('Error in function UserInterfaceTools.displayImages: ' + str(e))
             logger.exception('Error in UserInterfaceTools.displayImages: ' + str(e))
         
-
-    def refreshWeasel(self, new_series_name=None):
-        """
-        Refresh the user interface screen.
-        """
-        logger.info("UserInterfaceTools.refreshWeasel called")
-        try:
-            if new_series_name:
-                self.treeView.refreshDICOMStudiesTreeView(newSeriesName=new_series_name)
-            else:
-                self.treeView.refreshDICOMStudiesTreeView()
-        except Exception as e:
-            print('Error in function UserInterfaceTools.refreshWeasel: ' + str(e))
-            logger.exception('Error in UserInterfaceTools.refreshWeasel: ' + str(e))
