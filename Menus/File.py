@@ -9,7 +9,7 @@ def main(weasel):
         pipeline = 'File__OpenDICOM',
         context = True)
     menu.item(
-        label = "Read DICOM folder",
+        label = "Reload DICOM folder",
         shortcut = 'Ctrl+R',
         tooltip = "Read all images in the DICOM folder",
         pipeline = 'File__ReadDICOM',
