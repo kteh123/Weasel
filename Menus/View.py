@@ -15,6 +15,12 @@ def main(weasel):
         pipeline = 'ViewImageMultiSlider',
         context = True)
     menu.item(
+        label = 'Series or Image with ROI(multiple sliders)',
+        shortcut = 'Ctrl+M',
+        tooltip = 'View DICOM Image or series and draw ROI with multiple sliders',
+        pipeline = 'ViewImageMultiSliderROI',
+        context = True)
+    menu.item(
         label = 'Draw Region of Interest',
         shortcut = 'Ctrl+R',
         tooltip = 'View DICOM Image or series with the ROI tool',

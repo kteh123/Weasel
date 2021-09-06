@@ -1,4 +1,4 @@
-from CoreModules.WEASEL.ImageViewer import ImageViewer as imageViewer
+from CoreModules.WEASEL.ImageViewerROI import ImageViewerROI as imageViewerROI
 import logging
 from PyQt5.QtWidgets import QMessageBox
 
@@ -32,7 +32,7 @@ def main(objWeasel):
                         studyID = series[1]
                         seriesID = series[2]
                         imageList = objWeasel.treeView.returnSeriesImageList(subjectID, studyID, seriesID)
-                        imageViewer(objWeasel, subjectID, studyID, seriesID, imageList)
+                        imageViewerROI(objWeasel, subjectID, studyID, seriesID, imageList)
             elif objWeasel.treeView.isAnImageChecked:
                 if len(objWeasel.treeView.checkedImageList)>0: 
                     for image in objWeasel.treeView.checkedImageList:
@@ -40,7 +40,7 @@ def main(objWeasel):
                         studyID = image[1]
                         seriesID = image[2]
                         imagePath = image[3]
-                        imageViewer(objWeasel, subjectID, studyID, 
+                        imageViewerROI(objWeasel, subjectID, studyID, 
                                     seriesID, imagePath, singleImageSelected=True)
                         
         except NoTreeViewItemSelected:
