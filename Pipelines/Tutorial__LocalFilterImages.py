@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+
 #**************************************************************************
 # Template part of a tutorial 
 # Applies a local filter to checked images and saves them in a new series, 

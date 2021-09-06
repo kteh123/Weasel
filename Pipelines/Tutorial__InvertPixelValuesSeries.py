@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Inverts a number of selected images in place, 
 # series by series and showing a progress bar

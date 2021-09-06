@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+
 #**************************************************************************
 # Tutorial showing the use of user_input()
 # Runs the user input window in various configurations

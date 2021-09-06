@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Template part of a tutorial 
 # Performs a binary operation on two images and saves them in a new series, 

@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Template part of a tutorial 
 # Creates a copy of the checked studies

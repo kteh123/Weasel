@@ -1,3 +1,7 @@
+def isEnabled(weasel):
+    return True
+
+
 #**************************************************************************
 # Template part of a tutorial 
 # Anonymises the checked images

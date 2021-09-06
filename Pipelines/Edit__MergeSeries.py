@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Merges the series checked by the user 
 # into a new series under the same study

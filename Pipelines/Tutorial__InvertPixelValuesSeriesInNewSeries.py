@@ -1,8 +1,10 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Inverts the images in a number of selected series
 # and saves them in a new series, 
 # series by series and showing a progress bar
-# BUG: Throws an error
 #***************************************************************************
 
 def main(weasel):

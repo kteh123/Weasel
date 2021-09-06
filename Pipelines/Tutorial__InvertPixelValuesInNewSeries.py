@@ -1,11 +1,10 @@
+def isEnabled(weasel):
+    return True
+    
 #**************************************************************************
 # Template part of a tutorial 
 # Inverts a number of selected images and saves them in a new series, 
 # image by image and showing a progress bar
-# BUG: IF YOU SELECT TWO IMAGES IN DIFFERENT SERIES, THEY ARE NOT SAVED IN THE SAME SERIES
-# Note another way of writing this would be to do newSeries = Images.Merge()
-# and then iterating over the images in the new series. 
-# This should work but the bug needs to be fixed anyway.
 #***************************************************************************
 
 def main(weasel):

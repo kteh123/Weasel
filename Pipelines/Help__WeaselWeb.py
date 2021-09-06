@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 import webbrowser
 #webbrowser.get('chrome').open("Weasel.pro")
 

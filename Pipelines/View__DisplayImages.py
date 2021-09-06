@@ -1,3 +1,6 @@
+def isEnabled(weasel):
+    return True
+    
 def main(weasel):
 
     series = weasel.series()
