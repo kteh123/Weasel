@@ -128,6 +128,7 @@ class ReadWrite():
         Closes the DICOM folder and updates display.
         """  
         self.save_treeview()
+        self.close_subwindows()
         self.treeView.closeTreeView()  
         self.DICOMFolder = ''  
 

@@ -1,11 +1,9 @@
-from CoreModules.WEASEL.PythonMenuBuilder import PythonMenuBuilder as menuBuilder
-
 from Menus.File import main as menuFile
 from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
 from Menus.Help import main as menuHelp
 
-class BuildMenus():
+class EditMenus():
     """
     Programming interfaces for the Weasel menus. 
     """
@@ -14,7 +12,7 @@ class BuildMenus():
         """
         Interface for Python menu builder
         """
-        return menuBuilder(self, label)
+        return self.menuBuilder.newSubMenu(label)
 
     def menu_file(self):
         """
@@ -44,7 +42,7 @@ class BuildMenus():
         """
         Refreshes the enabled status of each menu item
         """  
-        for menu in self.listMenus:
+        for menu in self.menuBuilder.listMenus:
             for menuItem in menu.actions():
                 if not menuItem.isSeparator():
                     module = menuItem.data()
