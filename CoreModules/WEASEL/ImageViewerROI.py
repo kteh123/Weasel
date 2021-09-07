@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 
 #Subclassing QSlider so that the direction (Forward, Backward) of 
 #slider travel is returned to the calling function
+#This class is used to create a hidden slider used 
+#for zooming the image
 class Slider(QSlider):
     Nothing, Forward, Backward = 0, 1, -1
     directionChanged = pyqtSignal(int)
@@ -79,10 +81,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.selectedImagePath = ""
             self.imageNumber = -1
             self.weasel = pointerToWeasel
-            #A list of the sorted image sliders, 
-            #updated as they are added and removed 
-            #from the subwindow
-            self.listSortedImageSliders = [] 
             
             if singleImageSelected:
                 self.isSeries = False

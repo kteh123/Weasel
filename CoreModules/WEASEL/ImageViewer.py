@@ -157,7 +157,8 @@ class ImageViewer(QMdiSubWindow):
             self.slidersWidget.sliderMoved.connect(lambda imagePath: 
                                                    self.displayPixelArrayOfSingleImage(imagePath))
             #Display the first image in the viewer
-            self.slidersWidget.displayFirstImage()
+            self.displayPixelArrayOfSingleImage(self.imagePathList[0])
+            #self.slidersWidget.displayFirstImage()
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
@@ -567,6 +568,7 @@ class ImageViewer(QMdiSubWindow):
 
     def getColourTableForThisImage(self):
         try:
+            logger.info("ImageViewer.getColourTableForThisImage called")
             if self.isSeries:
                 if self.userSelection.getSeriesUpdateStatus():
                     self.colourTable = self.cmbColours.currentText()
@@ -575,6 +577,8 @@ class ImageViewer(QMdiSubWindow):
                     self.colourTable, _, _ = self.userSelection.returnUserSelection(imageName)  
                     if self.colourTable == 'default':
                         self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
+                else:  #no user selection, so get colour table saved to DICOM
+                    self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
             else:  #single image
                 self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
         except Exception as e:
@@ -608,12 +612,12 @@ class ImageViewer(QMdiSubWindow):
 
     
     def displayPixelArrayOfSingleImage(self, imagePath):
-            """Displays an image's pixel array in a pyqtGraph imageView widget 
-            & sets its colour table, contrast and intensity levels. 
-            Also, sets the contrast and intensity in the associated histogram.
-            """
-            #try:
-            logger.info("ImageViewer.ddisplayPixelArrayOfSingleImage called")
+        """Displays an image's pixel array in a pyqtGraph imageView widget 
+        & sets its colour table, contrast and intensity levels. 
+        Also, sets the contrast and intensity in the associated histogram.
+        """
+        try:
+            logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
 
             self.selectedImagePath = imagePath
             imageName = os.path.basename(self.selectedImagePath)
@@ -664,9 +668,9 @@ class ImageViewer(QMdiSubWindow):
                 self.graphicsView.getView().scene().sigMouseMoved.connect(
                         lambda pos: self.getPixelValue(pos))
 
-           # except Exception as e:
-           #     print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
-           #     logger.error('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+        except Exception as e:
+            print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+            logger.error('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
 
 
     def updateImageUserSelection(self):
