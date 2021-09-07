@@ -774,7 +774,7 @@ class ImageViewerROI(QMdiSubWindow):
             intensity = self.spinBoxIntensity.value()
             contrast = self.spinBoxContrast.value()
             mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
-            graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
+            self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
         except Exception as e:
             print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
             logger.error('Error in ImageViewerROI.updateImageLevels: ' + str(e))
@@ -878,18 +878,6 @@ class ImageViewerROI(QMdiSubWindow):
                self.btnDraw.setStyleSheet(
                  "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
                  )
-
-
-    def setUpLevelsSpinBoxes(self):
-        try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
-            self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
-            self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
-        except Exception as e:
-            print('Error in ImageViewerROI.setUpLevelsSpinBoxes: ' + str(e))
-            logger.error('Error in ImageViewerROI.setUpLevelsSpinBoxes: ' + str(e))
 
 
     def setInitialImageLevelValues(self):
