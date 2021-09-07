@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 #**************************************************************************
 # Inverts the images in a number of selected series

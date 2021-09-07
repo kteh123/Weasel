@@ -1,5 +1,3 @@
-def isEnabled(weasel):
-    return True
     
 #**************************************************************************
 # Template part of a tutorial 

@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 #**************************************************************************
 # Thresholds a number of selected images into a new series

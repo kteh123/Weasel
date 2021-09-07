@@ -39,3 +39,15 @@ class BuildMenus():
         Returns the default help menu
         """    
         return menuHelp(self) 
+
+    def refresh_menus(self):
+        """
+        Refreshes the enabled status of each menu item
+        """  
+        for menu in self.listMenus:
+            for menuItem in menu.actions():
+                if not menuItem.isSeparator():
+                    module = menuItem.data()
+                    if hasattr(module, "enable"):
+                        enable = getattr(module, "enable")(self)
+                        menuItem.setEnabled(enable)                

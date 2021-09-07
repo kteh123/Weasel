@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 #**************************************************************************
 # Apply Gaussian filter to a number of selected images in new series

@@ -66,18 +66,9 @@ def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
             pointerToWeasel.menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
             #pointerToWeasel.menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
 
-            if hasattr(module, "isSeriesOnly"):
-                boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
-            else:
-                boolApplyBothImagesAndSeries = True
-
-            pointerToWeasel.menuItem.setData(boolApplyBothImagesAndSeries)
-
-            if hasattr(module, "isEnabled"):
-                pointerToWeasel.menuItem.setEnabled(getattr(module, "isEnabled")(pointerToWeasel))
-            else:
-                pointerToWeasel.menuItem.setEnabled(False)
-            
+            pointerToWeasel.menuItem.setEnabled(True)
+            pointerToWeasel.menuItem.setData(module)
+          
             topMenu.addAction(pointerToWeasel.menuItem)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
