@@ -10,7 +10,7 @@ class NoTreeViewItemSelected(Exception):
    pass
 
 
-def isEnabled(weasel):
+def isEnabled(objWeasel):
     return True
 
 

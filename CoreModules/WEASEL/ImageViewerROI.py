@@ -123,7 +123,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
             if singleImageSelected:
-                self.displayOneImage()
+                self.displayPixelArrayOfSingleImage(self.imagePathList )
             else:
                 #DICOM series selected
                 self.setUpImageSliders()
@@ -213,7 +213,7 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
-                inputPath = [i[3] for i in self.weasel.checkedImageList]
+                inputPath = [i[3] for i in self.weasel.treeView.checkedImageList]
                 #inputPath = self.imageList
             else:
                 inputPath = [self.selectedImagePath]
@@ -263,8 +263,8 @@ class ImageViewerROI(QMdiSubWindow):
                 # for series ID in listParams[0]: # more than 1 ROI may be selected
                 seriesID = listParams[0][0] # Temporary, only the first ROI
                 imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
-                if self.isASeriesChecked:
-                    targetPath = [i[3] for i in self.checkedImageList]
+                if self.weasel.treeView.isASeriesChecked:
+                    targetPath = [i[3] for i in self.weasel.treeView.checkedImageList]
                     #targetPath = self.imageList
                 else:
                     targetPath = [self.selectedImagePath]
@@ -416,7 +416,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def displayROIMeanAndStd(self):
         logger.info("ImageViewerROI.displayROIMeanAndStd called")
-        if self.mainImageSlider:  
+        if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
@@ -515,27 +515,30 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def displayImageDataUnderMouse(self, mouseOverImage):
-        logger.info("ImageViewerROI.displayImageDataUnderMouse called")
-        #print("mousePointerOverImage={}".format(mousePointerOverImage))
-        if mouseOverImage:
-            xCoord = self.graphicsView.graphicsItem.xMouseCoord
-            yCoord = self.graphicsView.graphicsItem.yMouseCoord
-            pixelValue = self.graphicsView.graphicsItem.pixelValue
-            strValue = str(pixelValue)
-            if self.mainImageSlider:  
-                imageNumber = self.mainImageSlider.value()
+        try:
+            logger.info("ImageViewerROI.displayImageDataUnderMouse called")
+            if mouseOverImage:
+                xCoord = self.graphicsView.graphicsItem.xMouseCoord
+                yCoord = self.graphicsView.graphicsItem.yMouseCoord
+                pixelValue = self.graphicsView.graphicsItem.pixelValue
+                strValue = str(pixelValue)
+                if self.isSeries:  
+                    imageNumber = self.mainImageSlider.value()
+                else:
+                    imageNumber = 1
+                strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
+                self.pixelValueTxt.setText('= ' + strValue + strPosition)
             else:
-                imageNumber = 1
-            strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
-            self.pixelValueTxt.setText('= ' + strValue + strPosition)
-        else:
-             self.pixelValueTxt.setText('')
+                 self.pixelValueTxt.setText('')
+        except Exception as e:
+                print('Error in ImageViewerROI.displayImageDataUnderMouse: ' + str(e))
+                logger.error('Error in ImageViewerROI.displayImageDataUnderMouse: ' + str(e))
 
 
     def storeMaskData(self):
         logger.info("ImageViewerROI.storeMaskData called")
         regionName = self.cmbROIs.currentText()
-        if self.mainImageSlider:  
+        if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
@@ -546,7 +549,7 @@ class ImageViewerROI(QMdiSubWindow):
     def replaceMask(self):
         logger.info("ImageViewerROI.replaceMask called")
         regionName = self.cmbROIs.currentText()
-        if self.mainImageSlider:  
+        if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
@@ -619,7 +622,7 @@ class ImageViewerROI(QMdiSubWindow):
             logger.info("ImageViewerROI.reloadImageInNewImageItem called")
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
 
-            if self.mainImageSlider:  
+            if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
@@ -647,7 +650,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiStdDevTxt.clear()
             self.pixelValueTxt.clear()
         else:
-            if self.mainImageSlider:  
+            if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
@@ -764,7 +767,7 @@ class ImageViewerROI(QMdiSubWindow):
     def updateImageLevels(self):
         logger.info("ImageViewerROI.updateImageLevels called.")
         try:
-            if self.mainImageSlider:  
+            if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
@@ -775,15 +778,6 @@ class ImageViewerROI(QMdiSubWindow):
         except Exception as e:
             print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
             logger.error('Error in ImageViewerROI.updateImageLevels: ' + str(e))
-    
-
-    def displayOneImage(self):
-        try:
-            self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
-                         + os.path.basename(self.imagePathList))
-            self.displayPixelArrayOfSingleImage(self.imagePathList ) 
-        except Exception as e:
-            print('Error in ImageViewerROI.displayOneImage: ' + str(e))
 
 
     def setUpImageSliders(self):
@@ -803,9 +797,9 @@ class ImageViewerROI(QMdiSubWindow):
             #This is how an object created from the ImageSliders class communicates
             #with an object created from the ImageViewerROI class via the former's
             #sliderMoved event, which passes the image path of the image being viewed
-            #to ImageViewerROI's displayPixelArrayOfImageInSeries function for display.
+            #to ImageViewerROI's displayPixelArrayOfSingleImage function for display.
             self.slidersWidget.sliderMoved.connect(lambda imagePath: 
-                                                   self.displayPixelArrayOfImageInSeries(imagePath))
+                                                   self.displayPixelArrayOfSingleImage(imagePath))
             #Display the first image in the viewer
             self.slidersWidget.displayFirstImage()
         except Exception as e:
@@ -813,13 +807,13 @@ class ImageViewerROI(QMdiSubWindow):
             logger.error('Error in ImageViewerROI.setUpImageSliders: ' + str(e))
 
 
-    def displayPixelArrayOfImageInSeries(self, imagePath):
+    def displayPixelArrayOfSingleImage(self, imagePath):
             """Displays an image's pixel array in a pyqtGraph imageView widget 
             & sets its colour table, contrast and intensity levels. 
             Also, sets the contrast and intensity in the associated histogram.
             """
             try:
-                logger.info("ImageViewer.displayPixelArrayOfImageInSeries called")
+                logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
 
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
@@ -841,8 +835,8 @@ class ImageViewerROI(QMdiSubWindow):
                     self.setUpImageEventHandlers()
 
             except Exception as e:
-                print('Error in ImageViewerROI.displayPixelArrayOfImageInSeries: ' + str(e))
-                logger.error('Error in ImageViewerROI.displayPixelArrayOfImageInSeries: ' + str(e))
+                print('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
+                logger.error('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
 
 
     def setUpZoomSlider(self):
