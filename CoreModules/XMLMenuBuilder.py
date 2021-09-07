@@ -5,7 +5,7 @@ import importlib
 import logging
 logger = logging.getLogger(__name__)
 
-from CoreModules.WEASEL.WeaselMenuXMLReader import WeaselMenuXMLReader
+from CoreModules.XMLMenuReader import XMLMenuReader
 
 
 def setupMenus(weasel, menuXMLFile):
@@ -14,7 +14,7 @@ def setupMenus(weasel, menuXMLFile):
     try:
         logger.info("Menus.setupMenus")
         mainMenu = weasel.menuBar()
-        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        objXMLMenuReader = XMLMenuReader(menuXMLFile) 
         menus = objXMLMenuReader.getMenus()
         for menu in menus:
             menuName = menu.attrib['name']
@@ -118,7 +118,7 @@ def buildContextMenu(weasel, menuXMLFile):
     try:
         weasel.menuBuilder.context.hovered.connect(_actionHovered)
 
-        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        objXMLMenuReader = XMLMenuReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
         for item in items:
             buildContextMenuItem(weasel, weasel.menuBuilder.context, item)

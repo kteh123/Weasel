@@ -31,7 +31,7 @@ sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.StyleSheet as styleSheet
-from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
+from CoreModules.XMLConfigReader import XMLConfigReader
 from CoreModules.WEASEL.TreeView import TreeView
 from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
 from CoreModules.MenuBuilder import MenuBuilder
@@ -75,7 +75,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.DICOMFolder = ''
         self.treeView = None
 
-        self.objConfigXMLReader = WeaselConfigXMLReader()
+        self.objConfigXMLReader = XMLConfigReader()
         self.menuBuilder = MenuBuilder(self)
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         self.objXMLReader = WeaselXMLReader(self) 

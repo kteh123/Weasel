@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class WeaselConfigXMLReader:
+class XMLConfigReader:
     def __init__(self): 
         try:
             self.hasXMLFileParsedOK = True
@@ -13,8 +13,8 @@ class WeaselConfigXMLReader:
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
 
         except Exception as e:
-            print('Error in WeaselConfigXMLReader.__init__: ' + str(e)) 
-            logger.exception('Error in WeaselConfigXMLReader.__init__: ' + str(e))
+            print('Error in XMLConfigReader.__init__: ' + str(e)) 
+            logger.exception('Error in XMLConfigReader.__init__: ' + str(e))
 
 
     def __repr__(self):
@@ -31,8 +31,8 @@ class WeaselConfigXMLReader:
             else:
                 return menu.text
         except Exception as e:
-            print('Error in WeaselConfigXMLReader.getMenuConfigFile: ' + str(e)) 
-            logger.exception('Error in WeaselConfigXMLReader.getMenuConfigFile: ' + str(e))
+            print('Error in XMLConfigReader.getMenuConfigFile: ' + str(e)) 
+            logger.exception('Error in XMLConfigReader.getMenuConfigFile: ' + str(e))
 
 
     def getWeaselDataFolder(self):
@@ -43,5 +43,5 @@ class WeaselConfigXMLReader:
             else:
                 return folder.text
         except Exception as e:
-            print('Error in WeaselConfigXMLReader.getWeaselDataFolder: ' + str(e)) 
-            logger.exception('Error in WeaselConfigXMLReader.getWeaselDataFolder: ' + str(e))
+            print('Error in XMLConfigReader.getWeaselDataFolder: ' + str(e)) 
+            logger.exception('Error in XMLConfigReader.getWeaselDataFolder: ' + str(e))

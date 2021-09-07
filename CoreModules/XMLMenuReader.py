@@ -5,7 +5,7 @@ import pathlib
 logger = logging.getLogger(__name__)
 
 
-class WeaselMenuXMLReader:
+class XMLMenuReader:
     def __init__(self, menuXMLFile): 
         try:
             self.hasXMLFileParsedOK = True
@@ -25,8 +25,8 @@ class WeaselMenuXMLReader:
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
 
         except Exception as e:
-            print('Error in WeaselMenuXMLReader.__init__: ' + str(e)) 
-            logger.error('Error in WeaselMenuXMLReader.__init__: ' + str(e))
+            print('Error in XMLMenuReader.__init__: ' + str(e)) 
+            logger.error('Error in XMLMenuReader.__init__: ' + str(e))
 
 
     def __repr__(self):
