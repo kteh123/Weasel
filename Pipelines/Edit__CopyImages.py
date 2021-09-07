@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
 
 #**************************************************************************
 # Creates a copy of the checked images in the same series

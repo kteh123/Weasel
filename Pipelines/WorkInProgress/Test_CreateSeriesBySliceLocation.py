@@ -4,6 +4,9 @@
 # then a new series is created inside each study
 #****************************************************************
 
+def enable(weasel):
+    return False
+
 def main(weasel):
     images = weasel.images()
     studies = images.parent.parent

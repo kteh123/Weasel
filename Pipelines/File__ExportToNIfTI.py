@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
 
 def main(weasel):
     try:

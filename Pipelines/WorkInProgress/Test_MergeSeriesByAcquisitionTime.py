@@ -4,6 +4,9 @@
 #****************************************************************
 import numpy as np
 
+def enable(weasel):
+    return False
+
 def main(weasel):
     seriesList = weasel.series()
     for series in seriesList:

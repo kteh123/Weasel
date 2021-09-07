@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 #**************************************************************************
 # Merges the series checked by the user 

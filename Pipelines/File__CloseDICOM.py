@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 import logging
 logger = logging.getLogger(__name__)

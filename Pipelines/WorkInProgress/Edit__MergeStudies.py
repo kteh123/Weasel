@@ -3,6 +3,8 @@
 # Merges the Images checked by the user into a new series under the same study
 #***************************************************************************
 
+def enable(weasel):
+    return False
 
 def main(weasel):
     

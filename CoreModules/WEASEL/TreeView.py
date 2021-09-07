@@ -254,32 +254,12 @@ class TreeView():
 
 
     def toggleMenuItems(self):
-            """TO DO"""
+            """Resets the enabled status of all menu items"""
+            
+            self.weasel.refresh_menus()
             try:
                 logger.info("TreeView.toggleMenuItems called.")
-                for menu in self.weasel.listMenus:
-                    menuItems = menu.actions()
-                    for menuItem in menuItems:
-                        if not menuItem.isSeparator():
-                            if not(menuItem.data() is None):
-                                # Set to always enable until a robust solution is found
-                                menuItem.setEnabled(True)
-                                return 
 
-                                #Assume not all tools will act on an image
-                                #Assume all tools act on a series 
-                                #
-                                #Disable all menu items to account for the
-                                #case when all checkboxes are unchecked. 
-                                #Then enable depending on what is checked.
-                                menuItem.setEnabled(False)  
-                                if self.isASeriesChecked:
-                                    menuItem.setEnabled(True)
-                                elif self.isAnImageChecked:
-                                    if menuItem.data():
-                                        menuItem.setEnabled(True)
-                                    else:
-                                        menuItem.setEnabled(False) 
             except Exception as e:
                 print('Error in TreeView.toggleMenuItems: ' + str(e))
                 logger.exception('Error in TreeView.toggleMenuItems: ' + str(e))

@@ -1,5 +1,4 @@
-def isEnabled(weasel):
-    return True
+
     
 #**************************************************************************
 # Creates a copy of all of the checked series

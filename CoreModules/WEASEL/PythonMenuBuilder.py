@@ -63,17 +63,8 @@ class PythonMenuBuilder:
             objFunction = getattr(module, functionName)
             self.menuItem.triggered.connect(lambda : objFunction(self.pointerToWeasel))
 
-            if hasattr(module, "isSeriesOnly"):
-                boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(self)
-            else:
-                boolApplyBothImagesAndSeries = True
-
-            self.menuItem.setData(boolApplyBothImagesAndSeries)
-
-            if hasattr(module, "isEnabled"):
-                self.menuItem.setEnabled(getattr(module, "isEnabled")(self))
-            else:
-                self.menuItem.setEnabled(False)
+            self.menuItem.setEnabled(True)
+            self.menuItem.setData(module)
    
             self.topMenu.addAction(self.menuItem)
 

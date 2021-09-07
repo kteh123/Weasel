@@ -1,4 +1,5 @@
-def isEnabled(weasel):
+def enable(weasel):
+    print("Enabling Hello World!")
     return True
 
 def main(weasel):

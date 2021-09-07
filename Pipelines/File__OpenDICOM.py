@@ -1,8 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-def isEnabled(weasel):
-    return True
+
 
 def main(weasel):
     """
