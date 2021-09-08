@@ -1,3 +1,4 @@
+import os, sys
 import xml.etree.cElementTree as ET
 import logging
 logger = logging.getLogger(__name__)
@@ -39,7 +40,9 @@ class XMLConfigReader:
         try:
             folder = self.root.find('./weasel_data_folder')
             if folder.text is None:
-                return None
+                return os.path.dirname(sys.argv[0])
+            elif folder.text == '':
+                return os.path.dirname(sys.argv[0])
             else:
                 return folder.text
         except Exception as e:
