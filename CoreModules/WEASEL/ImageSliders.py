@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QSlider, 
                             QListWidget,
                             QListWidgetItem,
-                            QListView)
+                            QListView,
+                            QCheckBox)
 
 import numpy as np
 import copy
@@ -65,8 +66,7 @@ class ImageSliders(QObject):
             self.__setUpLayouts()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            self.__setUpImageTypeList()
-            self.__setUpSliderResetButton()
+            self.__setUpDisplayMultiSlidersCheckbox()
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -195,7 +195,7 @@ class ImageSliders(QObject):
             if maxNumberImages > 1:
                 self.mainSliderLayout.addWidget(self.mainImageSlider)
                 self.mainSliderLayout.addWidget(self.imageNumberLabel)
-        
+
             if maxNumberImages < 11:
                 self.mainSliderLayout.addStretch(1)
         except Exception as e:
@@ -203,10 +203,31 @@ class ImageSliders(QObject):
             logger.error('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
 
     
+    def __setUpDisplayMultiSlidersCheckbox(self):
+        self.showImageTypeListCheckBox = QCheckBox()
+        self.checkboxLabel = QLabel("Display multiple Sliders")
+        self.showImageTypeListCheckBox.stateChanged.connect(lambda state: self.displayHideMultiSliders(state))
+        self.imageTypeLayout.addWidget(self.showImageTypeListCheckBox)
+        self.imageTypeLayout.addWidget(self.checkboxLabel, stretch=1, alignment=Qt.AlignLeft)
+
+
+    def displayHideMultiSliders(self, state):
+        if state == Qt.Checked:
+            self.__setUpImageTypeList()
+        elif state == Qt.Unchecked:
+            #remove multiple sliders
+            self.imageTypeList.deleteLater()
+            self.dynamicListImageType.clear()
+            self.listSortedImageSliders.clear()
+            self.shapeList = []
+            for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
+                self.sortedImageSliderLayout.removeRow(rowNumber)
+                       
+
     def __setUpImageTypeList(self):
         self.imageTypeList = self.__createImageTypeList()
-        self.imageTypeLayout.addWidget(self.imageTypeList)
-
+        self.imageTypeLayout.addWidget( self.imageTypeList,  alignment=Qt.AlignLeft)
+        self.imageTypeLayout.addStretch(2)
 
     def __createImageTypeList(self):
         try:
