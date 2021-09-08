@@ -39,13 +39,15 @@ class AxisItem(GraphicsWidget):
             raise Exception("Orientation argument must be one of 'left', 'right', 'top', or 'bottom'.")
         if orientation in ['left', 'right']:
             self.label.rotate(-90)
-            
+        
+        fontForTick = QtGui.QFont()
+        fontForTick.setPixelSize(14)
         self.style = {
             'tickTextOffset': [5, 2],  ## (horizontal, vertical) spacing between text and axis 
-            'tickTextWidth': 30,  ## space reserved for tick text
-            'tickTextHeight': 18, 
-            'autoExpandTextSpace': True,  ## automatically expand text space if needed
-            'tickFont': None,
+            'tickTextWidth': 60,  ## space reserved for tick text
+            'tickTextHeight': 36, 
+            'autoExpandTextSpace': False,  ## automatically expand text space if needed
+            'tickFont': fontForTick,
             'stopAxisAtTick': (False, False),  ## whether axis is drawn to edge of box or to last tick 
             'textFillLimits': [  ## how much of the axis to fill up with tick text, maximally. 
                 (0, 0.8),    ## never fill more than 80% of the axis
@@ -72,7 +74,7 @@ class AxisItem(GraphicsWidget):
         self.labelUnitPrefix=''
         self.labelStyle = {}
         self.logMode = False
-        self.tickFont = None
+        self.tickFont = fontForTick
         
         self._tickLevels = None  ## used to override the automatic ticking system with explicit ticks
         self._tickSpacing = None  # used to override default tickSpacing method
@@ -265,7 +267,7 @@ class AxisItem(GraphicsWidget):
         if unitPrefix is not None:
             self.labelUnitPrefix = unitPrefix
         if len(args) > 0:
-            self.labelStyle = args
+            self.labelStyle = {'color': '#FFF', 'font-size': '8pt'}
         self.label.setHtml(self.labelString())
         self._adjustSize()
         self.picture = None
