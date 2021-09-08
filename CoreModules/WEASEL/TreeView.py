@@ -157,7 +157,7 @@ class TreeView():
         try:
             logger.info("TreeView.displayContextMenu called")
             if self.isASeriesChecked or self.isAnImageChecked:
-                self.weasel.context.exec_(self.widget.mapToGlobal(pos))
+                self.weasel.menuBuilder.context.exec_(self.widget.mapToGlobal(pos))
         except Exception as e:
             print('Error in function TreeView.displayContextMenu: ' + str(e))
 

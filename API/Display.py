@@ -19,6 +19,7 @@ class Display():
         """
         self.close_progress_bar()
         self.treeView.refreshDICOMStudiesTreeView()
+        self.refresh_menus()
 
     def reset_treeview(self):
         """

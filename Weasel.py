@@ -31,11 +31,10 @@ sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.StyleSheet as styleSheet
-from CoreModules.WEASEL.WeaselConfigXMLReader import WeaselConfigXMLReader
+from CoreModules.XMLConfigReader import XMLConfigReader
 from CoreModules.WEASEL.TreeView import TreeView
-import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
-#import Trash.ToolBar as toolBar
+from CoreModules.MenuBuilder import MenuBuilder
 from API.Main import WeaselProgrammingInterface
 
 __version__ = '1.0'
@@ -75,17 +74,14 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.centralwidget.layout().addWidget(self.statusBar)
         self.DICOMFolder = ''
         self.treeView = None
-        self.listMenus = []
-        self.listPythonFiles = self.returnListPythonFiles()
 
-         # XML reader object to process XML configuration file
-        self.objConfigXMLReader = WeaselConfigXMLReader()
-        #build menus from either xml or python config file
-        self.buildMenus()
+        self.objConfigXMLReader = XMLConfigReader()
+        self.menuBuilder = MenuBuilder(self)
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         self.objXMLReader = WeaselXMLReader(self) 
+
+        self.menuBuilder.buildMenus()
         
-        #toolBar.setupToolBar(self)  commented out to remove Ferret from Weasel
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
         logger.info("WEASEL GUI created successfully.")
 
@@ -93,32 +89,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
 
-    def buildMenus(self):
-        try:
-            logger.info("Weasel.buildMenus called.")
-            menuConfigFile = self.objConfigXMLReader.getMenuConfigFile()
-        
-            #create context menu to display with the tree view
-            self.context = QMenu(self)
 
-            if menuConfigFile:
-                #a menu config file has been defined
-                if self.isPythonFile(menuConfigFile):
-                    moduleFileName = [pythonFilePath 
-                                      for pythonFilePath in self.listPythonFiles 
-                                      if menuConfigFile in pythonFilePath][0]
-                    spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
-                    objFunction = getattr(module, "main")
-                    #execute python functions to build the menus and menu items
-                    objFunction(self)
-                elif self.isXMLFile(menuConfigFile):
-                    xmlMenuBuilder.setupMenus(self, menuConfigFile)
-                    xmlMenuBuilder.buildContextMenu(self, menuConfigFile)
-        except Exception as e:
-            print('Error in Weasel.buildMenus: ' + str(e)) 
-            logger.exception('Error in Weasel.buildMenus: ' + str(e)) 
 
 class Weasel_CMD(WeaselProgrammingInterface):
 

@@ -1,52 +1,49 @@
-from PyQt5.QtCore import  Qt
-from PyQt5 import QtCore 
-from PyQt5.QtWidgets import QAction, QApplication, QMessageBox, QMenu, QToolTip 
+from PyQt5.QtWidgets import QAction, QToolTip 
 from PyQt5.QtGui import QCursor, QIcon 
-import os
 import sys
-import pathlib
 import importlib
 import logging
 logger = logging.getLogger(__name__)
 
-from CoreModules.WEASEL.WeaselMenuXMLReader import WeaselMenuXMLReader
+from CoreModules.XMLMenuReader import XMLMenuReader
 
 
-def setupMenus(pointerToWeasel, menuXMLFile):
+def setupMenus(weasel, menuXMLFile):
     """Builds the menus in the menu bar of the MDI"""
+
     try:
         logger.info("Menus.setupMenus")
-        mainMenu = pointerToWeasel.menuBar()
-        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        mainMenu = weasel.menuBar()
+        objXMLMenuReader = XMLMenuReader(menuXMLFile) 
         menus = objXMLMenuReader.getMenus()
         for menu in menus:
             menuName = menu.attrib['name']
-            pointerToWeasel.topMenu = mainMenu.addMenu(menuName)
-            pointerToWeasel.topMenu.hovered.connect(_actionHovered)
-            pointerToWeasel.listMenus.append(pointerToWeasel.topMenu)
+            topMenu = mainMenu.addMenu(menuName)
+            topMenu.hovered.connect(_actionHovered)
+            weasel.menuBuilder.listMenus.append(topMenu)
             for item in menu:
-                buildUserDefinedToolsMenuItem(pointerToWeasel, pointerToWeasel.topMenu, item, pointerToWeasel.listPythonFiles)
+                buildUserDefinedToolsMenuItem(weasel, topMenu, item)
     except Exception as e:
             print('Error in Menus.setupMenus: ' + str(e)) 
             logger.exception('Error in Menus.setupMenus: ' + str(e)) 
 
 
-def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
+def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
     try:
         #create action button on the fly
         logger.info("Menus.buildUserDefinedToolsMenuItem called.")
         if item.find('separator') is not None:
-            pointerToWeasel.topMenu.addSeparator()
+            topMenu.addSeparator()
         else:
             if item.find('icon') is not None:
                 icon = item.find('icon').text
-                pointerToWeasel.menuItem = QAction(QIcon(icon), item.find('label').text, pointerToWeasel)
+                weasel.menuItem = QAction(QIcon(icon), item.find('label').text, weasel)
             else:
-                pointerToWeasel.menuItem = QAction(item.find('label').text, pointerToWeasel)
+                weasel.menuItem = QAction(item.find('label').text, weasel)
             if item.find('shortcut') is not None:
-                pointerToWeasel.menuItem.setShortcut(item.find('shortcut').text)
+                weasel.menuItem.setShortcut(item.find('shortcut').text)
             if item.find('tooltip') is not None:
-                pointerToWeasel.menuItem.setToolTip(item.find('tooltip').text)
+                weasel.menuItem.setToolTip(item.find('tooltip').text)
 
             moduleName = item.find('module').text
 
@@ -58,18 +55,18 @@ def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
             #Walk the directory structure until the modules defined the menu XML are found
             #moduleFileName = [os.path.join(dirpath, moduleName+".py") 
             #    for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute().parent) if moduleName+".py" in filenames][0]
-            moduleFileName = [pythonFilePath for pythonFilePath in pythonFiles if moduleName+".py" in pythonFilePath][0]
+            moduleFileName = [pythonFilePath for pythonFilePath in weasel.menuBuilder.listPythonFiles if moduleName+".py" in pythonFilePath][0]
             spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             objFunction = getattr(module, function)
-            pointerToWeasel.menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-            #pointerToWeasel.menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+            weasel.menuItem.triggered.connect(lambda : objFunction(weasel))
+            #weasel.menuItem.triggered.connect(lambda : weasel.refresh())
 
-            pointerToWeasel.menuItem.setEnabled(True)
-            pointerToWeasel.menuItem.setData(module)
+            weasel.menuItem.setEnabled(True)
+            weasel.menuItem.setData(module)
           
-            topMenu.addAction(pointerToWeasel.menuItem)
+            topMenu.addAction(weasel.menuItem)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         #filename = exception_traceback.tb_frame.f_code.co_filename
@@ -78,9 +75,9 @@ def buildUserDefinedToolsMenuItem(pointerToWeasel, topMenu, item, pythonFiles):
         logger.exception('Error in Menus.buildUserDefinedToolsMenuItem at line number {} when {}: '.format(line_number, item.find('label').text) + str(e)) 
 
 
-def buildContextMenuItem(pointerToWeasel, context, item, pythonFiles):
+def buildContextMenuItem(weasel, context, item):
     try:
-        menuItem = QAction(item.find('label').text, pointerToWeasel)
+        menuItem = QAction(item.find('label').text, weasel)
         menuItem.setEnabled(True)
         moduleName = item.find('module').text
     
@@ -91,20 +88,17 @@ def buildContextMenuItem(pointerToWeasel, context, item, pythonFiles):
     
         #moduleFileName = [os.path.join(dirpath, moduleName+".py") 
         #    for dirpath, dirnames, filenames in os.walk(pathlib.Path().absolute()) if moduleName+".py" in filenames][0]
-        moduleFileName = [pythonFilePath for pythonFilePath in pythonFiles if moduleName+".py" in pythonFilePath][0]
+        moduleFileName = [pythonFilePath for pythonFilePath in weasel.menuBuilder.listPythonFiles if moduleName+".py" in pythonFilePath][0]
         spec = importlib.util.spec_from_file_location(moduleName, moduleFileName)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         objFunction = getattr(module, function)
-        menuItem.triggered.connect(lambda : objFunction(pointerToWeasel))
-        #menuItem.triggered.connect(lambda : pointerToWeasel.refresh())
+        menuItem.triggered.connect(lambda : objFunction(weasel))
+        #menuItem.triggered.connect(lambda : weasel.refresh())
     
-        if hasattr(module, "isSeriesOnly"):
-            boolApplyBothImagesAndSeries = not getattr(module, "isSeriesOnly")(pointerToWeasel)
-        else:
-            boolApplyBothImagesAndSeries = True
-    
-        menuItem.setData(boolApplyBothImagesAndSeries)
+        menuItem.setEnabled(True)
+        menuItem.setData(module)
+
         context.addAction(menuItem)
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -119,15 +113,15 @@ def _actionHovered(action):
         QToolTip.showText(QCursor.pos(), tip)
 
 
-def buildContextMenu(pointerToWeasel, menuXMLFile):
+def buildContextMenu(weasel, menuXMLFile):
     logger.info("Menus.buildContextMenu called")
     try:
-        pointerToWeasel.context.hovered.connect(_actionHovered)
+        weasel.menuBuilder.context.hovered.connect(_actionHovered)
 
-        objXMLMenuReader = WeaselMenuXMLReader(menuXMLFile) 
+        objXMLMenuReader = XMLMenuReader(menuXMLFile) 
         items = objXMLMenuReader.getContextMenuItems()
         for item in items:
-            buildContextMenuItem(pointerToWeasel, pointerToWeasel.context, item, pointerToWeasel.listPythonFiles)
+            buildContextMenuItem(weasel, weasel.menuBuilder.context, item)
 
     except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()

@@ -62,10 +62,8 @@ class PythonMenuBuilder:
             spec.loader.exec_module(module)
             objFunction = getattr(module, functionName)
             self.menuItem.triggered.connect(lambda : objFunction(self.pointerToWeasel))
-
             self.menuItem.setEnabled(True)
             self.menuItem.setData(module)
-   
             self.topMenu.addAction(self.menuItem)
 
             if context:
