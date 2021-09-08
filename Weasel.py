@@ -77,9 +77,9 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
 
         self.objConfigXMLReader = XMLConfigReader()
         self.menuBuilder = MenuBuilder(self)
-        self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         self.objXMLReader = WeaselXMLReader(self) 
 
+        self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         self.menuBuilder.buildMenus()
         
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
