@@ -105,7 +105,7 @@ class ImageViewer(QMdiSubWindow):
 
             self.setUpTopRowLayout()
 
-            self.setUpGraphicsViewLayout()
+            self.setUpGraphicsView()
 
             self.setUpImageDataLayout()
 
@@ -288,17 +288,13 @@ class ImageViewer(QMdiSubWindow):
             logger.error('Error in ImageViewer.setUpTopRowLayout: ' + str(e))
 
 
-    def setUpGraphicsViewLayout(self):
+    def setUpGraphicsView(self):
         try:
-            self.graphicsViewLayout = pg.GraphicsLayoutWidget()
-            self.plotItem = self.graphicsViewLayout.addPlot() 
-            self.plotItem.getViewBox().setAspectLocked() 
-            self.imgItem = pg.ImageItem(border='w')   
-            self.graphicsView = pg.ImageView(view=self.plotItem, imageItem=self.imgItem)
+            self.graphicsView = pg.ImageView(view=pg.PlotItem()) #view=pg.PlotItem() adds axes to image
             self.mainVerticalLayout.addWidget(self.graphicsView, stretch=1)
         except Exception as e:
-            print('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
-            logger.error('Error in ImageViewer.setUpGraphicsViewLayout: ' + str(e))
+            print('Error in ImageViewer.setUpGraphicsView: ' + str(e))
+            logger.error('Error in ImageViewer.setUpGraphicsView: ' + str(e))
 
 
     def setUpDeleteImageButton(self):

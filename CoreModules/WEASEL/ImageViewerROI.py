@@ -106,7 +106,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpTopRowLayout()
 
-            self.setUpGraphicsViewLayout()
+            self.setUpGraphicsView()
             
             self.setUpImageDataLayout()
 
@@ -688,13 +688,9 @@ class ImageViewerROI(QMdiSubWindow):
             logger.error('Error in ImageViewerROI.setUpTopRowLayout: ' + str(e))
 
 
-    def setUpGraphicsViewLayout(self):
-        self.graphicsViewLayout = QHBoxLayout()
-        self.graphicsViewLayout.setContentsMargins(0, 0, 0, 0)
-        self.graphicsViewLayout.setSpacing(0)
+    def setUpGraphicsView(self):
         self.graphicsView = GraphicsView()
-        self.graphicsViewLayout.addWidget(self.graphicsView)
-        self.mainVerticalLayout.addLayout(self.graphicsViewLayout)
+        self.mainVerticalLayout.addWidget(self.graphicsView) 
 
 
     def setUpImageDataLayout(self):
