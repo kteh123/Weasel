@@ -1,6 +1,8 @@
 import  os
 import logging
 logger = logging.getLogger(__name__)
+__author__ = "Steve Shillitoe"
+#September 2021
 """This class module provides the class variables and functions needed
 to store and retrieve the data associated with changing the colour table, 
 intensity and contrast levels in individual images in a DICOM series of images."""

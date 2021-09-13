@@ -19,6 +19,9 @@ from DICOM.Classes import Series
 import logging
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+#September 2021
+
 listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", 
                   "FlipAngle", "InversionTime", "EchoTime", 
                   (0x2005, 0x1572)] # This last element is a good example of private tag

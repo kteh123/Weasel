@@ -40,6 +40,9 @@ from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imag
 import logging
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+#September 2021
+
 #List of colour tables supported by matplotlib
 listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis', 
             'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',

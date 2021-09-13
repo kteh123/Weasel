@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QMessageBox
 
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+#September 2021
+
 class NoTreeViewItemSelected(Exception):
    """Raised when the name of the function corresponding 
    to a module is not returned from the XML configuration file."""

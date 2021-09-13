@@ -40,6 +40,9 @@ from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imag
 import logging
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+#September 2021
+
 #Subclassing QSlider so that the direction (Forward, Backward) of 
 #slider travel is returned to the calling function
 #This class is used to create a hidden slider used 
