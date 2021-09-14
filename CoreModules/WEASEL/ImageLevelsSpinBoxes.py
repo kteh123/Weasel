@@ -75,5 +75,6 @@ class ImageLevelsSpinBoxes:
 
     def getSpinBoxes(self):    
         """Returns the individual spinboxes so that their ValueChanged signals
-        can be connected to functions in the calling program"""
+        can be connected to functions in the calling program that adjust image
+        intensity and contrast."""
         return self.spinBoxIntensity, self.spinBoxContrast
