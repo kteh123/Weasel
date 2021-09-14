@@ -47,14 +47,12 @@ class UserInterfaceTools():
         """
         return self.selectedImagePath
     
-    # Need to do one for subjects and to include treeView.buildListsCheckedItems(self)
-
     def getCheckedSubjects(self):
         """
         Returns a list with objects of class Subject of the items checked in the Treeview.
         """
         subjectList = []
-        subjectsTreeViewList = self.treeView.returnCheckedSubjects()
+        subjectsTreeViewList = self.treeView.checkedSubjectList
         if subjectsTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no subjects were checked in the Treeview.",
@@ -70,7 +68,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Study of the items checked in the Treeview.
         """
         studyList = []
-        studiesTreeViewList = self.treeView.returnCheckedStudies()
+        studiesTreeViewList = self.treeView.checkedStudyList
         if studiesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no studies were checked in the Treeview.",
@@ -87,7 +85,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Series of the items checked in the Treeview.
         """
         seriesList = []
-        seriesTreeViewList = self.treeView.returnCheckedSeries()
+        seriesTreeViewList = self.treeView.checkedSeriesList
         if seriesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no series were checked in the Treeview.",
@@ -104,7 +102,7 @@ class UserInterfaceTools():
         Returns a list with objects of class Image of the items checked in the Treeview.
         """
         imagesList = []
-        imagesTreeViewList = self.treeView.returnCheckedImages()
+        imagesTreeViewList = self.treeView.checkedImageList
         if imagesTreeViewList == []:
             self.showMessageWindow(msg="Script didn't run successfully because"
                               " no images were checked in the Treeview.",

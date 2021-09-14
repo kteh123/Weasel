@@ -274,19 +274,14 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
         for subject in xml_dict:
             subject_element = ET.SubElement(DICOM_XML_object, 'subject')
             subject_element.set('id', subject)
-            #added expanded attribute SS
-            #subject branches always expanded
-            subject_element.set('expanded', 'True')  #added by SS 12.03.21
             subject_element.set('checked', 'False')  #added by SS 16.03.21
             for study in xml_dict[subject]:
                 study_element = ET.SubElement(subject_element, 'study')
                 study_element.set('id', study)
-                study_element.set('expanded', 'False') #added by SS 12.03.21
                 study_element.set('checked', 'False')  #added by SS 16.03.21
                 for series in xml_dict[subject][study]:
                     series_element = ET.SubElement(study_element, 'series')
                     series_element.set('id', series)
-                    series_element.set('expanded', 'False') #added by SS 12.03.21
                     series_element.set('checked', 'False')  #added by SS 16.03.21
         fileCounter = 0
         msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))

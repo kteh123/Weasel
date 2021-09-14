@@ -25,8 +25,6 @@ def main(objWeasel):
             logger.info("viewImage.main called")
             if objWeasel.treeView.isAnItemChecked() == False:
                 raise NoTreeViewItemSelected
-            
-            objWeasel.treeView.buildListsCheckedItems()
 
             if objWeasel.treeView.isASeriesChecked:
                 if len(objWeasel.treeView.checkedSeriesList)>0: 
@@ -34,7 +32,7 @@ def main(objWeasel):
                         subjectID = series[0]
                         studyID = series[1]
                         seriesID = series[2]
-                        imageList = objWeasel.treeView.returnSeriesImageList(subjectID, studyID, seriesID)
+                        imageList = objWeasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
                         imageViewer(objWeasel, subjectID, studyID, seriesID, imageList)
             elif objWeasel.treeView.isAnImageChecked:
                 if len(objWeasel.treeView.checkedImageList)>0: 

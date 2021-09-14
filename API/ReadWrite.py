@@ -25,7 +25,6 @@ class ReadWrite():
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        self.treeView.buildListsCheckedItems()
         if self.treeView.checkedImageList == []:
             if self.cmd == True:
                 print("=====================================")
@@ -44,7 +43,6 @@ class ReadWrite():
         Returns a list of Series checked by the user.
         """
         seriesList = []       
-        self.treeView.buildListsCheckedItems()
         if self.treeView.checkedSeriesList == []:
             if self.cmd == True:
                 print("=====================================")
@@ -64,7 +62,6 @@ class ReadWrite():
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        self.treeView.buildListsCheckedItems()
         if self.treeView.checkedStudyList == []:
             if self.cmd == True:
                 print("=====================================")
@@ -83,7 +80,6 @@ class ReadWrite():
         Returns a list of Subjects checked by the user.
         """
         subjectList = []
-        self.treeView.buildListsCheckedItems()
         if self.treeView.checkedSubjectList == []:
             if self.cmd == True:
                 print("=====================================")

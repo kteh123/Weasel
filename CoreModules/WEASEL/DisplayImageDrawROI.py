@@ -76,7 +76,7 @@ def displayManyMultiImageSubWindows(weasel):
             subjectName = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = weasel.treeView.returnSeriesImageList(subjectName, studyName, seriesName)
+            imageList = weasel.objXMLReader.getImagePathList(subjectName, studyName, seriesName)
             displayMultiImageROISubWindow(weasel, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 
@@ -143,7 +143,7 @@ def displayManyMultiImageSubWindows(weasel):
             subjectName = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = weasel.treeView.returnSeriesImageList(subjectName, studyName, seriesName)
+            imageList = weasel.objXMLReader.getImagePathList(subjectName, studyName, seriesName)
             displayMultiImageROISubWindow(weasel, imageList, subjectName, studyName, 
                      seriesName, sliderPosition = -1)
 

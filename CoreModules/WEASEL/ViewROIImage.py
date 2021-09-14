@@ -1,4 +1,5 @@
 import CoreModules.WEASEL.DisplayImageDrawROI as displayImageROI
+
 from PyQt5.QtWidgets import QMessageBox
 import logging
 logger = logging.getLogger(__name__)
@@ -15,14 +16,10 @@ def main(objWeasel):
     Executed using the 'View Image with ROI' Menu item in the Tools menu."""
     try:
         logger.info("Menus.viewROIImage called")
-        #print('treeView.isAnItemChecked(objWeasel)={}'.format(treeView.isAnItemChecked(objWeasel)))
-        #print('treeView.isAnImageSelected(objWeasel)={}'.format(treeView.isAnImageSelected(objWeasel)))
-        #print('objWeasel.isASeriesChecked={}'.format(objWeasel.isASeriesChecked))
+        
         
         if objWeasel.treeView.isAnItemChecked() == False:
             raise NoTreeViewItemSelected
-
-        objWeasel.treeView.buildListsCheckedItems()
 
         if objWeasel.treeView.isASeriesChecked:
             displayImageROI.displayManyMultiImageSubWindows(objWeasel)

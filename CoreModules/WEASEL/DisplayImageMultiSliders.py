@@ -95,7 +95,7 @@ def displayManyMultiImageSubWindows(weasel):
                 subjectID = series[0]
                 studyName = series[1]
                 seriesName = series[2]
-                imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+                imageList = weasel.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
                 displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
@@ -120,7 +120,7 @@ def displayImageFromTreeView(weasel, item, col):
                 subjectID = item.parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().text(1).replace('Study -', '').strip()
                 seriesName = item.text(1).replace('Series -', '').strip()
-                imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+                imageList = weasel.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
                 displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                          seriesName, sliderPosition = -1)
     except Exception as e:
@@ -344,7 +344,7 @@ def displayManyMultiImageSubWindows(weasel):
             subjectID = series[0]
             studyName = series[1]
             seriesName = series[2]
-            imageList = weasel.treeView.returnSeriesImageList(subjectID, studyName, seriesName)
+            imageList = weasel.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
             displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1)
 
