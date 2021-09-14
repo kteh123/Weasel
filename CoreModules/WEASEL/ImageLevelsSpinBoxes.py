@@ -7,9 +7,19 @@ import CoreModules.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 
+__author__ = "Steve Shillitoe"
+#September 2021
 
 class ImageLevelsSpinBoxes:
-    """Creates two decimal spinboxes with labels to display icons in a horizontal layout."""
+    """This class creates two decimal spinboxes with labels to 
+    display appropriate icons in a horizontal layout.
+    This pair of spinboxes is used to adjust the intensity 
+    and contrast of an image.
+    
+    This resulting composite component, two spinboxes in a horizontal layout, is returned
+    to the calling function using the getCompositeComponent function. 
+    
+    The pair of spinboxes is return to the called function using the .getSpinBoxes function"""
     def __init__(self): 
         try:
             logger.info("created ImageLevelsSpinBoxes object.")
@@ -59,8 +69,11 @@ class ImageLevelsSpinBoxes:
 
 
     def getCompositeComponent(self):
+        """Returns the two spinboxes and thier labels in a horizontal layout"""
         return self.layout
 
 
     def getSpinBoxes(self):    
+        """Returns the individual spinboxes so that their ValueChanged signals
+        can be connected to functions in the calling program"""
         return self.spinBoxIntensity, self.spinBoxContrast
