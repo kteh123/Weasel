@@ -29,7 +29,8 @@ listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber",
 
 class SortedImageSlider(QSlider):
     """Subclass of the QSlider class with the added property attribute 
-    which identifies what the image subset has been filtered for"""
+    which identifies what the image subset has been filtered for. 
+    """
     def __init__(self,  DicomAttribute): 
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute

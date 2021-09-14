@@ -4,6 +4,7 @@ logger = logging.getLogger(__name__)
 
 __version__ = '1.0'
 __author__ = 'Steve Shillitoe'
+#October/November 2020
 
 class ROIs():
     def __init__(self, NumImages = 1):
