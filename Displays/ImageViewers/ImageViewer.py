@@ -34,9 +34,9 @@ import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 
 from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
-from Displays.ImageViewers.componentsUI.ImageSliders import ImageSliders as imageSliders
-from Displays.ImageViewers.componentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
-import Displays.ImageViewers.componentsUI.FreeHandROI.Resources as icons
+from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
+from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
+import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 #import CoreModules.FreeHandROI.Resources as icons
 #from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
 #from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
