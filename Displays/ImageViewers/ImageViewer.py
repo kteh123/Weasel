@@ -37,9 +37,6 @@ from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSe
 from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
-#import CoreModules.FreeHandROI.Resources as icons
-#from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
-#from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
 import logging
 logger = logging.getLogger(__name__)
