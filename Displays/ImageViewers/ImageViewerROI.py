@@ -35,11 +35,11 @@ import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 #from CoreModules.FreeHandROI.ROI_Storage import ROIs
 #import CoreModules.FreeHandROI.Resources as icons
 #Displays.ImageViewers
-from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
-from Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage import ROIs
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
-from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
-from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
+from Displays.ImageViewers.componentsUI.FreeHandROI.GraphicsView import GraphicsView
+from Displays.ImageViewers.componentsUI.FreeHandROI.ROI_Storage import ROIs
+import Displays.ImageViewers.componentsUI.FreeHandROI.Resources as icons
+from Displays.ImageViewers.componentsUI.ImageSliders  import ImageSliders as imageSliders
+from Displays.ImageViewers.componentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
 #from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
 #from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes

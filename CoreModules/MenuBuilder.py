@@ -55,8 +55,8 @@ class SubMenuBuilder:
             logger.info('PythonMenuBuilder Created top menu {}'.format(topMenuName))
 
         except Exception as e:
-            print('Error in PythonMenuBuilder.__init__: ' + str(e)) 
-            logger.exception('Error in PythonMenuBuilder.__init__: ' + str(e)) 
+            print('Error in SubMenuBuilder.__init__: ' + str(e)) 
+            logger.exception('Error in SubMenuBuilder.__init__: ' + str(e)) 
 
 
     def __repr__(self):
@@ -96,13 +96,12 @@ class SubMenuBuilder:
             self.menuItem.setEnabled(True)
             self.menuItem.setData(module)
             self.topMenu.addAction(self.menuItem)
-
             if context:
                 self.weasel.menuBuilder.context.addAction(self.menuItem)
     
         except Exception as e:
-            print('Error in PythonMenuBuilder.addItem when item={}: '.format(label) + str(e)) 
-            logger.exception('Error in PythonMenuBuilder.addItem: ' + str(e)) 
+            print('Error in MenuBuilder.item when item={}: '.format(label) + str(e)) 
+            logger.exception('Error in MenuBuilder.item: ' + str(e)) 
 
     def separator(self):
         self.topMenu.addSeparator()
