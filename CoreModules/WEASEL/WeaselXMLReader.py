@@ -1,7 +1,7 @@
 import xml.etree.cElementTree as ET  
 from datetime import datetime
 import logging
-import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 
 logger = logging.getLogger(__name__)
 
@@ -303,6 +303,24 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.getImageParentIDs: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getImageParentIDs: ' + str(e))
+
+    def objectID(self, elem):
+        """Returns the ID as currently used within weasel as a list"""
+        
+        if elem in self.root: # elem is a subject
+            return [elem.attrib['id']]
+        else:
+            for subject in self.root:
+                if elem in subject: # elem is a study
+                    return [subject.attrib['id'], elem.attrib['id']]
+                else:
+                    for study in subject:
+                        if elem in study: # elem is a series
+                            return [subject.attrib['id'], study.attrib['id'], elem.attrib['id']]
+                        else:
+                            for series in study:
+                                if elem in series: # elem is an image
+                                    return [subject.attrib['id'], study.attrib['id'], series.attrib['id'], elem.find('name').text]
 
 
     def removeSubjectFromXMLFile(self, subjectID):
