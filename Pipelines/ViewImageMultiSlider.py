@@ -1,5 +1,5 @@
-#from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
-import Displays.ImageViewers.ImageViewer as imageViewer
+from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
+
 import logging
 from PyQt5.QtWidgets import QMessageBox
 
