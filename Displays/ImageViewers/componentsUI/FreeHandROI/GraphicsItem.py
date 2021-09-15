@@ -4,11 +4,11 @@ from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
 import numpy as np
 from scipy.stats import iqr
-import .HelperFunctions as fn
+import CoreModules.FreeHandROI.HelperFunctions as fn
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-import .Resources as icons
+import CoreModules.FreeHandROI.Resources as icons
 import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
 np.set_printoptions(threshold=sys.maxsize)
 import logging

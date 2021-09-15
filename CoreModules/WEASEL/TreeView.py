@@ -166,6 +166,29 @@ class TreeView():
                 print('Error in TreeView.resizeTreeViewColumns: ' + str(e))
                 logger.exception('Error in TreeView.resizeTreeViewColumns: ' + str(e))
 
+
+    def setEvents(self):
+        #connect functions to events
+        #To Do replace the following function with a call to ImagerViewer class
+        self.widget.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self.weasel, item, col))
+        self.widget.customContextMenuRequested.connect(lambda pos: self.displayContextMenu(pos))
+        #check/uncheck child items below current checked/unchecked item
+        #check/uncheck item when the item label is selected
+        self.widget.itemClicked.connect(lambda item, col: toggleItemCheckedState(item, col))
+        self.widget.itemChanged.connect(lambda item: checkChildItems(item))
+        #check/uncheck parent items above current checked/unchecked item
+        self.widget.itemChanged.connect(lambda item: checkParentItems(item))
+        #check/uncheck items when a block of items is selected/unselected
+        self.widget.itemSelectionChanged.connect(lambda: self.toggleBlockSelectionCheckedState())
+        #build lists of checked items on the fly
+        self.widget.itemClicked.connect(lambda: self.buildListsCheckedItems())
+        #use lists of checked items to decide which menu items to enable
+        self.widget.itemClicked.connect(lambda: self.toggleMenuItems())
+        self.widget.itemCollapsed.connect(lambda item: self.saveTreeViewExpandedState(item, "False"))
+        self.widget.itemExpanded.connect(lambda item: self.saveTreeViewExpandedState(item, "True"))
+     
+        
+
     def displayContextMenu(self, pos):
         try:
             logger.info("TreeView.displayContextMenu called")

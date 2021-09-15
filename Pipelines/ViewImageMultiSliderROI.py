@@ -1,4 +1,6 @@
-from CoreModules.WEASEL.ImageViewerROI import ImageViewerROI as imageViewerROI
+#from Displays.ImageViewers.ImageViewerROI import ImageViewerROI as imageViewerROI
+import Displays.ImageViewers.ImageViewerROI as imageViewerROI
+
 import logging
 from PyQt5.QtWidgets import QMessageBox
 

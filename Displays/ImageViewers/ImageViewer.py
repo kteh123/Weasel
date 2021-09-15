@@ -32,10 +32,14 @@ import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
 from DICOM.Classes import Series
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 
-from CoreModules.WEASEL.UserImageColourSelection import UserSelection
-import CoreModules.FreeHandROI.Resources as icons
-from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
-from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
+
+from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
+from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
+from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
+import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
+#import CoreModules.FreeHandROI.Resources as icons
+#from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
+#from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
 import logging
 logger = logging.getLogger(__name__)

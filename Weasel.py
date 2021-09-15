@@ -27,6 +27,9 @@ sys.path.append(os.path.join(sys.path[0],'CoreModules'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
 sys.path.append(os.path.join(sys.path[0],'External'))
 sys.path.append(os.path.join(sys.path[0],'Pipelines'))
+sys.path.append(os.path.join(sys.path[0],'Displays'))
+sys.path.append(os.path.join(sys.path[0],'Displays', 'ImageViewers', 'ComponentsUI'))
+sys.path.append(os.path.join(sys.path[0],'Displays', 'ImageViewers', 'ComponentsUI', 'FreeHandROI'))
 sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
