@@ -26,8 +26,8 @@ from matplotlib import cm
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input

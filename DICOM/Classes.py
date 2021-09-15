@@ -7,8 +7,8 @@ import nibabel as nib
 import copy
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.MessageWindow as messageWindow
 
 import logging

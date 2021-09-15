@@ -2,8 +2,8 @@ import os
 import numpy as np
 import random
 import logging
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.MessageWindow as messageWindow
 
 logger = logging.getLogger(__name__)

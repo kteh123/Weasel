@@ -9,7 +9,7 @@ from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
 import CoreModules.FreeHandROI.Resources as icons
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)

@@ -10,8 +10,8 @@ import logging
 import warnings
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.TreeView as treeView
 import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow

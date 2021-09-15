@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 import copy
 import random
 from matplotlib import cm
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.ParametricMapsDictionary as param
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.ParametricMapsDictionary as param
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import logging
 logger = logging.getLogger(__name__)

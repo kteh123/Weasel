@@ -29,8 +29,8 @@ import numpy as np
 import math
 from scipy.stats import iqr
 import External.pyqtgraph as pg 
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
-import CoreModules.WEASEL.SaveDICOM_Image as SaveDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 from CoreModules.WEASEL.UserImageColourSelection_Original import UserSelection

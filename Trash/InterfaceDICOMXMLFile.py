@@ -1,4 +1,4 @@
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import logging
 logger = logging.getLogger(__name__)
 

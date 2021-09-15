@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import CoreModules.WEASEL.TreeView  as treeView
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import os
 import pydicom
 import pandas as pd
