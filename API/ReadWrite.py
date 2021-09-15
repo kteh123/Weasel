@@ -1,7 +1,7 @@
 import os
 from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
-from CoreModules.WEASEL.TreeView import TreeView
+from CoreModules.TreeView import TreeView
 from Displays.UserInput import userInput 
 from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
 
@@ -25,15 +25,15 @@ class ReadWrite():
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        if self.treeView.checkedImageList == []:
+        if self.objXMLReader.checkedImageList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                self.showMessageWindow(msg=msg)
+                self.message(msg=msg)
         else:
-            for image in self.treeView.checkedImageList:
+            for image in self.objXMLReader.checkedImageList:
                 newImage = Image(self, image[0], image[1], image[2], image[3])
                 imagesList.append(newImage)
         return ImagesList(imagesList)
@@ -43,15 +43,15 @@ class ReadWrite():
         Returns a list of Series checked by the user.
         """
         seriesList = []       
-        if self.treeView.checkedSeriesList == []:
+        if self.objXMLReader.checkedSeriesList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                self.showMessageWindow(msg=msg)
+                self.message(msg=msg)
         else:
-            for series in self.treeView.checkedSeriesList:
+            for series in self.objXMLReader.checkedSeriesList:
                 images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
                 newSeries = Series(self, series[0], series[1], series[2], listPaths=images)
                 seriesList.append(newSeries)
@@ -62,15 +62,15 @@ class ReadWrite():
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        if self.treeView.checkedStudyList == []:
+        if self.objXMLReader.checkedStudyList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                self.showMessageWindow(msg=msg)
+                self.message(msg=msg)
         else:
-            for study in self.treeView.checkedStudyList:
+            for study in self.objXMLReader.checkedStudyList:
                 newStudy = Study(self, study[0], study[1])
                 studyList.append(newStudy)
         return StudyList(studyList)
@@ -80,15 +80,15 @@ class ReadWrite():
         Returns a list of Subjects checked by the user.
         """
         subjectList = []
-        if self.treeView.checkedSubjectList == []:
+        if self.objXMLReader.checkedSubjectList == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
                 print("=====================================")
             elif msg is not None:
-                self.showMessageWindow(msg=msg)
+                self.message(msg=msg)
         else:
-            for subject in self.treeView.checkedSubjectList:
+            for subject in self.objXMLReader.checkedSubjectList:
                 newSubject = Subject(self, subject)
                 subjectList.append(newSubject)    
         return SubjectList(subjectList)
@@ -123,9 +123,8 @@ class ReadWrite():
         """
         Closes the DICOM folder and updates display.
         """  
-        self.save_treeview()
         self.close_subwindows()
-        self.treeView.closeTreeView()  
+        self.treeView.close()  
         self.DICOMFolder = ''  
 
     def user_input(self, *fields, title="User input window"):

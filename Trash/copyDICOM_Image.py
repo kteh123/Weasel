@@ -2,7 +2,7 @@ import os
 import numpy as np
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.TreeView  as treeView
 import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 import CoreModules.WEASEL.InterfaceDICOMXMLFile  as interfaceDICOMXMLFile

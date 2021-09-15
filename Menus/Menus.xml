@@ -43,13 +43,6 @@
       <module>File__ResetTreeView</module>
       <context_menu>yes</context_menu>
     </item>
-    <item>
-      <label>Save Tree View</label>
-      <shortcut>Ctrl+P</shortcut>
-      <tooltip>Saves the current state of the checkboxes on the tree view.</tooltip>
-      <module>File__SaveTreeView</module>
-      <context_menu>yes</context_menu>
-    </item>
 
   </menu>
 

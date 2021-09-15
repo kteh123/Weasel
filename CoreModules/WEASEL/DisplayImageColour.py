@@ -73,8 +73,8 @@ userSelectionDict = {}
 def displayManySingleImageSubWindows(weasel):
     try:
         logger.info("DisplayImageColour.displayManySingleImageSubWindows")
-        if len(weasel.treeView.checkedImageList)>0: 
-            for image in weasel.treeView.checkedImageList:
+        if len(weasel.objXMLReader.checkedImageList)>0: 
+            for image in weasel.objXMLReader.checkedImageList:
                 studyName = image[0]
                 seriesName = image[1]
                 imagePath = image[2]
@@ -88,8 +88,8 @@ def displayManySingleImageSubWindows(weasel):
 def displayManyMultiImageSubWindows(weasel):
     try:
         logger.info("DisplayImageColour.displayManyMultiImageSubWindows")
-        if len(weasel.treeView.checkedSeriesList)>0: 
-            for series in weasel.treeView.checkedSeriesList:
+        if len(weasel.objXMLReader.checkedSeriesList)>0: 
+            for series in weasel.objXMLReader.checkedSeriesList:
                 subjectID = series[0]
                 studyName = series[1]
                 seriesName = series[2]
@@ -108,13 +108,13 @@ def displayImageFromTreeView(weasel, item, col):
         logger.info("DisplayImageColour.displayImageFromTreeView")
         if col == 1:
             #Has an image or a series been double-clicked?
-            if weasel.treeView.isAnImageSelected(item):
+            if item.element.tag == 'image':
                 subjectID = item.parent().parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().parent().text(1).replace('Study -', '').strip()
                 seriesName = item.parent().text(1).replace('Series -', '').strip()
                 imagePath = item.text(4)
                 displayImageSubWindow(weasel, imagePath, subjectID, seriesName, studyName)
-            elif weasel.treeView.isASeriesSelected(item):
+            elif item.element.tag == 'series':
                 subjectID = item.parent().parent().text(1).replace('Subject -', '').strip()
                 studyName = item.parent().text(1).replace('Study -', '').strip()
                 seriesName = item.text(1).replace('Series -', '').strip()
@@ -272,8 +272,8 @@ def setUpImageGroupBox(imageLayout, imagePathForDisplay, studyName,
 
 
 def displayManySingleImageSubWindows(weasel):
-    if len(weasel.treeView.checkedImageList)>0: 
-        for image in weasel.treeView.checkedImageList:
+    if len(weasel.objXMLReader.checkedImageList)>0: 
+        for image in weasel.objXMLReader.checkedImageList:
             subjectID = image[0]
             studyName = image[1]
             seriesName = image[2]
@@ -282,8 +282,8 @@ def displayManySingleImageSubWindows(weasel):
 
 
 def displayManyMultiImageSubWindows(weasel):
-    if len(weasel.treeView.checkedSeriesList)>0: 
-        for series in weasel.treeView.checkedSeriesList:
+    if len(weasel.objXMLReader.checkedSeriesList)>0: 
+        for series in weasel.objXMLReader.checkedSeriesList:
             subjectID = series[0]
             studyName = series[1]
             seriesName = series[2]
@@ -965,7 +965,7 @@ def deleteSingleImage(weasel, currentImagePath, subjectID,
                     studyName, seriesName, currentImagePath)
             QApplication.processEvents()
             #Update tree view with xml file modified above
-            weasel.treeView.refreshDICOMStudiesTreeView()
+            TreeView.refreshDICOMStudiesTreeView()
             QApplication.restoreOverrideCursor()
     except Exception as e:
         print('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
@@ -1047,7 +1047,7 @@ def deleteImageInMultiImageViewer(weasel, currentImagePath, imageList,
                 weasel.objXMLReader.removeOneImageFromSeries(subjectID, 
                     studyName, seriesName, currentImagePath)
             #Update tree view with xml file modified above
-            weasel.treeView.refreshDICOMStudiesTreeView()
+            TreeView.refreshDICOMStudiesTreeView()
     except Exception as e:
         print('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
         logger.error('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))

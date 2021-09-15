@@ -27,12 +27,6 @@ class Display():
         """
         self.treeView.callUnCheckTreeViewItems()
 
-    def save_treeview(self):
-        """
-        Saves the treeview selections.
-        """
-        self.treeView.refreshDICOMStudiesTreeView()
-
     def close_subwindows(self):
         """
         Closes all open windows.

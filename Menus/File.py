@@ -29,12 +29,6 @@ def main(weasel):
         tooltip = "Uncheck all images",
         pipeline = 'File__ResetTreeView',
         context = True)
-    menu.item(
-        label = "Save selections",
-        shortcut = 'Ctrl+P',
-        tooltip = "Save the current selections of images",
-        pipeline = 'File__SaveTreeView',
-        context = True)
 
     menu.separator()
 
