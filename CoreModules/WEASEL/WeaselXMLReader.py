@@ -1,7 +1,7 @@
 import xml.etree.cElementTree as ET  
 from datetime import datetime
 import logging
-import CoreModules.WEASEL.ReadDICOM_Image as ReadDICOM_Image
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
 
 logger = logging.getLogger(__name__)
 
@@ -303,6 +303,7 @@ class WeaselXMLReader:
         except Exception as e:
             print('Error in WeaselXMLReader.getImageParentIDs: ' + str(e)) 
             logger.error('Error in WeaselXMLReader.getImageParentIDs: ' + str(e))
+
 
     def objectID(self, elem):
         """Returns the ID as currently used within weasel as a list"""
