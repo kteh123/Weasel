@@ -41,12 +41,6 @@ def main(weasel):
     menu.item(
         label = 'Merge images (copy)',
         pipeline = 'Edit__MergeImagesCopy')
-    menu.separator()
-    menu.item(
-        label = "Save selections",
-        shortcut = 'Ctrl+P',
-        tooltip = "Save the current selections of images",
-        pipeline = 'File__SaveTreeView')
 
     # Insert the default Help menu
     weasel.menu_help()

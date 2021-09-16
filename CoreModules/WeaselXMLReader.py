@@ -324,6 +324,69 @@ class WeaselXMLReader:
                                     return [subject.attrib['id'], study.attrib['id'], series.attrib['id'], elem.find('name').text]
 
 
+    def buildListsCheckedItems(self):
+        """This function generates and returns lists of checked items."""
+
+        logger.info("WeaselXMLReader.buildListsCheckedItems called")
+        try:
+            checkedImageList = []
+            checkedSeriesList = []
+            checkedStudyList = []
+            checkedSubjectList = []
+            for subject in self.root:
+                if subject.attrib['checked'] == 'True':
+                    objectID = self.objectID(subject)
+                    checkedSubjectList.append(objectID)
+                for study in subject:
+                    if study.attrib['checked'] == 'True':
+                        objectID = self.objectID(study)
+                        checkedStudyList.append(objectID)
+                    for series in study:
+                        if series.attrib['checked'] == 'True':
+                            objectID = self.objectID(series)
+                            checkedSeriesList.append(objectID)
+                        for image in series:
+                            if image.attrib['checked'] == 'True':
+                                objectID = self.objectID(image)
+                                checkedImageList.append(objectID)
+            return checkedImageList, checkedSeriesList, checkedStudyList, checkedSubjectList
+        except Exception as e:
+            print('Error in WeaselXMLReader.buildListsCheckedItems: ' + str(e))
+            logger.exception('Error in WeaselXMLReader.buildListsCheckedItems: ' + str(e))
+
+
+    @property
+    def checkedImageList(self):
+        images, _, _, _ = self.buildListsCheckedItems()
+        return images
+
+    @property
+    def checkedSeriesList(self):
+        _, series, _, _ = self.buildListsCheckedItems()
+        return series
+
+    @property
+    def checkedStudyList(self):
+        _, _, studies, _ = self.buildListsCheckedItems()
+        return studies
+
+    @property
+    def checkedSubjectList(self):
+        _, _, _, subjects = self.buildListsCheckedItems()
+        return subjects
+
+    @property
+    def isAnImageChecked(self): 
+        return self.checkedImageList != []
+
+    @property
+    def isASeriesChecked(self): 
+        return self.checkedSeriesList != []
+
+    def isAnItemChecked(self):
+        return self.isASeriesChecked or self.isAnImageChecked
+
+
     def removeSubjectFromXMLFile(self, subjectID):
         """Removes a subject from the DICOM XML file"""
         try:
@@ -568,7 +631,8 @@ class WeaselXMLReader:
                         #imageLabel = self.getImageLabel(subjectID_Original, studyID_Original, seriesID_Original, origImageList[index])
                     imageTime = self.getImageTime(subjectID, studyID, seriesID)
                     imageDate = self.getImageDate(subjectID, studyID, seriesID)
-                    newImage = ET.SubElement(newSeries,'image')
+                    newAttributes = {'checked':'False'}
+                    newImage = ET.SubElement(newSeries,'image', newAttributes)
                     #Add child nodes of the image element
                     labelNewImage = ET.SubElement(newImage, 'label')
                     #labelNewImage.text = str(index + 1).zfill(6)
@@ -645,7 +709,8 @@ class WeaselXMLReader:
                 newSeries = ET.SubElement(currentStudy, 'series', newAttributes)     
                 #print("image time {}, date {}".format(imageTime, imageDate))
                 #Now add image element
-                newImage = ET.SubElement(newSeries,'image')
+                newAttributes = {'checked':'False'}
+                newImage = ET.SubElement(newSeries, 'image', newAttributes)
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
                 labelNewImage.text = imageLabel # + suffix
@@ -660,7 +725,8 @@ class WeaselXMLReader:
             else:
                 #A series already exists to hold new images from
                 #the current parent series
-                newImage = ET.SubElement(series,'image')
+                newAttributes = {'checked':'False'}
+                newImage = ET.SubElement(series, 'image', newAttributes)
                 #Add child nodes of the image element
                 labelNewImage = ET.SubElement(newImage, 'label')
                 #imageLabel = self.getImageLabel(subjectID, studyID, seriesID, imageName)

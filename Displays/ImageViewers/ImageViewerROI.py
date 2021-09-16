@@ -31,18 +31,13 @@ import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
-#from CoreModules.FreeHandROI.GraphicsView import GraphicsView
-#from CoreModules.FreeHandROI.ROI_Storage import ROIs
-#import CoreModules.FreeHandROI.Resources as icons
-#Displays.ImageViewers
+
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage import ROIs
 import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
-#from CoreModules.WEASEL.ImageSliders import ImageSliders as imageSliders
-#from CoreModules.WEASEL.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
 import logging
 logger = logging.getLogger(__name__)
@@ -221,7 +216,7 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
-                inputPath = [i[3] for i in self.weasel.treeView.checkedImageList]
+                inputPath = [i[3] for i in self.weasel.objXMLReader.checkedImageList]
                 #inputPath = self.imageList
             else:
                 inputPath = [self.selectedImagePath]
@@ -271,8 +266,8 @@ class ImageViewerROI(QMdiSubWindow):
                 # for series ID in listParams[0]: # more than 1 ROI may be selected
                 seriesID = listParams[0][0] # Temporary, only the first ROI
                 imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
-                if self.weasel.treeView.isASeriesChecked:
-                    targetPath = [i[3] for i in self.weasel.treeView.checkedImageList]
+                if self.weasel.objXMLReader.isASeriesChecked:
+                    targetPath = [i[3] for i in self.weasel.objXMLReader.checkedImageList]
                     #targetPath = self.imageList
                 else:
                     targetPath = [self.selectedImagePath]

@@ -1,6 +1,6 @@
 
 import logging
-import CoreModules.WEASEL.TreeView  as treeView
+import CoreModules.TreeView  as treeView
 import CoreModules.WEASEL.XMLMenuBuilder as xmlMenuBuilder
 
 logger = logging.getLogger(__name__)

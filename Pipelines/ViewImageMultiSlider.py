@@ -1,5 +1,9 @@
-#from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
+<<<<<<< HEAD
 import Displays.ImageViewers.ImageViewer as imageViewer
+=======
+from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
+
+>>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
 import logging
 from PyQt5.QtWidgets import QMessageBox
 
@@ -14,30 +18,26 @@ class NoTreeViewItemSelected(Exception):
    pass
 
 
-def isEnabled(objWeasel):
-    return True
-
-
 def main(objWeasel):
         """Creates a subwindow that displays a DICOM image. Either executed using the 
         'View Image' Menu item in the Tools menu or by double clicking the Image name 
         in the DICOM studies tree view."""
         try:
             logger.info("viewImage.main called")
-            if objWeasel.treeView.isAnItemChecked() == False:
+            if objWeasel.objXMLReader.isAnItemChecked() == False:
                 raise NoTreeViewItemSelected
 
-            if objWeasel.treeView.isASeriesChecked:
-                if len(objWeasel.treeView.checkedSeriesList)>0: 
-                    for series in objWeasel.treeView.checkedSeriesList:
+            if objWeasel.objXMLReader.isASeriesChecked:
+                if len(objWeasel.objXMLReader.checkedSeriesList)>0: 
+                    for series in objWeasel.objXMLReader.checkedSeriesList:
                         subjectID = series[0]
                         studyID = series[1]
                         seriesID = series[2]
                         imageList = objWeasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
                         imageViewer(objWeasel, subjectID, studyID, seriesID, imageList)
-            elif objWeasel.treeView.isAnImageChecked:
-                if len(objWeasel.treeView.checkedImageList)>0: 
-                    for image in objWeasel.treeView.checkedImageList:
+            elif objWeasel.objXMLReader.isAnImageChecked:
+                if len(objWeasel.objXMLReader.checkedImageList)>0: 
+                    for image in objWeasel.objXMLReader.checkedImageList:
                         subjectID = image[0]
                         studyID = image[1]
                         seriesID = image[2]

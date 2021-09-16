@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QDoubleSpinBox, QLabel, QHBoxLayout)
 
 import logging
-import FreeHandROI.Resources as icons
+import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 
 logger = logging.getLogger(__name__)
 

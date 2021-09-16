@@ -35,8 +35,8 @@ sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.WEASEL.StyleSheet as styleSheet
 from CoreModules.XMLConfigReader import XMLConfigReader
-from CoreModules.WEASEL.TreeView import TreeView
-from CoreModules.WEASEL.WeaselXMLReader import WeaselXMLReader
+from CoreModules.TreeView import TreeView
+from CoreModules.WeaselXMLReader import WeaselXMLReader
 from CoreModules.MenuBuilder import MenuBuilder
 from API.Main import WeaselProgrammingInterface
 
