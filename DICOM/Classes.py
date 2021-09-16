@@ -10,6 +10,7 @@ from ast import literal_eval # Convert strings to their actual content. Eg. "[a,
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
+from API import StaticMethods
 import CoreModules.WEASEL.MessageWindow as messageWindow
 
 import logging
@@ -88,7 +89,7 @@ class ImagesList(ListOfDicomObjects):
             listIndividualAttributes = [series.subjectID, series.studyID, series.seriesID,
                                         series.images, series.studyUID, series.seriesUID, series.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             series = Series(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3], listAtt[4], listAtt[5], listAtt[6])
             parentsList.append(series)
@@ -215,7 +216,7 @@ class SeriesList(ListOfDicomObjects):
             study = series.parent
             listIndividualAttributes = [study.subjectID, study.studyID, study.studyUID, study.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             study = Study(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3])
             parentsList.append(study)
@@ -265,7 +266,7 @@ class StudyList(ListOfDicomObjects):
             subject = study.parent
             listIndividualAttributes = [subject.subjectID, subject.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = OriginalPipelines.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             subject = Subject(self[0].objWeasel, listAtt[0], listAtt[1])
             parentsList.append(subject)
