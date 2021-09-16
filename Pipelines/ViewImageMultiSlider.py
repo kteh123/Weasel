@@ -1,9 +1,9 @@
-<<<<<<< HEAD
-import Displays.ImageViewers.ImageViewer as imageViewer
-=======
+#<<<<<<< HEAD
+#import Displays.ImageViewers.ImageViewer as imageViewer
+#=======
 from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
 
->>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
+#>>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
 import logging
 from PyQt5.QtWidgets import QMessageBox
 

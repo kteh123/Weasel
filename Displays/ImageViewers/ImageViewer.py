@@ -36,7 +36,7 @@ import CoreModules.WEASEL.MessageWindow  as messageWindow
 from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
 from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
+from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -185,7 +185,7 @@ class ImageViewer(QMdiSubWindow):
     def setUpApplyUserSelectionButton(self):
         self.btnApply = QPushButton() 
         self.btnApply.setCheckable(True)
-        self.btnApply.setIcon(QIcon(QPixmap(icons.APPLY_SERIES_ICON)))
+        self.btnApply.setIcon(QIcon(QPixmap(APPLY_SERIES_ICON)))
         self.btnApply.setToolTip(
                     "Click to apply colour table and levels selected by the user to the whole series")
         self.btnApply.clicked.connect(self.applyColourTableToSeries)
@@ -193,7 +193,7 @@ class ImageViewer(QMdiSubWindow):
 
     def setUpUpdateUserSelectionToDICOMButton(self):
         self.btnUpdate = QPushButton() 
-        self.btnUpdate.setIcon(QIcon(QPixmap(icons.SAVE_ICON)))
+        self.btnUpdate.setIcon(QIcon(QPixmap(SAVE_ICON)))
         self.btnUpdate.setToolTip('Update DICOM with the new colour table, contrast & intensity levels')
         if self.isImage:
             self.btnUpdate.clicked.connect(self.updateSingleDicomImage)
@@ -203,14 +203,14 @@ class ImageViewer(QMdiSubWindow):
 
     def setUpExportImageButton(self):
         self.btnExport = QPushButton() 
-        self.btnExport.setIcon(QIcon(QPixmap(icons.EXPORT_ICON)))
+        self.btnExport.setIcon(QIcon(QPixmap(EXPORT_ICON)))
         self.btnExport.setToolTip('Exports the image to an external graphic file.')
         self.btnExport.clicked.connect(self.exportImage)
 
 
     def setUpResetButton(self):
         self.btnReset = QPushButton() 
-        self.btnReset.setIcon(QIcon(QPixmap(icons.RESET_ICON)))
+        self.btnReset.setIcon(QIcon(QPixmap(RESET_ICON)))
         self.btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
 
 
@@ -306,7 +306,7 @@ class ImageViewer(QMdiSubWindow):
             self.deleteButton = QPushButton()
             self.deleteButton.setToolTip(
                 'Deletes the DICOM image being viewed')
-            self.deleteButton.setIcon(QIcon(QPixmap(icons.DELETE_ICON)))
+            self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
             self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
             self.imageLayout.addWidget(self.deleteButton)
         except Exception as e:

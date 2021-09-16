@@ -1,8 +1,8 @@
-<<<<<<< HEAD
-import Displays.ImageViewers.ImageViewerROI as imageViewerROI
-=======
+#<<<<<<< HEAD
+#import Displays.ImageViewers.ImageViewerROI as imageViewerROI
+#=======
 from Displays.ImageViewers.ImageViewerROI import ImageViewerROI as imageViewerROI
->>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
+#>>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
 
 import logging
 from PyQt5.QtWidgets import QMessageBox

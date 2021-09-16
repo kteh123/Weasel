@@ -34,7 +34,7 @@ import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 from CoreModules.WEASEL.UserImageColourSelection_Original import UserSelection
-import CoreModules.FreeHandROI.Resources as icons
+import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 
 import logging
 logger = logging.getLogger(__name__)

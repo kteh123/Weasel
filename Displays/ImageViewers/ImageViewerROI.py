@@ -34,7 +34,7 @@ import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage import ROIs
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
+from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 
@@ -568,41 +568,41 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.btnDeleteROI = QPushButton() 
             self.btnDeleteROI.setToolTip('Delete the current ROI')
-            self.btnDeleteROI.setIcon(QIcon(QPixmap(icons.DELETE_ICON)))
+            self.btnDeleteROI.setIcon(QIcon(QPixmap(DELETE_ICON)))
         
             self.btnNewROI = QPushButton() 
             self.btnNewROI.setToolTip('Add a new ROI')
-            self.btnNewROI.setIcon(QIcon(QPixmap(icons.NEW_ICON)))
+            self.btnNewROI.setIcon(QIcon(QPixmap(NEW_ICON)))
 
             self.btnResetROI = QPushButton()
             self.btnResetROI.setToolTip('Clears the ROI from the image')
-            self.btnResetROI.setIcon(QIcon(QPixmap(icons.RESET_ICON)))
+            self.btnResetROI.setIcon(QIcon(QPixmap(RESET_ICON)))
 
             self.btnSaveROI = QPushButton()
             self.btnSaveROI.setToolTip('Saves the ROI in DICOM format')
-            self.btnSaveROI.setIcon(QIcon(QPixmap(icons.SAVE_ICON)))
+            self.btnSaveROI.setIcon(QIcon(QPixmap(SAVE_ICON)))
 
             self.btnLoad = QPushButton()
             self.btnLoad.setToolTip('Loads existing ROIs')
-            self.btnLoad.setIcon(QIcon(QPixmap(icons.LOAD_ICON)))
+            self.btnLoad.setIcon(QIcon(QPixmap(LOAD_ICON)))
 
             self.btnErase = QPushButton()
             self.buttonList.append(self.btnErase)
             self.btnErase.setToolTip("Erase the ROI")
             self.btnErase.setCheckable(True)
-            self.btnErase.setIcon(QIcon(QPixmap(icons.ERASOR_CURSOR)))
+            self.btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
 
             self.btnDraw = QPushButton()
             self.buttonList.append(self.btnDraw)
             self.btnDraw.setToolTip("Draw an ROI")
             self.btnDraw.setCheckable(True)
-            self.btnDraw.setIcon(QIcon(QPixmap(icons.PEN_CURSOR)))
+            self.btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
 
             self.btnZoom = QPushButton()
             self.buttonList.append(self.btnZoom)
             self.btnZoom.setToolTip("Zoom In-Left Mouse Button/Zoom Out-Right Mouse Button")
             self.btnZoom.setCheckable(True)
-            self.btnZoom.setIcon(QIcon(QPixmap(icons.MAGNIFYING_GLASS_CURSOR)))
+            self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
             self.connectSlotToSignalForROITools()
             

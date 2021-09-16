@@ -6,8 +6,7 @@ from PyQt5.QtWidgets import (QDoubleSpinBox, QLabel)
 
 
 import logging
-import CoreModules.FreeHandROI.Resources as icons
-
+import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 logger = logging.getLogger(__name__)
 
 #listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", "FlipAngle", "InversionTime", "EchoTime", (0x2005, 0x1572)] # This last element is a good example of private tag
