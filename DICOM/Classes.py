@@ -4,6 +4,7 @@ import numpy as np
 import random
 import pydicom
 import nibabel as nib
+import pandas as pd
 import copy
 from ast import literal_eval # Convert strings to their actual content. Eg. "[a, b]" becomes the actual list [a, b]
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
@@ -1392,6 +1393,33 @@ class Series:
         except Exception as e:
             print('Error in Series.export_as_nifti: ' + str(e))
             logger.exception('Error in Series.export_as_nifti: ' + str(e))
+    
+    def export_as_csv(self, directory=None, filename=None, columnHeaders=None):
+        logger.info("Series.export_as_csv called")
+        try:
+            if directory is None: directory = os.path.dirname(self.images[0])
+            if self.number_children == 1:
+                self.children[0].export_as_csv(directory=directory, filename=filename, columnHeaders=columnHeaders)
+            else:
+                table = self.PixelArray
+                image_counter = 0
+                for slice_image in table:
+                    if filename is None:
+                        one_filename = os.path.join(directory, self.seriesID + '_' + str(image_counter).zfill(6) + '.csv')
+                    else:
+                        one_filename = os.path.join(directory, filename + '_' + str(image_counter).zfill(6) +'.csv')
+                    if columnHeaders is None:
+                        one_columHeaders = []
+                        counter = 0
+                        for _ in slice_image:
+                            counter =+ 1
+                            one_columHeaders.append("Column" + str(counter))
+                    df = pd.DataFrame(slice_image, columns=one_columHeaders)
+                    df.to_csv(one_filename, index=False)
+                    image_counter =+ 1
+        except Exception as e:
+            print('Error in Series.export_as_csv: ' + str(e))
+            logger.exception('Error in Series.export_as_csv: ' + str(e))
 
 
 class Image:
@@ -1800,5 +1828,23 @@ class Image:
             print('Error in Image.export_as_nifti: ' + str(e))
             logger.exception('Error in Image.export_as_nifti: ' + str(e))
 
-
-
+    def export_as_csv(self, directory=None, filename=None, columnHeaders=None):
+        logger.info("Image.export_as_csv called")
+        try:
+            if directory is None: directory = os.path.dirname(self.images[0])
+            if filename is None:
+                filename = os.path.join(directory, self.seriesID + '.csv')
+            else:
+                filename = os.path.join(directory, filename + '.csv')
+            table = self.PixelArray
+            if columnHeaders is None:
+                columHeaders = []
+                counter = 0
+                for _ in table:
+                    counter =+ 1
+                    columHeaders.append("Column" + str(counter))
+            df = pd.DataFrame(table, columns=columHeaders)
+            df.to_csv(filename, index=False)
+        except Exception as e:
+            print('Error in Image.export_as_csv: ' + str(e))
+            logger.exception('Error in Image.export_as_csv: ' + str(e))

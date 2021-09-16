@@ -44,3 +44,10 @@ def main(weasel):
         tooltip = 'Save selected series as NIfTI',
         pipeline = 'File__ExportToNIfTI',
         context = True)
+
+    menu.item(
+        label = 'Export to CSV',
+        shortcut = 'Ctrl+V',
+        tooltip = 'Save selected series as CSV',
+        pipeline = 'File__ExportToCSV',
+        context = True)
