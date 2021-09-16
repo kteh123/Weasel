@@ -11,7 +11,7 @@ def main(weasel):
             weasel.progress_bar(max=len(dicomList), index=i+1, msg="Saving series " + series.label + " to NIfTI")
             series.export_as_nifti(directory=local_path)
         weasel.close_progress_bar()
-        weasel.information(msg="Selected series successfully saved as NIfTI", title="Export to NIfTI")
+        weasel.information(msg="Selected series/images successfully saved as NIfTI", title="Export to NIfTI")
     except Exception as e:
         # Record error message in the log and prints in the terminal
         weasel.log_error('Error in function File__ExportToNIfTI.main: ' + str(e))

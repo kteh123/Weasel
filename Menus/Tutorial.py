@@ -39,7 +39,7 @@ def main(weasel):
         tooltip = 'Filter images with user-defined settings',
         pipeline = 'Tutorial__LocalFilterImages')
     menu.item(
-        label = 'Threshold (overwrite)',
+        label = 'Threshold (new)',
         tooltip = 'Threshold images with user-defined settings',
         pipeline = 'Tutorial__ThresholdPixelValuesInNewSeries')
     menu.item(

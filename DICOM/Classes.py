@@ -697,7 +697,7 @@ class Study:
                         copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
                                                    study_name=outputStudy.studyID.split('_', 1)[1].split('_', 1)[1], patient_id=outputStudy.subjectID, output_dir=output_dir)
                         seriesPathsList.append(copiedSeries.images)
-                        seriesNumber =+ 1
+                        seriesNumber += 1
             else:
                 seriesNumber = 1
                 for index, study in enumerate(listStudies):
@@ -1413,11 +1413,11 @@ class Series:
                         one_columHeaders = []
                         counter = 0
                         for _ in slice_image:
-                            counter =+ 1
+                            counter += 1
                             one_columHeaders.append("Column" + str(counter))
-                    df = pd.DataFrame(slice_image, columns=one_columHeaders)
+                    df = pd.DataFrame(np.transpose(slice_image), columns=one_columHeaders)
                     df.to_csv(one_filename, index=False)
-                    image_counter =+ 1
+                    image_counter += 1
         except Exception as e:
             print('Error in Series.export_as_csv: ' + str(e))
             logger.exception('Error in Series.export_as_csv: ' + str(e))
@@ -1486,7 +1486,8 @@ class Image:
     def label(self):
         logger.info("Image.label called")
         try:
-            return self.objWeasel.treeView.returnImageName(self.subjectID, self.studyID, self.seriesID, self.path)
+            return self.objWeasel.objXMLReader.getImageLabel(self.subjectID, self.studyID, self.seriesID, imageName=self.path)
+            #return self.objWeasel.treeView.returnImageName(self.subjectID, self.studyID, self.seriesID, self.path)
         except Exception as e:
             print('Error in Image.label: ' + str(e))
             logger.exception('Error in Image.label: ' + str(e))
@@ -1839,12 +1840,12 @@ class Image:
                 filename = os.path.join(directory, filename + '.csv')
             table = self.PixelArray
             if columnHeaders is None:
-                columHeaders = []
+                columnHeaders = []
                 counter = 0
                 for _ in table:
-                    counter =+ 1
-                    columHeaders.append("Column" + str(counter))
-            df = pd.DataFrame(table, columns=columHeaders)
+                    counter += 1
+                    columnHeaders.append("Column" + str(counter))
+            df = pd.DataFrame(np.transpose(table), columns=columnHeaders)
             df.to_csv(filename, index=False)
         except Exception as e:
             print('Error in Image.export_as_csv: ' + str(e))
