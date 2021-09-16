@@ -26,9 +26,13 @@ hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit'
 string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile Weasel.py')
-# Add the "Scripting"/"Pipelines" folder when we make official release
-# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
+if platform == "win32" or platform == "win64" or os.name == 'nt':
+	os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile Weasel.py')
+	# Add the "Scripting"/"Pipelines" folder when we make official release
+	# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
+else:
+	os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile --windowed --osx-bundle-identifier Weasel Weasel.py')
+
 
 print("Cleaning up compilation files...")
 # Windows
