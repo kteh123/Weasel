@@ -405,6 +405,24 @@ def mapCoordinates(indexes, affineTarget, affineMask):
         print('Error in function ReadDICOM_Image.mapCoordinates: ' + str(e))
         logger.exception('Error in ReadDICOM_Image.mapCoordinates: ' + str(e))
 
+#https://theaisummer.com/medical-image-coordinates/
+#import scipy
+#def transform_coordinate_space(modality_1, modality_2):
+#   """
+#   Transfers coordinate space from modality_2 to modality_1
+#   Input images are in nifty/nibabel format (.nii or .nii.gz)
+#   """
+#   aff_t1 = modality_1.affine
+#   aff_t2 = modality_2.affine
+#   inv_af_2 = np.linalg.inv(aff_t2)
+#   out_shape = modality_1.get_fdata().shape
+#
+#   # desired transformation
+#   T = inv_af_2.dot(aff_t1)
+#
+#   # apply transformation
+#   transformed_img = scipy.ndimage.affine_transform(modality_2.get_fdata(), T, output_shape=out_shape)
+#   return transformed_img
 
 def applyAffine(affineReference, affineTarget, coordinates):
     logger.info("ReadDICOM_Image.applyAffine called")
