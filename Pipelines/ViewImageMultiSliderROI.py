@@ -1,19 +1,14 @@
-#<<<<<<< HEAD
-#import Displays.ImageViewers.ImageViewerROI as imageViewerROI
-#=======
 from Displays.ImageViewers.ImageViewerROI import ImageViewerROI as imageViewerROI
-#>>>>>>> cd8da5f6f3310a380f59879ed6c459feba97e49e
+
 
 import logging
-from PyQt5.QtWidgets import QMessageBox
-
 logger = logging.getLogger(__name__)
 
 __author__ = "Steve Shillitoe"
 #September 2021
 
 
-def main(objWeasel):
+def main(weasel):
         """Creates a subwindow that displays a DICOM image. 
         
         Either executed using the 
@@ -21,32 +16,17 @@ def main(objWeasel):
         in the DICOM studies tree view."""
         try:
             logger.info("viewImage.main called")
-            if objWeasel.objXMLReader.isAnItemChecked() == False:
-                raise NoTreeViewItemSelected
 
-            if objWeasel.objXMLReader.isASeriesChecked:
-                if len(objWeasel.objXMLReader.checkedSeriesList)>0: 
-                    for series in objWeasel.objXMLReader.checkedSeriesList:
-                        subjectID = series[0]
-                        studyID = series[1]
-                        seriesID = series[2]
-                        imageList = objWeasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
-                        imageViewerROI(objWeasel, subjectID, studyID, seriesID, imageList)
-            elif objWeasel.objXMLReader.isAnImageChecked:
-                if len(objWeasel.objXMLReader.checkedImageList)>0: 
-                    for image in objWeasel.objXMLReader.checkedImageList:
-                        subjectID = image[0]
-                        studyID = image[1]
-                        seriesID = image[2]
-                        imagePath = image[3]
-                        imageViewerROI(objWeasel, subjectID, studyID, 
-                                    seriesID, imagePath, singleImageSelected=True)
+            if weasel.series != []: 
+                for series in weasel.objXMLReader.checkedSeriesList:
+                    id = weasel.objXMLReader.objectID(series)
+                    imageList = [image.find('name').text for image in series]
+                    imageViewerROI(weasel, id[0], id[1], id[2], imageList)
+            elif weasel.images() != []: 
+                for image in weasel.objXMLReader.checkedImageList:
+                    id = weasel.objXMLReader.objectID(image)
+                    imageViewerROI(weasel, id[0], id[1], id[2], id[3], singleImageSelected=True)
                         
-        except NoTreeViewItemSelected:
-            msgBox = QMessageBox()
-            msgBox.setWindowTitle("View DICOM series or image with ROI")
-            msgBox.setText("Select either a series or an image")
-            msgBox.exec()
         except Exception as e:
             print('Error in ViewImageMultiSlider.main: ' + str(e))
             logger.error('Error in ViewImageMultiSlider.main: ' + str(e))

@@ -15,7 +15,7 @@ def main(weasel):
         pipeline = 'ViewImageMultiSlider',
         context = True)
     menu.item(
-        label = 'Series or Image with ROI(multiple sliders)',
+        label = 'Series or Image with ROI (multiple sliders)',
         shortcut = 'Ctrl+M',
         tooltip = 'View DICOM Image or series and draw ROI with multiple sliders',
         pipeline = 'ViewImageMultiSliderROI',

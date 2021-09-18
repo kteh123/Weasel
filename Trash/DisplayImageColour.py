@@ -18,9 +18,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                             QGroupBox, 
                             QDoubleSpinBox,
                             QPushButton,  
-                            QLabel, 
-                            QComboBox,
-                            QSizePolicy,
+                            QLabel,  
                             QSlider, 
                             QComboBox)
 
@@ -35,7 +33,7 @@ import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import CoreModules.WEASEL.DisplayImageCommon as displayImageCommon
 import CoreModules.WEASEL.MessageWindow  as messageWindow
-from CoreModules.WEASEL.UserImageColourSelection import UserSelection
+from CoreModules.WEASEL.UserImageColourSelection_Original import UserSelection
 import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
 
 import logging
@@ -103,53 +101,16 @@ def displayManyMultiImageSubWindows(weasel):
         logger.error('Error in DisplayImageColour.displayManyMultiImageSubWindows: ' + str(e))
 
 
-def displayImageFromTreeView(weasel, item, col):
-    #only display an image if the series or image name in column 1
-    #(second column) of the tree view is double clicked.
-    try:
-        logger.info("DisplayImageColour.displayImageFromTreeView")
-        if col == 1:
-            #Has an image or a series been double-clicked?
-            if item.element.tag == 'image':
-                subjectID = item.parent().parent().parent().text(1).replace('Subject -', '').strip()
-                studyName = item.parent().parent().text(1).replace('Study -', '').strip()
-                seriesName = item.parent().text(1).replace('Series -', '').strip()
-                imagePath = item.text(4)
-                displayImageSubWindow(weasel, imagePath, subjectID, seriesName, studyName)
-            elif item.element.tag == 'series':
-                subjectID = item.parent().parent().text(1).replace('Subject -', '').strip()
-                studyName = item.parent().text(1).replace('Study -', '').strip()
-                seriesName = item.text(1).replace('Series -', '').strip()
-                imageList = weasel.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
-                displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
-                         seriesName, sliderPosition = -1)
-    except Exception as e:
-            print('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
-            logger.error('Error in DisplayImageColour.displayImageFromTreeView: ' + str(e))
 
-
-def createSliderLayout(imageSeries, mainVerticalLayout):
-    sliderLayout = QGridLayout()
-    addSliderButtonLayout = QHBoxLayout()
-    if imageSeries:
-        mainVerticalLayout.addLayout(sliderLayout)
-        addSliderButton = QPushButton("Add Slider")
-        addSliderButton.clicked.connect(lambda:addSlider(sliderLayout))
-        addSliderButtonLayout.addWidget(addSliderButton)
-        addSliderButtonLayout.addStretch(1)
-        mainVerticalLayout.addLayout(addSliderButtonLayout)
-    return addSliderButtonLayout, sliderLayout
 
 
 def setUpSubWindow(weasel, imageSeries = False):
     """
     This function creates a subwindow with a vertical layout &
     a missing image label.
-
     Input Parameters
     ****************
     weasel - an object reference to the WEASEL interface.
-
     Output Parameters
     *****************
     layout - PyQt5 QVBoxLayout vertical layout box
@@ -225,61 +186,19 @@ def setUpSubWindow(weasel, imageSeries = False):
         imageDataGroupBox = QGroupBox()
         imageDataGroupBox.setLayout(imageDataLayout)
         mainVerticalLayout.addWidget(imageDataGroupBox)
-        ####
-        addSliderButtonLayout, sliderLayout = createSliderLayout(imageSeries, mainVerticalLayout)
+
+        sliderLayout = QHBoxLayout()
+        if imageSeries:
+            mainVerticalLayout.addLayout(sliderLayout)
 
         subWindow.show()
         return (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
-                imageDataLayout, graphicsViewLayout, sliderLayout, addSliderButtonLayout, 
+                imageDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow)
     except Exception as e:
             print('Error in DisplayImageColour.setUpSubWindow: ' + str(e))
             logger.error('Error in DisplayImageColour.setUpSubWindow: ' + str(e))
 
-
-def addSlider(sliderLayout):
-    rowNumber = sliderLayout.rowCount()
-    imageTypeList = createImageTypeList()
-    imageSlider = createImageSlider()
-    deleteSliderButton = QPushButton("Delete")
-    deleteSliderButton.clicked.connect(lambda: deleteSlider(rowNumber, sliderLayout))
-    sliderLayout.addWidget(imageTypeList, rowNumber, 0)
-    sliderLayout.addWidget(imageSlider, rowNumber, 1)
-    sliderLayout.addWidget(deleteSliderButton, rowNumber, 2)
-    ##Connect image slider to the image list and display those images
-    #imageSlider.valueChanged.connect(
-    #              lambda: imageSliderMoved(weasel, subjectID, studyName, seriesName, 
-    #                                            imageList, 
-    #                                            imageSlider.value(),
-    #                                            lblImageMissing,
-    #                                            lblPixelValue,
-    #                                            deleteButton,
-    #                                             graphicsView, 
-    #                                            spinBoxIntensity, spinBoxContrast,
-    #                                            cmbColours, imageNumberLabel,
-    #                                            subWindow))
-           
-    ##Display the first image in the viewer
-    #imageSliderMoved(weasel, subjectID, studyName, seriesName, 
-    #                        imageList,
-    #                        imageSlider.value(),
-    #                        lblImageMissing,
-    #                        lblPixelValue,
-    #                        deleteButton,
-    #                        graphicsView, 
-    #                        spinBoxIntensity, spinBoxContrast,
-    #                        cmbColours, imageNumberLabel,
-    #                        subWindow)
-
-
-
-
-def deleteSlider(rowNumber, sliderLayout):
-    for colNumber in range(0, sliderLayout.columnCount()):
-        widgetItem = sliderLayout.itemAtPosition(rowNumber, colNumber)
-        sliderLayout.removeItem(widgetItem)
-        widgetItem.widget().deleteLater()
-        
 
 def setUpPixelDataGroupBox(pixelDataLayout):
         lblPixel = QLabel("<h4>Pixel Value:</h4>")
@@ -352,7 +271,6 @@ def displayManyMultiImageSubWindows(weasel):
 def displayImageSubWindow(weasel, derivedImagePath=None, subjectID=None, seriesName=None, studyName=None):
         """
         Creates a subwindow that displays a single DICOM image. 
-
         Input Parmeters
         ***************
         weasel - an object reference to the WEASEL interface.
@@ -366,12 +284,12 @@ def displayImageSubWindow(weasel, derivedImagePath=None, subjectID=None, seriesN
             logger.info("DisplayImageColour.displayImageSubWindow called")
             #weasel.selectedImagePath is populated when the image in the
             #tree view is clicked & selected
-            print("derivedImagePath={}".format(derivedisplayManyMultiImageSubWindowsdImagePath))
+            print("derivedImagePath={}".format(derivedImagePath))
             if derivedImagePath:
                 weasel.selectedImagePath = derivedImagePath
 
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
-                pixelDataLayout, graphicsViewLayout, sliderLayout, addSliderButtonLayout,
+                pixelDataLayout, graphicsViewLayout, sliderLayout, 
                 lblImageMissing, subWindow) = setUpSubWindow(weasel)
             imageName = os.path.basename(weasel.selectedImagePath)
             windowTitle = subjectID + " - " + studyName + " - " + seriesName + " - " + imageName
@@ -431,48 +349,16 @@ def displayOneImage(weasel, lblImageMissing, lblPixelValue,
     displayColourTableInComboBox(cmbColours, colourTable)
 
 
-def createImageSlider():
-    imageSlider = QSlider(Qt.Horizontal)
-    imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
-    imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
-    imageSlider.setSingleStep(1)
-    imageSlider.setTickPosition(QSlider.TicksBothSides)
-    imageSlider.setTickInterval(1)
-    imageSlider.setMinimum(1)
-    return imageSlider
-
-
-def createImageTypeList():
-    imageTypeList = QComboBox()
-    #imageTypeList.setStyleSheet (
-     #   "QComboBox::down-arrow {border-width: 0px;}")
-    #imageTypeList.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-    imageTypeList.setFixedWidth(900)
-    imageTypeList.addItems(displayImageCommon.listImageTypes)
-    imageTypeList.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-    imageTypeList.currentIndexChanged.connect(lambda listIndex: getSubsetImages(listIndex))
-    return imageTypeList
-
-
-def getSubsetImages(listIndex):
-#  select and return a subset of images according to the image type selected
-#return list of images to be displayed
-    print("index is {}".format(listIndex))
-
-
-
 def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName, 
                      seriesName, sliderPosition = -1):
         """
         Creates a subwindow that displays all the DICOM images in a series. 
         A slider allows the user to scroll through the images.  A delete
         button allows the user to delete the image they are viewing.
-
         The user can either update the whole series with a new colour table 
         and contrast & intensity values  or they can update individual
         images in the series with a new colour table 
         and contrast & intensity values.
-
         Input Parmeters
         ***************
         weasel - an object reference to the WEASEL interface.
@@ -486,7 +372,7 @@ def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName,
         try:
             logger.info("DisplayImageColour.displayMultiImageSubWindow called")
             (imgItem, graphicsView, colourTableLayout, imageLayout, imageLevelsLayout, 
-            pixelDataLayout, graphicsViewLayout, sliderLayout, addSliderButtonLayout,
+            pixelDataLayout, graphicsViewLayout, sliderLayout, 
             lblImageMissing, subWindow) = setUpSubWindow(weasel, imageSeries=True)
             #subWindow.setStyleSheet("background-color:#6666ff;")
 
@@ -496,6 +382,7 @@ def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName,
             #add user selection object to dictionary
             global userSelectionDict
             userSelectionDict[seriesName] = UserSelection(userSelectionList)
+            
             
             #file path of the first image, 
             #Study ID & Series ID are stored locally on the
@@ -522,44 +409,44 @@ def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName,
                                                                      graphicsView, singleImageSelected=False)
            
 
-            mainImageSlider = createImageSlider()
-
-            ###
-
+            imageSlider = QSlider(Qt.Horizontal)
+            imageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
+            imageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
             lblPixelValue = setUpPixelDataGroupBox(pixelDataLayout)
             cmbColours = setUpColourTools(weasel, colourTableLayout, graphicsView, False,  
                                                 lblHiddenImagePath, lblHiddenSeriesName, 
                                                 lblHiddenStudyName, lblHiddenSubjectID,
                                                 spinBoxIntensity, spinBoxContrast, btnApply, cmbColours, 
-                                                lblImageMissing, lblPixelValue, mainImageSlider)
+                                                lblImageMissing, lblPixelValue, imageSlider)
 
            
             maxNumberImages = len(imageList)
-            mainImageSlider.setMaximum(maxNumberImages)
+            imageSlider.setMinimum(1)
+            imageSlider.setMaximum(maxNumberImages)
             if maxNumberImages < 4:
-                mainImageSlider.setFixedWidth(subWindow.width()*.2)
+                imageSlider.setFixedWidth(subWindow.width()*.2)
             elif maxNumberImages > 3 and maxNumberImages < 11:
-                mainImageSlider.setFixedWidth(subWindow.width()*.5)
+                imageSlider.setFixedWidth(subWindow.width()*.5)
             else:
-                mainImageSlider.setFixedWidth(subWindow.width()*.85)
+                imageSlider.setFixedWidth(subWindow.width()*.85)
             if sliderPosition == -1:
-                mainImageSlider.setValue(1)
+                imageSlider.setValue(1)
             else:
-                mainImageSlider.setValue(sliderPosition)
+                imageSlider.setValue(sliderPosition)
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
             imageNumberLabel = QLabel()
-
-            imageTypeList = createImageTypeList()
             if maxNumberImages > 1:
-                sliderLayout.addWidget(imageTypeList, 0, 0)
-                sliderLayout.addWidget(mainImageSlider, 0, 1)
-                sliderLayout.addWidget(imageNumberLabel, 0,2)
+                sliderLayout.addWidget(imageSlider)
+            sliderLayout.addWidget(imageNumberLabel)
             if len(imageList) < 11:
                 sliderLayout.addStretch(1)
             
-            mainImageSlider.valueChanged.connect(
+            imageSlider.valueChanged.connect(
                   lambda: imageSliderMoved(weasel, subjectID, studyName, seriesName, 
                                                 imageList, 
-                                                mainImageSlider.value(),
+                                                imageSlider.value(),
                                                 lblImageMissing,
                                                 lblPixelValue,
                                                 deleteButton,
@@ -571,7 +458,7 @@ def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName,
             #Display the first image in the viewer
             imageSliderMoved(weasel, subjectID, studyName, seriesName, 
                                   imageList,
-                                  mainImageSlider.value(),
+                                  imageSlider.value(),
                                   lblImageMissing,
                                   lblPixelValue,
                                   deleteButton,
@@ -584,7 +471,7 @@ def displayMultiImageSubWindow(weasel, imageList, subjectID, studyName,
                                       weasel.selectedImagePath, imageList, subjectID, 
                                       lblHiddenStudyName.text(), 
                                       lblHiddenSeriesName.text(),
-                                      mainImageSlider.value(), subWindow))
+                                      imageSlider.value(), subWindow))
 
         except (IndexError, AttributeError):
                 subWindow.close()
@@ -636,7 +523,6 @@ def getHistogramLevels( graphicsView, spinBoxIntensity, spinBoxContrast):
         """
         This function determines contrast and intensity from the image
         and set the contrast & intensity spinboxes to these values.
-
         Input Parameters
         *****************
          graphicsView - pyqtGraph imageView widget
@@ -660,7 +546,6 @@ def setUpColourTools(weasel, layout,  graphicsView,
             Generates widgets for the display of a 
             dropdown list containing colour tables
             and spin boxes for setting image contrast and intensity.
-
             Input Parmeters
             ***************
             weasel - an object reference to the WEASEL interface.
@@ -680,7 +565,6 @@ def setUpColourTools(weasel, layout,  graphicsView,
             spinBoxIntensity - name of the spinbox widget that displays/sets image intensity.
             spinBoxContrast - name of the spinbox widget that displays/sets image contrast.
             imageSlider - name of the slider widget used to scroll through the images.
-
         Output Parameters
         *****************
             cmbColours - A dropdown list of colour table names based on the QComboBox class
@@ -870,14 +754,12 @@ def returnUserSelectedLevels(seriesName, centre, width, currentImageNumber):
     """
     When the user has selected new image levels that must override the 
     levels saved in the DICOM series/image, this function returns those selected levels
-
     Input parameters
     ****************
     seriesName - string variable containing the name of DICOM series of images to be displayed
     centre - Image intensity
     width - Image contrast
     currentImageNumber - The ordinal number of the image being viewed in the image list
-
     Output parameters
     *****************
     success - boolean, set to true if level values are successfully retrieved
@@ -1003,7 +885,7 @@ def imageSliderMoved(weasel, subjectID, studyName, seriesName,
                                        lut,
                                        multiImage=True,  
                                        deleteButton=deleteButton) 
-                weasel.selectedImagePath = imageList[currentImageNumber]
+
                 subWindow.setWindowTitle(subjectID + ' - ' + studyName + ' - '+ seriesName + ' - ' 
                          + os.path.basename(weasel.selectedImagePath))
         except TypeError as e: 
@@ -1051,7 +933,7 @@ def deleteSingleImage(weasel, currentImagePath, subjectID,
                     studyName, seriesName, currentImagePath)
             QApplication.processEvents()
             #Update tree view with xml file modified above
-            weasel.treeView.refreshDICOMStudiesTreeView()
+            TreeView.refreshDICOMStudiesTreeView()
             QApplication.restoreOverrideCursor()
     except Exception as e:
         print('Error in DisplayImageColour.deleteSingleImage: ' + str(e))
@@ -1133,7 +1015,7 @@ def deleteImageInMultiImageViewer(weasel, currentImagePath, imageList,
                 weasel.objXMLReader.removeOneImageFromSeries(subjectID, 
                     studyName, seriesName, currentImagePath)
             #Update tree view with xml file modified above
-            weasel.treeView.refreshDICOMStudiesTreeView()
+            TreeView.refreshDICOMStudiesTreeView()
     except Exception as e:
         print('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
         logger.error('Error in DisplayImageColour.deleteImageInMultiImageViewer: ' + str(e))
@@ -1221,7 +1103,6 @@ def applyColourTableToSeries(weasel, button, graphicsView, cmbColours, seriesNam
     """This function applies a user selected colour map to the current image.
     If the Apply checkbox is checked then the new colour map is also applied to 
     the whole series of DICOM images by setting a boolean flag to True.
-
     Input Parmeters
     ***************
         weasel - an object reference to the WEASEL interface.
@@ -1513,7 +1394,6 @@ def displayColourTableInComboBox(cmbColours, colourTable):
     This function causes the combobox widget cmbColours to 
     display the name of the colour table stored in the string
     variable colourTable. 
-
      Input Parmeters
      ****************
     cmbColours - name of the dropdown lists of colour map names
@@ -1576,7 +1456,6 @@ def getPixelValue(pos,  graphicsView, pixelArray, lblPixelValue, imageNumber=1):
     image and when it is, it determines the value of the pixel
     under the mouse pointer and displays this in the label
     lblPixelValue.
-
     Input parameters
     ****************
     pos - X,Y coordinates of the mouse pointer
@@ -1622,7 +1501,6 @@ def readLevelsFromDICOMImage(weasel, pixelArray):
         ***************
         weasel - an object reference to the WEASEL interface.
         pixelArray - pixel array to be displayed
-
         Output Parameters
         *****************
         centre - Image intensity

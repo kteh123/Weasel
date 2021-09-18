@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemVi
 import os
 import sys
 import logging
-import CoreModules.WEASEL.DisplayImageColour  as displayImageColour
+from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
 
 logger = logging.getLogger(__name__)
 __author__ = "Steve Shillitoe"
@@ -37,7 +37,7 @@ class TreeView():
                 self.widget.header().setSectionResizeMode(3, QHeaderView.ResizeToContents)
                 self.widget.setHeaderLabels(["", "DICOM Files", "Date", "Time", "Path"])
                 self.widget.setContextMenuPolicy(Qt.CustomContextMenu)
-                self.widget.itemDoubleClicked.connect(lambda item, col: displayImageColour.displayImageFromTreeView(self.weasel, item, col))
+                self.widget.itemDoubleClicked.connect(lambda item, col: self._displayImage(item, col))
                 self.widget.customContextMenuRequested.connect(lambda pos: self._displayContextMenu(pos))
                 self.widget.itemClicked.connect(lambda item, col: self._itemClickedEvent(item, col))
 
@@ -137,11 +137,19 @@ class TreeView():
                 item.setCheckState(0, Qt.Unchecked)
             return item 
 
+    def _displayImage(self, item, col):
+        if col == 1:
+            id = self.weasel.objXMLReader.objectID(item.element)
+            if item.element.tag == 'image':
+                imageViewer(self.weasel, id[0], id[1], id[2], id[3], singleImageSelected=True)
+            elif item.element.tag == 'series':
+                imageList = [image.find('name').text for image in item.element]
+                imageViewer(self.weasel, id[0], id[1], id[2], imageList)
 
     def _displayContextMenu(self, pos):
         try:
             logger.info("TreeView.displayContextMenu called")
-            if self.isASeriesChecked or self.isAnImageChecked:
+            if self.series() != [] or self.images() != []:
                 self.weasel.menuBuilder.context.exec_(self.widget.mapToGlobal(pos))
         except Exception as e:
             print('Error in function TreeView.displayContextMenu: ' + str(e))

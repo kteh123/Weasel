@@ -1,10 +1,8 @@
 import os
 import logging
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
-import CoreModules.WEASEL.DisplayImageColour as displayImageColour
 import CoreModules.WEASEL.MessageWindow as messageWindow
 from Displays.ViewMetaData import displayMetaDataSubWindow
-from DICOM.Classes import (Subject, Study, Series, Image)
 
 logger = logging.getLogger(__name__)
 
@@ -55,22 +53,4 @@ class UserInterfaceTools():
             print('Error in function UserInterfaceTools.displayMetadata: ' + str(e))
             logger.exception('Error in UserInterfaceTools.displayMetadata: ' + str(e))
 
-
-    def displayImages(self, inputPath, subjectID, studyID, seriesID):
-        """
-        Display the PixelArray in "inputPath" in the User Interface.
-        """
-        logger.info("UserInterfaceTools.displayImages called")
-        try:
-            if isinstance(inputPath, str) and os.path.exists(inputPath):
-                displayImageColour.displayImageSubWindow(self, inputPath, subjectID, seriesID, studyID)
-            elif isinstance(inputPath, list) and os.path.exists(inputPath[0]):
-                if len(inputPath) == 1:
-                    displayImageColour.displayImageSubWindow(self, inputPath[0], subjectID, seriesID, studyID)
-                else:
-                    displayImageColour.displayMultiImageSubWindow(self, inputPath, subjectID, studyID, seriesID)
-            return
-        except Exception as e:
-            print('Error in function UserInterfaceTools.displayImages: ' + str(e))
-            logger.exception('Error in UserInterfaceTools.displayImages: ' + str(e))
         

@@ -25,7 +25,8 @@ class ReadWrite():
         Returns a list of Images checked by the user.
         """
         imagesList = [] 
-        if self.objXMLReader.checkedImageList == []:
+        images = self.objXMLReader.checkedImageList
+        if images == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -33,8 +34,9 @@ class ReadWrite():
             elif msg is not None:
                 self.message(msg=msg)
         else:
-            for image in self.objXMLReader.checkedImageList:
-                newImage = Image(self, image[0], image[1], image[2], image[3])
+            for image in images:
+                id = self.objXMLReader.objectID(image)
+                newImage = Image(self, id[0], id[1], id[2], id[3])
                 imagesList.append(newImage)
         return ImagesList(imagesList)
 
@@ -42,8 +44,9 @@ class ReadWrite():
         """
         Returns a list of Series checked by the user.
         """
-        seriesList = []       
-        if self.objXMLReader.checkedSeriesList == []:
+        seriesList = []  
+        checked_series = self.objXMLReader.checkedSeriesList     
+        if checked_series == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -51,9 +54,10 @@ class ReadWrite():
             elif msg is not None:
                 self.message(msg=msg)
         else:
-            for series in self.objXMLReader.checkedSeriesList:
-                images = self.objXMLReader.getImagePathList(series[0], series[1], series[2])
-                newSeries = Series(self, series[0], series[1], series[2], listPaths=images)
+            for series in checked_series:
+                images = [image.find('name').text for image in series]
+                id = self.objXMLReader.objectID(series)
+                newSeries = Series(self, id[0], id[1], id[2], listPaths=images)
                 seriesList.append(newSeries)
         return SeriesList(seriesList)
 
@@ -62,7 +66,8 @@ class ReadWrite():
         Returns a list of Studies checked by the user.
         """
         studyList = []
-        if self.objXMLReader.checkedStudyList == []:
+        checked_studies = self.objXMLReader.checkedStudyList 
+        if checked_studies == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -70,8 +75,9 @@ class ReadWrite():
             elif msg is not None:
                 self.message(msg=msg)
         else:
-            for study in self.objXMLReader.checkedStudyList:
-                newStudy = Study(self, study[0], study[1])
+            for study in checked_studies:
+                id = self.objXMLReader.objectID(study)
+                newStudy = Study(self, id[0], id[1])
                 studyList.append(newStudy)
         return StudyList(studyList)
 
@@ -80,7 +86,8 @@ class ReadWrite():
         Returns a list of Subjects checked by the user.
         """
         subjectList = []
-        if self.objXMLReader.checkedSubjectList == []:
+        checked_subjects = self.objXMLReader.checkedSubjectList
+        if checked_subjects == []:
             if self.cmd == True:
                 print("=====================================")
                 print(msg)
@@ -88,8 +95,9 @@ class ReadWrite():
             elif msg is not None:
                 self.message(msg=msg)
         else:
-            for subject in self.objXMLReader.checkedSubjectList:
-                newSubject = Subject(self, subject)
+            for subject in checked_subjects:
+                id = self.objXMLReader.objectID(subject)
+                newSubject = Subject(self, id[0])
                 subjectList.append(newSubject)    
         return SubjectList(subjectList)
 

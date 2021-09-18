@@ -89,7 +89,7 @@ class UserSelection:
             contrast = tempList[2] 
             return colourTable, intensity, contrast
         except Exception as e:
-                print('Error in DisplayImageColour.UserSelection.returnUserSelection: ' + str(e))
-                logger.error('Error in DisplayImageColour.UserSelection.returnUserSelection: ' + str(e)) 
+                print('Error in UserImageColourSelection.UserSelection.returnUserSelection: ' + str(e))
+                logger.error('Error in UserImageColourSelection.UserSelection.returnUserSelection: ' + str(e)) 
 
 

@@ -10,7 +10,7 @@ from ast import literal_eval # Convert strings to their actual content. Eg. "[a,
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-from API import StaticMethods
+
 import CoreModules.WEASEL.MessageWindow as messageWindow
 
 import logging
@@ -32,7 +32,7 @@ class ListOfDicomObjects(list):
         Displays all items in the list.
         """
         for item in self:
-            item.display()
+            item.objWeasel.display(item)
 
 
 class ImagesList(ListOfDicomObjects):
@@ -89,17 +89,19 @@ class ImagesList(ListOfDicomObjects):
             listIndividualAttributes = [series.subjectID, series.studyID, series.seriesID,
                                         series.images, series.studyUID, series.seriesUID, series.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = self[0].objWeasel.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             series = Series(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3], listAtt[4], listAtt[5], listAtt[6])
             parentsList.append(series)
         return SeriesList(parentsList)
 
+
     def display(self):
         """
         Displays all images as a series.
         """
-        self[0].displayListImages(self)
+        weasel = self[0].objWeasel.display(self)
+
 
     def sort(self, *argv, reverse=False):
         """
@@ -216,7 +218,7 @@ class SeriesList(ListOfDicomObjects):
             study = series.parent
             listIndividualAttributes = [study.subjectID, study.studyID, study.studyUID, study.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = self[0].objWeasel.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             study = Study(self[0].objWeasel, listAtt[0], listAtt[1], listAtt[2], listAtt[3])
             parentsList.append(study)
@@ -266,7 +268,7 @@ class StudyList(ListOfDicomObjects):
             subject = study.parent
             listIndividualAttributes = [subject.subjectID, subject.suffix]
             listParentsAttribute.append(listIndividualAttributes)
-        listUniqueParentsAttribute = StaticMethods.unique_elements(listParentsAttribute)
+        listUniqueParentsAttribute = self[0].objWeasel.unique_elements(listParentsAttribute)
         for listAtt in listUniqueParentsAttribute:
             subject = Subject(self[0].objWeasel, listAtt[0], listAtt[1])
             parentsList.append(subject)
@@ -403,11 +405,6 @@ class Subject:
         except Exception as e:
             print('Error in Subject.all_images: ' + str(e))
             logger.exception('Error in Subject.all_images: ' + str(e))
-
-    @classmethod
-    def fromTreeView(cls, objWeasel, subjectItem):
-        subjectID = subjectItem.text(1).replace('Subject -', '').strip()
-        return cls(objWeasel, subjectID)
     
     def new(self, suffix="_Copy", subjectID=None):
         logger.info("Subject.new called")
@@ -597,12 +594,6 @@ class Study:
         except Exception as e:
             print('Error in Study.all_images: ' + str(e))
             logger.exception('Error in Study.all_images: ' + str(e))
-    
-    @classmethod
-    def fromTreeView(cls, objWeasel, studyItem):
-        subjectID = studyItem.parent().text(1).replace('Subject -', '').strip()
-        studyID = studyItem.text(1).replace('Study -', '').strip()
-        return cls(objWeasel, subjectID, studyID)
 
     def new(self, suffix="_Copy", studyID=None):
         logger.info("Study.new called")
@@ -823,14 +814,6 @@ class Series:
         except Exception as e:
             print('Error in Series.label: ' + str(e))
             logger.exception('Error in Series.label: ' + str(e))
-
-    @classmethod
-    def fromTreeView(cls, objWeasel, seriesItem):
-        subjectID = seriesItem.parent().parent().text(1).replace('Subject -', '').strip()
-        studyID = seriesItem.parent().text(1).replace('Study -', '').strip()
-        seriesID = seriesItem.text(1).replace('Series -', '').strip()
-        images = objWeasel.objXMLReader.getImagePathList(subjectID, studyID, seriesID)
-        return cls(objWeasel, subjectID, studyID, seriesID, listPaths=images)
     
     def new(self, suffix="_Copy", series_id=None, series_name=None, series_uid=None):
         logger.info("Series.new called")
@@ -1028,13 +1011,7 @@ class Series:
             logger.exception('Error in Series.where: ' + str(e))
 
     def display(self):
-        logger.info("Series.display called")
-        try:
-            if self.objWeasel.cmd == False:
-                self.objWeasel.displayImages(self.images, self.subjectID, self.studyID, self.seriesID)
-        except Exception as e:
-            print('Error in Series.display: ' + str(e))
-            logger.exception('Error in Series.display: ' + str(e))
+        self.objWeasel.display(self)
 
     def plot(self, xlabel="X axis", ylabel="Y axis"):
         logger.info("Series.plot called")
@@ -1454,14 +1431,6 @@ class Image:
         except Exception as e:
             print('Error in Image.parent: ' + str(e))
             logger.exception('Error in Image.parent: ' + str(e))
-
-    @classmethod
-    def fromTreeView(cls, objWeasel, imageItem):
-        subjectID = imageItem.parent().parent().parent().text(1).replace('Subject -', '').strip()
-        studyID = imageItem.parent().parent().text(1).replace('Study -', '').strip()
-        seriesID = imageItem.parent().text(1).replace('Series -', '').strip()
-        path = imageItem.text(4)
-        return cls(objWeasel, subjectID, studyID, seriesID, path)
     
     @staticmethod
     def newSeriesFrom(listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None):
@@ -1611,23 +1580,8 @@ class Image:
             logger.exception('Error in Image.merge: ' + str(e))
     
     def display(self):
-        logger.info("Image.display called")
-        try:
-            if self.objWeasel.cmd == False:
-                self.objWeasel.displayImages(self.path, self.subjectID, self.studyID, self.seriesID)
-        except Exception as e:
-            print('Error in Image.display: ' + str(e))
-            logger.exception('Error in Image.display: ' + str(e))
+        self.objWeasel.display(self)
 
-    @staticmethod
-    def displayListImages(listImages):
-        logger.info("Image.displayListImages called")
-        try:
-            pathsList = [image.path for image in listImages]
-            listImages[0].objWeasel.displayImages(pathsList, listImages[0].subjectID, listImages[0].studyID, listImages[0].seriesID)
-        except Exception as e:
-            print('Error in Image.displayListImages: ' + str(e))
-            logger.exception('Error in Image.displayListImages: ' + str(e))
 
     def plot(self, xlabel="X axis", ylabel="Y axis"):
         logger.info("Image.plot called")

@@ -324,6 +324,25 @@ class WeaselXMLReader:
                                     return [subject.attrib['id'], study.attrib['id'], series.attrib['id'], elem.find('name').text]
 
 
+    def branch(self, elem):
+        """Returns the parents of the current element"""
+        
+        if elem in self.root: # elem is a subject
+            return [elem]
+        else:
+            for subject in self.root:
+                if elem in subject: # elem is a study
+                    return [subject, elem]
+                else:
+                    for study in subject:
+                        if elem in study: # elem is a series
+                            return [subject, study, elem]
+                        else:
+                            for series in study:
+                                if elem in series: # elem is an image
+                                    return [subject, study, series, elem]
+
+
     def buildListsCheckedItems(self):
         """This function generates and returns lists of checked items."""
 
@@ -335,20 +354,16 @@ class WeaselXMLReader:
             checkedSubjectList = []
             for subject in self.root:
                 if subject.attrib['checked'] == 'True':
-                    objectID = self.objectID(subject)
-                    checkedSubjectList.append(objectID)
+                    checkedSubjectList.append(subject)
                 for study in subject:
                     if study.attrib['checked'] == 'True':
-                        objectID = self.objectID(study)
-                        checkedStudyList.append(objectID)
+                        checkedStudyList.append(study)
                     for series in study:
                         if series.attrib['checked'] == 'True':
-                            objectID = self.objectID(series)
-                            checkedSeriesList.append(objectID)
+                            checkedSeriesList.append(series)
                         for image in series:
                             if image.attrib['checked'] == 'True':
-                                objectID = self.objectID(image)
-                                checkedImageList.append(objectID)
+                                checkedImageList.append(image)
             return checkedImageList, checkedSeriesList, checkedStudyList, checkedSubjectList
         except Exception as e:
             print('Error in WeaselXMLReader.buildListsCheckedItems: ' + str(e))
@@ -374,17 +389,6 @@ class WeaselXMLReader:
     def checkedSubjectList(self):
         _, _, _, subjects = self.buildListsCheckedItems()
         return subjects
-
-    @property
-    def isAnImageChecked(self): 
-        return self.checkedImageList != []
-
-    @property
-    def isASeriesChecked(self): 
-        return self.checkedSeriesList != []
-
-    def isAnItemChecked(self):
-        return self.isASeriesChecked or self.isAnImageChecked
 
 
     def removeSubjectFromXMLFile(self, subjectID):

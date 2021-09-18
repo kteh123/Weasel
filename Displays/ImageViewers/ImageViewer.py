@@ -29,7 +29,6 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-from DICOM.Classes import Series
 import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 
@@ -988,7 +987,6 @@ class ImageViewer(QMdiSubWindow):
             """
         try:
             logger.info("In ImageViewer.updateWholeDicomSeries")
-            #imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, self.seriesID)
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
@@ -1017,8 +1015,6 @@ class ImageViewer(QMdiSubWindow):
         try:
             logger.info("In ImageViewer.updateDicomSeriesImageByImage")
        
-            #imagePathList = self.objXMLReader.getImagePathList(subjectID, studyName, seriesName)
-
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
             messageWindow.displayMessageSubWindow(self.weasel,

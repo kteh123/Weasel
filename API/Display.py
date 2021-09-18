@@ -1,4 +1,5 @@
 import Displays.MeanROITimeCurveViewer as curveViewer
+from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
 
 from PyQt5.QtGui import (QIcon)
 from PyQt5.QtWidgets import QMdiSubWindow
@@ -12,6 +13,21 @@ class Display():
     """
     Programming interfaces for modifying the Weasel GUI elements. 
     """
+
+    def display(self, dcm):
+        """
+        Displays a DICOM object (image or series).
+        """
+        if dcm.__class__.__name__ == "Image":
+            imageViewer(self, dcm.subjectID, dcm.studyID, dcm.seriesID, dcm.path, singleImageSelected=True)
+        elif dcm.__class__.__name__ == "Series":
+            imageViewer(self, dcm.subjectID, dcm.studyID, dcm.seriesID, dcm.images)
+        elif self.__class__.__name__ == "ImagesList":
+            for image in dcm:
+                self.display(image)
+        elif self.__class__.__name__ == "SeriesList":
+            for series in dcm:
+                self.display(series)
 
     def refresh(self):
         """
