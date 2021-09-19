@@ -64,25 +64,29 @@ class ImageViewer(QMdiSubWindow):
     the facility to change the colour table applied to the image.  It also has multiple
     sliders for browsing series of images."""
 
-    def __init__(self,  pointerToWeasel, subjectID, 
-                 studyID, seriesID, imagePathList, singleImageSelected=False): 
+    def __init__(self, weasel, dcm): 
         try:
             super().__init__()
-            self.subjectID = subjectID
-            self.studyID = studyID
-            self.seriesID = seriesID
-            self.imagePathList = imagePathList
+
+            self.subjectID = dcm.subjectID
+            self.studyID = dcm.studyID
+            self.seriesID = dcm.seriesID
+            if dcm.__class__.__name__ == "Image":
+                self.imagePathList = dcm.path
+            elif dcm.__class__.__name__ == "Series":
+                self.imagePathList = dcm.images
+
             self.selectedImagePath = ""
             self.imageNumber = -1
             self.colourTable = ""
             self.cmbColours = QComboBox()  
             self.lut = ""
-            self.weasel = pointerToWeasel
+            self.weasel = weasel
 
-            if singleImageSelected:
+            if dcm.__class__.__name__ == "Image":
                 self.isSeries = False
                 self.isImage = True
-                self.selectedImagePath = imagePathList
+                self.selectedImagePath = dcm.path
             else:
                 self.isSeries = True
                 self.isImage = False
@@ -116,7 +120,7 @@ class ImageViewer(QMdiSubWindow):
     
             self.setUpHistogram() #At the right-hand side of the image, adjusts levels
         
-            if singleImageSelected:
+            if dcm.__class__.__name__ == "Image":
                 self.displayPixelArrayOfSingleImage(self.imagePathList) 
             else:
                 #DICOM series selected

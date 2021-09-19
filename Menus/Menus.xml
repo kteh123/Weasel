@@ -51,7 +51,7 @@
           <label>View Series/Image</label>
           <shortcut>Ctrl+V</shortcut>
           <tooltip>View DICOM Image or series</tooltip>
-          <module>View__DisplayImages</module>
+          <module>View__ImageMultiSlider</module>
           <context_menu>yes</context_menu><!--Also appears in the tree view context menu-->
         </item>
         <item>

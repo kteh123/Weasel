@@ -2,6 +2,8 @@ import xml.etree.cElementTree as ET
 from datetime import datetime
 import logging
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
+from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
+
 
 logger = logging.getLogger(__name__)
 
@@ -370,25 +372,42 @@ class WeaselXMLReader:
             logger.exception('Error in WeaselXMLReader.buildListsCheckedItems: ' + str(e))
 
 
-    @property
-    def checkedImageList(self):
+    def checkedImages(self):
+        list = [] 
         images, _, _, _ = self.buildListsCheckedItems()
-        return images
+        for image in images:
+            id = self.objectID(image)
+            dcm = Image(self.weasel, id[0], id[1], id[2], id[3])
+            list.append(dcm)
+        return ImagesList(list)
 
-    @property
-    def checkedSeriesList(self):
+    def checkedSeries(self):
+        list = []
         _, series, _, _ = self.buildListsCheckedItems()
-        return series
+        for sery in series:
+            id = self.objectID(sery)
+            images = [image.find('name').text for image in sery]
+            dcm = Series(self.weasel, id[0], id[1], id[2], listPaths=images)
+            list.append(dcm)
+        return SeriesList(list)
 
-    @property
-    def checkedStudyList(self):
+    def checkedStudies(self):
+        list = []
         _, _, studies, _ = self.buildListsCheckedItems()
-        return studies
+        for study in studies:
+            id = self.objectID(study)
+            dcm = Study(self.weasel, id[0], id[1])
+            list.append(dcm)
+        return StudyList(list)
 
-    @property
-    def checkedSubjectList(self):
+    def checkedSubjects(self):
+        list = []
         _, _, _, subjects = self.buildListsCheckedItems()
-        return subjects
+        for subject in subjects:
+            id = self.objectID(subject)
+            dcm = Subject(self.weasel, id[0])
+            list.append(dcm)
+        return SubjectList(list)
 
 
     def removeSubjectFromXMLFile(self, subjectID):

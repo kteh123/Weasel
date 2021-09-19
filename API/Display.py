@@ -19,9 +19,9 @@ class Display():
         Displays a DICOM object (image or series).
         """
         if dcm.__class__.__name__ == "Image":
-            imageViewer(self, dcm.subjectID, dcm.studyID, dcm.seriesID, dcm.path, singleImageSelected=True)
+            imageViewer(self, dcm)
         elif dcm.__class__.__name__ == "Series":
-            imageViewer(self, dcm.subjectID, dcm.studyID, dcm.seriesID, dcm.images)
+            imageViewer(self, dcm)
         elif self.__class__.__name__ == "ImagesList":
             for image in dcm:
                 self.display(image)

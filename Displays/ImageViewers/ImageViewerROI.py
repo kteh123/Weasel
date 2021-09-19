@@ -75,22 +75,24 @@ class ImageViewerROI(QMdiSubWindow):
     the facility to draw a ROI on the image.  It also has multiple
     sliders for browsing series of images."""
 
-    def __init__(self,  pointerToWeasel, subjectID, 
-                 studyID, seriesID, imagePathList, singleImageSelected=False): 
+    def __init__(self, weasel, dcm): 
         try:
             super().__init__()
-            self.subjectID = subjectID
-            self.studyID = studyID
-            self.seriesID = seriesID
-            self.imagePathList = imagePathList
+            self.subjectID = dcm.subjectID
+            self.studyID = dcm.studyID
+            self.seriesID = dcm.seriesID
+            if dcm.__class__.__name__ == "Image":
+                self.imagePathList = dcm.path
+            elif dcm.__class__.__name__ == "Series":
+                self.imagePathList = dcm.images
             self.selectedImagePath = ""
             self.imageNumber = -1
-            self.weasel = pointerToWeasel
+            self.weasel = weasel
             
-            if singleImageSelected:
+            if dcm.__class__.__name__ == "Image":
                 self.isSeries = False
                 self.isImage = True
-                self.selectedImagePath = self.imagePathList
+                self.selectedImagePath = dcm.path
             else:
                 self.isSeries = True
                 self.isImage = False
@@ -125,7 +127,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
-            if singleImageSelected:
+            if dcm.__class__.__name__ == "Image":
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
             else:
                 #DICOM series selected
@@ -216,7 +218,7 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
-                inputPath = [i.find('name').text for i in self.weasel.objXMLReader.checkedImageList]
+                inputPath = [i.path for i in self.weasel.images()]
                 #inputPath = self.imageList
             else:
                 inputPath = [self.selectedImagePath]
@@ -267,7 +269,7 @@ class ImageViewerROI(QMdiSubWindow):
                 seriesID = listParams[0][0] # Temporary, only the first ROI
                 imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
-                    targetPath = [i.find('name').text for i in self.weasel.objXMLReader.checkedImageList]
+                    targetPath = [i.path for i in self.weasel.images()]
                     #targetPath = self.imageList
                 else:
                     targetPath = [self.selectedImagePath]

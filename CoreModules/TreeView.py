@@ -6,6 +6,8 @@ import os
 import sys
 import logging
 from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
+from DICOM.Classes import (Image, Series)
+
 
 logger = logging.getLogger(__name__)
 __author__ = "Steve Shillitoe"
@@ -141,10 +143,12 @@ class TreeView():
         if col == 1:
             id = self.weasel.objXMLReader.objectID(item.element)
             if item.element.tag == 'image':
-                imageViewer(self.weasel, id[0], id[1], id[2], id[3], singleImageSelected=True)
+                image = Image(self, id[0], id[1], id[2], id[3])
+                imageViewer(self.weasel, image)
             elif item.element.tag == 'series':
                 imageList = [image.find('name').text for image in item.element]
-                imageViewer(self.weasel, id[0], id[1], id[2], imageList)
+                series = Series(self, id[0], id[1], id[2], listPaths=imageList)
+                imageViewer(self.weasel, series)
 
     def _displayContextMenu(self, pos):
         try:

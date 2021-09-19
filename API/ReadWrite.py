@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.TreeView import TreeView
 from Displays.UserInput import userInput 
-from DICOM.Classes import (ImagesList, SeriesList, StudyList, SubjectList, Image, Series, Study, Subject)
 
 import logging
 logger = logging.getLogger(__name__)
@@ -20,86 +19,45 @@ class ReadWrite():
         print(message)
         logger.exception(message)
 
-    def images(self, msg=None):
+    def images(self, msg=''):
         """
         Returns a list of Images checked by the user.
         """
-        imagesList = [] 
-        images = self.objXMLReader.checkedImageList
-        if images == []:
-            if self.cmd == True:
-                print("=====================================")
-                print(msg)
-                print("=====================================")
-            elif msg is not None:
+        list = self.objXMLReader.checkedImages()
+        if list == []:
+            if msg != '':
                 self.message(msg=msg)
-        else:
-            for image in images:
-                id = self.objXMLReader.objectID(image)
-                newImage = Image(self, id[0], id[1], id[2], id[3])
-                imagesList.append(newImage)
-        return ImagesList(imagesList)
+        return list
 
-    def series(self, msg=None):
+    def series(self, msg=''):
         """
         Returns a list of Series checked by the user.
         """
-        seriesList = []  
-        checked_series = self.objXMLReader.checkedSeriesList     
-        if checked_series == []:
-            if self.cmd == True:
-                print("=====================================")
-                print(msg)
-                print("=====================================")
-            elif msg is not None:
+        list = self.objXMLReader.checkedSeries()
+        if list == []:
+            if msg != '':
                 self.message(msg=msg)
-        else:
-            for series in checked_series:
-                images = [image.find('name').text for image in series]
-                id = self.objXMLReader.objectID(series)
-                newSeries = Series(self, id[0], id[1], id[2], listPaths=images)
-                seriesList.append(newSeries)
-        return SeriesList(seriesList)
+        return list
 
-    def studies(self, msg=None):
+    def studies(self, msg=''):
         """
         Returns a list of Studies checked by the user.
         """
-        studyList = []
-        checked_studies = self.objXMLReader.checkedStudyList 
-        if checked_studies == []:
-            if self.cmd == True:
-                print("=====================================")
-                print(msg)
-                print("=====================================")
-            elif msg is not None:
+        list = self.objXMLReader.checkedStudies()
+        if list == []:
+            if msg != '':
                 self.message(msg=msg)
-        else:
-            for study in checked_studies:
-                id = self.objXMLReader.objectID(study)
-                newStudy = Study(self, id[0], id[1])
-                studyList.append(newStudy)
-        return StudyList(studyList)
+        return list
 
-    def subjects(self, msg=None):
+    def subjects(self, msg=''):
         """
         Returns a list of Subjects checked by the user.
         """
-        subjectList = []
-        checked_subjects = self.objXMLReader.checkedSubjectList
-        if checked_subjects == []:
-            if self.cmd == True:
-                print("=====================================")
-                print(msg)
-                print("=====================================")
-            elif msg is not None:
+        list = self.objXMLReader.checkedSubjects()
+        if list == []:
+            if msg != '':
                 self.message(msg=msg)
-        else:
-            for subject in checked_subjects:
-                id = self.objXMLReader.objectID(subject)
-                newSubject = Subject(self, id[0])
-                subjectList.append(newSubject)    
-        return SubjectList(subjectList)
+        return list
 
     def read_dicom_folder(self):
         """
