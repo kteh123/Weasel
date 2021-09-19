@@ -48,9 +48,9 @@ def download(objWeasel):
                         if experimentName[0] == "All":
                             dataset = session.projects[projectName[0]].subjects[subjectName[0]]
                             downloadFolder = selectXNATPathDownload(objWeasel)
-                            objWeasel.informationnload", "The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.")
+                            objWeasel.information("The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.")
                             dataset.download_dir(downloadFolder)
-                            objWeasel.informationnload", "Download completed!")
+                            objWeasel.information("Download completed!")
                         else:
                             xnatScans = [scan.series_description for scan in session.projects[projectName[0]].subjects[subjectName[0]].experiments[experimentName[0]].scans.values()]
                             xnatScans.insert(0, "All")
@@ -147,11 +147,11 @@ def upload(objWeasel):
     session.disconnect()
 
     
-def selectXNATPathDownload(self, tree_view_dir=False):
+def selectXNATPathDownload(weasel, tree_view_dir=False):
     if tree_view_dir == False:
-        directory = objWeasel.selectFolder(title="Select the directory where you wish to download")
+        directory = weasel.selectFolder(title="Select the directory where you wish to download")
     else:
-        directory = self.DICOMfolderPath
+        directory = os.path.split(weasel.objXMLReader.file)
     return directory
 
 

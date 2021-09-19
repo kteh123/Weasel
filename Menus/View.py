@@ -3,13 +3,13 @@ def main(weasel):
     menu = weasel.menu("View")
 
     menu.item(
-        label = 'Series or Image (multiple sliders)',
+        label = 'Series or Image',
         shortcut = 'Ctrl+M',
         tooltip = 'View DICOM Image or series with multiple sliders',
         pipeline = 'View__ImageMultiSlider',
         context = True)
     menu.item(
-        label = 'Series or Image with ROI (multiple sliders)',
+        label = 'Draw ROI',
         shortcut = 'Ctrl+M',
         tooltip = 'View DICOM Image or series and draw ROI with multiple sliders',
         pipeline = 'View__ImageMultiSliderROI',

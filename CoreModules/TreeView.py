@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemVi
 import os
 import sys
 import logging
+from CoreModules.WeaselXMLReader import WeaselXMLReader
 from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
 from DICOM.Classes import (Image, Series)
 
@@ -22,9 +23,7 @@ class TreeView():
             if os.path.exists(XML_File_Path):
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.weasel = weasel
-                self.DICOM_XML_FilePath = XML_File_Path
-                self.DICOMfolderPath, _ = os.path.split(XML_File_Path)
-                self.weasel.objXMLReader.parseXMLFile(XML_File_Path)
+                self.weasel.objXMLReader = WeaselXMLReader(weasel, XML_File_Path)
                 self.treeViewColumnWidths = { 1: 0, 2: 0, 3: 0} 
 
                 self.widget = QTreeWidget()
@@ -75,7 +74,7 @@ class TreeView():
         logger.info("TreeView.buildTreeView called")
         self.widget.clear()
         self.widget.blockSignals(True)
-        for subjectElement in self.weasel.objXMLReader.getSubjects():
+        for subjectElement in self.weasel.objXMLReader.root:
             subjectWidgetTreeBranch = self._createWidgetTreeBranch("Subject",  subjectElement,  self.widget)
             for studyElement in subjectElement:
                 studyWidgetTreeBranch = self._createWidgetTreeBranch("Study",  studyElement, subjectWidgetTreeBranch)
@@ -218,7 +217,7 @@ class TreeView():
             self.widget.setColumnWidth(3, self.treeViewColumnWidths[3])
             self.weasel.refresh_menus()
             self.widget.show()
-            self.weasel.objXMLReader.saveXMLFile()
+            self.weasel.objXMLReader.save()
             
             QApplication.restoreOverrideCursor()
         except Exception as e:
@@ -229,7 +228,8 @@ class TreeView():
 
     def close(self):
         try:
-            self.weasel.objXMLReader.saveXMLFile()
+            self.weasel.objXMLReader.save()
+            self.weasel.objXMLReader = None
             self.widget.clear()
             self.widget.close()
         except Exception as e:

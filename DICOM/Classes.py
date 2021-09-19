@@ -331,7 +331,7 @@ class Project:
         logger.info("Project.children called")
         try:
             children = []
-            rootXML = self.objWeasel.objXMLReader.getXMLRoot()
+            rootXML = self.objWeasel.objXMLReader.root
             for subjectXML in rootXML:
                 subjectID = subjectXML.attrib['id']
                 subject = Subject(self.objWeasel, subjectID)
