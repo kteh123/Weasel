@@ -17,6 +17,39 @@ from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox)
 import logging
 logger = logging.getLogger(__name__)
 
+def makeDICOM_XML_File(weasel, scan_directory):
+    """Creates an XML file that describes the contents of the scan folder,
+    scan_directory.  Returns the full file path of the resulting XML file,
+    which takes it's name from the scan folder."""
+    try:
+        logger.info("WriteXMLfromDICOM.makeDICOM_XML_File called.")
+        if scan_directory:
+            start_time=time.time()
+            numFiles, numFolders = get_files_info(scan_directory)
+            if numFolders == 0:
+                folder = os.path.basename(scan_directory) + ' folder.'
+            else:
+                folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
+                    + 'subdirectory(s)'
+
+            progBarMsg = "Collecting {} files from the {}".format(numFiles, folder)
+            scans, paths = get_scan_data(scan_directory, progBarMsg, weasel)
+
+            weasel.message(msg="<H4>Reading data from each DICOM file</H4>")
+            dictionary = build_dictionary(scans, messageWindow, weasel)
+
+            weasel.message("<H4>Writing DICOM data to an XML file</H4>")
+            xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, weasel)
+            
+            weasel.message("<H4>Saving XML file</H4>")
+            fullFilePath = create_XML_file(xml, scan_directory)
+            weasel.close_message()
+            logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}.".format(fullFilePath))
+        return fullFilePath
+    except Exception as e:
+        print('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
+        logger.error('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
+
 
 def get_files_info(scan_directory):
     """This method returns the number of files and subfolders in a folder. It doesn't mean that they are all DICOM.
@@ -72,24 +105,25 @@ def scan_tree(scan_directory):
             yield entry
 
 
-def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
+def get_scan_data(scan_directory, progBarMsg, weasel):
     """This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     """
     try:
         logger.info("WriteXMLfromDICOM.get_scan_data called")
+        
         list_paths = list()
         list_dicom = list()
         file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
         file_list.sort(key=natural_keys)
         multiframe_files_list = list()
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
+        weasel.progress_bar(max=len(file_list), msg=progBarMsg, title="Reading files")
         fileCounter = 0
         multiframeCounter = 0
         for filepath in file_list:
             try:
                 fileCounter += 1
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+                weasel.update_progress_bar(fileCounter)
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'PerFrameFunctionalGroupsSequence',
@@ -120,13 +154,12 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
                     multiframeCounter += 1
                     if multiframeCounter == 1:
-                        buttonReply = QMessageBox.question(self, "Multiframe DICOM files found",
-                                      "WEASEL detected the existence of multiframe DICOM in the selected directory and will convert these. This operation requires overwriting the original files. Do you wish to proceed?", 
-                                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
-                        if buttonReply == QMessageBox.Cancel:
-                            print("User chose not to convert Multiframe DICOM. Loading process halted.")
-                            msgWindow.hideProgressBar(self)
-                            msgWindow.closeMessageSubWindow(self)
+                        OK = weasel.question(
+                            title = "Multiframe DICOM files found", 
+                            question = "The data you are loading are multiframe DICOM and will be converted. This operation requires overwriting the original files. Do you wish to proceed?"
+                        )
+                        if not OK:
+                            weasel.close_progress_bar()
                             return None
                     if os.name =='nt':
                         multiframeScript = 'emf2sf.bat'
@@ -153,7 +186,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     #elif hasattr(dataset, 'SequenceName'):
                     #    fileBaseFlag = fileBase + "00_" + str(dataset.SequenceName)
                     # Run the dcm4che emf2sf
-                    msgWindow.displayMessageSubWindow(self, "Multiframe DICOM detected. Converting to single frame ...")
+                    weasel.message(msg = "Multiframe DICOM detected. Converting to single frame ...")
                     multiframeCommand = [multiframeProgram, "--inst-no", "'%s'", "--not-chseries", "--out-dir", multiframeDir, "--out-file", fileBaseFlag, filepath]
                     try:
                         commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
@@ -168,9 +201,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
                         # Discussion about removing the original file or not
                         os.remove(filepath)
-                        msgWindow.displayMessageSubWindow(self, progBarMsg)
-                        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
-                        msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+                        weasel.progress_bar(max=len(file_list), index=fileCounter,  msg=progBarMsg)
                     else:
                         print('Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n'\
                               'The DICOM file ' + filepath + ' was not deleted.')
@@ -189,9 +220,10 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
         for singleframe in np.unique(multiframe_files_list):
             try:
                 fileCounter += 1
-                msgWindow.displayMessageSubWindow(self, "Reading {} single frame DICOM files converted earlier".format(len(np.unique(multiframe_files_list))))
-                msgWindow.setMsgWindowProgBarMaxValue(self, len(np.unique(multiframe_files_list)))
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+                weasel.progress_bar(
+                    max = len(np.unique(multiframe_files_list)), 
+                    index = fileCounter,  
+                    msg = "Reading {} single frame DICOM files converted earlier".format(len(np.unique(multiframe_files_list))))
                 list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
                              'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
@@ -205,7 +237,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 continue
 
         if len(list_dicom) == 0:
-            msgWindow.displayMessageSubWindow(self, "No DICOM files present in the selected folder")
+            weasel.message( "No DICOM files present in the selected folder")
             raise FileNotFoundError('No DICOM files present in the selected folder')
 
         return list_dicom, list_paths
@@ -240,15 +272,15 @@ def get_study_series(dicom):
         print('Error in WriteXMLfromDICOM.get_study_series: ' + str(e))
 
 
-def build_dictionary(list_dicom, msgWindow, self):
+def build_dictionary(list_dicom, msgWindow, weasel):
     try:
         logger.info("WriteXMLfromDICOM.build_dictionary called")
         xml_dict = {}
         fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
+        msgWindow.setMsgWindowProgBarMaxValue(weasel, len(list_dicom))
         for dicomfile in list_dicom:
             fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+            msgWindow.setMsgWindowProgBarValue(weasel, fileCounter)
             subject, study, sequence, series_number, _, _ = get_study_series(dicomfile)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
@@ -261,7 +293,7 @@ def build_dictionary(list_dicom, msgWindow, self):
         print('Error in WriteXMLfromDICOM.build_dictionary: ' + str(e))
 
 
-def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
+def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, weasel):
     """This method opens all DICOM files in the given list and saves 
         information from each file individually to an XML tree/structure.
     """
@@ -284,10 +316,10 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
                     series_element.set('id', series)
                     series_element.set('checked', 'False')  #added by SS 16.03.21
         fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
+        msgWindow.setMsgWindowProgBarMaxValue(weasel, len(list_dicom))
         for index, dicomfile in enumerate(list_dicom):
             fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+            msgWindow.setMsgWindowProgBarValue(weasel, fileCounter)
             subject, study, sequence, series_number, study_uid, series_uid = get_study_series(dicomfile)
             subject_search_string = "./*[@id='" + subject + "']"
             study_root = DICOM_XML_object.find(subject_search_string)
@@ -349,7 +381,7 @@ def create_XML_file(DICOM_XML_object, scan_directory):
         print('Error in WriteXMLfromDICOM.create_XML_file: ' + str(e))
 
 
-def getScanDirectory(self):
+def getScanDirectory(weasel):
     """Displays an open folder dialog window to allow the
     user to select the folder holding the DICOM files"""
     try:
@@ -357,9 +389,9 @@ def getScanDirectory(self):
         #cwd = os.getcwd()
 
         scan_directory = QFileDialog.getExistingDirectory(
-            self,
+            weasel,
             'Select the directory containing the scan', 
-            self.weaselDataFolder, 
+            weasel.weaselDataFolder, 
             QFileDialog.ShowDirsOnly)
         return scan_directory
     except Exception as e:
@@ -385,37 +417,3 @@ def existsDICOMXMLFile(scanDirectory):
         logger.error('Error in function WriteXMLfromDICOM.existsDICOMXMLFile: ' + str(e))
 
 
-def makeDICOM_XML_File(self, scan_directory):
-    """Creates an XML file that describes the contents of the scan folder,
-    scan_directory.  Returns the full file path of the resulting XML file,
-    which takes it's name from the scan folder."""
-    try:
-        logger.info("WriteXMLfromDICOM.makeDICOM_XML_File called.")
-        if scan_directory:
-            start_time=time.time()
-            numFiles, numFolders = get_files_info(scan_directory)
-            if numFolders == 0:
-                folder = os.path.basename(scan_directory) + ' folder.'
-            else:
-                folder = os.path.basename(scan_directory) + ' folder and {} '.format(numFolders) \
-                    + 'subdirectory(s)'
-
-            progBarMsg = "Collecting {} files from the {}".format(numFiles, folder)
-            messageWindow.displayMessageSubWindow(self, progBarMsg)
-            scans, paths = get_scan_data(scan_directory, messageWindow, progBarMsg, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
-            dictionary = build_dictionary(scans, messageWindow, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
-            xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
-            fullFilePath = create_XML_file(xml, scan_directory)
-            self.msgSubWindow.close()
-            end_time=time.time()
-            xmlCreationTime = end_time - start_time 
-            #print('XML file creation time = {}'.format(xmlCreationTime))
-            logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}."
-                        .format(fullFilePath))
-        return fullFilePath
-    except Exception as e:
-        print('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
-        logger.error('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))

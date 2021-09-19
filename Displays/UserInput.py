@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox,
                              QDoubleSpinBox, QLineEdit, QListWidget, QAbstractItemView )
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
-import CoreModules.WEASEL.StyleSheet as styleSheet
+import CoreModules.StyleSheet as styleSheet
 import logging
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt
 #import matplotlib.pyplot as plt
 
 from Displays.GraphPlotter import PlotGraph as plotGraph
-#import CoreModules.WEASEL.StyleSheet as styleSheet
 #import sys
 import logging
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtWidgets import QFileDialog
-import CoreModules.WEASEL.WriteXMLfromDICOM as WriteXMLfromDICOM
+import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.TreeView import TreeView
 from Displays.UserInput import userInput 
 

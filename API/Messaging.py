@@ -60,12 +60,11 @@ class Messaging():
         else:
             QMessageBox.critical(self, title, msg)
 
-    def question(self, question="You wish to proceed (OK) or not (Cancel)?", title="Message Window Title"):
-        """
-        Displays a question window in the User Interface with the title in "title" and
-        with the question in "question". The 2 strings in the arguments are the input by default.
+    def question(self, question="Do you wish to proceed?", title="Question for the user"):
+        """Displays a question window in the User Interface
+        
         The user has to click either "OK" or "Cancel" in order to continue using the interface.
-        It returns 0 if reply is "Cancel" and 1 if reply is "OK".
+        It returns False if reply is "Cancel" and True if reply is "OK".
         """
         if self.cmd == True:
             print("=====================================")
@@ -106,6 +105,7 @@ class Messaging():
     def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """
         Displays a progress bar with the unit set in "index".
+
         Note: launching a new progress bar at each iteration costs time, so this
         should only be used in iterations where the progress bar is updated infrequently
         For iterations with frequent updates, use progress_bar outside the iteration

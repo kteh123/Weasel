@@ -33,7 +33,7 @@ sys.path.append(os.path.join(sys.path[0],'Displays', 'ImageViewers', 'Components
 sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
-import CoreModules.WEASEL.StyleSheet as styleSheet
+import CoreModules.StyleSheet as styleSheet
 from CoreModules.XMLConfigReader import XMLConfigReader
 from CoreModules.TreeView import TreeView
 from CoreModules.MenuBuilder import MenuBuilder
