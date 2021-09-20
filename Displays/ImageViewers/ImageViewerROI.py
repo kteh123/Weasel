@@ -636,11 +636,13 @@ class ImageViewerROI(QMdiSubWindow):
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
             self.graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
+            self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
                print('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
                logger.error('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
+               logger.exception('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
     
 
     def deleteROITidyUp(self):
@@ -815,7 +817,6 @@ class ImageViewerROI(QMdiSubWindow):
             Also, sets the contrast and intensity in the associated histogram.
             """
             try:
-                logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
 
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
@@ -831,10 +832,9 @@ class ImageViewerROI(QMdiSubWindow):
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.lblImageMissing.hide() 
-                    self.graphicsView.setImage(self.pixelArray, None, imagePath)
+                    self.reloadImageInNewImageItem()
+                    self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
-                    self.setUpImageEventHandlers()
 
             except Exception as e:
                 print('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
