@@ -356,7 +356,7 @@ class ImageViewerROI(QMdiSubWindow):
     def eraseROI(self, checked):
         logger.info("ImageViewerROI.eraseROI called.")
         if checked:
-            self.setButtonsToDefaultStyle(self.buttonList)
+            self.setButtonsToDefaultStyle()
             self.graphicsView.eraseROI()
             self.btnErase.setStyleSheet("background-color: red")
         else:
@@ -607,7 +607,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
             self.connectSlotToSignalForROITools()
-            
+
+            self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
