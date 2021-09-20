@@ -542,13 +542,18 @@ class ImageViewerROI(QMdiSubWindow):
 
     def storeMaskData(self):
         logger.info("ImageViewerROI.storeMaskData called")
-        regionName = self.cmbROIs.currentText()
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-        mask = self.graphicsView.graphicsItem.getMaskData()
-        self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+        try:
+            regionName = self.cmbROIs.currentText()
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+                print("imageNumber={}".format(imageNumber))
+            else:
+                imageNumber = 1
+            mask = self.graphicsView.graphicsItem.getMaskData()
+            self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+        except Exception as e:
+                print('Error in ImageViewerROI.storeMaskData: ' + str(e))
+                logger.error('Error in ImageViewerROI.storeMaskData: ' + str(e))
 
 
     def replaceMask(self):
@@ -635,13 +640,11 @@ class ImageViewerROI(QMdiSubWindow):
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
-            self.graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
                print('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
-               logger.error('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
                logger.exception('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
     
 
@@ -800,9 +803,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             #This is how an object created from the ImageSliders class communicates
             #with an object created from the ImageViewerROI class via the former's
-            #sliderMoved event, which passes the image path of the image being viewed
+            #imageSliderMoved event, which passes the image path of the image being viewed
             #to ImageViewerROI's displayPixelArrayOfSingleImage function for display.
-            self.slidersWidget.sliderMoved.connect(lambda imagePath: 
+            self.slidersWidget.imageSliderMoved.connect(lambda imagePath: 
                                                    self.displayPixelArrayOfSingleImage(imagePath))
             #Display the first image in the viewer
             self.slidersWidget.displayFirstImage()
@@ -817,6 +820,7 @@ class ImageViewerROI(QMdiSubWindow):
             Also, sets the contrast and intensity in the associated histogram.
             """
             try:
+                logger.info("ImageViewerROI.displayPixelArrayOfSingleImage called")
 
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
