@@ -215,7 +215,7 @@ class ImageViewerROI(QMdiSubWindow):
             # Save Current ROI
             regionName = self.cmbROIs.currentText()
             logger.info("ImageViewerROI.saveROI called")
-            # get the list of boolean masks
+            # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
@@ -229,8 +229,8 @@ class ImageViewerROI(QMdiSubWindow):
                 "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
                 "Export ROIs")
             messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(inputPath))
-            (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
-            seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
+            (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
+            seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
             
             for index, path in enumerate(inputPath):
@@ -243,7 +243,7 @@ class ImageViewerROI(QMdiSubWindow):
             #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
             messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
             messageWindow.closeMessageSubWindow(self.weasel)
-            self.weasel.treeView.refreshDICOMStudiesTreeView(newSeriesName=treeSeriesID)
+            self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
                 print('Error in ImageViewerROI.saveROI: ' + str(e))
