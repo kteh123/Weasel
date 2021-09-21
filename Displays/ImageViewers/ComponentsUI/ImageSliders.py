@@ -13,8 +13,11 @@ from PyQt5.QtWidgets import (QMessageBox,
 
 import numpy as np
 import copy
+import itertools
+import pandas as pd
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 from DICOM.Classes import Series
+from External.PandasDICOM.DICOM_to_DataFrame import DICOM_to_DataFrame
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,12 +62,12 @@ class ImageSliders(QObject):
             # Global variables for the Multisliders
             self.dynamicListImageType = []
             self.shapeList = []
-            self.arrayForMultiSlider = self.imagePathList # Please find the explanation of this variable at __multipleImageSliderMoved(self)
-            self.seriesToFormat = Series(self.weasel, self.subjectID, self.studyID, self.seriesID, listPaths=self.imagePathList)
+            self.multiSliderPositionList = []
+            self.dicomTable = pd.DataFrame()
             #A list of the sorted image sliders, 
             #updated as they are added and removed 
             #from the subwindow
-            self.listSortedImageSliders = []  
+            self.listSortedImageSliders = []
 
             #Create the custom, composite sliders widget
             self.__setUpLayouts()
@@ -144,33 +147,38 @@ class ImageSliders(QObject):
                 self.imageNumberLabel.setText(imageNumberString)
                 self.selectedImagePath = self.imagePathList[currentImageNumber]
 
-                #Send the file path of  current image to the parent application
+                if len(self.listSortedImageSliders) > 0:
+                    self.multiSliderPositionList = []
+                    subTable = copy.copy(self.dicomTable)
+                    for index, tag in enumerate(self.dynamicListImageType):
+                        tagValue = subTable.loc[self.selectedImagePath, tag]
+                        listAttr = sorted(subTable[tag].unique())
+                        newIndex = listAttr.index(tagValue)
+                        self.multiSliderPositionList.append(newIndex)
+                        maxAttr = self.listSortedImageSliders[index][0].maximum()
+                        self.listSortedImageSliders[index][0].blockSignals(True)
+                        self.listSortedImageSliders[index][1].blockSignals(True)
+                        self.listSortedImageSliders[index][0].setValue(newIndex+1)
+                        self.listSortedImageSliders[index][1].setText("image {} of {}".format(newIndex+1, maxAttr))
+                        self.listSortedImageSliders[index][0].blockSignals(False)
+                        self.listSortedImageSliders[index][1].blockSignals(False)
+                        # subTable will be needed in the case of extra "nameless" slider
+                        subTable = subTable[subTable[tag] == tagValue]
+                    if len(self.listSortedImageSliders) > len(self.dynamicListImageType):
+                        newIndex = subTable.index.to_list().index(self.selectedImagePath)
+                        self.multiSliderPositionList.append(newIndex)
+                        maxAttr = self.listSortedImageSliders[index+1][0].maximum()
+                        self.listSortedImageSliders[index+1][0].blockSignals(True)
+                        self.listSortedImageSliders[index+1][1].blockSignals(True)
+                        self.listSortedImageSliders[index+1][0].setValue(newIndex+1)
+                        self.listSortedImageSliders[index+1][1].setText("image {} of {}".format(newIndex+1, maxAttr))
+                        self.listSortedImageSliders[index+1][0].blockSignals(False)
+                        self.listSortedImageSliders[index+1][1].blockSignals(False)
+
+                #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
 
-                #SS 31 Aug. Synchronising main and sorted image sliders attempt
-                if len(self.listSortedImageSliders)>0:
-                    np_array = np.array(self.arrayForMultiSlider)
-                    item_index = np.where(np_array == self.selectedImagePath) 
-                    if np_array.ndim == 1:
-                        firstSliderValue = item_index[0][0]
-                        #print("firstSliderValue ={}".format(firstSliderValue))
-                        self.listSortedImageSliders[0][0].blockSignals(True)
-                        self.listSortedImageSliders[0][0].setValue(firstSliderValue)
-                        #Need to update image x of y text for this slider
-                        self.listSortedImageSliders[0][0].blockSignals(False)
-                    elif np_array.ndim == 2:
-                        firstSliderValue = item_index[0][0]
-                        secondSliderValue = item_index[1][0]
-                        #print("firstSliderValue ={}".format(firstSliderValue))
-                        #print("secondSliderValue ={}".format(secondSliderValue))
-                        self.listSortedImageSliders[0][0].blockSignals(True)
-                        self.listSortedImageSliders[0][0].setValue(firstSliderValue)
-                        self.listSortedImageSliders[0][0].blockSignals(False)
-                        self.listSortedImageSliders[1][0].blockSignals(True)
-                        self.listSortedImageSliders[1][0].setValue(secondSliderValue)
-                        self.listSortedImageSliders[1][0].blockSignals(False)
-                        #Need to update image x of y text for these sliders
-
+                    
         except TypeError as e: 
             print('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
             logger.error('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
@@ -218,6 +226,8 @@ class ImageSliders(QObject):
     def displayHideMultiSliders(self, state):
         if state == Qt.Checked:
             self.__setUpImageTypeList()
+            tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+            self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
         elif state == Qt.Unchecked:
             #remove multiple sliders
             self.imageTypeList.deleteLater()
@@ -233,16 +243,19 @@ class ImageSliders(QObject):
         self.imageTypeLayout.addWidget( self.imageTypeList,  alignment=Qt.AlignLeft)
         self.imageTypeLayout.addStretch(2)
 
+
     def __createImageTypeList(self):
         try:
             imageTypeList = QListWidget()
             imageTypeList.setFlow(QListView.Flow.LeftToRight)
             imageTypeList.setWrapping(True)
             imageTypeList.setMaximumHeight(25)
+            self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=listImageTypes) # Consider commenting if it takes too long
             for imageType in listImageTypes:
                 # First, check if the DICOM tag exists in the images of the series.
-                if ReadDICOM_Image.getImageTagValue(self.selectedImagePath, imageType) is not None:
-                    _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, imageType)
+                if ReadDICOM_Image.getImageTagValue(self.selectedImagePath, imageType):# is not None:
+                    numAttr = len(self.dicomTable[imageType].unique())
+                    #_, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, imageType)
                     # Then, check if there's more than 1 unique value for the corresponding DICOM tag
                     if numAttr > 1:
                         item = QListWidgetItem(imageType)
@@ -261,119 +274,97 @@ class ImageSliders(QObject):
     def __addRemoveSortedImageSlider(self, item):
         try:
             if item.checkState() == Qt.Checked:
-                #add a slider-label pair
-                imageSliderLayout = self.__createSortedImageSlider(item.text()) 
-                if imageSliderLayout is not None:
-                    self.sortedImageSliderLayout.addRow(item.text(), imageSliderLayout)  
+                self.__createSortedImageSlider(item.text())
             else:
-                #remove a slider-label pair
-                for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
-                    layoutItem = self.sortedImageSliderLayout.itemAt(rowNumber, QFormLayout.LabelRole)
-                    if item.text() == layoutItem.widget().text():
-                        self.sortedImageSliderLayout.removeRow(rowNumber)
-                        self.dynamicListImageType.remove(item.text())
-                        for sliderImagePair in self.listSortedImageSliders: 
-                            if sliderImagePair[0].attribute == item.text(): 
-                                self.listSortedImageSliders.remove(sliderImagePair) 
-                        self.shapeList = []
-                        if len(self.dynamicListImageType) > 1:
-                            # Loop through all the existing sliders at this stage and update the setMaximum of each slider
-                            for index, tag in enumerate(self.dynamicListImageType):
-                                _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
-                                self.shapeList.append(numAttr)
-                                self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().setMaximum(numAttr)
-                                currentImageNumber = self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().value()
-                                labelText = "image {} of {}".format(currentImageNumber, numAttr)
-                                self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(1).widget().setText(labelText)
-                            # Sort according to the tags
-                            self.seriesToFormat.sort(*self.dynamicListImageType)
-                            # Reshape the self.arrayForMultiSlider list of paths
-                            self.arrayForMultiSlider = self.__reshapePathsList()
-                        elif len(self.dynamicListImageType) == 1:
-                            sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, self.dynamicListImageType[0])
-                            self.arrayForMultiSlider = sortedSequencePath
-                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().setMaximum(len(sortedSequencePath))
-                            currentImageNumber = self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().value()
-                            labelText = "image {} of {}".format(currentImageNumber, len(sortedSequencePath))
-                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
-                        else:
-                            self.arrayForMultiSlider = self.imagePathList
-                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().setMaximum(len(self.imagePathList)) 
-                            currentImageNumber = self.sortedImageSliderLayout.itemAt(1).layout().itemAt(0).widget().value()
-                            labelText = "image {} of {}".format(currentImageNumber, len(self.imagePathList))
-                            self.sortedImageSliderLayout.itemAt(1).layout().itemAt(1).widget().setText(labelText)
+                self.__removeSortedImageSlider(item.text())
         except Exception as e:
             print('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
             logger.error('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
 
 
-    def __reshapePathsList(self): 
-        """This is ann auxiliary function that reshapes the
-           list of paths to match the multisliders in the viewer.
-        """
-        list1 = list(np.arange(np.prod(self.shapeList)).reshape(self.shapeList))
-        list2 = self.seriesToFormat.images
-        last = 0
-        res = []
-        for ele in list1:
-            res.append(list2[last : last + len(ele)])
-            last += len(ele)
-        return res
-
-
-    def __createSortedImageSlider(self, DicomAttribute):  
-        try:
-            imageSlider = SortedImageSlider(DicomAttribute)
+    def __updateSliders(self):
+        ##Remove sorted image sliders
+        while self.sortedImageSliderLayout.rowCount() > 0:
+            rowNumber = self.sortedImageSliderLayout.rowCount() - 1
+            self.sortedImageSliderLayout.removeRow(rowNumber)
+        ## Iterate through the list of checked DICOM tags
+        self.shapeList = []
+        self.listSortedImageSliders = []
+        for tag in self.dynamicListImageType:
+            numAttr = len(self.dicomTable[tag].unique())
+            self.shapeList.append(numAttr)
+            imageSlider = SortedImageSlider(tag)
             imageLabel = QLabel()
             layout = QHBoxLayout()
             layout.addWidget(imageSlider)
             layout.addWidget(imageLabel)
             listSliderLabelPair = [imageSlider, imageLabel]
             self.listSortedImageSliders.append(listSliderLabelPair)
-            # This makes the slider work with arrow keys on Mac OS
             imageSlider.setFocusPolicy(Qt.StrongFocus) 
-            self.dynamicListImageType.append(DicomAttribute)
-            # If there is more that 1 slider in the multi-slider layout
-            if len(self.dynamicListImageType) > 1:
-                # Loop through all the existing sliders at this stage and update the setMaximum of each slider
-                self.shapeList = []
-                for index, tag in enumerate(self.dynamicListImageType[:-1]):
-                    _, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, tag)
-                    self.shapeList.append(numAttr)
-                    self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().setMaximum(numAttr)
-                    currentImageNumber = self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(0).widget().value()
-                    labelText = "image {} of {}".format(currentImageNumber, numAttr)
-                    self.sortedImageSliderLayout.itemAt(2*index+1).layout().itemAt(1).widget().setText(labelText)
-                _, maxNumberImages = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
-                self.shapeList.append(maxNumberImages)
-                # Sort according to the tags
-                self.seriesToFormat.sort(*self.dynamicListImageType)
-                # Reshape the self.arrayForMultiSlider list of paths
-                if np.prod(self.shapeList) > len(self.imagePathList):
-                    QMessageBox.warning(self.weasel, "Maximum dimension exceeded", "The number of slider combinations exceeds the total number of images in the series")
-                    self.listSortedImageSliders.remove(listSliderLabelPair)
-                    return None
-                else:
-                    self.arrayForMultiSlider = self.__reshapePathsList()
-            else:
-                sortedSequencePath, _, _, _ = ReadDICOM_Image.sortSequenceByTag(self.imagePathList, DicomAttribute)
-                maxNumberImages = len(self.imagePathList)
-                self.arrayForMultiSlider = sortedSequencePath
-                
-            imageSlider.setMaximum(maxNumberImages)
+            imageSlider.setMaximum(numAttr)
             imageSlider.setSingleStep(1)
             imageSlider.setTickPosition(QSlider.TicksBothSides)
             imageSlider.setTickInterval(1)
             imageSlider.setMinimum(1)
-            
             imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
-            imageLabel.setText("image 1 of {}".format(maxNumberImages))
-            
-            return layout
+            imageLabel.setText("image 1 of {}".format(numAttr))
+            if layout is not None:
+                self.sortedImageSliderLayout.addRow(tag, layout)
+
+        # Create a new slider with empty label string if there is more than 1 image per combination of tags
+        if np.prod(self.shapeList) != len(self.imagePathList):
+            imageSlider = SortedImageSlider('')
+            imageLabel = QLabel()
+            layout = QHBoxLayout()
+            layout.addWidget(imageSlider)
+            layout.addWidget(imageLabel)
+            listSliderLabelPair = [imageSlider, imageLabel]
+            self.listSortedImageSliders.append(listSliderLabelPair)
+            imageSlider.setFocusPolicy(Qt.StrongFocus)
+            imageSlider.setSingleStep(1)
+            imageSlider.setTickPosition(QSlider.TicksBothSides)
+            imageSlider.setTickInterval(1)
+            imageSlider.setMinimum(1)
+            if layout is not None:
+                self.sortedImageSliderLayout.addRow('', layout)
+            subTable = copy.copy(self.dicomTable)
+            # Filter first values of each slider
+            for tag in self.dynamicListImageType:
+                listAttr = sorted(self.dicomTable[tag].unique())
+                subTable = subTable[subTable[tag] == listAttr[0]]
+            starting_point_lenght = len(subTable.index.to_list())
+            imageSlider.setMaximum(starting_point_lenght)
+            imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
+            imageLabel.setText("image 1 of {}".format(starting_point_lenght))
+
+
+    def __createSortedImageSlider(self, DicomAttribute):
+        try:
+            attributeList, _ = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
+            attributeListUnique = []
+            for x in attributeList:
+                if x not in attributeListUnique:
+                    attributeListUnique.append(x)
+            self.dynamicListImageType.append(DicomAttribute)
+            self.__updateSliders()
         except Exception as e:
             print('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
             logger.exception('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
     
+
+    def __removeSortedImageSlider(self, DicomAttribute):
+        try:
+            attributeList, _ = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
+            attributeListUnique = []
+            for x in attributeList:
+                if x not in attributeListUnique:
+                    attributeListUnique.append(x)
+            self.dynamicListImageType.remove(DicomAttribute)
+            self.__updateSliders()
+        except Exception as e:
+            print('Error in ImageSliders.__removeSortedImageSlider: ' + str(e))
+            logger.exception('Error in ImageSliders.__removeSortedImageSlider: ' + str(e))
+
 
     def __multipleImageSliderMoved(self):  
         """This function is attached to the slider moved event of each 
@@ -382,19 +373,24 @@ class ImageSliders(QObject):
         try:
             indexDict = {}
             #Create a dictionary of DICOM attribute:slider index pairs
+            self.multiSliderPositionList = []
             for sliderImagePair in self.listSortedImageSliders:
                 #update the text of the image x of y label
                 indexDict[sliderImagePair[0].attribute] = sliderImagePair[0].value()
-                currentImageNumberThisSlider =  sliderImagePair[0].value()
+                currentImageNumberThisSlider = sliderImagePair[0].value()
                 maxNumberImagesThisSlider =  sliderImagePair[0].maximum()
                 labelText = "image {} of {}".format(currentImageNumberThisSlider, maxNumberImagesThisSlider)
                 sliderImagePair[1].setText(labelText)
-            # Create a copy of self.arrayForMultiSlider and loop through 
-            # indexDict to get the sliders values and map them to self.arrayForMultiSlider
-            auxList = copy.copy(self.arrayForMultiSlider)
-            for index in indexDict.values():
-                auxList = auxList[index - 1]
-            self.selectedImagePath = auxList
+                self.multiSliderPositionList.append(currentImageNumberThisSlider-1)
+            subTable = copy.copy(self.dicomTable)
+            for index, tag in enumerate(self.dynamicListImageType):
+                position = self.multiSliderPositionList[index]
+                listAttr = sorted(self.dicomTable[tag].unique())
+                subTable = subTable[subTable[tag] == listAttr[position]]
+            if len(subTable.index.to_list()) > 1:
+                self.selectedImagePath = subTable.index.to_list()[self.multiSliderPositionList[-1]]
+            else:    
+                self.selectedImagePath = subTable.index.to_list()[0]
             self.sliderMoved.emit(self.selectedImagePath)
             
             #update the position of the main slider so that it points to the
@@ -428,7 +424,6 @@ class ImageSliders(QObject):
             self.listSortedImageSliders = []
             self.dynamicListImageType = []
             self.shapeList = []
-            self.arrayForMultiSlider = self.imagePathList
 
             #Reset the main image slider
             self.__mainImageSliderMoved(1)
@@ -453,12 +448,10 @@ class ImageSliders(QObject):
             #adjust the lists attached to sorted image list sliders
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
-
-            #if deleted image in self.arrayForMultiSlider
-            # remove image from self.arrayForMultiSlider
-
             if len(self.listSortedImageSliders) > 0:
-                print("self.arrayForMultiSlider={}".format(self.arrayForMultiSlider))
+                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
+                self.__updateSliders()
             
         except Exception as e:
             print('Error in ImageSliders.__imageDeleted: ' + str(e))
