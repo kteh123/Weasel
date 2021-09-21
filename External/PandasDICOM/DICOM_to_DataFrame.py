@@ -33,7 +33,10 @@ def DICOM_to_DataFrame(files, tags=[]):
             if 'TransferSyntaxUID' in dataset.file_meta:
                 row = []
                 for tag in tags:
-                    if tag not in dataset:
+                    # If DICOM is multiframe
+                    if tag not in dataset and tag == "SliceLocation":
+                        value = dataset[(0x2001, 0x100a)].value
+                    elif tag not in dataset:
                         value = None
                     else:
                         value = dataset[tag].value
