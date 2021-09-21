@@ -88,6 +88,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.selectedImagePath = ""
             self.imageNumber = -1
             self.weasel = weasel
+            self.numberOfImages = len(self.imagePathList)
             
             if dcm.__class__.__name__ == "Image":
                 self.isSeries = False
@@ -125,7 +126,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpROIButtons()
 
-            self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
+            #self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
             if dcm.__class__.__name__ == "Image":
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
@@ -214,12 +215,13 @@ class ImageViewerROI(QMdiSubWindow):
             # Save Current ROI
             regionName = self.cmbROIs.currentText()
             logger.info("ImageViewerROI.saveROI called")
-            maskList = self.graphicsView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
-            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
+            # get the list of boolean masks
+            maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
+            # Convert each 2D boolean to 0s and 1s
+            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
                 inputPath = [i.path for i in self.weasel.images()]
-                #inputPath = self.imageList
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
@@ -230,8 +232,7 @@ class ImageViewerROI(QMdiSubWindow):
             (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
-            #outputPath = []
-            #for image in inputPath:
+            
             for index, path in enumerate(inputPath):
                 #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
                 messageWindow.setMsgWindowProgBarValue(self.weasel, index)
@@ -356,7 +357,7 @@ class ImageViewerROI(QMdiSubWindow):
     def eraseROI(self, checked):
         logger.info("ImageViewerROI.eraseROI called.")
         if checked:
-            self.setButtonsToDefaultStyle(self.buttonList)
+            self.setButtonsToDefaultStyle()
             self.graphicsView.eraseROI()
             self.btnErase.setStyleSheet("background-color: red")
         else:
@@ -542,13 +543,17 @@ class ImageViewerROI(QMdiSubWindow):
 
     def storeMaskData(self):
         logger.info("ImageViewerROI.storeMaskData called")
-        regionName = self.cmbROIs.currentText()
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-        mask = self.graphicsView.graphicsItem.getMaskData()
-        self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+        try:
+            regionName = self.cmbROIs.currentText()
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+            else:
+                imageNumber = 1
+            mask = self.graphicsView.graphicsItem.getMaskData()
+            self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+        except Exception as e:
+                print('Error in ImageViewerROI.storeMaskData: ' + str(e))
+                logger.error('Error in ImageViewerROI.storeMaskData: ' + str(e))
 
 
     def replaceMask(self):
@@ -607,7 +612,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
             self.connectSlotToSignalForROITools()
-            
+
+            self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
@@ -634,12 +640,12 @@ class ImageViewerROI(QMdiSubWindow):
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
-            self.graphicsView.setImage(pixelArray, mask, self.selectedImagePath)
+            self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
                print('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
-               logger.error('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
+               logger.exception('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
     
 
     def deleteROITidyUp(self):
@@ -696,7 +702,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpGraphicsView(self):
-        self.graphicsView = GraphicsView()
+        self.graphicsView = GraphicsView(self.numberOfImages)
         self.mainVerticalLayout.addWidget(self.graphicsView) 
 
 
@@ -814,7 +820,7 @@ class ImageViewerROI(QMdiSubWindow):
             Also, sets the contrast and intensity in the associated histogram.
             """
             try:
-                logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
+                logger.info("ImageViewerROI.displayPixelArrayOfSingleImage called")
 
                 self.selectedImagePath = imagePath
                 imageName = os.path.basename(self.selectedImagePath)
@@ -830,10 +836,9 @@ class ImageViewerROI(QMdiSubWindow):
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.lblImageMissing.hide() 
-                    self.graphicsView.setImage(self.pixelArray, None, imagePath)
+                    self.reloadImageInNewImageItem()
+                    self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
-                    self.setUpImageEventHandlers()
 
             except Exception as e:
                 print('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))

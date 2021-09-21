@@ -459,6 +459,7 @@ class GraphicsItem(QGraphicsObject):
             print('Error in FreeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.getListRoiInnerPoints: ' + str(e))
 
+
     def createBlankMask(self):
         logger.info("FreeHandROI.GraphicsItem.createBlankMask called")
         ny, nx = np.shape(self.pixelArray)
