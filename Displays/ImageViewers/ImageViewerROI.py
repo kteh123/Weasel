@@ -88,6 +88,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.selectedImagePath = ""
             self.imageNumber = -1
             self.weasel = weasel
+            self.numberOfImages = len(self.imagePathList)
             
             if dcm.__class__.__name__ == "Image":
                 self.isSeries = False
@@ -125,7 +126,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpROIButtons()
 
-            self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
+            #self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
             if dcm.__class__.__name__ == "Image":
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
@@ -214,12 +215,13 @@ class ImageViewerROI(QMdiSubWindow):
             # Save Current ROI
             regionName = self.cmbROIs.currentText()
             logger.info("ImageViewerROI.saveROI called")
-            maskList = self.graphicsView.dictROIs.dictMasks[regionName] # Will return a list of boolean masks
-            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] # Convert each 2D boolean to 0s and 1s
+            # get the list of boolean masks
+            maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
+            # Convert each 2D boolean to 0s and 1s
+            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
                 inputPath = [i.path for i in self.weasel.images()]
-                #inputPath = self.imageList
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
@@ -230,8 +232,7 @@ class ImageViewerROI(QMdiSubWindow):
             (subjectID, studyID, seriesID) = self.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
-            #outputPath = []
-            #for image in inputPath:
+            
             for index, path in enumerate(inputPath):
                 #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
                 messageWindow.setMsgWindowProgBarValue(self.weasel, index)
@@ -546,7 +547,6 @@ class ImageViewerROI(QMdiSubWindow):
             regionName = self.cmbROIs.currentText()
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
-                print("imageNumber={}".format(imageNumber))
             else:
                 imageNumber = 1
             mask = self.graphicsView.graphicsItem.getMaskData()
@@ -702,7 +702,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpGraphicsView(self):
-        self.graphicsView = GraphicsView()
+        self.graphicsView = GraphicsView(self.numberOfImages)
         self.mainVerticalLayout.addWidget(self.graphicsView) 
 
 
@@ -803,9 +803,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             #This is how an object created from the ImageSliders class communicates
             #with an object created from the ImageViewerROI class via the former's
-            #imageSliderMoved event, which passes the image path of the image being viewed
+            #sliderMoved event, which passes the image path of the image being viewed
             #to ImageViewerROI's displayPixelArrayOfSingleImage function for display.
-            self.slidersWidget.imageSliderMoved.connect(lambda imagePath: 
+            self.slidersWidget.sliderMoved.connect(lambda imagePath: 
                                                    self.displayPixelArrayOfSingleImage(imagePath))
             #Display the first image in the viewer
             self.slidersWidget.displayFirstImage()

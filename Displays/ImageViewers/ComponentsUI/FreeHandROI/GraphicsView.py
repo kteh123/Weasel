@@ -28,7 +28,7 @@ class GraphicsView(QGraphicsView):
     sigUpdateZoom = QtCore.Signal(int)
 
 
-    def __init__(self): 
+    def __init__(self, numberOfImages): 
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
@@ -38,7 +38,7 @@ class GraphicsView(QGraphicsView):
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.zoomEnabled = False
         self.currentROIName = None
-        self.dictROIs = ROIs()
+        self.dictROIs = ROIs(numberOfImages)
         self.menu = QMenu()
         self.menu.hovered.connect(self._actionHovered)
         #Following commented out to not display vertical and

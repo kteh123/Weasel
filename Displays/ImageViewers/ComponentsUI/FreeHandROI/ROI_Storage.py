@@ -7,12 +7,27 @@ __author__ = 'Steve Shillitoe'
 #October/November 2020
 
 class ROIs():
-    def __init__(self, NumImages = 1):
-        logger.info("ROI_Storage object initialised")
+    """An object instanciated from this class in the GraphicsView class
+   is used to store the masks on an image that form a Region of Interest, ROI.
+   An ROI is given a name by the user and it may extend over 1 or more images
+   but on each image it may have a different shape and position.
+
+   A mask is a boolean array that is the same size as the DICOM images. 
+   A blank mask contains only False values.  When an ROI is drawn on an
+   image, the array elements in the mask corresponding to the ROI are
+   set to True.
+
+   Mask data is stored in a Python dictionary, where the key is the 
+   ROI's name and the value a list of masks, one mask for each image
+   in the DICOM series. Initially all the masks in this list are blank.
+   When an ROI is drawn on an image, the array elements that correlate with
+   the ROI in the mask in the list corresponding to that image are set to True.
+   """
+    def __init__(self, numberOfImages):
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
-        self.NumOfImages = NumImages
+        self.NumOfImages = numberOfImages
         logger.info("RIO_Storage object created")
 
 
@@ -60,6 +75,12 @@ class ROIs():
 
 
     def createListOfBlankMasks(self, mask):
+        """
+        Creates a list of blank masks (boolean arrays with all
+        elements set to False). Each mask is the same size as
+        the DICOM images in the series. There is one mask for
+        each image in the series.
+        """
         try:
             logger.info("RIO_Storage.createListOfBlankMasks called")
             ny, nx = np.shape(mask)
@@ -105,7 +126,8 @@ class ROIs():
             else:
                 return None
         except Exception as e:
-            print('Error in ROI_Storage.getMask: ' + str(e))
+            print('Error in ROI_Storage.getMask when imageNumber={}: '.format(imageNumber) + str(e))
+            logger.exception('Error in ROI_Storage.getMask when imageNumber={}: '.format(imageNumber) + str(e))
 
 
     def hasRegionGotMask(self, regionName):
