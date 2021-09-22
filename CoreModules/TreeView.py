@@ -152,8 +152,8 @@ class TreeView():
     def _displayContextMenu(self, pos):
         try:
             logger.info("TreeView.displayContextMenu called")
-            if self.series() != [] or self.images() != []:
-                self.weasel.menuBuilder.context.exec_(self.widget.mapToGlobal(pos))
+            #if (self.weasel.series() != []) or (self.weasel.images() != []):
+            self.weasel.menuBuilder.context.exec_(self.widget.mapToGlobal(pos))
         except Exception as e:
             print('Error in function TreeView.displayContextMenu: ' + str(e))
 
