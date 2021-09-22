@@ -26,8 +26,8 @@ __author__ = "Steve Shillitoe"
 #September 2021
 
 listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber", 
-                  "FlipAngle", "InversionTime", "EchoTime", 
-                  (0x2005, 0x1572)] # This last element is a good example of private tag
+                  "FlipAngle", "InversionTime", "EchoTime", "DiffusionBValue", 
+                  "DiffusionGradientOrientation", (0x2005, 0x1572)] # This last element is a good example of private tag
 
 
 class SortedImageSlider(QSlider):
@@ -224,24 +224,30 @@ class ImageSliders(QObject):
 
 
     def displayHideMultiSliders(self, state):
-        if state == Qt.Checked:
-            self.__setUpImageTypeList()
-            tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
-            self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
-        elif state == Qt.Unchecked:
-            #remove multiple sliders
-            self.imageTypeList.deleteLater()
-            self.dynamicListImageType.clear()
-            self.listSortedImageSliders.clear()
-            self.shapeList = []
-            for rowNumber in range(0, self.sortedImageSliderLayout.rowCount()):
-                self.sortedImageSliderLayout.removeRow(rowNumber)
-                       
+        try:
+            if state == Qt.Checked:
+                self.__setUpImageTypeList()
+                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
+            elif state == Qt.Unchecked:
+                #remove multiple sliders
+                self.imageTypeList.clear()
+                self.dynamicListImageType.clear()
+                self.listSortedImageSliders.clear()
+                self.imageTypeLayout.itemAt(2).widget().deleteLater()
+                self.shapeList = []
+                for rowNumber in range(self.sortedImageSliderLayout.rowCount()-1, -1, -1):
+                    self.sortedImageSliderLayout.removeRow(rowNumber)
+        except Exception as e:
+            print('Error in ImageSliders.displayHideMultiSliders: ' + str(e))
+            logger.exception('Error in ImageSliders.displayHideMultiSliders: ' + str(e))         
+
 
     def __setUpImageTypeList(self):
         self.imageTypeList = self.__createImageTypeList()
         self.imageTypeLayout.addWidget( self.imageTypeList,  alignment=Qt.AlignLeft)
-        self.imageTypeLayout.addStretch(2)
+        # The following stretch messes a bit with the layout when unchecking the MultiSliders checkbox
+        #self.imageTypeLayout.addStretch(2)
 
 
     def __createImageTypeList(self):
@@ -253,7 +259,7 @@ class ImageSliders(QObject):
             self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=listImageTypes) # Consider commenting if it takes too long
             for imageType in listImageTypes:
                 # First, check if the DICOM tag exists in the images of the series.
-                if ReadDICOM_Image.getImageTagValue(self.selectedImagePath, imageType):# is not None:
+                if ReadDICOM_Image.getImageTagValue(self.selectedImagePath, imageType) is not None:
                     numAttr = len(self.dicomTable[imageType].unique())
                     #_, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, imageType)
                     # Then, check if there's more than 1 unique value for the corresponding DICOM tag
