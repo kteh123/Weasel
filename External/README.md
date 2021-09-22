@@ -3,5 +3,4 @@ You can find a list of these below with their respective version.
 Each one has a folder allocated, which contains their own README.md file with their licensing details (all open-source)
 
 - dcm4che Version 5.23.1
-- elastix Version 5.0.1
 - pyqtgraph Version 0.9.11
