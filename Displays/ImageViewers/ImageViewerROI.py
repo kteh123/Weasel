@@ -33,7 +33,6 @@ import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
 
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
-from Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage import ROIs
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
@@ -126,8 +125,6 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpROIButtons()
 
-            #self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
-
             if dcm.__class__.__name__ == "Image":
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
             else:
@@ -199,13 +196,13 @@ class ImageViewerROI(QMdiSubWindow):
             if index == -1:
                 self.cmbNamesROIs.setItemText(currentIndex, newText);
                 nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
-                #dictROIs.printContentsDictMasks()
                 if nameChangedOK == False:
                     msgBox = QMessageBox()
                     msgBox.setWindowTitle("ROI Name Change")
                     msgBox.setText("This name is already in use")
                     msgBox.exec()
                     cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+
         except Exception as e:
                 print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
                 logger.error('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
@@ -262,14 +259,14 @@ class ImageViewerROI(QMdiSubWindow):
             paramDict = {"Series":"listview"}
             helpMsg = "Select a Series with ROI"
             #studyID = self.selectedStudy
-            study = self.objXMLReader.getStudy(self.subjectID, self.studyID)
+            study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
             listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
             inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
             listParams = inputDlg.returnListParameterValues()
             if inputDlg.closeInputDialog() == False:
                 # for series ID in listParams[0]: # more than 1 ROI may be selected
                 seriesID = listParams[0][0] # Temporary, only the first ROI
-                imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
+                imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     targetPath = [i.path for i in self.weasel.images()]
                     #targetPath = self.imageList
@@ -334,10 +331,10 @@ class ImageViewerROI(QMdiSubWindow):
                         #pass
             
                 # First populate the ROI_Storage data structure in a loop
-                for imageNumber in range(len(maskList)):
-                    self.graphicsView.dictROIs.addRegion(region, 
-                                                         np.array(maskList[imageNumber]).astype(bool), 
-                                                         imageNumber + 1)
+                self.graphicsView.currentROIName = region
+                for imageNumber in range(len(maskList)):  #To Do
+                    self.graphicsView.currentImageNumber = imageNumber + 1
+                    self.graphicsView.dictROIs.addRegion(np.array(maskList[imageNumber]).astype(bool))
 
                 # Second populate the dropdown list of region names
                 self.cmbNamesROIs.blockSignals(True)
@@ -445,13 +442,9 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
             lambda mouseOverImage:self.displayImageDataUnderMouse(mouseOverImage))
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.displayROIMeanAndStd)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.replaceMask)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
 
@@ -542,22 +535,20 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.error('Error in ImageViewerROI.displayImageDataUnderMouse: ' + str(e))
 
 
-    def storeMaskData(self):
-        logger.info("ImageViewerROI.storeMaskData called")
+    def updateDetailsROI(self):
+        logger.info("ImageViewerROI.updateDetailsROI called")
         try:
-            regionName = self.cmbNamesROIs.currentText()
+            self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
             if self.isSeries:  
-                imageNumber = self.mainImageSlider.value()
+                self.graphicsView.currentImageNumber = self.mainImageSlider.value()
             else:
-                imageNumber = 1
-            mask = self.graphicsView.graphicsItem.getMaskData()
-            self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+                self.graphicsView.currentImageNumber = 1
         except Exception as e:
-                print('Error in ImageViewerROI.storeMaskData: ' + str(e))
-                logger.error('Error in ImageViewerROI.storeMaskData: ' + str(e))
+                print('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
+                logger.error('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
 
 
-    def replaceMask(self):
+    def replaceMask(self):  #To Do
         logger.info("ImageViewerROI.replaceMask called")
         regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  

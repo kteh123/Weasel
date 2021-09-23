@@ -23,12 +23,14 @@ class ROIs():
    When an ROI is drawn on an image, the array elements that correlate with
    the ROI in the mask in the list corresponding to that image are set to True.
    """
-    def __init__(self, numberOfImages):
+    def __init__(self, numberOfImages, linkToGraphicsView):
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
         self.NumOfImages = numberOfImages
+        self.linkToGraphicsView = linkToGraphicsView
         logger.info("RIO_Storage object created")
+
 
 
     def __repr__(self):
@@ -36,42 +38,43 @@ class ROIs():
            self.__class__.__name__)
 
 
-    def addRegion(self, regionName, mask, imageNumber = 1):
+    def addRegion(self, mask):
         logger.info("RIO_Storage.addRegion called")
         try:
-            if regionName in self.dictMasks:
-                imageMaskList = self.dictMasks[regionName]
-                if imageMaskList[imageNumber - 1] is None:
+            if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
+                if imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] is None:
                     #empty list
-                    imageMaskList[imageNumber - 1] = mask
+                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = mask
                 else:
                     #already contains a mask, so add to an existing ROI 
                     #using boolean OR (|) to get the union 
-                    imageMaskList[imageNumber - 1] = imageMaskList[imageNumber - 1]  | mask
-                self.dictMasks[regionName] = imageMaskList
-                #self.dictMasks[regionName] = self.dictMasks[regionName] | mask
+                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]  | mask
+                self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
+                #self.dictMasks[self.linkToGraphicsView.currentROIName] = self.dictMasks[self.linkToGraphicsView.currentROIName] | mask
             else:
                 #a new ROI
                 #Make a copy of the list of image mask lists
                 imageMaskList = self.createListOfBlankMasks(mask)
                 #Add the current mask to the correct list in the list of lists
-                imageMaskList[imageNumber - 1] = mask
-                self.dictMasks[regionName] = imageMaskList
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = mask
+                self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print('Error in ROI_Storage.addRegion: ' + str(e))
+            logger.exception('Error in ROI_Storage.addRegion: ' + str(e))
 
 
-    def replaceMask(self, regionName, mask, imageNumber = 1):
-        logger.info("RIO_Storage.replaceMask called")
+    def updateMask(self, mask):
+        logger.info("RIO_Storage.updateMask called")
         try:
-            if regionName in self.dictMasks:
-                imageMaskList = self.dictMasks[regionName]
+            if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
-                imageMaskList[imageNumber - 1] =  mask & imageMaskList[imageNumber - 1]
-                self.dictMasks[regionName] = imageMaskList
-
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask & imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
-            print('Error in ROI_Storage.replaceMask: ' + str(e))
+            print('Error in ROI_Storage.updateMask: ' + str(e))
+            logger.exception('Error in ROI_Storage.updateMask: ' + str(e))
 
 
     def createListOfBlankMasks(self, mask):

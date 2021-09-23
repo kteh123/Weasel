@@ -38,7 +38,8 @@ class GraphicsView(QGraphicsView):
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.zoomEnabled = False
         self.currentROIName = None
-        self.dictROIs = ROIs(numberOfImages)
+        self.currentImageNumber = None
+        self.dictROIs = ROIs(numberOfImages, self)
         self.menu = QMenu()
         self.menu.hovered.connect(self._actionHovered)
         #Following commented out to not display vertical and
@@ -293,6 +294,3 @@ class GraphicsView(QGraphicsView):
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
-
-    def parentTest(self):
-        print("Successfully connected to parent")
