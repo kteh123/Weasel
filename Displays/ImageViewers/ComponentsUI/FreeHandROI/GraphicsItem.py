@@ -7,8 +7,6 @@ from scipy.stats import iqr
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-#import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
-#import .HelperFunctions as fn
 from .HelperFunctions import *
 from .Resources import * 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
