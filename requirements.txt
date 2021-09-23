@@ -8,6 +8,7 @@ numpy>=1.17.3
 opencv-python==3.4.13.47
 openpyxl>=3.0.2
 pandas>=1.0.0,<1.2
+pdoc3>=0.10.0
 pyautogui>=0.9.48
 pydicom>=2.0.0,<2.2.0
 pyinstaller>=4.2
