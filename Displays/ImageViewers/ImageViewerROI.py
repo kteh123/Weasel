@@ -160,16 +160,17 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpROIDropDownList(self):
-        self.cmbROIs = QComboBox()
+        self.cmbNamesROIs = QComboBox()
         self.lblCmbROIs =  QLabel("ROIs")
-        self.cmbROIs.setDuplicatesEnabled(False)
-        self.cmbROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        self.cmbROIs.addItem("region1")
-        self.cmbROIs.setCurrentIndex(0)
-        self.cmbROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
-        self.cmbROIs.setToolTip("Displays a list of ROIs created")
-        self.cmbROIs.setEditable(True)
-        self.cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
+        self.cmbNamesROIs.setDuplicatesEnabled(False)
+        self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.cmbNamesROIs.addItem("region1")
+        self.graphicsView.currentROIName = "region1"
+        self.cmbNamesROIs.setCurrentIndex(0)
+        self.cmbNamesROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
+        self.cmbNamesROIs.setToolTip("Displays a list of ROIs created")
+        self.cmbNamesROIs.setEditable(True)
+        self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
 
 
     def connectSlotToSignalForROITools(self):
@@ -181,22 +182,22 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
-        self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
     def roiNameChanged(self, newText):
         try:
             logger.info("ImageViewerROI.roiNameChanged called")
-            currentIndex = self.cmbROIs.currentIndex()
+            currentIndex = self.cmbNamesROIs.currentIndex()
             #Prevent spaces in new ROI name
             if ' ' in newText:
                 newText = newText.replace(" ", "")
-                self.cmbROIs.setItemText(currentIndex, newText)
-                self.cmbROIs.setCurrentText(newText)
-            index = self.cmbROIs.findText(newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText)
+                self.cmbNamesROIs.setCurrentText(newText)
+            index = self.cmbNamesROIs.findText(newText);
             if index == -1:
-                self.cmbROIs.setItemText(currentIndex, newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText);
                 nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
                 #dictROIs.printContentsDictMasks()
                 if nameChangedOK == False:
@@ -204,7 +205,7 @@ class ImageViewerROI(QMdiSubWindow):
                     msgBox.setWindowTitle("ROI Name Change")
                     msgBox.setText("This name is already in use")
                     msgBox.exec()
-                    cmbROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+                    cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
         except Exception as e:
                 print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
                 logger.error('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
@@ -213,7 +214,7 @@ class ImageViewerROI(QMdiSubWindow):
     def saveROI(self):
         try:
             # Save Current ROI
-            regionName = self.cmbROIs.currentText()
+            regionName = self.cmbNamesROIs.currentText()
             logger.info("ImageViewerROI.saveROI called")
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
@@ -339,16 +340,16 @@ class ImageViewerROI(QMdiSubWindow):
                                                          imageNumber + 1)
 
                 # Second populate the dropdown list of region names
-                self.cmbROIs.blockSignals(True)
+                self.cmbNamesROIs.blockSignals(True)
                 #remove previous contents of ROI dropdown list
-                self.cmbROIs.clear()  
-                self.cmbROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
-                self.cmbROIs.blockSignals(False)
+                self.cmbNamesROIs.clear()  
+                self.cmbNamesROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
+                self.cmbNamesROIs.blockSignals(False)
 
                 # Redisplay the current image to show the mask
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
-                self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
+                self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
                 logger.error('Error in ImageViewerROI.loadROI: ' + str(e)) 
@@ -427,7 +428,7 @@ class ImageViewerROI(QMdiSubWindow):
         else:
             imageNumber = 1
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
@@ -504,20 +505,20 @@ class ImageViewerROI(QMdiSubWindow):
     def addNewROItoDropDownList(self, newRegion):
         logger.info("ImageViewerROI.addNewROItoDropDownList called.")
         noDuplicate = True
-        for count in range(self.cmbROIs.count()):
-             if self.cmbROIs.itemText(count) == newRegion:
+        for count in range(self.cmbNamesROIs.count()):
+             if self.cmbNamesROIs.itemText(count) == newRegion:
                  noDuplicate = False
                  break
         if noDuplicate:
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.addItem(newRegion)
-            self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
-            self.cmbROIs.blockSignals(False)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.addItem(newRegion)
+            self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+            self.cmbNamesROIs.blockSignals(False)
 
 
     def updateROIName(self):
         logger.info("ImageViewerROI.updateROIName called.")
-        self.graphicsView.currentROIName = self.cmbROIs.currentText()
+        self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
 
 
     def displayImageDataUnderMouse(self, mouseOverImage):
@@ -544,7 +545,7 @@ class ImageViewerROI(QMdiSubWindow):
     def storeMaskData(self):
         logger.info("ImageViewerROI.storeMaskData called")
         try:
-            regionName = self.cmbROIs.currentText()
+            regionName = self.cmbNamesROIs.currentText()
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
@@ -558,7 +559,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def replaceMask(self):
         logger.info("ImageViewerROI.replaceMask called")
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
@@ -613,7 +614,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.connectSlotToSignalForROITools()
 
-            self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.cmbNamesROIs, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
@@ -631,7 +632,7 @@ class ImageViewerROI(QMdiSubWindow):
     def reloadImageInNewImageItem(self):
         try:
             logger.info("ImageViewerROI.reloadImageInNewImageItem called")
-            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
+            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
@@ -639,7 +640,7 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -653,9 +654,9 @@ class ImageViewerROI(QMdiSubWindow):
     
         self.reloadImageInNewImageItem() 
         self.displayROIMeanAndStd()
-        if self.cmbROIs.currentIndex() == 0 and self.cmbROIs.count() == 1: 
-            self.cmbROIs.clear()
-            self.cmbROIs.addItem("region1")
+        if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+            self.cmbNamesROIs.clear()
+            self.cmbNamesROIs.addItem("region1")
             self.setCurrentIndex(0) 
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -665,10 +666,10 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.removeItem(cmbROIs.currentIndex())
-            self.cmbROIs.blockSignals(False)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.removeItem(cmbNamesROIs.currentIndex())
+            self.cmbNamesROIs.blockSignals(False)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.reloadMask(mask)
 
 
@@ -780,7 +781,7 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
             intensity = self.spinBoxIntensity.value()
             contrast = self.spinBoxContrast.value()
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
         except Exception as e:
             print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))

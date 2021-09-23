@@ -7,8 +7,10 @@ from scipy.stats import iqr
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.HelperFunctions as fn
+#import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
+#import .HelperFunctions as fn
+from .HelperFunctions import *
+from .Resources import * 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 np.set_printoptions(threshold=sys.maxsize)
 import logging
@@ -28,7 +30,7 @@ class GraphicsItem(QGraphicsObject):
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
 
-    def __init__(self, pixelArray, roi, path): 
+    def __init__(self, pixelArray, roi, path, linkToGraphicsView): 
         super(GraphicsItem, self).__init__()
         logger.info("GraphicsItem initialised")
         self.pixelArray = pixelArray
@@ -36,11 +38,12 @@ class GraphicsItem(QGraphicsObject):
             minValue, maxValue = readLevels(path, self.pixelArray)
         else:
             minValue, maxValue = self.__quickMinMax(self.pixelArray)
+        self.linkToGraphicsView = linkToGraphicsView
         self.contrast = maxValue - minValue
         self.intensity = minValue + (maxValue - minValue)/2
-        imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-        self.origQimage = fn.makeQImage(imgData, alpha)
-        self.qimage = fn.makeQImage(imgData, alpha)
+        imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+        self.origQimage = makeQImage(imgData, alpha)
+        self.qimage = makeQImage(imgData, alpha)
         self.mask = None
         if roi is not None:
             #add roi to pixel map
@@ -77,8 +80,8 @@ class GraphicsItem(QGraphicsObject):
         try:
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
-            imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-            self.qimage = fn.makeQImage(imgData, alpha)
+            imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+            self.qimage = makeQImage(imgData, alpha)
             self.pixMap = QPixmap.fromImage(self.qimage)
 
             #Need to reapply mask
@@ -127,15 +130,15 @@ class GraphicsItem(QGraphicsObject):
         logger.info("FreeHandROI.GraphicsItem.hoverEnterEvent called")
         try:
             if self.drawEnabled:
-                pm = QPixmap(icons.PEN_CURSOR)
+                pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(icons.ERASOR_CURSOR)
+                pm = QPixmap(ERASOR_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
-                pm = QPixmap(icons.MAGNIFYING_GLASS_CURSOR)
+                pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
         except Exception as e:
@@ -198,6 +201,7 @@ class GraphicsItem(QGraphicsObject):
                         #self.mask[xCoord, yCoord] = False
                         self.mask[yCoord, xCoord] = False
                         self.sigMaskEdited.emit()
+                        #store mask
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -225,6 +229,10 @@ class GraphicsItem(QGraphicsObject):
 
                             self.prevPathCoordsList = self.pathCoordsList
                             self.createMask(self.pathCoordsList)
+                            #store mask
+                            self.linkToGraphicsView.parentTest()
+                            #self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+                            self.sigMaskCreated.emit()
                             self.listROICoords = self.getListRoiInnerPoints(self.mask)
                             #print("ROI Inner coords={}".format(self.listROICoords))
                             self.fillFreeHandRoi()
@@ -248,12 +256,14 @@ class GraphicsItem(QGraphicsObject):
                                 self.setPixelToRed(xCoord, yCoord)
                                 #self.mask[xCoord, yCoord] = True
                                 self.mask[yCoord, xCoord] = True
+                                #store mask
                                 self.sigMaskCreated.emit()
                         else:
                             #first create a boolean mask with all values False
                             self.createBlankMask()
                             self.setPixelToRed(xCoord, yCoord)
                             self.mask[yCoord, xCoord] = True
+                            #store mask
                             self.sigMaskCreated.emit()
 
                 if self.eraseEnabled:
@@ -268,6 +278,7 @@ class GraphicsItem(QGraphicsObject):
                             #self.mask[xCoord, yCoord] = False
                             self.mask[yCoord, xCoord] = False
                             self.sigMaskEdited.emit()
+                            #store mask
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
@@ -483,7 +494,6 @@ class GraphicsItem(QGraphicsObject):
             #setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
-            self.sigMaskCreated.emit()
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
@@ -498,8 +508,8 @@ class GraphicsItem(QGraphicsObject):
             elif (button == Qt.RightButton): 
               self.sigZoomOut.emit()
         except Exception as e:
-            print('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
-            logger.error('Error in FreeHandROI.GraphicsItem.createMask: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.mousePressEvent: ' + str(e))
+            logger.error('Error in FreeHandROI.GraphicsItem.mousePressEvent: ' + str(e))
 
 
 def readLevels(path, pixelArray): 

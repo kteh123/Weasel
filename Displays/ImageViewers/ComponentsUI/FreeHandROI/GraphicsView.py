@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
 from PyQt5.QtGui import QPixmap, QCursor, QIcon, QToolTip
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
+from .Resources import * 
 import logging
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class GraphicsView(QGraphicsView):
                 self.graphicsItem = None
                 self.scene.clear()
 
-            self.graphicsItem = GraphicsItem(pixelArray, mask, path)
+            self.graphicsItem = GraphicsItem(pixelArray, mask, path, self)
        
             #Give graphicsItem some time to adjust itself
             QApplication.processEvents()
@@ -178,23 +178,23 @@ class GraphicsView(QGraphicsView):
                 zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
                 zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
 
-                drawROI = QAction(QIcon(icons.PEN_CURSOR), 'Draw', None)
+                drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
                 drawROI.setToolTip("Draw an ROI")
                 drawROI.triggered.connect(lambda: self.drawROI(True))
 
-                eraseROI  = QAction(QIcon(icons.ERASOR_CURSOR), 'Erasor', None)
+                eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
                 eraseROI.setToolTip("Erase the ROI")
                 eraseROI.triggered.connect(lambda: self.eraseROI(True))
 
-                newROI  = QAction(QIcon(icons.NEW_ICON),'New ROI', None)
+                newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
                 newROI.setToolTip("Create a new ROI")
                 newROI.triggered.connect(self.newROI)
 
-                resetROI  = QAction(QIcon(icons.RESET_ICON),'Reset ROI', None)
+                resetROI  = QAction(QIcon(RESET_ICON),'Reset ROI', None)
                 resetROI.setToolTip("Clear drawn ROI from the image")
                 resetROI.triggered.connect(self.resetROI)
 
-                deleteROI  = QAction(QIcon(icons.DELETE_ICON), 'Delete ROI', None)
+                deleteROI  = QAction(QIcon(DELETE_ICON), 'Delete ROI', None)
                 deleteROI.setToolTip("Delete drawn ROI from the image")
                 deleteROI.triggered.connect(self.deleteROI)
 
@@ -293,3 +293,6 @@ class GraphicsView(QGraphicsView):
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
+
+    def parentTest(self):
+        print("Successfully connected to parent")
