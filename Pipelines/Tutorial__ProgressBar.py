@@ -3,7 +3,7 @@
 #***************************************************************************
 
 
-from Displays.ProgressBar import ProgressBar
+from Displays.Messaging import ProgressBar
 
 def main(weasel):
 

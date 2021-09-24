@@ -1,5 +1,5 @@
 
-from ProgressBar import ProgressBar
+from Messaging import ProgressBar
 
 weasel = None
 

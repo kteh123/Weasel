@@ -1,5 +1,5 @@
 
-from Displays.Message import Message
+from Displays.Messaging import Message
 
 def main(weasel):
 

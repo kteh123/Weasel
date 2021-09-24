@@ -1,5 +1,5 @@
 
-from Message import Message
+from Messaging import Message
 
 weasel = None
 

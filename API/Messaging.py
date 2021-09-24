@@ -4,8 +4,7 @@ from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (QApplication, QMessageBox)
 from PyQt5.QtCore import  Qt
 
-from Displays.ProgressBar import ProgressBar
-from Displays.Message import Message
+from Displays.Messaging import (Message, ProgressBar)
 
 
 class Messaging():
