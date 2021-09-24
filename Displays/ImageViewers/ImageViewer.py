@@ -29,7 +29,6 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 
 from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
@@ -994,10 +993,8 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                "<H4>Updating {} DICOM files</H4>".format(numImages),
-                "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg="<H4>Updating {} DICOM files</H4>".format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
             for imagePath in self.imagePathList:
                 dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -1006,8 +1003,8 @@ class ImageViewer(QMdiSubWindow):
                                                                    levels=levels, lut=self.lut)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print('Error in ImageViewer.updateWholeDicomSeries: ' + str(e))
 
@@ -1021,10 +1018,8 @@ class ImageViewer(QMdiSubWindow):
        
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                "<H4>Updating {} DICOM files</H4>".format(numImages),
-                "Updating DICOM images")
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg="<H4>Updating {} DICOM files</H4>".format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
        
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -1041,8 +1036,8 @@ class ImageViewer(QMdiSubWindow):
                     updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                         levels=levels, lut=None)
                     SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print('Error in ImageViewer.updateDicomSeriesImageByImage: ' + str(e))
 

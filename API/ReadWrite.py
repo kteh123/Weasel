@@ -74,7 +74,7 @@ class ReadWrite():
         """
         Open a DICOM folder and update display.
         """ 
-        self.DICOMFolder = WriteXMLfromDICOM.getScanDirectory(self)
+        self.DICOMFolder = self.select_folder(title="Select the folder with DICOM data")
         if self.DICOMFolder:
             self.close_subwindows()
             self.cursor_arrow_to_hourglass()

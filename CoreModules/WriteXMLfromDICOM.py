@@ -10,7 +10,7 @@ from pydicom import Dataset, DataElement, dcmread
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
-import CoreModules.WEASEL.MessageWindow as messageWindow
+import Trash.MessageWindow as messageWindow
 
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox)
 

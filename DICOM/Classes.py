@@ -11,8 +11,6 @@ from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
 
-import CoreModules.WEASEL.MessageWindow as messageWindow
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -459,33 +457,34 @@ class Subject:
             # Setup Progress Bar
             progressBarTitle = "Progress Bar - Merging " + str(len(listSubjects)) + " Subjects"
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>Merging {} Subjects</H4>").format(len(listSubjects)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                listSubjects[0].objWeasel.progress_bar(
+                    msg = ("<H4>Merging {} Subjects</H4>").format(len(listSubjects)),
+                    index = 0, max = len(listSubjects))
             # Add new subject (outputSubject) to XML
             for index, subject in enumerate(listSubjects):
                 # Increment progress bar
                 subjMsg = "Merging subject " + subject.subjectID
                 if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + "</H4>"), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                    listSubjects[0].objWeasel.progress_bar(
+                        msg = ("<H4>" + subjMsg + "</H4>"),
+                        index = index+1, max = len(listSubjects))
                 # Overwrite or not?
                 if overwrite == False:
                     for study in subject.children:
                         # Create a copy of the study into the new subject
                         studyMsg = ", study " + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = ("<H4>" + subjMsg + studyMsg + "</H4>"),
+                                index = index+1, max = len(listSubjects))
                         study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
                 else:
                     for study in subject.children:
                         studyMsg = ", study " + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, ("<H4>" + subjMsg + studyMsg + "</H4>"), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = ("<H4>" + subjMsg + studyMsg + "</H4>"),
+                                index = index+1, max = len(listSubjects))
                         seriesPathsList = []
                         for series in study.children:
                             series.Item('PatientID', outputSubject.subjectID)
@@ -673,16 +672,17 @@ class Study:
             # Set up Progress Bar
             progressBarTitle = "Progress Bar - Merging " + str(len(listStudies)) + " Studies"
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging {} Studies</H4>").format(len(listStudies)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                listStudies[0].objWeasel.progress_bar(
+                    msg = ("<H4>Merging {} Studies</H4>").format(len(listStudies)),
+                    index = 0, max = len(listStudies))
             # Add new study (outputStudy) to XML
             seriesPathsList = []
             if overwrite == False:
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = ("<H4>Merging study " + study.studyID + "</H4>"),
+                            index = index+1, max = len(listStudies))
                     seriesNumber = 1
                     for series in study.children:
                         copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split('_', 1)[1], study_uid=outputStudy.studyUID,
@@ -693,9 +693,9 @@ class Study:
                 seriesNumber = 1
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, ("<H4>Merging study " + study.studyID + "</H4>"), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = ("<H4>Merging study " + study.studyID + "</H4>"),
+                            index = index+1, max = len(listStudies))
                     for series in study.children:
                         series.Item('PatientID', outputStudy.subjectID)
                         series.Item('StudyInstanceUID', outputStudy.studyUID)

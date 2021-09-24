@@ -4,7 +4,6 @@ import random
 import logging
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.MessageWindow as messageWindow
 
 logger = logging.getLogger(__name__)
 
@@ -132,12 +131,15 @@ class GenericDICOMTools:
                 elif (series_id is None) and (series_uid is not None):
                     series_id = int(str(ReadDICOM_Image.getDicomDataset(imagePathList[0]).SeriesNumber) + str(random.randint(0, 9999)))
             newImagePathList = []
-            if progress_bar == True: messageWindow.displayMessageSubWindow(self, ("<H4>Merging {} images</H4>").format(len(imagePathList)), "Progress Bar - Merging")
+            if progress_bar == True: 
+                self.progress_bar(msg = ("<H4>Merging {} images</H4>").format(len(imagePathList)))
             if overwrite:
                 originalPathList = imagePathList
-                if progress_bar == True: messageWindow.setMsgWindowProgBarMaxValue(self, len(imagePathList))
+                if progress_bar == True: 
+                    self.progressBar.set_maximum(len(imagePathList))
                 for index, path in enumerate(imagePathList):
-                    if progress_bar == True: messageWindow.setMsgWindowProgBarValue(self, index+1)
+                    if progress_bar == True: 
+                        self.progressBar.set_value(index+1)
                     if patient_id:
                         SaveDICOM_Image.overwriteDicomFileTag(path, "PatientID", patient_id)
                     if study_uid:
@@ -159,9 +161,11 @@ class GenericDICOMTools:
                                 originalPathList, newImagePathList, suffix, newSeriesName=series_name, newStudyName=study_name, newSubjectName=patient_id)
                 self.objXMLReader.removeMultipleImagesFromXMLFile(originalPathList)
             else:
-                if progress_bar == True: messageWindow.setMsgWindowProgBarMaxValue(self, len(imagePathList))
+                if progress_bar == True: 
+                    self.progressBar.set_maximum(len(imagePathList))
                 for index, path in enumerate(imagePathList):
-                    if progress_bar == True: messageWindow.setMsgWindowProgBarValue(self, index+1)
+                    if progress_bar == True: 
+                        self.progressBar.set_value(len(index+1))
                     newDataset = ReadDICOM_Image.getDicomDataset(path)
                     newFilePath = SaveDICOM_Image.returnFilePath(path, suffix)
                     SaveDICOM_Image.saveDicomToFile(newDataset, output_path=newFilePath)

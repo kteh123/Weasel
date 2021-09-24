@@ -28,7 +28,6 @@ from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
 
@@ -223,24 +222,22 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
-            messageWindow.displayMessageSubWindow(self.weasel,
-                "<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)),
-                "Export ROIs")
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(inputPath))
+            self.weasel.progress_bar(msg="<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)))
+            self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
             
             for index, path in enumerate(inputPath):
                 #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
-                messageWindow.setMsgWindowProgBarValue(self.weasel, index)
+                self.weasel.progressBar.set_value(index)
                 outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
                 SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
                 treeSeriesID = self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
             #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
             #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-            messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
-            messageWindow.closeMessageSubWindow(self.weasel)
+            self.weasel.progressBar.set_value(len(inputPath))
+            self.weasel.progressBar.close()
             self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
@@ -282,11 +279,9 @@ class ImageViewerROI(QMdiSubWindow):
                     region = "new_region_label"
                 # Affine re-adjustment
                 for index, dicomFile in enumerate(targetPath):
-                    messageWindow.displayMessageSubWindow(self.weasel,
-                    "<H4>Loading selected ROI into target image {}</H4>".format(index + 1),
-                    "Load ROIs")
-                    messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(targetPath))
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 1)
+                    self.weasel.progress_bar("<H4>Loading selected ROI into target image {}</H4>".format(index + 1))
+                    self.weasel.progressBar.set_maximum(len(targetPath))
+                    self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                     horizontalFlag = None
@@ -315,8 +310,8 @@ class ImageViewerROI(QMdiSubWindow):
                             #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                             #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 2)
-                messageWindow.closeMessageSubWindow(self.weasel)
+                    self.weasel.progressBar.set_value(index+2)
+                self.weasel.progressBar.close()
 
                 # Faster approach - 3D and no dilation
                 #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))

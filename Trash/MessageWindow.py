@@ -11,73 +11,76 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def displayMessageSubWindow(weasel, message, title="Loading DICOM files"):
+def displayMessageSubWindow(self, message, title="Loading DICOM files"):
         """
         Creates a subwindow that displays a message to the user. 
         """
         try:
             
             logger.info('MessageWindow.displayMessageSubWindow called with title={}.'.format(title))
-            weasel.closeSubWindows("Msg_Window")
+            for subWin in self.mdiArea.subWindowList():
+                if subWin.objectName() == "Msg_Window":
+                    subWin.close()
                     
             widget = QWidget()
             widget.setLayout(QVBoxLayout()) 
-            msgSubWindow = QMdiSubWindow()
-            msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
-            msgSubWindow.setWidget(widget)
-            msgSubWindow.setObjectName("Msg_Window")
-            msgSubWindow.setWindowTitle(title)
-            height, width = weasel.getMDIAreaDimensions()
-            msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
-            weasel.lblMsg = QLabel('<H4>' + message + '</H4>')
-            widget.layout().addWidget(weasel.lblMsg)
+            self.msgSubWindow = QMdiSubWindow(self)
+            self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
+            self.msgSubWindow.setWidget(widget)
+            self.msgSubWindow.setObjectName("Msg_Window")
+            self.msgSubWindow.setWindowTitle(title)
+            height, width = self.getMDIAreaDimensions()
+            self.msgSubWindow.setGeometry(0,0,width*0.5,height*0.25)
+            self.lblMsg = QLabel('<H4>' + message + '</H4>')
+            widget.layout().addWidget(self.lblMsg)
 
-            weasel.progBarMsg = QProgressBar(weasel)
-            widget.layout().addWidget(weasel.progBarMsg)
+            self.progBarMsg = QProgressBar(self)
+            widget.layout().addWidget(self.progBarMsg)
             widget.layout().setAlignment(Qt.AlignTop)
-            weasel.progBarMsg.hide()
-            weasel.progBarMsg.setValue(0)
+            self.progBarMsg.hide()
+            self.progBarMsg.setValue(0)
 
-            weasel.mdiArea.addSubWindow(weasel.msgSubWindow)
-            weasel.msgSubWindow.show()
+            self.mdiArea.addSubWindow(self.msgSubWindow)
+            self.msgSubWindow.show()
             QApplication.processEvents()
         except Exception as e:
             print('Error in MessageWindow.displayMessageSubWindow when title={}'.format(title) + str(e))
             logger.exception('Error in  MessageWindow.displayMessageSubWindow when title={}'.format(title) + str(e))
 
 
-def setMsgWindowProgBarMaxValue(weasel, maxValue):
-    weasel.progBarMsg.show()
-    weasel.progBarMsg.setMaximum(maxValue)
+def setMsgWindowProgBarMaxValue(self, maxValue):
+    self.progBarMsg.show()
+    self.progBarMsg.setMaximum(maxValue)
 
 
-def setMsgWindowProgBarValue(weasel, value, msg=None):
+def setMsgWindowProgBarValue(self, value, msg=None):
     try:
-        weasel.progBarMsg.setValue(value)
+        self.progBarMsg.setValue(value)
         if msg is not None:
-            weasel.lblMsg.setText(msg)
+            self.lblMsg.setText(msg)
     except Exception as e:
             print('Error in MessageWindow.setMsgWindowProgBarValue when message={}'.format(msg) + str(e))
             logger.exception('Error in MessageWindow.setMsgWindowProgBarValue when message={}'.format(msg) + str(e))
 
-def hideProgressBar(weasel):
+def hideProgressBar(self):
     try:
         logger.info('MessageWindow.hideProgressBar called.')
-        if weasel.progBarMsg:
-            if weasel.progBarMsg.isHidden() == False:
-                weasel.progBarMsg.hide()
+        if self.progBarMsg:
+            if self.progBarMsg.isHidden() == False:
+                self.progBarMsg.hide()
     except AttributeError as e:
         logger.exception('Attribute Error in  MessageWindow.hideProgressBar: ' + str(e))
     except Exception as e:
             print('Error in  MessageWindow.hideProgressBar: ' + str(e))
             logger.exception('Error in  MessageWindow.hideProgressBar: ' + str(e))
 
-def closeMessageSubWindow(weasel):
+
+def closeMessageSubWindow(self):
     try:
         logger.info('MessageWindow.closeMessageSubWindow called.')
-        if weasel.msgSubWindow:
-            if weasel.msgSubWindow.isEnabled() == True:
-                weasel.msgSubWindow.close()
+        if self.msgSubWindow:
+            if self.msgSubWindow.isEnabled() == True:
+                self.msgSubWindow.close()
     except AttributeError as e:
         logger.exception('Attribute Error in  MessageWindow.closeMessageSubWindow: ' + str(e))
     except Exception as e:

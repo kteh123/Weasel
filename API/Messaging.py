@@ -4,7 +4,8 @@ from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (QApplication, QMessageBox)
 from PyQt5.QtCore import  Qt
 
-import CoreModules.WEASEL.MessageWindow as messageWindow
+from Displays.ProgressBar import ProgressBar
+from Displays.Message import Message
 
 
 class Messaging():
@@ -84,7 +85,7 @@ class Messaging():
             else:
                 return False
 
-    def message(self, msg="Message in the box", title="Window Title"):
+    def message(self, msg="Message in the box", title="Message.."):
         """
         Displays a Message window with the text in "msg" and the title "title".
         """
@@ -93,14 +94,14 @@ class Messaging():
             print(title + ": " + msg)
             print("=====================================")
         else:
-            messageWindow.displayMessageSubWindow(self, "<H4>" + msg + "</H4>", title)
+            self.msgWindow = Message(parent = self, message = "<H4>" + msg + "</H4>")
 
     def close_message(self):
         """
         Closes the message window 
         """
         if self.cmd == False:
-            self.msgSubWindow.close()
+            self.msgWindow.close()
 
     def progress_bar(self, max=1, index=0, msg="Progressing...", title="Progress Bar"):
         """
@@ -118,9 +119,14 @@ class Messaging():
             self.tqdm_prog = tqdm(total=max)
             self.tqdm_prog.update(index)
         else:
-            messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
-            messageWindow.setMsgWindowProgBarMaxValue(self, max)
-            messageWindow.setMsgWindowProgBarValue(self, index)
+            for subWin in self.mdiArea.subWindowList():
+                if subWin.objectName() == "Progress bar":
+                    subWin.close()
+            self.progressBar = ProgressBar(
+                parent = self, 
+                message = ("<H4>" + msg + "</H4>").format(index), 
+                value = index, 
+                maximum = max)
 
     def update_progress_bar(self, index=0, msg=None):
         """
@@ -130,7 +136,7 @@ class Messaging():
             if msg is not None: print(msg)
             self.tqdm_prog.update(index)
         else:
-            messageWindow.setMsgWindowProgBarValue(self, index, msg)
+            self.progressBar.set_value(index)
 
     def close_progress_bar(self):
         """
@@ -139,8 +145,7 @@ class Messaging():
         if self.cmd == True and self.tqdm_prog:
             self.tqdm_prog.close()
         else:
-            messageWindow.hideProgressBar(self)
-            messageWindow.closeMessageSubWindow(self)
+            self.progressBar.close()
 
     def set_status(self, msg="I'm done with this!"):
         """

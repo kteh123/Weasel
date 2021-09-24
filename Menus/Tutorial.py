@@ -31,6 +31,15 @@ def main(weasel):
         label = 'Demo user input display',
         pipeline = 'Tutorial__UserInput')
     menu.item(
+        label = 'Demo progress bar',
+        pipeline = 'Tutorial__ProgressBar')
+    menu.item(
+        label = 'Demo message bar',
+        pipeline = 'Tutorial__Message')
+
+    menu.separator()
+
+    menu.item(
         label = 'Gaussian filter (copy)',
         tooltip = 'Filter images with user-defined settings',
         pipeline = 'Tutorial__GaussianPixelValuesInNewSeries')

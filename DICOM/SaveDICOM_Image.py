@@ -10,7 +10,6 @@ import random
 from matplotlib import cm
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.ParametricMapsDictionary as param
-import CoreModules.WEASEL.MessageWindow as messageWindow
 import logging
 logger = logging.getLogger(__name__)
 
@@ -86,17 +85,15 @@ def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast,
     logger.info("SaveDICOM_Image.updateSingleDicomImage called")
     try:
         logger.info("In SaveDICOM_Image.updateSingleDicomImage")
-        messageWindow.displayMessageSubWindow(objWeasel,
-            "<H4>Updating 1 DICOM file</H4>",
-            "Updating DICOM images")
-        messageWindow.setMsgWindowProgBarMaxValue(objWeasel,1)
-        messageWindow.setMsgWindowProgBarValue(objWeasel,0)
+        objWeasel.progress_bar(msg="<H4>Updating 1 DICOM file</H4>")
+        objWeasel.progressBar.set_maximum(1)
+        objWeasel.progressBar.set_value(0)
         dataset = ReadDICOM_Image.getDicomDataset(imagePath)
         levels = [spinBoxIntensity.value(), spinBoxContrast.value()]
         updatedDataset = updateSingleDicom(dataset, colourmap=colourmap, levels=levels, lut=lut)
         saveDicomToFile(updatedDataset, output_path=imagePath)
-        messageWindow.setMsgWindowProgBarValue(objWeasel,1)
-        messageWindow.closeMessageSubWindow(objWeasel)
+        objWeasel.progressBar.set_value(1)
+        objWeasel.progressBar.close()
     except Exception as e:
         print('Error in SaveDICOM_Image.updateSingleDicomImage: ' + str(e))
         logger.exception('Error in SaveDICOM_Image.updateSingleDicomImage: ' + str(e))

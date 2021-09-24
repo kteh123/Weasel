@@ -1,8 +1,8 @@
 import os
 import logging
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
-import CoreModules.WEASEL.MessageWindow as messageWindow
 from Displays.ViewMetaData import displayMetaDataSubWindow
+from DICOM.DeveloperTools import PixelArrayDICOMTools
 
 logger = logging.getLogger(__name__)
 
@@ -17,24 +17,11 @@ class UserInterfaceTools():
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
 
-
-    def progressBar(self, maxNumber=1, index=0, msg="Iteration Number {}", title="Progress Bar"):
-        """
-        Updates the ProgressBar to the unit set in "index".
-        """
-        index += 1
-        messageWindow.displayMessageSubWindow(self, ("<H4>" + msg + "</H4>").format(index), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-        messageWindow.setMsgWindowProgBarValue(self, index)
-        return index
-    
-
     def selectFolder(self, title="Select the directory"):
         """Displays an open folder dialog window to allow the
         user to select afolder """
         scan_directory = QFileDialog.getExistingDirectory(self, title, self.weaselDataFolder, QFileDialog.ShowDirsOnly)
         return scan_directory
-
 
     def displayMetadata(self, inputPath):
         """
