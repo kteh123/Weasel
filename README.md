@@ -24,9 +24,9 @@ Download URLs:
 
 [Python](https://www.python.org/downloads/)
 
-If the images you wish to work with are Enhanced/Multiframe DICOM, then it is required to have **Java SDK** installed so that 'dcm4che' can work correctly.
+If the images you wish to work with are Enhanced/Multiframe DICOM, then it is required to have **Java JDK** installed so that `dcm4che` can work correctly.
 
-[Java SDK](https://www.oracle.com/java/technologies/downloads/)
+[Java JDK](https://www.oracle.com/java/technologies/downloads/)
 
 There are 2 options downloading and installing Weasel requirements:
 
