@@ -9,5 +9,4 @@ jobs:
     steps:
       - name: Deploy Manual Github Page
         run: |
-          # Split of the subtree at Documents/Manual and force push it to the gh-pages branch
-          git push origin `git subtree split --prefix Documents/Manual master`:gh-pages --force
+          git subtree push --prefix Documents/Manual origin gh-pages
