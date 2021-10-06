@@ -87,10 +87,12 @@ First, you have to navigate to your Weasel folder
 
 and run the following python command:
 
-`python compile_and_generate_binary.py`
+`python create_weasel_executable.py`
 
 You may use your IDE instead of the terminal during this process. The generated executable can be found in the `Weasel` folder.
 
+**For MacOS:** If the command above doesn't work, you might need to run `python3` instead and/or use `sudo` before the command. Eg. `sudo python3 create_weasel_executable.py`.
+
 ## Other Info
 
-Weasel runs the command `emf2sf` of [dcm4che](https://www.dcm4che.org/) on Multiframe DICOM. Elastix will be integrated in the future.
+Weasel runs the command `emf2sf` of [dcm4che](https://www.dcm4che.org/) on Enhanced/Multiframe DICOM. Elastix for Python can be used via ITK-Elastix.
