@@ -4,7 +4,6 @@ from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
                             QMessageBox, 
                             QWidget,
-                            QFormLayout,
                             QHBoxLayout,
                             QVBoxLayout, 
                             QMdiSubWindow, 
@@ -33,6 +32,7 @@ import DICOM.SaveDICOM_Image as SaveDICOM_Image
 
 from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
 from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
+from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueComponent 
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 
@@ -112,8 +112,6 @@ class ImageViewer(QMdiSubWindow):
             self.setUpTopRowLayout()
 
             self.setUpGraphicsView()
-
-            self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
     
@@ -216,11 +214,14 @@ class ImageViewer(QMdiSubWindow):
         self.btnReset.setToolTip('Return to colour tables and levels in the DICOM file')
 
 
-    def setUpColourTableLayout(self):
+    def setUpColourTableGroupBox(self):
         self.colourTableLayout = QHBoxLayout()
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
         self.colourTableGroupBox = QGroupBox("Colour Table")
+        self.colourTableGroupBox.isFlat()
+        self.colourTableGroupBox.setFixedWidth(300)
+        self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
         self.setUpColourTableDropDown()
@@ -251,38 +252,44 @@ class ImageViewer(QMdiSubWindow):
             self.cmbColours.activated.connect(self.updateImageUserSelection)
 
 
-    def setUpImageLayout(self):
+    def setUpImageGroupBox(self):
         try:
             self.imageLayout = QVBoxLayout()
             self.imageLayout.setContentsMargins(0, 2, 0, 0)
             self.imageLayout.setSpacing(0)
             self.imageGroupBox = QGroupBox("Image")
+            self.imageGroupBox.isFlat()
+            self.imageGroupBox.setFixedWidth(75)
+            self.imageGroupBox.setFixedHeight(50)
             self.imageGroupBox.setLayout(self.imageLayout)
             self.setUpDeleteImageButton()
         except Exception as e:
-            print('Error in ImageViewer.setUpImageLayout: ' + str(e))
-            logger.error('Error in ImageViewer.setUpImageLayout: ' + str(e))
+            print('Error in ImageViewer.setUpImageGroupBox: ' + str(e))
+            logger.error('Error in ImageViewer.setUpImageGroupBox: ' + str(e))
 
 
-    def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
-        self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+    def setUpImageLevelsGroupBox(self):
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
+        self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
+        self.imageLevelsGroupBox.isFlat()
+        self.imageLevelsGroupBox.setFixedWidth(200)
+        self.imageLevelsGroupBox.setFixedHeight(50)
+        self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
         try:
             self.topRowMainLayout = QHBoxLayout()
 
-            self.setUpColourTableLayout()
-            self.setUpImageLevelsLayout()
-            self.setUpImageLayout()
+            self.setUpColourTableGroupBox()
+            self.setUpImageLevelsGroupBox()
+            self.setUpImageGroupBox()
+            self.setUpPixelValueGroupBox()
 
             self.topRowMainLayout.addWidget(self.colourTableGroupBox)
             self.topRowMainLayout.addWidget(self.imageGroupBox)
-            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
+            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox) 
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
 
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
@@ -314,32 +321,57 @@ class ImageViewer(QMdiSubWindow):
         except Exception as e:
             print('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
             logger.error('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
-            
+ 
 
-    def setUpPixelValueLabels(self):
-        self.lblPixel = QLabel("<h4>Pixel Value:</h4>")
-        self.imageDataLayout.addWidget(self.lblPixel)
-        self.lblPixelValue = QLabel()
-        self.lblPixelValue.setStyleSheet("color : red; padding-left:0; margin-left:0;")
-        self.imageDataLayout.addWidget(self.lblPixelValue)
-        self.imageDataLayout.addStretch(50)
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox("Pixel Value")
+        self.pixelValueGroupBox.isFlat()
+        self.pixelValueGroupBox.setFixedWidth(200)
+        self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
 
-
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-        self.setUpPixelValueLabels()
+  
+    def getPixelValue(self, pos, imageNumber=1):
+        """
+        This function checks that the mouse pointer is over the
+        image and when it is, it determines the value of the pixel
+        under the mouse pointer and displays this in the label
+        lblPixelValue.
+        """
+        try:
+            container =  self.graphicsView.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView(pos) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
+                z_i =  imageNumber
+                if (len(np.shape(self.pixelArray)) == 2) and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] \
+                    and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]: 
+                    self.lblPixelValue.setText(
+                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
+                    .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
+                elif (len(np.shape(self.pixelArray)) == 3) \
+                    and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] \
+                    and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]:
+                    z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
+                    self.lblPixelValue.setText(
+                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
+                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
+                else:
+                    self.lblPixelValue.setText("")
+            else:
+                self.lblPixelValue.setText("")
+                   
+        except Exception as e:
+            print('Error in ImageViewer.getPixelValue: ' + str(e))
+            logger.error('Error in ImageViewer.getPixelValue: ' + str(e))
 
 
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes()
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
             if self.isSeries: 
@@ -797,43 +829,6 @@ class ImageViewer(QMdiSubWindow):
         except Exception as e:
             print('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
             logger.error('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
-
-
-    def getPixelValue(self, pos, imageNumber=1):
-        """
-        This function checks that the mouse pointer is over the
-        image and when it is, it determines the value of the pixel
-        under the mouse pointer and displays this in the label
-        lblPixelValue.
-        """
-        try:
-            #print ("Image position: {}".format(pos))
-            container =  self.graphicsView.getView()
-            if container.sceneBoundingRect().contains(pos): 
-                mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = math.floor(mousePoint.x())
-                y_i = math.floor(mousePoint.y()) 
-                z_i =  imageNumber
-                if (len(np.shape(self.pixelArray)) == 2) and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] \
-                    and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]: 
-                    self.lblPixelValue.setText(
-                        "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
-                elif (len(np.shape(self.pixelArray)) == 3) \
-                    and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] \
-                    and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]:
-                    z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
-                    self.lblPixelValue.setText(
-                        "<h4> = {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
-                else:
-                    self.lblPixelValue.setText("")
-            else:
-                self.lblPixelValue.setText("")
-                   
-        except Exception as e:
-            print('Error in ImageViewer.getPixelValue: ' + str(e))
-            logger.error('Error in ImageViewer.getPixelValue: ' + str(e))
 
 
     def blockLevelsSpinBoxSignals(self, block):
