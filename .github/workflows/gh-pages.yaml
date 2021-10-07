@@ -7,21 +7,21 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
+      - uses: actions/checkout@v2
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.7' # install the python version needed
           
-        name: Install Python Packages
+      - name: Install Python Packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-        name: Build Github Page Manual
-        uses: actions/checkout@v2
+      - name: Build Github Page Manual
         run: python create_weasel_manual.py
 
-        name: Commit and Deploy Github Page Manual
+      - name: Commit and Deploy Github Page Manual
         run: |
           git --version
           git config user.name "GitHub Actions Bot"
