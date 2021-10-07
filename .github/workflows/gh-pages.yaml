@@ -19,7 +19,7 @@ jobs:
           pip install pdoc3
 
       - name: Build Github Page Manual
-        run: python create_weasel_manual.py
+        run: python create_weasel_executable.py
 
       - name: Commit and Deploy Github Page Manual
         run: |
