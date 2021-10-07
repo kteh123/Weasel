@@ -219,7 +219,6 @@ class ImageViewer(QMdiSubWindow):
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
         self.colourTableGroupBox = QGroupBox("Colour Table")
-        self.colourTableGroupBox.isFlat()
         self.colourTableGroupBox.setFixedWidth(300)
         self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
@@ -258,7 +257,6 @@ class ImageViewer(QMdiSubWindow):
             self.imageLayout.setContentsMargins(0, 2, 0, 0)
             self.imageLayout.setSpacing(0)
             self.imageGroupBox = QGroupBox("Image")
-            self.imageGroupBox.isFlat()
             self.imageGroupBox.setFixedWidth(75)
             self.imageGroupBox.setFixedHeight(50)
             self.imageGroupBox.setLayout(self.imageLayout)
@@ -271,10 +269,10 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageLevelsGroupBox(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
-        self.imageLevelsGroupBox.isFlat()
         self.imageLevelsGroupBox.setFixedWidth(200)
         self.imageLevelsGroupBox.setFixedHeight(50)
-        self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
+        self.imageLevelsGroupBox.setLayout(
+            self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
@@ -327,7 +325,6 @@ class ImageViewer(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.isFlat()
         self.pixelValueGroupBox.setFixedWidth(200)
         self.pixelValueGroupBox.setFixedHeight(50)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
@@ -351,14 +348,14 @@ class ImageViewer(QMdiSubWindow):
                     and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]: 
                     self.lblPixelValue.setText(
                         "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
+                    .format (round(self.pixelArray[ x_i, y_i ], 3), x_i, y_i, z_i))
                 elif (len(np.shape(self.pixelArray)) == 3) \
                     and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] \
                     and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]:
                     z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                     self.lblPixelValue.setText(
                         "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
+                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 3), x_i, y_i, z_i + 1))
                 else:
                     self.lblPixelValue.setText("")
             else:

@@ -31,6 +31,7 @@ class ImageLevelsSpinBoxes:
             self.spinBoxIntensity.setMaximum(1000000000.00)
             self.spinBoxIntensity.setWrapping(True)
             self.spinBoxIntensity.setSingleStep(1.0)
+            self.spinBoxIntensity.setFixedWidth(75)
 
             self.spinBoxContrast = QDoubleSpinBox()
             self.spinBoxContrast.setToolTip("Adjust Image Contrast")
@@ -39,6 +40,7 @@ class ImageLevelsSpinBoxes:
             self.spinBoxContrast.setMaximum(1000000000.00)
             self.spinBoxContrast.setWrapping(True)
             self.spinBoxContrast.setSingleStep(1.0)
+            self.spinBoxContrast.setFixedWidth(75)
     
             lblIntensity = QLabel()
             lblIntensity.setToolTip("Intensity")

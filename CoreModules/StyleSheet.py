@@ -26,8 +26,8 @@ TRISTAN_GREY = """
                     margin: 0.25em;
                     border: 1px solid gray;
                     border-radius: 3px;
-                    padding: 1px 18px 1px 3px;
-                    min-width: 6em;
+                    padding: 0px 0px 0px 0px;
+                    min-width: 4em;
                     font-size: 9pt;
                     font-weight: bold;}
                 

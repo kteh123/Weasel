@@ -30,12 +30,11 @@ import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
-
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
-
+from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueComponent 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -149,21 +148,22 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpRoiToolsLayout(self):
         self.roiToolsLayout = QHBoxLayout()
-        self.roiToolsLayout.setContentsMargins(0, 2, 0, 0)
+        self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
         self.roiToolsGroupBox = QGroupBox("ROIs")
+        self.roiToolsGroupBox.setFixedHeight(50)
+        self.roiToolsGroupBox.setFixedWidth(400)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
     def setUpROIDropDownList(self):
         self.cmbNamesROIs = QComboBox()
-        self.lblCmbROIs =  QLabel("ROIs")
         self.cmbNamesROIs.setDuplicatesEnabled(False)
-        self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmbNamesROIs.addItem("region1")
+        self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.graphicsView.currentROIName = "region1"
         self.cmbNamesROIs.setCurrentIndex(0)
-        self.cmbNamesROIs.setStyleSheet('QComboBox {font: 12pt Arial}')
+        self.cmbNamesROIs.setStyleSheet('QComboBox {font: 11pt Arial}')
         self.cmbNamesROIs.setToolTip("Displays a list of ROIs created")
         self.cmbNamesROIs.setEditable(True)
         self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
@@ -435,7 +435,7 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info("ImageViewerROI.setUpImageEventHandlers called.")
         try:
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
-            lambda mouseOverImage:self.displayImageDataUnderMouse(mouseOverImage))
+            lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
             self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
@@ -508,10 +508,32 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info("ImageViewerROI.updateROIName called.")
         self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
 
+    
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox("Pixel Value")
+        self.pixelValueGroupBox.setFixedWidth(175)
+        self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
-    def displayImageDataUnderMouse(self, mouseOverImage):
+
+    def setUpZoomGroupBox(self):
+        self.zoomValueLabel = QLabel("<H4>100%</H4>")
+        self.zoomValueLabel.setStyleSheet("color : red; padding-left:1; margin-left:1;")
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
+        self.zoomGroupBox = QGroupBox("Zoom")
+        self.zoomGroupBox.setFixedWidth(65)
+        self.zoomGroupBox.setFixedHeight(50)
+        self.zoomGroupBox.setLayout(layout) 
+
+
+    def getPixelValue(self, mouseOverImage):
         try:
-            logger.info("ImageViewerROI.displayImageDataUnderMouse called")
+            logger.info("ImageViewerROI.getPixelValue called")
             if mouseOverImage:
                 xCoord = self.graphicsView.graphicsItem.xMouseCoord
                 yCoord = self.graphicsView.graphicsItem.yMouseCoord
@@ -522,12 +544,12 @@ class ImageViewerROI(QMdiSubWindow):
                 else:
                     imageNumber = 1
                 strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
-                self.pixelValueTxt.setText('= ' + strValue + strPosition)
+                self.lblPixelValue.setText(strValue + strPosition)
             else:
-                 self.pixelValueTxt.setText('')
+                 self.lblPixelValue.setText('')
         except Exception as e:
-                print('Error in ImageViewerROI.displayImageDataUnderMouse: ' + str(e))
-                logger.error('Error in ImageViewerROI.displayImageDataUnderMouse: ' + str(e))
+                print('Error in ImageViewerROI.getPixelValue: ' + str(e))
+                logger.error('Error in ImageViewerROI.getPixelValue: ' + str(e))
 
 
     def updateDetailsROI(self):
@@ -543,7 +565,7 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.error('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
 
 
-    def replaceMask(self):  #To Do
+    def replaceMask(self):  
         logger.info("ImageViewerROI.replaceMask called")
         regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
@@ -609,7 +631,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
-            self.roiToolsLayout.addStretch(20)
+            #self.roiToolsLayout.addStretch(20)
         except Exception as e:
                print('Error in ImageViewerROI.setUpROIButtons: ' + str(e))
                logger.error('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
@@ -660,11 +682,11 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
-        self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
+        self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
+        self.imageLevelsGroupBox.setFixedWidth(200)
+        self.imageLevelsGroupBox.setFixedHeight(50)
+        self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
@@ -674,10 +696,16 @@ class ImageViewerROI(QMdiSubWindow):
             self.setUpRoiToolsLayout()
             
             self.setUpImageLevelsLayout()
+
+            self.setUpPixelValueGroupBox()
+
+            self.setUpZoomGroupBox()
             
             self.topRowMainLayout.addWidget(self.roiToolsGroupBox)
             self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
-        
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
+            self.topRowMainLayout.addWidget(self.zoomGroupBox)
+
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
             self.lblImageMissing = QLabel("<h4>Image Missing</h4>")
@@ -705,15 +733,6 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpImageDataWidgets(self):
         try:
             logger.info("ImageViewerROI.setUpImageDataWidgets called.")
-        
-            self.pixelValueLabel = QLabel("Pixel Value")
-            self.pixelValueLabel.setAlignment(Qt.AlignRight)
-            self.pixelValueLabel.setStyleSheet("padding-right:1; margin-right:1;")
-
-            self.pixelValueTxt = QLabel()
-            self.pixelValueTxt.setIndent(0)
-            self.pixelValueTxt.setAlignment(Qt.AlignLeft)
-            self.pixelValueTxt.setStyleSheet("color : red; padding-left:1; margin-left:1;")
 
             self.roiMeanLabel = QLabel("ROI Mean")
             self.roiMeanLabel.setStyleSheet("padding-right:1; margin-right:1;")
@@ -725,21 +744,12 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.roiStdDevTxt = QLabel()
             self.roiStdDevTxt.setStyleSheet("color : red; padding-left:1; margin-left:1;")
-
-            self.zoomLabel = QLabel("Zoom:")
-            self.zoomLabel.setStyleSheet("padding-right:1; margin-right:1;")
-
-            self.zoomValueLabel = QLabel("<H4>100%</H4>")
-            self.zoomValueLabel.setStyleSheet("color : red; padding-left:1; margin-left:1;")
         
-            self.imageDataLayout.addWidget(self.pixelValueLabel, Qt.AlignRight)
-            self.imageDataLayout.addWidget(self.pixelValueTxt, Qt.AlignLeft)
             self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
             self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
             self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
             self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomValueLabel, Qt.AlignLeft)
+            
             self.imageDataLayout.addStretch(10)
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
@@ -748,9 +758,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes() 
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes() 
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
         except Exception as e:
