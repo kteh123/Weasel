@@ -4,6 +4,7 @@ import venv
 
 print("Creating Python Virtual Environment...")
 venv_dir = os.path.join(os.getcwd(), "venv")
+icon_dir = os.path.join(os.getcwd(), "Documents" , "images" , "favicon.ico")
 os.makedirs(venv_dir, exist_ok=True)
 venv.create(venv_dir, with_pip=True)
 
@@ -26,12 +27,9 @@ hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit'
 string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
 
 print("Starting compilation...")
-if platform == "win32" or platform == "win64" or os.name == 'nt':
-	os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile Weasel.py')
-	# Add the "Scripting"/"Pipelines" folder when we make official release
-	# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
-else:
-	os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile --windowed --osx-bundle-identifier Weasel Weasel.py')
+os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile -i ' + str(icon_dir) + ' Weasel.py')
+# Add the "Scripting"/"Pipelines" folder when we make official release
+# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
 
 
 print("Cleaning up compilation files...")
@@ -52,14 +50,14 @@ else:
 	os.system('rm -r venv/')
 
 # If compiled in MacOS, we need to make the icon double-clickable.
-if platform == "darwin" or os.name == 'posix':
-	os.system('mv Weasel.app/Contents/MacOS/Weasel Weasel.app/Contents/MacOS/Weasel_bin')
-	with open ('Weasel.app/Contents/MacOS/Weasel.sh', 'w') as rsh:
-		rsh.write('''\
-			#! /bin/bash
-			DIR=$(cd "$(dirname "$0")"; pwd)
-			open $DIR/Weasel_bin
-			''')
-	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel.sh')
+#if platform == "darwin" or os.name == 'posix':
+#	os.system('mv Weasel.app/Contents/MacOS/Weasel Weasel.app/Contents/MacOS/Weasel_bin')
+#	with open ('Weasel.app/Contents/MacOS/Weasel.sh', 'w') as rsh:
+#		rsh.write('''\
+#			#! /bin/bash
+#			DIR=$(cd "$(dirname "$0")"; pwd)
+#			open $DIR/Weasel_bin
+#			''')
+#	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel.sh')
 
 print("Binary file successfully created and saved in the Weasel repository!")
