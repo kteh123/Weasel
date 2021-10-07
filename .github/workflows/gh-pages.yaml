@@ -7,8 +7,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Deploy Manual Github Page
         run: |
+          apt-get install -y git
+          git --version
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           git add Documents/Manual
