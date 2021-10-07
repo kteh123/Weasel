@@ -1,4 +1,4 @@
-name: Deploy Manual Github Page
+name: Upload Manual to Github Page
 on:
   push:
     branches:

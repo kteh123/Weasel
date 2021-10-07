@@ -6,11 +6,14 @@
 
 # Weasel
 
-Prototype DICOM image viewer.  
+Prototype DICOM image viewer. For more information, please visit the [official website](https://weasel.pro/).
+
 To use, open the File Menu and select the 'View DICOM Studies' option. Browse to a folder containing DICOM image files and an XML file 
 describing their study/series/image structure. Select this XML file to build a tree view visual representation of this structure. 
 To view an image, either double click it or select it, open the Tools menu and select the 'View Image' menu item. 
 To view an inverted image, select an image in the tree view, open the Tools menu and select the 'Invert Image' item.
+
+**Joao Sousa `07/10/2021` - This first paragraph needs rewriting.**
 
 The 'Sample Data' folder contains 24 DICOM images and an XML file describing thier structure. To use this prototype download the source code and this folder to your computer.  Run the source code and browse to the 'Sample Data' folder and select the DICOM.xml file using File\View DICOM Studies
 
@@ -24,7 +27,7 @@ Download URLs:
 
 [Python](https://www.python.org/downloads/)
 
-If the images you wish to work with are Enhanced/Multiframe DICOM, then it is required to have **Java JDK** installed so that `dcm4che` can work correctly.
+If the images you wish to work with are Enhanced/Multiframe DICOM, then it is required to have **Java JDK** installed so that `dcm4che` can work correctly. If you're using an old OS, it is recommended that you scroll down when navigating the link below and choose an older version of **Java JDK** to install.
 
 [Java JDK](https://www.oracle.com/java/technologies/downloads/)
 
@@ -66,7 +69,7 @@ Running `pip install -e .` will read the `setup.py` file and install the require
 
 The core Python modules used in Weasel are in requirements.txt so alternatively you may choose to run `pip install -r requirements.txt` and then any other Python packages of your choice can be installed separately in your machine or in your virtual environment.
 
-# Start the Graphical User Interface
+# Start Weasel Graphical User Interface
 Open a Terminal (MacOS and Linux) or a CMD (Windows), navigate to the downloaded Weasel folder
 
 `cd <Weasel_folder_path>`
@@ -76,6 +79,17 @@ and start Weasel by running the command
 `python Weasel.py`
 
 If you're a developer, you may start Weasel by opening an IDE (Sublime Text, VS Code, Visual Studio, etc.) and run the Weasel.py script.
+
+# Start Weasel Command-Line Mode
+Open a Terminal (MacOS and Linux) or a CMD (Windows), navigate to the downloaded Weasel folder
+
+`cd <Weasel_folder_path>`
+
+and start Weasel by running the command
+
+`python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py`
+
+This alternative of Weasel is recommended if you're processing a large number of DICOM files at the same time or if you're running a time-consuming script.
 
 # Generate the Executable
 
