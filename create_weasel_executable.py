@@ -51,4 +51,15 @@ else:
 	print("Deleting the created Python Virtual Environment for the process...")
 	os.system('rm -r venv/')
 
+# If compiled in MacOS, we need to make the icon double-clickable.
+if platform == "darwin" or os.name == 'posix':
+	os.system('mv Weasel.app/Contents/MacOS/Weasel Weasel.app/Contents/MacOS/Weasel_bin')
+	with open ('Weasel.app/Contents/MacOS/Weasel.sh', 'w') as rsh:
+		rsh.write('''\
+			#! /bin/bash
+			DIR=$(cd "$(dirname "$0")"; pwd)
+			open $DIR/Weasel_bin
+			''')
+	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel.sh')
+
 print("Binary file successfully created and saved in the Weasel repository!")
