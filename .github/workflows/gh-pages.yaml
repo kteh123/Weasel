@@ -9,4 +9,5 @@ jobs:
     steps:
       - name: Deploy Manual Github Page
         run: |
-          git subtree push --prefix Documents/Manual origin gh-pages
+          git add Documents/Manual && git commit -m "Initial Manual subtree commit"
+          git push origin `git subtree split --prefix Documents/Manual master`:gh-pages --force
