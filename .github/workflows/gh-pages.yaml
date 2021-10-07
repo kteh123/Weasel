@@ -9,4 +9,5 @@ jobs:
     steps:
       - name: Deploy Manual Github Page
         run: |
+          cd WEASEL
           git push origin `git subtree split --prefix Documents/Manual master`:gh-pages --force
