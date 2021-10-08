@@ -49,15 +49,35 @@ else:
 	print("Deleting the created Python Virtual Environment for the process...")
 	os.system('rm -r venv/')
 
-# If compiled in MacOS, we need to make the icon double-clickable.
-#if platform == "darwin" or os.name == 'posix':
-#	os.system('mv Weasel.app/Contents/MacOS/Weasel Weasel.app/Contents/MacOS/Weasel_bin')
-#	with open ('Weasel.app/Contents/MacOS/Weasel.sh', 'w') as rsh:
-#		rsh.write('''\
-#			#! /bin/bash
-#			DIR=$(cd "$(dirname "$0")"; pwd)
-#			open $DIR/Weasel_bin
-#			''')
-#	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel.sh')
+
+# If compiled in MacOS, we need to create the App Bundle manually.
+if platform == "darwin" or os.name == 'posix':
+	os.system('mv Weasel WeaselMacOS')
+	with open ('Weasel', 'w') as rsh:
+		rsh.write('''\
+			#! /bin/bash
+			DIR=$(cd "$(dirname "$0")"; pwd)
+			open $DIR/WeaselMacOS
+			''')
+	os.system('mkdir -p Weasel.app/Contents/MacOS')
+	os.system('mkdir -p Weasel.app/Contents/Resources')
+	os.system('cp Weasel WeaselMacOS Weasel.app/Contents/MacOS/')
+	os.system('cp Documents/images/favicon.icns Weasel.app/Contents/Resources/')
+	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel')
+	os.system('cd Weasel.app/Contents/')
+	os.system('echo "APPSFooB" > PkgInfo')
+	with open ('Info.plist', 'w') as rsh:
+		rsh.write('''\
+			<?xml version="1.0" encoding="UTF-8"?>
+			<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+			"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+			<plist version="1.0">
+			<dict>
+			<key>CFBundleIconFile</key>
+ 			<string>favicon.icns</string>
+			</dict>
+			</plist>
+			''')
+
 
 print("Binary file successfully created and saved in the Weasel repository!")
