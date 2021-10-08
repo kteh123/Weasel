@@ -113,13 +113,13 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.setUpGraphicsView()
             
-            self.setUpImageDataLayout()
+            #self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
 
             self.setUpZoomSlider()
 
-            self.setUpImageDataWidgets()
+           # self.setUpImageDataWidgets()
 
             self.setUpROIButtons()
 
@@ -152,7 +152,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.roiToolsLayout.setSpacing(0)
         self.roiToolsGroupBox = QGroupBox("ROIs")
         self.roiToolsGroupBox.setFixedHeight(50)
-        self.roiToolsGroupBox.setFixedWidth(400)
+        self.roiToolsGroupBox.setFixedWidth(500)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
@@ -408,8 +408,8 @@ class ImageViewerROI(QMdiSubWindow):
     
     def getRoiMeanAndStd(self, mask, pixelArray):
         logger.info("ImageViewerROI.getRoiMeanAndStd called")
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 6)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 6)
+        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 2)
+        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 2)
         return mean, std
 
 
@@ -424,8 +424,8 @@ class ImageViewerROI(QMdiSubWindow):
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText(str(mean))
-            self.roiStdDevTxt.setText(str(std))
+            self.roiMeanTxt.setText("Mean: " + str(mean))
+            self.roiStdDevTxt.setText("SD: " + str(std))
         else:
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -513,20 +513,20 @@ class ImageViewerROI(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.setFixedWidth(175)
+        self.pixelValueGroupBox.setFixedWidth(165)
         self.pixelValueGroupBox.setFixedHeight(50)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
 
     def setUpZoomGroupBox(self):
         self.zoomValueLabel = QLabel("<H4>100%</H4>")
-        self.zoomValueLabel.setStyleSheet("color : red; padding-left:1; margin-left:1;")
+        self.zoomValueLabel.setStyleSheet("color:red; padding-left:1; margin-left:1; font-size:8pt;")
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
         self.zoomGroupBox = QGroupBox("Zoom")
-        self.zoomGroupBox.setFixedWidth(65)
+        self.zoomGroupBox.setFixedWidth(60)
         self.zoomGroupBox.setFixedHeight(50)
         self.zoomGroupBox.setLayout(layout) 
 
@@ -620,6 +620,12 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnZoom.setCheckable(True)
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
+            self.roiMeanTxt = QLabel()
+            self.roiMeanTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
+            self.roiMeanTxt.setToolTip("ROI Mean Value")
+            self.roiStdDevTxt = QLabel()
+            self.roiStdDevTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
+            self.roiStdDevTxt.setToolTip("ROI Mean Value Standard Deviation")
             self.connectSlotToSignalForROITools()
 
             self.roiToolsLayout.addWidget(self.cmbNamesROIs, alignment=Qt.AlignLeft)
@@ -631,6 +637,9 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
+
             #self.roiToolsLayout.addStretch(20)
         except Exception as e:
                print('Error in ImageViewerROI.setUpROIButtons: ' + str(e))
@@ -734,21 +743,21 @@ class ImageViewerROI(QMdiSubWindow):
         try:
             logger.info("ImageViewerROI.setUpImageDataWidgets called.")
 
-            self.roiMeanLabel = QLabel("ROI Mean")
-            self.roiMeanLabel.setStyleSheet("padding-right:1; margin-right:1;")
-            self.roiMeanTxt = QLabel()
-            self.roiMeanTxt.setStyleSheet("color : red; padding-left:1; margin-left:1;")
+            #self.roiMeanLabel = QLabel("ROI Mean")
+            #self.roiMeanLabel.setStyleSheet("padding-right:1; margin-right:1;")
+            #self.roiMeanTxt = QLabel()
+            #self.roiMeanTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
 
-            self.roiStdDevLabel = QLabel("ROI Sdev.")
-            self.roiStdDevLabel.setStyleSheet("padding-right:1; margin-right:1;")
+            #self.roiStdDevLabel = QLabel("ROI Sdev.")
+            #self.roiStdDevLabel.setStyleSheet("padding-right:1; margin-right:1;")
 
-            self.roiStdDevTxt = QLabel()
-            self.roiStdDevTxt.setStyleSheet("color : red; padding-left:1; margin-left:1;")
+            #self.roiStdDevTxt = QLabel()
+            #self.roiStdDevTxt.setStyleSheet("color : red; padding-left:0; margin-left:0;font-size:9pt;")
         
-            self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
+            #self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
+            #self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
+            #self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
+            #self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
             
             self.imageDataLayout.addStretch(10)
         except Exception as e:
