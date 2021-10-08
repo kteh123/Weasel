@@ -54,20 +54,17 @@ else:
 if platform == "darwin" or os.name == 'posix':
 	os.system('mv Weasel WeaselMacOS')
 	with open ('Weasel', 'w') as rsh:
-		rsh.write('''\
+		rsh.write('''
 			#! /bin/bash
 			DIR=$(cd "$(dirname "$0")"; pwd)
 			open $DIR/WeaselMacOS
 			''')
 	os.system('mkdir -p Weasel.app/Contents/MacOS')
 	os.system('mkdir -p Weasel.app/Contents/Resources')
-	os.system('cp Weasel WeaselMacOS Weasel.app/Contents/MacOS/')
+	os.system('mv Weasel WeaselMacOS Weasel.app/Contents/MacOS/')
 	os.system('cp Documents/images/favicon.icns Weasel.app/Contents/Resources/')
-	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel')
-	os.system('cd Weasel.app/Contents/')
-	os.system('echo "APPSFooB" > PkgInfo')
-	with open ('Info.plist', 'w') as rsh:
-		rsh.write('''\
+	with open ('Weasel.app/Contents/Info.plist', 'w') as infop:
+		infop.write('''
 			<?xml version="1.0" encoding="UTF-8"?>
 			<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
 			"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -78,6 +75,7 @@ if platform == "darwin" or os.name == 'posix':
 			</dict>
 			</plist>
 			''')
+	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel')
 
 
 print("Binary file successfully created and saved in the Weasel repository!")
