@@ -2,7 +2,8 @@ from PyQt5.QtWidgets import (QApplication,
         QMdiArea, QWidget, QVBoxLayout, 
         QMdiSubWindow, QMainWindow, QMenu,
         QStatusBar, QDockWidget, QLabel)
-from PyQt5.QtCore import  Qt
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 import os
 import sys
 import argparse
@@ -63,6 +64,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.cmd = False
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
+        self.setWindowIcon(QIcon(os.path.join("Documents","images", "favicon.ico")))
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
@@ -172,6 +174,7 @@ def main():
         weaselCommandLine.run()
     else:
         app = QApplication(sys.argv)
+        app.setWindowIcon(QIcon(os.path.join("Documents","images", "favicon.ico")))
         winMDI = Weasel()
         winMDI.showMaximized()
         sys.exit(app.exec())

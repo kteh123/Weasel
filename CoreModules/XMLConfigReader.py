@@ -8,7 +8,6 @@ class XMLConfigReader:
     def __init__(self): 
         try:
             self.hasXMLFileParsedOK = True
-            print(os.path.dirname(sys.argv[0]))
             self.fullFilePath = os.path.join(os.path.dirname(sys.argv[0]), "config.xml")
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()

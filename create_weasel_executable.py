@@ -4,7 +4,8 @@ import venv
 
 print("Creating Python Virtual Environment...")
 venv_dir = os.path.join(os.getcwd(), "venv")
-icon_dir = os.path.join(os.getcwd(), "Documents" , "images" , "favicon.ico")
+icon_file = os.path.join(os.getcwd(), "Documents" , "images" , "favicon.ico")
+icon_png = os.path.join(os.getcwd(), "Documents" , "images" , "uni-sheffield-logo.png")
 os.makedirs(venv_dir, exist_ok=True)
 venv.create(venv_dir, with_pip=True)
 
@@ -27,7 +28,7 @@ hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit'
 string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile -i ' + str(icon_dir) + ' Weasel.py')
+os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
 # Add the "Scripting"/"Pipelines" folder when we make official release
 # Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
 
@@ -52,30 +53,11 @@ else:
 
 # If compiled in MacOS, we need to create the App Bundle manually.
 if platform == "darwin" or os.name == 'posix':
-	os.system('mv Weasel WeaselMacOS')
-	with open ('Weasel', 'w') as rsh:
-		rsh.write('''
-			#! /bin/bash
-			DIR=$(cd "$(dirname "$0")"; pwd)
-			open $DIR/WeaselMacOS
-			''')
-	os.system('mkdir -p Weasel.app/Contents/MacOS')
-	os.system('mkdir -p Weasel.app/Contents/Resources')
-	os.system('mv Weasel WeaselMacOS Weasel.app/Contents/MacOS/')
-	os.system('cp Documents/images/favicon.icns Weasel.app/Contents/Resources/')
-	with open ('Weasel.app/Contents/Info.plist', 'w') as infop:
-		infop.write('''
-			<?xml version="1.0" encoding="UTF-8"?>
-			<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
-			"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-			<plist version="1.0">
-			<dict>
-			<key>CFBundleIconFile</key>
- 			<string>favicon.icns</string>
-			</dict>
-			</plist>
-			''')
-	os.system('chmod +x Weasel.app/Contents/MacOS/Weasel')
-
+	os.system('chmod 775 Weasel')
+	os.system('sips -i ' + str(icon_png))
+	os.system('DeRez -only icns ' +  str(icon_png) + ' > icon.rsrc')
+	os.system('Rez -append icon.rsrc -o Weasel')
+	os.system('SetFile -a C Weasel')
+	os.system('rm -f icon.rsrc')
 
 print("Binary file successfully created and saved in the Weasel repository!")
