@@ -14,7 +14,7 @@ class PixelValueComponent:
         self.lblPixelValue = QLabel()
         self.lblPixelValue.setMargin(0)
         self.lblPixelValue.setStyleSheet(
-            "color : red; padding-left:0; margin-left:0; padding-right:0; margin-right:0;")
+            "color : red; padding-left:0; margin-left:0; padding-right:0; margin-right:0; font-size:8pt;")
         self.pixelValueLayout.addWidget(self.lblPixelValue, alignment=Qt.AlignCenter)
 
     def getLayout(self):
