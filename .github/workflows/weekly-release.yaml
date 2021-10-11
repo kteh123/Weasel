@@ -9,6 +9,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_artifact: ${{ steps.create_release.outputs.upload_url }}
+      date_string: ${{ steps.date.outputs.date }}
+
     steps:
     - name: Get current date
       id: date
@@ -59,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          upload_url: ${{ needs.release.steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.release.outputs.upload_artifact }}
           asset_path: ./pyinstaller_output.zip
-          asset_name: ${{ needs.release.steps.date.outputs.date }}-weasel-${{ matrix.os }}.zip
+          asset_name: ${{ needs.release.outputs.date_string }}-weasel-${{ matrix.os }}.zip
           asset_content_type: application/zip
