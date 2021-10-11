@@ -152,7 +152,6 @@ class ImageViewerROI(QMdiSubWindow):
         self.roiToolsLayout.setSpacing(0)
         self.roiToolsGroupBox = QGroupBox("ROIs")
         self.roiToolsGroupBox.setFixedHeight(50)
-        #self.roiToolsGroupBox.setFixedWidth(500)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
@@ -513,7 +512,6 @@ class ImageViewerROI(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        #self.pixelValueGroupBox.setFixedWidth(165)
         self.pixelValueGroupBox.setFixedHeight(50)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
@@ -526,7 +524,6 @@ class ImageViewerROI(QMdiSubWindow):
         layout.setSpacing(0)
         layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
         self.zoomGroupBox = QGroupBox("Zoom")
-        #self.zoomGroupBox.setFixedWidth(60)
         self.zoomGroupBox.setFixedHeight(50)
         self.zoomGroupBox.setLayout(layout) 
 
@@ -639,8 +636,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
-
-            #self.roiToolsLayout.addStretch(20)
         except Exception as e:
                print('Error in ImageViewerROI.setUpROIButtons: ' + str(e))
                logger.error('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
@@ -693,7 +688,6 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpImageLevelsLayout(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
-        #self.imageLevelsGroupBox.setFixedWidth(200)
         self.imageLevelsGroupBox.setFixedHeight(50)
         self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
@@ -740,6 +734,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpImageDataWidgets(self):
+        """Redundant"""
         try:
             logger.info("ImageViewerROI.setUpImageDataWidgets called.")
 
@@ -759,7 +754,7 @@ class ImageViewerROI(QMdiSubWindow):
             #self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
             #self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
             
-            self.imageDataLayout.addStretch(10)
+          #  self.imageDataLayout.addStretch(10)
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
                 logger.error('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
