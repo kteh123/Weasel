@@ -1,8 +1,7 @@
-name: Create Weasel Release
+name: Create Weekly Weasel Release
 on:
-  #schedule:
-  #    - cron: "0 0 * * *" #runs at 00:00 UTC everyday
-  # Maybe every Friday at midday?
+  schedule:
+    - cron: "0 12 * * 3,6" #runs at 12:00 UTC every Tuesday and Friday
   push:
     branches:
       - master
@@ -49,13 +48,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-      - name: Generate the Executable
+      - name: Generate the Executable for Windows
+        if: ${{ matrix.os == 'windows-latest'}}
         run: python create_weasel_executable.py
+
+      - name: Generate the Executable for MacOS/Linux
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
+        run: sudo python create_weasel_executable.py
 
       - name: Zip the output files
         uses: papeloto/action-zip@v1
         with:
-          files: Weasel.exe Weasel Weasel.so config.xml
+          files: Weasel.exe Weasel Weasel.so config.xml Menus/ Menus\
           dest: pyinstaller_output.zip
           
       - name: Upload the zipped executable to the Release
