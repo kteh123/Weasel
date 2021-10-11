@@ -26,9 +26,12 @@ os.system(activation_command + ' && python setup.py clean')
 print("Creating list of hidden-imports...")
 hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'ukat']
 string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
+data_folders = ['API', 'CoreModules', 'Pipelines', 'External', 'dipy']
+string_data = ' '.join(['--collect-datas '+ mod for mod in data_folders])
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
+os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_data + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
+# os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' --collect-datas External --collect-datas dipy --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
 # Add the "Scripting"/"Pipelines" folder when we make official release
 # Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
 

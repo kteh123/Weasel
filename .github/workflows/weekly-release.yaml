@@ -51,13 +51,11 @@ jobs:
       - name: Generate the Executable for Windows
         if: ${{ matrix.os == 'windows-latest'}}
         run: |
-          cd
           python create_weasel_executable.py
 
       - name: Generate the Executable for MacOS/Linux
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
         run: |
-          pwd
           sudo python create_weasel_executable.py
 
       - name: Zip the output files
