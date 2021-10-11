@@ -152,7 +152,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.roiToolsLayout.setSpacing(0)
         self.roiToolsGroupBox = QGroupBox("ROIs")
         self.roiToolsGroupBox.setFixedHeight(50)
-        self.roiToolsGroupBox.setFixedWidth(500)
+        #self.roiToolsGroupBox.setFixedWidth(500)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
@@ -408,8 +408,8 @@ class ImageViewerROI(QMdiSubWindow):
     
     def getRoiMeanAndStd(self, mask, pixelArray):
         logger.info("ImageViewerROI.getRoiMeanAndStd called")
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 2)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 2)
+        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
         return mean, std
 
 
@@ -424,7 +424,7 @@ class ImageViewerROI(QMdiSubWindow):
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText("Mean: " + str(mean))
+            self.roiMeanTxt.setText("M: " + str(mean))
             self.roiStdDevTxt.setText("SD: " + str(std))
         else:
             self.roiMeanTxt.clear()
@@ -513,7 +513,7 @@ class ImageViewerROI(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.setFixedWidth(165)
+        #self.pixelValueGroupBox.setFixedWidth(165)
         self.pixelValueGroupBox.setFixedHeight(50)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
@@ -526,7 +526,7 @@ class ImageViewerROI(QMdiSubWindow):
         layout.setSpacing(0)
         layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
         self.zoomGroupBox = QGroupBox("Zoom")
-        self.zoomGroupBox.setFixedWidth(60)
+        #self.zoomGroupBox.setFixedWidth(60)
         self.zoomGroupBox.setFixedHeight(50)
         self.zoomGroupBox.setLayout(layout) 
 
@@ -621,10 +621,10 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
             self.roiMeanTxt = QLabel()
-            self.roiMeanTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
+            self.roiMeanTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:8pt;")
             self.roiMeanTxt.setToolTip("ROI Mean Value")
             self.roiStdDevTxt = QLabel()
-            self.roiStdDevTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
+            self.roiStdDevTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:8pt;")
             self.roiStdDevTxt.setToolTip("ROI Mean Value Standard Deviation")
             self.connectSlotToSignalForROITools()
 
@@ -693,7 +693,7 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpImageLevelsLayout(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
-        self.imageLevelsGroupBox.setFixedWidth(200)
+        #self.imageLevelsGroupBox.setFixedWidth(200)
         self.imageLevelsGroupBox.setFixedHeight(50)
         self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
