@@ -58,10 +58,20 @@ jobs:
         run: |
           sudo python create_weasel_executable.py
 
+      - name: Add icon and change permissions of executable for MacOS
+        if: ${{ matrix.os == 'macos-latest'}}
+        run: |
+          sudo chmod 775 Weasel
+          sips -i Documents/images/uni-sheffield-logo.png
+	        DeRez -only icns Documents/images/uni-sheffield-logo.png > icon.rsrc
+	        Rez -append icon.rsrc -o Weasel
+	        SetFile -a C Weasel
+	        rm -f icon.rsrc
+
       - name: Zip the output files
         uses: papeloto/action-zip@v1
         with:
-          files: Weasel.exe Weasel Weasel.so config.xml Menus
+          files: Weasel.exe Weasel Weasel.so config.xml
           dest: pyinstaller_output.zip
           
       - name: Upload the zipped executable to the Release
