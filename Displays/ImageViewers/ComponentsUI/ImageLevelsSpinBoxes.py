@@ -47,14 +47,14 @@ class ImageLevelsSpinBoxes:
             #set the size of the icon
             pixmap = QPixmap(icons.BRIGHTNESS_ICON).scaled(16, 16)
             lblIntensity.setPixmap(pixmap)
-            lblIntensity.setStyleSheet("padding-right:0; padding-top:0; margin-top:3; margin-right:0;")
+            lblIntensity.setStyleSheet("padding-left:0;padding-right:0; padding-top:0; margin-top:3; margin-right:0;")
 
             lblContrast = QLabel()
             lblContrast.setToolTip("Contrast")
             #set the size of the icon
             pixmap = QPixmap(icons.CONTRAST_ICON).scaled(16, 16)
             lblContrast.setPixmap(pixmap)
-            lblContrast.setStyleSheet("padding-right:0; padding-top:0; margin-top:3; margin-right:0;")
+            lblContrast.setStyleSheet("padding-left:0;padding-right:0; padding-top:0; margin-top:3; margin-right:0;")
     
             self.layout = QHBoxLayout()
             self.layout.setAlignment(Qt.AlignLeft)
