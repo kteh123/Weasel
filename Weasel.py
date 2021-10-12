@@ -120,7 +120,6 @@ class Weasel_CMD(WeaselProgrammingInterface):
             else:
                 print("=====================================")
                 print("Invalid input arguments given.")
-                print("Running the GUI version of WEASEL.")
                 print("See --help flag for more information.")
                 print("=====================================")
                 self.XMLDicomFile = None
@@ -129,7 +128,6 @@ class Weasel_CMD(WeaselProgrammingInterface):
         else:
             print("=====================================")
             print("Invalid input arguments given.")
-            print("Running the GUI version of WEASEL.")
             print("See --help flag for more information.")
             print("=====================================")
             self.XMLDicomFile = None
@@ -160,10 +158,11 @@ def main():
     example_text = example_text = '''example usage:
         python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"
         Weasel.exe -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"'''
-    parser = argparse.ArgumentParser(prog='base_maker',
+    parser = argparse.ArgumentParser(prog='Weasel',
                                  description='WEASEL Command-line Mode',
                                  epilog=example_text,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+                                 formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 usage='Weasel.py/.exe [-h] [-c] [-d] XML_DATA_PATH [-s] PYTHON_SCRIPT_PATH' )
     parser.add_argument('-c', '--command-line', action='store_true', help='Start WEASEL in command-line mode')
     parser.add_argument('-d', '--xml-dicom', type=str, metavar='', required=False, help='Path to the XML file with the DICOM filepaths')
     parser.add_argument('-s', '--python-script', type=str, metavar='', required=False, help='Path to the Python file with the analysis script (menu) to process')
