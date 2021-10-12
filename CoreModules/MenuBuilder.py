@@ -4,6 +4,7 @@ import CoreModules.XMLMenuBuilder as xmlMenuBuilder
 from PyQt5.QtWidgets import QAction, QMenu, QToolTip 
 from PyQt5.QtGui import QCursor, QIcon 
 import os
+import sys
 import pathlib
 import importlib
 import logging
@@ -20,23 +21,26 @@ class MenuBuilder():
         self.listPythonFiles = returnListPythonFiles()
 
     def buildMenus(self):
-
-        menuConfigFile = self.weasel.objConfigXMLReader.getMenuConfigFile()
-        if menuConfigFile:
-            #a menu config file has been defined
-            if isPythonFile(menuConfigFile):
-                moduleFileName = [pythonFilePath 
-                                    for pythonFilePath in self.listPythonFiles 
-                                    if menuConfigFile in pythonFilePath][0]
-                spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                objFunction = getattr(module, "main")
-                #execute python functions to build the menus and menu items
-                objFunction(self.weasel)
-            elif isXMLFile(menuConfigFile):
-                xmlMenuBuilder.setupMenus(self.weasel, menuConfigFile)
-                xmlMenuBuilder.buildContextMenu(self.weasel, menuConfigFile)
+        try:
+            menuConfigFile = self.weasel.objConfigXMLReader.getMenuConfigFile()
+            if menuConfigFile:
+                #a menu config file has been defined
+                if isPythonFile(menuConfigFile):
+                    moduleFileName = [pythonFilePath 
+                                        for pythonFilePath in self.listPythonFiles 
+                                        if menuConfigFile in pythonFilePath][0]
+                    spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    objFunction = getattr(module, "main")
+                    #execute python functions to build the menus and menu items
+                    objFunction(self.weasel)
+                elif isXMLFile(menuConfigFile):
+                    xmlMenuBuilder.setupMenus(self.weasel, menuConfigFile)
+                    xmlMenuBuilder.buildContextMenu(self.weasel, menuConfigFile)
+        except Exception as e:
+            print('Error in MenuBuilder.buildMenus: ' + str(e)) 
+            logger.exception('Error in MenuBuilder.buildMenus: ' + str(e)) 
 
     def newSubMenu(self, label):
         return SubMenuBuilder(self.weasel, label)
@@ -118,6 +122,15 @@ def returnListPythonFiles():
         for individualFile in filenames:
             if individualFile.endswith(".py"):
                 listPythonFiles.append(os.path.join(dirpath, individualFile))
+    
+    if listPythonFiles == []:
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            search_directory = pathlib.Path(sys._MEIPASS)
+        for dirpath, _, filenames in os.walk(search_directory):
+            for individualFile in filenames:
+                if individualFile.endswith(".py"):
+                    listPythonFiles.append(os.path.join(dirpath, individualFile))
+                    
     return listPythonFiles
 
 def isPythonFile(fileName):
@@ -131,5 +144,4 @@ def isXMLFile(fileName):
     if fileName.split(".")[-1].lower()  == 'xml':
         flag = True
     return flag
-
 
