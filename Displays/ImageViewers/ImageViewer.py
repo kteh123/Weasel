@@ -218,8 +218,8 @@ class ImageViewer(QMdiSubWindow):
         self.colourTableLayout = QHBoxLayout()
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
-        self.colourTableGroupBox = QGroupBox("Colour Table")
-        self.colourTableGroupBox.setFixedWidth(300)
+        self.colourTableGroupBox = QGroupBox()
+        #self.colourTableGroupBox.setFixedWidth(300)
         self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
@@ -233,10 +233,13 @@ class ImageViewer(QMdiSubWindow):
 
         self.setUpResetButton()
 
+        self.setUpDeleteImageButton()
+
         if self.isImage: 
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.btnReset.clicked.connect(lambda: self.displayPixelArrayOfSingleImage(self.imagePathList))                                                     
         elif self.isSeries:
             #Viewing a DICOM series, so show the Reset button
@@ -248,27 +251,13 @@ class ImageViewer(QMdiSubWindow):
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.cmbColours.activated.connect(self.updateImageUserSelection)
-
-
-    def setUpImageGroupBox(self):
-        try:
-            self.imageLayout = QVBoxLayout()
-            self.imageLayout.setContentsMargins(0, 2, 0, 0)
-            self.imageLayout.setSpacing(0)
-            self.imageGroupBox = QGroupBox("Image")
-            self.imageGroupBox.setFixedWidth(75)
-            self.imageGroupBox.setFixedHeight(50)
-            self.imageGroupBox.setLayout(self.imageLayout)
-            self.setUpDeleteImageButton()
-        except Exception as e:
-            print('Error in ImageViewer.setUpImageGroupBox: ' + str(e))
-            logger.error('Error in ImageViewer.setUpImageGroupBox: ' + str(e))
 
 
     def setUpImageLevelsGroupBox(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
-        self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
+        self.imageLevelsGroupBox = QGroupBox()
         self.imageLevelsGroupBox.setFixedWidth(200)
         self.imageLevelsGroupBox.setFixedHeight(50)
         self.imageLevelsGroupBox.setLayout(
@@ -281,11 +270,9 @@ class ImageViewer(QMdiSubWindow):
 
             self.setUpColourTableGroupBox()
             self.setUpImageLevelsGroupBox()
-            self.setUpImageGroupBox()
             self.setUpPixelValueGroupBox()
 
             self.topRowMainLayout.addWidget(self.colourTableGroupBox)
-            self.topRowMainLayout.addWidget(self.imageGroupBox)
             self.topRowMainLayout.addWidget(self.imageLevelsGroupBox) 
             self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
 
@@ -315,7 +302,7 @@ class ImageViewer(QMdiSubWindow):
                 'Deletes the DICOM image being viewed')
             self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
             self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
-            self.imageLayout.addWidget(self.deleteButton)
+            #self.imageLayout.addWidget(self.deleteButton)
         except Exception as e:
             print('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
             logger.error('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
@@ -325,7 +312,6 @@ class ImageViewer(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.setFixedWidth(200)
         self.pixelValueGroupBox.setFixedHeight(50)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
 
@@ -344,18 +330,17 @@ class ImageViewer(QMdiSubWindow):
                 x_i = math.floor(mousePoint.x())
                 y_i = math.floor(mousePoint.y()) 
                 z_i =  imageNumber
-                if (len(np.shape(self.pixelArray)) == 2) and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] \
-                    and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]: 
-                    self.lblPixelValue.setText(
-                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ x_i, y_i ], 3), x_i, y_i, z_i))
-                elif (len(np.shape(self.pixelArray)) == 3) \
-                    and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] \
-                    and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]:
-                    z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
-                    self.lblPixelValue.setText(
-                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>"
-                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 3), x_i, y_i, z_i + 1))
+                if ((len(np.shape(self.pixelArray)) == 2) 
+                    and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] 
+                    and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]): 
+                        self.lblPixelValue.setText(
+                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                elif ((len(np.shape(self.pixelArray)) == 3) 
+                        and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] 
+                        and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]):
+                            z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
+                            self.lblPixelValue.setText(
+                                "<h4> {} @ X: {}, Y: {}, Z: {}</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
                 else:
                     self.lblPixelValue.setText("")
             else:

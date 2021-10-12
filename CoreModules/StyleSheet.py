@@ -41,12 +41,12 @@ TRISTAN_GREY = """
                         border: 2px solid gray;
                         border-radius: 5px;
                         padding: 0;
-                        margin-top: 0.25em; 
+                        margin-top: 0.3em; 
                         margin-left: 0; 
                         margin-right: 0;
                         margin-bottom: 0em;
                         font-weight: bold;
-                        font-size: 9pt;
+                        font-size: 8pt;
                           }
 
                 QGroupBox:title {subcontrol-position: top middle; 
