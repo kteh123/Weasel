@@ -1,10 +1,10 @@
 name: Create Weekly Weasel Release
 on:
   schedule:
-    - cron: "0 12 * * 3,6" #runs at 12:00 UTC every Tuesday and Friday
-  #push:
-  #  branches:
-  #    - master
+    - cron: "0 12 * * 5" #runs at 12:00 UTC every Tuesday and Friday
+  push:
+    branches:
+      - master
 jobs:
   release:
     runs-on: ubuntu-latest

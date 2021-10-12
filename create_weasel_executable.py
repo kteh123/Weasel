@@ -60,7 +60,7 @@ else:
 
 # If compiled in MacOS, we need to create the App Bundle manually.
 if platform == "darwin" or os.name == 'posix':
-	os.system('chmod 775 Weasel')
+	os.system('sudo chmod 775 Weasel')
 	os.system('sips -i ' + str(icon_png))
 	os.system('DeRez -only icns ' +  str(icon_png) + ' > icon.rsrc')
 	os.system('Rez -append icon.rsrc -o Weasel')
