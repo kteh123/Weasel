@@ -63,10 +63,10 @@ jobs:
         run: |
           sudo chmod 775 Weasel
           sips -i Documents/images/uni-sheffield-logo.png
-	        DeRez -only icns Documents/images/uni-sheffield-logo.png > icon.rsrc
-	        Rez -append icon.rsrc -o Weasel
-	        SetFile -a C Weasel
-	        rm -f icon.rsrc
+          DeRez -only icns Documents/images/uni-sheffield-logo.png > icon.rsrc
+          Rez -append icon.rsrc -o Weasel
+          SetFile -a C Weasel
+          rm -f icon.rsrc
 
       - name: Zip the output files
         uses: papeloto/action-zip@v1
