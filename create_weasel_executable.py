@@ -25,14 +25,15 @@ os.system(activation_command + ' && python setup.py clean')
 
 print("Creating list of hidden-imports and data to collect and add...")
 hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'ukat']
-string_hidden_imports = ' '.join(['--hidden-import '+ mod for mod in hidden_modules])
+string_hidden_imports = ' '.join(['--hidden-import '+ mod + ' ' for mod in hidden_modules])
 collect_data_folders = ['External', 'dipy']
-string_collect_data = ' '.join(['--collect-datas '+ mod for mod in collect_data_folders])
+string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect_data_folders])
 if platform == "win32" or platform == "win64" or os.name == 'nt':
 	data_folders = ['API;.', 'Menus;.', 'Pipelines;.']
 else:
 	data_folders = ['API:.', 'Menus:.', 'Pipelines:.']
-string_data = ' '.join(['--add-data '+ mod for mod in data_folders])
+	print(data_folders)
+string_data = ' '.join(['--add-data '+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")
 os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_collect_data + ' ' + string_data + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
