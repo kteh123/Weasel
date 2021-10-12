@@ -112,14 +112,10 @@ class ImageViewerROI(QMdiSubWindow):
             self.setUpTopRowLayout()
 
             self.setUpGraphicsView()
-            
-            #self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
 
             self.setUpZoomSlider()
-
-           # self.setUpImageDataWidgets()
 
             self.setUpROIButtons()
 
@@ -150,7 +146,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.roiToolsLayout = QHBoxLayout()
         self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
-        self.roiToolsGroupBox = QGroupBox("ROI")
+        self.roiToolsGroupBox = QGroupBox()
         self.roiToolsGroupBox.setFixedHeight(45)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
@@ -541,7 +537,8 @@ class ImageViewerROI(QMdiSubWindow):
                 else:
                     imageNumber = 1
                 strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
-                self.lblPixelValue.setText(strValue + strPosition)
+                self.lblPixelValue.setWordWrap(True)
+                self.lblPixelValue.setText(strValue + '\n' + strPosition)
             else:
                  self.lblPixelValue.setText('')
         except Exception as e:
@@ -687,7 +684,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpImageLevelsLayout(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
-        self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
+        self.imageLevelsGroupBox = QGroupBox()
         self.imageLevelsGroupBox.setFixedHeight(45)
         self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
@@ -722,42 +719,6 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpGraphicsView(self):
         self.graphicsView = GraphicsView(self.numberOfImages)
         self.mainVerticalLayout.addWidget(self.graphicsView) 
-
-
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-
-
-    def setUpImageDataWidgets(self):
-        """Redundant"""
-        try:
-            logger.info("ImageViewerROI.setUpImageDataWidgets called.")
-
-            #self.roiMeanLabel = QLabel("ROI Mean")
-            #self.roiMeanLabel.setStyleSheet("padding-right:1; margin-right:1;")
-            #self.roiMeanTxt = QLabel()
-            #self.roiMeanTxt.setStyleSheet("color : red; padding-left:0; margin-left:0; font-size:9pt;")
-
-            #self.roiStdDevLabel = QLabel("ROI Sdev.")
-            #self.roiStdDevLabel.setStyleSheet("padding-right:1; margin-right:1;")
-
-            #self.roiStdDevTxt = QLabel()
-            #self.roiStdDevTxt.setStyleSheet("color : red; padding-left:0; margin-left:0;font-size:9pt;")
-        
-            #self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
-            #self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
-            #self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
-            #self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
-            
-          #  self.imageDataLayout.addStretch(10)
-        except Exception as e:
-                print('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
-                logger.error('Error in ImageViewerROI.setUpImageDataWidgets: ' + str(e))
 
 
     def setUpLevelsSpinBoxes(self):
