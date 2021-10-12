@@ -59,13 +59,15 @@ jobs:
           sudo python create_weasel_executable.py
 
       - name: Add icon and change permissions of executable for MacOS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         if: ${{ matrix.os == 'macos-latest'}}
         run: |
-          sudo chmod 775 Weasel
+          chmod 775 ./Weasel
           sips -i Documents/images/uni-sheffield-logo.png
           DeRez -only icns Documents/images/uni-sheffield-logo.png > icon.rsrc
-          Rez -append icon.rsrc -o Weasel
-          SetFile -a C Weasel
+          Rez -append icon.rsrc -o ./Weasel
+          SetFile -a C ./Weasel
           rm -f icon.rsrc
 
       - name: Zip the output files
