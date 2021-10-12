@@ -150,8 +150,8 @@ class ImageViewerROI(QMdiSubWindow):
         self.roiToolsLayout = QHBoxLayout()
         self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
-        self.roiToolsGroupBox = QGroupBox("ROIs")
-        self.roiToolsGroupBox.setFixedHeight(50)
+        self.roiToolsGroupBox = QGroupBox("ROI")
+        self.roiToolsGroupBox.setFixedHeight(45)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
@@ -423,7 +423,7 @@ class ImageViewerROI(QMdiSubWindow):
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText("M: " + str(mean))
+            self.roiMeanTxt.setText("Mean: " + str(mean))
             self.roiStdDevTxt.setText("SD: " + str(std))
         else:
             self.roiMeanTxt.clear()
@@ -512,7 +512,7 @@ class ImageViewerROI(QMdiSubWindow):
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setFixedHeight(45)
         self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
 
@@ -524,7 +524,7 @@ class ImageViewerROI(QMdiSubWindow):
         layout.setSpacing(0)
         layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
         self.zoomGroupBox = QGroupBox("Zoom")
-        self.zoomGroupBox.setFixedHeight(50)
+        self.zoomGroupBox.setFixedHeight(45)
         self.zoomGroupBox.setLayout(layout) 
 
 
@@ -688,7 +688,7 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpImageLevelsLayout(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox("Contrast and Intensity")
-        self.imageLevelsGroupBox.setFixedHeight(50)
+        self.imageLevelsGroupBox.setFixedHeight(45)
         self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
 

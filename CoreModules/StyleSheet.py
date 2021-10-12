@@ -40,9 +40,11 @@ TRISTAN_GREY = """
                                       stop: 0 #D9D9D9, stop: 1 #FFFFFF);
                         border: 2px solid gray;
                         border-radius: 5px;
-                        padding: 0.25em;
+                        padding: 0;
                         margin-top: 0.25em; 
-                        margin-bottom: 0.25em;
+                        margin-left: 0; 
+                        margin-right: 0;
+                        margin-bottom: 0em;
                         font-weight: bold;
                         font-size: 9pt;
                           }
@@ -51,13 +53,13 @@ TRISTAN_GREY = """
                     padding: -14px 0px 0px 3px; 
                     color:black;}
 
-                QLabel{ padding: 4px;
+                QLabel{ padding: 1px;
                         min-height: 1em;
                         text-align: centre;
                         font-weight: bold;
                         font-size: 9pt;
                         background: transparent;
-                        margin: 0.25em;
+                        margin: 0em;
                         }
 
                 QTableWidget{color: black;}
