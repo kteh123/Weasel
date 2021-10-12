@@ -65,7 +65,7 @@ class GraphicsItem(QGraphicsObject):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
-        self.setToolTip("Use the mouse wheel to zoom")
+        #self.setToolTip("Use the mouse wheel to zoom")
 
 
     def __repr__(self):

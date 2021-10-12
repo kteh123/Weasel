@@ -50,7 +50,7 @@ TRISTAN_GREY = """
                           }
 
                 QGroupBox:title {subcontrol-position: top middle; 
-                    padding: -14px 0px 0px 3px; 
+                    padding: -7px 0px 0px 3px; 
                     color:black;}
 
                 QLabel{ padding: 1px;
