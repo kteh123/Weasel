@@ -19,7 +19,7 @@ jobs:
 
       - name: Generate updated Reference Manual
         run: |
-          python create_weasel_executable.py
+          python create_weasel_manual.py
 
       - name: Deploy manual to Github Page https://qib-sheffield.github.io/WEASEL/
         run: |
