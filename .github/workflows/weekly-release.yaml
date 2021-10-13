@@ -1,7 +1,7 @@
 name: Create Weekly Weasel Release
 on:
   schedule:
-    - cron: "0 12 * * 5" #runs at 12:00 UTC every Tuesday and Friday
+    - cron: "0 12 * * 5" #runs at 12:00 UTC every Friday
   push:
     branches:
       - master
@@ -58,18 +58,36 @@ jobs:
         run: |
           sudo python create_weasel_executable.py
 
-      - name: Zip the output files
+      - name: Zip the output files for Windows
         uses: papeloto/action-zip@v1
+        if: ${{ matrix.os == 'windows-latest'}}
         with:
           files: Weasel.exe Weasel Weasel.so config.xml
           dest: pyinstaller_output.zip
+
+      - name: Compress the output files for MacOS/Linux
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
+        run: |
+          tar -czvf pyinstaller_output.tar.gz Weasel.exe Weasel Weasel.so config.xml
           
-      - name: Upload the zipped executable to the Release
+      - name: Upload the zipped Windows executable to the Release
         uses: actions/upload-release-asset@v1
+        if: ${{ matrix.os == 'windows-latest'}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           upload_url: ${{ needs.release.outputs.upload_artifact }}
           asset_path: ./pyinstaller_output.zip
           asset_name: ${{ needs.release.outputs.date_string }}-weasel-${{ matrix.os }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload the compressed MacOS/Linux executable to the Release
+        uses: actions/upload-release-asset@v1
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          upload_url: ${{ needs.release.outputs.upload_artifact }}
+          asset_path: ./pyinstaller_output.tar.gz
+          asset_name: ${{ needs.release.outputs.date_string }}-weasel-${{ matrix.os }}.tar.gz
           asset_content_type: application/zip
