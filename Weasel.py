@@ -60,6 +60,11 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
     def __init__(self): 
         """Creates the MDI container. Joao Sousa GH Action test 14/10/2021."""
         super().__init__()
+        print("=====================================")
+        print("MESSAGE TO THE USER:")
+        print("=====================================")
+        print("This terminal window is required to be open for WEASEL to run and should not be closed.")
+        print("WEASEL should take approximately 30 seconds to start.")
         self.cmd = False
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
