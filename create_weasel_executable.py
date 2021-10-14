@@ -31,8 +31,8 @@ string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect
 if platform == "win32" or platform == "win64" or os.name == 'nt':
 	data_folders = ['API;.', 'Menus;.', 'Pipelines;.']
 else:
-	data_folders = ['API:API', 'Menus:Menus', 'Pipelines:Pipelines']
-string_data = ' '.join(['--add-data '+ mod + ' ' for mod in data_folders])
+	data_folders = ['API:.', 'Menus:.', 'Pipelines:.']
+string_data = ' '.join(['--add-data='+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")
 os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_collect_data + ' ' + string_data + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
