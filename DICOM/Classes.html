@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.DICOM.Classes API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -38,8 +38,6 @@ from ast import literal_eval # Convert strings to their actual content. Eg. &#34
 from DICOM.DeveloperTools import (PixelArrayDICOMTools, GenericDICOMTools)
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-
-import CoreModules.WEASEL.MessageWindow as messageWindow
 
 import logging
 logger = logging.getLogger(__name__)
@@ -487,33 +485,34 @@ class Subject:
             # Setup Progress Bar
             progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listSubjects)) + &#34; Subjects&#34;
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                listSubjects[0].objWeasel.progress_bar(
+                    msg = (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)),
+                    index = 0, max = len(listSubjects))
             # Add new subject (outputSubject) to XML
             for index, subject in enumerate(listSubjects):
                 # Increment progress bar
                 subjMsg = &#34;Merging subject &#34; + subject.subjectID
                 if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                    listSubjects[0].objWeasel.progress_bar(
+                        msg = (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;),
+                        index = index+1, max = len(listSubjects))
                 # Overwrite or not?
                 if overwrite == False:
                     for study in subject.children:
                         # Create a copy of the study into the new subject
                         studyMsg = &#34;, study &#34; + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                                index = index+1, max = len(listSubjects))
                         study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
                 else:
                     for study in subject.children:
                         studyMsg = &#34;, study &#34; + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                                index = index+1, max = len(listSubjects))
                         seriesPathsList = []
                         for series in study.children:
                             series.Item(&#39;PatientID&#39;, outputSubject.subjectID)
@@ -701,16 +700,17 @@ class Study:
             # Set up Progress Bar
             progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listStudies)) + &#34; Studies&#34;
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                listStudies[0].objWeasel.progress_bar(
+                    msg = (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)),
+                    index = 0, max = len(listStudies))
             # Add new study (outputStudy) to XML
             seriesPathsList = []
             if overwrite == False:
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listStudies))
                     seriesNumber = 1
                     for series in study.children:
                         copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split(&#39;_&#39;, 1)[1], study_uid=outputStudy.studyUID,
@@ -721,9 +721,9 @@ class Study:
                 seriesNumber = 1
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listStudies))
                     for series in study.children:
                         series.Item(&#39;PatientID&#39;, outputStudy.subjectID)
                         series.Item(&#39;StudyInstanceUID&#39;, outputStudy.studyUID)
@@ -5344,16 +5344,17 @@ def parent(self):
             # Set up Progress Bar
             progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listStudies)) + &#34; Studies&#34;
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+                listStudies[0].objWeasel.progress_bar(
+                    msg = (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)),
+                    index = 0, max = len(listStudies))
             # Add new study (outputStudy) to XML
             seriesPathsList = []
             if overwrite == False:
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listStudies))
                     seriesNumber = 1
                     for series in study.children:
                         copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split(&#39;_&#39;, 1)[1], study_uid=outputStudy.studyUID,
@@ -5364,9 +5365,9 @@ def parent(self):
                 seriesNumber = 1
                 for index, study in enumerate(listStudies):
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                        messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                        listStudies[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listStudies))
                     for series in study.children:
                         series.Item(&#39;PatientID&#39;, outputStudy.subjectID)
                         series.Item(&#39;StudyInstanceUID&#39;, outputStudy.studyUID)
@@ -5447,16 +5448,17 @@ def merge(listStudies, newStudyName=None, suffix=&#39;_Merged&#39;, overwrite=Fa
         # Set up Progress Bar
         progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listStudies)) + &#34; Studies&#34;
         if progress_bar == True: 
-            messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)), progressBarTitle)
-            messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
+            listStudies[0].objWeasel.progress_bar(
+                msg = (&#34;&lt;H4&gt;Merging {} Studies&lt;/H4&gt;&#34;).format(len(listStudies)),
+                index = 0, max = len(listStudies))
         # Add new study (outputStudy) to XML
         seriesPathsList = []
         if overwrite == False:
             for index, study in enumerate(listStudies):
                 if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                    messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                    listStudies[0].objWeasel.progress_bar(
+                        msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                        index = index+1, max = len(listStudies))
                 seriesNumber = 1
                 for series in study.children:
                     copiedSeries = series.copy(suffix=suffix, series_id=seriesNumber, series_name=series.seriesID.split(&#39;_&#39;, 1)[1], study_uid=outputStudy.studyUID,
@@ -5467,9 +5469,9 @@ def merge(listStudies, newStudyName=None, suffix=&#39;_Merged&#39;, overwrite=Fa
             seriesNumber = 1
             for index, study in enumerate(listStudies):
                 if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listStudies[0].objWeasel, (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listStudies[0].objWeasel, len(listStudies))
-                    messageWindow.setMsgWindowProgBarValue(listStudies[0].objWeasel, index+1)
+                    listStudies[0].objWeasel.progress_bar(
+                        msg = (&#34;&lt;H4&gt;Merging study &#34; + study.studyID + &#34;&lt;/H4&gt;&#34;),
+                        index = index+1, max = len(listStudies))
                 for series in study.children:
                     series.Item(&#39;PatientID&#39;, outputStudy.subjectID)
                     series.Item(&#39;StudyInstanceUID&#39;, outputStudy.studyUID)
@@ -6056,33 +6058,34 @@ def parent(self):
             # Setup Progress Bar
             progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listSubjects)) + &#34; Subjects&#34;
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+                listSubjects[0].objWeasel.progress_bar(
+                    msg = (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)),
+                    index = 0, max = len(listSubjects))
             # Add new subject (outputSubject) to XML
             for index, subject in enumerate(listSubjects):
                 # Increment progress bar
                 subjMsg = &#34;Merging subject &#34; + subject.subjectID
                 if progress_bar == True: 
-                    messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                    messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                    messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                    listSubjects[0].objWeasel.progress_bar(
+                        msg = (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;),
+                        index = index+1, max = len(listSubjects))
                 # Overwrite or not?
                 if overwrite == False:
                     for study in subject.children:
                         # Create a copy of the study into the new subject
                         studyMsg = &#34;, study &#34; + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                                index = index+1, max = len(listSubjects))
                         study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
                 else:
                     for study in subject.children:
                         studyMsg = &#34;, study &#34; + study.studyID
                         if progress_bar == True: 
-                            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                            messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                            listSubjects[0].objWeasel.progress_bar(
+                                msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                                index = index+1, max = len(listSubjects))
                         seriesPathsList = []
                         for series in study.children:
                             series.Item(&#39;PatientID&#39;, outputSubject.subjectID)
@@ -6148,33 +6151,34 @@ def merge(listSubjects, newSubjectName=None, suffix=&#39;_Merged&#39;, overwrite
         # Setup Progress Bar
         progressBarTitle = &#34;Progress Bar - Merging &#34; + str(len(listSubjects)) + &#34; Subjects&#34;
         if progress_bar == True: 
-            messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)), progressBarTitle)
-            messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
+            listSubjects[0].objWeasel.progress_bar(
+                msg = (&#34;&lt;H4&gt;Merging {} Subjects&lt;/H4&gt;&#34;).format(len(listSubjects)),
+                index = 0, max = len(listSubjects))
         # Add new subject (outputSubject) to XML
         for index, subject in enumerate(listSubjects):
             # Increment progress bar
             subjMsg = &#34;Merging subject &#34; + subject.subjectID
             if progress_bar == True: 
-                messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                listSubjects[0].objWeasel.progress_bar(
+                    msg = (&#34;&lt;H4&gt;&#34; + subjMsg + &#34;&lt;/H4&gt;&#34;),
+                    index = index+1, max = len(listSubjects))
             # Overwrite or not?
             if overwrite == False:
                 for study in subject.children:
                     # Create a copy of the study into the new subject
                     studyMsg = &#34;, study &#34; + study.studyID
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                        messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                        listSubjects[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listSubjects))
                     study.copy(suffix=suffix, newSubjectID=outputSubject.subjectID, output_dir=output_dir)
             else:
                 for study in subject.children:
                     studyMsg = &#34;, study &#34; + study.studyID
                     if progress_bar == True: 
-                        messageWindow.displayMessageSubWindow(listSubjects[0].objWeasel, (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;), progressBarTitle)
-                        messageWindow.setMsgWindowProgBarMaxValue(listSubjects[0].objWeasel, len(listSubjects))
-                        messageWindow.setMsgWindowProgBarValue(listSubjects[0].objWeasel, index+1)
+                        listSubjects[0].objWeasel.progress_bar(
+                            msg = (&#34;&lt;H4&gt;&#34; + subjMsg + studyMsg + &#34;&lt;/H4&gt;&#34;),
+                            index = index+1, max = len(listSubjects))
                     seriesPathsList = []
                     for series in study.children:
                         series.Item(&#39;PatientID&#39;, outputSubject.subjectID)
@@ -6752,7 +6756,7 @@ def children(self):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

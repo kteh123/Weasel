@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Displays.ImageViewers.ImageViewerROI API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -56,16 +56,13 @@ from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.MessageWindow as messageWindow
 import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
-
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
-from Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage import ROIs
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 from Displays.ImageViewers.ComponentsUI.ImageSliders  import ImageSliders as imageSliders
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
-
+from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueComponent 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -143,18 +140,12 @@ class ImageViewerROI(QMdiSubWindow):
             self.setUpTopRowLayout()
 
             self.setUpGraphicsView()
-            
-            self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
 
             self.setUpZoomSlider()
 
-            self.setUpImageDataWidgets()
-
             self.setUpROIButtons()
-
-            #self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
             if dcm.__class__.__name__ == &#34;Image&#34;:
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
@@ -181,23 +172,24 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpRoiToolsLayout(self):
         self.roiToolsLayout = QHBoxLayout()
-        self.roiToolsLayout.setContentsMargins(0, 2, 0, 0)
+        self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
-        self.roiToolsGroupBox = QGroupBox(&#34;ROIs&#34;)
+        self.roiToolsGroupBox = QGroupBox()
+        self.roiToolsGroupBox.setFixedHeight(45)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
     def setUpROIDropDownList(self):
-        self.cmbROIs = QComboBox()
-        self.lblCmbROIs =  QLabel(&#34;ROIs&#34;)
-        self.cmbROIs.setDuplicatesEnabled(False)
-        self.cmbROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        self.cmbROIs.addItem(&#34;region1&#34;)
-        self.cmbROIs.setCurrentIndex(0)
-        self.cmbROIs.setStyleSheet(&#39;QComboBox {font: 12pt Arial}&#39;)
-        self.cmbROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
-        self.cmbROIs.setEditable(True)
-        self.cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
+        self.cmbNamesROIs = QComboBox()
+        self.cmbNamesROIs.setDuplicatesEnabled(False)
+        self.cmbNamesROIs.addItem(&#34;region1&#34;)
+        self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.graphicsView.currentROIName = &#34;region1&#34;
+        self.cmbNamesROIs.setCurrentIndex(0)
+        self.cmbNamesROIs.setStyleSheet(&#39;QComboBox {font: 11pt Arial}&#39;)
+        self.cmbNamesROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
+        self.cmbNamesROIs.setEditable(True)
+        self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
 
 
     def connectSlotToSignalForROITools(self):
@@ -209,30 +201,30 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
-        self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
     def roiNameChanged(self, newText):
         try:
             logger.info(&#34;ImageViewerROI.roiNameChanged called&#34;)
-            currentIndex = self.cmbROIs.currentIndex()
+            currentIndex = self.cmbNamesROIs.currentIndex()
             #Prevent spaces in new ROI name
             if &#39; &#39; in newText:
                 newText = newText.replace(&#34; &#34;, &#34;&#34;)
-                self.cmbROIs.setItemText(currentIndex, newText)
-                self.cmbROIs.setCurrentText(newText)
-            index = self.cmbROIs.findText(newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText)
+                self.cmbNamesROIs.setCurrentText(newText)
+            index = self.cmbNamesROIs.findText(newText);
             if index == -1:
-                self.cmbROIs.setItemText(currentIndex, newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText);
                 nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
-                #dictROIs.printContentsDictMasks()
                 if nameChangedOK == False:
                     msgBox = QMessageBox()
                     msgBox.setWindowTitle(&#34;ROI Name Change&#34;)
                     msgBox.setText(&#34;This name is already in use&#34;)
                     msgBox.exec()
-                    cmbROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+                    cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e)) 
@@ -241,7 +233,7 @@ class ImageViewerROI(QMdiSubWindow):
     def saveROI(self):
         try:
             # Save Current ROI
-            regionName = self.cmbROIs.currentText()
+            regionName = self.cmbNamesROIs.currentText()
             logger.info(&#34;ImageViewerROI.saveROI called&#34;)
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
@@ -253,24 +245,22 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)),
-                &#34;Export ROIs&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(inputPath))
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+            self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
             
             for index, path in enumerate(inputPath):
                 #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
-                messageWindow.setMsgWindowProgBarValue(self.weasel, index)
+                self.weasel.progressBar.set_value(index)
                 outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
                 SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map=&#34;SEG&#34;)
                 treeSeriesID = self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
             #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map=&#34;SEG&#34;) # Consider Enhanced DICOM for parametric_map
             #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-            messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
-            messageWindow.closeMessageSubWindow(self.weasel)
+            self.weasel.progressBar.set_value(len(inputPath))
+            self.weasel.progressBar.close()
             self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
             QMessageBox.information(self.weasel, &#34;Export ROIs&#34;, &#34;Image Saved&#34;)
         except Exception as e:
@@ -289,14 +279,14 @@ class ImageViewerROI(QMdiSubWindow):
             paramDict = {&#34;Series&#34;:&#34;listview&#34;}
             helpMsg = &#34;Select a Series with ROI&#34;
             #studyID = self.selectedStudy
-            study = self.objXMLReader.getStudy(self.subjectID, self.studyID)
+            study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
             listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
             inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
             listParams = inputDlg.returnListParameterValues()
             if inputDlg.closeInputDialog() == False:
                 # for series ID in listParams[0]: # more than 1 ROI may be selected
                 seriesID = listParams[0][0] # Temporary, only the first ROI
-                imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
+                imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     targetPath = [i.path for i in self.weasel.images()]
                     #targetPath = self.imageList
@@ -312,11 +302,9 @@ class ImageViewerROI(QMdiSubWindow):
                     region = &#34;new_region_label&#34;
                 # Affine re-adjustment
                 for index, dicomFile in enumerate(targetPath):
-                    messageWindow.displayMessageSubWindow(self.weasel,
-                    &#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1),
-                    &#34;Load ROIs&#34;)
-                    messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(targetPath))
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 1)
+                    self.weasel.progress_bar(&#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1))
+                    self.weasel.progressBar.set_maximum(len(targetPath))
+                    self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                     horizontalFlag = None
@@ -345,8 +333,8 @@ class ImageViewerROI(QMdiSubWindow):
                             #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                             #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 2)
-                messageWindow.closeMessageSubWindow(self.weasel)
+                    self.weasel.progressBar.set_value(index+2)
+                self.weasel.progressBar.close()
 
                 # Faster approach - 3D and no dilation
                 #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
@@ -361,22 +349,22 @@ class ImageViewerROI(QMdiSubWindow):
                         #pass
             
                 # First populate the ROI_Storage data structure in a loop
-                for imageNumber in range(len(maskList)):
-                    self.graphicsView.dictROIs.addRegion(region, 
-                                                         np.array(maskList[imageNumber]).astype(bool), 
-                                                         imageNumber + 1)
+                self.graphicsView.currentROIName = region
+                for imageNumber in range(len(maskList)):  #To Do
+                    self.graphicsView.currentImageNumber = imageNumber + 1
+                    self.graphicsView.dictROIs.addRegion(np.array(maskList[imageNumber]).astype(bool))
 
                 # Second populate the dropdown list of region names
-                self.cmbROIs.blockSignals(True)
+                self.cmbNamesROIs.blockSignals(True)
                 #remove previous contents of ROI dropdown list
-                self.cmbROIs.clear()  
-                self.cmbROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
-                self.cmbROIs.blockSignals(False)
+                self.cmbNamesROIs.clear()  
+                self.cmbNamesROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
+                self.cmbNamesROIs.blockSignals(False)
 
                 # Redisplay the current image to show the mask
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
-                self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
+                self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -443,8 +431,8 @@ class ImageViewerROI(QMdiSubWindow):
     
     def getRoiMeanAndStd(self, mask, pixelArray):
         logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 6)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 6)
+        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
         return mean, std
 
 
@@ -455,12 +443,12 @@ class ImageViewerROI(QMdiSubWindow):
         else:
             imageNumber = 1
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText(str(mean))
-            self.roiStdDevTxt.setText(str(std))
+            self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+            self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
         else:
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -470,15 +458,11 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
         try:
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
-            lambda mouseOverImage:self.displayImageDataUnderMouse(mouseOverImage))
+            lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.displayROIMeanAndStd)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.replaceMask)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
 
@@ -532,25 +516,45 @@ class ImageViewerROI(QMdiSubWindow):
     def addNewROItoDropDownList(self, newRegion):
         logger.info(&#34;ImageViewerROI.addNewROItoDropDownList called.&#34;)
         noDuplicate = True
-        for count in range(self.cmbROIs.count()):
-             if self.cmbROIs.itemText(count) == newRegion:
+        for count in range(self.cmbNamesROIs.count()):
+             if self.cmbNamesROIs.itemText(count) == newRegion:
                  noDuplicate = False
                  break
         if noDuplicate:
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.addItem(newRegion)
-            self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
-            self.cmbROIs.blockSignals(False)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.addItem(newRegion)
+            self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+            self.cmbNamesROIs.blockSignals(False)
 
 
     def updateROIName(self):
         logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
-        self.graphicsView.currentROIName = self.cmbROIs.currentText()
+        self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
+
+    
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+        self.pixelValueGroupBox.setFixedHeight(45)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
 
-    def displayImageDataUnderMouse(self, mouseOverImage):
+    def setUpZoomGroupBox(self):
+        self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
+        self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
+        self.zoomGroupBox = QGroupBox(&#34;Zoom&#34;)
+        self.zoomGroupBox.setFixedHeight(45)
+        self.zoomGroupBox.setLayout(layout) 
+
+
+    def getPixelValue(self, mouseOverImage):
         try:
-            logger.info(&#34;ImageViewerROI.displayImageDataUnderMouse called&#34;)
+            logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
                 xCoord = self.graphicsView.graphicsItem.xMouseCoord
                 yCoord = self.graphicsView.graphicsItem.yMouseCoord
@@ -561,32 +565,31 @@ class ImageViewerROI(QMdiSubWindow):
                 else:
                     imageNumber = 1
                 strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
-                self.pixelValueTxt.setText(&#39;= &#39; + strValue + strPosition)
+                self.lblPixelValue.setWordWrap(True)
+                self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
             else:
-                 self.pixelValueTxt.setText(&#39;&#39;)
+                 self.lblPixelValue.setText(&#39;&#39;)
         except Exception as e:
-                print(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))
+                print(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))
 
 
-    def storeMaskData(self):
-        logger.info(&#34;ImageViewerROI.storeMaskData called&#34;)
+    def updateDetailsROI(self):
+        logger.info(&#34;ImageViewerROI.updateDetailsROI called&#34;)
         try:
-            regionName = self.cmbROIs.currentText()
+            self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
             if self.isSeries:  
-                imageNumber = self.mainImageSlider.value()
+                self.graphicsView.currentImageNumber = self.mainImageSlider.value()
             else:
-                imageNumber = 1
-            mask = self.graphicsView.graphicsItem.getMaskData()
-            self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+                self.graphicsView.currentImageNumber = 1
         except Exception as e:
-                print(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))
+                print(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))
 
 
-    def replaceMask(self):
+    def replaceMask(self):  
         logger.info(&#34;ImageViewerROI.replaceMask called&#34;)
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
@@ -639,9 +642,15 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnZoom.setCheckable(True)
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
+            self.roiMeanTxt = QLabel()
+            self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+            self.roiMeanTxt.setToolTip(&#34;ROI Mean Value&#34;)
+            self.roiStdDevTxt = QLabel()
+            self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+            self.roiStdDevTxt.setToolTip(&#34;ROI Mean Value Standard Deviation&#34;)
             self.connectSlotToSignalForROITools()
 
-            self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.cmbNamesROIs, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
@@ -650,7 +659,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
-            self.roiToolsLayout.addStretch(20)
+            self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
         except Exception as e:
                print(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e))
                logger.error(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
@@ -659,7 +669,7 @@ class ImageViewerROI(QMdiSubWindow):
     def reloadImageInNewImageItem(self):
         try:
             logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
-            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
+            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
@@ -667,7 +677,7 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -681,9 +691,9 @@ class ImageViewerROI(QMdiSubWindow):
     
         self.reloadImageInNewImageItem() 
         self.displayROIMeanAndStd()
-        if self.cmbROIs.currentIndex() == 0 and self.cmbROIs.count() == 1: 
-            self.cmbROIs.clear()
-            self.cmbROIs.addItem(&#34;region1&#34;)
+        if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+            self.cmbNamesROIs.clear()
+            self.cmbNamesROIs.addItem(&#34;region1&#34;)
             self.setCurrentIndex(0) 
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -693,19 +703,18 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.removeItem(cmbROIs.currentIndex())
-            self.cmbROIs.blockSignals(False)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.removeItem(cmbNamesROIs.currentIndex())
+            self.cmbNamesROIs.blockSignals(False)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.reloadMask(mask)
 
 
     def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+        self.imageLevelsGroupBox.setFixedHeight(45)
+        self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
@@ -715,10 +724,16 @@ class ImageViewerROI(QMdiSubWindow):
             self.setUpRoiToolsLayout()
             
             self.setUpImageLevelsLayout()
+
+            self.setUpPixelValueGroupBox()
+
+            self.setUpZoomGroupBox()
             
             self.topRowMainLayout.addWidget(self.roiToolsGroupBox)
             self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
-        
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
+            self.topRowMainLayout.addWidget(self.zoomGroupBox)
+
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
             self.lblImageMissing = QLabel(&#34;&lt;h4&gt;Image Missing&lt;/h4&gt;&#34;)
@@ -734,64 +749,9 @@ class ImageViewerROI(QMdiSubWindow):
         self.mainVerticalLayout.addWidget(self.graphicsView) 
 
 
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-
-
-    def setUpImageDataWidgets(self):
-        try:
-            logger.info(&#34;ImageViewerROI.setUpImageDataWidgets called.&#34;)
-        
-            self.pixelValueLabel = QLabel(&#34;Pixel Value&#34;)
-            self.pixelValueLabel.setAlignment(Qt.AlignRight)
-            self.pixelValueLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.pixelValueTxt = QLabel()
-            self.pixelValueTxt.setIndent(0)
-            self.pixelValueTxt.setAlignment(Qt.AlignLeft)
-            self.pixelValueTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.roiMeanLabel = QLabel(&#34;ROI Mean&#34;)
-            self.roiMeanLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-            self.roiMeanTxt = QLabel()
-            self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.roiStdDevLabel = QLabel(&#34;ROI Sdev.&#34;)
-            self.roiStdDevLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.roiStdDevTxt = QLabel()
-            self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.zoomLabel = QLabel(&#34;Zoom:&#34;)
-            self.zoomLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
-            self.zoomValueLabel.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-        
-            self.imageDataLayout.addWidget(self.pixelValueLabel, Qt.AlignRight)
-            self.imageDataLayout.addWidget(self.pixelValueTxt, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomValueLabel, Qt.AlignLeft)
-            self.imageDataLayout.addStretch(10)
-        except Exception as e:
-                print(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))
-
-
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes() 
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes() 
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
         except Exception as e:
@@ -808,7 +768,7 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
             intensity = self.spinBoxIntensity.value()
             contrast = self.spinBoxContrast.value()
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
         except Exception as e:
             print(&#39;Error in ImageViewerROI.updateImageLevels when imageNumber={}: &#39;.format(imageNumber) + str(e))
@@ -990,18 +950,12 @@ sliders for browsing series of images.</p></div>
             self.setUpTopRowLayout()
 
             self.setUpGraphicsView()
-            
-            self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
 
             self.setUpZoomSlider()
 
-            self.setUpImageDataWidgets()
-
             self.setUpROIButtons()
-
-            #self.graphicsView.dictROIdisplayOneImages = ROIs(NumImages=len(self.imagePathList))
 
             if dcm.__class__.__name__ == &#34;Image&#34;:
                 self.displayPixelArrayOfSingleImage(self.imagePathList )
@@ -1028,23 +982,24 @@ sliders for browsing series of images.</p></div>
 
     def setUpRoiToolsLayout(self):
         self.roiToolsLayout = QHBoxLayout()
-        self.roiToolsLayout.setContentsMargins(0, 2, 0, 0)
+        self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
-        self.roiToolsGroupBox = QGroupBox(&#34;ROIs&#34;)
+        self.roiToolsGroupBox = QGroupBox()
+        self.roiToolsGroupBox.setFixedHeight(45)
         self.roiToolsGroupBox.setLayout(self.roiToolsLayout)
 
 
     def setUpROIDropDownList(self):
-        self.cmbROIs = QComboBox()
-        self.lblCmbROIs =  QLabel(&#34;ROIs&#34;)
-        self.cmbROIs.setDuplicatesEnabled(False)
-        self.cmbROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        self.cmbROIs.addItem(&#34;region1&#34;)
-        self.cmbROIs.setCurrentIndex(0)
-        self.cmbROIs.setStyleSheet(&#39;QComboBox {font: 12pt Arial}&#39;)
-        self.cmbROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
-        self.cmbROIs.setEditable(True)
-        self.cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
+        self.cmbNamesROIs = QComboBox()
+        self.cmbNamesROIs.setDuplicatesEnabled(False)
+        self.cmbNamesROIs.addItem(&#34;region1&#34;)
+        self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.graphicsView.currentROIName = &#34;region1&#34;
+        self.cmbNamesROIs.setCurrentIndex(0)
+        self.cmbNamesROIs.setStyleSheet(&#39;QComboBox {font: 11pt Arial}&#39;)
+        self.cmbNamesROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
+        self.cmbNamesROIs.setEditable(True)
+        self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)
 
 
     def connectSlotToSignalForROITools(self):
@@ -1056,30 +1011,30 @@ sliders for browsing series of images.</p></div>
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
-        self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
     def roiNameChanged(self, newText):
         try:
             logger.info(&#34;ImageViewerROI.roiNameChanged called&#34;)
-            currentIndex = self.cmbROIs.currentIndex()
+            currentIndex = self.cmbNamesROIs.currentIndex()
             #Prevent spaces in new ROI name
             if &#39; &#39; in newText:
                 newText = newText.replace(&#34; &#34;, &#34;&#34;)
-                self.cmbROIs.setItemText(currentIndex, newText)
-                self.cmbROIs.setCurrentText(newText)
-            index = self.cmbROIs.findText(newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText)
+                self.cmbNamesROIs.setCurrentText(newText)
+            index = self.cmbNamesROIs.findText(newText);
             if index == -1:
-                self.cmbROIs.setItemText(currentIndex, newText);
+                self.cmbNamesROIs.setItemText(currentIndex, newText);
                 nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
-                #dictROIs.printContentsDictMasks()
                 if nameChangedOK == False:
                     msgBox = QMessageBox()
                     msgBox.setWindowTitle(&#34;ROI Name Change&#34;)
                     msgBox.setText(&#34;This name is already in use&#34;)
                     msgBox.exec()
-                    cmbROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+                    cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e)) 
@@ -1088,7 +1043,7 @@ sliders for browsing series of images.</p></div>
     def saveROI(self):
         try:
             # Save Current ROI
-            regionName = self.cmbROIs.currentText()
+            regionName = self.cmbNamesROIs.currentText()
             logger.info(&#34;ImageViewerROI.saveROI called&#34;)
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
@@ -1100,24 +1055,22 @@ sliders for browsing series of images.</p></div>
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)),
-                &#34;Export ROIs&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(inputPath))
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+            self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
             
             for index, path in enumerate(inputPath):
                 #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
-                messageWindow.setMsgWindowProgBarValue(self.weasel, index)
+                self.weasel.progressBar.set_value(index)
                 outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
                 SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map=&#34;SEG&#34;)
                 treeSeriesID = self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
             #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map=&#34;SEG&#34;) # Consider Enhanced DICOM for parametric_map
             #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-            messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
-            messageWindow.closeMessageSubWindow(self.weasel)
+            self.weasel.progressBar.set_value(len(inputPath))
+            self.weasel.progressBar.close()
             self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
             QMessageBox.information(self.weasel, &#34;Export ROIs&#34;, &#34;Image Saved&#34;)
         except Exception as e:
@@ -1136,14 +1089,14 @@ sliders for browsing series of images.</p></div>
             paramDict = {&#34;Series&#34;:&#34;listview&#34;}
             helpMsg = &#34;Select a Series with ROI&#34;
             #studyID = self.selectedStudy
-            study = self.objXMLReader.getStudy(self.subjectID, self.studyID)
+            study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
             listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
             inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
             listParams = inputDlg.returnListParameterValues()
             if inputDlg.closeInputDialog() == False:
                 # for series ID in listParams[0]: # more than 1 ROI may be selected
                 seriesID = listParams[0][0] # Temporary, only the first ROI
-                imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
+                imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     targetPath = [i.path for i in self.weasel.images()]
                     #targetPath = self.imageList
@@ -1159,11 +1112,9 @@ sliders for browsing series of images.</p></div>
                     region = &#34;new_region_label&#34;
                 # Affine re-adjustment
                 for index, dicomFile in enumerate(targetPath):
-                    messageWindow.displayMessageSubWindow(self.weasel,
-                    &#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1),
-                    &#34;Load ROIs&#34;)
-                    messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(targetPath))
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 1)
+                    self.weasel.progress_bar(&#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1))
+                    self.weasel.progressBar.set_maximum(len(targetPath))
+                    self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                     horizontalFlag = None
@@ -1192,8 +1143,8 @@ sliders for browsing series of images.</p></div>
                             #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                             #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
-                    messageWindow.setMsgWindowProgBarValue(self.weasel, index + 2)
-                messageWindow.closeMessageSubWindow(self.weasel)
+                    self.weasel.progressBar.set_value(index+2)
+                self.weasel.progressBar.close()
 
                 # Faster approach - 3D and no dilation
                 #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
@@ -1208,22 +1159,22 @@ sliders for browsing series of images.</p></div>
                         #pass
             
                 # First populate the ROI_Storage data structure in a loop
-                for imageNumber in range(len(maskList)):
-                    self.graphicsView.dictROIs.addRegion(region, 
-                                                         np.array(maskList[imageNumber]).astype(bool), 
-                                                         imageNumber + 1)
+                self.graphicsView.currentROIName = region
+                for imageNumber in range(len(maskList)):  #To Do
+                    self.graphicsView.currentImageNumber = imageNumber + 1
+                    self.graphicsView.dictROIs.addRegion(np.array(maskList[imageNumber]).astype(bool))
 
                 # Second populate the dropdown list of region names
-                self.cmbROIs.blockSignals(True)
+                self.cmbNamesROIs.blockSignals(True)
                 #remove previous contents of ROI dropdown list
-                self.cmbROIs.clear()  
-                self.cmbROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
-                self.cmbROIs.blockSignals(False)
+                self.cmbNamesROIs.clear()  
+                self.cmbNamesROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
+                self.cmbNamesROIs.blockSignals(False)
 
                 # Redisplay the current image to show the mask
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
-                self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
+                self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -1290,8 +1241,8 @@ sliders for browsing series of images.</p></div>
     
     def getRoiMeanAndStd(self, mask, pixelArray):
         logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 6)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 6)
+        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
         return mean, std
 
 
@@ -1302,12 +1253,12 @@ sliders for browsing series of images.</p></div>
         else:
             imageNumber = 1
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText(str(mean))
-            self.roiStdDevTxt.setText(str(std))
+            self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+            self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
         else:
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -1317,15 +1268,11 @@ sliders for browsing series of images.</p></div>
         logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
         try:
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
-            lambda mouseOverImage:self.displayImageDataUnderMouse(mouseOverImage))
+            lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
-            self.graphicsView.graphicsItem.sigMaskCreated.connect(self.displayROIMeanAndStd)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.replaceMask)
-
-            self.graphicsView.graphicsItem.sigMaskEdited.connect(self.storeMaskData)
+            self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
 
@@ -1379,25 +1326,45 @@ sliders for browsing series of images.</p></div>
     def addNewROItoDropDownList(self, newRegion):
         logger.info(&#34;ImageViewerROI.addNewROItoDropDownList called.&#34;)
         noDuplicate = True
-        for count in range(self.cmbROIs.count()):
-             if self.cmbROIs.itemText(count) == newRegion:
+        for count in range(self.cmbNamesROIs.count()):
+             if self.cmbNamesROIs.itemText(count) == newRegion:
                  noDuplicate = False
                  break
         if noDuplicate:
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.addItem(newRegion)
-            self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
-            self.cmbROIs.blockSignals(False)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.addItem(newRegion)
+            self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+            self.cmbNamesROIs.blockSignals(False)
 
 
     def updateROIName(self):
         logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
-        self.graphicsView.currentROIName = self.cmbROIs.currentText()
+        self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
+
+    
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+        self.pixelValueGroupBox.setFixedHeight(45)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) 
 
 
-    def displayImageDataUnderMouse(self, mouseOverImage):
+    def setUpZoomGroupBox(self):
+        self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
+        self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
+        self.zoomGroupBox = QGroupBox(&#34;Zoom&#34;)
+        self.zoomGroupBox.setFixedHeight(45)
+        self.zoomGroupBox.setLayout(layout) 
+
+
+    def getPixelValue(self, mouseOverImage):
         try:
-            logger.info(&#34;ImageViewerROI.displayImageDataUnderMouse called&#34;)
+            logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
                 xCoord = self.graphicsView.graphicsItem.xMouseCoord
                 yCoord = self.graphicsView.graphicsItem.yMouseCoord
@@ -1408,32 +1375,31 @@ sliders for browsing series of images.</p></div>
                 else:
                     imageNumber = 1
                 strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
-                self.pixelValueTxt.setText(&#39;= &#39; + strValue + strPosition)
+                self.lblPixelValue.setWordWrap(True)
+                self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
             else:
-                 self.pixelValueTxt.setText(&#39;&#39;)
+                 self.lblPixelValue.setText(&#39;&#39;)
         except Exception as e:
-                print(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))
+                print(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))
 
 
-    def storeMaskData(self):
-        logger.info(&#34;ImageViewerROI.storeMaskData called&#34;)
+    def updateDetailsROI(self):
+        logger.info(&#34;ImageViewerROI.updateDetailsROI called&#34;)
         try:
-            regionName = self.cmbROIs.currentText()
+            self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
             if self.isSeries:  
-                imageNumber = self.mainImageSlider.value()
+                self.graphicsView.currentImageNumber = self.mainImageSlider.value()
             else:
-                imageNumber = 1
-            mask = self.graphicsView.graphicsItem.getMaskData()
-            self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+                self.graphicsView.currentImageNumber = 1
         except Exception as e:
-                print(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))
+                print(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))
 
 
-    def replaceMask(self):
+    def replaceMask(self):  
         logger.info(&#34;ImageViewerROI.replaceMask called&#34;)
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
@@ -1486,9 +1452,15 @@ sliders for browsing series of images.</p></div>
             self.btnZoom.setCheckable(True)
             self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
+            self.roiMeanTxt = QLabel()
+            self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+            self.roiMeanTxt.setToolTip(&#34;ROI Mean Value&#34;)
+            self.roiStdDevTxt = QLabel()
+            self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+            self.roiStdDevTxt.setToolTip(&#34;ROI Mean Value Standard Deviation&#34;)
             self.connectSlotToSignalForROITools()
 
-            self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.cmbNamesROIs, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
@@ -1497,7 +1469,8 @@ sliders for browsing series of images.</p></div>
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
-            self.roiToolsLayout.addStretch(20)
+            self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
         except Exception as e:
                print(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e))
                logger.error(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
@@ -1506,7 +1479,7 @@ sliders for browsing series of images.</p></div>
     def reloadImageInNewImageItem(self):
         try:
             logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
-            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
+            self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
@@ -1514,7 +1487,7 @@ sliders for browsing series of images.</p></div>
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -1528,9 +1501,9 @@ sliders for browsing series of images.</p></div>
     
         self.reloadImageInNewImageItem() 
         self.displayROIMeanAndStd()
-        if self.cmbROIs.currentIndex() == 0 and self.cmbROIs.count() == 1: 
-            self.cmbROIs.clear()
-            self.cmbROIs.addItem(&#34;region1&#34;)
+        if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+            self.cmbNamesROIs.clear()
+            self.cmbNamesROIs.addItem(&#34;region1&#34;)
             self.setCurrentIndex(0) 
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -1540,19 +1513,18 @@ sliders for browsing series of images.</p></div>
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
-            self.cmbROIs.blockSignals(True)
-            self.cmbROIs.removeItem(cmbROIs.currentIndex())
-            self.cmbROIs.blockSignals(False)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.removeItem(cmbNamesROIs.currentIndex())
+            self.cmbNamesROIs.blockSignals(False)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.reloadMask(mask)
 
 
     def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+        self.imageLevelsGroupBox.setFixedHeight(45)
+        self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
@@ -1562,10 +1534,16 @@ sliders for browsing series of images.</p></div>
             self.setUpRoiToolsLayout()
             
             self.setUpImageLevelsLayout()
+
+            self.setUpPixelValueGroupBox()
+
+            self.setUpZoomGroupBox()
             
             self.topRowMainLayout.addWidget(self.roiToolsGroupBox)
             self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
-        
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
+            self.topRowMainLayout.addWidget(self.zoomGroupBox)
+
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
             self.lblImageMissing = QLabel(&#34;&lt;h4&gt;Image Missing&lt;/h4&gt;&#34;)
@@ -1581,64 +1559,9 @@ sliders for browsing series of images.</p></div>
         self.mainVerticalLayout.addWidget(self.graphicsView) 
 
 
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-
-
-    def setUpImageDataWidgets(self):
-        try:
-            logger.info(&#34;ImageViewerROI.setUpImageDataWidgets called.&#34;)
-        
-            self.pixelValueLabel = QLabel(&#34;Pixel Value&#34;)
-            self.pixelValueLabel.setAlignment(Qt.AlignRight)
-            self.pixelValueLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.pixelValueTxt = QLabel()
-            self.pixelValueTxt.setIndent(0)
-            self.pixelValueTxt.setAlignment(Qt.AlignLeft)
-            self.pixelValueTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.roiMeanLabel = QLabel(&#34;ROI Mean&#34;)
-            self.roiMeanLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-            self.roiMeanTxt = QLabel()
-            self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.roiStdDevLabel = QLabel(&#34;ROI Sdev.&#34;)
-            self.roiStdDevLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.roiStdDevTxt = QLabel()
-            self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-            self.zoomLabel = QLabel(&#34;Zoom:&#34;)
-            self.zoomLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-            self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
-            self.zoomValueLabel.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-        
-            self.imageDataLayout.addWidget(self.pixelValueLabel, Qt.AlignRight)
-            self.imageDataLayout.addWidget(self.pixelValueTxt, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
-            self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomLabel, Qt.AlignLeft)
-            self.imageDataLayout.addWidget(self.zoomValueLabel, Qt.AlignLeft)
-            self.imageDataLayout.addStretch(10)
-        except Exception as e:
-                print(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))
-                logger.error(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))
-
-
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes() 
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes() 
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
         except Exception as e:
@@ -1655,7 +1578,7 @@ sliders for browsing series of images.</p></div>
                 imageNumber = 1
             intensity = self.spinBoxIntensity.value()
             contrast = self.spinBoxContrast.value()
-            mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
         except Exception as e:
             print(&#39;Error in ImageViewerROI.updateImageLevels when imageNumber={}: &#39;.format(imageNumber) + str(e))
@@ -1792,15 +1715,15 @@ sliders for browsing series of images.</p></div>
 <pre><code class="python">def addNewROItoDropDownList(self, newRegion):
     logger.info(&#34;ImageViewerROI.addNewROItoDropDownList called.&#34;)
     noDuplicate = True
-    for count in range(self.cmbROIs.count()):
-         if self.cmbROIs.itemText(count) == newRegion:
+    for count in range(self.cmbNamesROIs.count()):
+         if self.cmbNamesROIs.itemText(count) == newRegion:
              noDuplicate = False
              break
     if noDuplicate:
-        self.cmbROIs.blockSignals(True)
-        self.cmbROIs.addItem(newRegion)
-        self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
-        self.cmbROIs.blockSignals(False)</code></pre>
+        self.cmbNamesROIs.blockSignals(True)
+        self.cmbNamesROIs.addItem(newRegion)
+        self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+        self.cmbNamesROIs.blockSignals(False)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools"><code class="name flex">
@@ -1821,8 +1744,8 @@ sliders for browsing series of images.</p></div>
     self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
     self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
     self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-    self.cmbROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
-    self.cmbROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
+    self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+    self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROITidyUp"><code class="name flex">
@@ -1839,9 +1762,9 @@ sliders for browsing series of images.</p></div>
 
     self.reloadImageInNewImageItem() 
     self.displayROIMeanAndStd()
-    if self.cmbROIs.currentIndex() == 0 and self.cmbROIs.count() == 1: 
-        self.cmbROIs.clear()
-        self.cmbROIs.addItem(&#34;region1&#34;)
+    if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+        self.cmbNamesROIs.clear()
+        self.cmbNamesROIs.addItem(&#34;region1&#34;)
         self.setCurrentIndex(0) 
         self.roiMeanTxt.clear()
         self.roiStdDevTxt.clear()
@@ -1851,41 +1774,11 @@ sliders for browsing series of images.</p></div>
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
-        self.cmbROIs.blockSignals(True)
-        self.cmbROIs.removeItem(cmbROIs.currentIndex())
-        self.cmbROIs.blockSignals(False)
-        mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+        self.cmbNamesROIs.blockSignals(True)
+        self.cmbNamesROIs.removeItem(cmbNamesROIs.currentIndex())
+        self.cmbNamesROIs.blockSignals(False)
+        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
         self.graphicsView.graphicsItem.reloadMask(mask)</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayImageDataUnderMouse"><code class="name flex">
-<span>def <span class="ident">displayImageDataUnderMouse</span></span>(<span>self, mouseOverImage)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def displayImageDataUnderMouse(self, mouseOverImage):
-    try:
-        logger.info(&#34;ImageViewerROI.displayImageDataUnderMouse called&#34;)
-        if mouseOverImage:
-            xCoord = self.graphicsView.graphicsItem.xMouseCoord
-            yCoord = self.graphicsView.graphicsItem.yMouseCoord
-            pixelValue = self.graphicsView.graphicsItem.pixelValue
-            strValue = str(pixelValue)
-            if self.isSeries:  
-                imageNumber = self.mainImageSlider.value()
-            else:
-                imageNumber = 1
-            strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
-            self.pixelValueTxt.setText(&#39;= &#39; + strValue + strPosition)
-        else:
-             self.pixelValueTxt.setText(&#39;&#39;)
-    except Exception as e:
-            print(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewerROI.displayImageDataUnderMouse: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage"><code class="name flex">
@@ -1946,12 +1839,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     else:
         imageNumber = 1
     pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-    regionName = self.cmbROIs.currentText()
+    regionName = self.cmbNamesROIs.currentText()
     mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
     if mask is not None:
         mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-        self.roiMeanTxt.setText(str(mean))
-        self.roiStdDevTxt.setText(str(std))
+        self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+        self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
     else:
         self.roiMeanTxt.clear()
         self.roiStdDevTxt.clear()</code></pre>
@@ -2003,6 +1896,37 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
          )</code></pre>
 </details>
 </dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue"><code class="name flex">
+<span>def <span class="ident">getPixelValue</span></span>(<span>self, mouseOverImage)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getPixelValue(self, mouseOverImage):
+    try:
+        logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
+        if mouseOverImage:
+            xCoord = self.graphicsView.graphicsItem.xMouseCoord
+            yCoord = self.graphicsView.graphicsItem.yMouseCoord
+            pixelValue = self.graphicsView.graphicsItem.pixelValue
+            strValue = str(pixelValue)
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+            else:
+                imageNumber = 1
+            strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
+            self.lblPixelValue.setWordWrap(True)
+            self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
+        else:
+             self.lblPixelValue.setText(&#39;&#39;)
+    except Exception as e:
+            print(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd"><code class="name flex">
 <span>def <span class="ident">getRoiMeanAndStd</span></span>(<span>self, mask, pixelArray)</span>
 </code></dt>
@@ -2014,8 +1938,8 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def getRoiMeanAndStd(self, mask, pixelArray):
     logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-    mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 6)
-    std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 6)
+    mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+    std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
     return mean, std</code></pre>
 </details>
 </dd>
@@ -2039,14 +1963,14 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         paramDict = {&#34;Series&#34;:&#34;listview&#34;}
         helpMsg = &#34;Select a Series with ROI&#34;
         #studyID = self.selectedStudy
-        study = self.objXMLReader.getStudy(self.subjectID, self.studyID)
+        study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
         listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
         inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
         listParams = inputDlg.returnListParameterValues()
         if inputDlg.closeInputDialog() == False:
             # for series ID in listParams[0]: # more than 1 ROI may be selected
             seriesID = listParams[0][0] # Temporary, only the first ROI
-            imagePathList = self.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
+            imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
             if self.weasel.series != []:
                 targetPath = [i.path for i in self.weasel.images()]
                 #targetPath = self.imageList
@@ -2062,11 +1986,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                 region = &#34;new_region_label&#34;
             # Affine re-adjustment
             for index, dicomFile in enumerate(targetPath):
-                messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1),
-                &#34;Load ROIs&#34;)
-                messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(targetPath))
-                messageWindow.setMsgWindowProgBarValue(self.weasel, index + 1)
+                self.weasel.progress_bar(&#34;&lt;H4&gt;Loading selected ROI into target image {}&lt;/H4&gt;&#34;.format(index + 1))
+                self.weasel.progressBar.set_maximum(len(targetPath))
+                self.weasel.progressBar.set_value(index + 1)
                 dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
                 horizontalFlag = None
@@ -2095,8 +2017,8 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                         #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
                         #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
-                messageWindow.setMsgWindowProgBarValue(self.weasel, index + 2)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(index+2)
+            self.weasel.progressBar.close()
 
             # Faster approach - 3D and no dilation
             #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
@@ -2111,22 +2033,22 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                     #pass
         
             # First populate the ROI_Storage data structure in a loop
-            for imageNumber in range(len(maskList)):
-                self.graphicsView.dictROIs.addRegion(region, 
-                                                     np.array(maskList[imageNumber]).astype(bool), 
-                                                     imageNumber + 1)
+            self.graphicsView.currentROIName = region
+            for imageNumber in range(len(maskList)):  #To Do
+                self.graphicsView.currentImageNumber = imageNumber + 1
+                self.graphicsView.dictROIs.addRegion(np.array(maskList[imageNumber]).astype(bool))
 
             # Second populate the dropdown list of region names
-            self.cmbROIs.blockSignals(True)
+            self.cmbNamesROIs.blockSignals(True)
             #remove previous contents of ROI dropdown list
-            self.cmbROIs.clear()  
-            self.cmbROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
-            self.cmbROIs.blockSignals(False)
+            self.cmbNamesROIs.clear()  
+            self.cmbNamesROIs.addItems(self.graphicsView.dictROIs.getListOfRegions())
+            self.cmbNamesROIs.blockSignals(False)
 
             # Redisplay the current image to show the mask
             #mask = graphicsView.dictROIs.getMask(region, 1)
             #graphicsView.graphicsItem.reloadMask(mask)
-            self.cmbROIs.setCurrentIndex(self.cmbROIs.count() - 1)
+            self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
     except Exception as e:
             print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
             logger.error(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) </code></pre>
@@ -2144,7 +2066,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def reloadImageInNewImageItem(self):
     try:
         logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
-        self.graphicsView.dictROIs.setPreviousRegionName(self.cmbROIs.currentText())
+        self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
@@ -2152,7 +2074,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             imageNumber = 1
 
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
@@ -2170,9 +2092,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def replaceMask(self):
+<pre><code class="python">def replaceMask(self):  
     logger.info(&#34;ImageViewerROI.replaceMask called&#34;)
-    regionName = self.cmbROIs.currentText()
+    regionName = self.cmbNamesROIs.currentText()
     if self.isSeries:  
         imageNumber = self.mainImageSlider.value()
     else:
@@ -2193,23 +2115,23 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def roiNameChanged(self, newText):
     try:
         logger.info(&#34;ImageViewerROI.roiNameChanged called&#34;)
-        currentIndex = self.cmbROIs.currentIndex()
+        currentIndex = self.cmbNamesROIs.currentIndex()
         #Prevent spaces in new ROI name
         if &#39; &#39; in newText:
             newText = newText.replace(&#34; &#34;, &#34;&#34;)
-            self.cmbROIs.setItemText(currentIndex, newText)
-            self.cmbROIs.setCurrentText(newText)
-        index = self.cmbROIs.findText(newText);
+            self.cmbNamesROIs.setItemText(currentIndex, newText)
+            self.cmbNamesROIs.setCurrentText(newText)
+        index = self.cmbNamesROIs.findText(newText);
         if index == -1:
-            self.cmbROIs.setItemText(currentIndex, newText);
+            self.cmbNamesROIs.setItemText(currentIndex, newText);
             nameChangedOK = self.graphicsView.dictROIs.renameDictionaryKey(newText)
-            #dictROIs.printContentsDictMasks()
             if nameChangedOK == False:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle(&#34;ROI Name Change&#34;)
                 msgBox.setText(&#34;This name is already in use&#34;)
                 msgBox.exec()
-                cmbROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+                cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
+
     except Exception as e:
             print(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e))
             logger.error(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e)) </code></pre>
@@ -2227,7 +2149,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def saveROI(self):
     try:
         # Save Current ROI
-        regionName = self.cmbROIs.currentText()
+        regionName = self.cmbNamesROIs.currentText()
         logger.info(&#34;ImageViewerROI.saveROI called&#34;)
         # get the list of boolean masks for this series
         maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
@@ -2239,24 +2161,22 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         else:
             inputPath = [self.selectedImagePath]
         # Saving Progress message
-        messageWindow.displayMessageSubWindow(self.weasel,
-            &#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)),
-            &#34;Export ROIs&#34;)
-        messageWindow.setMsgWindowProgBarMaxValue(self.weasel, len(inputPath))
+        self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+        self.weasel.progressBar.set_maximum(len(inputPath))
         (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
         seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
         seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
         
         for index, path in enumerate(inputPath):
             #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
-            messageWindow.setMsgWindowProgBarValue(self.weasel, index)
+            self.weasel.progressBar.set_value(index)
             outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
             SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map=&#34;SEG&#34;)
             treeSeriesID = self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
         #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map=&#34;SEG&#34;) # Consider Enhanced DICOM for parametric_map
         #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
-        messageWindow.setMsgWindowProgBarValue(self.weasel, len(inputPath))
-        messageWindow.closeMessageSubWindow(self.weasel)
+        self.weasel.progressBar.set_value(len(inputPath))
+        self.weasel.progressBar.close()
         self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
         QMessageBox.information(self.weasel, &#34;Export ROIs&#34;, &#34;Image Saved&#34;)
     except Exception as e:
@@ -2364,77 +2284,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     self.mainVerticalLayout.addWidget(self.graphicsView) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataLayout"><code class="name flex">
-<span>def <span class="ident">setUpImageDataLayout</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setUpImageDataLayout(self):
-    self.imageDataLayout = QHBoxLayout()
-    self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-    self.imageDataLayout.setSpacing(0)
-    self.imageDataGroupBox = QGroupBox()
-    self.imageDataGroupBox.setLayout(self.imageDataLayout)
-    self.mainVerticalLayout.addWidget(self.imageDataGroupBox)</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataWidgets"><code class="name flex">
-<span>def <span class="ident">setUpImageDataWidgets</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setUpImageDataWidgets(self):
-    try:
-        logger.info(&#34;ImageViewerROI.setUpImageDataWidgets called.&#34;)
-    
-        self.pixelValueLabel = QLabel(&#34;Pixel Value&#34;)
-        self.pixelValueLabel.setAlignment(Qt.AlignRight)
-        self.pixelValueLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-        self.pixelValueTxt = QLabel()
-        self.pixelValueTxt.setIndent(0)
-        self.pixelValueTxt.setAlignment(Qt.AlignLeft)
-        self.pixelValueTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-        self.roiMeanLabel = QLabel(&#34;ROI Mean&#34;)
-        self.roiMeanLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-        self.roiMeanTxt = QLabel()
-        self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-        self.roiStdDevLabel = QLabel(&#34;ROI Sdev.&#34;)
-        self.roiStdDevLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-        self.roiStdDevTxt = QLabel()
-        self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-
-        self.zoomLabel = QLabel(&#34;Zoom:&#34;)
-        self.zoomLabel.setStyleSheet(&#34;padding-right:1; margin-right:1;&#34;)
-
-        self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
-        self.zoomValueLabel.setStyleSheet(&#34;color : red; padding-left:1; margin-left:1;&#34;)
-    
-        self.imageDataLayout.addWidget(self.pixelValueLabel, Qt.AlignRight)
-        self.imageDataLayout.addWidget(self.pixelValueTxt, Qt.AlignLeft)
-        self.imageDataLayout.addWidget(self.roiMeanLabel, Qt.AlignLeft) 
-        self.imageDataLayout.addWidget(self.roiMeanTxt, Qt.AlignLeft) 
-        self.imageDataLayout.addWidget(self.roiStdDevLabel, Qt.AlignLeft)
-        self.imageDataLayout.addWidget(self.roiStdDevTxt, Qt.AlignLeft)
-        self.imageDataLayout.addWidget(self.zoomLabel, Qt.AlignLeft)
-        self.imageDataLayout.addWidget(self.zoomValueLabel, Qt.AlignLeft)
-        self.imageDataLayout.addStretch(10)
-    except Exception as e:
-            print(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewerROI.setUpImageDataWidgets: &#39; + str(e))</code></pre>
-</details>
-</dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers"><code class="name flex">
 <span>def <span class="ident">setUpImageEventHandlers</span></span>(<span>self)</span>
 </code></dt>
@@ -2448,15 +2297,11 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
     try:
         self.graphicsView.graphicsItem.sigMouseHovered.connect(
-        lambda mouseOverImage:self.displayImageDataUnderMouse(mouseOverImage))
+        lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
-        self.graphicsView.graphicsItem.sigMaskCreated.connect(self.storeMaskData)
+        self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
-        self.graphicsView.graphicsItem.sigMaskCreated.connect(self.displayROIMeanAndStd)
-
-        self.graphicsView.graphicsItem.sigMaskEdited.connect(self.replaceMask)
-
-        self.graphicsView.graphicsItem.sigMaskEdited.connect(self.storeMaskData)
+        self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
         self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
 
@@ -2491,11 +2336,10 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpImageLevelsLayout(self):
-    self.imageLevelsLayout= QHBoxLayout()
-    self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-    self.imageLevelsLayout.setSpacing(0)
+    self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
     self.imageLevelsGroupBox = QGroupBox()
-    self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)</code></pre>
+    self.imageLevelsGroupBox.setFixedHeight(45)
+    self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders"><code class="name flex">
@@ -2545,9 +2389,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def setUpLevelsSpinBoxes(self):
     try:
-        spinBoxObject = imageLevelsSpinBoxes()
-        self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-        self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes() 
+        self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes() 
         self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
         self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
     except Exception as e:
@@ -2573,6 +2415,23 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     except Exception as e:
         print(&#39;Error in ImageViewerROI.setUpMainLayout: &#39; + str(e))
         logger.error(&#39;Error in ImageViewerROI.setUpMainLayout: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox"><code class="name flex">
+<span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setUpPixelValueGroupBox(self):
+    pixelValueComponent = PixelValueComponent()
+    self.lblPixelValue = pixelValueComponent.getLabel()
+    self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+    self.pixelValueGroupBox.setFixedHeight(45)
+    self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons"><code class="name flex">
@@ -2628,9 +2487,15 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.btnZoom.setCheckable(True)
         self.btnZoom.setIcon(QIcon(QPixmap(MAGNIFYING_GLASS_CURSOR)))
 
+        self.roiMeanTxt = QLabel()
+        self.roiMeanTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+        self.roiMeanTxt.setToolTip(&#34;ROI Mean Value&#34;)
+        self.roiStdDevTxt = QLabel()
+        self.roiStdDevTxt.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0; font-size:8pt;&#34;)
+        self.roiStdDevTxt.setToolTip(&#34;ROI Mean Value Standard Deviation&#34;)
         self.connectSlotToSignalForROITools()
 
-        self.roiToolsLayout.addWidget(self.cmbROIs, alignment=Qt.AlignLeft)
+        self.roiToolsLayout.addWidget(self.cmbNamesROIs, alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnNewROI, alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnResetROI,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnDeleteROI,  alignment=Qt.AlignLeft)
@@ -2639,7 +2504,8 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
-        self.roiToolsLayout.addStretch(20)
+        self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
+        self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
     except Exception as e:
            print(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e))
            logger.error(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) </code></pre>
@@ -2655,16 +2521,16 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpROIDropDownList(self):
-    self.cmbROIs = QComboBox()
-    self.lblCmbROIs =  QLabel(&#34;ROIs&#34;)
-    self.cmbROIs.setDuplicatesEnabled(False)
-    self.cmbROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-    self.cmbROIs.addItem(&#34;region1&#34;)
-    self.cmbROIs.setCurrentIndex(0)
-    self.cmbROIs.setStyleSheet(&#39;QComboBox {font: 12pt Arial}&#39;)
-    self.cmbROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
-    self.cmbROIs.setEditable(True)
-    self.cmbROIs.setInsertPolicy(QComboBox.InsertAtCurrent)</code></pre>
+    self.cmbNamesROIs = QComboBox()
+    self.cmbNamesROIs.setDuplicatesEnabled(False)
+    self.cmbNamesROIs.addItem(&#34;region1&#34;)
+    self.cmbNamesROIs.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+    self.graphicsView.currentROIName = &#34;region1&#34;
+    self.cmbNamesROIs.setCurrentIndex(0)
+    self.cmbNamesROIs.setStyleSheet(&#39;QComboBox {font: 11pt Arial}&#39;)
+    self.cmbNamesROIs.setToolTip(&#34;Displays a list of ROIs created&#34;)
+    self.cmbNamesROIs.setEditable(True)
+    self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout"><code class="name flex">
@@ -2678,9 +2544,10 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def setUpRoiToolsLayout(self):
     self.roiToolsLayout = QHBoxLayout()
-    self.roiToolsLayout.setContentsMargins(0, 2, 0, 0)
+    self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
     self.roiToolsLayout.setSpacing(0)
-    self.roiToolsGroupBox = QGroupBox(&#34;ROIs&#34;)
+    self.roiToolsGroupBox = QGroupBox()
+    self.roiToolsGroupBox.setFixedHeight(45)
     self.roiToolsGroupBox.setLayout(self.roiToolsLayout)</code></pre>
 </details>
 </dd>
@@ -2700,10 +2567,16 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.setUpRoiToolsLayout()
         
         self.setUpImageLevelsLayout()
+
+        self.setUpPixelValueGroupBox()
+
+        self.setUpZoomGroupBox()
         
         self.topRowMainLayout.addWidget(self.roiToolsGroupBox)
         self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
-    
+        self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
+        self.topRowMainLayout.addWidget(self.zoomGroupBox)
+
         self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
         self.lblImageMissing = QLabel(&#34;&lt;h4&gt;Image Missing&lt;/h4&gt;&#34;)
@@ -2712,6 +2585,27 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     except Exception as e:
         print(&#39;Error in ImageViewerROI.setUpTopRowLayout: &#39; + str(e))
         logger.error(&#39;Error in ImageViewerROI.setUpTopRowLayout: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox"><code class="name flex">
+<span>def <span class="ident">setUpZoomGroupBox</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setUpZoomGroupBox(self):
+    self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
+    self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
+    layout = QHBoxLayout()
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(0)
+    layout.addWidget(self.zoomValueLabel, alignment = Qt.AlignCenter)
+    self.zoomGroupBox = QGroupBox(&#34;Zoom&#34;)
+    self.zoomGroupBox.setFixedHeight(45)
+    self.zoomGroupBox.setLayout(layout) </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider"><code class="name flex">
@@ -2738,8 +2632,8 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             logger.error(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.storeMaskData"><code class="name flex">
-<span>def <span class="ident">storeMaskData</span></span>(<span>self)</span>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI"><code class="name flex">
+<span>def <span class="ident">updateDetailsROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2747,19 +2641,17 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def storeMaskData(self):
-    logger.info(&#34;ImageViewerROI.storeMaskData called&#34;)
+<pre><code class="python">def updateDetailsROI(self):
+    logger.info(&#34;ImageViewerROI.updateDetailsROI called&#34;)
     try:
-        regionName = self.cmbROIs.currentText()
+        self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
+            self.graphicsView.currentImageNumber = self.mainImageSlider.value()
         else:
-            imageNumber = 1
-        mask = self.graphicsView.graphicsItem.getMaskData()
-        self.graphicsView.dictROIs.addRegion(regionName, mask, imageNumber)
+            self.graphicsView.currentImageNumber = 1
     except Exception as e:
-            print(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewerROI.storeMaskData: &#39; + str(e))</code></pre>
+            print(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels"><code class="name flex">
@@ -2780,7 +2672,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             imageNumber = 1
         intensity = self.spinBoxIntensity.value()
         contrast = self.spinBoxContrast.value()
-        mask = self.graphicsView.dictROIs.getMask(self.cmbROIs.currentText(), imageNumber)
+        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
         self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
     except Exception as e:
         print(&#39;Error in ImageViewerROI.updateImageLevels when imageNumber={}: &#39;.format(imageNumber) + str(e))
@@ -2798,7 +2690,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def updateROIName(self):
     logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
-    self.graphicsView.currentROIName = self.cmbROIs.currentText()</code></pre>
+    self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider"><code class="name flex">
@@ -2986,11 +2878,11 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList">addNewROItoDropDownList</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools">connectSlotToSignalForROITools</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROITidyUp" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROITidyUp">deleteROITidyUp</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayImageDataUnderMouse" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayImageDataUnderMouse">displayImageDataUnderMouse</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd">displayROIMeanAndStd</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI">drawROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI">eraseROI</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue">getPixelValue</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI">loadROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem">reloadImageInNewImageItem</a></code></li>
@@ -3002,19 +2894,19 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour">setEraseButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataLayout">setUpImageDataLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataWidgets" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageDataWidgets">setUpImageDataWidgets</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders">setUpImageSliders</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout">setUpMainLayout</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons">setUpROIButtons</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList">setUpROIDropDownList</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout">setUpRoiToolsLayout</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox">setUpZoomGroupBox</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider">setUpZoomSlider</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.storeMaskData" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.storeMaskData">storeMaskData</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI">updateDetailsROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels">updateImageLevels</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName">updateROIName</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider">updateZoomSlider</a></code></li>
@@ -3038,7 +2930,7 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

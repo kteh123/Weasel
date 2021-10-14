@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>WEASEL.CoreModules.DICOMFolder API documentation</title>
+<meta name="description" content="Class for reading and summarizing contents of a DICOM folder …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>WEASEL.CoreModules.DICOMFolder</code></h1>
+</header>
+<section id="section-intro">
+<p>Class for reading and summarizing contents of a DICOM folder.</p>
+<p>The DICOMfolder reads a folder containing DICOM files,
+summarizes the content as a pandas DataFrame, and exports as csv.
+DICOMFolder can also turn the DataFrame into an ElementTree and save
+that as an XML file. DICOMfolder also handles conversion of multi-frame
+DICOM data into single frame.</p>
+<pre><code>Examples:
+
+folder = DICOMfolder()
+for f in folder.files(): print(f)
+folder.read_dataframe()
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34; Class for reading and summarizing contents of a DICOM folder.
+
+The DICOMfolder reads a folder containing DICOM files,
+summarizes the content as a pandas DataFrame, and exports as csv.
+DICOMFolder can also turn the DataFrame into an ElementTree and save
+that as an XML file. DICOMfolder also handles conversion of multi-frame 
+DICOM data into single frame.
+
+    Examples:
+
+    folder = DICOMfolder()
+    for f in folder.files(): print(f)
+    folder.read_dataframe()
+
+&#34;&#34;&#34;
+
+import os
+import sys
+import pathlib
+import subprocess
+import pydicom
+import pandas
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
+
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QWidget, QMainWindow)
+
+
+
+
+class DICOMFolder():
+
+    def __init__(self, parent=None, path=None):
+
+        self.parent = parent
+        self.path = path
+        self.dataframe = None
+        self.element_tree = None
+
+        if self.parent is None:
+            app = QApplication(sys.argv)
+            self.parent = QMainWindow()
+        if self.path is None:
+            self.select_folder()
+        
+    def select_folder(self):
+
+        self.path = QFileDialog.getExistingDirectory(
+            parent = self.parent, 
+            caption = &#34;Please select a folder with DICOM data&#34;, 
+            directory = os.path.dirname(sys.argv[0]), 
+            options = QFileDialog.ShowDirsOnly)
+
+    def files(self):
+        &#34;&#34;&#34;Returns all files in the folder.&#34;&#34;&#34;
+
+        return [item.path for item in scan_tree(self.path) if item.is_file()]
+
+    def create_dataframe(self):
+        &#34;&#34;&#34;Summarises a DICOM folder as a DataFrame.
+
+        Creates
+        -------
+        dataframe : pandas.DataFrame
+            A Pandas dataframe with one row per file
+            The index is the file path 
+            Each column corresponds to a Tag in the list of Tags
+        &#34;&#34;&#34;
+        all_files = self.files()
+        self.dataframe = read_dataframe(all_files)
+
+    def write_csv(self):
+        &#34;&#34;&#34; Writes a DataFrame as a CSV file&#34;&#34;&#34;
+
+        file = self.csv()
+        self.dataframe.to_csv(file)
+
+    def read_csv(self):
+        &#34;&#34;&#34;Reads the DataFrame from a CSV file &#34;&#34;&#34;  
+
+        file = self.csv()
+        self.dataframe = pandas.read_csv(file, index_col=0)
+
+    def csv(self):
+        &#34;&#34;&#34; Returns the file path of the CSV file&#34;&#34;&#34;
+
+        filename = os.path.basename(os.path.normpath(self.path)) + &#34;.csv&#34;
+        return os.path.join(self.path, filename)
+
+    def create_element_tree(self):
+        &#34;&#34;&#34;
+        Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. 
+
+        Parameters
+        ----------
+        data_frame: pandas DataFrame created by DICOM_to_DataFrame
+
+        Returns
+        -------
+        An XML ElementTree representing the DICOM object structure
+        &#34;&#34;&#34;   
+        self.element_tree = element_tree_from_dataframe(self.dataframe)
+
+    def write_xml(self):
+        &#34;&#34;&#34;Saves an ElementTree as an XML file
+
+        Arguments
+        ---------
+        element_tree: An XML ElementTree
+        xml_file: path to the xml file
+        &#34;&#34;&#34;
+        file = self.xml()
+        xml_string = ET.tostring(self.element_tree, encoding=&#39;utf-8&#39;)
+        xml_string = minidom.parseString(xml_string).toprettyxml(encoding=&#34;utf-8&#34;, indent=&#34;  &#34;)
+        with open(file, &#34;wb&#34;) as f: f.write(xml_string) 
+
+    def read_xml(self):
+        &#34;&#34;&#34;Creates an ElementTree from an XML file&#34;&#34;&#34; 
+
+        file = self.xml()
+        self.element_tree = ET.parse(file)
+
+    def xml(self):
+        &#34;&#34;&#34; Returns the file path of the XML file&#34;&#34;&#34;
+
+        filename = os.path.basename(os.path.normpath(self.path)) + &#34;.xml&#34;
+        return os.path.join(self.path, filename)
+
+
+    def drop_multiframe(self):
+        &#34;&#34;&#34;Drop multi-frame data from the dataframe without deleting the files&#34;&#34;&#34;
+
+        singleframe = self.dataframe.NumberOfFrames.isnull() 
+        multiframe = singleframe == False
+        if multiframe.sum() != 0: 
+            files = self.dataframe[multiframe].index.values.tolist()
+            self.dataframe.drop(index=files, inplace=True) 
+            self.write_csv()
+
+    def convert_multiframe(self):
+        &#34;&#34;&#34;Converts multi-frame into single-frame data&#34;&#34;&#34;
+
+        singleframe = self.dataframe.NumberOfFrames.isnull() 
+        multiframe = singleframe == False
+        if multiframe.sum() == 0: 
+            return 
+        for filepath, image in self.dataframe[multiframe].iterrows():
+            singleframe_files, fail = split_multiframe(filepath, str(image.SeriesDescription))
+            if fail == 0: 
+                # add the single frame files to the dataframe
+                singleframe_df = read_dataframe(singleframe_files) 
+                self.dataframe = pandas.concat([self.dataframe, singleframe_df])
+                # delete the original multiframe file
+                os.remove(filepath)
+                self.dataframe.drop(index=filepath, inplace=True)
+        self.write_csv()
+
+
+def read_dataframe(files):
+    &#34;&#34;&#34;Creates a dataframe from a list of files.
+
+    Arguments
+    ---------
+    files : [str]
+        A list of filepaths to read
+    &#34;&#34;&#34;
+    tags = [&#39;PatientID&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;, &#39;SOPInstanceUID&#39;,
+            &#39;PatientName&#39;, &#39;StudyDescription&#39;, &#39;SeriesDescription&#39;, &#39;SequenceName&#39;, &#39;SeriesNumber&#39;, &#39;InstanceNumber&#39;,
+            &#39;StudyDate&#39;, &#39;SeriesDate&#39;, &#39;AcquisitionDate&#39;,
+            &#39;StudyTime&#39;, &#39;SeriesTime&#39;, &#39;AcquisitionTime&#39;, 
+            &#39;NumberOfFrames&#39;]
+
+    array = []
+    dicom_files = []
+    
+    for file in files:
+        # print(file)
+        dataset = pydicom.dcmread(file, force=True)
+        if isinstance(dataset, pydicom.dataset.FileDataset):
+            if &#39;TransferSyntaxUID&#39; in dataset.file_meta:
+                row = [False]  # Default Check state
+                for tag in tags:
+                    if tag not in dataset:
+                        value = None
+                    else:
+                        value = dataset[tag].value
+                    row.append(value)
+                array.append(row)
+                dicom_files.append(file) 
+    columns = [&#39;Checked&#39;]
+    columns.extend(tags)
+    return pandas.DataFrame(array, index=dicom_files, columns=columns)
+
+
+def element_tree_from_dataframe(df):
+    &#34;&#34;&#34;
+    Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. 
+
+    Parameters
+    ----------
+    data_frame: pandas DataFrame created by DICOM_to_DataFrame
+
+    Returns
+    -------
+    An XML ElementTree representing the DICOM object structure
+    &#34;&#34;&#34;   
+
+    element_tree = ET.Element(&#39;DICOM&#39;)
+    comment = ET.Comment(&#39;Element Tree representing a DICOM folder&#39;)
+    element_tree.append(comment)
+
+    df.sort_values(
+        [&#39;PatientID&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesNumber&#39;, &#39;InstanceNumber&#39;], 
+        inplace = True)
+
+    for subject in df.PatientID.unique():
+        subject = df[df.PatientID == subject]
+        labels = label(subject.iloc[0])     
+        subject_element = ET.SubElement(element_tree, &#39;subject&#39;)
+        subject_element.set(&#39;id&#39;, labels[0])
+        subject_element.set(&#39;expanded&#39;, &#39;False&#39;)  
+        subject_element.set(&#39;checked&#39;, &#39;True&#39; if subject.Checked.all() else &#39;False&#39;) 
+        for study in subject.StudyInstanceUID.unique():
+            study = subject[subject.StudyInstanceUID == study]
+            labels = label(study.iloc[0])
+            study_element = ET.SubElement(subject_element, &#39;study&#39;)
+            study_element.set(&#39;id&#39;, labels[1])
+            study_element.set(&#39;expanded&#39;, &#39;False&#39;) 
+            study_element.set(&#39;checked&#39;, &#39;True&#39; if study.Checked.all() else &#39;False&#39;)  
+            for series in study.SeriesInstanceUID.unique():
+                series = study[study.SeriesInstanceUID == series]
+                labels = label(series.iloc[0])
+                series_element = ET.SubElement(study_element, &#39;series&#39;)
+                series_element.set(&#39;id&#39;, labels[2])
+                series_element.set(&#39;expanded&#39;, &#39;False&#39;) 
+                series_element.set(&#39;checked&#39;, &#39;True&#39; if series.Checked.all() else &#39;False&#39;)  
+                for filepath, image in series.iterrows():
+                    labels = label(image)
+                    image_element = ET.SubElement(series_element, &#39;image&#39;)
+                    image_element.set(&#39;checked&#39;, &#39;True&#39; if series.Checked.all() else &#39;False&#39;)  
+                    ET.SubElement(image_element, &#39;label&#39;).text = labels[3]
+                    ET.SubElement(image_element, &#39;name&#39;).text = filepath
+                    ET.SubElement(image_element, &#39;time&#39;).text = labels[5]
+                    ET.SubElement(image_element, &#39;date&#39;).text = labels[4]
+    return element_tree
+
+
+def label(image):
+    &#34;&#34;&#34;Creates human readable labels for a DICOM image.
+
+    Arguments
+    --------- 
+    image: A row in a DataFrame or a pydicom DataSet
+
+    Returns
+    -------
+    A tuple of strings
+    &#34;&#34;&#34; 
+
+    subject_label = &#39;Name: &#39; + str(image.PatientName)
+    subject_label += &#39; [Patient ID = &#39; + str(image.PatientID) + &#39;]&#39;
+    study_label = &#39;Description: &#39; + str(image.StudyDescription) 
+    study_label += &#39; [Date = &#39; + str(image.StudyDate) + &#34;, &#34;
+    study_label += &#39;Time = &#39; + str(image.StudyTime).split(&#34;.&#34;)[0] +&#39;]&#39;
+    series_label = &#39;Description: &#39; + str(image.SeriesDescription)
+    series_label += &#39;[Nr = &#39; + str(image.SeriesNumber) + &#34;]&#34;
+    image_label = &#39;Nr: &#39; + str(image.InstanceNumber).zfill(6)
+
+    SeriesTime = str(image.AcquisitionTime)
+    SeriesDate = str(image.StudyDate)
+
+    &#34;&#34;&#34;Bugs - commenting out for now 
+    if image.AcquisitionTime is not None:
+
+    SeriesTime = str(image.SeriesTime)
+    SeriesDate = str(image.SeriesDate)
+
+        try:
+            SeriesTime = datetime.datetime.strptime(str(image.AcquisitionTime), &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        except:
+            SeriesTime = datetime.datetime.strptime(str(image.AcquisitionTime), &#39;%H%M%S.%f&#39;).strftime(&#39;%H:%M&#39;)
+        try:
+            SeriesDate = datetime.datetime.strptime(str(image.AcquisitionDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+        except:
+            SeriesDate = datetime.datetime.strptime(str(image.StudyDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    elif image.SeriesTime is not None:  # Enhanced MRI
+        try:
+            SeriesTime = datetime.datetime.strptime(str(image.SeriesTime), &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        except:
+            SeriesTime = datetime.datetime.strptime(str(image.SeriesTime), &#39;%H%M%S.%f&#39;).strftime(&#39;%H:%M&#39;)
+        try:
+            SeriesDate = datetime.datetime.strptime(str(image.SeriesDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+        except:
+            SeriesDate = datetime.datetime.strptime(str(image.StudyDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    else:
+        SeriesTime = datetime.datetime.strptime(&#39;000000&#39;, &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        SeriesDate = datetime.datetime.strptime(&#39;20000101&#39;, &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    &#34;&#34;&#34;
+
+    return (subject_label, study_label, series_label, image_label, 
+            SeriesDate, SeriesTime)
+      
+
+def split_multiframe(filepath, description):
+    &#34;&#34;&#34;Splits a multi-frame image into single frames&#34;&#34;&#34;
+
+    # Run the dcm4che emf2sf
+    script = &#39;emf2sf&#39;
+    multiframeDir = os.path.dirname(filepath)
+    fileBase = &#34;SingleFrame_&#34;
+    fileBaseFlag = fileBase + &#34;000000_&#34; + description
+    command = [program(script), &#34;--inst-no&#34;, &#34;&#39;%s&#39;&#34;, &#34;--not-chseries&#34;, &#34;--out-dir&#34;, multiframeDir, &#34;--out-file&#34;, fileBaseFlag, filepath]
+    try:
+        fail = subprocess.call(command, stdout=subprocess.PIPE)
+    except Exception as e:
+        fail = 1
+        print(&#39;Error in &#39; + script + &#39;: &#39; + str(e)) 
+        print(&#39;Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n&#39;\
+                &#39;The DICOM file &#39; + filepath + &#39; was not deleted.&#39;)
+        logger.exception(&#39;Error in &#39; + script + &#39;: &#39; + str(e))
+
+    # Return a list of newly created files
+    multiframe_files_list = []
+    if fail == 0:
+        for new_file in os.listdir(multiframeDir):
+            if new_file.startswith(fileBase):
+                new_file_path = os.path.join(multiframeDir, new_file)
+                multiframe_files_list.append(new_file_path)            
+    return multiframe_files_list, fail
+
+
+def program(script):
+    &#34;&#34;&#34;Helper function: Find the program for a given script&#34;&#34;&#34;
+
+    if os.name ==&#39;nt&#39;: script += &#39;.bat&#39;
+    program = script
+    # If running Weasel as executable (SPS: THIS NEEDS TO CHANGE - CAN&#39;T ACCOUNT FOR THAT INSIDE)
+    if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+        directory = pathlib.Path(sys._MEIPASS)
+    # If running Weasel as normal Python script
+    else:
+        directory = pathlib.Path().absolute()
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            if filename.endswith(script):
+                sys.path.append(dirpath)
+                program = os.path.join(dirpath, filename)
+    return program
+
+
+def scan_tree(directory):
+    &#34;&#34;&#34;Helper function: yield DirEntry objects for the directory.&#34;&#34;&#34;
+
+    for entry in os.scandir(directory):
+        if entry.is_dir(follow_symlinks=False):
+            yield from scan_tree(entry.path)
+        else:
+            yield entry</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe"><code class="name flex">
+<span>def <span class="ident">element_tree_from_dataframe</span></span>(<span>df)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data_frame</code></strong> :&ensp;<code>pandas DataFrame created by DICOM_to_DataFrame</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>An XML ElementTree representing the DICOM object structure</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def element_tree_from_dataframe(df):
+    &#34;&#34;&#34;
+    Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. 
+
+    Parameters
+    ----------
+    data_frame: pandas DataFrame created by DICOM_to_DataFrame
+
+    Returns
+    -------
+    An XML ElementTree representing the DICOM object structure
+    &#34;&#34;&#34;   
+
+    element_tree = ET.Element(&#39;DICOM&#39;)
+    comment = ET.Comment(&#39;Element Tree representing a DICOM folder&#39;)
+    element_tree.append(comment)
+
+    df.sort_values(
+        [&#39;PatientID&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesNumber&#39;, &#39;InstanceNumber&#39;], 
+        inplace = True)
+
+    for subject in df.PatientID.unique():
+        subject = df[df.PatientID == subject]
+        labels = label(subject.iloc[0])     
+        subject_element = ET.SubElement(element_tree, &#39;subject&#39;)
+        subject_element.set(&#39;id&#39;, labels[0])
+        subject_element.set(&#39;expanded&#39;, &#39;False&#39;)  
+        subject_element.set(&#39;checked&#39;, &#39;True&#39; if subject.Checked.all() else &#39;False&#39;) 
+        for study in subject.StudyInstanceUID.unique():
+            study = subject[subject.StudyInstanceUID == study]
+            labels = label(study.iloc[0])
+            study_element = ET.SubElement(subject_element, &#39;study&#39;)
+            study_element.set(&#39;id&#39;, labels[1])
+            study_element.set(&#39;expanded&#39;, &#39;False&#39;) 
+            study_element.set(&#39;checked&#39;, &#39;True&#39; if study.Checked.all() else &#39;False&#39;)  
+            for series in study.SeriesInstanceUID.unique():
+                series = study[study.SeriesInstanceUID == series]
+                labels = label(series.iloc[0])
+                series_element = ET.SubElement(study_element, &#39;series&#39;)
+                series_element.set(&#39;id&#39;, labels[2])
+                series_element.set(&#39;expanded&#39;, &#39;False&#39;) 
+                series_element.set(&#39;checked&#39;, &#39;True&#39; if series.Checked.all() else &#39;False&#39;)  
+                for filepath, image in series.iterrows():
+                    labels = label(image)
+                    image_element = ET.SubElement(series_element, &#39;image&#39;)
+                    image_element.set(&#39;checked&#39;, &#39;True&#39; if series.Checked.all() else &#39;False&#39;)  
+                    ET.SubElement(image_element, &#39;label&#39;).text = labels[3]
+                    ET.SubElement(image_element, &#39;name&#39;).text = filepath
+                    ET.SubElement(image_element, &#39;time&#39;).text = labels[5]
+                    ET.SubElement(image_element, &#39;date&#39;).text = labels[4]
+    return element_tree</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.label"><code class="name flex">
+<span>def <span class="ident">label</span></span>(<span>image)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates human readable labels for a DICOM image.</p>
+<h2 id="arguments">Arguments</h2>
+<p>image: A row in a DataFrame or a pydicom DataSet</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A tuple</code> of <code>strings</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def label(image):
+    &#34;&#34;&#34;Creates human readable labels for a DICOM image.
+
+    Arguments
+    --------- 
+    image: A row in a DataFrame or a pydicom DataSet
+
+    Returns
+    -------
+    A tuple of strings
+    &#34;&#34;&#34; 
+
+    subject_label = &#39;Name: &#39; + str(image.PatientName)
+    subject_label += &#39; [Patient ID = &#39; + str(image.PatientID) + &#39;]&#39;
+    study_label = &#39;Description: &#39; + str(image.StudyDescription) 
+    study_label += &#39; [Date = &#39; + str(image.StudyDate) + &#34;, &#34;
+    study_label += &#39;Time = &#39; + str(image.StudyTime).split(&#34;.&#34;)[0] +&#39;]&#39;
+    series_label = &#39;Description: &#39; + str(image.SeriesDescription)
+    series_label += &#39;[Nr = &#39; + str(image.SeriesNumber) + &#34;]&#34;
+    image_label = &#39;Nr: &#39; + str(image.InstanceNumber).zfill(6)
+
+    SeriesTime = str(image.AcquisitionTime)
+    SeriesDate = str(image.StudyDate)
+
+    &#34;&#34;&#34;Bugs - commenting out for now 
+    if image.AcquisitionTime is not None:
+
+    SeriesTime = str(image.SeriesTime)
+    SeriesDate = str(image.SeriesDate)
+
+        try:
+            SeriesTime = datetime.datetime.strptime(str(image.AcquisitionTime), &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        except:
+            SeriesTime = datetime.datetime.strptime(str(image.AcquisitionTime), &#39;%H%M%S.%f&#39;).strftime(&#39;%H:%M&#39;)
+        try:
+            SeriesDate = datetime.datetime.strptime(str(image.AcquisitionDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+        except:
+            SeriesDate = datetime.datetime.strptime(str(image.StudyDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    elif image.SeriesTime is not None:  # Enhanced MRI
+        try:
+            SeriesTime = datetime.datetime.strptime(str(image.SeriesTime), &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        except:
+            SeriesTime = datetime.datetime.strptime(str(image.SeriesTime), &#39;%H%M%S.%f&#39;).strftime(&#39;%H:%M&#39;)
+        try:
+            SeriesDate = datetime.datetime.strptime(str(image.SeriesDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+        except:
+            SeriesDate = datetime.datetime.strptime(str(image.StudyDate), &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    else:
+        SeriesTime = datetime.datetime.strptime(&#39;000000&#39;, &#39;%H%M%S&#39;).strftime(&#39;%H:%M&#39;)
+        SeriesDate = datetime.datetime.strptime(&#39;20000101&#39;, &#39;%Y%m%d&#39;).strftime(&#39;%d/%m/%Y&#39;)
+    &#34;&#34;&#34;
+
+    return (subject_label, study_label, series_label, image_label, 
+            SeriesDate, SeriesTime)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.program"><code class="name flex">
+<span>def <span class="ident">program</span></span>(<span>script)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper function: Find the program for a given script</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def program(script):
+    &#34;&#34;&#34;Helper function: Find the program for a given script&#34;&#34;&#34;
+
+    if os.name ==&#39;nt&#39;: script += &#39;.bat&#39;
+    program = script
+    # If running Weasel as executable (SPS: THIS NEEDS TO CHANGE - CAN&#39;T ACCOUNT FOR THAT INSIDE)
+    if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+        directory = pathlib.Path(sys._MEIPASS)
+    # If running Weasel as normal Python script
+    else:
+        directory = pathlib.Path().absolute()
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            if filename.endswith(script):
+                sys.path.append(dirpath)
+                program = os.path.join(dirpath, filename)
+    return program</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.read_dataframe"><code class="name flex">
+<span>def <span class="ident">read_dataframe</span></span>(<span>files)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a dataframe from a list of files.</p>
+<h2 id="arguments">Arguments</h2>
+<dl>
+<dt><strong><code>files</code></strong> :&ensp;<code>[str]</code></dt>
+<dd>A list of filepaths to read</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_dataframe(files):
+    &#34;&#34;&#34;Creates a dataframe from a list of files.
+
+    Arguments
+    ---------
+    files : [str]
+        A list of filepaths to read
+    &#34;&#34;&#34;
+    tags = [&#39;PatientID&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;, &#39;SOPInstanceUID&#39;,
+            &#39;PatientName&#39;, &#39;StudyDescription&#39;, &#39;SeriesDescription&#39;, &#39;SequenceName&#39;, &#39;SeriesNumber&#39;, &#39;InstanceNumber&#39;,
+            &#39;StudyDate&#39;, &#39;SeriesDate&#39;, &#39;AcquisitionDate&#39;,
+            &#39;StudyTime&#39;, &#39;SeriesTime&#39;, &#39;AcquisitionTime&#39;, 
+            &#39;NumberOfFrames&#39;]
+
+    array = []
+    dicom_files = []
+    
+    for file in files:
+        # print(file)
+        dataset = pydicom.dcmread(file, force=True)
+        if isinstance(dataset, pydicom.dataset.FileDataset):
+            if &#39;TransferSyntaxUID&#39; in dataset.file_meta:
+                row = [False]  # Default Check state
+                for tag in tags:
+                    if tag not in dataset:
+                        value = None
+                    else:
+                        value = dataset[tag].value
+                    row.append(value)
+                array.append(row)
+                dicom_files.append(file) 
+    columns = [&#39;Checked&#39;]
+    columns.extend(tags)
+    return pandas.DataFrame(array, index=dicom_files, columns=columns)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.scan_tree"><code class="name flex">
+<span>def <span class="ident">scan_tree</span></span>(<span>directory)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper function: yield DirEntry objects for the directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scan_tree(directory):
+    &#34;&#34;&#34;Helper function: yield DirEntry objects for the directory.&#34;&#34;&#34;
+
+    for entry in os.scandir(directory):
+        if entry.is_dir(follow_symlinks=False):
+            yield from scan_tree(entry.path)
+        else:
+            yield entry</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.split_multiframe"><code class="name flex">
+<span>def <span class="ident">split_multiframe</span></span>(<span>filepath, description)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Splits a multi-frame image into single frames</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def split_multiframe(filepath, description):
+    &#34;&#34;&#34;Splits a multi-frame image into single frames&#34;&#34;&#34;
+
+    # Run the dcm4che emf2sf
+    script = &#39;emf2sf&#39;
+    multiframeDir = os.path.dirname(filepath)
+    fileBase = &#34;SingleFrame_&#34;
+    fileBaseFlag = fileBase + &#34;000000_&#34; + description
+    command = [program(script), &#34;--inst-no&#34;, &#34;&#39;%s&#39;&#34;, &#34;--not-chseries&#34;, &#34;--out-dir&#34;, multiframeDir, &#34;--out-file&#34;, fileBaseFlag, filepath]
+    try:
+        fail = subprocess.call(command, stdout=subprocess.PIPE)
+    except Exception as e:
+        fail = 1
+        print(&#39;Error in &#39; + script + &#39;: &#39; + str(e)) 
+        print(&#39;Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n&#39;\
+                &#39;The DICOM file &#39; + filepath + &#39; was not deleted.&#39;)
+        logger.exception(&#39;Error in &#39; + script + &#39;: &#39; + str(e))
+
+    # Return a list of newly created files
+    multiframe_files_list = []
+    if fail == 0:
+        for new_file in os.listdir(multiframeDir):
+            if new_file.startswith(fileBase):
+                new_file_path = os.path.join(multiframeDir, new_file)
+                multiframe_files_list.append(new_file_path)            
+    return multiframe_files_list, fail</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder"><code class="flex name class">
+<span>class <span class="ident">DICOMFolder</span></span>
+<span>(</span><span>parent=None, path=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DICOMFolder():
+
+    def __init__(self, parent=None, path=None):
+
+        self.parent = parent
+        self.path = path
+        self.dataframe = None
+        self.element_tree = None
+
+        if self.parent is None:
+            app = QApplication(sys.argv)
+            self.parent = QMainWindow()
+        if self.path is None:
+            self.select_folder()
+        
+    def select_folder(self):
+
+        self.path = QFileDialog.getExistingDirectory(
+            parent = self.parent, 
+            caption = &#34;Please select a folder with DICOM data&#34;, 
+            directory = os.path.dirname(sys.argv[0]), 
+            options = QFileDialog.ShowDirsOnly)
+
+    def files(self):
+        &#34;&#34;&#34;Returns all files in the folder.&#34;&#34;&#34;
+
+        return [item.path for item in scan_tree(self.path) if item.is_file()]
+
+    def create_dataframe(self):
+        &#34;&#34;&#34;Summarises a DICOM folder as a DataFrame.
+
+        Creates
+        -------
+        dataframe : pandas.DataFrame
+            A Pandas dataframe with one row per file
+            The index is the file path 
+            Each column corresponds to a Tag in the list of Tags
+        &#34;&#34;&#34;
+        all_files = self.files()
+        self.dataframe = read_dataframe(all_files)
+
+    def write_csv(self):
+        &#34;&#34;&#34; Writes a DataFrame as a CSV file&#34;&#34;&#34;
+
+        file = self.csv()
+        self.dataframe.to_csv(file)
+
+    def read_csv(self):
+        &#34;&#34;&#34;Reads the DataFrame from a CSV file &#34;&#34;&#34;  
+
+        file = self.csv()
+        self.dataframe = pandas.read_csv(file, index_col=0)
+
+    def csv(self):
+        &#34;&#34;&#34; Returns the file path of the CSV file&#34;&#34;&#34;
+
+        filename = os.path.basename(os.path.normpath(self.path)) + &#34;.csv&#34;
+        return os.path.join(self.path, filename)
+
+    def create_element_tree(self):
+        &#34;&#34;&#34;
+        Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. 
+
+        Parameters
+        ----------
+        data_frame: pandas DataFrame created by DICOM_to_DataFrame
+
+        Returns
+        -------
+        An XML ElementTree representing the DICOM object structure
+        &#34;&#34;&#34;   
+        self.element_tree = element_tree_from_dataframe(self.dataframe)
+
+    def write_xml(self):
+        &#34;&#34;&#34;Saves an ElementTree as an XML file
+
+        Arguments
+        ---------
+        element_tree: An XML ElementTree
+        xml_file: path to the xml file
+        &#34;&#34;&#34;
+        file = self.xml()
+        xml_string = ET.tostring(self.element_tree, encoding=&#39;utf-8&#39;)
+        xml_string = minidom.parseString(xml_string).toprettyxml(encoding=&#34;utf-8&#34;, indent=&#34;  &#34;)
+        with open(file, &#34;wb&#34;) as f: f.write(xml_string) 
+
+    def read_xml(self):
+        &#34;&#34;&#34;Creates an ElementTree from an XML file&#34;&#34;&#34; 
+
+        file = self.xml()
+        self.element_tree = ET.parse(file)
+
+    def xml(self):
+        &#34;&#34;&#34; Returns the file path of the XML file&#34;&#34;&#34;
+
+        filename = os.path.basename(os.path.normpath(self.path)) + &#34;.xml&#34;
+        return os.path.join(self.path, filename)
+
+
+    def drop_multiframe(self):
+        &#34;&#34;&#34;Drop multi-frame data from the dataframe without deleting the files&#34;&#34;&#34;
+
+        singleframe = self.dataframe.NumberOfFrames.isnull() 
+        multiframe = singleframe == False
+        if multiframe.sum() != 0: 
+            files = self.dataframe[multiframe].index.values.tolist()
+            self.dataframe.drop(index=files, inplace=True) 
+            self.write_csv()
+
+    def convert_multiframe(self):
+        &#34;&#34;&#34;Converts multi-frame into single-frame data&#34;&#34;&#34;
+
+        singleframe = self.dataframe.NumberOfFrames.isnull() 
+        multiframe = singleframe == False
+        if multiframe.sum() == 0: 
+            return 
+        for filepath, image in self.dataframe[multiframe].iterrows():
+            singleframe_files, fail = split_multiframe(filepath, str(image.SeriesDescription))
+            if fail == 0: 
+                # add the single frame files to the dataframe
+                singleframe_df = read_dataframe(singleframe_files) 
+                self.dataframe = pandas.concat([self.dataframe, singleframe_df])
+                # delete the original multiframe file
+                os.remove(filepath)
+                self.dataframe.drop(index=filepath, inplace=True)
+        self.write_csv()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe"><code class="name flex">
+<span>def <span class="ident">convert_multiframe</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts multi-frame into single-frame data</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_multiframe(self):
+    &#34;&#34;&#34;Converts multi-frame into single-frame data&#34;&#34;&#34;
+
+    singleframe = self.dataframe.NumberOfFrames.isnull() 
+    multiframe = singleframe == False
+    if multiframe.sum() == 0: 
+        return 
+    for filepath, image in self.dataframe[multiframe].iterrows():
+        singleframe_files, fail = split_multiframe(filepath, str(image.SeriesDescription))
+        if fail == 0: 
+            # add the single frame files to the dataframe
+            singleframe_df = read_dataframe(singleframe_files) 
+            self.dataframe = pandas.concat([self.dataframe, singleframe_df])
+            # delete the original multiframe file
+            os.remove(filepath)
+            self.dataframe.drop(index=filepath, inplace=True)
+    self.write_csv()</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe"><code class="name flex">
+<span>def <span class="ident">create_dataframe</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Summarises a DICOM folder as a DataFrame.</p>
+<h2 id="creates">Creates</h2>
+<p>dataframe : pandas.DataFrame
+A Pandas dataframe with one row per file
+The index is the file path
+Each column corresponds to a Tag in the list of Tags</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_dataframe(self):
+    &#34;&#34;&#34;Summarises a DICOM folder as a DataFrame.
+
+    Creates
+    -------
+    dataframe : pandas.DataFrame
+        A Pandas dataframe with one row per file
+        The index is the file path 
+        Each column corresponds to a Tag in the list of Tags
+    &#34;&#34;&#34;
+    all_files = self.files()
+    self.dataframe = read_dataframe(all_files)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree"><code class="name flex">
+<span>def <span class="ident">create_element_tree</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data_frame</code></strong> :&ensp;<code>pandas DataFrame created by DICOM_to_DataFrame</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>An XML ElementTree representing the DICOM object structure</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_element_tree(self):
+    &#34;&#34;&#34;
+    Converts a Pandas DataFrame representing a DICOM folder into an ElementTree. 
+
+    Parameters
+    ----------
+    data_frame: pandas DataFrame created by DICOM_to_DataFrame
+
+    Returns
+    -------
+    An XML ElementTree representing the DICOM object structure
+    &#34;&#34;&#34;   
+    self.element_tree = element_tree_from_dataframe(self.dataframe)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv"><code class="name flex">
+<span>def <span class="ident">csv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the file path of the CSV file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def csv(self):
+    &#34;&#34;&#34; Returns the file path of the CSV file&#34;&#34;&#34;
+
+    filename = os.path.basename(os.path.normpath(self.path)) + &#34;.csv&#34;
+    return os.path.join(self.path, filename)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe"><code class="name flex">
+<span>def <span class="ident">drop_multiframe</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Drop multi-frame data from the dataframe without deleting the files</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def drop_multiframe(self):
+    &#34;&#34;&#34;Drop multi-frame data from the dataframe without deleting the files&#34;&#34;&#34;
+
+    singleframe = self.dataframe.NumberOfFrames.isnull() 
+    multiframe = singleframe == False
+    if multiframe.sum() != 0: 
+        files = self.dataframe[multiframe].index.values.tolist()
+        self.dataframe.drop(index=files, inplace=True) 
+        self.write_csv()</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.files"><code class="name flex">
+<span>def <span class="ident">files</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all files in the folder.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def files(self):
+    &#34;&#34;&#34;Returns all files in the folder.&#34;&#34;&#34;
+
+    return [item.path for item in scan_tree(self.path) if item.is_file()]</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv"><code class="name flex">
+<span>def <span class="ident">read_csv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads the DataFrame from a CSV file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_csv(self):
+    &#34;&#34;&#34;Reads the DataFrame from a CSV file &#34;&#34;&#34;  
+
+    file = self.csv()
+    self.dataframe = pandas.read_csv(file, index_col=0)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml"><code class="name flex">
+<span>def <span class="ident">read_xml</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates an ElementTree from an XML file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_xml(self):
+    &#34;&#34;&#34;Creates an ElementTree from an XML file&#34;&#34;&#34; 
+
+    file = self.xml()
+    self.element_tree = ET.parse(file)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder"><code class="name flex">
+<span>def <span class="ident">select_folder</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_folder(self):
+
+    self.path = QFileDialog.getExistingDirectory(
+        parent = self.parent, 
+        caption = &#34;Please select a folder with DICOM data&#34;, 
+        directory = os.path.dirname(sys.argv[0]), 
+        options = QFileDialog.ShowDirsOnly)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv"><code class="name flex">
+<span>def <span class="ident">write_csv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Writes a DataFrame as a CSV file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_csv(self):
+    &#34;&#34;&#34; Writes a DataFrame as a CSV file&#34;&#34;&#34;
+
+    file = self.csv()
+    self.dataframe.to_csv(file)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml"><code class="name flex">
+<span>def <span class="ident">write_xml</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saves an ElementTree as an XML file</p>
+<h2 id="arguments">Arguments</h2>
+<dl>
+<dt><strong><code>element_tree</code></strong> :&ensp;<code>An XML ElementTree</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>xml_file</code></strong> :&ensp;<code>path to the xml file</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_xml(self):
+    &#34;&#34;&#34;Saves an ElementTree as an XML file
+
+    Arguments
+    ---------
+    element_tree: An XML ElementTree
+    xml_file: path to the xml file
+    &#34;&#34;&#34;
+    file = self.xml()
+    xml_string = ET.tostring(self.element_tree, encoding=&#39;utf-8&#39;)
+    xml_string = minidom.parseString(xml_string).toprettyxml(encoding=&#34;utf-8&#34;, indent=&#34;  &#34;)
+    with open(file, &#34;wb&#34;) as f: f.write(xml_string) </code></pre>
+</details>
+</dd>
+<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml"><code class="name flex">
+<span>def <span class="ident">xml</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the file path of the XML file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def xml(self):
+    &#34;&#34;&#34; Returns the file path of the XML file&#34;&#34;&#34;
+
+    filename = os.path.basename(os.path.normpath(self.path)) + &#34;.xml&#34;
+    return os.path.join(self.path, filename)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="WEASEL.CoreModules" href="index.html">WEASEL.CoreModules</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe" href="#WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe">element_tree_from_dataframe</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.label" href="#WEASEL.CoreModules.DICOMFolder.label">label</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.program" href="#WEASEL.CoreModules.DICOMFolder.program">program</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.read_dataframe" href="#WEASEL.CoreModules.DICOMFolder.read_dataframe">read_dataframe</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.scan_tree" href="#WEASEL.CoreModules.DICOMFolder.scan_tree">scan_tree</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.split_multiframe" href="#WEASEL.CoreModules.DICOMFolder.split_multiframe">split_multiframe</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder">DICOMFolder</a></code></h4>
+<ul class="two-column">
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe">convert_multiframe</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe">create_dataframe</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree">create_element_tree</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv">csv</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe">drop_multiframe</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.files" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.files">files</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv">read_csv</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml">read_xml</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder">select_folder</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv">write_csv</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml">write_xml</a></code></li>
+<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml">xml</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

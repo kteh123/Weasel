@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -35,8 +35,8 @@ from scipy.stats import iqr
 from numpy import nanmin, nanmax
 from matplotlib.path import Path as MplPath
 import sys
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources as icons
-import Displays.ImageViewers.ComponentsUI.FreeHandROI.HelperFunctions as fn
+from .HelperFunctions import *
+from .Resources import * 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 np.set_printoptions(threshold=sys.maxsize)
 import logging
@@ -51,12 +51,12 @@ class GraphicsItem(QGraphicsObject):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal(bool)
-    sigMaskCreated = QtCore.Signal()
-    sigMaskEdited = QtCore.Signal()
+    sigGetDetailsROI = QtCore.Signal()
+    sigRecalculateMeanROI = QtCore.Signal()
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
 
-    def __init__(self, pixelArray, roi, path): 
+    def __init__(self, pixelArray, roi, path, linkToGraphicsView): 
         super(GraphicsItem, self).__init__()
         logger.info(&#34;GraphicsItem initialised&#34;)
         self.pixelArray = pixelArray
@@ -64,11 +64,12 @@ class GraphicsItem(QGraphicsObject):
             minValue, maxValue = readLevels(path, self.pixelArray)
         else:
             minValue, maxValue = self.__quickMinMax(self.pixelArray)
+        self.linkToGraphicsView = linkToGraphicsView
         self.contrast = maxValue - minValue
         self.intensity = minValue + (maxValue - minValue)/2
-        imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-        self.origQimage = fn.makeQImage(imgData, alpha)
-        self.qimage = fn.makeQImage(imgData, alpha)
+        imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+        self.origQimage = makeQImage(imgData, alpha)
+        self.qimage = makeQImage(imgData, alpha)
         self.mask = None
         if roi is not None:
             #add roi to pixel map
@@ -92,7 +93,7 @@ class GraphicsItem(QGraphicsObject):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
-        self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
+        #self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
 
 
     def __repr__(self):
@@ -105,8 +106,8 @@ class GraphicsItem(QGraphicsObject):
         try:
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
-            imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-            self.qimage = fn.makeQImage(imgData, alpha)
+            imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+            self.qimage = makeQImage(imgData, alpha)
             self.pixMap = QPixmap.fromImage(self.qimage)
 
             #Need to reapply mask
@@ -155,15 +156,15 @@ class GraphicsItem(QGraphicsObject):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverEnterEvent called&#34;)
         try:
             if self.drawEnabled:
-                pm = QPixmap(icons.PEN_CURSOR)
+                pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(icons.ERASOR_CURSOR)
+                pm = QPixmap(ERASOR_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
-                pm = QPixmap(icons.MAGNIFYING_GLASS_CURSOR)
+                pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
         except Exception as e:
@@ -187,7 +188,7 @@ class GraphicsItem(QGraphicsObject):
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
             self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = round(self.pixelArray[self.xMouseCoord, self.yMouseCoord], 3)
+            self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent: &#39; + str(e))
@@ -199,20 +200,21 @@ class GraphicsItem(QGraphicsObject):
         try:
             buttons = event.buttons()
             if (buttons == Qt.LeftButton):
-                xCoord = int(event.pos().x())
-                yCoord = int(event.pos().y())
+                self.xMouseCoord = int(event.pos().x())
+                self.yMouseCoord = int(event.pos().y())
                 if self.drawEnabled:
                     #Only draw if left button pressed
                     if self.last_x is None: # First event.
-                        self.last_x = (event.pos()).x()
-                        self.last_y = (event.pos()).y()
-                        self.start_x = int(self.last_x)
-                        self.start_y = int(self.last_y)
+                        self.last_x = self.xMouseCoord
+                        self.last_y = self.yMouseCoord
+                        self.start_x = self.xMouseCoord
+                        self.start_y = self.yMouseCoord
                         return #  Ignore the first time.
-                    self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
+                    self.drawStraightLine(self.last_x, self.last_y, 
+                                          self.xMouseCoord, self.yMouseCoord)
                     # Update the origin for next time.
-                    self.last_x = xCoord
-                    self.last_y = yCoord
+                    self.last_x = self.xMouseCoord
+                    self.last_y = self.yMouseCoord
                     #Do not add duplicates to the list
                     if [self.last_x, self.last_y] not in self.pathCoordsList:
                         self.pathCoordsList.append([self.last_x, self.last_y])
@@ -221,11 +223,7 @@ class GraphicsItem(QGraphicsObject):
                 if self.eraseEnabled:
                     #erase mask at this pixel 
                     #and set pixel back to original value
-                    if self.mask is not None:
-                        self.resetPixel(xCoord, yCoord)
-                        #self.mask[xCoord, yCoord] = False
-                        self.mask[yCoord, xCoord] = False
-                        self.sigMaskEdited.emit()
+                    self.erasePixelROI()
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -233,9 +231,22 @@ class GraphicsItem(QGraphicsObject):
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
 
 
+    def erasePixelROI(self):
+        if self.mask is not None:
+            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            self.sigGetDetailsROI.emit()
+            #update existing mask
+            self.linkToGraphicsView.dictROIs.updateMask(self.mask)
+            self.sigRecalculateMeanROI.emit()
+
+
     def mouseReleaseEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
         try:
+            #Get the coordinates of the cursor
+            self.xMouseCoord = int(event.pos().x())
+            self.yMouseCoord = int(event.pos().y())
             button = event.button()
             if (button == Qt.LeftButton):
                 if self.drawEnabled:
@@ -253,6 +264,11 @@ class GraphicsItem(QGraphicsObject):
 
                             self.prevPathCoordsList = self.pathCoordsList
                             self.createMask(self.pathCoordsList)
+                            #store mask
+                            self.sigGetDetailsROI.emit()
+                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.sigRecalculateMeanROI.emit()
+                            
                             self.listROICoords = self.getListRoiInnerPoints(self.mask)
                             #print(&#34;ROI Inner coords={}&#34;.format(self.listROICoords))
                             self.fillFreeHandRoi()
@@ -264,38 +280,34 @@ class GraphicsItem(QGraphicsObject):
                             self.mouseMoved = False
                     else:
                         #The mouse was not moved, so a pixel was clicked on
-                        xCoord = int(event.pos().x())
-                        yCoord = int(event.pos().y())
                         if self.mask is not None:
-                            if self.mask[yCoord, xCoord]:
+                            if self.mask[self.yMouseCoord, self.xMouseCoord]:
                                 pass
                                 #mask already exists at this pixel, 
                                 #so do nothing
                             else:
                                 #added to the mask
-                                self.setPixelToRed(xCoord, yCoord)
-                                #self.mask[xCoord, yCoord] = True
-                                self.mask[yCoord, xCoord] = True
-                                self.sigMaskCreated.emit()
+                                self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                                self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                                #store mask
+                                self.sigGetDetailsROI.emit()
+                                self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                                self.sigRecalculateMeanROI.emit()
                         else:
                             #first create a boolean mask with all values False
                             self.createBlankMask()
-                            self.setPixelToRed(xCoord, yCoord)
-                            self.mask[yCoord, xCoord] = True
-                            self.sigMaskCreated.emit()
-
+                            self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                            self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                            #store mask
+                            self.sigGetDetailsROI.emit()
+                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.sigRecalculateMeanROI.emit()
                 if self.eraseEnabled:
-                    if self.mask is not None:
-                        if not self.mouseMoved:
-                            #The mouse was not moved, so a pixel was clicked on
-                            xCoord = int(event.pos().x())
-                            yCoord = int(event.pos().y())
-                            #erase mask at this pixel 
-                            #and set pixel back to original value
-                            self.resetPixel(xCoord, yCoord)
-                            #self.mask[xCoord, yCoord] = False
-                            self.mask[yCoord, xCoord] = False
-                            self.sigMaskEdited.emit()
+                    if not self.mouseMoved:
+                        #The mouse was not moved, so a pixel was clicked on
+                        #erase mask at this pixel 
+                        #and set pixel back to original value
+                        self.erasePixelROI()                    
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -511,7 +523,6 @@ class GraphicsItem(QGraphicsObject):
             #setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
-            self.sigMaskCreated.emit()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
@@ -526,8 +537,8 @@ class GraphicsItem(QGraphicsObject):
             elif (button == Qt.RightButton): 
               self.sigZoomOut.emit()
         except Exception as e:
-            print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
-            logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
+            print(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))
+            logger.error(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))
 
 
 def readLevels(path, pixelArray): 
@@ -653,7 +664,7 @@ def readLevels(path, pixelArray):
 <dl>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem"><code class="flex name class">
 <span>class <span class="ident">GraphicsItem</span></span>
-<span>(</span><span>pixelArray, roi, path)</span>
+<span>(</span><span>pixelArray, roi, path, linkToGraphicsView)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>QGraphicsObject(parent: QGraphicsItem = None)</p></div>
@@ -665,12 +676,12 @@ def readLevels(path, pixelArray):
     #sub classing QGraphicsObject rather than more logical QGraphicsItem
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal(bool)
-    sigMaskCreated = QtCore.Signal()
-    sigMaskEdited = QtCore.Signal()
+    sigGetDetailsROI = QtCore.Signal()
+    sigRecalculateMeanROI = QtCore.Signal()
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
 
-    def __init__(self, pixelArray, roi, path): 
+    def __init__(self, pixelArray, roi, path, linkToGraphicsView): 
         super(GraphicsItem, self).__init__()
         logger.info(&#34;GraphicsItem initialised&#34;)
         self.pixelArray = pixelArray
@@ -678,11 +689,12 @@ def readLevels(path, pixelArray):
             minValue, maxValue = readLevels(path, self.pixelArray)
         else:
             minValue, maxValue = self.__quickMinMax(self.pixelArray)
+        self.linkToGraphicsView = linkToGraphicsView
         self.contrast = maxValue - minValue
         self.intensity = minValue + (maxValue - minValue)/2
-        imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-        self.origQimage = fn.makeQImage(imgData, alpha)
-        self.qimage = fn.makeQImage(imgData, alpha)
+        imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+        self.origQimage = makeQImage(imgData, alpha)
+        self.qimage = makeQImage(imgData, alpha)
         self.mask = None
         if roi is not None:
             #add roi to pixel map
@@ -706,7 +718,7 @@ def readLevels(path, pixelArray):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
-        self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
+        #self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
 
 
     def __repr__(self):
@@ -719,8 +731,8 @@ def readLevels(path, pixelArray):
         try:
             minValue = intensity - (contrast/2)
             maxValue = contrast + minValue
-            imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-            self.qimage = fn.makeQImage(imgData, alpha)
+            imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+            self.qimage = makeQImage(imgData, alpha)
             self.pixMap = QPixmap.fromImage(self.qimage)
 
             #Need to reapply mask
@@ -769,15 +781,15 @@ def readLevels(path, pixelArray):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverEnterEvent called&#34;)
         try:
             if self.drawEnabled:
-                pm = QPixmap(icons.PEN_CURSOR)
+                pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(icons.ERASOR_CURSOR)
+                pm = QPixmap(ERASOR_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
-                pm = QPixmap(icons.MAGNIFYING_GLASS_CURSOR)
+                pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
         except Exception as e:
@@ -801,7 +813,7 @@ def readLevels(path, pixelArray):
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
             self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = round(self.pixelArray[self.xMouseCoord, self.yMouseCoord], 3)
+            self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent: &#39; + str(e))
@@ -813,20 +825,21 @@ def readLevels(path, pixelArray):
         try:
             buttons = event.buttons()
             if (buttons == Qt.LeftButton):
-                xCoord = int(event.pos().x())
-                yCoord = int(event.pos().y())
+                self.xMouseCoord = int(event.pos().x())
+                self.yMouseCoord = int(event.pos().y())
                 if self.drawEnabled:
                     #Only draw if left button pressed
                     if self.last_x is None: # First event.
-                        self.last_x = (event.pos()).x()
-                        self.last_y = (event.pos()).y()
-                        self.start_x = int(self.last_x)
-                        self.start_y = int(self.last_y)
+                        self.last_x = self.xMouseCoord
+                        self.last_y = self.yMouseCoord
+                        self.start_x = self.xMouseCoord
+                        self.start_y = self.yMouseCoord
                         return #  Ignore the first time.
-                    self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
+                    self.drawStraightLine(self.last_x, self.last_y, 
+                                          self.xMouseCoord, self.yMouseCoord)
                     # Update the origin for next time.
-                    self.last_x = xCoord
-                    self.last_y = yCoord
+                    self.last_x = self.xMouseCoord
+                    self.last_y = self.yMouseCoord
                     #Do not add duplicates to the list
                     if [self.last_x, self.last_y] not in self.pathCoordsList:
                         self.pathCoordsList.append([self.last_x, self.last_y])
@@ -835,11 +848,7 @@ def readLevels(path, pixelArray):
                 if self.eraseEnabled:
                     #erase mask at this pixel 
                     #and set pixel back to original value
-                    if self.mask is not None:
-                        self.resetPixel(xCoord, yCoord)
-                        #self.mask[xCoord, yCoord] = False
-                        self.mask[yCoord, xCoord] = False
-                        self.sigMaskEdited.emit()
+                    self.erasePixelROI()
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -847,9 +856,22 @@ def readLevels(path, pixelArray):
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
 
 
+    def erasePixelROI(self):
+        if self.mask is not None:
+            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            self.sigGetDetailsROI.emit()
+            #update existing mask
+            self.linkToGraphicsView.dictROIs.updateMask(self.mask)
+            self.sigRecalculateMeanROI.emit()
+
+
     def mouseReleaseEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
         try:
+            #Get the coordinates of the cursor
+            self.xMouseCoord = int(event.pos().x())
+            self.yMouseCoord = int(event.pos().y())
             button = event.button()
             if (button == Qt.LeftButton):
                 if self.drawEnabled:
@@ -867,6 +889,11 @@ def readLevels(path, pixelArray):
 
                             self.prevPathCoordsList = self.pathCoordsList
                             self.createMask(self.pathCoordsList)
+                            #store mask
+                            self.sigGetDetailsROI.emit()
+                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.sigRecalculateMeanROI.emit()
+                            
                             self.listROICoords = self.getListRoiInnerPoints(self.mask)
                             #print(&#34;ROI Inner coords={}&#34;.format(self.listROICoords))
                             self.fillFreeHandRoi()
@@ -878,38 +905,34 @@ def readLevels(path, pixelArray):
                             self.mouseMoved = False
                     else:
                         #The mouse was not moved, so a pixel was clicked on
-                        xCoord = int(event.pos().x())
-                        yCoord = int(event.pos().y())
                         if self.mask is not None:
-                            if self.mask[yCoord, xCoord]:
+                            if self.mask[self.yMouseCoord, self.xMouseCoord]:
                                 pass
                                 #mask already exists at this pixel, 
                                 #so do nothing
                             else:
                                 #added to the mask
-                                self.setPixelToRed(xCoord, yCoord)
-                                #self.mask[xCoord, yCoord] = True
-                                self.mask[yCoord, xCoord] = True
-                                self.sigMaskCreated.emit()
+                                self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                                self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                                #store mask
+                                self.sigGetDetailsROI.emit()
+                                self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                                self.sigRecalculateMeanROI.emit()
                         else:
                             #first create a boolean mask with all values False
                             self.createBlankMask()
-                            self.setPixelToRed(xCoord, yCoord)
-                            self.mask[yCoord, xCoord] = True
-                            self.sigMaskCreated.emit()
-
+                            self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                            self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                            #store mask
+                            self.sigGetDetailsROI.emit()
+                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.sigRecalculateMeanROI.emit()
                 if self.eraseEnabled:
-                    if self.mask is not None:
-                        if not self.mouseMoved:
-                            #The mouse was not moved, so a pixel was clicked on
-                            xCoord = int(event.pos().x())
-                            yCoord = int(event.pos().y())
-                            #erase mask at this pixel 
-                            #and set pixel back to original value
-                            self.resetPixel(xCoord, yCoord)
-                            #self.mask[xCoord, yCoord] = False
-                            self.mask[yCoord, xCoord] = False
-                            self.sigMaskEdited.emit()
+                    if not self.mouseMoved:
+                        #The mouse was not moved, so a pixel was clicked on
+                        #erase mask at this pixel 
+                        #and set pixel back to original value
+                        self.erasePixelROI()                    
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -1125,7 +1148,6 @@ def readLevels(path, pixelArray):
             #setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
-            self.sigMaskCreated.emit()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
@@ -1140,8 +1162,8 @@ def readLevels(path, pixelArray):
             elif (button == Qt.RightButton): 
               self.sigZoomOut.emit()
         except Exception as e:
-            print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
-            logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))</code></pre>
+            print(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))
+            logger.error(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1244,7 +1266,6 @@ def readLevels(path, pixelArray):
         #setting radius=0.1 includes the drawn boundary in the ROI
         #ideally radius should = pixel size
         self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
-        self.sigMaskCreated.emit()
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))</code></pre>
@@ -1278,6 +1299,25 @@ def readLevels(path, pixelArray):
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI"><code class="name flex">
+<span>def <span class="ident">erasePixelROI</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def erasePixelROI(self):
+    if self.mask is not None:
+        self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+        self.mask[self.yMouseCoord, self.xMouseCoord] = False
+        self.sigGetDetailsROI.emit()
+        #update existing mask
+        self.linkToGraphicsView.dictROIs.updateMask(self.mask)
+        self.sigRecalculateMeanROI.emit()</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi"><code class="name flex">
@@ -1367,15 +1407,15 @@ def readLevels(path, pixelArray):
     logger.info(&#34;FreeHandROI.GraphicsItem.hoverEnterEvent called&#34;)
     try:
         if self.drawEnabled:
-            pm = QPixmap(icons.PEN_CURSOR)
+            pm = QPixmap(PEN_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.eraseEnabled:
-            pm = QPixmap(icons.ERASOR_CURSOR)
+            pm = QPixmap(ERASOR_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.zoomEnabled:
-            pm = QPixmap(icons.MAGNIFYING_GLASS_CURSOR)
+            pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
     except Exception as e:
@@ -1417,7 +1457,7 @@ def readLevels(path, pixelArray):
         self.xMouseCoord = int(event.pos().x())
         self.yMouseCoord = int(event.pos().y())
         self.pixelColour = self.origQimage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-        self.pixelValue = round(self.pixelArray[self.xMouseCoord, self.yMouseCoord], 3)
+        self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
         self.sigMouseHovered.emit(True)
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent: &#39; + str(e))
@@ -1438,20 +1478,21 @@ def readLevels(path, pixelArray):
     try:
         buttons = event.buttons()
         if (buttons == Qt.LeftButton):
-            xCoord = int(event.pos().x())
-            yCoord = int(event.pos().y())
+            self.xMouseCoord = int(event.pos().x())
+            self.yMouseCoord = int(event.pos().y())
             if self.drawEnabled:
                 #Only draw if left button pressed
                 if self.last_x is None: # First event.
-                    self.last_x = (event.pos()).x()
-                    self.last_y = (event.pos()).y()
-                    self.start_x = int(self.last_x)
-                    self.start_y = int(self.last_y)
+                    self.last_x = self.xMouseCoord
+                    self.last_y = self.yMouseCoord
+                    self.start_x = self.xMouseCoord
+                    self.start_y = self.yMouseCoord
                     return #  Ignore the first time.
-                self.drawStraightLine(self.last_x, self.last_y, xCoord, yCoord)
+                self.drawStraightLine(self.last_x, self.last_y, 
+                                      self.xMouseCoord, self.yMouseCoord)
                 # Update the origin for next time.
-                self.last_x = xCoord
-                self.last_y = yCoord
+                self.last_x = self.xMouseCoord
+                self.last_y = self.yMouseCoord
                 #Do not add duplicates to the list
                 if [self.last_x, self.last_y] not in self.pathCoordsList:
                     self.pathCoordsList.append([self.last_x, self.last_y])
@@ -1460,11 +1501,7 @@ def readLevels(path, pixelArray):
             if self.eraseEnabled:
                 #erase mask at this pixel 
                 #and set pixel back to original value
-                if self.mask is not None:
-                    self.resetPixel(xCoord, yCoord)
-                    #self.mask[xCoord, yCoord] = False
-                    self.mask[yCoord, xCoord] = False
-                    self.sigMaskEdited.emit()
+                self.erasePixelROI()
 
         #elif (buttons == Qt.RightButton):
     except Exception as e:
@@ -1490,8 +1527,8 @@ def readLevels(path, pixelArray):
         elif (button == Qt.RightButton): 
           self.sigZoomOut.emit()
     except Exception as e:
-        print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
-        logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))</code></pre>
+        print(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))
+        logger.error(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.mouseReleaseEvent"><code class="name flex">
@@ -1506,6 +1543,9 @@ def readLevels(path, pixelArray):
 <pre><code class="python">def mouseReleaseEvent(self, event):
     logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
     try:
+        #Get the coordinates of the cursor
+        self.xMouseCoord = int(event.pos().x())
+        self.yMouseCoord = int(event.pos().y())
         button = event.button()
         if (button == Qt.LeftButton):
             if self.drawEnabled:
@@ -1523,6 +1563,11 @@ def readLevels(path, pixelArray):
 
                         self.prevPathCoordsList = self.pathCoordsList
                         self.createMask(self.pathCoordsList)
+                        #store mask
+                        self.sigGetDetailsROI.emit()
+                        self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                        self.sigRecalculateMeanROI.emit()
+                        
                         self.listROICoords = self.getListRoiInnerPoints(self.mask)
                         #print(&#34;ROI Inner coords={}&#34;.format(self.listROICoords))
                         self.fillFreeHandRoi()
@@ -1534,38 +1579,34 @@ def readLevels(path, pixelArray):
                         self.mouseMoved = False
                 else:
                     #The mouse was not moved, so a pixel was clicked on
-                    xCoord = int(event.pos().x())
-                    yCoord = int(event.pos().y())
                     if self.mask is not None:
-                        if self.mask[yCoord, xCoord]:
+                        if self.mask[self.yMouseCoord, self.xMouseCoord]:
                             pass
                             #mask already exists at this pixel, 
                             #so do nothing
                         else:
                             #added to the mask
-                            self.setPixelToRed(xCoord, yCoord)
-                            #self.mask[xCoord, yCoord] = True
-                            self.mask[yCoord, xCoord] = True
-                            self.sigMaskCreated.emit()
+                            self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                            self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                            #store mask
+                            self.sigGetDetailsROI.emit()
+                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.sigRecalculateMeanROI.emit()
                     else:
                         #first create a boolean mask with all values False
                         self.createBlankMask()
-                        self.setPixelToRed(xCoord, yCoord)
-                        self.mask[yCoord, xCoord] = True
-                        self.sigMaskCreated.emit()
-
+                        self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+                        self.mask[self.yMouseCoord, self.xMouseCoord] = True
+                        #store mask
+                        self.sigGetDetailsROI.emit()
+                        self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                        self.sigRecalculateMeanROI.emit()
             if self.eraseEnabled:
-                if self.mask is not None:
-                    if not self.mouseMoved:
-                        #The mouse was not moved, so a pixel was clicked on
-                        xCoord = int(event.pos().x())
-                        yCoord = int(event.pos().y())
-                        #erase mask at this pixel 
-                        #and set pixel back to original value
-                        self.resetPixel(xCoord, yCoord)
-                        #self.mask[xCoord, yCoord] = False
-                        self.mask[yCoord, xCoord] = False
-                        self.sigMaskEdited.emit()
+                if not self.mouseMoved:
+                    #The mouse was not moved, so a pixel was clicked on
+                    #erase mask at this pixel 
+                    #and set pixel back to original value
+                    self.erasePixelROI()                    
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))</code></pre>
@@ -1738,20 +1779,20 @@ def readLevels(path, pixelArray):
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.setROIPathColour: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskCreated"><code class="name flex">
-<span>def <span class="ident">sigMaskCreated</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskEdited"><code class="name flex">
-<span>def <span class="ident">sigMaskEdited</span></span>(<span>...)</span>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigGetDetailsROI"><code class="name flex">
+<span>def <span class="ident">sigGetDetailsROI</span></span>(<span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered"><code class="name flex">
 <span>def <span class="ident">sigMouseHovered</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI"><code class="name flex">
+<span>def <span class="ident">sigRecalculateMeanROI</span></span>(<span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1782,8 +1823,8 @@ def readLevels(path, pixelArray):
     try:
         minValue = intensity - (contrast/2)
         maxValue = contrast + minValue
-        imgData, alpha = fn.makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
-        self.qimage = fn.makeQImage(imgData, alpha)
+        imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
+        self.qimage = makeQImage(imgData, alpha)
         self.pixMap = QPixmap.fromImage(self.qimage)
 
         #Need to reapply mask
@@ -1827,6 +1868,7 @@ def readLevels(path, pixelArray):
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createBlankMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createBlankMask">createBlankMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask">createMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine">drawStraightLine</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI">erasePixelROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi">fillFreeHandRoi</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints">getListRoiInnerPoints</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData">getMaskData</a></code></li>
@@ -1843,9 +1885,9 @@ def readLevels(path, pixelArray):
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.resetPixel" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.resetPixel">resetPixel</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setPixelToRed" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setPixelToRed">setPixelToRed</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setROIPathColour" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setROIPathColour">setROIPathColour</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskCreated" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskCreated">sigMaskCreated</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskEdited" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMaskEdited">sigMaskEdited</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigGetDetailsROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigGetDetailsROI">sigGetDetailsROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered">sigMouseHovered</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI">sigRecalculateMeanROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn">sigZoomIn</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut">sigZoomOut</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.updateImageLevels" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.updateImageLevels">updateImageLevels</a></code></li>
@@ -1857,7 +1899,7 @@ def readLevels(path, pixelArray):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

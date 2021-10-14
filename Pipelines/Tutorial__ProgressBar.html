@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.Pipelines.Tutorial__HelloWorld API documentation</title>
+<title>WEASEL.Pipelines.Tutorial__ProgressBar API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,21 +19,56 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.Pipelines.Tutorial__HelloWorld</code></h1>
+<h1 class="title">Module <code>WEASEL.Pipelines.Tutorial__ProgressBar</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def enable(weasel):
-    return True
+<pre><code class="python">#**************************************************************************
+# Tutorial showing the use of the progress Bar
+#***************************************************************************
+
+
+from Displays.Messaging import ProgressBar
 
 def main(weasel):
 
-    weasel.message(
-        msg = &#34;Hello World!&#34;,
-        title = &#39;My first tutorial&#39;)</code></pre>
+    maximum = 50000
+    progress = ProgressBar(
+        parent = weasel, 
+        message = &#39;Look at my progress!&#39;,
+        maximum = maximum)
+    for i in range(maximum):
+        progress.set_value(i)
+
+    maximum = 100000
+    progress.set_maximum(maximum)
+    progress.set_message(&#39;And even more progress!!!!!!!!!!!!!&#39;)
+    for i in range(maximum):
+        progress.set_value(i)
+
+    progress.close()
+
+
+    outside = 100
+    inside = 50
+    progress_inside = ProgressBar(
+        parent = weasel, 
+        message = &#39;I can even make progress..&#39;,
+        maximum = inside)
+    progress_outside = ProgressBar(
+        parent = weasel, 
+        message = &#39;WHILE I am making progress!!&#39;,
+        maximum = outside)
+    for i in range(outside):
+        progress_outside.set_value(i)
+        for j in range(inside):
+            progress_inside.set_value(j)
+
+    progress_inside.close()
+    progress_outside.close()</code></pre>
 </details>
 </section>
 <section>
@@ -43,20 +78,7 @@ def main(weasel):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="WEASEL.Pipelines.Tutorial__HelloWorld.enable"><code class="name flex">
-<span>def <span class="ident">enable</span></span>(<span>weasel)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def enable(weasel):
-    return True</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Pipelines.Tutorial__HelloWorld.main"><code class="name flex">
+<dt id="WEASEL.Pipelines.Tutorial__ProgressBar.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>weasel)</span>
 </code></dt>
 <dd>
@@ -67,9 +89,40 @@ def main(weasel):
 </summary>
 <pre><code class="python">def main(weasel):
 
-    weasel.message(
-        msg = &#34;Hello World!&#34;,
-        title = &#39;My first tutorial&#39;)</code></pre>
+    maximum = 50000
+    progress = ProgressBar(
+        parent = weasel, 
+        message = &#39;Look at my progress!&#39;,
+        maximum = maximum)
+    for i in range(maximum):
+        progress.set_value(i)
+
+    maximum = 100000
+    progress.set_maximum(maximum)
+    progress.set_message(&#39;And even more progress!!!!!!!!!!!!!&#39;)
+    for i in range(maximum):
+        progress.set_value(i)
+
+    progress.close()
+
+
+    outside = 100
+    inside = 50
+    progress_inside = ProgressBar(
+        parent = weasel, 
+        message = &#39;I can even make progress..&#39;,
+        maximum = inside)
+    progress_outside = ProgressBar(
+        parent = weasel, 
+        message = &#39;WHILE I am making progress!!&#39;,
+        maximum = outside)
+    for i in range(outside):
+        progress_outside.set_value(i)
+        for j in range(inside):
+            progress_inside.set_value(j)
+
+    progress_inside.close()
+    progress_outside.close()</code></pre>
 </details>
 </dd>
 </dl>
@@ -90,8 +143,7 @@ def main(weasel):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="WEASEL.Pipelines.Tutorial__HelloWorld.enable" href="#WEASEL.Pipelines.Tutorial__HelloWorld.enable">enable</a></code></li>
-<li><code><a title="WEASEL.Pipelines.Tutorial__HelloWorld.main" href="#WEASEL.Pipelines.Tutorial__HelloWorld.main">main</a></code></li>
+<li><code><a title="WEASEL.Pipelines.Tutorial__ProgressBar.main" href="#WEASEL.Pipelines.Tutorial__ProgressBar.main">main</a></code></li>
 </ul>
 </li>
 </ul>

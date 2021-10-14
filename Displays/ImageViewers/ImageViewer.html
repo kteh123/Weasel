@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Displays.ImageViewers.ImageViewer API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -32,7 +32,6 @@ from PyQt5.QtGui import QPixmap, QIcon,  QCursor
 from PyQt5.QtWidgets import (QFileDialog, QApplication,                           
                             QMessageBox, 
                             QWidget,
-                            QFormLayout,
                             QHBoxLayout,
                             QVBoxLayout, 
                             QMdiSubWindow, 
@@ -57,11 +56,11 @@ from scipy.stats import iqr
 import External.pyqtgraph as pg 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import CoreModules.WEASEL.MessageWindow  as messageWindow
 
 
 from Displays.ImageViewers.DataStructures.UserImageColourSelection import UserSelection
 from Displays.ImageViewers.ComponentsUI.ImageSliders import ImageSliders as imageSliders
+from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueComponent 
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 
@@ -141,8 +140,6 @@ class ImageViewer(QMdiSubWindow):
             self.setUpTopRowLayout()
 
             self.setUpGraphicsView()
-
-            self.setUpImageDataLayout()
 
             self.setUpLevelsSpinBoxes()
     
@@ -245,11 +242,13 @@ class ImageViewer(QMdiSubWindow):
         self.btnReset.setToolTip(&#39;Return to colour tables and levels in the DICOM file&#39;)
 
 
-    def setUpColourTableLayout(self):
+    def setUpColourTableGroupBox(self):
         self.colourTableLayout = QHBoxLayout()
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
-        self.colourTableGroupBox = QGroupBox(&#34;Colour Table&#34;)
+        self.colourTableGroupBox = QGroupBox()
+        #self.colourTableGroupBox.setFixedWidth(300)
+        self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
         self.setUpColourTableDropDown()
@@ -262,10 +261,13 @@ class ImageViewer(QMdiSubWindow):
 
         self.setUpResetButton()
 
+        self.setUpDeleteImageButton()
+
         if self.isImage: 
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.btnReset.clicked.connect(lambda: self.displayPixelArrayOfSingleImage(self.imagePathList))                                                     
         elif self.isSeries:
             #Viewing a DICOM series, so show the Reset button
@@ -277,41 +279,30 @@ class ImageViewer(QMdiSubWindow):
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.cmbColours.activated.connect(self.updateImageUserSelection)
 
 
-    def setUpImageLayout(self):
-        try:
-            self.imageLayout = QVBoxLayout()
-            self.imageLayout.setContentsMargins(0, 2, 0, 0)
-            self.imageLayout.setSpacing(0)
-            self.imageGroupBox = QGroupBox(&#34;Image&#34;)
-            self.imageGroupBox.setLayout(self.imageLayout)
-            self.setUpDeleteImageButton()
-        except Exception as e:
-            print(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))
-
-
-    def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
+    def setUpImageLevelsGroupBox(self):
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+        self.imageLevelsGroupBox.setFixedWidth(200)
+        self.imageLevelsGroupBox.setFixedHeight(50)
+        self.imageLevelsGroupBox.setLayout(
+            self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
         try:
             self.topRowMainLayout = QHBoxLayout()
 
-            self.setUpColourTableLayout()
-            self.setUpImageLevelsLayout()
-            self.setUpImageLayout()
+            self.setUpColourTableGroupBox()
+            self.setUpImageLevelsGroupBox()
+            self.setUpPixelValueGroupBox()
 
             self.topRowMainLayout.addWidget(self.colourTableGroupBox)
-            self.topRowMainLayout.addWidget(self.imageGroupBox)
-            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
+            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox) 
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
 
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
@@ -339,36 +330,58 @@ class ImageViewer(QMdiSubWindow):
                 &#39;Deletes the DICOM image being viewed&#39;)
             self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
             self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
-            self.imageLayout.addWidget(self.deleteButton)
+            #self.imageLayout.addWidget(self.deleteButton)
         except Exception as e:
             print(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
-            
+ 
 
-    def setUpPixelValueLabels(self):
-        self.lblPixel = QLabel(&#34;&lt;h4&gt;Pixel Value:&lt;/h4&gt;&#34;)
-        self.imageDataLayout.addWidget(self.lblPixel)
-        self.lblPixelValue = QLabel()
-        self.lblPixelValue.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0;&#34;)
-        self.imageDataLayout.addWidget(self.lblPixelValue)
-        self.imageDataLayout.addStretch(50)
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+        self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
 
-
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-        self.setUpPixelValueLabels()
+  
+    def getPixelValue(self, pos, imageNumber=1):
+        &#34;&#34;&#34;
+        This function checks that the mouse pointer is over the
+        image and when it is, it determines the value of the pixel
+        under the mouse pointer and displays this in the label
+        lblPixelValue.
+        &#34;&#34;&#34;
+        try:
+            container =  self.graphicsView.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView(pos) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
+                z_i =  imageNumber
+                if ((len(np.shape(self.pixelArray)) == 2) 
+                    and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
+                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
+                        self.lblPixelValue.setText(
+                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                elif ((len(np.shape(self.pixelArray)) == 3) 
+                        and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
+                        and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
+                            z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
+                            self.lblPixelValue.setText(
+                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                else:
+                    self.lblPixelValue.setText(&#34;&#34;)
+            else:
+                self.lblPixelValue.setText(&#34;&#34;)
+                   
+        except Exception as e:
+            print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
 
 
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes()
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
             if self.isSeries: 
@@ -828,43 +841,6 @@ class ImageViewer(QMdiSubWindow):
             logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
 
 
-    def getPixelValue(self, pos, imageNumber=1):
-        &#34;&#34;&#34;
-        This function checks that the mouse pointer is over the
-        image and when it is, it determines the value of the pixel
-        under the mouse pointer and displays this in the label
-        lblPixelValue.
-        &#34;&#34;&#34;
-        try:
-            #print (&#34;Image position: {}&#34;.format(pos))
-            container =  self.graphicsView.getView()
-            if container.sceneBoundingRect().contains(pos): 
-                mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = math.floor(mousePoint.x())
-                y_i = math.floor(mousePoint.y()) 
-                z_i =  imageNumber
-                if (len(np.shape(self.pixelArray)) == 2) and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] \
-                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]: 
-                    self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                    .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
-                elif (len(np.shape(self.pixelArray)) == 3) \
-                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] \
-                    and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]:
-                    z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
-                    self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
-                else:
-                    self.lblPixelValue.setText(&#34;&#34;)
-            else:
-                self.lblPixelValue.setText(&#34;&#34;)
-                   
-        except Exception as e:
-            print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
-
-
     def blockLevelsSpinBoxSignals(self, block):
         &#34;&#34;&#34; 
         Toggles (off/on) blocking the signals from the spinboxes associated 
@@ -1022,10 +998,8 @@ class ImageViewer(QMdiSubWindow):
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-                &#34;Updating DICOM images&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
             for imagePath in self.imagePathList:
                 dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -1034,8 +1008,8 @@ class ImageViewer(QMdiSubWindow):
                                                                    levels=levels, lut=self.lut)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print(&#39;Error in ImageViewer.updateWholeDicomSeries: &#39; + str(e))
 
@@ -1049,10 +1023,8 @@ class ImageViewer(QMdiSubWindow):
        
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-                &#34;Updating DICOM images&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
        
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -1069,8 +1041,8 @@ class ImageViewer(QMdiSubWindow):
                     updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                         levels=levels, lut=None)
                     SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print(&#39;Error in ImageViewer.updateDicomSeriesImageByImage: &#39; + str(e))
 
@@ -1167,8 +1139,6 @@ sliders for browsing series of images.</p></div>
 
             self.setUpGraphicsView()
 
-            self.setUpImageDataLayout()
-
             self.setUpLevelsSpinBoxes()
     
             self.setUpHistogram() #At the right-hand side of the image, adjusts levels
@@ -1270,11 +1240,13 @@ sliders for browsing series of images.</p></div>
         self.btnReset.setToolTip(&#39;Return to colour tables and levels in the DICOM file&#39;)
 
 
-    def setUpColourTableLayout(self):
+    def setUpColourTableGroupBox(self):
         self.colourTableLayout = QHBoxLayout()
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
-        self.colourTableGroupBox = QGroupBox(&#34;Colour Table&#34;)
+        self.colourTableGroupBox = QGroupBox()
+        #self.colourTableGroupBox.setFixedWidth(300)
+        self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
         self.setUpColourTableDropDown()
@@ -1287,10 +1259,13 @@ sliders for browsing series of images.</p></div>
 
         self.setUpResetButton()
 
+        self.setUpDeleteImageButton()
+
         if self.isImage: 
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.btnReset.clicked.connect(lambda: self.displayPixelArrayOfSingleImage(self.imagePathList))                                                     
         elif self.isSeries:
             #Viewing a DICOM series, so show the Reset button
@@ -1302,41 +1277,30 @@ sliders for browsing series of images.</p></div>
             self.colourTableLayout.addWidget(self.btnReset)
             self.colourTableLayout.addWidget(self.btnUpdate)
             self.colourTableLayout.addWidget(self.btnExport)
+            self.colourTableLayout.addWidget(self.deleteButton)
             self.cmbColours.activated.connect(self.updateImageUserSelection)
 
 
-    def setUpImageLayout(self):
-        try:
-            self.imageLayout = QVBoxLayout()
-            self.imageLayout.setContentsMargins(0, 2, 0, 0)
-            self.imageLayout.setSpacing(0)
-            self.imageGroupBox = QGroupBox(&#34;Image&#34;)
-            self.imageGroupBox.setLayout(self.imageLayout)
-            self.setUpDeleteImageButton()
-        except Exception as e:
-            print(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))
-
-
-    def setUpImageLevelsLayout(self):
-        self.imageLevelsLayout= QHBoxLayout()
-        self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLevelsLayout.setSpacing(0)
+    def setUpImageLevelsGroupBox(self):
+        self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
-        self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)
+        self.imageLevelsGroupBox.setFixedWidth(200)
+        self.imageLevelsGroupBox.setFixedHeight(50)
+        self.imageLevelsGroupBox.setLayout(
+            self.levelsCompositeComponentLayout.getCompositeComponent())
 
 
     def setUpTopRowLayout(self):
         try:
             self.topRowMainLayout = QHBoxLayout()
 
-            self.setUpColourTableLayout()
-            self.setUpImageLevelsLayout()
-            self.setUpImageLayout()
+            self.setUpColourTableGroupBox()
+            self.setUpImageLevelsGroupBox()
+            self.setUpPixelValueGroupBox()
 
             self.topRowMainLayout.addWidget(self.colourTableGroupBox)
-            self.topRowMainLayout.addWidget(self.imageGroupBox)
-            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
+            self.topRowMainLayout.addWidget(self.imageLevelsGroupBox) 
+            self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
 
             self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
@@ -1364,36 +1328,58 @@ sliders for browsing series of images.</p></div>
                 &#39;Deletes the DICOM image being viewed&#39;)
             self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
             self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
-            self.imageLayout.addWidget(self.deleteButton)
+            #self.imageLayout.addWidget(self.deleteButton)
         except Exception as e:
             print(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
-            
+ 
 
-    def setUpPixelValueLabels(self):
-        self.lblPixel = QLabel(&#34;&lt;h4&gt;Pixel Value:&lt;/h4&gt;&#34;)
-        self.imageDataLayout.addWidget(self.lblPixel)
-        self.lblPixelValue = QLabel()
-        self.lblPixelValue.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0;&#34;)
-        self.imageDataLayout.addWidget(self.lblPixelValue)
-        self.imageDataLayout.addStretch(50)
+    def setUpPixelValueGroupBox(self):
+        pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+        self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
 
-
-    def setUpImageDataLayout(self):
-        self.imageDataLayout = QHBoxLayout()
-        self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-        self.imageDataLayout.setSpacing(0)
-        self.imageDataGroupBox = QGroupBox()
-        self.imageDataGroupBox.setLayout(self.imageDataLayout)
-        self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-        self.setUpPixelValueLabels()
+  
+    def getPixelValue(self, pos, imageNumber=1):
+        &#34;&#34;&#34;
+        This function checks that the mouse pointer is over the
+        image and when it is, it determines the value of the pixel
+        under the mouse pointer and displays this in the label
+        lblPixelValue.
+        &#34;&#34;&#34;
+        try:
+            container =  self.graphicsView.getView()
+            if container.sceneBoundingRect().contains(pos): 
+                mousePoint = container.getViewBox().mapSceneToView(pos) 
+                x_i = math.floor(mousePoint.x())
+                y_i = math.floor(mousePoint.y()) 
+                z_i =  imageNumber
+                if ((len(np.shape(self.pixelArray)) == 2) 
+                    and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
+                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
+                        self.lblPixelValue.setText(
+                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                elif ((len(np.shape(self.pixelArray)) == 3) 
+                        and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
+                        and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
+                            z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
+                            self.lblPixelValue.setText(
+                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                else:
+                    self.lblPixelValue.setText(&#34;&#34;)
+            else:
+                self.lblPixelValue.setText(&#34;&#34;)
+                   
+        except Exception as e:
+            print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
 
 
     def setUpLevelsSpinBoxes(self):
         try:
-            spinBoxObject = imageLevelsSpinBoxes()
-            self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-            self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+            self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes()
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
             if self.isSeries: 
@@ -1853,43 +1839,6 @@ sliders for browsing series of images.</p></div>
             logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
 
 
-    def getPixelValue(self, pos, imageNumber=1):
-        &#34;&#34;&#34;
-        This function checks that the mouse pointer is over the
-        image and when it is, it determines the value of the pixel
-        under the mouse pointer and displays this in the label
-        lblPixelValue.
-        &#34;&#34;&#34;
-        try:
-            #print (&#34;Image position: {}&#34;.format(pos))
-            container =  self.graphicsView.getView()
-            if container.sceneBoundingRect().contains(pos): 
-                mousePoint = container.getViewBox().mapSceneToView(pos) 
-                x_i = math.floor(mousePoint.x())
-                y_i = math.floor(mousePoint.y()) 
-                z_i =  imageNumber
-                if (len(np.shape(self.pixelArray)) == 2) and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] \
-                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]: 
-                    self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                    .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
-                elif (len(np.shape(self.pixelArray)) == 3) \
-                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] \
-                    and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]:
-                    z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
-                    self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                    .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
-                else:
-                    self.lblPixelValue.setText(&#34;&#34;)
-            else:
-                self.lblPixelValue.setText(&#34;&#34;)
-                   
-        except Exception as e:
-            print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
-
-
     def blockLevelsSpinBoxSignals(self, block):
         &#34;&#34;&#34; 
         Toggles (off/on) blocking the signals from the spinboxes associated 
@@ -2047,10 +1996,8 @@ sliders for browsing series of images.</p></div>
 
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-                &#34;Updating DICOM images&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
             for imagePath in self.imagePathList:
                 dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -2059,8 +2006,8 @@ sliders for browsing series of images.</p></div>
                                                                    levels=levels, lut=self.lut)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
                 imageCounter += 1
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print(&#39;Error in ImageViewer.updateWholeDicomSeries: &#39; + str(e))
 
@@ -2074,10 +2021,8 @@ sliders for browsing series of images.</p></div>
        
             #Iterate through list of images and update each image
             numImages = len(self.imagePathList)
-            messageWindow.displayMessageSubWindow(self.weasel,
-                &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-                &#34;Updating DICOM images&#34;)
-            messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+            self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+            self.weasel.progressBar.set_maximum(numImages)
             imageCounter = 0
        
             for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -2094,8 +2039,8 @@ sliders for browsing series of images.</p></div>
                     updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                         levels=levels, lut=None)
                     SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-                messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-            messageWindow.closeMessageSubWindow(self.weasel)
+                self.weasel.progressBar.set_value(imageCounter)
+            self.weasel.progressBar.close()
         except Exception as e:
             print(&#39;Error in ImageViewer.updateDicomSeriesImageByImage: &#39; + str(e))
 
@@ -2678,25 +2623,23 @@ lblPixelValue.</p></div>
     lblPixelValue.
     &#34;&#34;&#34;
     try:
-        #print (&#34;Image position: {}&#34;.format(pos))
         container =  self.graphicsView.getView()
         if container.sceneBoundingRect().contains(pos): 
             mousePoint = container.getViewBox().mapSceneToView(pos) 
             x_i = math.floor(mousePoint.x())
             y_i = math.floor(mousePoint.y()) 
             z_i =  imageNumber
-            if (len(np.shape(self.pixelArray)) == 2) and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] \
-                and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]: 
-                self.lblPixelValue.setText(
-                    &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                .format (round(self.pixelArray[ x_i, y_i ], 6), x_i, y_i, z_i))
-            elif (len(np.shape(self.pixelArray)) == 3) \
-                and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] \
-                and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]:
-                z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
-                self.lblPixelValue.setText(
-                    &#34;&lt;h4&gt; = {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;
-                .format (round(self.pixelArray[ z_i, x_i, y_i ], 6), x_i, y_i, z_i + 1))
+            if ((len(np.shape(self.pixelArray)) == 2) 
+                and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
+                and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
+                    self.lblPixelValue.setText(
+                    &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+            elif ((len(np.shape(self.pixelArray)) == 3) 
+                    and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
+                    and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
+                        z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
+                        self.lblPixelValue.setText(
+                            &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
             else:
                 self.lblPixelValue.setText(&#34;&#34;)
         else:
@@ -2917,8 +2860,8 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
     self.colourTableLayout.addWidget(self.cmbColours)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableLayout"><code class="name flex">
-<span>def <span class="ident">setUpColourTableLayout</span></span>(<span>self)</span>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox"><code class="name flex">
+<span>def <span class="ident">setUpColourTableGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2926,11 +2869,13 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setUpColourTableLayout(self):
+<pre><code class="python">def setUpColourTableGroupBox(self):
     self.colourTableLayout = QHBoxLayout()
     self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
     self.colourTableLayout.setSpacing(5)
-    self.colourTableGroupBox = QGroupBox(&#34;Colour Table&#34;)
+    self.colourTableGroupBox = QGroupBox()
+    #self.colourTableGroupBox.setFixedWidth(300)
+    self.colourTableGroupBox.setFixedHeight(50)
     self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
     self.setUpColourTableDropDown()
@@ -2943,10 +2888,13 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 
     self.setUpResetButton()
 
+    self.setUpDeleteImageButton()
+
     if self.isImage: 
         self.colourTableLayout.addWidget(self.btnReset)
         self.colourTableLayout.addWidget(self.btnUpdate)
         self.colourTableLayout.addWidget(self.btnExport)
+        self.colourTableLayout.addWidget(self.deleteButton)
         self.btnReset.clicked.connect(lambda: self.displayPixelArrayOfSingleImage(self.imagePathList))                                                     
     elif self.isSeries:
         #Viewing a DICOM series, so show the Reset button
@@ -2958,6 +2906,7 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
         self.colourTableLayout.addWidget(self.btnReset)
         self.colourTableLayout.addWidget(self.btnUpdate)
         self.colourTableLayout.addWidget(self.btnExport)
+        self.colourTableLayout.addWidget(self.deleteButton)
         self.cmbColours.activated.connect(self.updateImageUserSelection)</code></pre>
 </details>
 </dd>
@@ -2977,7 +2926,7 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
             &#39;Deletes the DICOM image being viewed&#39;)
         self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
         self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
-        self.imageLayout.addWidget(self.deleteButton)
+        #self.imageLayout.addWidget(self.deleteButton)
     except Exception as e:
         print(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
         logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))</code></pre>
@@ -3033,8 +2982,8 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
     self.graphicsView.ui.menuBtn.hide()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageDataLayout"><code class="name flex">
-<span>def <span class="ident">setUpImageDataLayout</span></span>(<span>self)</span>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox"><code class="name flex">
+<span>def <span class="ident">setUpImageLevelsGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3042,53 +2991,13 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setUpImageDataLayout(self):
-    self.imageDataLayout = QHBoxLayout()
-    self.imageDataLayout.setContentsMargins(0, 0, 0, 0)
-    self.imageDataLayout.setSpacing(0)
-    self.imageDataGroupBox = QGroupBox()
-    self.imageDataGroupBox.setLayout(self.imageDataLayout)
-    self.mainVerticalLayout.addWidget(self.imageDataGroupBox)
-    self.setUpPixelValueLabels()</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLayout"><code class="name flex">
-<span>def <span class="ident">setUpImageLayout</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setUpImageLayout(self):
-    try:
-        self.imageLayout = QVBoxLayout()
-        self.imageLayout.setContentsMargins(0, 2, 0, 0)
-        self.imageLayout.setSpacing(0)
-        self.imageGroupBox = QGroupBox(&#34;Image&#34;)
-        self.imageGroupBox.setLayout(self.imageLayout)
-        self.setUpDeleteImageButton()
-    except Exception as e:
-        print(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))
-        logger.error(&#39;Error in ImageViewer.setUpImageLayout: &#39; + str(e))</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsLayout"><code class="name flex">
-<span>def <span class="ident">setUpImageLevelsLayout</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setUpImageLevelsLayout(self):
-    self.imageLevelsLayout= QHBoxLayout()
-    self.imageLevelsLayout.setContentsMargins(0, 2, 0, 0)
-    self.imageLevelsLayout.setSpacing(0)
+<pre><code class="python">def setUpImageLevelsGroupBox(self):
+    self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
     self.imageLevelsGroupBox = QGroupBox()
-    self.imageLevelsGroupBox.setLayout(self.imageLevelsLayout)</code></pre>
+    self.imageLevelsGroupBox.setFixedWidth(200)
+    self.imageLevelsGroupBox.setFixedHeight(50)
+    self.imageLevelsGroupBox.setLayout(
+        self.levelsCompositeComponentLayout.getCompositeComponent())</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders"><code class="name flex">
@@ -3139,9 +3048,7 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 </summary>
 <pre><code class="python">def setUpLevelsSpinBoxes(self):
     try:
-        spinBoxObject = imageLevelsSpinBoxes()
-        self.imageLevelsLayout.addLayout(spinBoxObject.getCompositeComponent())
-        self.spinBoxIntensity, self.spinBoxContrast = spinBoxObject.getSpinBoxes()
+        self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes()
         self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
         self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
         if self.isSeries: 
@@ -3172,8 +3079,8 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
         logger.error(&#39;Error in ImageViewer.setUpMainLayout: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueLabels"><code class="name flex">
-<span>def <span class="ident">setUpPixelValueLabels</span></span>(<span>self)</span>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox"><code class="name flex">
+<span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3181,13 +3088,12 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setUpPixelValueLabels(self):
-    self.lblPixel = QLabel(&#34;&lt;h4&gt;Pixel Value:&lt;/h4&gt;&#34;)
-    self.imageDataLayout.addWidget(self.lblPixel)
-    self.lblPixelValue = QLabel()
-    self.lblPixelValue.setStyleSheet(&#34;color : red; padding-left:0; margin-left:0;&#34;)
-    self.imageDataLayout.addWidget(self.lblPixelValue)
-    self.imageDataLayout.addStretch(50)</code></pre>
+<pre><code class="python">def setUpPixelValueGroupBox(self):
+    pixelValueComponent = PixelValueComponent()
+    self.lblPixelValue = pixelValueComponent.getLabel()
+    self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
+    self.pixelValueGroupBox.setFixedHeight(50)
+    self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton"><code class="name flex">
@@ -3218,13 +3124,13 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
     try:
         self.topRowMainLayout = QHBoxLayout()
 
-        self.setUpColourTableLayout()
-        self.setUpImageLevelsLayout()
-        self.setUpImageLayout()
+        self.setUpColourTableGroupBox()
+        self.setUpImageLevelsGroupBox()
+        self.setUpPixelValueGroupBox()
 
         self.topRowMainLayout.addWidget(self.colourTableGroupBox)
-        self.topRowMainLayout.addWidget(self.imageGroupBox)
-        self.topRowMainLayout.addWidget(self.imageLevelsGroupBox)
+        self.topRowMainLayout.addWidget(self.imageLevelsGroupBox) 
+        self.topRowMainLayout.addWidget(self.pixelValueGroupBox)
 
         self.mainVerticalLayout.addLayout(self.topRowMainLayout)
 
@@ -3310,10 +3216,8 @@ a different table and set of levels</p></div>
    
         #Iterate through list of images and update each image
         numImages = len(self.imagePathList)
-        messageWindow.displayMessageSubWindow(self.weasel,
-            &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-            &#34;Updating DICOM images&#34;)
-        messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+        self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+        self.weasel.progressBar.set_maximum(numImages)
         imageCounter = 0
    
         for imageCounter, imagePath in enumerate(self.imagePathList, 0):
@@ -3330,8 +3234,8 @@ a different table and set of levels</p></div>
                 updatedDataset = SaveDICOM_Image.updateSingleDicom(dataset, colourmap=selectedColourMap, 
                                                     levels=levels, lut=None)
                 SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
-            messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-        messageWindow.closeMessageSubWindow(self.weasel)
+            self.weasel.progressBar.set_value(imageCounter)
+        self.weasel.progressBar.close()
     except Exception as e:
         print(&#39;Error in ImageViewer.updateDicomSeriesImageByImage: &#39; + str(e))</code></pre>
 </details>
@@ -3462,10 +3366,8 @@ one set of levels</p>
 
         #Iterate through list of images and update each image
         numImages = len(self.imagePathList)
-        messageWindow.displayMessageSubWindow(self.weasel,
-            &#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages),
-            &#34;Updating DICOM images&#34;)
-        messageWindow.setMsgWindowProgBarMaxValue(self.weasel, numImages)
+        self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Updating {} DICOM files&lt;/H4&gt;&#34;.format(numImages))
+        self.weasel.progressBar.set_maximum(numImages)
         imageCounter = 0
         for imagePath in self.imagePathList:
             dataset = ReadDICOM_Image.getDicomDataset(imagePath) 
@@ -3474,8 +3376,8 @@ one set of levels</p>
                                                                levels=levels, lut=self.lut)
             SaveDICOM_Image.saveDicomToFile(updatedDataset, output_path=imagePath)
             imageCounter += 1
-            messageWindow.setMsgWindowProgBarValue(self.weasel, imageCounter)
-        messageWindow.closeMessageSubWindow(self.weasel)
+            self.weasel.progressBar.set_value(imageCounter)
+        self.weasel.progressBar.close()
     except Exception as e:
         print(&#39;Error in ImageViewer.updateWholeDicomSeries: &#39; + str(e))</code></pre>
 </details>
@@ -3521,18 +3423,16 @@ one set of levels</p>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap">setPgColourMap</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton">setUpApplyUserSelectionButton</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown">setUpColourTableDropDown</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableLayout">setUpColourTableLayout</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox">setUpColourTableGroupBox</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton">setUpDeleteImageButton</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton">setUpExportImageButton</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView">setUpGraphicsView</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram">setUpHistogram</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageDataLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageDataLayout">setUpImageDataLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLayout">setUpImageLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox">setUpImageLevelsGroupBox</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders">setUpImageSliders</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout">setUpMainLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueLabels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueLabels">setUpPixelValueLabels</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton">setUpResetButton</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton">setUpUpdateUserSelectionToDICOMButton</a></code></li>
@@ -3550,7 +3450,7 @@ one set of levels</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

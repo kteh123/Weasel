@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.API.UserInterfaceTools API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -29,8 +29,8 @@
 <pre><code class="python">import os
 import logging
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
-import CoreModules.WEASEL.MessageWindow as messageWindow
 from Displays.ViewMetaData import displayMetaDataSubWindow
+from DICOM.DeveloperTools import PixelArrayDICOMTools
 
 logger = logging.getLogger(__name__)
 
@@ -45,24 +45,11 @@ class UserInterfaceTools():
     def __repr__(self):
        return &#39;{}&#39;.format(self.__class__.__name__)
 
-
-    def progressBar(self, maxNumber=1, index=0, msg=&#34;Iteration Number {}&#34;, title=&#34;Progress Bar&#34;):
-        &#34;&#34;&#34;
-        Updates the ProgressBar to the unit set in &#34;index&#34;.
-        &#34;&#34;&#34;
-        index += 1
-        messageWindow.displayMessageSubWindow(self, (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-        messageWindow.setMsgWindowProgBarValue(self, index)
-        return index
-    
-
     def selectFolder(self, title=&#34;Select the directory&#34;):
         &#34;&#34;&#34;Displays an open folder dialog window to allow the
         user to select afolder &#34;&#34;&#34;
         scan_directory = QFileDialog.getExistingDirectory(self, title, self.weaselDataFolder, QFileDialog.ShowDirsOnly)
         return scan_directory
-
 
     def displayMetadata(self, inputPath):
         &#34;&#34;&#34;
@@ -116,24 +103,11 @@ message windows.</p></div>
     def __repr__(self):
        return &#39;{}&#39;.format(self.__class__.__name__)
 
-
-    def progressBar(self, maxNumber=1, index=0, msg=&#34;Iteration Number {}&#34;, title=&#34;Progress Bar&#34;):
-        &#34;&#34;&#34;
-        Updates the ProgressBar to the unit set in &#34;index&#34;.
-        &#34;&#34;&#34;
-        index += 1
-        messageWindow.displayMessageSubWindow(self, (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), title)
-        messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-        messageWindow.setMsgWindowProgBarValue(self, index)
-        return index
-    
-
     def selectFolder(self, title=&#34;Select the directory&#34;):
         &#34;&#34;&#34;Displays an open folder dialog window to allow the
         user to select afolder &#34;&#34;&#34;
         scan_directory = QFileDialog.getExistingDirectory(self, title, self.weaselDataFolder, QFileDialog.ShowDirsOnly)
         return scan_directory
-
 
     def displayMetadata(self, inputPath):
         &#34;&#34;&#34;
@@ -182,26 +156,6 @@ If "inputPath" is a list, then it displays the metadata of the first image.</p><
         logger.exception(&#39;Error in UserInterfaceTools.displayMetadata: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.UserInterfaceTools.UserInterfaceTools.progressBar"><code class="name flex">
-<span>def <span class="ident">progressBar</span></span>(<span>self, maxNumber=1, index=0, msg='Iteration Number {}', title='Progress Bar')</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Updates the ProgressBar to the unit set in "index".</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def progressBar(self, maxNumber=1, index=0, msg=&#34;Iteration Number {}&#34;, title=&#34;Progress Bar&#34;):
-    &#34;&#34;&#34;
-    Updates the ProgressBar to the unit set in &#34;index&#34;.
-    &#34;&#34;&#34;
-    index += 1
-    messageWindow.displayMessageSubWindow(self, (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), title)
-    messageWindow.setMsgWindowProgBarMaxValue(self, maxNumber)
-    messageWindow.setMsgWindowProgBarValue(self, index)
-    return index</code></pre>
-</details>
-</dd>
 <dt id="WEASEL.API.UserInterfaceTools.UserInterfaceTools.selectFolder"><code class="name flex">
 <span>def <span class="ident">selectFolder</span></span>(<span>self, title='Select the directory')</span>
 </code></dt>
@@ -241,7 +195,6 @@ user to select afolder</p></div>
 <h4><code><a title="WEASEL.API.UserInterfaceTools.UserInterfaceTools" href="#WEASEL.API.UserInterfaceTools.UserInterfaceTools">UserInterfaceTools</a></code></h4>
 <ul class="">
 <li><code><a title="WEASEL.API.UserInterfaceTools.UserInterfaceTools.displayMetadata" href="#WEASEL.API.UserInterfaceTools.UserInterfaceTools.displayMetadata">displayMetadata</a></code></li>
-<li><code><a title="WEASEL.API.UserInterfaceTools.UserInterfaceTools.progressBar" href="#WEASEL.API.UserInterfaceTools.UserInterfaceTools.progressBar">progressBar</a></code></li>
 <li><code><a title="WEASEL.API.UserInterfaceTools.UserInterfaceTools.selectFolder" href="#WEASEL.API.UserInterfaceTools.UserInterfaceTools.selectFolder">selectFolder</a></code></li>
 </ul>
 </li>
@@ -251,7 +204,7 @@ user to select afolder</p></div>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
