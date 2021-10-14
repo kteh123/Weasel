@@ -33,7 +33,7 @@ jobs:
           git config user.email "<>"
           cd Documents/Manual
           git init
-          git add.
+          git add .
           git commit -m "Reference Manual ${{ steps.date.outputs.date }}"
           git remote add origin https://github.com/QIB-Sheffield/WEASEL.git
           git push origin gh-pages
