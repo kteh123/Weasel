@@ -45,25 +45,35 @@ CopyTree(menus_folder, os.path.join(weasel_copy_folder, "Menus"))
 CopyTree(pipelines_folder, os.path.join(weasel_copy_folder, "Pipelines"))
 shutil.copyfile(weasel_file, os.path.join(weasel_copy_folder, "Weasel.py"))
 
-print("Creating Python Virtual Environment for the occasion...")
-venv_dir = os.path.join(os.getcwd(), "venv")
-os.makedirs(venv_dir, exist_ok=True)
-venv.create(venv_dir, with_pip=True)
+#print("Creating Python Virtual Environment for the occasion...")
+#venv_dir = os.path.join(os.getcwd(), "venv")
+#os.makedirs(venv_dir, exist_ok=True)
+#venv.create(venv_dir, with_pip=True)
+#
+#print("Activating the Python Virtual Environment created...")
+## Windows
+#if platform == "win32" or platform == "win64" or os.name == 'nt':
+#	activation_command = str(venv_dir) + "\\Scripts\\activate"
+## MacOS and Linux
+#else:
+#	activation_command = ". " + venv_dir + "/bin/activate"
+#
+#print("Installing Python packages in the Virtual Environment...")
+#os.system(activation_command + ' && pip install -e .')
 
-print("Activating the Python Virtual Environment created...")
-# Windows
+# Delete failing python files - this is temporary
+tmp_dicomtest_path = os.path.join(weasel_copy_folder, "CoreModules", "DICOMFolderTest.py")
+tmp_displaytest_path = os.path.join(weasel_copy_folder, "Displays", "MessagingTestMessage.py")
+tmp_displaytest2_path = os.path.join(weasel_copy_folder, "Displays", "MessagingTestProgressBar.py")
 if platform == "win32" or platform == "win64" or os.name == 'nt':
-	activation_command = str(venv_dir) + "\\Scripts\\activate"
-# MacOS and Linux
+    os.system("del " + str(tmp_dicomtest_path) + " " + str(tmp_displaytest_path) + " " + str(tmp_displaytest2_path))
 else:
-	activation_command = ". " + venv_dir + "/bin/activate"
-
-print("Installing Python packages in the Virtual Environment...")
-os.system(activation_command + ' && pip install -e .')
+    os.system("rm -f " + str(tmp_dicomtest_path) + " " + str(tmp_displaytest_path) + " " + str(tmp_displaytest2_path))
 
 print("Creating WEASEL manual using pdoc3...")
-doc_command = "pdoc3 --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
-os.system(activation_command + ' && ' + doc_command)
+doc_command = "pdoc --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
+os.system(doc_command)
+#os.system(activation_command + ' && ' + doc_command)
 
 print("Moving documentation files to the 'Manual' folder...")
 shutil.rmtree(temporary_folder)

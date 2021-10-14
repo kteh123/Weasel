@@ -31,15 +31,11 @@ string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect
 if platform == "win32" or platform == "win64" or os.name == 'nt':
 	data_folders = ['API;.', 'Menus;.', 'Pipelines;.']
 else:
-	data_folders = ['API:.', 'Menus:.', 'Pipelines:.']
-	print(data_folders)
+	data_folders = ['API:API', 'Menus:Menus', 'Pipelines:Pipelines']
 string_data = ' '.join(['--add-data '+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")
 os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_collect_data + ' ' + string_data + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
-# Add the "Scripting"/"Pipelines" folder when we make official release
-# Add the --windowed flag when we have full confidence of running without errors and all logged in the Activity Log.
-
 
 print("Cleaning up compilation files...")
 # Windows
@@ -59,7 +55,7 @@ else:
 	os.system('rm -r venv/')
 
 
-# If compiled in MacOS, we need to create the App Bundle manually.
+# If compiled in MacOS, we need to change permissions and add the icon manually.
 if platform == "darwin" or os.name == 'posix':
 	os.system('sudo chmod 775 Weasel')
 	os.system('sips -i ' + str(icon_png))

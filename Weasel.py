@@ -24,14 +24,13 @@ if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
 
 #os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.dirname(sys.argv[0]))
+sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.join(sys.path[0],'CoreModules'))
-sys.path.append(os.path.join(sys.path[0],'CoreModules','WEASEL'))
 sys.path.append(os.path.join(sys.path[0],'External'))
 sys.path.append(os.path.join(sys.path[0],'Pipelines'))
 sys.path.append(os.path.join(sys.path[0],'Displays'))
 sys.path.append(os.path.join(sys.path[0],'Displays', 'ImageViewers', 'ComponentsUI'))
 sys.path.append(os.path.join(sys.path[0],'Displays', 'ImageViewers', 'ComponentsUI', 'FreeHandROI'))
-sys.path.append(os.path.join(sys.path[0],'API'))
 sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.StyleSheet as styleSheet
@@ -59,7 +58,7 @@ logger = logging.getLogger(__name__)
 class Weasel(QMainWindow, WeaselProgrammingInterface):
 
     def __init__(self): 
-        """Creates the MDI container. Joao Sousa GH Action test."""
+        """Creates the MDI container. Joao Sousa GH Action test 14/10/2021."""
         super().__init__()
         self.cmd = False
         self.showFullScreen()
