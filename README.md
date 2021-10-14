@@ -93,7 +93,9 @@ This alternative of Weasel is recommended if you're processing a large number of
 
 # Generate the Executable
 
-If you wish to get one file that executes the whole software, you can compile the Python project into an executable of the operative system you're using by using the `pyinstaller` package.
+There is a Github Action Workflow in place that automatically builds the Weasel executable for Windows, MacOS and Linux and uploads the output files to a Weekly Release every Friday at midday.
+
+If you wish to create your own bundle, you can compile the Python project into an executable of the operative system you're using by using the `pyinstaller` package.
 
 First, you have to navigate to your Weasel folder
 
@@ -106,6 +108,8 @@ and run the following python command:
 You may use your IDE instead of the terminal during this process. The generated executable can be found in the `Weasel` folder.
 
 **For MacOS:** If the command above doesn't work, you might need to run `python3` instead and/or use `sudo` before the command. Eg. `sudo python3 create_weasel_executable.py`.
+
+Any extra files you wish to add to your bundle, you can do so by writing the files/folders path in the `--collect-datas` and `--add-data` flags in the `create_weasel_executable.py` file.
 
 ## Other Info
 

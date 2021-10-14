@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 class Weasel(QMainWindow, WeaselProgrammingInterface):
 
     def __init__(self): 
-        """Creates the MDI container. Joao Sousa GH Action test 14/10/2021."""
+        """Creates the MDI container."""
         super().__init__()
         print("=====================================")
         print("MESSAGE TO THE USER:")
