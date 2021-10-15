@@ -151,9 +151,8 @@ def returnListPythonFiles():
             if individualFile.endswith(&#34;.py&#34;):
                 listPythonFiles.append(os.path.join(dirpath, individualFile))
     
-    if listPythonFiles == []:
-        if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
-            search_directory = pathlib.Path(sys._MEIPASS)
+    if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+        search_directory = pathlib.Path(sys._MEIPASS)
         for dirpath, _, filenames in os.walk(search_directory):
             for individualFile in filenames:
                 if individualFile.endswith(&#34;.py&#34;):
@@ -229,9 +228,8 @@ def isXMLFile(fileName):
             if individualFile.endswith(&#34;.py&#34;):
                 listPythonFiles.append(os.path.join(dirpath, individualFile))
     
-    if listPythonFiles == []:
-        if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
-            search_directory = pathlib.Path(sys._MEIPASS)
+    if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+        search_directory = pathlib.Path(sys._MEIPASS)
         for dirpath, _, filenames in os.walk(search_directory):
             for individualFile in filenames:
                 if individualFile.endswith(&#34;.py&#34;):
