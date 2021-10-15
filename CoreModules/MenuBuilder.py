@@ -123,9 +123,8 @@ def returnListPythonFiles():
             if individualFile.endswith(".py"):
                 listPythonFiles.append(os.path.join(dirpath, individualFile))
     
-    if listPythonFiles == []:
-        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-            search_directory = pathlib.Path(sys._MEIPASS)
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        search_directory = pathlib.Path(sys._MEIPASS)
         for dirpath, _, filenames in os.walk(search_directory):
             for individualFile in filenames:
                 if individualFile.endswith(".py"):
