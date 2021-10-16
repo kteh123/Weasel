@@ -33,6 +33,7 @@ def get_files_info(scan_directory):
         return number_files, number_folders
     except Exception as e:
         print('Error in WriteXMLfromDICOM.get_files_info: ' + str(e))
+        logger.exception('Error in WriteXMLfromDICOM.get_files_info: ' + str(e))
 
 
 def atof(text):
@@ -127,7 +128,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                             print("User chose not to convert Multiframe DICOM. Loading process halted.")
                             msgWindow.hideProgressBar(self)
                             msgWindow.closeMessageSubWindow(self)
-                            return None
+                            return None, None
                     if os.name =='nt':
                         multiframeScript = 'emf2sf.bat'
                     else:
@@ -192,10 +193,19 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                 msgWindow.displayMessageSubWindow(self, "Reading {} single frame DICOM files converted earlier".format(len(np.unique(multiframe_files_list))))
                 msgWindow.setMsgWindowProgBarMaxValue(self, len(np.unique(multiframe_files_list)))
                 msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-                list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'AcquisitionTime',
-                             'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
+                list_tags = ['InstanceNumber', 'SOPInstanceUID', 'PixelData', 'FloatPixelData', 'DoubleFloatPixelData', 'SliceLocation', (0x2001, 0x100a),
+                             'AcquisitionTime', 'AcquisitionDate', 'SeriesTime', 'SeriesDate', 'PatientName', 'PatientID', 'StudyDate', 'StudyTime', 
                              'SeriesDescription', 'StudyDescription', 'SequenceName', 'ProtocolName', 'SeriesNumber', 'StudyInstanceUID', 'SeriesInstanceUID']
                 dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
+                # The multiframe converter stores SliceLocation in tag (0x2001, 0x100a), so this step is to store it in SliceLocation.
+                dicomTag = (0x2001, 0x100a)
+                sliceValue = dataset[dicomTag].value
+                if not hasattr(dataset, 'SliceLocation'):
+                    elem = DataElement(0x00201041, 'DS', sliceValue)
+                    with dcmread(singleframe, force=True) as ds:
+                        ds.add(elem)
+                        ds.save_as(singleframe)
+                dataset.SliceLocation = sliceValue
                 if (hasattr(dataset, 'InstanceNumber') and hasattr(dataset, 'SOPInstanceUID') and 
                     any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData'])
                     and ('DIRFILE' not in singleframe) and ('DICOMDIR' not in singleframe)):
@@ -211,6 +221,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
         return list_dicom, list_paths
     except Exception as e:
         print('Error in WriteXMLfromDICOM.get_scan_data: ' + str(e))
+        logger.exception('Error in function WriteXMLfromDICOM.get_scan_data: ' + str(e))
 
 
 def get_study_series(dicom):
@@ -238,6 +249,7 @@ def get_study_series(dicom):
         return subject, study, sequence, series_number, study_uid, series_uid
     except Exception as e:
         print('Error in WriteXMLfromDICOM.get_study_series: ' + str(e))
+        logger.exception('Error in WriteXMLfromDICOM.get_study_series: ' + str(e))
 
 
 def build_dictionary(list_dicom, msgWindow, self):
@@ -259,6 +271,7 @@ def build_dictionary(list_dicom, msgWindow, self):
         return xml_dict
     except Exception as e:
         print('Error in WriteXMLfromDICOM.build_dictionary: ' + str(e))
+        logger.exception('Error in WriteXMLfromDICOM.build_dictionary: ' + str(e))
 
 
 def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
@@ -333,6 +346,7 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
         return DICOM_XML_object
     except Exception as e:
         print('Error in WriteXMLfromDICOM.open_dicom_to_xml: ' + str(e))
+        logger.exception('Error in WriteXMLfromDICOM.open_dicom_to_xml: ' + str(e))
 
 
 def create_XML_file(DICOM_XML_object, scan_directory):
@@ -347,6 +361,7 @@ def create_XML_file(DICOM_XML_object, scan_directory):
         return os.path.join(scan_directory, filename)
     except Exception as e:
         print('Error in WriteXMLfromDICOM.create_XML_file: ' + str(e))
+        logger.exception('Error in WriteXMLfromDICOM.create_XML_file: ' + str(e))
 
 
 def getScanDirectory(self):
@@ -364,6 +379,7 @@ def getScanDirectory(self):
         return scan_directory
     except Exception as e:
         print('Error in function WriteXMLfromDICOM.getScanDirectory: ' + str(e))
+        logger.exception('Error in function WriteXMLfromDICOM.getScanDirectory: ' + str(e))
 
 
 def existsDICOMXMLFile(scanDirectory):
@@ -391,6 +407,7 @@ def makeDICOM_XML_File(self, scan_directory):
     which takes it's name from the scan folder."""
     try:
         logger.info("WriteXMLfromDICOM.makeDICOM_XML_File called.")
+        fullFilePath = ''
         if scan_directory:
             start_time=time.time()
             numFiles, numFolders = get_files_info(scan_directory)
@@ -403,19 +420,20 @@ def makeDICOM_XML_File(self, scan_directory):
             progBarMsg = "Collecting {} files from the {}".format(numFiles, folder)
             messageWindow.displayMessageSubWindow(self, progBarMsg)
             scans, paths = get_scan_data(scan_directory, messageWindow, progBarMsg, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
-            dictionary = build_dictionary(scans, messageWindow, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
-            xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
-            messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
-            fullFilePath = create_XML_file(xml, scan_directory)
-            self.msgSubWindow.close()
-            end_time=time.time()
-            xmlCreationTime = end_time - start_time 
-            #print('XML file creation time = {}'.format(xmlCreationTime))
-            logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}."
-                        .format(fullFilePath))
+            if scans and paths:
+                messageWindow.displayMessageSubWindow(self,"<H4>Reading data from each DICOM file</H4>")
+                dictionary = build_dictionary(scans, messageWindow, self)
+                messageWindow.displayMessageSubWindow(self,"<H4>Writing DICOM data to an XML file</H4>")
+                xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
+                messageWindow.displayMessageSubWindow(self,"<H4>Saving XML file</H4>")
+                fullFilePath = create_XML_file(xml, scan_directory)
+                self.msgSubWindow.close()
+                end_time=time.time()
+                xmlCreationTime = end_time - start_time 
+                #print('XML file creation time = {}'.format(xmlCreationTime))
+                logger.info("WriteXMLfromDICOM.makeDICOM_XML_File returns {}."
+                            .format(fullFilePath))
         return fullFilePath
     except Exception as e:
         print('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
-        logger.error('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
+        logger.exception('Error in function WriteXMLfromDICOM.makeDICOM_XML_File: ' + str(e))
