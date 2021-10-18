@@ -2,6 +2,9 @@ name: Create Weekly Weasel Release
 on:
   schedule:
     - cron: "0 12 * * 5" #runs at 12:00 UTC every Friday
+  push:
+    branches:
+      - "master"
 
 jobs:
   release:
@@ -15,6 +18,12 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y%m%d')"
 
+    - name: Build Changelog
+      id: github_release
+      uses: mikepenz/release-changelog-builder-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Create the Release
       id: create_release
       uses: actions/create-release@v1
@@ -25,6 +34,8 @@ jobs:
         release_name: Weasel ${{ steps.date.outputs.date }}
         body: |
           Weekly Release: ${{ steps.date.outputs.date }}
+
+          ${{steps.github_release.outputs.changelog}}
         draft: false
         prerelease: false
 
