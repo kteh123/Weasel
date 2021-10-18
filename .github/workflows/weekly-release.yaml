@@ -14,16 +14,15 @@ jobs:
       date_string: ${{ steps.date.outputs.date }}
 
     steps:
-      - uses: actions/checkout@v2
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
   
       - name: Build Changelog
         id: github_release
-        uses: mikepenz/release-changelog-builder-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: metcalfc/changelog-generator@v1.0.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Create the Release
         id: create_release
