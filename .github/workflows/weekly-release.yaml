@@ -2,9 +2,6 @@ name: Create Weekly Weasel Release
 on:
   schedule:
     - cron: "0 12 * * 5" #runs at 12:00 UTC every Friday
-  push:
-    branches:
-      - "master"
 
 jobs:
   release:
@@ -36,7 +33,8 @@ jobs:
           release_name: Weasel ${{ steps.date.outputs.date }}
           body: |
             **Weekly Release:** ${{ steps.date.outputs.date }}
-            **Full Changelog:** ${{steps.changelog.outputs.changelog}}
+            **Full Changelog:** 
+            ${{steps.changelog.outputs.changelog}}
           draft: false
           prerelease: false
 
