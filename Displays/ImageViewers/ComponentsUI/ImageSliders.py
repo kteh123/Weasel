@@ -1,6 +1,6 @@
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QMessageBox, 
-                            QFormLayout,
+                            QGridLayout,
                             QHBoxLayout,
                             QVBoxLayout,
                             QPushButton,  
@@ -38,6 +38,35 @@ class SortedImageSlider(QSlider):
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute
        self.setToolTip("Images sorted according to {}".format(DicomAttribute))
+       self.setMaximumWidth(400)
+
+
+class SortedImageCheckBox(QCheckBox):
+    """Subclass of the QCheckBox class with the added property attribute 
+    which identifies what the image subset has been filtered for and 
+    columnNumber which is the number of the column in the grid layout 
+    where a widget created from this class is placed. 
+    """
+    def __init__(self,  DicomAttribute, colNum): 
+       super().__init__()
+       self.setText(DicomAttribute)
+       self.setToolTip("Tick the check box to create a subset of images based on {}".format(DicomAttribute))
+       self.setCheckState(Qt.Unchecked)
+       #set a minimum width, so that the parent grid layout
+       #allocates sufficient column width for the whole
+       #label to be visible
+       self.setMinimumWidth(150)
+       #Properties added to the QCheckBox class
+       self.attribute =  DicomAttribute
+       self.colNumber = colNum
+
+    @property
+    def dicomAttribute(self):
+        return self.attribute
+
+    @property
+    def columnNumber(self):
+        return self.colNumber
 
 
 class ImageSliders(QObject):
@@ -45,7 +74,6 @@ class ImageSliders(QObject):
     navigating a DICOM series of images."""
 
     sliderMoved = pyqtSignal(str)
-
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList):
@@ -71,9 +99,10 @@ class ImageSliders(QObject):
 
             #Create the custom, composite sliders widget
             self.__setUpLayouts()
+            self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            self.__setUpDisplayMultiSlidersCheckbox()
+            #self.__setUpDisplayMultiSlidersCheckbox()
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -104,11 +133,16 @@ class ImageSliders(QObject):
         
             self.mainSliderLayout = QHBoxLayout()
             self.imageTypeLayout = QHBoxLayout()
-            self.sortedImageSliderLayout = QFormLayout()
-        
+            self.sortedImageSliderLayout = QGridLayout()
+            #The grid layout is added to the horizontal layout in order to
+            #prevent it expanding too far to the right when it only contains
+            #a few widgets.
+            self.imageTypeLayout.addLayout(self.sortedImageSliderLayout)
+            self.imageTypeLayout.addStretch()
+            self.sortedImageSliderLayout.setHorizontalSpacing(0)
+            self.sortedImageSliderLayout.setContentsMargins(0, 0, 0, 0)
             self.mainVerticalLayout.addLayout(self.mainSliderLayout)
             self.mainVerticalLayout.addLayout(self.imageTypeLayout)
-            self.mainVerticalLayout.addLayout(self.sortedImageSliderLayout)
         except Exception as e:
             print('Error in ImageSliders.__setUpLayouts: ' + str(e))
             logger.error('Error in ImageSliders.__setUpLayouts: ' + str(e))
@@ -116,6 +150,7 @@ class ImageSliders(QObject):
     
     def __createMainImageSlider(self): 
         try:
+            logger.info("ImageSliders.__createMainImageSlider called")
             self.mainImageSlider = QSlider(Qt.Horizontal)
             self.mainImageSlider.setFocusPolicy(Qt.StrongFocus) # This makes the slider work with arrow keys on Mac OS
             self.mainImageSlider.setToolTip("Use this slider to navigate the series of DICOM images")
@@ -128,7 +163,35 @@ class ImageSliders(QObject):
             print('Error in ImageSliders.__createMainImageSlider: ' + str(e))
             logger.error('Error in ImageSliders.__createMainImageSlider: ' + str(e))
 
-    
+
+    def __addMainImageSliderToLayout(self):
+        """Configures the width of the slider according to the number of images
+        it must navigate and adds it and its associated label to the main slider
+        layout"""
+        try:
+            maxNumberImages = len(self.imagePathList)
+            self.mainImageSlider.setMaximum(maxNumberImages)
+            widthSubWindow = self.weasel.mdiArea.width()
+            if maxNumberImages < 4:
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
+            elif maxNumberImages > 3 and maxNumberImages < 11:
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
+            else:
+                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
+        
+            self.imageNumberLabel = QLabel()
+        
+            if maxNumberImages > 1:
+                self.mainSliderLayout.addWidget(self.mainImageSlider)
+                self.mainSliderLayout.addWidget(self.imageNumberLabel)
+
+            if maxNumberImages < 11:
+                self.mainSliderLayout.addStretch(1)
+        except Exception as e:
+            print('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
+            logger.error('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
+
+
     def __mainImageSliderMoved(self, imageNumber=None):
         """On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
@@ -177,8 +240,6 @@ class ImageSliders(QObject):
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-
-                    
         except TypeError as e: 
             print('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
             logger.error('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
@@ -187,191 +248,191 @@ class ImageSliders(QObject):
             logger.error('Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
 
 
-    def __addMainImageSliderToLayout(self):
-        """Configures the width of the slider according to the number of images
-        it must navigate and adds it and its associated label to the main slider
-        layout"""
+    def __addMultiSliderButtonToLayout(self):
+        """Creates toggle button (off-grey, on-red) to display/hide
+        a checkbox for each DICOM attribute to sort images by.
+        """
         try:
-            maxNumberImages = len(self.imagePathList)
-            self.mainImageSlider.setMaximum(maxNumberImages)
-            widthSubWindow = self.weasel.mdiArea.width()
-            if maxNumberImages < 4:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
-            elif maxNumberImages > 3 and maxNumberImages < 11:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
-            else:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
-        
-            self.imageNumberLabel = QLabel()
-        
-            if maxNumberImages > 1:
-                self.mainSliderLayout.addWidget(self.mainImageSlider)
-                self.mainSliderLayout.addWidget(self.imageNumberLabel)
-
-            if maxNumberImages < 11:
-                self.mainSliderLayout.addStretch(1)
+            self.btnMultiSliders = QPushButton()
+            self.btnMultiSliders.setToolTip("Display Multiple Sliders")
+            self.btnMultiSliders.setCheckable(True)
+            #self.btnMultiSliders.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+            self.mainSliderLayout.addWidget(self.btnMultiSliders)
+            self.btnMultiSliders.clicked.connect(lambda setRed: self.__displayHideImageTypeCheckBoxes(setRed))
         except Exception as e:
-            print('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
-            logger.error('Error in ImageSliders.__addMainImageSliderToLayout: ' + str(e))
-
+            print('Error in ImageSliders.__addMultiSliderButtonToLayout: ' + str(e))
+            logger.error('Error in ImageSliders.__addMultiSliderButtonToLayout: ' + str(e))
     
-    def __setUpDisplayMultiSlidersCheckbox(self):
-        self.showImageTypeListCheckBox = QCheckBox()
-        self.checkboxLabel = QLabel("Display multiple Sliders")
-        self.showImageTypeListCheckBox.stateChanged.connect(lambda state: self.displayHideMultiSliders(state))
-        self.imageTypeLayout.addWidget(self.showImageTypeListCheckBox)
-        self.imageTypeLayout.addWidget(self.checkboxLabel, stretch=1, alignment=Qt.AlignLeft)
 
-
-    def displayHideMultiSliders(self, state):
+    ##Functions below support the display/hiding of the multi-sliders##   
+    def __displayHideImageTypeCheckBoxes(self, state):
+        """This function shows or hides a checkbox for each DICOM attribute
+        
+        It is executed when the multi-sliders toggle button is clicked
+        """
         try:
-            if state == Qt.Checked:
-                self.__setUpImageTypeList()
-                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+            if state == True:
+                logger.info("ImageSliders.__displayHideImageTypeCheckBoxes to display image type checkboxes")
+                #make button red to show it is clicked
+                self.btnMultiSliders.setStyleSheet("background-color: red")
+                self.__setUpImageTypeCheckBoxes()
+                tagsList = [self.checkboxList[i].dicomAttribute for i in range(len(self.checkboxList))]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
-            elif state == Qt.Unchecked:
-                #remove multiple sliders
-                self.imageTypeList.clear()
+            elif state == False:
+                logger.info("ImageSliders.__displayHideImageTypeCheckBoxes to hide image type checkboxes")
+                #reset the button to grey
+                self.btnMultiSliders.setStyleSheet(
+                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+                #hide image sliders by deleting them from the grid layout
+                self.__clearAllMultiImageWidgets()
+                #self.imageTypeList.clear()
                 self.dynamicListImageType.clear()
                 self.listSortedImageSliders.clear()
-                self.imageTypeLayout.itemAt(2).widget().deleteLater()
-                self.shapeList = []
-                for rowNumber in range(self.sortedImageSliderLayout.rowCount()-1, -1, -1):
-                    self.sortedImageSliderLayout.removeRow(rowNumber)
+                self.shapeList = []    
         except Exception as e:
-            print('Error in ImageSliders.displayHideMultiSliders: ' + str(e))
-            logger.exception('Error in ImageSliders.displayHideMultiSliders: ' + str(e))         
-
-
-    def __setUpImageTypeList(self):
-        self.imageTypeList = self.__createImageTypeList()
-        self.imageTypeLayout.addWidget( self.imageTypeList,  alignment=Qt.AlignLeft)
-        # The following stretch messes a bit with the layout when unchecking the MultiSliders checkbox
-        #self.imageTypeLayout.addStretch(2)
-
-
-    def __createImageTypeList(self):
+            print('Error in ImageSliders.__displayHideImageTypeCheckBoxes: ' + str(e))
+            logger.exception('Error in ImageSliders.__displayHideImageTypeCheckBoxes: ' + str(e))
+            
+    
+    def __clearAllMultiImageWidgets(self, leaveCheckBoxes=False):
+        """Clears all widgets related with multi-sliders,
+        if the multi-sliders toggle button is off.
+        """
         try:
-            imageTypeList = QListWidget()
-            imageTypeList.setFlow(QListView.Flow.LeftToRight)
-            imageTypeList.setWrapping(True)
-            imageTypeList.setMaximumHeight(25)
+            
+            widgets = [self.sortedImageSliderLayout.itemAt(i).widget() 
+                       for i in range(self.sortedImageSliderLayout.count())]
+            for widget in widgets:
+                    if leaveCheckBoxes:
+                        if isinstance(widget, SortedImageCheckBox):
+                            continue
+                    widget.deleteLater()
+                    widget = None
+        except Exception as e:
+            print('Error in ImageSliders.__clearAllMultiImageWidgets when widget = {}: '.format(type(widget)) + str(e))
+            logger.error('Error in ImageSliders.__clearAllMultiImageWidgets: ' + str(e))   
+
+
+    def __setUpImageTypeCheckBoxes(self):
+        """This method searches for the DICOM tags in listImageTypes that are present
+        in the DICOM files and presents them with checkboxes in the image viewer.
+        """
+        try:
             self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=listImageTypes) # Consider commenting if it takes too long
-            for imageType in listImageTypes:
+            columnNumber = 0 
+            self.checkboxList = []
+            for index, imageType in enumerate(listImageTypes):
                 # First, check if the DICOM tag exists in the images of the series.
                 if ReadDICOM_Image.getImageTagValue(self.selectedImagePath, imageType) is not None:
                     numAttr = len(self.dicomTable[imageType].unique())
                     #_, numAttr = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, imageType)
                     # Then, check if there's more than 1 unique value for the corresponding DICOM tag
                     if numAttr > 1:
-                        item = QListWidgetItem(imageType)
-                        item.setToolTip("Tick the check box to create a subset of images based on {}".format(imageType))
-                        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-                        item.setCheckState(Qt.Unchecked)
-                        imageTypeList.addItem(item)
-               
-            imageTypeList.itemClicked.connect(lambda item: self.__addRemoveSortedImageSlider(item))
-            return imageTypeList
+                        tempCheckBoxObject = self.__createSortedImageCheckBox(imageType, columnNumber)
+                        self.checkboxList.append(tempCheckBoxObject)
+                        #add to first row (0) of the layout
+                        self.sortedImageSliderLayout.addWidget(tempCheckBoxObject, 0, columnNumber)
+                        columnNumber +=3
         except Exception as e:
-            print('Error in ImageSliders.__createImageTypeList: ' + str(e))
-            logger.error('Error in ImageSliders.__createImageTypeList: ' + str(e))
+            print('Error in ImageSliders.__setUpImageTypeCheckBoxes: ' + str(e))
+            logger.error('Error in ImageSliders.___setUpImageTypeCheckBoxes: ' + str(e))
 
 
-    def __addRemoveSortedImageSlider(self, item):
+    def __createSortedImageCheckBox(self, imageType, colNumber):
         try:
-            if item.checkState() == Qt.Checked:
-                self.__createSortedImageSlider(item.text())
-            else:
-                self.__removeSortedImageSlider(item.text())
+            tempCheckBox = SortedImageCheckBox(imageType, colNumber) 
+            tempCheckBox.stateChanged.connect(
+                lambda state: self.__displayHideImageTypeSlider(state,  imageType))
+            return tempCheckBox
         except Exception as e:
-            print('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
-            logger.error('Error in ImageSliders.__addRemoveSortedImageSlider: ' + str(e))
+            print('Error in ImageSliders.__createSortedImageCheckBox: ' + str(e))
+            logger.error('Error in ImageSliders.__createSortedImageCheckBox: ' + str(e))
+
+
+    def __displayHideImageTypeSlider(self, state, attribute):
+        """This function displays or hides the slider associated with a checkbox"""
+        logger.info("ImageSliders.____displayHideMultiSliders called")
+        if state == Qt.Checked:
+            self.dynamicListImageType.append(attribute)
+        elif state == Qt.Unchecked:
+            self.dynamicListImageType.remove(attribute)   
+        self.__updateSliders()
+    
+    def getCheckBoxColumnNumber(self, attribute):
+        for chkBox in self.checkboxList:
+            if chkBox.dicomAttribute == attribute:
+                return chkBox.columnNumber
+                break
 
 
     def __updateSliders(self):
-        ##Remove sorted image sliders
-        while self.sortedImageSliderLayout.rowCount() > 0:
-            rowNumber = self.sortedImageSliderLayout.rowCount() - 1
-            self.sortedImageSliderLayout.removeRow(rowNumber)
-        ## Iterate through the list of checked DICOM tags
-        self.shapeList = []
-        self.listSortedImageSliders = []
-        for tag in self.dynamicListImageType:
-            numAttr = len(self.dicomTable[tag].unique())
-            self.shapeList.append(numAttr)
-            imageSlider = SortedImageSlider(tag)
-            imageLabel = QLabel()
-            layout = QHBoxLayout()
-            layout.addWidget(imageSlider)
-            layout.addWidget(imageLabel)
-            listSliderLabelPair = [imageSlider, imageLabel]
-            self.listSortedImageSliders.append(listSliderLabelPair)
-            imageSlider.setFocusPolicy(Qt.StrongFocus) 
-            imageSlider.setMaximum(numAttr)
-            imageSlider.setSingleStep(1)
-            imageSlider.setTickPosition(QSlider.TicksBothSides)
-            imageSlider.setTickInterval(1)
-            imageSlider.setMinimum(1)
-            imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
-            imageLabel.setText("image 1 of {}".format(numAttr))
-            if layout is not None:
-                self.sortedImageSliderLayout.addRow(tag, layout)
-
-        # Create a new slider with empty label string if there is more than 1 image per combination of tags
-        if np.prod(self.shapeList) != len(self.imagePathList):
-            imageSlider = SortedImageSlider('')
-            imageLabel = QLabel()
-            layout = QHBoxLayout()
-            layout.addWidget(imageSlider)
-            layout.addWidget(imageLabel)
-            listSliderLabelPair = [imageSlider, imageLabel]
-            self.listSortedImageSliders.append(listSliderLabelPair)
-            imageSlider.setFocusPolicy(Qt.StrongFocus)
-            imageSlider.setSingleStep(1)
-            imageSlider.setTickPosition(QSlider.TicksBothSides)
-            imageSlider.setTickInterval(1)
-            imageSlider.setMinimum(1)
-            if layout is not None:
-                self.sortedImageSliderLayout.addRow('', layout)
-            subTable = copy.copy(self.dicomTable)
-            # Filter first values of each slider
+        """This method updates the state of the multi-sliders. However, it doesn't follow a
+        simple or classic update/refresh style and approach.
+        First, this method clears all widgets related to multi-sliders first. Then, based on the checked
+        ImageTypes (aka DICOM tags), it creates new sliders so that these are in accordance with the current state of
+        the image viewer (total number of images + checked DICOM tags).
+        This means that the new sliders might have different lenghts.
+        """
+        try:
+            #Remove sorted image sliders
+            self.__clearAllMultiImageWidgets(leaveCheckBoxes=True)
+   
+            self.shapeList = []
+            self.listSortedImageSliders = []
+           
             for tag in self.dynamicListImageType:
-                listAttr = sorted(self.dicomTable[tag].unique())
-                subTable = subTable[subTable[tag] == listAttr[0]]
-            starting_point_lenght = len(subTable.index.to_list())
-            imageSlider.setMaximum(starting_point_lenght)
-            imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
-            imageLabel.setText("image 1 of {}".format(starting_point_lenght))
-
-
-    def __createSortedImageSlider(self, DicomAttribute):
-        try:
-            attributeList, _ = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
-            attributeListUnique = []
-            for x in attributeList:
-                if x not in attributeListUnique:
-                    attributeListUnique.append(x)
-            self.dynamicListImageType.append(DicomAttribute)
-            self.__updateSliders()
+                columnNumber = self.getCheckBoxColumnNumber(tag)
+                numAttr = len(self.dicomTable[tag].unique())
+                self.shapeList.append(numAttr)
+                imageSlider = SortedImageSlider(tag)
+                imageLabel = QLabel()
+                imageLabel.setMaximumWidth(200)
+                listSliderLabelPair = [imageSlider, imageLabel]
+                self.listSortedImageSliders.append(listSliderLabelPair)
+                imageSlider.setFocusPolicy(Qt.StrongFocus) 
+                imageSlider.setMaximum(numAttr)
+                imageSlider.setSingleStep(1)
+                imageSlider.setTickPosition(QSlider.TicksBothSides)
+                imageSlider.setTickInterval(1)
+                imageSlider.setMinimum(1)
+                imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
+                imageLabel.setText("image 1 of {}".format(numAttr))
+            
+                self.sortedImageSliderLayout.addWidget(imageSlider, 0, columnNumber+1, alignment=Qt.AlignLeft)
+                self.sortedImageSliderLayout.addWidget(imageLabel, 0, columnNumber+2, alignment=Qt.AlignLeft)
+                
+            
+            # Create a new slider with empty label string if there is more than 1 image per combination of tags
+            if np.prod(self.shapeList) != len(self.imagePathList) and len(self.dynamicListImageType) > 0:
+                imageSlider = SortedImageSlider('')
+                imageLabel = QLabel()
+                listSliderLabelPair = [imageSlider, imageLabel]
+                self.listSortedImageSliders.append(listSliderLabelPair)
+                imageSlider.setFocusPolicy(Qt.StrongFocus)
+                imageSlider.setSingleStep(1)
+                imageSlider.setTickPosition(QSlider.TicksBothSides)
+                imageSlider.setTickInterval(1)
+                imageSlider.setMinimum(1)
+                #Add to second row of the layout
+                self.sortedImageSliderLayout.addWidget(imageSlider, 1, 0, alignment=Qt.AlignHCenter)
+                self.sortedImageSliderLayout.addWidget(imageLabel, 1, 1, alignment=Qt.AlignHCenter)
+                
+                subTable = copy.copy(self.dicomTable)
+                # Filter first values of each slider
+                
+                for tag in self.dynamicListImageType:
+                    listAttr = sorted(self.dicomTable[tag].unique())
+                    subTable = subTable[subTable[tag] == listAttr[0]]
+                starting_point_lenght = len(subTable.index.to_list())
+                imageSlider.setMaximum(starting_point_lenght)
+                imageSlider.valueChanged.connect(self.__multipleImageSliderMoved)
+                imageLabel.setText("image 1 of {}".format(starting_point_lenght))
         except Exception as e:
-            print('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
-            logger.exception('Error in ImageSliders.__createSortedImageSlider: ' + str(e))
+            print('Error in ImageSliders.__updateSliders when tag={}: '.format(tag) + str(e))
+            logger.exception('Error in ImageSliders.__updateSliders: ' + str(e))
+
     
-
-    def __removeSortedImageSlider(self, DicomAttribute):
-        try:
-            attributeList, _ = ReadDICOM_Image.getSeriesTagValues(self.imagePathList, DicomAttribute)
-            attributeListUnique = []
-            for x in attributeList:
-                if x not in attributeListUnique:
-                    attributeListUnique.append(x)
-            self.dynamicListImageType.remove(DicomAttribute)
-            self.__updateSliders()
-        except Exception as e:
-            print('Error in ImageSliders.__removeSortedImageSlider: ' + str(e))
-            logger.exception('Error in ImageSliders.__removeSortedImageSlider: ' + str(e))
-
-
     def __multipleImageSliderMoved(self):  
         """This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
@@ -406,37 +467,7 @@ class ImageSliders(QObject):
         except Exception as e:
             print('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
             logger.exception('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
-    
-
-    def __setUpSliderResetButton(self):
-        self.resetButton = QPushButton("Reset")
-        self.resetButton.setToolTip("Return this screen to the state that it had when first opened")
-        self.resetButton.clicked.connect(self.__resetSliders)
-        self.imageTypeLayout.addWidget(self.resetButton)
-
-
-    def __resetSliders(self):
-        try:
-            ##Remove sorted image sliders
-            while self.sortedImageSliderLayout.rowCount() > 0:
-                rowNumber = self.sortedImageSliderLayout.rowCount() - 1
-                self.sortedImageSliderLayout.removeRow(rowNumber)
-
-            #Uncheck all checkboxes in image type list 
-            for index in xrange(self.imageTypeList.count()):
-                self.imageTypeList.item(index).setCheckState(Qt.Unchecked)
-            
-            #Reinialise Global variables for the Multisliders
-            self.listSortedImageSliders = []
-            self.dynamicListImageType = []
-            self.shapeList = []
-
-            #Reset the main image slider
-            self.__mainImageSliderMoved(1)
-        except Exception as e:
-            print('Error in ImageSliders.__resetSliders: ' + str(e))
-            logger.error('Error in ImageSliders.__resetSliders: ' + str(e))
-
+           
 
     def __imageDeleted(self, newImagePathList):
         try:
@@ -458,10 +489,5 @@ class ImageSliders(QObject):
                 tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
                 self.__updateSliders()
-            
         except Exception as e:
             print('Error in ImageSliders.__imageDeleted: ' + str(e))
-        
-
-            
-    
