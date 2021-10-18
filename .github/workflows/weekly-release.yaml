@@ -12,14 +12,16 @@ jobs:
     outputs:
       upload_artifact: ${{ steps.create_release.outputs.upload_url }}
       date_string: ${{ steps.date.outputs.date }}
+      changelog_text: ${{steps.changelog.outputs.changelog}}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
   
       - name: Build Changelog
-        id: github_release
+        id: changelog
         uses: metcalfc/changelog-generator@v1.0.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
@@ -33,9 +35,8 @@ jobs:
           tag_name: v${{ github.run_number }}_${{ github.sha }}
           release_name: Weasel ${{ steps.date.outputs.date }}
           body: |
-            Weekly Release: ${{ steps.date.outputs.date }}
-  
-            ${{steps.github_release.outputs.changelog}}
+            **Weekly Release:** ${{ steps.date.outputs.date }}
+            **Full Changelog:** ${{steps.changelog.outputs.changelog}}
           draft: false
           prerelease: false
 
