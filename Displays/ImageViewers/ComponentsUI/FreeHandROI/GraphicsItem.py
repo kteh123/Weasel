@@ -1,4 +1,4 @@
-from PyQt5.QtCore import (QRectF, Qt)
+from PyQt5.QtCore import (QRectF, QRect, QPoint, Qt)
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
@@ -10,6 +10,7 @@ import sys
 from .HelperFunctions import *
 from .Resources import * 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
+from time import sleep
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -53,6 +54,8 @@ class GraphicsItem(QGraphicsObject):
         self.last_x, self.last_y = None, None
         self.start_x = None
         self.start_y = None
+        #self.originRectX = None
+        #self.originRectY = None
         self.pathCoordsList = []
         self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
@@ -174,6 +177,7 @@ class GraphicsItem(QGraphicsObject):
             if (buttons == Qt.LeftButton):
                 self.xMouseCoord = int(event.pos().x())
                 self.yMouseCoord = int(event.pos().y())
+
                 if self.drawEnabled:
                     #Only draw if left button pressed
                     if self.last_x is None: # First event.
@@ -201,6 +205,23 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
+
+
+    def drawRectangle(self):
+        """This function draws a rectangle on the image.
+
+        Not used. To use uncomment references to self.originRectX and
+        self.originRectY throughout the class and the 2 lines below."""
+        objPainter = QPainter(self.pixMap)
+        objPen = objPainter.pen()
+        objPen.setWidth(1) #1 pixel
+        objPen.setColor(QColor("#0000FF")) #blue
+        objPainter.setPen(objPen)
+        #objPainter.drawRect(QRect(QPoint(self.originRectX, self.originRectY),
+         #                         QPoint(self.xMouseCoord, self.yMouseCoord)))
+        objPainter.end()
+        self.qimage =  self.pixMap.toImage()
+        self.update()
 
 
     def erasePixelROI(self):
@@ -279,7 +300,7 @@ class GraphicsItem(QGraphicsObject):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()                    
+                        self.erasePixelROI()  
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
@@ -345,6 +366,7 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
+
 
     def reloadImage(self):
         logger.info("FreeHandROI.GraphicsItem.reloadImage called")
@@ -501,9 +523,11 @@ class GraphicsItem(QGraphicsObject):
             
 
     def mousePressEvent(self, event):
-        logger.info("FreeHandROI.GraphicsItem.mousePressEven called")
+        logger.info("FreeHandROI.GraphicsItem.mousePressEvent called")
         try:
             button = event.button()
+            #self.originRectX  = int(event.pos().x())
+            #self.originRectY = int(event.pos().y())
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
             elif (button == Qt.RightButton): 

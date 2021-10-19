@@ -38,7 +38,6 @@ class SortedImageSlider(QSlider):
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute
        self.setToolTip("Images sorted according to {}".format(DicomAttribute))
-       self.setMaximumWidth(400)
 
 
 class SortedImageCheckBox(QCheckBox):
@@ -55,7 +54,7 @@ class SortedImageCheckBox(QCheckBox):
        #set a minimum width, so that the parent grid layout
        #allocates sufficient column width for the whole
        #label to be visible
-       self.setMinimumWidth(150)
+       self.setMinimumWidth(160)
        #Properties added to the QCheckBox class
        self.attribute =  DicomAttribute
        self.colNumber = colNum
@@ -86,6 +85,7 @@ class ImageSliders(QObject):
             self.seriesID = seriesID
             self.weasel = pointerToWeasel
             self.selectedImagePath = imagePathList[0]
+            self.widthSubWindow = self.weasel.mdiArea.width()
         
             # Global variables for the Multisliders
             self.dynamicListImageType = []
@@ -171,13 +171,13 @@ class ImageSliders(QObject):
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            widthSubWindow = self.weasel.mdiArea.width()
+            
             if maxNumberImages < 4:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
             elif maxNumberImages > 3 and maxNumberImages < 11:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
             else:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -387,7 +387,6 @@ class ImageSliders(QObject):
                 self.shapeList.append(numAttr)
                 imageSlider = SortedImageSlider(tag)
                 imageLabel = QLabel()
-                imageLabel.setMaximumWidth(200)
                 listSliderLabelPair = [imageSlider, imageLabel]
                 self.listSortedImageSliders.append(listSliderLabelPair)
                 imageSlider.setFocusPolicy(Qt.StrongFocus) 
