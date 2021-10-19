@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PyQt5.QtCore import (QRectF, Qt)
+<pre><code class="python">from PyQt5.QtCore import (QRectF, QRect, QPoint, Qt)
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
 from PyQt5.QtWidgets import  QGraphicsObject, QApplication, QMenu, QAction
@@ -38,6 +38,7 @@ import sys
 from .HelperFunctions import *
 from .Resources import * 
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
+from time import sleep
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -81,6 +82,8 @@ class GraphicsItem(QGraphicsObject):
         self.last_x, self.last_y = None, None
         self.start_x = None
         self.start_y = None
+        #self.originRectX = None
+        #self.originRectY = None
         self.pathCoordsList = []
         self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
@@ -202,6 +205,7 @@ class GraphicsItem(QGraphicsObject):
             if (buttons == Qt.LeftButton):
                 self.xMouseCoord = int(event.pos().x())
                 self.yMouseCoord = int(event.pos().y())
+
                 if self.drawEnabled:
                     #Only draw if left button pressed
                     if self.last_x is None: # First event.
@@ -229,6 +233,23 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
+
+
+    def drawRectangle(self):
+        &#34;&#34;&#34;This function draws a rectangle on the image.
+
+        Not used. To use uncomment references to self.originRectX and
+        self.originRectY throughout the class and the 2 lines below.&#34;&#34;&#34;
+        objPainter = QPainter(self.pixMap)
+        objPen = objPainter.pen()
+        objPen.setWidth(1) #1 pixel
+        objPen.setColor(QColor(&#34;#0000FF&#34;)) #blue
+        objPainter.setPen(objPen)
+        #objPainter.drawRect(QRect(QPoint(self.originRectX, self.originRectY),
+         #                         QPoint(self.xMouseCoord, self.yMouseCoord)))
+        objPainter.end()
+        self.qimage =  self.pixMap.toImage()
+        self.update()
 
 
     def erasePixelROI(self):
@@ -307,7 +328,7 @@ class GraphicsItem(QGraphicsObject):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()                    
+                        self.erasePixelROI()  
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -373,6 +394,7 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))
+
 
     def reloadImage(self):
         logger.info(&#34;FreeHandROI.GraphicsItem.reloadImage called&#34;)
@@ -529,9 +551,11 @@ class GraphicsItem(QGraphicsObject):
             
 
     def mousePressEvent(self, event):
-        logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEven called&#34;)
+        logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
         try:
             button = event.button()
+            #self.originRectX  = int(event.pos().x())
+            #self.originRectY = int(event.pos().y())
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
             elif (button == Qt.RightButton): 
@@ -706,6 +730,8 @@ def readLevels(path, pixelArray):
         self.last_x, self.last_y = None, None
         self.start_x = None
         self.start_y = None
+        #self.originRectX = None
+        #self.originRectY = None
         self.pathCoordsList = []
         self.prevPathCoordsList = []
         self.setAcceptHoverEvents(True)
@@ -827,6 +853,7 @@ def readLevels(path, pixelArray):
             if (buttons == Qt.LeftButton):
                 self.xMouseCoord = int(event.pos().x())
                 self.yMouseCoord = int(event.pos().y())
+
                 if self.drawEnabled:
                     #Only draw if left button pressed
                     if self.last_x is None: # First event.
@@ -854,6 +881,23 @@ def readLevels(path, pixelArray):
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseMoveEvent: &#39; + str(e))
+
+
+    def drawRectangle(self):
+        &#34;&#34;&#34;This function draws a rectangle on the image.
+
+        Not used. To use uncomment references to self.originRectX and
+        self.originRectY throughout the class and the 2 lines below.&#34;&#34;&#34;
+        objPainter = QPainter(self.pixMap)
+        objPen = objPainter.pen()
+        objPen.setWidth(1) #1 pixel
+        objPen.setColor(QColor(&#34;#0000FF&#34;)) #blue
+        objPainter.setPen(objPen)
+        #objPainter.drawRect(QRect(QPoint(self.originRectX, self.originRectY),
+         #                         QPoint(self.xMouseCoord, self.yMouseCoord)))
+        objPainter.end()
+        self.qimage =  self.pixMap.toImage()
+        self.update()
 
 
     def erasePixelROI(self):
@@ -932,7 +976,7 @@ def readLevels(path, pixelArray):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()                    
+                        self.erasePixelROI()  
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -998,6 +1042,7 @@ def readLevels(path, pixelArray):
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))
+
 
     def reloadImage(self):
         logger.info(&#34;FreeHandROI.GraphicsItem.reloadImage called&#34;)
@@ -1154,9 +1199,11 @@ def readLevels(path, pixelArray):
             
 
     def mousePressEvent(self, event):
-        logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEven called&#34;)
+        logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
         try:
             button = event.button()
+            #self.originRectX  = int(event.pos().x())
+            #self.originRectY = int(event.pos().y())
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
             elif (button == Qt.RightButton): 
@@ -1269,6 +1316,34 @@ def readLevels(path, pixelArray):
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMask: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawRectangle"><code class="name flex">
+<span>def <span class="ident">drawRectangle</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function draws a rectangle on the image.</p>
+<p>Not used. To use uncomment references to self.originRectX and
+self.originRectY throughout the class and the 2 lines below.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def drawRectangle(self):
+    &#34;&#34;&#34;This function draws a rectangle on the image.
+
+    Not used. To use uncomment references to self.originRectX and
+    self.originRectY throughout the class and the 2 lines below.&#34;&#34;&#34;
+    objPainter = QPainter(self.pixMap)
+    objPen = objPainter.pen()
+    objPen.setWidth(1) #1 pixel
+    objPen.setColor(QColor(&#34;#0000FF&#34;)) #blue
+    objPainter.setPen(objPen)
+    #objPainter.drawRect(QRect(QPoint(self.originRectX, self.originRectY),
+     #                         QPoint(self.xMouseCoord, self.yMouseCoord)))
+    objPainter.end()
+    self.qimage =  self.pixMap.toImage()
+    self.update()</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine"><code class="name flex">
@@ -1480,6 +1555,7 @@ def readLevels(path, pixelArray):
         if (buttons == Qt.LeftButton):
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
+
             if self.drawEnabled:
                 #Only draw if left button pressed
                 if self.last_x is None: # First event.
@@ -1519,9 +1595,11 @@ def readLevels(path, pixelArray):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mousePressEvent(self, event):
-    logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEven called&#34;)
+    logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
     try:
         button = event.button()
+        #self.originRectX  = int(event.pos().x())
+        #self.originRectY = int(event.pos().y())
         if (button == Qt.LeftButton):
           self.sigZoomIn.emit()
         elif (button == Qt.RightButton): 
@@ -1606,7 +1684,7 @@ def readLevels(path, pixelArray):
                     #The mouse was not moved, so a pixel was clicked on
                     #erase mask at this pixel 
                     #and set pixel back to original value
-                    self.erasePixelROI()                    
+                    self.erasePixelROI()  
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))</code></pre>
@@ -1867,6 +1945,7 @@ def readLevels(path, pixelArray):
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.boundingRect" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.boundingRect">boundingRect</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createBlankMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createBlankMask">createBlankMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask">createMask</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawRectangle" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawRectangle">drawRectangle</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine">drawStraightLine</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI">erasePixelROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi">fillFreeHandRoi</a></code></li>

@@ -66,7 +66,6 @@ class SortedImageSlider(QSlider):
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute
        self.setToolTip(&#34;Images sorted according to {}&#34;.format(DicomAttribute))
-       self.setMaximumWidth(400)
 
 
 class SortedImageCheckBox(QCheckBox):
@@ -83,7 +82,7 @@ class SortedImageCheckBox(QCheckBox):
        #set a minimum width, so that the parent grid layout
        #allocates sufficient column width for the whole
        #label to be visible
-       self.setMinimumWidth(150)
+       self.setMinimumWidth(160)
        #Properties added to the QCheckBox class
        self.attribute =  DicomAttribute
        self.colNumber = colNum
@@ -114,6 +113,7 @@ class ImageSliders(QObject):
             self.seriesID = seriesID
             self.weasel = pointerToWeasel
             self.selectedImagePath = imagePathList[0]
+            self.widthSubWindow = self.weasel.mdiArea.width()
         
             # Global variables for the Multisliders
             self.dynamicListImageType = []
@@ -199,13 +199,13 @@ class ImageSliders(QObject):
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            widthSubWindow = self.weasel.mdiArea.width()
+            
             if maxNumberImages &lt; 4:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
             elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
             else:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -415,7 +415,6 @@ class ImageSliders(QObject):
                 self.shapeList.append(numAttr)
                 imageSlider = SortedImageSlider(tag)
                 imageLabel = QLabel()
-                imageLabel.setMaximumWidth(200)
                 listSliderLabelPair = [imageSlider, imageLabel]
                 self.listSortedImageSliders.append(listSliderLabelPair)
                 imageSlider.setFocusPolicy(Qt.StrongFocus) 
@@ -558,6 +557,7 @@ navigating a DICOM series of images.</p></div>
             self.seriesID = seriesID
             self.weasel = pointerToWeasel
             self.selectedImagePath = imagePathList[0]
+            self.widthSubWindow = self.weasel.mdiArea.width()
         
             # Global variables for the Multisliders
             self.dynamicListImageType = []
@@ -643,13 +643,13 @@ navigating a DICOM series of images.</p></div>
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            widthSubWindow = self.weasel.mdiArea.width()
+            
             if maxNumberImages &lt; 4:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.2)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
             elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.5)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
             else:
-                self.mainImageSlider.setFixedWidth(widthSubWindow*.80)
+                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -859,7 +859,6 @@ navigating a DICOM series of images.</p></div>
                 self.shapeList.append(numAttr)
                 imageSlider = SortedImageSlider(tag)
                 imageLabel = QLabel()
-                imageLabel.setMaximumWidth(200)
                 listSliderLabelPair = [imageSlider, imageLabel]
                 self.listSortedImageSliders.append(listSliderLabelPair)
                 imageSlider.setFocusPolicy(Qt.StrongFocus) 
@@ -1073,7 +1072,7 @@ where a widget created from this class is placed.</p></div>
        #set a minimum width, so that the parent grid layout
        #allocates sufficient column width for the whole
        #label to be visible
-       self.setMinimumWidth(150)
+       self.setMinimumWidth(160)
        #Properties added to the QCheckBox class
        self.attribute =  DicomAttribute
        self.colNumber = colNum
@@ -1142,8 +1141,7 @@ which identifies what the image subset has been filtered for.</p></div>
     def __init__(self,  DicomAttribute): 
        super().__init__(orientation=Qt.Horizontal)
        self.attribute =  DicomAttribute
-       self.setToolTip(&#34;Images sorted according to {}&#34;.format(DicomAttribute))
-       self.setMaximumWidth(400)</code></pre>
+       self.setToolTip(&#34;Images sorted according to {}&#34;.format(DicomAttribute))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
