@@ -463,6 +463,10 @@ class ImageSliders(QObject):
             #same image as the sorted image sliders.
             indexImageInMainList = self.imagePathList.index(self.selectedImagePath)
             self.mainImageSlider.setValue(indexImageInMainList+1)
+        except IndexError:
+            print(
+            "Warning - due to the DICOM attribute sliders you have selected, you may not be able to navigate the series of images."
+            )
         except Exception as e:
             print('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
             logger.exception('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
