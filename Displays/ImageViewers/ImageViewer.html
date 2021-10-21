@@ -711,10 +711,39 @@ class ImageViewer(QMdiSubWindow):
   
                 self.graphicsView.getView().scene().sigMouseMoved.connect(
                         lambda pos: self.getPixelValue(pos))
+                self.graphicsView.getView().scene().sigMouseDragged.connect(
+                        lambda ev: self.rightButtonDrag(ev))
 
         except Exception as e:
             print(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
+
+
+    def rightButtonDrag(self, ev):
+        try:
+            self.blockLevelsSpinBoxSignals(True)
+            centre = self.spinBoxIntensity.value()
+            width = self.spinBoxContrast.value()
+            delta = ev.screenPos() - ev.lastScreenPos()
+            if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+                step_y = float(centre / np.shape(self.pixelArray)[1])
+            else:
+                step_y = 0.01
+            if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+                step_x = float(width/ np.shape(self.pixelArray)[0])
+            else:
+                step_x = 0.01
+            horizontalDiff = step_y * delta.y()
+            verticalDiff = step_x * delta.x() # Maybe put a minus sign here
+            newCentre = centre + horizontalDiff
+            newWidth = width + verticalDiff
+            self.spinBoxIntensity.setValue(newCentre)
+            self.spinBoxContrast.setValue(newWidth)
+            self.updateImageLevels()
+            self.blockLevelsSpinBoxSignals(False)
+        except Exception as e:
+            print(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))
 
 
     def updateImageUserSelection(self):
@@ -1709,10 +1738,39 @@ sliders for browsing series of images.</p></div>
   
                 self.graphicsView.getView().scene().sigMouseMoved.connect(
                         lambda pos: self.getPixelValue(pos))
+                self.graphicsView.getView().scene().sigMouseDragged.connect(
+                        lambda ev: self.rightButtonDrag(ev))
 
         except Exception as e:
             print(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
-            logger.error(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
+
+
+    def rightButtonDrag(self, ev):
+        try:
+            self.blockLevelsSpinBoxSignals(True)
+            centre = self.spinBoxIntensity.value()
+            width = self.spinBoxContrast.value()
+            delta = ev.screenPos() - ev.lastScreenPos()
+            if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+                step_y = float(centre / np.shape(self.pixelArray)[1])
+            else:
+                step_y = 0.01
+            if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+                step_x = float(width/ np.shape(self.pixelArray)[0])
+            else:
+                step_x = 0.01
+            horizontalDiff = step_y * delta.y()
+            verticalDiff = step_x * delta.x() # Maybe put a minus sign here
+            newCentre = centre + horizontalDiff
+            newWidth = width + verticalDiff
+            self.spinBoxIntensity.setValue(newCentre)
+            self.spinBoxContrast.setValue(newWidth)
+            self.updateImageLevels()
+            self.blockLevelsSpinBoxSignals(False)
+        except Exception as e:
+            print(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))
 
 
     def updateImageUserSelection(self):
@@ -2421,10 +2479,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
             self.graphicsView.getView().scene().sigMouseMoved.connect(
                     lambda pos: self.getPixelValue(pos))
+            self.graphicsView.getView().scene().sigMouseDragged.connect(
+                    lambda ev: self.rightButtonDrag(ev))
 
     except Exception as e:
         print(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))
-        logger.error(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))</code></pre>
+        logger.exception(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage"><code class="name flex">
@@ -2776,6 +2836,42 @@ minimumValue - Minimum pixel value in the image</p></div>
     except Exception as e:
         print(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
         logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.rightButtonDrag"><code class="name flex">
+<span>def <span class="ident">rightButtonDrag</span></span>(<span>self, ev)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rightButtonDrag(self, ev):
+    try:
+        self.blockLevelsSpinBoxSignals(True)
+        centre = self.spinBoxIntensity.value()
+        width = self.spinBoxContrast.value()
+        delta = ev.screenPos() - ev.lastScreenPos()
+        if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+            step_y = float(centre / np.shape(self.pixelArray)[1])
+        else:
+            step_y = 0.01
+        if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+            step_x = float(width/ np.shape(self.pixelArray)[0])
+        else:
+            step_x = 0.01
+        horizontalDiff = step_y * delta.y()
+        verticalDiff = step_x * delta.x() # Maybe put a minus sign here
+        newCentre = centre + horizontalDiff
+        newWidth = width + verticalDiff
+        self.spinBoxIntensity.setValue(newCentre)
+        self.spinBoxContrast.setValue(newWidth)
+        self.updateImageLevels()
+        self.blockLevelsSpinBoxSignals(False)
+    except Exception as e:
+        print(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))
+        logger.exception(&#39;Error in ImageViewer.rightButtonDrag: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap"><code class="name flex">
@@ -3420,6 +3516,7 @@ one set of levels</p>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue">getPixelValue</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage">readLevelsFromDICOMImage</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels">returnUserSelectedLevels</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.rightButtonDrag" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.rightButtonDrag">rightButtonDrag</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap">setPgColourMap</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton">setUpApplyUserSelectionButton</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown">setUpColourTableDropDown</a></code></li>
