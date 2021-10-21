@@ -66,7 +66,8 @@ class GraphicsScene(QtGui.QGraphicsScene):
     sigMouseHover = QtCore.Signal(object)   ## emits a list of objects hovered over
     sigMouseMoved = QtCore.Signal(object)   ## emits position of mouse on every move
     sigMouseClicked = QtCore.Signal(object)   ## emitted when mouse is clicked. Check for event.isAccepted() to see whether the event has already been acted on.
-    
+    sigMouseDragged = QtCore.Signal(object) ## emitted when mouse drag
+
     sigPrepareForPaint = QtCore.Signal()  ## emitted immediately before the scene is about to be rendered
     
     _addressCache = weakref.WeakValueDictionary()
@@ -181,7 +182,9 @@ class GraphicsScene(QtGui.QGraphicsScene):
                 if len(self.dragButtons) > 0:
                     if self.sendDragEvent(ev, init=init):
                         ev.accept()
-                
+                    if self.dragButtons == [2]:
+                        self.sigMouseDragged.emit(ev)
+            
     def leaveEvent(self, ev):  ## inform items that mouse is gone
         if len(self.dragButtons) == 0:
             self.sendHoverEvents(ev, exitOnly=True)

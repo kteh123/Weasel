@@ -125,6 +125,7 @@ class ViewBox(GraphicsWidget):
         """
         
         GraphicsWidget.__init__(self, parent)
+        self.parent = parent
         self.name = None
         self.linksBlocked = False
         self.addedItems = []
@@ -1275,26 +1276,26 @@ class ViewBox(GraphicsWidget):
                 if x is not None or y is not None:
                     self.translateBy(x=x, y=y)
                 self.sigRangeChangedManually.emit(self.state['mouseEnabled'])
-        elif ev.button() & QtCore.Qt.RightButton:
-            #print "vb.rightDrag"
-            if self.state['aspectLocked'] is not False:
-                mask[0] = 0
-            
-            dif = ev.screenPos() - ev.lastScreenPos()
-            dif = np.array([dif.x(), dif.y()])
-            dif[0] *= -1
-            s = ((mask * 0.02) + 1) ** dif
-            
-            tr = self.childGroup.transform()
-            tr = fn.invertQTransform(tr)
-            
-            x = s[0] if mouseEnabled[0] == 1 else None
-            y = s[1] if mouseEnabled[1] == 1 else None
-            
-            center = Point(tr.map(ev.buttonDownPos(QtCore.Qt.RightButton)))
-            self._resetTarget()
-            self.scaleBy(x=x, y=y, center=center)
-            self.sigRangeChangedManually.emit(self.state['mouseEnabled'])
+        #elif ev.button() & QtCore.Qt.RightButton:
+        #    #print "vb.rightDrag"
+        #    if self.state['aspectLocked'] is not False:
+        #        mask[0] = 0
+        #    
+        #    dif = ev.screenPos() - ev.lastScreenPos()
+        #    dif = np.array([dif.x(), dif.y()])
+        #    dif[0] *= -1
+        #    s = ((mask * 0.02) + 1) ** dif
+        #    
+        #    tr = self.childGroup.transform()
+        #    tr = fn.invertQTransform(tr)
+        #    
+        #    x = s[0] if mouseEnabled[0] == 1 else None
+        #    y = s[1] if mouseEnabled[1] == 1 else None
+        #    
+        #    center = Point(tr.map(ev.buttonDownPos(QtCore.Qt.RightButton)))
+        #    self._resetTarget()
+        #    self.scaleBy(x=x, y=y, center=center)
+        #    self.sigRangeChangedManually.emit(self.state['mouseEnabled'])
 
     def keyPressEvent(self, ev):
         """

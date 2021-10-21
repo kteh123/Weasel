@@ -683,10 +683,39 @@ class ImageViewer(QMdiSubWindow):
   
                 self.graphicsView.getView().scene().sigMouseMoved.connect(
                         lambda pos: self.getPixelValue(pos))
+                self.graphicsView.getView().scene().sigMouseDragged.connect(
+                        lambda ev: self.rightButtonDrag(ev))
 
         except Exception as e:
             print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
-            logger.error('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+            logger.exception('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
+
+
+    def rightButtonDrag(self, ev):
+        try:
+            self.blockLevelsSpinBoxSignals(True)
+            centre = self.spinBoxIntensity.value()
+            width = self.spinBoxContrast.value()
+            delta = ev.screenPos() - ev.lastScreenPos()
+            if float(centre / np.shape(self.pixelArray)[1]) > 0.01:
+                step_y = float(centre / np.shape(self.pixelArray)[1])
+            else:
+                step_y = 0.01
+            if float(width / np.shape(self.pixelArray)[0]) > 0.01:
+                step_x = float(width/ np.shape(self.pixelArray)[0])
+            else:
+                step_x = 0.01
+            horizontalDiff = step_y * delta.y()
+            verticalDiff = step_x * delta.x() # Maybe put a minus sign here
+            newCentre = centre + horizontalDiff
+            newWidth = width + verticalDiff
+            self.spinBoxIntensity.setValue(newCentre)
+            self.spinBoxContrast.setValue(newWidth)
+            self.updateImageLevels()
+            self.blockLevelsSpinBoxSignals(False)
+        except Exception as e:
+            print('Error in ImageViewer.rightButtonDrag: ' + str(e))
+            logger.exception('Error in ImageViewer.rightButtonDrag: ' + str(e))
 
 
     def updateImageUserSelection(self):
