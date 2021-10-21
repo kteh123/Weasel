@@ -404,7 +404,8 @@ class ImageSliders(QObject):
             
             # Create a new slider with empty label string if there is more than 1 image per combination of tags
             if np.prod(self.shapeList) != len(self.imagePathList) and len(self.dynamicListImageType) > 0:
-                imageSlider = SortedImageSlider('')
+                imageSlider = SortedImageSlider('Instance')
+                instanceLabel = QLabel('Instance')
                 imageLabel = QLabel()
                 listSliderLabelPair = [imageSlider, imageLabel]
                 self.listSortedImageSliders.append(listSliderLabelPair)
@@ -414,8 +415,9 @@ class ImageSliders(QObject):
                 imageSlider.setTickInterval(1)
                 imageSlider.setMinimum(1)
                 #Add to second row of the layout
-                self.sortedImageSliderLayout.addWidget(imageSlider, 1, 0, alignment=Qt.AlignHCenter)
-                self.sortedImageSliderLayout.addWidget(imageLabel, 1, 1, alignment=Qt.AlignHCenter)
+                self.sortedImageSliderLayout.addWidget(instanceLabel, 1, 0, alignment=Qt.AlignHCenter)
+                self.sortedImageSliderLayout.addWidget(imageSlider, 1, 1, alignment=Qt.AlignLeft)
+                self.sortedImageSliderLayout.addWidget(imageLabel, 1, 2, alignment=Qt.AlignLeft)
                 
                 subTable = copy.copy(self.dicomTable)
                 # Filter first values of each slider
@@ -464,9 +466,8 @@ class ImageSliders(QObject):
             indexImageInMainList = self.imagePathList.index(self.selectedImagePath)
             self.mainImageSlider.setValue(indexImageInMainList+1)
         except IndexError:
-            print(
-            "Warning - due to the DICOM attribute sliders you have selected, you may not be able to navigate the series of images."
-            )
+            print("Warning - due to the DICOM attribute sliders you have selected, you may not be able to navigate the series of images.")
+            QMessageBox.warning(self.weasel, "Warning Message", "Due to the DICOM attribute sliders you have selected, you may not be able to navigate the series of images.")
         except Exception as e:
             print('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
             logger.exception('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
