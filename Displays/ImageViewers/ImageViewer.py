@@ -664,12 +664,8 @@ class ImageViewer(QMdiSubWindow):
                 self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
                 self.lblImageMissing.hide() 
-                center, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
-                self.blockLevelsSpinBoxSignals(True)
-                self.spinBoxIntensity.setValue(center)
-                self.spinBoxContrast.setValue(width)
-                self.blockLevelsSpinBoxSignals(False)
-                    
+                maximumValue, minimumValue = self.getAndSetLevels()
+                
                 if len(np.shape(self.pixelArray)) < 3:
                         self.graphicsView.setImage(self.pixelArray, 
                                                 autoHistogramRange=True, 

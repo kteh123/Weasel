@@ -71,7 +71,6 @@ class UserSelection:
             self._applyUserSelectionToAnImage = True 
             tempList =[colourTable, intensity,  contrast]
             self.imageDict[imageName] = tempList
-              
         except Exception as e:
             print('Error in UserImageColourSelection.updateUserSelection: ' + str(e))
             logger.error('Error in UserImageColourSelection.updateUserSelection: ' + str(e)) 
