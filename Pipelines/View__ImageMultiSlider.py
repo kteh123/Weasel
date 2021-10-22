@@ -9,11 +9,16 @@ __author__ = "Steve Shillitoe"
 
 
 def main(weasel):
-    checked_series = weasel.series()
-    if checked_series != []: 
-        for series in checked_series:
-            imageViewer(weasel, series)
-    else:
-        for image in weasel.images(msg = 'No images checked'):
-            imageViewer(weasel, image)
-                    
+    try:
+        checked_series = weasel.series()
+        if checked_series != []: 
+            for series in checked_series:
+                imageViewer(weasel, series)
+        else:
+            for image in weasel.images(msg = 'No images checked'):
+                imageViewer(weasel, image)
+    except (IndexError, AttributeError):
+        weasel.information(msg="Select either a series or an image", title="View DICOM header")
+    except Exception as e:
+            print('Error in View_ImageMultiSlider.main: ' + str(e))
+            logger.error('Error in View_ImageMultiSlider.main: ' + str(e))               

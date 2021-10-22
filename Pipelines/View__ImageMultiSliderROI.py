@@ -20,7 +20,8 @@ def main(weasel):
             else: 
                 for image in weasel.images():
                     imageViewerROI(weasel, image)
-                        
+        except (IndexError, AttributeError):
+            weasel.information(msg="Select either a series or an image", title="View DICOM header")                
         except Exception as e:
-            print('Error in ViewImageMultiSlider.main: ' + str(e))
-            logger.error('Error in ViewImageMultiSlider.main: ' + str(e))
+            print('Error in View_ImageMultiSliderROI.main: ' + str(e))
+            logger.error('Error in View_ImageMultiSliderROI.main: ' + str(e))
