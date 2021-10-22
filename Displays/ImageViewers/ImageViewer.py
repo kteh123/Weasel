@@ -36,6 +36,7 @@ from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueCompone
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -142,6 +143,8 @@ class ImageViewer(QMdiSubWindow):
 
     def setUpImageSliders(self):
         try:
+            logger.info("ImageViewer.setpUpImageSliders called.")
+            start = time.perf_counter()
             #create an instance of the ImageSliders class
             self.slidersWidget = imageSliders(self.weasel, 
                                              self.subjectID, 
@@ -163,6 +166,7 @@ class ImageViewer(QMdiSubWindow):
             #Display the first image in the viewer
             #self.displayPixelArrayOfSingleImage(self.imagePathList[0])
             self.slidersWidget.displayFirstImage()
+            print("ImageViewer.setUpImageSliders time = {} seconds".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
@@ -634,7 +638,7 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
-
+            start = time.perf_counter()
             self.selectedImagePath = imagePath
             imageName = os.path.basename(self.selectedImagePath)
             self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
@@ -685,7 +689,7 @@ class ImageViewer(QMdiSubWindow):
                         lambda pos: self.getPixelValue(pos))
                 self.graphicsView.getView().scene().sigMouseDragged.connect(
                         lambda ev: self.rightButtonDrag(ev))
-
+                print("ImageViewer.displayPixelArrayOfSingleImage time = {}".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
             logger.exception('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))

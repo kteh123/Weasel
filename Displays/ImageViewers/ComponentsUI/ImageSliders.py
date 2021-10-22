@@ -18,7 +18,7 @@ import pandas as pd
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 from DICOM.Classes import Series
 from External.PandasDICOM.DICOM_to_DataFrame import DICOM_to_DataFrame
-
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -78,6 +78,7 @@ class ImageSliders(QObject):
                  studyID, seriesID, imagePathList):
         try:
             #Super class QObject to provide support for pyqtSignal
+            start = time.perf_counter()
             super().__init__()
             self.imagePathList = imagePathList
             self.subjectID = subjectID
@@ -102,7 +103,7 @@ class ImageSliders(QObject):
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            #self.__setUpDisplayMultiSlidersCheckbox()
+            print("Time to instanciate ImageSliders object = {} seconds".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -199,6 +200,7 @@ class ImageSliders(QObject):
         """
         try: 
             logger.info("ImageSliders.__mainImageSliderMoved called")
+            start = time.perf_counter()
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
             else:
@@ -240,6 +242,7 @@ class ImageSliders(QObject):
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
+                print("Main Image Slider moved = {} seconds".format(time.perf_counter() - start))
         except TypeError as e: 
             print('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
             logger.error('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
