@@ -48,10 +48,11 @@ def main(weasel):
             else: 
                 for image in weasel.images():
                     imageViewerROI(weasel, image)
-                        
+        except (IndexError, AttributeError):
+            weasel.information(msg=&#34;Select either a series or an image&#34;, title=&#34;View DICOM header&#34;)                
         except Exception as e:
-            print(&#39;Error in ViewImageMultiSlider.main: &#39; + str(e))
-            logger.error(&#39;Error in ViewImageMultiSlider.main: &#39; + str(e))</code></pre>
+            print(&#39;Error in View_ImageMultiSliderROI.main: &#39; + str(e))
+            logger.error(&#39;Error in View_ImageMultiSliderROI.main: &#39; + str(e))</code></pre>
 </details>
 </section>
 <section>
@@ -82,10 +83,11 @@ def main(weasel):
             else: 
                 for image in weasel.images():
                     imageViewerROI(weasel, image)
-                        
+        except (IndexError, AttributeError):
+            weasel.information(msg=&#34;Select either a series or an image&#34;, title=&#34;View DICOM header&#34;)                
         except Exception as e:
-            print(&#39;Error in ViewImageMultiSlider.main: &#39; + str(e))
-            logger.error(&#39;Error in ViewImageMultiSlider.main: &#39; + str(e))</code></pre>
+            print(&#39;Error in View_ImageMultiSliderROI.main: &#39; + str(e))
+            logger.error(&#39;Error in View_ImageMultiSliderROI.main: &#39; + str(e))</code></pre>
 </details>
 </dd>
 </dl>
