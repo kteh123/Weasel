@@ -338,13 +338,13 @@ class ImageViewer(QMdiSubWindow):
                     and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] 
                     and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]): 
                         self.lblPixelValue.setText(
-                        "<h4> {} @ X: {}, Y: {}, Z: {}</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                        "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
                         and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] 
                         and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]):
                             z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                             self.lblPixelValue.setText(
-                                "<h4> {} @ X: {}, Y: {}, Z: {}</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                                "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 else:
                     self.lblPixelValue.setText("")
             else:
