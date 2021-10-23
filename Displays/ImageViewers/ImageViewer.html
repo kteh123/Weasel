@@ -366,13 +366,13 @@ class ImageViewer(QMdiSubWindow):
                     and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
                     and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
                         self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
                         and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
                         and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
                             z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                             self.lblPixelValue.setText(
-                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 else:
                     self.lblPixelValue.setText(&#34;&#34;)
             else:
@@ -1392,13 +1392,13 @@ sliders for browsing series of images.</p></div>
                     and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
                     and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
                         self.lblPixelValue.setText(
-                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                        &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
                         and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
                         and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
                             z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                             self.lblPixelValue.setText(
-                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                                &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 else:
                     self.lblPixelValue.setText(&#34;&#34;)
             else:
@@ -2688,13 +2688,13 @@ lblPixelValue.</p></div>
                 and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 1 ] 
                 and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 0 ]): 
                     self.lblPixelValue.setText(
-                    &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                    &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
             elif ((len(np.shape(self.pixelArray)) == 3) 
                     and x_i &gt;= 0 and x_i &lt; self.pixelArray.shape [ 1 ] 
                     and y_i &gt;= 0 and y_i &lt; self.pixelArray.shape [ 2 ]):
                         z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                         self.lblPixelValue.setText(
-                            &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {}&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i))
+                            &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
             else:
                 self.lblPixelValue.setText(&#34;&#34;)
         else:
