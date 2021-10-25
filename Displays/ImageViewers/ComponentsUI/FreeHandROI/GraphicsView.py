@@ -42,8 +42,8 @@ class GraphicsView(QGraphicsView):
         self.dictROIs = ROIs(numberOfImages, self)
         self.mainMenu = QMenu()
         self.mainMenu.hovered.connect(self._actionHovered)
-        self.erasorSizeMenu = QMenu()
-        self.erasorSizeMenu.hovered.connect(self._actionHovered)
+        self.eraserSizeMenu = QMenu()
+        self.eraserSizeMenu.hovered.connect(self._actionHovered)
         
         #Following commented out to not display vertical and
         #horizontal scroll bars
@@ -167,8 +167,8 @@ class GraphicsView(QGraphicsView):
             logger.error('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
 
 
-    def setUpErasorSizeMenu(self, event):
-        self.erasorSizeMenu.clear()
+    def setUpEraserSizeMenu(self, event):
+        self.eraserSizeMenu.clear()
         onePixel = QAction('One Pixel', None)
         onePixel.setToolTip('Erase one pixel')
         threePixels = QAction('3 x 3 Pixels', None)
@@ -192,19 +192,19 @@ class GraphicsView(QGraphicsView):
         elevenPixels.triggered.connect(lambda:  self.setErasorSize(11,elevenPixels))
         twentyOnePixels.triggered.connect(lambda:  self.setErasorSize(21,twentyOnePixels ))
         
-        self.erasorSizeMenu.addAction(onePixel)
-        self.erasorSizeMenu.addAction(threePixels)
-        self.erasorSizeMenu.addAction(fivePixels)
-        self.erasorSizeMenu.addAction(sevenPixels)
-        self.erasorSizeMenu.addAction(ninePixels)
-        self.erasorSizeMenu.addAction(elevenPixels)
-        self.erasorSizeMenu.addAction(twentyOnePixels)
-        self.erasorSizeMenu.exec_(event.globalPos())
+        self.eraserSizeMenu.addAction(onePixel)
+        self.eraserSizeMenu.addAction(threePixels)
+        self.eraserSizeMenu.addAction(fivePixels)
+        self.eraserSizeMenu.addAction(sevenPixels)
+        self.eraserSizeMenu.addAction(ninePixels)
+        self.eraserSizeMenu.addAction(elevenPixels)
+        self.eraserSizeMenu.addAction(twentyOnePixels)
+        self.eraserSizeMenu.exec_(event.globalPos())
        
 
-    def setErasorSize(self, erasorSize, action):
-        self.graphicsItem.erasorSize = erasorSize
-        for item in self.erasorSizeMenu.actions():
+    def setErasorSize(self, eraserSize, action):
+        self.graphicsItem.eraserSize = eraserSize
+        for item in self.eraserSizeMenu.actions():
             item.font().setBold(False)
         action.font().setBold(True)
 
@@ -223,7 +223,7 @@ class GraphicsView(QGraphicsView):
         drawROI.setToolTip("Draw an ROI")
         drawROI.triggered.connect(lambda: self.drawROI(True))
         
-        eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
+        eraseROI  = QAction(QIcon(ERASER_CURSOR), 'Eraser', None)
         eraseROI.setToolTip("Erase the ROI")
         eraseROI.triggered.connect(lambda: self.eraseROI(True))
         
@@ -258,9 +258,9 @@ class GraphicsView(QGraphicsView):
         try:
             if not self.zoomEnabled:
                 if self.graphicsItem.eraseEnabled:
-                    self.setUpErasorSizeMenu(event)
+                    self.setUpEraserSizeMenu(event)
                 else:
-                    self.graphicsItem.erasorSize = 1
+                    self.graphicsItem.eraserSize = 1
                     self.setUpMainMenu(event)  
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))

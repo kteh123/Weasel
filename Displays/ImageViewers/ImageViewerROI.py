@@ -600,7 +600,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.buttonList.append(self.btnErase)
             self.btnErase.setToolTip("Erase the ROI")
             self.btnErase.setCheckable(True)
-            self.btnErase.setIcon(QIcon(QPixmap(ERASOR_CURSOR)))
+            self.btnErase.setIcon(QIcon(QPixmap(ERASER_CURSOR)))
 
             self.btnDraw = QPushButton()
             self.buttonList.append(self.btnDraw)

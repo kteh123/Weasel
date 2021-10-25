@@ -68,7 +68,7 @@ class GraphicsItem(QGraphicsObject):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
-        self.erasorSize = 1
+        self.eraserSize = 1
         #self.setToolTip("Use the mouse wheel to zoom")
 
 
@@ -136,7 +136,8 @@ class GraphicsItem(QGraphicsObject):
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(ERASOR_CURSOR)
+                pm = QPixmap(ERASER_CURSOR)
+                self.eraserSize = 1
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
@@ -227,11 +228,11 @@ class GraphicsItem(QGraphicsObject):
 
     def eraseROI(self):
         if self.mask is not None:
-            if self.erasorSize == 1:
+            if self.eraserSize == 1:
                 self.resetPixel(self.xMouseCoord, self.yMouseCoord)
                 self.mask[self.yMouseCoord, self.xMouseCoord] = False
             else:
-                increment = (self.erasorSize - 1)/2
+                increment = (self.eraserSize - 1)/2
                 lowX = int(self.xMouseCoord - increment)
                 highX = int(self.xMouseCoord + increment)
                 lowY = int(self.yMouseCoord - increment)
