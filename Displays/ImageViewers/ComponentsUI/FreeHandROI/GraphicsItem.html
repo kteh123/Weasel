@@ -96,6 +96,7 @@ class GraphicsItem(QGraphicsObject):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
+        self.eraserSize = 1
         #self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
 
 
@@ -163,7 +164,8 @@ class GraphicsItem(QGraphicsObject):
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(ERASOR_CURSOR)
+                pm = QPixmap(ERASER_CURSOR)
+                self.eraserSize = 1
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
@@ -225,9 +227,9 @@ class GraphicsItem(QGraphicsObject):
                     self.mouseMoved = True
 
                 if self.eraseEnabled:
-                    #erase mask at this pixel 
+                    #erase mask at this mouse pointer position
                     #and set pixel back to original value
-                    self.erasePixelROI()
+                    self.eraseROI()
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -252,10 +254,24 @@ class GraphicsItem(QGraphicsObject):
         self.update()
 
 
-    def erasePixelROI(self):
+    def eraseROI(self):
         if self.mask is not None:
-            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            if self.eraserSize == 1:
+                self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+                self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            else:
+                increment = (self.eraserSize - 1)/2
+                lowX = int(self.xMouseCoord - increment)
+                highX = int(self.xMouseCoord + increment)
+                lowY = int(self.yMouseCoord - increment)
+                highY = int(self.yMouseCoord + increment)
+            
+                for x in range(lowX, highX+1, 1):
+                    for y in range(lowY, highY+1, 1):
+                        if x &gt; -1 and  y &gt; -1:
+                            self.resetPixel(x, y)
+                            self.mask[y, x] = False
+                            
             self.sigGetDetailsROI.emit()
             #update existing mask
             self.linkToGraphicsView.dictROIs.updateMask(self.mask)
@@ -328,7 +344,7 @@ class GraphicsItem(QGraphicsObject):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()  
+                        self.eraseROI()  
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -744,6 +760,7 @@ def readLevels(path, pixelArray):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
+        self.eraserSize = 1
         #self.setToolTip(&#34;Use the mouse wheel to zoom&#34;)
 
 
@@ -811,7 +828,8 @@ def readLevels(path, pixelArray):
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.eraseEnabled:
-                pm = QPixmap(ERASOR_CURSOR)
+                pm = QPixmap(ERASER_CURSOR)
+                self.eraserSize = 1
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
             if self.zoomEnabled:
@@ -873,9 +891,9 @@ def readLevels(path, pixelArray):
                     self.mouseMoved = True
 
                 if self.eraseEnabled:
-                    #erase mask at this pixel 
+                    #erase mask at this mouse pointer position
                     #and set pixel back to original value
-                    self.erasePixelROI()
+                    self.eraseROI()
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -900,10 +918,24 @@ def readLevels(path, pixelArray):
         self.update()
 
 
-    def erasePixelROI(self):
+    def eraseROI(self):
         if self.mask is not None:
-            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            if self.eraserSize == 1:
+                self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+                self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            else:
+                increment = (self.eraserSize - 1)/2
+                lowX = int(self.xMouseCoord - increment)
+                highX = int(self.xMouseCoord + increment)
+                lowY = int(self.yMouseCoord - increment)
+                highY = int(self.yMouseCoord + increment)
+            
+                for x in range(lowX, highX+1, 1):
+                    for y in range(lowY, highY+1, 1):
+                        if x &gt; -1 and  y &gt; -1:
+                            self.resetPixel(x, y)
+                            self.mask[y, x] = False
+                            
             self.sigGetDetailsROI.emit()
             #update existing mask
             self.linkToGraphicsView.dictROIs.updateMask(self.mask)
@@ -976,7 +1008,7 @@ def readLevels(path, pixelArray):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()  
+                        self.eraseROI()  
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
@@ -1376,8 +1408,8 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.drawStraightLine: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI"><code class="name flex">
-<span>def <span class="ident">erasePixelROI</span></span>(<span>self)</span>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.eraseROI"><code class="name flex">
+<span>def <span class="ident">eraseROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1385,10 +1417,24 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def erasePixelROI(self):
+<pre><code class="python">def eraseROI(self):
     if self.mask is not None:
-        self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-        self.mask[self.yMouseCoord, self.xMouseCoord] = False
+        if self.eraserSize == 1:
+            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+        else:
+            increment = (self.eraserSize - 1)/2
+            lowX = int(self.xMouseCoord - increment)
+            highX = int(self.xMouseCoord + increment)
+            lowY = int(self.yMouseCoord - increment)
+            highY = int(self.yMouseCoord + increment)
+        
+            for x in range(lowX, highX+1, 1):
+                for y in range(lowY, highY+1, 1):
+                    if x &gt; -1 and  y &gt; -1:
+                        self.resetPixel(x, y)
+                        self.mask[y, x] = False
+                        
         self.sigGetDetailsROI.emit()
         #update existing mask
         self.linkToGraphicsView.dictROIs.updateMask(self.mask)
@@ -1486,7 +1532,8 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.eraseEnabled:
-            pm = QPixmap(ERASOR_CURSOR)
+            pm = QPixmap(ERASER_CURSOR)
+            self.eraserSize = 1
             cursor = QCursor(pm, hotX=0, hotY=30)
             QApplication.setOverrideCursor(cursor)
         if self.zoomEnabled:
@@ -1575,9 +1622,9 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
                 self.mouseMoved = True
 
             if self.eraseEnabled:
-                #erase mask at this pixel 
+                #erase mask at this mouse pointer position
                 #and set pixel back to original value
-                self.erasePixelROI()
+                self.eraseROI()
 
         #elif (buttons == Qt.RightButton):
     except Exception as e:
@@ -1684,7 +1731,7 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
                     #The mouse was not moved, so a pixel was clicked on
                     #erase mask at this pixel 
                     #and set pixel back to original value
-                    self.erasePixelROI()  
+                    self.eraseROI()  
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: &#39; + str(e))</code></pre>
@@ -1947,7 +1994,7 @@ self.originRectY throughout the class and the 2 lines below.</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMask">createMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawRectangle" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawRectangle">drawRectangle</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.drawStraightLine">drawStraightLine</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.erasePixelROI">erasePixelROI</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.eraseROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.eraseROI">eraseROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi">fillFreeHandRoi</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints">getListRoiInnerPoints</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData">getMaskData</a></code></li>
