@@ -68,6 +68,7 @@ class GraphicsItem(QGraphicsObject):
         self.drawEnabled = False
         self.eraseEnabled = False
         self.zoomEnabled = False
+        self.erasorSize = 1
         #self.setToolTip("Use the mouse wheel to zoom")
 
 
@@ -197,9 +198,9 @@ class GraphicsItem(QGraphicsObject):
                     self.mouseMoved = True
 
                 if self.eraseEnabled:
-                    #erase mask at this pixel 
+                    #erase mask at this mouse pointer position
                     #and set pixel back to original value
-                    self.erasePixelROI()
+                    self.eraseROI()
 
             #elif (buttons == Qt.RightButton):
         except Exception as e:
@@ -224,10 +225,24 @@ class GraphicsItem(QGraphicsObject):
         self.update()
 
 
-    def erasePixelROI(self):
+    def eraseROI(self):
         if self.mask is not None:
-            self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-            self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            if self.erasorSize == 1:
+                self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+                self.mask[self.yMouseCoord, self.xMouseCoord] = False
+            else:
+                increment = (self.erasorSize - 1)/2
+                lowX = int(self.xMouseCoord - increment)
+                highX = int(self.xMouseCoord + increment)
+                lowY = int(self.yMouseCoord - increment)
+                highY = int(self.yMouseCoord + increment)
+            
+                for x in range(lowX, highX+1, 1):
+                    for y in range(lowY, highY+1, 1):
+                        if x > -1 and  y > -1:
+                            self.resetPixel(x, y)
+                            self.mask[y, x] = False
+                            
             self.sigGetDetailsROI.emit()
             #update existing mask
             self.linkToGraphicsView.dictROIs.updateMask(self.mask)
@@ -300,7 +315,7 @@ class GraphicsItem(QGraphicsObject):
                         #The mouse was not moved, so a pixel was clicked on
                         #erase mask at this pixel 
                         #and set pixel back to original value
-                        self.erasePixelROI()  
+                        self.eraseROI()  
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))

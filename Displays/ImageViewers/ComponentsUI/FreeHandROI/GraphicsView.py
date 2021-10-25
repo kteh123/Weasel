@@ -40,8 +40,11 @@ class GraphicsView(QGraphicsView):
         self.currentROIName = None
         self.currentImageNumber = None
         self.dictROIs = ROIs(numberOfImages, self)
-        self.menu = QMenu()
-        self.menu.hovered.connect(self._actionHovered)
+        self.mainMenu = QMenu()
+        self.mainMenu.hovered.connect(self._actionHovered)
+        self.erasorSizeMenu = QMenu()
+        self.erasorSizeMenu.hovered.connect(self._actionHovered)
+        
         #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -164,51 +167,101 @@ class GraphicsView(QGraphicsView):
             logger.error('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
 
 
+    def setUpErasorSizeMenu(self, event):
+        self.erasorSizeMenu.clear()
+        onePixel = QAction('One Pixel', None)
+        onePixel.setToolTip('Erase one pixel')
+        threePixels = QAction('3 x 3 Pixels', None)
+        threePixels.setToolTip('Erase a 3x3 square of pixels')
+        fivePixels = QAction('5 x 5 Pixels', None)
+        fivePixels.setToolTip('Erase a 5x5 square of pixels')
+        sevenPixels = QAction('7 x 7 Pixels', None)
+        sevenPixels.setToolTip('Erase a 7x7 square of pixels')
+        ninePixels = QAction('9 x 9 Pixels', None)
+        ninePixels.setToolTip('Erase a 9x9 square of pixels')
+        elevenPixels = QAction('11 x 11 Pixels', None)
+        elevenPixels.setToolTip('Erase a 11x11 square of pixels')
+        twentyOnePixels = QAction('21 x 21 Pixels', None)
+        twentyOnePixels.setToolTip('Erase a 21x21 square of pixels')
+
+        onePixel.triggered.connect(lambda:self.setErasorSize(1, onePixel ))
+        threePixels.triggered.connect(lambda:  self.setErasorSize(3,threePixels ))
+        fivePixels.triggered.connect(lambda:  self.setErasorSize(5,fivePixels))
+        sevenPixels.triggered.connect(lambda:  self.setErasorSize(7, sevenPixels))
+        ninePixels.triggered.connect(lambda:  self.setErasorSize(9, ninePixels))
+        elevenPixels.triggered.connect(lambda:  self.setErasorSize(11,elevenPixels))
+        twentyOnePixels.triggered.connect(lambda:  self.setErasorSize(21,twentyOnePixels ))
+        
+        self.erasorSizeMenu.addAction(onePixel)
+        self.erasorSizeMenu.addAction(threePixels)
+        self.erasorSizeMenu.addAction(fivePixels)
+        self.erasorSizeMenu.addAction(sevenPixels)
+        self.erasorSizeMenu.addAction(ninePixels)
+        self.erasorSizeMenu.addAction(elevenPixels)
+        self.erasorSizeMenu.addAction(twentyOnePixels)
+        self.erasorSizeMenu.exec_(event.globalPos())
+       
+
+    def setErasorSize(self, erasorSize, action):
+        self.graphicsItem.erasorSize = erasorSize
+        for item in self.erasorSizeMenu.actions():
+            item.font().setBold(False)
+        action.font().setBold(True)
+
+
+    def setUpMainMenu(self, event):
+        self.mainMenu.clear()
+        self.sigContextMenuDisplayed.emit()
+        zoomIn = QAction('Zoom In', None)
+        zoomIn.setToolTip('Click to zoom in')
+        zoomOut = QAction('Zoom Out', None)
+        zoomOut.setToolTip('Click to zoom out')
+        zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
+        zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
+        
+        drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
+        drawROI.setToolTip("Draw an ROI")
+        drawROI.triggered.connect(lambda: self.drawROI(True))
+        
+        eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
+        eraseROI.setToolTip("Erase the ROI")
+        eraseROI.triggered.connect(lambda: self.eraseROI(True))
+        
+        newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
+        newROI.setToolTip("Create a new ROI")
+        newROI.triggered.connect(self.newROI)
+        
+        resetROI  = QAction(QIcon(RESET_ICON),'Reset ROI', None)
+        resetROI.setToolTip("Clear drawn ROI from the image")
+        resetROI.triggered.connect(self.resetROI)
+        
+        deleteROI  = QAction(QIcon(DELETE_ICON), 'Delete ROI', None)
+        deleteROI.setToolTip("Delete drawn ROI from the image")
+        deleteROI.triggered.connect(self.deleteROI)
+        
+        self.mainMenu.addAction(zoomIn)
+        self.mainMenu.addAction(zoomOut)
+        self.mainMenu.addSeparator()
+        self.mainMenu.addAction(drawROI)
+        self.mainMenu.addAction(eraseROI)
+        self.mainMenu.addSeparator()
+        self.mainMenu.addAction(newROI)
+        self.mainMenu.addAction(resetROI)
+        self.mainMenu.addAction(deleteROI)
+        self.mainMenu.exec_(event.globalPos())
+
+
     def contextMenuEvent(self, event):
         #display pop-up context menu when the right mouse button is pressed
         #as long as zoom is not enabled
         logger.info("freeHandROI.GraphicsView.contextMenuEvent called")
         try:
             if not self.zoomEnabled:
-                self.menu.clear()
-                self.sigContextMenuDisplayed.emit()
-                zoomIn = QAction('Zoom In', None)
-                zoomIn.setToolTip('Click to zoom in')
-                zoomOut = QAction('Zoom Out', None)
-                zoomOut.setToolTip('Click to zoom out')
-                zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
-                zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-
-                drawROI = QAction(QIcon(PEN_CURSOR), 'Draw', None)
-                drawROI.setToolTip("Draw an ROI")
-                drawROI.triggered.connect(lambda: self.drawROI(True))
-
-                eraseROI  = QAction(QIcon(ERASOR_CURSOR), 'Erasor', None)
-                eraseROI.setToolTip("Erase the ROI")
-                eraseROI.triggered.connect(lambda: self.eraseROI(True))
-
-                newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
-                newROI.setToolTip("Create a new ROI")
-                newROI.triggered.connect(self.newROI)
-
-                resetROI  = QAction(QIcon(RESET_ICON),'Reset ROI', None)
-                resetROI.setToolTip("Clear drawn ROI from the image")
-                resetROI.triggered.connect(self.resetROI)
-
-                deleteROI  = QAction(QIcon(DELETE_ICON), 'Delete ROI', None)
-                deleteROI.setToolTip("Delete drawn ROI from the image")
-                deleteROI.triggered.connect(self.deleteROI)
-
-                self.menu.addAction(zoomIn)
-                self.menu.addAction(zoomOut)
-                self.menu.addSeparator()
-                self.menu.addAction(drawROI)
-                self.menu.addAction(eraseROI)
-                self.menu.addSeparator()
-                self.menu.addAction(newROI)
-                self.menu.addAction(resetROI)
-                self.menu.addAction(deleteROI)
-                self.menu.exec_(event.globalPos())  
+                if self.graphicsItem.eraseEnabled:
+                    self.setUpErasorSizeMenu(event)
+                else:
+                    self.graphicsItem.erasorSize = 1
+                    self.setUpMainMenu(event)  
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
