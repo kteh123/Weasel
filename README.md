@@ -6,16 +6,11 @@
 
 # Weasel
 
-Prototype DICOM image viewer. For more information, please visit the [official website](https://weasel.pro/).
+Weasel is a Python environment for developing and deploying quantitative medical imaging applications.
 
-To use, open the File Menu and select the 'View DICOM Studies' option. Browse to a folder containing DICOM image files and an XML file 
-describing their study/series/image structure. Select this XML file to build a tree view visual representation of this structure. 
-To view an image, either double click it or select it, open the Tools menu and select the 'View Image' menu item. 
-To view an inverted image, select an image in the tree view, open the Tools menu and select the 'Invert Image' item.
+It aims to simplify the process of testing prototype image processing pipelines on clinical data, by avoiding the need for dedicated graphical interface development and removing the overhead involved in interfacing with DICOM databases.
 
-**Joao Sousa `07/10/2021` - This first paragraph needs rewriting.**
-
-The 'Sample Data' folder contains 24 DICOM images and an XML file describing thier structure. To use this prototype download the source code and this folder to your computer.  Run the source code and browse to the 'Sample Data' folder and select the DICOM.xml file using File\View DICOM Studies
+This will speed up the translation of new methods into early stage clinical studies, bringing forward the point where prototypes can be stress-tested under real world conditions.
 
 # Installation
 
