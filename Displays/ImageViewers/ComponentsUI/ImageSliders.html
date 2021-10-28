@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from PyQt5.QtCore import  Qt, pyqtSignal, QObject
+from PyQt5.QtGui import QPixmap, QIcon, QPixmap
 from PyQt5.QtWidgets import (QMessageBox, 
                             QGridLayout,
                             QHBoxLayout,
@@ -38,7 +39,6 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QListWidgetItem,
                             QListView,
                             QCheckBox)
-
 import numpy as np
 import copy
 import itertools
@@ -57,6 +57,7 @@ listImageTypes = [&#34;SliceLocation&#34;, &#34;AcquisitionTime&#34;, &#34;Acqui
                   &#34;FlipAngle&#34;, &#34;InversionTime&#34;, &#34;EchoTime&#34;, &#34;DiffusionBValue&#34;, 
                   &#34;DiffusionGradientOrientation&#34;, (0x2005, 0x1572)] # This last element is a good example of private tag
 
+SLIDER_ICON = &#39;Displays/ImageViewers/ComponentsUI/Images/slider_icon.png&#39; 
 
 class SortedImageSlider(QSlider):
     &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute 
@@ -287,7 +288,7 @@ class ImageSliders(QObject):
             self.btnMultiSliders = QPushButton()
             self.btnMultiSliders.setToolTip(&#34;Display Multiple Sliders&#34;)
             self.btnMultiSliders.setCheckable(True)
-            #self.btnMultiSliders.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+            self.btnMultiSliders.setIcon(QIcon(QPixmap(SLIDER_ICON)))
             self.mainSliderLayout.addWidget(self.btnMultiSliders)
             self.btnMultiSliders.clicked.connect(lambda setRed: self.__displayHideImageTypeCheckBoxes(setRed))
         except Exception as e:
@@ -739,7 +740,7 @@ navigating a DICOM series of images.</p></div>
             self.btnMultiSliders = QPushButton()
             self.btnMultiSliders.setToolTip(&#34;Display Multiple Sliders&#34;)
             self.btnMultiSliders.setCheckable(True)
-            #self.btnMultiSliders.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+            self.btnMultiSliders.setIcon(QIcon(QPixmap(SLIDER_ICON)))
             self.mainSliderLayout.addWidget(self.btnMultiSliders)
             self.btnMultiSliders.clicked.connect(lambda setRed: self.__displayHideImageTypeCheckBoxes(setRed))
         except Exception as e:

@@ -200,6 +200,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnLoad.clicked.connect(self.loadROI)
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
+        self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
@@ -413,6 +414,20 @@ class ImageViewerROI(QMdiSubWindow):
              )
 
 
+    def paintROI(self, checked):
+        logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
+        if checked:
+            self.setButtonsToDefaultStyle()
+            self.graphicsView.paintROI()
+            self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+        else:
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            self.graphicsView.graphicsItem.paintEnabled = False
+            self.btnPaint.setStyleSheet(
+             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
+
+
     def zoomImage(self, checked):
         logger.info(&#34;ImageViewerROI.zoomImage called.&#34;)
         if checked:
@@ -430,28 +445,39 @@ class ImageViewerROI(QMdiSubWindow):
 
     
     def getRoiMeanAndStd(self, mask, pixelArray):
-        logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
-        return mean, std
+        try:
+            logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
+            mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+            std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
+            return mean, std
+        except Exception as e:
+            print(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))
 
 
     def displayROIMeanAndStd(self):
-        logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbNamesROIs.currentText()
-        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-        if mask is not None:
-            mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
-            self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
-        else:
-            self.roiMeanTxt.clear()
-            self.roiStdDevTxt.clear()
+        try:
+            logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+            else:
+                imageNumber = 1
+            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            regionName = self.cmbNamesROIs.currentText()
+            print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
+            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
+            print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+            if mask is not None:
+                mean, std = self.getRoiMeanAndStd(mask, pixelArray)
+                self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+                self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
+            else:
+                self.roiMeanTxt.clear()
+                self.roiStdDevTxt.clear()
+        except Exception as e:
+                print(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e)) 
 
 
     def setUpImageEventHandlers(self):
@@ -475,6 +501,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
                                                            self.setEraseButtonColour(setRed))
+
+            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
+                                                           self.setPaintButtonColour(setRed))
 
             self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
@@ -626,7 +655,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.btnErase = QPushButton()
             self.buttonList.append(self.btnErase)
-            self.btnErase.setToolTip(&#34;Erase the ROI&#34;)
+            self.btnErase.setToolTip(&#34;Erase the ROI. Right click to change eraser size.&#34;)
             self.btnErase.setCheckable(True)
             self.btnErase.setIcon(QIcon(QPixmap(ERASER_CURSOR)))
 
@@ -635,6 +664,12 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnDraw.setToolTip(&#34;Draw an ROI&#34;)
             self.btnDraw.setCheckable(True)
             self.btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+
+            self.btnPaint = QPushButton()
+            self.buttonList.append(self.btnPaint)
+            self.btnPaint.setToolTip(&#34;Paint an ROI&#34;)
+            self.btnPaint.setCheckable(True)
+            self.btnPaint.setIcon(QIcon(QPixmap(BRUSH_CURSOR)))
 
             self.btnZoom = QPushButton()
             self.buttonList.append(self.btnZoom)
@@ -657,6 +692,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnSaveROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnLoad,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.btnPaint,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
@@ -855,6 +891,9 @@ class ImageViewerROI(QMdiSubWindow):
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
+               self.btnPaint.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
         else:
                self.btnErase.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
@@ -865,11 +904,30 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
         if setRed:
                self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnPaint.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
                self.btnErase.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
                self.btnDraw.setStyleSheet(
+                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+
+
+    def setPaintButtonColour(self, setRed):
+        logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
+        if setRed:
+               self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnDraw.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+               self.btnErase.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+        else:
+               self.btnPaint.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
 
@@ -1010,6 +1068,7 @@ sliders for browsing series of images.</p></div>
         self.btnLoad.clicked.connect(self.loadROI)
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
+        self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
@@ -1223,6 +1282,20 @@ sliders for browsing series of images.</p></div>
              )
 
 
+    def paintROI(self, checked):
+        logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
+        if checked:
+            self.setButtonsToDefaultStyle()
+            self.graphicsView.paintROI()
+            self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+        else:
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            self.graphicsView.graphicsItem.paintEnabled = False
+            self.btnPaint.setStyleSheet(
+             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
+
+
     def zoomImage(self, checked):
         logger.info(&#34;ImageViewerROI.zoomImage called.&#34;)
         if checked:
@@ -1240,28 +1313,39 @@ sliders for browsing series of images.</p></div>
 
     
     def getRoiMeanAndStd(self, mask, pixelArray):
-        logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
-        return mean, std
+        try:
+            logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
+            mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+            std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
+            return mean, std
+        except Exception as e:
+            print(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))
 
 
     def displayROIMeanAndStd(self):
-        logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbNamesROIs.currentText()
-        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-        if mask is not None:
-            mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
-            self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
-        else:
-            self.roiMeanTxt.clear()
-            self.roiStdDevTxt.clear()
+        try:
+            logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+            else:
+                imageNumber = 1
+            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            regionName = self.cmbNamesROIs.currentText()
+            print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
+            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
+            print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+            if mask is not None:
+                mean, std = self.getRoiMeanAndStd(mask, pixelArray)
+                self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+                self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
+            else:
+                self.roiMeanTxt.clear()
+                self.roiStdDevTxt.clear()
+        except Exception as e:
+                print(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e))
+                logger.error(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e)) 
 
 
     def setUpImageEventHandlers(self):
@@ -1285,6 +1369,9 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
                                                            self.setEraseButtonColour(setRed))
+
+            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
+                                                           self.setPaintButtonColour(setRed))
 
             self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
@@ -1436,7 +1523,7 @@ sliders for browsing series of images.</p></div>
 
             self.btnErase = QPushButton()
             self.buttonList.append(self.btnErase)
-            self.btnErase.setToolTip(&#34;Erase the ROI&#34;)
+            self.btnErase.setToolTip(&#34;Erase the ROI. Right click to change eraser size.&#34;)
             self.btnErase.setCheckable(True)
             self.btnErase.setIcon(QIcon(QPixmap(ERASER_CURSOR)))
 
@@ -1445,6 +1532,12 @@ sliders for browsing series of images.</p></div>
             self.btnDraw.setToolTip(&#34;Draw an ROI&#34;)
             self.btnDraw.setCheckable(True)
             self.btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+
+            self.btnPaint = QPushButton()
+            self.buttonList.append(self.btnPaint)
+            self.btnPaint.setToolTip(&#34;Paint an ROI&#34;)
+            self.btnPaint.setCheckable(True)
+            self.btnPaint.setIcon(QIcon(QPixmap(BRUSH_CURSOR)))
 
             self.btnZoom = QPushButton()
             self.buttonList.append(self.btnZoom)
@@ -1467,6 +1560,7 @@ sliders for browsing series of images.</p></div>
             self.roiToolsLayout.addWidget(self.btnSaveROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnLoad,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.btnPaint,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
@@ -1665,6 +1759,9 @@ sliders for browsing series of images.</p></div>
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
+               self.btnPaint.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
         else:
                self.btnErase.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
@@ -1675,11 +1772,30 @@ sliders for browsing series of images.</p></div>
         logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
         if setRed:
                self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnPaint.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
                self.btnErase.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
                self.btnDraw.setStyleSheet(
+                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+
+
+    def setPaintButtonColour(self, setRed):
+        logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
+        if setRed:
+               self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnDraw.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+               self.btnErase.setStyleSheet(
+                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+                 )
+        else:
+               self.btnPaint.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
 
@@ -1743,6 +1859,7 @@ sliders for browsing series of images.</p></div>
     self.btnLoad.clicked.connect(self.loadROI)
     self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
     self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
+    self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
     self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
     self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
     self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
@@ -1833,21 +1950,28 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def displayROIMeanAndStd(self):
-    logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-    if self.isSeries:  
-        imageNumber = self.mainImageSlider.value()
-    else:
-        imageNumber = 1
-    pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-    regionName = self.cmbNamesROIs.currentText()
-    mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-    if mask is not None:
-        mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-        self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
-        self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
-    else:
-        self.roiMeanTxt.clear()
-        self.roiStdDevTxt.clear()</code></pre>
+    try:
+        logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+        print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
+        if self.isSeries:  
+            imageNumber = self.mainImageSlider.value()
+        else:
+            imageNumber = 1
+        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        regionName = self.cmbNamesROIs.currentText()
+        print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
+        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
+        print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+        if mask is not None:
+            mean, std = self.getRoiMeanAndStd(mask, pixelArray)
+            self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
+            self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
+        else:
+            self.roiMeanTxt.clear()
+            self.roiStdDevTxt.clear()
+    except Exception as e:
+            print(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e))
+            logger.error(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e)) </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI"><code class="name flex">
@@ -1937,10 +2061,14 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getRoiMeanAndStd(self, mask, pixelArray):
-    logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
-    mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
-    std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
-    return mean, std</code></pre>
+    try:
+        logger.info(&#34;ImageViewerROI.getRoiMeanAndStd called&#34;)
+        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
+        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
+        return mean, std
+    except Exception as e:
+        print(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))
+        logger.error(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI"><code class="name flex">
@@ -2052,6 +2180,29 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     except Exception as e:
             print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
             logger.error(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) </code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI"><code class="name flex">
+<span>def <span class="ident">paintROI</span></span>(<span>self, checked)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def paintROI(self, checked):
+    logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
+    if checked:
+        self.setButtonsToDefaultStyle()
+        self.graphicsView.paintROI()
+        self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+    else:
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        self.graphicsView.graphicsItem.paintEnabled = False
+        self.btnPaint.setStyleSheet(
+         &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+         )</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem"><code class="name flex">
@@ -2221,6 +2372,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
     if setRed:
            self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+           self.btnPaint.setStyleSheet(
+            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
            self.btnErase.setStyleSheet(
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
@@ -2246,6 +2400,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
            self.btnDraw.setStyleSheet(
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
+           self.btnPaint.setStyleSheet(
+            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
     else:
            self.btnErase.setStyleSheet(
              &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
@@ -2268,6 +2425,31 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     self.spinBoxContrast.blockSignals(True)
     self.spinBoxContrast.setValue(self.graphicsView.graphicsItem.contrast)
     self.spinBoxContrast.blockSignals(False)</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour"><code class="name flex">
+<span>def <span class="ident">setPaintButtonColour</span></span>(<span>self, setRed)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setPaintButtonColour(self, setRed):
+    logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
+    if setRed:
+           self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+           self.btnDraw.setStyleSheet(
+            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
+           self.btnErase.setStyleSheet(
+            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )
+    else:
+           self.btnPaint.setStyleSheet(
+             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+             )</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView"><code class="name flex">
@@ -2314,6 +2496,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
                                                        self.setEraseButtonColour(setRed))
+
+        self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
+                                                       self.setPaintButtonColour(setRed))
 
         self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
         self.graphicsView.sigROIChanged.connect(self.updateROIName)
@@ -2471,7 +2656,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.btnErase = QPushButton()
         self.buttonList.append(self.btnErase)
-        self.btnErase.setToolTip(&#34;Erase the ROI&#34;)
+        self.btnErase.setToolTip(&#34;Erase the ROI. Right click to change eraser size.&#34;)
         self.btnErase.setCheckable(True)
         self.btnErase.setIcon(QIcon(QPixmap(ERASER_CURSOR)))
 
@@ -2480,6 +2665,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.btnDraw.setToolTip(&#34;Draw an ROI&#34;)
         self.btnDraw.setCheckable(True)
         self.btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+
+        self.btnPaint = QPushButton()
+        self.buttonList.append(self.btnPaint)
+        self.btnPaint.setToolTip(&#34;Paint an ROI&#34;)
+        self.btnPaint.setCheckable(True)
+        self.btnPaint.setIcon(QIcon(QPixmap(BRUSH_CURSOR)))
 
         self.btnZoom = QPushButton()
         self.buttonList.append(self.btnZoom)
@@ -2502,6 +2693,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.roiToolsLayout.addWidget(self.btnSaveROI,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnLoad,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
+        self.roiToolsLayout.addWidget(self.btnPaint,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
         self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
@@ -2885,6 +3077,7 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue">getPixelValue</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI">loadROI</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI">paintROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem">reloadImageInNewImageItem</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask">replaceMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
@@ -2893,6 +3086,7 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setDrawButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setDrawButtonColour">setDrawButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour">setEraseButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour">setPaintButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
