@@ -66,11 +66,14 @@ class ROIs():
 
     def updateMask(self, mask):
         logger.info("RIO_Storage.updateMask called")
+        #print("RIO_Storage.updateMask called self.dictMasks={}".format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                print("updateMask-currentROIName in self.dictMasks")
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
                 imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask & imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                print("createMaskFromDrawnROI Coords of True elements ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print('Error in ROI_Storage.updateMask: ' + str(e))
