@@ -458,16 +458,13 @@ class ImageViewerROI(QMdiSubWindow):
     def displayROIMeanAndStd(self):
         try:
             logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             regionName = self.cmbNamesROIs.currentText()
-            print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
-            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
                 self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
@@ -1326,16 +1323,13 @@ sliders for browsing series of images.</p></div>
     def displayROIMeanAndStd(self):
         try:
             logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             regionName = self.cmbNamesROIs.currentText()
-            print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
-            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
                 self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
@@ -1952,16 +1946,13 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def displayROIMeanAndStd(self):
     try:
         logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-        print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         regionName = self.cmbNamesROIs.currentText()
-        print(&#34;ImageViewerROI.displayROIMeanAndStd regionName {}, imageNumber {}&#34;.format(regionName, imageNumber))
-        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-        print(&#34;ImageViewerROI.displayROIMeanAndStd size Mask={}&#34;.format(len(mask)))
+        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
         if mask is not None:
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
             self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))

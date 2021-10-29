@@ -94,11 +94,14 @@ class ROIs():
 
     def updateMask(self, mask):
         logger.info(&#34;RIO_Storage.updateMask called&#34;)
+        #print(&#34;RIO_Storage.updateMask called self.dictMasks={}&#34;.format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                print(&#34;updateMask-currentROIName in self.dictMasks&#34;)
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
                 imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask &amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                print(&#34;createMaskFromDrawnROI Coords of True elements ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.updateMask: &#39; + str(e))
@@ -344,11 +347,14 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
 
     def updateMask(self, mask):
         logger.info(&#34;RIO_Storage.updateMask called&#34;)
+        #print(&#34;RIO_Storage.updateMask called self.dictMasks={}&#34;.format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                print(&#34;updateMask-currentROIName in self.dictMasks&#34;)
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
                 imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask &amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                print(&#34;createMaskFromDrawnROI Coords of True elements ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.updateMask: &#39; + str(e))
@@ -798,11 +804,14 @@ each image in the series.</p></div>
 </summary>
 <pre><code class="python">def updateMask(self, mask):
     logger.info(&#34;RIO_Storage.updateMask called&#34;)
+    #print(&#34;RIO_Storage.updateMask called self.dictMasks={}&#34;.format(self.dictMasks))
     try:
         if self.linkToGraphicsView.currentROIName in self.dictMasks:
+            print(&#34;updateMask-currentROIName in self.dictMasks&#34;)
             imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
             #imageMaskList[imageNumber - 1] = mask
             imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask &amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+            print(&#34;createMaskFromDrawnROI Coords of True elements ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
             self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
     except Exception as e:
         print(&#39;Error in ROI_Storage.updateMask: &#39; + str(e))
