@@ -211,7 +211,8 @@ class ImageViewerROI(QMdiSubWindow):
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
-            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
+            #maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
+            maskList = [np.array(mask, dtype=np.int) for mask in maskList] 
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
                 inputPath = [i.path for i in self.weasel.images()]
@@ -405,6 +406,7 @@ class ImageViewerROI(QMdiSubWindow):
         if checked:
             self.setButtonsToDefaultStyle()
             self.graphicsView.setZoomEnabled(True)
+            self.graphicsView.graphicsItem.paintEnabled = False
             self.graphicsView.graphicsItem.drawEnabled = False
             self.graphicsView.graphicsItem.eraseEnabled = False
             self.btnZoom.setStyleSheet("background-color: red")
@@ -419,8 +421,8 @@ class ImageViewerROI(QMdiSubWindow):
     def getRoiMeanAndStd(self, mask, pixelArray):
         try:
             logger.info("ImageViewerROI.getRoiMeanAndStd called")
-            mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
-            std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
+            mean = round(np.mean(np.extract(mask, pixelArray)), 1)
+            std = round(np.std(np.extract(mask, pixelArray)), 1)
             return mean, std
         except Exception as e:
             print('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
@@ -430,6 +432,7 @@ class ImageViewerROI(QMdiSubWindow):
     def displayROIMeanAndStd(self):
         try:
             logger.info("ImageViewerROI.displayROIMeanAndStd called")
+            print("ImageViewerROI.displayROIMeanAndStd called") ##
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
@@ -438,7 +441,9 @@ class ImageViewerROI(QMdiSubWindow):
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
+                print("mask is not none, size={}".format(len(mask)))##
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
+                print("mean ={}, std ={}".format(mean, std)) ##
                 self.roiMeanTxt.setText("Mean: " + str(mean))
                 self.roiStdDevTxt.setText("SD: " + str(std))
             else:
@@ -693,16 +698,15 @@ class ImageViewerROI(QMdiSubWindow):
 
     def deleteROITidyUp(self):
         logger.info("ImageViewerROI.deleteROITidyUp called")
-    
         self.reloadImageInNewImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem("region1")
-            self.setCurrentIndex(0) 
+            self.cmbNamesROIs.setCurrentIndex(0) 
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
-            self.pixelValueTxt.clear()
+            self.lblPixelValue.clear()
         else:
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()

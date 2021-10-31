@@ -216,67 +216,6 @@ class GraphicsItem(QGraphicsObject):
             logger.error('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
 
     
-    def paintROI(self):
-        isMaskNew = False
-        if self.mask is None:
-            print("paintROI mask is none")
-            self.createBlankMask()
-            isMaskNew = True
-            print("1. paintROI size Mask={}".format(len(self.mask)))
-
-        if self.pixelSquareSize == 1:
-            self.mask[self.xMouseCoord, self.yMouseCoord] = True
-            self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
-        else:
-            increment = (self.pixelSquareSize - 1)/2
-            lowX = int(self.xMouseCoord - increment)
-            highX = int(self.xMouseCoord + increment)
-            lowY = int(self.yMouseCoord - increment)
-            highY = int(self.yMouseCoord + increment)
-            
-            for x in range(lowX, highX+1, 1):
-                for y in range(lowY, highY+1, 1):
-                    if x > -1 and  y > -1:
-                        self.mask[x, y] = True
-                        self.setPixelToRed(x, y)
-            
-        self.update()
-        self.sigGetDetailsROI.emit()
-        #update existing mask
-        print("paintROI size Mask={}".format(len(self.mask)))
-        if isMaskNew:
-            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
-        else:
-            self.linkToGraphicsView.dictROIs.updateMask(self.mask)
-        self.sigRecalculateMeanROI.emit()
-
-
-    def eraseROI(self):
-        if self.mask is not None:
-            print("eraseROI")
-            if self.pixelSquareSize == 1:
-                self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-                print("self.mask[self.xMouseCoord, self.yMouseCoord]={}".format(self.mask[self.xMouseCoord, self.yMouseCoord]))
-                self.mask[self.xMouseCoord, self.yMouseCoord] = False
-            else:
-                increment = (self.pixelSquareSize - 1)/2
-                lowX = int(self.xMouseCoord - increment)
-                highX = int(self.xMouseCoord + increment)
-                lowY = int(self.yMouseCoord - increment)
-                highY = int(self.yMouseCoord + increment)
-            
-                for x in range(lowX, highX+1, 1):
-                    for y in range(lowY, highY+1, 1):
-                        if x > -1 and  y > -1:
-                            self.resetPixel(x, y)
-                            self.mask[x, y] = False
-                            
-            self.sigGetDetailsROI.emit()
-            #update existing mask
-            self.linkToGraphicsView.dictROIs.updateMask(self.mask)
-            self.sigRecalculateMeanROI.emit()
-
-
     def mouseReleaseEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.mouseReleaseEvent called")
         try:
@@ -302,11 +241,10 @@ class GraphicsItem(QGraphicsObject):
                             self.createMaskFromDrawnROI(self.pathCoordsList)
                             #store mask
                             self.sigGetDetailsROI.emit()
-                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.linkToGraphicsView.dictROIs.addMask(self.mask)
                             self.sigRecalculateMeanROI.emit()
                             
                             self.listROICoords = self.getListRoiInnerPoints(self.mask)
-                            #print("ROI Inner coords={}".format(self.listROICoords))
                             self.fillFreeHandRoi()
                             self.start_x = None 
                             self.start_y = None
@@ -322,22 +260,22 @@ class GraphicsItem(QGraphicsObject):
                                 #mask already exists at this pixel, 
                                 #so do nothing
                             else:
-                                #add to the mask
+                                #update mask
                                 self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
                                 self.mask[self.xMouseCoord, self.yMouseCoord] = True
                                 #store mask
                                 self.sigGetDetailsROI.emit()
-                                self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                                self.linkToGraphicsView.dictROIs.addMask(self.mask)
                                 self.sigRecalculateMeanROI.emit()
                         else:
-                            #first create a boolean mask with all values False
-                            self.createBlankMask()
+                            self.createBlankMask() #create a new boolean mask with all values False
                             self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
                             self.mask[self.xMouseCoord, self.yMouseCoord] = True
                             #store mask
                             self.sigGetDetailsROI.emit()
-                            self.linkToGraphicsView.dictROIs.addRegion(self.mask)
+                            self.linkToGraphicsView.dictROIs.addMask(self.mask)
                             self.sigRecalculateMeanROI.emit()
+
                 if self.eraseEnabled:
                     if not self.mouseMoved:
                         #The mouse was not moved, so a pixel was clicked on
@@ -354,6 +292,58 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
+
+
+    def paintROI(self):
+        if self.mask is None:
+            self.createBlankMask()
+
+        if self.pixelSquareSize == 1:
+            self.mask[self.xMouseCoord, self.yMouseCoord] = True
+            self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
+        else:
+            increment = (self.pixelSquareSize - 1)/2
+            lowX = int(self.xMouseCoord - increment)
+            highX = int(self.xMouseCoord + increment)
+            lowY = int(self.yMouseCoord - increment)
+            highY = int(self.yMouseCoord + increment)
+            
+            for x in range(lowX, highX+1, 1):
+                for y in range(lowY, highY+1, 1):
+                    if x > -1 and  y > -1:
+                        self.mask[x, y] = True
+                        self.setPixelToRed(x, y)
+            
+        self.update()
+        self.sigGetDetailsROI.emit()
+        self.linkToGraphicsView.dictROIs.addMask(self.mask)
+        self.sigRecalculateMeanROI.emit()
+
+
+    def eraseROI(self):
+        if self.mask is not None:
+            print("eraseROI")
+            if self.pixelSquareSize == 1:
+                self.resetPixel(self.xMouseCoord, self.yMouseCoord)
+                print("self.mask[self.xMouseCoord, self.yMouseCoord]={}".format(self.mask[self.xMouseCoord, self.yMouseCoord]))
+                self.mask[self.xMouseCoord, self.yMouseCoord] = False
+            else:
+                increment = (self.pixelSquareSize - 1)/2
+                lowX = int(self.xMouseCoord - increment)
+                highX = int(self.xMouseCoord + increment)
+                lowY = int(self.yMouseCoord - increment)
+                highY = int(self.yMouseCoord + increment)
+            
+                for x in range(lowX, highX+1, 1):
+                    for y in range(lowY, highY+1, 1):
+                        if x > -1 and  y > -1:
+                            self.resetPixel(x, y)
+                            self.mask[x, y] = False
+                            
+            self.sigGetDetailsROI.emit()
+            #update existing mask
+            self.linkToGraphicsView.dictROIs.replaceMask(self.mask)
+            self.sigRecalculateMeanROI.emit()
 
 
     def resetPixel(self, x, y):
@@ -552,7 +542,7 @@ class GraphicsItem(QGraphicsObject):
 
     def createBlankMask(self):
         logger.info("FreeHandROI.GraphicsItem.createBlankMask called")
-        print("FreeHandROI.GraphicsItem.createBlankMask called self.pixelArray={}".format(len(self.pixelArray)))
+        print("FreeHandROI.GraphicsItem.createBlankMask called self.pixelArray={}".format(len(self.pixelArray)))##
         ny, nx = np.shape(self.pixelArray)
         self.mask = np.full((nx, ny), False, dtype=bool)
 
@@ -560,6 +550,7 @@ class GraphicsItem(QGraphicsObject):
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
         logger.info("FreeHandROI.GraphicsItem.createMaskFromDrawnROI called")
         try:
+            print("drawROIEnabled={}, paintROIEnabled={}".format(self.drawEnabled, self.paintEnabled))##
             self.mask = None
             #1. Create a list called points
             # of x,y coordinates for each element 
@@ -577,7 +568,7 @@ class GraphicsItem(QGraphicsObject):
             #Setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((ny, nx))
-            print("createMaskFromDrawnROI Coords of True elements ={}".format(np.where(self.mask==True)))
+            print("createMaskFromDrawnROI Coords of True elements ={}".format(np.where(self.mask==True)))##
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
@@ -587,8 +578,6 @@ class GraphicsItem(QGraphicsObject):
         logger.info("FreeHandROI.GraphicsItem.mousePressEvent called")
         try:
             button = event.button()
-            #self.originRectX  = int(event.pos().x())
-            #self.originRectY = int(event.pos().y())
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
             elif (button == Qt.RightButton): 
