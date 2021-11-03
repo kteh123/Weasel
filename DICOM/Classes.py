@@ -128,9 +128,14 @@ class ImagesList(ListOfDicomObjects):
         list_images = []
         for image in self:
             value = image[tag]
-            statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
-            if eval(literal_eval(statement)) == True:
-                list_images.append(image)
+            if condition == "==":
+                statement = 'str(' + repr(value) + ') ' + condition + ' str(' + repr(target) + ')'
+                if eval(statement) == True:
+                    list_images.append(image)
+            else:
+                statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
+                if eval(literal_eval(statement)) == True:
+                    list_images.append(image)
         self = ImagesList(list_images)
         return self
 
@@ -1000,10 +1005,16 @@ class Series:
             list_paths = []
             for image in self.children:
                 value = image[tag]
-                statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
-                if eval(literal_eval(statement)) == True:
-                    list_images.append(image)
-                    list_paths.append(image.path)
+                if condition == "==":
+                    statement = 'str(' + repr(value) + ') ' + condition + ' str(' + repr(target) + ')'
+                    if eval(statement) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
+                else:
+                    statement = repr(value) + ' ' + repr(condition) + ' ' + repr(target)
+                    if eval(literal_eval(statement)) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
             self.images = list_paths
             return self
         except Exception as e:
