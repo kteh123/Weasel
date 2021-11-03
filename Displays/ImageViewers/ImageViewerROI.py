@@ -172,6 +172,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnLoad.clicked.connect(self.loadROI)
         self.btnErase.clicked.connect(lambda checked: self.eraseROI(checked))
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
+        self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
@@ -210,7 +211,8 @@ class ImageViewerROI(QMdiSubWindow):
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
-            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
+            #maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
+            maskList = [np.array(mask, dtype=np.int) for mask in maskList] 
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
                 inputPath = [i.path for i in self.weasel.images()]
@@ -385,11 +387,26 @@ class ImageViewerROI(QMdiSubWindow):
              )
 
 
+    def paintROI(self, checked):
+        logger.info("ImageViewerROI.paintROI called.")
+        if checked:
+            self.setButtonsToDefaultStyle()
+            self.graphicsView.paintROI()
+            self.btnPaint.setStyleSheet("background-color: red")
+        else:
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            self.graphicsView.graphicsItem.paintEnabled = False
+            self.btnPaint.setStyleSheet(
+             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+             )
+
+
     def zoomImage(self, checked):
         logger.info("ImageViewerROI.zoomImage called.")
         if checked:
             self.setButtonsToDefaultStyle()
             self.graphicsView.setZoomEnabled(True)
+            self.graphicsView.graphicsItem.paintEnabled = False
             self.graphicsView.graphicsItem.drawEnabled = False
             self.graphicsView.graphicsItem.eraseEnabled = False
             self.btnZoom.setStyleSheet("background-color: red")
@@ -402,28 +419,39 @@ class ImageViewerROI(QMdiSubWindow):
 
     
     def getRoiMeanAndStd(self, mask, pixelArray):
-        logger.info("ImageViewerROI.getRoiMeanAndStd called")
-        mean = round(np.mean(np.extract(np.transpose(mask), pixelArray)), 1)
-        std = round(np.std(np.extract(np.transpose(mask), pixelArray)), 1)
-        return mean, std
+        try:
+            logger.info("ImageViewerROI.getRoiMeanAndStd called")
+            mean = round(np.mean(np.extract(mask, pixelArray)), 1)
+            std = round(np.std(np.extract(mask, pixelArray)), 1)
+            return mean, std
+        except Exception as e:
+            print('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
+            logger.error('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
 
 
     def displayROIMeanAndStd(self):
-        logger.info("ImageViewerROI.displayROIMeanAndStd called")
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        regionName = self.cmbNamesROIs.currentText()
-        mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)
-        if mask is not None:
-            mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            self.roiMeanTxt.setText("Mean: " + str(mean))
-            self.roiStdDevTxt.setText("SD: " + str(std))
-        else:
-            self.roiMeanTxt.clear()
-            self.roiStdDevTxt.clear()
+        try:
+            logger.info("ImageViewerROI.displayROIMeanAndStd called")
+            print("ImageViewerROI.displayROIMeanAndStd called") ##
+            if self.isSeries:  
+                imageNumber = self.mainImageSlider.value()
+            else:
+                imageNumber = 1
+            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            regionName = self.cmbNamesROIs.currentText()
+            mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
+            if mask is not None:
+                print("mask is not none, size={}".format(len(mask)))##
+                mean, std = self.getRoiMeanAndStd(mask, pixelArray)
+                print("mean ={}, std ={}".format(mean, std)) ##
+                self.roiMeanTxt.setText("Mean: " + str(mean))
+                self.roiStdDevTxt.setText("SD: " + str(std))
+            else:
+                self.roiMeanTxt.clear()
+                self.roiStdDevTxt.clear()
+        except Exception as e:
+                print('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e))
+                logger.error('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e)) 
 
 
     def setUpImageEventHandlers(self):
@@ -447,6 +475,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
                                                            self.setEraseButtonColour(setRed))
+
+            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
+                                                           self.setPaintButtonColour(setRed))
 
             self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
@@ -598,7 +629,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.btnErase = QPushButton()
             self.buttonList.append(self.btnErase)
-            self.btnErase.setToolTip("Erase the ROI")
+            self.btnErase.setToolTip("Erase the ROI. Right click to change eraser size.")
             self.btnErase.setCheckable(True)
             self.btnErase.setIcon(QIcon(QPixmap(ERASER_CURSOR)))
 
@@ -607,6 +638,12 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnDraw.setToolTip("Draw an ROI")
             self.btnDraw.setCheckable(True)
             self.btnDraw.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+
+            self.btnPaint = QPushButton()
+            self.buttonList.append(self.btnPaint)
+            self.btnPaint.setToolTip("Paint an ROI")
+            self.btnPaint.setCheckable(True)
+            self.btnPaint.setIcon(QIcon(QPixmap(BRUSH_CURSOR)))
 
             self.btnZoom = QPushButton()
             self.buttonList.append(self.btnZoom)
@@ -629,6 +666,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.btnSaveROI,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnLoad,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnDraw,  alignment=Qt.AlignLeft)
+            self.roiToolsLayout.addWidget(self.btnPaint,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnErase, alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.btnZoom,  alignment=Qt.AlignLeft)
             self.roiToolsLayout.addWidget(self.roiMeanTxt,  alignment=Qt.AlignLeft)
@@ -660,16 +698,15 @@ class ImageViewerROI(QMdiSubWindow):
 
     def deleteROITidyUp(self):
         logger.info("ImageViewerROI.deleteROITidyUp called")
-    
         self.reloadImageInNewImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem("region1")
-            self.setCurrentIndex(0) 
+            self.cmbNamesROIs.setCurrentIndex(0) 
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
-            self.pixelValueTxt.clear()
+            self.lblPixelValue.clear()
         else:
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
@@ -827,6 +864,9 @@ class ImageViewerROI(QMdiSubWindow):
                self.btnDraw.setStyleSheet(
                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
                  )
+               self.btnPaint.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
         else:
                self.btnErase.setStyleSheet(
                  "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
@@ -837,11 +877,30 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info("DisplayImageDrawRIO.setDrawButtonColour called")
         if setRed:
                self.btnDraw.setStyleSheet("background-color: red")
+               self.btnPaint.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
                self.btnErase.setStyleSheet(
                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
                  )
         else:
                self.btnDraw.setStyleSheet(
+                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+
+
+    def setPaintButtonColour(self, setRed):
+        logger.info("DisplayImageDrawRIO.setPaintButtonColour called")
+        if setRed:
+               self.btnPaint.setStyleSheet("background-color: red")
+               self.btnDraw.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+               self.btnErase.setStyleSheet(
+                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
+                 )
+        else:
+               self.btnPaint.setStyleSheet(
                  "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
                  )
 

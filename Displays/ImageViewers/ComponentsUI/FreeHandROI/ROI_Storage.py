@@ -38,8 +38,8 @@ class ROIs():
            self.__class__.__name__)
 
 
-    def addRegion(self, mask):
-        logger.info("RIO_Storage.addRegion called")
+    def addMask(self, mask):
+        logger.info("RIO_Storage.addMask called")
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
@@ -60,21 +60,26 @@ class ROIs():
                 imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = mask
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
-            print('Error in ROI_Storage.addRegion: ' + str(e))
-            logger.exception('Error in ROI_Storage.addRegion: ' + str(e))
+            print('Error in ROI_Storage.addMask: ' + str(e))
+            logger.exception('Error in ROI_Storage.addMask: ' + str(e))
 
 
-    def updateMask(self, mask):
-        logger.info("RIO_Storage.updateMask called")
+    def replaceMask(self, mask):
+        logger.info("RIO_Storage.replaceMask called")
+        #print("RIO_Storage.replaceMask called self.dictMasks={}".format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
+                print("replaceMask-currentROIName is in self.dictMasks")
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask & imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                print("ROI_Storage.replaceMask Coords of True elements in old mask ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+                print("ROI_Storage.replaceMask Coords of True elements in new masks ={}".format(np.where(mask==True)))
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask #& imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
+                print("ROI_Storage.replaceMask Coords of True elements in &ed masks ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
-            print('Error in ROI_Storage.updateMask: ' + str(e))
-            logger.exception('Error in ROI_Storage.updateMask: ' + str(e))
+            print('Error in ROI_Storage.replaceMask: ' + str(e))
+            logger.exception('Error in ROI_Storage.replaceMask: ' + str(e))
 
 
     def createListOfBlankMasks(self, mask):

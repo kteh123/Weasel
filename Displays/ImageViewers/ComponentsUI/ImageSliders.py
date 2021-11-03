@@ -1,4 +1,5 @@
 from PyQt5.QtCore import  Qt, pyqtSignal, QObject
+from PyQt5.QtGui import QPixmap, QIcon, QPixmap
 from PyQt5.QtWidgets import (QMessageBox, 
                             QGridLayout,
                             QHBoxLayout,
@@ -10,7 +11,6 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QListWidgetItem,
                             QListView,
                             QCheckBox)
-
 import numpy as np
 import copy
 import itertools
@@ -29,6 +29,7 @@ listImageTypes = ["SliceLocation", "AcquisitionTime", "AcquisitionNumber",
                   "FlipAngle", "InversionTime", "EchoTime", "DiffusionBValue", 
                   "DiffusionGradientOrientation", (0x2005, 0x1572)] # This last element is a good example of private tag
 
+SLIDER_ICON = 'Displays/ImageViewers/ComponentsUI/Images/slider_icon.png' 
 
 class SortedImageSlider(QSlider):
     """Subclass of the QSlider class with the added property attribute 
@@ -259,7 +260,7 @@ class ImageSliders(QObject):
             self.btnMultiSliders = QPushButton()
             self.btnMultiSliders.setToolTip("Display Multiple Sliders")
             self.btnMultiSliders.setCheckable(True)
-            #self.btnMultiSliders.setIcon(QIcon(QPixmap(PEN_CURSOR)))
+            self.btnMultiSliders.setIcon(QIcon(QPixmap(SLIDER_ICON)))
             self.mainSliderLayout.addWidget(self.btnMultiSliders)
             self.btnMultiSliders.clicked.connect(lambda setRed: self.__displayHideImageTypeCheckBoxes(setRed))
         except Exception as e:
