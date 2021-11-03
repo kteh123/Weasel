@@ -156,9 +156,14 @@ class ImagesList(ListOfDicomObjects):
         list_images = []
         for image in self:
             value = image[tag]
-            statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-            if eval(literal_eval(statement)) == True:
-                list_images.append(image)
+            if condition == &#34;==&#34;:
+                statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+                if eval(statement) == True:
+                    list_images.append(image)
+            else:
+                statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+                if eval(literal_eval(statement)) == True:
+                    list_images.append(image)
         self = ImagesList(list_images)
         return self
 
@@ -1028,10 +1033,16 @@ class Series:
             list_paths = []
             for image in self.children:
                 value = image[tag]
-                statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-                if eval(literal_eval(statement)) == True:
-                    list_images.append(image)
-                    list_paths.append(image.path)
+                if condition == &#34;==&#34;:
+                    statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+                    if eval(statement) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
+                else:
+                    statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+                    if eval(literal_eval(statement)) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
             self.images = list_paths
             return self
         except Exception as e:
@@ -2994,9 +3005,14 @@ def parent(self):
         list_images = []
         for image in self:
             value = image[tag]
-            statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-            if eval(literal_eval(statement)) == True:
-                list_images.append(image)
+            if condition == &#34;==&#34;:
+                statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+                if eval(statement) == True:
+                    list_images.append(image)
+            else:
+                statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+                if eval(literal_eval(statement)) == True:
+                    list_images.append(image)
         self = ImagesList(list_images)
         return self
 
@@ -3272,9 +3288,14 @@ def paths(self):
     list_images = []
     for image in self:
         value = image[tag]
-        statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-        if eval(literal_eval(statement)) == True:
-            list_images.append(image)
+        if condition == &#34;==&#34;:
+            statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+            if eval(statement) == True:
+                list_images.append(image)
+        else:
+            statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+            if eval(literal_eval(statement)) == True:
+                list_images.append(image)
     self = ImagesList(list_images)
     return self</code></pre>
 </details>
@@ -3699,10 +3720,16 @@ def number_children(self):
             list_paths = []
             for image in self.children:
                 value = image[tag]
-                statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-                if eval(literal_eval(statement)) == True:
-                    list_images.append(image)
-                    list_paths.append(image.path)
+                if condition == &#34;==&#34;:
+                    statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+                    if eval(statement) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
+                else:
+                    statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+                    if eval(literal_eval(statement)) == True:
+                        list_images.append(image)
+                        list_paths.append(image.path)
             self.images = list_paths
             return self
         except Exception as e:
@@ -4978,10 +5005,16 @@ def parent(self):
         list_paths = []
         for image in self.children:
             value = image[tag]
-            statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
-            if eval(literal_eval(statement)) == True:
-                list_images.append(image)
-                list_paths.append(image.path)
+            if condition == &#34;==&#34;:
+                statement = &#39;str(&#39; + repr(value) + &#39;) &#39; + condition + &#39; str(&#39; + repr(target) + &#39;)&#39;
+                if eval(statement) == True:
+                    list_images.append(image)
+                    list_paths.append(image.path)
+            else:
+                statement = repr(value) + &#39; &#39; + repr(condition) + &#39; &#39; + repr(target)
+                if eval(literal_eval(statement)) == True:
+                    list_images.append(image)
+                    list_paths.append(image.path)
         self.images = list_paths
         return self
     except Exception as e:
