@@ -176,6 +176,24 @@ class GraphicsItem(QGraphicsObject):
             logger.error('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
        
 
+    def drawROIBoundary(self):
+        if self.last_x is None: # First event.
+            self.last_x = self.xMouseCoord
+            self.last_y = self.yMouseCoord
+            self.start_x = self.xMouseCoord
+            self.start_y = self.yMouseCoord
+            return #  Ignore the first time.
+        self.drawStraightLine(self.last_x, self.last_y, 
+                              self.xMouseCoord, self.yMouseCoord)
+        # Update the origin for next time.
+        self.last_x = self.xMouseCoord
+        self.last_y = self.yMouseCoord
+        #Do not add duplicates to the list
+        if [self.last_x, self.last_y] not in self.pathCoordsList:
+            self.pathCoordsList.append([self.last_x, self.last_y])
+        self.mouseMoved = True
+
+
     def mouseMoveEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.mouseMoveEvent called")
         try:
@@ -183,39 +201,49 @@ class GraphicsItem(QGraphicsObject):
             if (buttons == Qt.LeftButton):
                 self.xMouseCoord = int(event.pos().x())
                 self.yMouseCoord = int(event.pos().y())
-
+                
                 if self.drawEnabled:
-                    #Only draw if left button pressed
-                    if self.last_x is None: # First event.
-                        self.last_x = self.xMouseCoord
-                        self.last_y = self.yMouseCoord
-                        self.start_x = self.xMouseCoord
-                        self.start_y = self.yMouseCoord
-                        return #  Ignore the first time.
-                    self.drawStraightLine(self.last_x, self.last_y, 
-                                          self.xMouseCoord, self.yMouseCoord)
-                    # Update the origin for next time.
-                    self.last_x = self.xMouseCoord
-                    self.last_y = self.yMouseCoord
-                    #Do not add duplicates to the list
-                    if [self.last_x, self.last_y] not in self.pathCoordsList:
-                        self.pathCoordsList.append([self.last_x, self.last_y])
-                    self.mouseMoved = True
+                    self.drawROIBoundary()
 
                 if self.eraseEnabled:
-                    #erase mask at this mouse pointer position
-                    #and set pixel back to original value
                     self.eraseROI()
 
                 if self.paintEnabled:
                     self.paintROI()
 
-            #elif (buttons == Qt.RightButton):
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseMoveEvent: ' + str(e))
 
     
+    def closeAndFillROI(self):
+        if  (self.last_x != None and self.start_x != None 
+                and self.last_y != None and self.start_y != None):
+            if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
+                #free hand drawn ROI is closed, so no further action needed
+                pass
+            else:
+                #free hand drawn ROI is not closed, so need to draw a
+                #straight line from the coordinates of its start to
+                #the coordinates of its last point
+                self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
+        
+            self.prevPathCoordsList = self.pathCoordsList
+            self.createMaskFromDrawnROI(self.pathCoordsList)
+            #store mask
+            self.sigGetDetailsROI.emit()
+            self.linkToGraphicsView.dictROIs.addMask(self.mask)
+            self.sigRecalculateMeanROI.emit()
+            
+            self.listROICoords = self.getListRoiInnerPoints(self.mask)
+            self.fillFreeHandRoi()
+            self.start_x = None 
+            self.start_y = None
+            self.last_x = None
+            self.last_y = None
+            self.pathCoordsList = []
+            self.mouseMoved = False
+
     def mouseReleaseEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.mouseReleaseEvent called")
         try:
@@ -226,32 +254,7 @@ class GraphicsItem(QGraphicsObject):
             if (button == Qt.LeftButton):
                 if self.drawEnabled:
                     if self.mouseMoved:
-                        if  (self.last_x != None and self.start_x != None 
-                                and self.last_y != None and self.start_y != None):
-                            if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
-                                #free hand drawn ROI is closed, so no further action needed
-                                pass
-                            else:
-                                #free hand drawn ROI is not closed, so need to draw a
-                                #straight line from the coordinates of its start to
-                                #the coordinates of its last point
-                                self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
-
-                            self.prevPathCoordsList = self.pathCoordsList
-                            self.createMaskFromDrawnROI(self.pathCoordsList)
-                            #store mask
-                            self.sigGetDetailsROI.emit()
-                            self.linkToGraphicsView.dictROIs.addMask(self.mask)
-                            self.sigRecalculateMeanROI.emit()
-                            
-                            self.listROICoords = self.getListRoiInnerPoints(self.mask)
-                            self.fillFreeHandRoi()
-                            self.start_x = None 
-                            self.start_y = None
-                            self.last_x = None
-                            self.last_y = None
-                            self.pathCoordsList = []
-                            self.mouseMoved = False
+                        self.closeAndFillROI()
                     else:
                         #The mouse was not moved, so a pixel was clicked on
                         if self.mask is not None:
@@ -277,18 +280,10 @@ class GraphicsItem(QGraphicsObject):
                             self.sigRecalculateMeanROI.emit()
 
                 if self.eraseEnabled:
-                    if not self.mouseMoved:
-                        #The mouse was not moved, so a pixel was clicked on
-                        #erase mask at this pixel 
-                        #and set pixel back to original value
-                        self.eraseROI()
+                    self.eraseROI()
                         
                 if self.paintEnabled:
-                    if not self.mouseMoved:
-                        #The mouse was not moved, so a pixel was clicked on
-                        #paint an ROI mask at this pixel 
-                        #and set its red channel to 255
-                        self.paintROI()
+                    self.paintROI()
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
@@ -312,8 +307,7 @@ class GraphicsItem(QGraphicsObject):
                 for y in range(lowY, highY+1, 1):
                     if x > -1 and  y > -1:
                         self.mask[x, y] = True
-                        self.setPixelToRed(x, y)
-            
+                        self.setPixelToRed(x, y)    
         self.update()
         self.sigGetDetailsROI.emit()
         self.linkToGraphicsView.dictROIs.addMask(self.mask)
@@ -321,11 +315,11 @@ class GraphicsItem(QGraphicsObject):
 
 
     def eraseROI(self):
+        #erase mask at this mouse pointer position
+        #and set pixel back to original value
         if self.mask is not None:
-            print("eraseROI")
             if self.pixelSquareSize == 1:
                 self.resetPixel(self.xMouseCoord, self.yMouseCoord)
-                print("self.mask[self.xMouseCoord, self.yMouseCoord]={}".format(self.mask[self.xMouseCoord, self.yMouseCoord]))
                 self.mask[self.xMouseCoord, self.yMouseCoord] = False
             else:
                 increment = (self.pixelSquareSize - 1)/2
@@ -454,9 +448,6 @@ class GraphicsItem(QGraphicsObject):
                 for coords in listROICoords:
                     x = coords[0]
                     y = coords[1]
-                    #x = coords[1]
-                    #y = coords[0]
-                    #print("({}, {})".format(x, y))
                     pixelColour = self.qimage.pixel(x, y) 
                     pixelRGB =  QColor(pixelColour).getRgb()
                     redVal = pixelRGB[0]
@@ -542,7 +533,6 @@ class GraphicsItem(QGraphicsObject):
 
     def createBlankMask(self):
         logger.info("FreeHandROI.GraphicsItem.createBlankMask called")
-        print("FreeHandROI.GraphicsItem.createBlankMask called self.pixelArray={}".format(len(self.pixelArray)))##
         ny, nx = np.shape(self.pixelArray)
         self.mask = np.full((nx, ny), False, dtype=bool)
 
@@ -550,7 +540,6 @@ class GraphicsItem(QGraphicsObject):
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
         logger.info("FreeHandROI.GraphicsItem.createMaskFromDrawnROI called")
         try:
-            print("drawROIEnabled={}, paintROIEnabled={}".format(self.drawEnabled, self.paintEnabled))##
             self.mask = None
             #1. Create a list called points
             # of x,y coordinates for each element 
@@ -560,7 +549,7 @@ class GraphicsItem(QGraphicsObject):
             points = list(zip(x.flatten(),y.flatten()))
 
             #2. Convert the ROI boundary coordinates into a path object
-            roiPath = MplPath(roiBoundaryCoords)
+            roiPath = MplPath(roiBoundaryCoords, closed=True)
 
             #3.Create a boolean array representing the original pixel array
             #with all elements set to False except those falling within the
@@ -568,7 +557,9 @@ class GraphicsItem(QGraphicsObject):
             #Setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
             self.mask = roiPath.contains_points(points, radius=0.1).reshape((ny, nx))
-            print("createMaskFromDrawnROI Coords of True elements ={}".format(np.where(self.mask==True)))##
+            result = np.where(self.mask == True) 
+            print("true coords ={}".format(list(zip(result[0], result[1])) ))
+
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
@@ -631,28 +622,4 @@ def readLevels(path, pixelArray):
             print('Error in GraphicsItem.readLevels: ' + str(e))
             logger.error('Error in GraphicsItem.readLevels: ' + str(e))
 
-            
-    #      def get_mask(img_frame, drawn_roi, row, col):
-    #for i in np.arange(row):
-    #    for j in np.arange(col):
-    #         if np.logical_and(drawn_roi.path.contains_points([(j,i)]) == [True], img_frame[i][j] > 0):
-    #             mask[i][j] = 1
-    #mask_bool = mask.astype(bool)
-    #mask_bool = ~mask_bool
-    #return mask_bool
-
-     #def drawRectangle(self):
-     #   """This function draws a rectangle on the image.
-
-     #   Not used. To use uncomment references to self.originRectX and
-     #   self.originRectY throughout the class and the 2 lines below."""
-     #   objPainter = QPainter(self.pixMap)
-     #   objPen = objPainter.pen()
-     #   objPen.setWidth(1) #1 pixel
-     #   objPen.setColor(QColor("#0000FF")) #blue
-     #   objPainter.setPen(objPen)
-     #   #objPainter.drawRect(QRect(QPoint(self.originRectX, self.originRectY),
-     #    #                         QPoint(self.xMouseCoord, self.yMouseCoord)))
-     #   objPainter.end()
-     #   self.qimage =  self.pixMap.toImage()
-     #   self.update()
+       
