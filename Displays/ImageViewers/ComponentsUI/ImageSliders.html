@@ -132,7 +132,7 @@ class ImageSliders(QObject):
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
+            #print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
         except Exception as e:
             print(&#39;Error in ImageSliders.__init__: &#39; + str(e))
             logger.error(&#39;Error in ImageSliders.__init__: &#39; + str(e))
@@ -271,7 +271,7 @@ class ImageSliders(QObject):
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-                print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
+                #print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
         except TypeError as e: 
             print(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
             logger.error(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
@@ -584,7 +584,7 @@ navigating a DICOM series of images.</p></div>
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
+            #print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
         except Exception as e:
             print(&#39;Error in ImageSliders.__init__: &#39; + str(e))
             logger.error(&#39;Error in ImageSliders.__init__: &#39; + str(e))
@@ -723,7 +723,7 @@ navigating a DICOM series of images.</p></div>
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-                print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
+                #print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
         except TypeError as e: 
             print(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
             logger.error(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
