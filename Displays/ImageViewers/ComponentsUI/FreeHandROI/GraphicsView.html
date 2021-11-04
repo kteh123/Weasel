@@ -73,7 +73,7 @@ class GraphicsView(QGraphicsView):
         self.mainContextMenu.hovered.connect(self._actionHovered)
         self.pixelSquareSizeMenu = QMenu()
         self.pixelSquareSizeMenu.hovered.connect(self._actionHovered)
-        
+       
         #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -199,19 +199,41 @@ class GraphicsView(QGraphicsView):
     def setUpPixelSquareSizeMenu(self, event):
         self.pixelSquareSizeMenu.clear()
         onePixel = QAction(&#39;One Pixel&#39;, None)
+        onePixel.setCheckable(True)
         onePixel.setToolTip(&#39;Erase/Paint one pixel&#39;)
         threePixels = QAction(&#39;3 x 3 Pixels&#39;, None)
+        threePixels.setCheckable(True)
         threePixels.setToolTip(&#39;Erase/Paint a 3x3 square of pixels&#39;)
         fivePixels = QAction(&#39;5 x 5 Pixels&#39;, None)
+        fivePixels.setCheckable(True)
         fivePixels.setToolTip(&#39;Erase/Paint a 5x5 square of pixels&#39;)
         sevenPixels = QAction(&#39;7 x 7 Pixels&#39;, None)
+        sevenPixels.setCheckable(True)
         sevenPixels.setToolTip(&#39;Erase/Paint a 7x7 square of pixels&#39;)
         ninePixels = QAction(&#39;9 x 9 Pixels&#39;, None)
+        ninePixels.setCheckable(True)
         ninePixels.setToolTip(&#39;Erase/Paint a 9x9 square of pixels&#39;)
         elevenPixels = QAction(&#39;11 x 11 Pixels&#39;, None)
+        elevenPixels.setCheckable(True)
         elevenPixels.setToolTip(&#39;Erase/Paint a 11x11 square of pixels&#39;)
         twentyOnePixels = QAction(&#39;21 x 21 Pixels&#39;, None)
+        twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
+
+        if self.graphicsItem.pixelSquareSize == 1:
+            onePixel.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 3:
+            threePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 5:
+            fivePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 7:
+            sevenPixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 9:
+            ninePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 11:
+            elevenPixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 21:
+            twentyOnePixels.setChecked(True)
 
         onePixel.triggered.connect(lambda:self.setPixelSquareSize(1, onePixel ))
         threePixels.triggered.connect(lambda:  self.setPixelSquareSize(3,threePixels ))
@@ -229,13 +251,10 @@ class GraphicsView(QGraphicsView):
         self.pixelSquareSizeMenu.addAction(elevenPixels)
         self.pixelSquareSizeMenu.addAction(twentyOnePixels)
         self.pixelSquareSizeMenu.exec_(event.globalPos())
-       
+
 
     def setPixelSquareSize(self, pixelSquareSize, action):
         self.graphicsItem.pixelSquareSize = pixelSquareSize
-        for item in self.pixelSquareSizeMenu.actions():
-            item.font().setBold(False)
-        action.font().setBold(True)
 
 
     def setUpMainContextMenu(self, event):
@@ -453,7 +472,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         self.mainContextMenu.hovered.connect(self._actionHovered)
         self.pixelSquareSizeMenu = QMenu()
         self.pixelSquareSizeMenu.hovered.connect(self._actionHovered)
-        
+       
         #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -579,19 +598,41 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
     def setUpPixelSquareSizeMenu(self, event):
         self.pixelSquareSizeMenu.clear()
         onePixel = QAction(&#39;One Pixel&#39;, None)
+        onePixel.setCheckable(True)
         onePixel.setToolTip(&#39;Erase/Paint one pixel&#39;)
         threePixels = QAction(&#39;3 x 3 Pixels&#39;, None)
+        threePixels.setCheckable(True)
         threePixels.setToolTip(&#39;Erase/Paint a 3x3 square of pixels&#39;)
         fivePixels = QAction(&#39;5 x 5 Pixels&#39;, None)
+        fivePixels.setCheckable(True)
         fivePixels.setToolTip(&#39;Erase/Paint a 5x5 square of pixels&#39;)
         sevenPixels = QAction(&#39;7 x 7 Pixels&#39;, None)
+        sevenPixels.setCheckable(True)
         sevenPixels.setToolTip(&#39;Erase/Paint a 7x7 square of pixels&#39;)
         ninePixels = QAction(&#39;9 x 9 Pixels&#39;, None)
+        ninePixels.setCheckable(True)
         ninePixels.setToolTip(&#39;Erase/Paint a 9x9 square of pixels&#39;)
         elevenPixels = QAction(&#39;11 x 11 Pixels&#39;, None)
+        elevenPixels.setCheckable(True)
         elevenPixels.setToolTip(&#39;Erase/Paint a 11x11 square of pixels&#39;)
         twentyOnePixels = QAction(&#39;21 x 21 Pixels&#39;, None)
+        twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
+
+        if self.graphicsItem.pixelSquareSize == 1:
+            onePixel.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 3:
+            threePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 5:
+            fivePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 7:
+            sevenPixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 9:
+            ninePixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 11:
+            elevenPixels.setChecked(True)
+        elif self.graphicsItem.pixelSquareSize == 21:
+            twentyOnePixels.setChecked(True)
 
         onePixel.triggered.connect(lambda:self.setPixelSquareSize(1, onePixel ))
         threePixels.triggered.connect(lambda:  self.setPixelSquareSize(3,threePixels ))
@@ -609,13 +650,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         self.pixelSquareSizeMenu.addAction(elevenPixels)
         self.pixelSquareSizeMenu.addAction(twentyOnePixels)
         self.pixelSquareSizeMenu.exec_(event.globalPos())
-       
+
 
     def setPixelSquareSize(self, pixelSquareSize, action):
         self.graphicsItem.pixelSquareSize = pixelSquareSize
-        for item in self.pixelSquareSizeMenu.actions():
-            item.font().setBold(False)
-        action.font().setBold(True)
 
 
     def setUpMainContextMenu(self, event):
@@ -1075,10 +1113,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setPixelSquareSize(self, pixelSquareSize, action):
-    self.graphicsItem.pixelSquareSize = pixelSquareSize
-    for item in self.pixelSquareSizeMenu.actions():
-        item.font().setBold(False)
-    action.font().setBold(True)</code></pre>
+    self.graphicsItem.pixelSquareSize = pixelSquareSize</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setUpMainContextMenu"><code class="name flex">
@@ -1149,19 +1184,41 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <pre><code class="python">def setUpPixelSquareSizeMenu(self, event):
     self.pixelSquareSizeMenu.clear()
     onePixel = QAction(&#39;One Pixel&#39;, None)
+    onePixel.setCheckable(True)
     onePixel.setToolTip(&#39;Erase/Paint one pixel&#39;)
     threePixels = QAction(&#39;3 x 3 Pixels&#39;, None)
+    threePixels.setCheckable(True)
     threePixels.setToolTip(&#39;Erase/Paint a 3x3 square of pixels&#39;)
     fivePixels = QAction(&#39;5 x 5 Pixels&#39;, None)
+    fivePixels.setCheckable(True)
     fivePixels.setToolTip(&#39;Erase/Paint a 5x5 square of pixels&#39;)
     sevenPixels = QAction(&#39;7 x 7 Pixels&#39;, None)
+    sevenPixels.setCheckable(True)
     sevenPixels.setToolTip(&#39;Erase/Paint a 7x7 square of pixels&#39;)
     ninePixels = QAction(&#39;9 x 9 Pixels&#39;, None)
+    ninePixels.setCheckable(True)
     ninePixels.setToolTip(&#39;Erase/Paint a 9x9 square of pixels&#39;)
     elevenPixels = QAction(&#39;11 x 11 Pixels&#39;, None)
+    elevenPixels.setCheckable(True)
     elevenPixels.setToolTip(&#39;Erase/Paint a 11x11 square of pixels&#39;)
     twentyOnePixels = QAction(&#39;21 x 21 Pixels&#39;, None)
+    twentyOnePixels.setCheckable(True)
     twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
+
+    if self.graphicsItem.pixelSquareSize == 1:
+        onePixel.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 3:
+        threePixels.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 5:
+        fivePixels.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 7:
+        sevenPixels.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 9:
+        ninePixels.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 11:
+        elevenPixels.setChecked(True)
+    elif self.graphicsItem.pixelSquareSize == 21:
+        twentyOnePixels.setChecked(True)
 
     onePixel.triggered.connect(lambda:self.setPixelSquareSize(1, onePixel ))
     threePixels.triggered.connect(lambda:  self.setPixelSquareSize(3,threePixels ))
