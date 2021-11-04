@@ -104,7 +104,7 @@ class ImageSliders(QObject):
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            print("Time to instanciate ImageSliders object = {} seconds".format(time.perf_counter()-start))
+            #print("Time to instanciate ImageSliders object = {} seconds".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageSliders.__init__: ' + str(e))
             logger.error('Error in ImageSliders.__init__: ' + str(e))
@@ -243,7 +243,7 @@ class ImageSliders(QObject):
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-                print("Main Image Slider moved = {} seconds".format(time.perf_counter() - start))
+                #print("Main Image Slider moved = {} seconds".format(time.perf_counter() - start))
         except TypeError as e: 
             print('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
             logger.error('Type Error in ImageSliders.__mainImageSliderMoved: ' + str(e))
