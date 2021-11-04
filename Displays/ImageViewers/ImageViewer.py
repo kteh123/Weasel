@@ -166,7 +166,7 @@ class ImageViewer(QMdiSubWindow):
             #Display the first image in the viewer
             #self.displayPixelArrayOfSingleImage(self.imagePathList[0])
             self.slidersWidget.displayFirstImage()
-            print("ImageViewer.setUpImageSliders time = {} seconds".format(time.perf_counter()-start))
+            #print("ImageViewer.setUpImageSliders time = {} seconds".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
@@ -599,7 +599,7 @@ class ImageViewer(QMdiSubWindow):
                         self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
                 else:  #no user selection, so get colour table saved to DICOM
                     self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
-            else:  #single image
+            elif self.isImage: 
                 self.colourTable, self.lut = ReadDICOM_Image.getColourmap(self.selectedImagePath)
         except Exception as e:
                 print('Error in ImageViewer.getColourTableForThisImage: ' + str(e))
@@ -607,28 +607,35 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getAndSetLevels(self):
-        if self.isSeries: 
-            centre = self.spinBoxIntensity.value()
-            width = self.spinBoxContrast.value()
-            success, minimumValue, maximumValue = self.returnUserSelectedLevels()
-            if not success:
+        try:
+            success = False
+            if self.isSeries: 
+                success, minimumValue, maximumValue = self.returnUserSelectedLevels()
+            if not success or self.isImage:
                 centre, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
-            
-        self.blockLevelsSpinBoxSignals(True)
-        self.spinBoxIntensity.setValue(centre)
-        self.spinBoxContrast.setValue(width)
-        self.blockLevelsSpinBoxSignals(False)
-        return maximumValue, minimumValue
+
+            self.blockLevelsSpinBoxSignals(True)
+            self.spinBoxIntensity.setValue(centre)
+            self.spinBoxContrast.setValue(width)
+            self.blockLevelsSpinBoxSignals(False)
+            return maximumValue, minimumValue
+        except Exception as e:
+            print('Error in ImageViewer.getAndSetLevels: ' + str(e))
+            logger.exception('Error in ImageViewer.getAndSetLevels: ' + str(e))  
 
 
     def getAndSetLevelsSpinBoxStepSize(self, maximumValue, minimumValue):
-        if (minimumValue < 1 and minimumValue > -1) and (maximumValue < 1 and maximumValue > -1):
-            spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
-        else:
-            spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+        try:
+            if (minimumValue < 1 and minimumValue > -1) and (maximumValue < 1 and maximumValue > -1):
+                spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
+            else:
+                spinBoxStep = int((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
         
-        self.spinBoxIntensity.setSingleStep(spinBoxStep)
-        self.spinBoxContrast.setSingleStep(spinBoxStep)
+            self.spinBoxIntensity.setSingleStep(spinBoxStep)
+            self.spinBoxContrast.setSingleStep(spinBoxStep)
+        except Exception as e:
+            print('Error in ImageViewer.getAndSetLevelsSpinBoxStepSize: ' + str(e))
+            logger.exception('Error in ImageViewer.getAndSetLevelsSpinBoxStepSize: ' + str(e))
 
     
     def displayPixelArrayOfSingleImage(self, imagePath):
@@ -685,7 +692,6 @@ class ImageViewer(QMdiSubWindow):
                         lambda pos: self.getPixelValue(pos))
                 self.graphicsView.getView().scene().sigMouseDragged.connect(
                         lambda ev: self.rightButtonDrag(ev))
-                print("ImageViewer.displayPixelArrayOfSingleImage time = {}".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
             logger.exception('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
@@ -808,16 +814,16 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.returnUserSelectedLevels called")
-            #The ordinal number of the image being viewed in the image list
-            currentImageNumber = self.slidersWidget.getMainSlider().value() - 1
-            centre = self.spinBoxIntensity.value()
-            width = self.spinBoxContrast.value()
-
+      
             minimumValue = -1
             maximumValue = -1
             success = False
             
             if self.userSelection.getSeriesUpdateStatus():
+                #Get the ordinal number of the image being viewed in the image list
+                currentImageNumber = self.slidersWidget.getMainSlider().value() - 1
+                centre = self.spinBoxIntensity.value()
+                width = self.spinBoxContrast.value()
                 #apply contrast and intensity values
                 #selected in the GUI spinboxes
                 #for the whole series to this image
