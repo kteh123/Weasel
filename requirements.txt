@@ -10,7 +10,6 @@ opencv-python>=4.2.0.32
 openpyxl>=3.0.2
 pandas>=1.0.0,<1.2
 pdoc3>=0.10.0
-pip>=21.2.1
 pyautogui>=0.9.48
 pydicom>=2.0.0,<2.2.0
 pyinstaller>=4.2
