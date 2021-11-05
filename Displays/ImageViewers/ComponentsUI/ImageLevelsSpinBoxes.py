@@ -80,3 +80,15 @@ class ImageLevelsSpinBoxes:
         can be connected to functions in the calling program that adjust image
         intensity and contrast."""
         return self.spinBoxIntensity, self.spinBoxContrast
+
+
+    def blockLevelsSpinBoxSignals(self, block):
+        """ 
+        Toggles (off/on) blocking the signals from the spinboxes associated 
+        with input of intensity and contrast values. 
+        Input Parmeters
+        ***************
+            block - boolean taking values True/False
+        """
+        self.spinBoxIntensity.blockSignals(block)
+        self.spinBoxContrast.blockSignals(block)

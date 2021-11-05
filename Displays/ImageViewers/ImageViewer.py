@@ -614,10 +614,10 @@ class ImageViewer(QMdiSubWindow):
             if not success or self.isImage:
                 centre, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
 
-            self.blockLevelsSpinBoxSignals(True)
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             self.spinBoxIntensity.setValue(centre)
             self.spinBoxContrast.setValue(width)
-            self.blockLevelsSpinBoxSignals(False)
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
             return maximumValue, minimumValue
         except Exception as e:
             print('Error in ImageViewer.getAndSetLevels: ' + str(e))
@@ -691,15 +691,15 @@ class ImageViewer(QMdiSubWindow):
                 self.graphicsView.getView().scene().sigMouseMoved.connect(
                         lambda pos: self.getPixelValue(pos))
                 self.graphicsView.getView().scene().sigMouseDragged.connect(
-                        lambda ev: self.rightButtonDrag(ev))
+                        lambda ev: self.adjustLevelsByRightButtonDrag(ev))
         except Exception as e:
             print('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
             logger.exception('Error in ImageViewer.displayPixelArrayOfSingleImage: ' + str(e))
 
 
-    def rightButtonDrag(self, ev):
+    def adjustLevelsByRightButtonDrag(self, ev):
         try:
-            self.blockLevelsSpinBoxSignals(True)
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
             width = self.spinBoxContrast.value()
             delta = ev.screenPos() - ev.lastScreenPos()
@@ -718,10 +718,10 @@ class ImageViewer(QMdiSubWindow):
             self.spinBoxIntensity.setValue(newCentre)
             self.spinBoxContrast.setValue(newWidth)
             self.updateImageLevels()
-            self.blockLevelsSpinBoxSignals(False)
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
         except Exception as e:
-            print('Error in ImageViewer.rightButtonDrag: ' + str(e))
-            logger.exception('Error in ImageViewer.rightButtonDrag: ' + str(e))
+            print('Error in ImageViewer.adjustLevelsByRightButtonDrag: ' + str(e))
+            logger.exception('Error in ImageViewer.adjustLevelsByRightButtonDrag: ' + str(e))
 
 
     def updateImageUserSelection(self):
@@ -846,19 +846,6 @@ class ImageViewer(QMdiSubWindow):
         except Exception as e:
             print('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
             logger.error('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
-
-
-    def blockLevelsSpinBoxSignals(self, block):
-        """ 
-        Toggles (off/on) blocking the signals from the spinboxes associated 
-        with input of intensity and contrast values. 
-        Input Parmeters
-        ***************
-            block - boolean taking values True/False
-        """
-        self.spinBoxIntensity.blockSignals(block)
-        self.spinBoxContrast.blockSignals(block)
-
 
     def setPgColourMap(self):
         """This function converts a matplotlib colour map into
