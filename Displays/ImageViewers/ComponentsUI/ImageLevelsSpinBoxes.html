@@ -107,7 +107,19 @@ class ImageLevelsSpinBoxes:
         &#34;&#34;&#34;Returns the individual spinboxes so that their ValueChanged signals
         can be connected to functions in the calling program that adjust image
         intensity and contrast.&#34;&#34;&#34;
-        return self.spinBoxIntensity, self.spinBoxContrast</code></pre>
+        return self.spinBoxIntensity, self.spinBoxContrast
+
+
+    def blockLevelsSpinBoxSignals(self, block):
+        &#34;&#34;&#34; 
+        Toggles (off/on) blocking the signals from the spinboxes associated 
+        with input of intensity and contrast values. 
+        Input Parmeters
+        ***************
+            block - boolean taking values True/False
+        &#34;&#34;&#34;
+        self.spinBoxIntensity.blockSignals(block)
+        self.spinBoxContrast.blockSignals(block)</code></pre>
 </details>
 </section>
 <section>
@@ -203,10 +215,48 @@ to the calling function using the getCompositeComponent function. </p>
         &#34;&#34;&#34;Returns the individual spinboxes so that their ValueChanged signals
         can be connected to functions in the calling program that adjust image
         intensity and contrast.&#34;&#34;&#34;
-        return self.spinBoxIntensity, self.spinBoxContrast</code></pre>
+        return self.spinBoxIntensity, self.spinBoxContrast
+
+
+    def blockLevelsSpinBoxSignals(self, block):
+        &#34;&#34;&#34; 
+        Toggles (off/on) blocking the signals from the spinboxes associated 
+        with input of intensity and contrast values. 
+        Input Parmeters
+        ***************
+            block - boolean taking values True/False
+        &#34;&#34;&#34;
+        self.spinBoxIntensity.blockSignals(block)
+        self.spinBoxContrast.blockSignals(block)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.blockLevelsSpinBoxSignals"><code class="name flex">
+<span>def <span class="ident">blockLevelsSpinBoxSignals</span></span>(<span>self, block)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Toggles (off/on) blocking the signals from the spinboxes associated
+with input of intensity and contrast values.
+Input Parmeters</p>
+<hr>
+<pre><code>block - boolean taking values True/False
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def blockLevelsSpinBoxSignals(self, block):
+    &#34;&#34;&#34; 
+    Toggles (off/on) blocking the signals from the spinboxes associated 
+    with input of intensity and contrast values. 
+    Input Parmeters
+    ***************
+        block - boolean taking values True/False
+    &#34;&#34;&#34;
+    self.spinBoxIntensity.blockSignals(block)
+    self.spinBoxContrast.blockSignals(block)</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.getCompositeComponent"><code class="name flex">
 <span>def <span class="ident">getCompositeComponent</span></span>(<span>self)</span>
 </code></dt>
@@ -260,6 +310,7 @@ intensity and contrast.</p></div>
 <li>
 <h4><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes">ImageLevelsSpinBoxes</a></code></h4>
 <ul class="">
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.blockLevelsSpinBoxSignals" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.blockLevelsSpinBoxSignals">blockLevelsSpinBoxSignals</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.getCompositeComponent" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.getCompositeComponent">getCompositeComponent</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.getSpinBoxes" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes.ImageLevelsSpinBoxes.getSpinBoxes">getSpinBoxes</a></code></li>
 </ul>

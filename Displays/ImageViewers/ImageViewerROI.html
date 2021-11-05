@@ -391,8 +391,12 @@ class ImageViewerROI(QMdiSubWindow):
         try:
             logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            self.graphicsView.graphicsItem.drawEnabled = False
+            self.graphicsView.graphicsItem.eraseEnabled = False
+            self.graphicsView.graphicsItem.paintEnabled = False
             if len(self.buttonList) &gt; 0:
                 for button in self.buttonList:
+                    #button.setChecked(False)
                     button.setStyleSheet(
                      &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                      )
@@ -400,7 +404,16 @@ class ImageViewerROI(QMdiSubWindow):
                 print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
 
-    
+
+    #def resetDrawButton(self):
+    #    self.graphicsView.graphicsItem.drawEnabled = QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+    #    self.graphicsView.graphicsItem.drawEnabled = False
+    #    self.btnDraw.setStyleSheet(
+    #        &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+    #        )
+    #    self.btnDraw.isChecked(False)
+
+
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
@@ -460,7 +473,7 @@ class ImageViewerROI(QMdiSubWindow):
     def displayROIMeanAndStd(self):
         try:
             logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
+            #print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
@@ -469,9 +482,9 @@ class ImageViewerROI(QMdiSubWindow):
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
-                print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
+                #print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-                print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
+                #print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
                 self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
                 self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
             else:
@@ -485,6 +498,10 @@ class ImageViewerROI(QMdiSubWindow):
     def setUpImageEventHandlers(self):
         logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
         try:
+            self.graphicsView.graphicsItem.sigRightMouseDrag.connect(
+                lambda deltaX, deltaY: self.adjustLevelsByRightButtonDrag(
+                                        deltaX, deltaY))
+
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
             lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
@@ -492,8 +509,10 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
+            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            
             self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
@@ -518,6 +537,33 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.error(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) 
 
 
+    def adjustLevelsByRightButtonDrag(self, deltaX, deltaY):
+        try:
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
+            centre = self.spinBoxIntensity.value()
+            width = self.spinBoxContrast.value()
+            #delta = ev.screenPos() - ev.lastScreenPos()
+            if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+                step_y = float(centre / np.shape(self.pixelArray)[1])
+            else:
+                step_y = 0.01
+            if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+                step_x = float(width/ np.shape(self.pixelArray)[0])
+            else:
+                step_x = 0.01
+            horizontalDiff = step_y * deltaY
+            verticalDiff = step_x * deltaX # Maybe put a minus sign here
+            newCentre = centre + horizontalDiff
+            newWidth = width + verticalDiff
+            self.spinBoxIntensity.setValue(newCentre)
+            self.spinBoxContrast.setValue(newWidth)
+            self.updateImageLevels()
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
+        except Exception as e:
+            print(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))
+
+    
     def updateZoomSlider(self, increment):
         &#34;&#34;&#34;This function updates the position of the slider on the image
         zoom slider and calculates the % zoom for display in the label zoomLabel.
@@ -704,7 +750,7 @@ class ImageViewerROI(QMdiSubWindow):
                logger.error(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def reloadImageInNewImageItem(self):
+    def reloadImageInNewImageItem(self): ###
         try:
             logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -717,6 +763,7 @@ class ImageViewerROI(QMdiSubWindow):
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
+            self.setButtonsToDefaultStyle()
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
@@ -1260,8 +1307,12 @@ sliders for browsing series of images.</p></div>
         try:
             logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            self.graphicsView.graphicsItem.drawEnabled = False
+            self.graphicsView.graphicsItem.eraseEnabled = False
+            self.graphicsView.graphicsItem.paintEnabled = False
             if len(self.buttonList) &gt; 0:
                 for button in self.buttonList:
+                    #button.setChecked(False)
                     button.setStyleSheet(
                      &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                      )
@@ -1269,7 +1320,16 @@ sliders for browsing series of images.</p></div>
                 print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
                 logger.error(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
 
-    
+
+    #def resetDrawButton(self):
+    #    self.graphicsView.graphicsItem.drawEnabled = QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+    #    self.graphicsView.graphicsItem.drawEnabled = False
+    #    self.btnDraw.setStyleSheet(
+    #        &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
+    #        )
+    #    self.btnDraw.isChecked(False)
+
+
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
@@ -1329,7 +1389,7 @@ sliders for browsing series of images.</p></div>
     def displayROIMeanAndStd(self):
         try:
             logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-            print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
+            #print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
@@ -1338,9 +1398,9 @@ sliders for browsing series of images.</p></div>
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
-                print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
+                #print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-                print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
+                #print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
                 self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
                 self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
             else:
@@ -1354,6 +1414,10 @@ sliders for browsing series of images.</p></div>
     def setUpImageEventHandlers(self):
         logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
         try:
+            self.graphicsView.graphicsItem.sigRightMouseDrag.connect(
+                lambda deltaX, deltaY: self.adjustLevelsByRightButtonDrag(
+                                        deltaX, deltaY))
+
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
             lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
@@ -1361,8 +1425,10 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
+            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            
             self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
@@ -1387,6 +1453,33 @@ sliders for browsing series of images.</p></div>
                 logger.error(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) 
 
 
+    def adjustLevelsByRightButtonDrag(self, deltaX, deltaY):
+        try:
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
+            centre = self.spinBoxIntensity.value()
+            width = self.spinBoxContrast.value()
+            #delta = ev.screenPos() - ev.lastScreenPos()
+            if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+                step_y = float(centre / np.shape(self.pixelArray)[1])
+            else:
+                step_y = 0.01
+            if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+                step_x = float(width/ np.shape(self.pixelArray)[0])
+            else:
+                step_x = 0.01
+            horizontalDiff = step_y * deltaY
+            verticalDiff = step_x * deltaX # Maybe put a minus sign here
+            newCentre = centre + horizontalDiff
+            newWidth = width + verticalDiff
+            self.spinBoxIntensity.setValue(newCentre)
+            self.spinBoxContrast.setValue(newWidth)
+            self.updateImageLevels()
+            self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
+        except Exception as e:
+            print(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))
+            logger.exception(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))
+
+    
     def updateZoomSlider(self, increment):
         &#34;&#34;&#34;This function updates the position of the slider on the image
         zoom slider and calculates the % zoom for display in the label zoomLabel.
@@ -1573,7 +1666,7 @@ sliders for browsing series of images.</p></div>
                logger.error(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def reloadImageInNewImageItem(self):
+    def reloadImageInNewImageItem(self): ###
         try:
             logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -1586,6 +1679,7 @@ sliders for browsing series of images.</p></div>
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
+            self.setButtonsToDefaultStyle()
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
@@ -1844,6 +1938,42 @@ sliders for browsing series of images.</p></div>
         self.cmbNamesROIs.blockSignals(False)</code></pre>
 </details>
 </dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightButtonDrag"><code class="name flex">
+<span>def <span class="ident">adjustLevelsByRightButtonDrag</span></span>(<span>self, deltaX, deltaY)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def adjustLevelsByRightButtonDrag(self, deltaX, deltaY):
+    try:
+        self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
+        centre = self.spinBoxIntensity.value()
+        width = self.spinBoxContrast.value()
+        #delta = ev.screenPos() - ev.lastScreenPos()
+        if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
+            step_y = float(centre / np.shape(self.pixelArray)[1])
+        else:
+            step_y = 0.01
+        if float(width / np.shape(self.pixelArray)[0]) &gt; 0.01:
+            step_x = float(width/ np.shape(self.pixelArray)[0])
+        else:
+            step_x = 0.01
+        horizontalDiff = step_y * deltaY
+        verticalDiff = step_x * deltaX # Maybe put a minus sign here
+        newCentre = centre + horizontalDiff
+        newWidth = width + verticalDiff
+        self.spinBoxIntensity.setValue(newCentre)
+        self.spinBoxContrast.setValue(newWidth)
+        self.updateImageLevels()
+        self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
+    except Exception as e:
+        print(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))
+        logger.exception(&#39;Error in ImageViewerROI.adjustLevelsByRightButtonDrag: &#39; + str(e))</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools"><code class="name flex">
 <span>def <span class="ident">connectSlotToSignalForROITools</span></span>(<span>self)</span>
 </code></dt>
@@ -1953,7 +2083,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def displayROIMeanAndStd(self):
     try:
         logger.info(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;)
-        print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
+        #print(&#34;ImageViewerROI.displayROIMeanAndStd called&#34;) ##
         if self.isSeries:  
             imageNumber = self.mainImageSlider.value()
         else:
@@ -1962,9 +2092,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         regionName = self.cmbNamesROIs.currentText()
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
         if mask is not None:
-            print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
+            #print(&#34;mask is not none, size={}&#34;.format(len(mask)))##
             mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-            print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
+            #print(&#34;mean ={}, std ={}&#34;.format(mean, std)) ##
             self.roiMeanTxt.setText(&#34;Mean: &#34; + str(mean))
             self.roiStdDevTxt.setText(&#34;SD: &#34; + str(std))
         else:
@@ -2215,7 +2345,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def reloadImageInNewImageItem(self):
+<pre><code class="python">def reloadImageInNewImageItem(self): ###
     try:
         logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
         self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -2228,6 +2358,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
+        self.setButtonsToDefaultStyle()
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
     except Exception as e:
@@ -2351,8 +2482,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     try:
         logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        self.graphicsView.graphicsItem.drawEnabled = False
+        self.graphicsView.graphicsItem.eraseEnabled = False
+        self.graphicsView.graphicsItem.paintEnabled = False
         if len(self.buttonList) &gt; 0:
             for button in self.buttonList:
+                #button.setChecked(False)
                 button.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -2480,6 +2615,10 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def setUpImageEventHandlers(self):
     logger.info(&#34;ImageViewerROI.setUpImageEventHandlers called.&#34;)
     try:
+        self.graphicsView.graphicsItem.sigRightMouseDrag.connect(
+            lambda deltaX, deltaY: self.adjustLevelsByRightButtonDrag(
+                                    deltaX, deltaY))
+
         self.graphicsView.graphicsItem.sigMouseHovered.connect(
         lambda mouseOverImage:self.getPixelValue(mouseOverImage))
 
@@ -2487,8 +2626,10 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-        self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+        self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
+        self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+        
         self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
         self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
@@ -3071,6 +3212,7 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <h4><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI">ImageViewerROI</a></code></h4>
 <ul class="">
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList">addNewROItoDropDownList</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightButtonDrag" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightButtonDrag">adjustLevelsByRightButtonDrag</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools">connectSlotToSignalForROITools</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROITidyUp" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROITidyUp">deleteROITidyUp</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
