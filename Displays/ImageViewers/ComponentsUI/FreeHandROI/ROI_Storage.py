@@ -69,13 +69,13 @@ class ROIs():
         #print("RIO_Storage.replaceMask called self.dictMasks={}".format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
-                print("replaceMask-currentROIName is in self.dictMasks")
+                #print("replaceMask-currentROIName is in self.dictMasks")
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
                 #imageMaskList[imageNumber - 1] = mask
-                print("ROI_Storage.replaceMask Coords of True elements in old mask ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
-                print("ROI_Storage.replaceMask Coords of True elements in new masks ={}".format(np.where(mask==True)))
+                #print("ROI_Storage.replaceMask Coords of True elements in old mask ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+                #print("ROI_Storage.replaceMask Coords of True elements in new masks ={}".format(np.where(mask==True)))
                 imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask #& imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
-                print("ROI_Storage.replaceMask Coords of True elements in &ed masks ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+                #print("ROI_Storage.replaceMask Coords of True elements in &ed masks ={}".format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print('Error in ROI_Storage.replaceMask: ' + str(e))
