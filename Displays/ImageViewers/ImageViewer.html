@@ -604,9 +604,10 @@ class ImageViewer(QMdiSubWindow):
 
     def getHistogramLevels(self):
         &#34;&#34;&#34;
-        This function sets the intensity and contrast values of
-        the corresponding spinboxes for the image being displayed.
-
+        This function ensures that the intensity and contrast spinboxes
+        show the correct values when the histogram on the right of the
+        image is manually adjusted.
+        
         The max and min levels of the image are retrieved from the 
         graphicsView object in pyqtGraph and used to calculate
         the intensity (centre) and contrast (width) values of the image.
@@ -1628,9 +1629,10 @@ sliders for browsing series of images.</p></div>
 
     def getHistogramLevels(self):
         &#34;&#34;&#34;
-        This function sets the intensity and contrast values of
-        the corresponding spinboxes for the image being displayed.
-
+        This function ensures that the intensity and contrast spinboxes
+        show the correct values when the histogram on the right of the
+        image is manually adjusted.
+        
         The max and min levels of the image are retrieved from the 
         graphicsView object in pyqtGraph and used to calculate
         the intensity (centre) and contrast (width) values of the image.
@@ -2652,8 +2654,9 @@ and its colour table in a png file with the path+filename in fileName. </p>
 <span>def <span class="ident">getHistogramLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This function sets the intensity and contrast values of
-the corresponding spinboxes for the image being displayed.</p>
+<div class="desc"><p>This function ensures that the intensity and contrast spinboxes
+show the correct values when the histogram on the right of the
+image is manually adjusted.</p>
 <p>The max and min levels of the image are retrieved from the
 graphicsView object in pyqtGraph and used to calculate
 the intensity (centre) and contrast (width) values of the image.
@@ -2664,9 +2667,10 @@ Then the contrast &amp; intensity spinboxes are set to these values.</p></div>
 </summary>
 <pre><code class="python">def getHistogramLevels(self):
     &#34;&#34;&#34;
-    This function sets the intensity and contrast values of
-    the corresponding spinboxes for the image being displayed.
-
+    This function ensures that the intensity and contrast spinboxes
+    show the correct values when the histogram on the right of the
+    image is manually adjusted.
+    
     The max and min levels of the image are retrieved from the 
     graphicsView object in pyqtGraph and used to calculate
     the intensity (centre) and contrast (width) values of the image.
