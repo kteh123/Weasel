@@ -52,6 +52,7 @@ import scipy
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
+import math
 from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
@@ -633,15 +634,20 @@ class ImageViewerROI(QMdiSubWindow):
         try:
             logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
-                xCoord = self.graphicsView.graphicsItem.xMouseCoord
-                yCoord = self.graphicsView.graphicsItem.yMouseCoord
+                xCoord = math.floor(self.graphicsView.graphicsItem.xMouseCoord)
+                yCoord = math.floor(self.graphicsView.graphicsItem.yMouseCoord)
+                #correct the y coordinate value so that it has a value
+                #of 0 at the bottom left corner of the image rather than
+                #at the top left corner of the image
+                _, nY = self.pixelArray.shape
+                correctedYCoord = nY - yCoord
                 pixelValue = self.graphicsView.graphicsItem.pixelValue
                 strValue = str(pixelValue)
                 if self.isSeries:  
                     imageNumber = self.mainImageSlider.value()
                 else:
                     imageNumber = 1
-                strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
+                strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(correctedYCoord ) + &#39;, Z:&#39; + str(imageNumber)
                 self.lblPixelValue.setWordWrap(True)
                 self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
             else:
@@ -1549,15 +1555,20 @@ sliders for browsing series of images.</p></div>
         try:
             logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
-                xCoord = self.graphicsView.graphicsItem.xMouseCoord
-                yCoord = self.graphicsView.graphicsItem.yMouseCoord
+                xCoord = math.floor(self.graphicsView.graphicsItem.xMouseCoord)
+                yCoord = math.floor(self.graphicsView.graphicsItem.yMouseCoord)
+                #correct the y coordinate value so that it has a value
+                #of 0 at the bottom left corner of the image rather than
+                #at the top left corner of the image
+                _, nY = self.pixelArray.shape
+                correctedYCoord = nY - yCoord
                 pixelValue = self.graphicsView.graphicsItem.pixelValue
                 strValue = str(pixelValue)
                 if self.isSeries:  
                     imageNumber = self.mainImageSlider.value()
                 else:
                     imageNumber = 1
-                strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
+                strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(correctedYCoord ) + &#39;, Z:&#39; + str(imageNumber)
                 self.lblPixelValue.setWordWrap(True)
                 self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
             else:
@@ -2164,15 +2175,20 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     try:
         logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
         if mouseOverImage:
-            xCoord = self.graphicsView.graphicsItem.xMouseCoord
-            yCoord = self.graphicsView.graphicsItem.yMouseCoord
+            xCoord = math.floor(self.graphicsView.graphicsItem.xMouseCoord)
+            yCoord = math.floor(self.graphicsView.graphicsItem.yMouseCoord)
+            #correct the y coordinate value so that it has a value
+            #of 0 at the bottom left corner of the image rather than
+            #at the top left corner of the image
+            _, nY = self.pixelArray.shape
+            correctedYCoord = nY - yCoord
             pixelValue = self.graphicsView.graphicsItem.pixelValue
             strValue = str(pixelValue)
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
                 imageNumber = 1
-            strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(yCoord) + &#39;, Z:&#39; + str(imageNumber)
+            strPosition = &#39; @ X:&#39; + str(xCoord) + &#39;, Y:&#39; + str(correctedYCoord ) + &#39;, Z:&#39; + str(imageNumber)
             self.lblPixelValue.setWordWrap(True)
             self.lblPixelValue.setText(strValue + &#39;\n&#39; + strPosition)
         else:
