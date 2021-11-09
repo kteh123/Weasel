@@ -471,7 +471,7 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info("ImageViewerROI.setUpImageEventHandlers called.")
         try:
             self.graphicsView.graphicsItem.sigRightMouseDrag.connect(
-                lambda deltaX, deltaY: self.adjustLevelsByRightButtonDrag(
+                lambda deltaX, deltaY: self.adjustLevelsByRightMouseButtonDrag(
                                         deltaX, deltaY))
 
             self.graphicsView.graphicsItem.sigMouseHovered.connect(
@@ -509,7 +509,7 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.error('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
 
 
-    def adjustLevelsByRightButtonDrag(self, deltaX, deltaY):
+    def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -532,8 +532,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.updateImageLevels()
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(False)
         except Exception as e:
-            print('Error in ImageViewerROI.adjustLevelsByRightButtonDrag: ' + str(e))
-            logger.exception('Error in ImageViewerROI.adjustLevelsByRightButtonDrag: ' + str(e))
+            print('Error in ImageViewerROI.adjustLevelsByRightMouseButtonDrag: ' + str(e))
+            logger.exception('Error in ImageViewerROI.adjustLevelsByRightMouseButtonDrag: ' + str(e))
 
     
     def updateZoomSlider(self, increment):
