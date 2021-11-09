@@ -333,18 +333,23 @@ class ImageViewer(QMdiSubWindow):
                 mousePoint = container.getViewBox().mapSceneToView(pos) 
                 x_i = math.floor(mousePoint.x())
                 y_i = math.floor(mousePoint.y()) 
+                #correct the y coordinate value so that it has a value
+                #of 0 at the bottom left corner of the image rather than
+                #at the top left corner of the image
+                _, nY = self.pixelArray.shape
+                correctedYCoord = nY -  y_i
                 z_i =  imageNumber
                 if ((len(np.shape(self.pixelArray)) == 2) 
                     and y_i >= 0 and y_i < self.pixelArray.shape [ 1 ] 
                     and x_i >= 0 and x_i < self.pixelArray.shape [ 0 ]): 
                         self.lblPixelValue.setText(
-                        "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
+                        "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, correctedYCoord, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
                         and x_i >= 0 and x_i < self.pixelArray.shape [ 1 ] 
                         and y_i >= 0 and y_i < self.pixelArray.shape [ 2 ]):
                             z_i = math.floor(self.graphicsView.timeIndex(self.graphicsView.timeLine)[1])
                             self.lblPixelValue.setText(
-                                "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, y_i, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
+                                "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (self.pixelArray[ x_i, y_i ],x_i, correctedYCoord, z_i, ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 else:
                     self.lblPixelValue.setText("")
             else:

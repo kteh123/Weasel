@@ -24,6 +24,7 @@ import scipy
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
+import math
 from scipy.ndimage.morphology import binary_dilation, binary_closing
 from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
@@ -605,15 +606,20 @@ class ImageViewerROI(QMdiSubWindow):
         try:
             logger.info("ImageViewerROI.getPixelValue called")
             if mouseOverImage:
-                xCoord = self.graphicsView.graphicsItem.xMouseCoord
-                yCoord = self.graphicsView.graphicsItem.yMouseCoord
+                xCoord = math.floor(self.graphicsView.graphicsItem.xMouseCoord)
+                yCoord = math.floor(self.graphicsView.graphicsItem.yMouseCoord)
+                #correct the y coordinate value so that it has a value
+                #of 0 at the bottom left corner of the image rather than
+                #at the top left corner of the image
+                _, nY = self.pixelArray.shape
+                correctedYCoord = nY - yCoord
                 pixelValue = self.graphicsView.graphicsItem.pixelValue
                 strValue = str(pixelValue)
                 if self.isSeries:  
                     imageNumber = self.mainImageSlider.value()
                 else:
                     imageNumber = 1
-                strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(yCoord) + ', Z:' + str(imageNumber)
+                strPosition = ' @ X:' + str(xCoord) + ', Y:' + str(correctedYCoord ) + ', Z:' + str(imageNumber)
                 self.lblPixelValue.setWordWrap(True)
                 self.lblPixelValue.setText(strValue + '\n' + strPosition)
             else:
