@@ -317,7 +317,9 @@ class GraphicsItem(QGraphicsObject):
             self.createBlankMask()
 
         if self.pixelSquareSize == 1:
-            self.mask[self.xMouseCoord, self.yMouseCoord] = True
+            #indices flipped for setting mask values to
+            #fit with the numpy [rows, columns] format
+            self.mask[self.yMouseCoord, self.xMouseCoord] = True
             self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
         else:
             increment = (self.pixelSquareSize - 1)/2
@@ -329,7 +331,9 @@ class GraphicsItem(QGraphicsObject):
             for x in range(lowX, highX+1, 1):
                 for y in range(lowY, highY+1, 1):
                     if x > -1 and  y > -1:
-                        self.mask[x, y] = True
+                        #indices flipped for setting mask values to
+                        #fit with the numpy [rows, columns] format
+                        self.mask[y, x] = True
                         self.setPixelToRed(x, y)    
         self.update()
         self.sigGetDetailsROI.emit()
@@ -343,7 +347,9 @@ class GraphicsItem(QGraphicsObject):
         if self.mask is not None:
             if self.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
-                self.mask[self.xMouseCoord, self.yMouseCoord] = False
+                #indices flipped for setting mask values to
+                #fit with the numpy [rows, columns] format
+                self.mask[self.yMouseCoord, self.xMouseCoord] = False
             else:
                 increment = (self.pixelSquareSize - 1)/2
                 lowX = int(self.xMouseCoord - increment)
@@ -355,7 +361,9 @@ class GraphicsItem(QGraphicsObject):
                     for y in range(lowY, highY+1, 1):
                         if x > -1 and  y > -1:
                             self.resetPixelToOriginalValue(x, y)
-                            self.mask[x, y] = False
+                            #indices flipped for setting mask values to
+                            #fit with the numpy [rows, columns] format
+                            self.mask[y, x] = False
                             
             self.sigGetDetailsROI.emit()
             #update existing mask
@@ -579,7 +587,7 @@ class GraphicsItem(QGraphicsObject):
             #ROI that are set to True.  
             #Setting radius=0.1 includes the drawn boundary in the ROI
             #ideally radius should = pixel size
-            self.mask = roiPath.contains_points(points, radius=0.1).reshape((ny, nx))
+            self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
             #result = np.where(self.mask == True) 
             #print("true coords ={}".format(list(zip(result[0], result[1])) ))
 
