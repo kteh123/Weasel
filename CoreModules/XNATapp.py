@@ -10,7 +10,7 @@ def isEnabled(self):
 
 def download(objWeasel):
     # Insert Try/Except
-    credentialsWindow = {"URL":"string,https://test-ukrin.dpuk.org", "Username":"string,j.sousa", "Password":"string"}
+    credentialsWindow = {"URL":"string,https://test-ukrin.dpuk.org", "Username":"string,your.xnat.username", "Password":"string"}
     info = "Please insert the XNAT URL and your XNAT credentials"
     loginDetails = objWeasel.inputWindow(credentialsWindow, title="XNAT Login", helpText=info)
     if loginDetails is None: return
@@ -78,7 +78,7 @@ def download(objWeasel):
 
 def upload(objWeasel):
     # Insert Try/Except
-    credentialsWindow = {"URL":"string,https://test-ukrin.dpuk.org", "Username":"string,j.sousa", "Password":"string"}
+    credentialsWindow = {"URL":"string,https://test-ukrin.dpuk.org", "Username":"string,your.xnat.username", "Password":"string"}
     info = "Please insert the XNAT URL and your XNAT credentials"
     loginDetails = objWeasel.inputWindow(credentialsWindow, title="XNAT Login", helpText=info)
     if loginDetails is None: return

@@ -144,7 +144,8 @@ class Messaging():
         if self.cmd == True and self.tqdm_prog:
             self.tqdm_prog.close()
         else:
-            self.progressBar.close()
+            if hasattr(self, "progressBar"):
+                self.progressBar.close()
 
     def set_status(self, msg="I'm done with this!"):
         """
