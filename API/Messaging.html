@@ -172,7 +172,8 @@ class Messaging():
         if self.cmd == True and self.tqdm_prog:
             self.tqdm_prog.close()
         else:
-            self.progressBar.close()
+            if hasattr(self, &#34;progressBar&#34;):
+                self.progressBar.close()
 
     def set_status(self, msg=&#34;I&#39;m done with this!&#34;):
         &#34;&#34;&#34;
@@ -336,7 +337,8 @@ class Messaging():
         if self.cmd == True and self.tqdm_prog:
             self.tqdm_prog.close()
         else:
-            self.progressBar.close()
+            if hasattr(self, &#34;progressBar&#34;):
+                self.progressBar.close()
 
     def set_status(self, msg=&#34;I&#39;m done with this!&#34;):
         &#34;&#34;&#34;
@@ -379,7 +381,8 @@ class Messaging():
     if self.cmd == True and self.tqdm_prog:
         self.tqdm_prog.close()
     else:
-        self.progressBar.close()</code></pre>
+        if hasattr(self, &#34;progressBar&#34;):
+            self.progressBar.close()</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.Messaging.Messaging.cursor_arrow_to_hourglass"><code class="name flex">
