@@ -211,13 +211,13 @@ class TreeView():
             self.treeViewColumnWidths[2] = self.widget.columnWidth(2)
             self.treeViewColumnWidths[3] = self.widget.columnWidth(3)
             self.widget.hide()
+            self.weasel.objXMLReader.save()
             self._buildTreeView()
             self.widget.setColumnWidth(1, self.treeViewColumnWidths[1])
             self.widget.setColumnWidth(2, self.treeViewColumnWidths[2])  
             self.widget.setColumnWidth(3, self.treeViewColumnWidths[3])
             self.weasel.refresh_menus()
             self.widget.show()
-            self.weasel.objXMLReader.save()
             
             QApplication.restoreOverrideCursor()
         except Exception as e:

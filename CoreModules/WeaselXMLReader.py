@@ -26,7 +26,8 @@ class WeaselXMLReader:
         try:
             self.weasel = weasel
             self.file = xml_file
-            self.tree = ET.parse(xml_file) 
+            self.tree = ET.parse(xml_file)
+            self.root = self.tree.getroot()
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
         except Exception as e:
             print('Error in WeaselXMLReader.__init__: ' + str(e)) 
@@ -38,11 +39,11 @@ class WeaselXMLReader:
            self.__class__.__name__,
            self.fullFilePath)
 
-    @property
-    def root(self):
-        "Return the root of the element tree"
-
-        return self.tree.getroot()
+#    @property
+#    def root(self):
+#        "Return the root of the element tree"
+#
+#        return self.tree.getroot()
 
     def save(self):
         try:

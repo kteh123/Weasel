@@ -215,7 +215,8 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
-                inputPath = [i.path for i in self.weasel.images()]
+                #inputPath = [i.path for i in self.weasel.images()]
+                inputPath = self.imagePathList 
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
@@ -228,9 +229,13 @@ class ImageViewerROI(QMdiSubWindow):
                 self.weasel.progressBar.set_value(index)
                 outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
                 SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
+                if "philips" in ReadDICOM_Image.getImageTagValue(outputPath, "Manufacturer").lower():
+                    slope = ReadDICOM_Image.getImageTagValue(outputPath, "RescaleSlope")
+                    SaveDICOM_Image.overwriteDicomFileTag(outputPath, (0x2005, 0x100E), 1/slope) #[(0x2005, 0x100E)]
+                self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
             self.weasel.progressBar.set_value(len(inputPath))
             self.weasel.progressBar.close()
-            self.weasel.treeView.refreshDICOMStudiesTreeView()
+            self.weasel.refresh()
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
             print('Error in ImageViewerROI.saveROI: ' + str(e))
@@ -257,8 +262,8 @@ class ImageViewerROI(QMdiSubWindow):
                 seriesID = listParams[0][0] # Temporary, only the first ROI
                 imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
-                    targetPath = [i.path for i in self.weasel.images()]
-                    #targetPath = self.imageList
+                    #targetPath = [i.path for i in self.weasel.images()]
+                    targetPath = self.imagePathList
                 else:
                     targetPath = [self.selectedImagePath]
                 maskInput = ReadDICOM_Image.returnSeriesPixelArray(imagePathList)
@@ -334,6 +339,7 @@ class ImageViewerROI(QMdiSubWindow):
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+                self.reloadImageInNewImageItem()
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
                 logger.exception('Error in ImageViewerROI.loadROI: ' + str(e)) 
