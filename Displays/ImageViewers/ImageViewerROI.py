@@ -129,7 +129,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.show()
         except Exception as e:
             print('Error in ImageViewerROI.__init__: ' + str(e))
-            logger.error('Error in ImageViewerROI.__init__: ' + str(e))
+            logger.exception('Error in ImageViewerROI.__init__: ' + str(e))
 
 
     def setUpMainLayout(self):
@@ -140,7 +140,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.setWidget(self.widget)
         except Exception as e:
             print('Error in ImageViewerROI.setUpMainLayout: ' + str(e))
-            logger.error('Error in ImageViewerROI.setUpMainLayout: ' + str(e))
+            logger.exception('Error in ImageViewerROI.setUpMainLayout: ' + str(e))
 
 
     def setUpRoiToolsLayout(self):
@@ -201,19 +201,18 @@ class ImageViewerROI(QMdiSubWindow):
 
         except Exception as e:
                 print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
-                logger.error('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
+                logger.exception('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
 
 
     def saveROI(self):
         try:
             # Save Current ROI
-            regionName = self.cmbNamesROIs.currentText()
             logger.info("ImageViewerROI.saveROI called")
+            regionName = self.cmbNamesROIs.currentText()
             # get the list of boolean masks for this series
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
-            #maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList] 
-            maskList = [np.array(mask, dtype=np.int) for mask in maskList] 
+            maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
             suffix = str("_ROI_"+ regionName)
             if len(maskList) > 1:
                 inputPath = [i.path for i in self.weasel.images()]
@@ -225,22 +224,17 @@ class ImageViewerROI(QMdiSubWindow):
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
             seriesUID = SaveDICOM_Image.generateUIDs(ReadDICOM_Image.getDicomDataset(inputPath[0]), seriesID)
-            
             for index, path in enumerate(inputPath):
-                #outputPath.append(SaveDICOM_Image.returnFilePath(image, suffix))
                 self.weasel.progressBar.set_value(index)
                 outputPath = SaveDICOM_Image.returnFilePath(path, suffix)
                 SaveDICOM_Image.saveNewSingleDicomImage(outputPath, path, maskList[index], suffix, series_id=seriesID, series_uid=seriesUID, parametric_map="SEG")
-                treeSeriesID = self.weasel.objXMLReader.insertNewImageInXMLFile(path, outputPath, suffix)
-            #SaveDICOM_Image.saveDicomNewSeries(outputPath, inputPath, maskList, suffix, parametric_map="SEG") # Consider Enhanced DICOM for parametric_map
-            #seriesID = interfaceDICOMXMLFile.insertNewSeriesInXMLFile(self, inputPath, outputPath, suffix)
             self.weasel.progressBar.set_value(len(inputPath))
             self.weasel.progressBar.close()
-            self.weasel.treeView.refreshDICOMStudiesTreeView()#newSeriesName=treeSeriesID
+            self.weasel.treeView.refreshDICOMStudiesTreeView()
             QMessageBox.information(self.weasel, "Export ROIs", "Image Saved")
         except Exception as e:
-                print('Error in ImageViewerROI.saveROI: ' + str(e))
-                logger.error('Error in ImageViewerROI.saveROI: ' + str(e)) 
+            print('Error in ImageViewerROI.saveROI: ' + str(e))
+            logger.exception('Error in ImageViewerROI.saveROI: ' + str(e)) 
 
 
     def loadROI(self):
@@ -248,7 +242,7 @@ class ImageViewerROI(QMdiSubWindow):
             logger.info("ImageViewerROI.loadROI called")
             # The following workflow is assumed:
             #   1. The user first loads a series of DICOM images
-            #   2. Then the user loads the series of ROIs that are superimposed upon the images
+            #   2. Then the user chooses the series with the mask that will overlay the current viewer.
 
             # Prompt Windows to select Series
             paramDict = {"Series":"listview"}
@@ -277,7 +271,7 @@ class ImageViewerROI(QMdiSubWindow):
                     region = "new_region_label"
                 # Affine re-adjustment
                 for index, dicomFile in enumerate(targetPath):
-                    self.weasel.progress_bar("<H4>Loading selected ROI into target image {}</H4>".format(index + 1))
+                    self.weasel.progress_bar(msg="<H4>Loading selected ROI into target image {}</H4>".format(index + 1))
                     self.weasel.progressBar.set_maximum(len(targetPath))
                     self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
@@ -327,7 +321,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.graphicsView.currentROIName = region
                 for imageNumber in range(len(maskList)):  #To Do
                     self.graphicsView.currentImageNumber = imageNumber + 1
-                    self.graphicsView.dictROIs.addRegion(np.array(maskList[imageNumber]).astype(bool))
+                    self.graphicsView.dictROIs.addMask(np.array(maskList[imageNumber]).astype(bool))
 
                 # Second populate the dropdown list of region names
                 self.cmbNamesROIs.blockSignals(True)
@@ -342,7 +336,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
-                logger.error('Error in ImageViewerROI.loadROI: ' + str(e)) 
+                logger.exception('Error in ImageViewerROI.loadROI: ' + str(e)) 
 
 
     def eraseROI(self, checked):
@@ -375,7 +369,7 @@ class ImageViewerROI(QMdiSubWindow):
                      )
         except Exception as e:
                 print('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))
-                logger.error('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))  
+                logger.exception('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))  
 
 
     #def resetDrawButton(self):
@@ -440,7 +434,7 @@ class ImageViewerROI(QMdiSubWindow):
             return mean, std
         except Exception as e:
             print('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
-            logger.error('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
+            logger.exception('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
 
 
     def displayROIMeanAndStd(self):
@@ -465,7 +459,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.roiStdDevTxt.clear()
         except Exception as e:
                 print('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e))
-                logger.error('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e)) 
+                logger.exception('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e)) 
 
 
     def setUpImageEventHandlers(self):
@@ -507,7 +501,7 @@ class ImageViewerROI(QMdiSubWindow):
                                                     self.updateZoomSlider(increment))
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e))
-                logger.error('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
+                logger.exception('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
 
 
     def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
@@ -560,7 +554,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.zoomSlider.blockSignals(False)
         except Exception as e:
                 print('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
-                logger.error('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
+                logger.exception('Error in ImageViewerROI.updateZoomSlider: ' + str(e))
 
 
     def addNewROItoDropDownList(self, newRegion):
@@ -626,7 +620,7 @@ class ImageViewerROI(QMdiSubWindow):
                  self.lblPixelValue.setText('')
         except Exception as e:
                 print('Error in ImageViewerROI.getPixelValue: ' + str(e))
-                logger.error('Error in ImageViewerROI.getPixelValue: ' + str(e))
+                logger.exception('Error in ImageViewerROI.getPixelValue: ' + str(e))
 
 
     def updateDetailsROI(self):
@@ -639,7 +633,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.graphicsView.currentImageNumber = 1
         except Exception as e:
                 print('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
-                logger.error('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
+                logger.exception('Error in ImageViewerROI.updateDetailsROI: ' + str(e))
 
 
     def replaceMask(self):  
@@ -725,7 +719,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.roiToolsLayout.addWidget(self.roiStdDevTxt,  alignment=Qt.AlignLeft)
         except Exception as e:
                print('Error in ImageViewerROI.setUpROIButtons: ' + str(e))
-               logger.error('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
+               logger.exception('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
 
             
     def reloadImageInNewImageItem(self): ###
@@ -803,7 +797,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.mainVerticalLayout.addWidget(self.lblImageMissing)
         except Exception as e:
             print('Error in ImageViewerROI.setUpTopRowLayout: ' + str(e))
-            logger.error('Error in ImageViewerROI.setUpTopRowLayout: ' + str(e))
+            logger.exception('Error in ImageViewerROI.setUpTopRowLayout: ' + str(e))
 
 
     def setUpGraphicsView(self):
@@ -818,7 +812,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.spinBoxContrast.valueChanged.connect(self.updateImageLevels)
         except Exception as e:
             print('Error in ImageViewerROI.setUpLevelsSpinBoxes: ' + str(e))
-            logger.error('Error in ImageViewerROI.setUpLevelsSpinBoxes: ' + str(e))
+            logger.exception('Error in ImageViewerROI.setUpLevelsSpinBoxes: ' + str(e))
 
 
     def updateImageLevels(self):
@@ -834,7 +828,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.updateImageLevels(intensity, contrast, mask)
         except Exception as e:
             print('Error in ImageViewerROI.updateImageLevels when imageNumber={}: '.format(imageNumber) + str(e))
-            logger.error('Error in ImageViewerROI.updateImageLevels: ' + str(e))
+            logger.exception('Error in ImageViewerROI.updateImageLevels: ' + str(e))
 
 
     def setUpImageSliders(self):
@@ -861,7 +855,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.slidersWidget.displayFirstImage()
         except Exception as e:
             print('Error in ImageViewerROI.setUpImageSliders: ' + str(e))
-            logger.error('Error in ImageViewerROI.setUpImageSliders: ' + str(e))
+            logger.exception('Error in ImageViewerROI.setUpImageSliders: ' + str(e))
 
 
     def displayPixelArrayOfSingleImage(self, imagePath):
@@ -892,7 +886,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             except Exception as e:
                 print('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
-                logger.error('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
+                logger.exception('Error in ImageViewerROI.displayPixelArrayOfSingleImage: ' + str(e))
 
 
     def setUpZoomSlider(self):
@@ -907,7 +901,7 @@ class ImageViewerROI(QMdiSubWindow):
                   self.graphicsView.zoomImage(self.zoomSlider.direction()))
         except Exception as e:
                 print('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))
-                logger.error('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))  
+                logger.exception('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))  
 
 
     def setEraseButtonColour(self, setRed):
