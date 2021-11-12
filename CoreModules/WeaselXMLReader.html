@@ -54,7 +54,8 @@ class WeaselXMLReader:
         try:
             self.weasel = weasel
             self.file = xml_file
-            self.tree = ET.parse(xml_file) 
+            self.tree = ET.parse(xml_file)
+            self.root = self.tree.getroot()
             logger.info(&#39;In module &#39; + __name__ + &#39; Created XML Reader Object&#39;)
         except Exception as e:
             print(&#39;Error in WeaselXMLReader.__init__: &#39; + str(e)) 
@@ -66,11 +67,11 @@ class WeaselXMLReader:
            self.__class__.__name__,
            self.fullFilePath)
 
-    @property
-    def root(self):
-        &#34;Return the root of the element tree&#34;
-
-        return self.tree.getroot()
+#    @property
+#    def root(self):
+#        &#34;Return the root of the element tree&#34;
+#
+#        return self.tree.getroot()
 
     def save(self):
         try:
@@ -763,7 +764,8 @@ xml_file: the XML file to be represented</p></div>
         try:
             self.weasel = weasel
             self.file = xml_file
-            self.tree = ET.parse(xml_file) 
+            self.tree = ET.parse(xml_file)
+            self.root = self.tree.getroot()
             logger.info(&#39;In module &#39; + __name__ + &#39; Created XML Reader Object&#39;)
         except Exception as e:
             print(&#39;Error in WeaselXMLReader.__init__: &#39; + str(e)) 
@@ -775,11 +777,11 @@ xml_file: the XML file to be represented</p></div>
            self.__class__.__name__,
            self.fullFilePath)
 
-    @property
-    def root(self):
-        &#34;Return the root of the element tree&#34;
-
-        return self.tree.getroot()
+#    @property
+#    def root(self):
+#        &#34;Return the root of the element tree&#34;
+#
+#        return self.tree.getroot()
 
     def save(self):
         try:
@@ -1427,23 +1429,6 @@ xml_file: the XML file to be represented</p></div>
         except Exception as e:
             print(&#39;Error in WeaselXMLReader.getNewSeriesName: &#39; + str(e))</code></pre>
 </details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.root"><code class="name">var <span class="ident">root</span></code></dt>
-<dd>
-<div class="desc"><p>Return the root of the element tree</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def root(self):
-    &#34;Return the root of the element tree&#34;
-
-    return self.tree.getroot()</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.branch"><code class="name flex">
@@ -2325,7 +2310,6 @@ in the DICOM XML file</p></div>
 <li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject">removeOneStudyFromSubject</a></code></li>
 <li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile">removeSubjectFromXMLFile</a></code></li>
 <li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile">renameSeriesinXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.root" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.root">root</a></code></li>
 <li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.save" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.save">save</a></code></li>
 </ul>
 </li>
