@@ -227,18 +227,7 @@ class GraphicsItem(QGraphicsObject):
     def closeAndFillROI(self):
         if  (self.last_x != None and self.start_x != None 
                 and self.last_y != None and self.start_y != None):
-            #if int(self.last_x) == self.start_x and int(self.last_y) == self.start_y:
-            #    #free hand drawn ROI is closed, so no further action needed
-            #    pass
-            #else:
-            #    #free hand drawn ROI is not closed, so need to draw a
-            #    #straight line from the coordinates of its start to
-            #    #the coordinates of its last point
-            #    self.drawStraightLine(self.last_x, self.last_y, self.start_x, self.start_y)
-        
-            #self.prevPathCoordsList = self.pathCoordsList
             self.createMaskFromDrawnROI(self.pathCoordsList)
-            #self.removeROIBoundaryLine()
             #store mask
             self.sigGetDetailsROI.emit()
             self.linkToGraphicsView.dictROIs.addMask(self.mask)
@@ -281,14 +270,14 @@ class GraphicsItem(QGraphicsObject):
                     else:
                         #The mouse was not moved, so a pixel was clicked on
                         if self.mask is not None:
-                            if self.mask[self.xMouseCoord, self.yMouseCoord] == True:
+                            if self.mask[self.yMouseCoord, self.xMouseCoord] == True:
                                 pass
                                 #mask already exists at this pixel, 
                                 #so do nothing
                             else:
                                 #update mask
                                 self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
-                                self.mask[self.xMouseCoord, self.yMouseCoord] = True
+                                self.mask[self.yMouseCoord, self.xMouseCoord] = True
                                 #store mask
                                 self.sigGetDetailsROI.emit()
                                 self.linkToGraphicsView.dictROIs.addMask(self.mask)
@@ -296,7 +285,7 @@ class GraphicsItem(QGraphicsObject):
                         else:
                             self.createBlankMask() #create a new boolean mask with all values False
                             self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
-                            self.mask[self.xMouseCoord, self.yMouseCoord] = True
+                            self.mask[self.yMouseCoord, self.xMouseCoord] = True
                             #store mask
                             self.sigGetDetailsROI.emit()
                             self.linkToGraphicsView.dictROIs.addMask(self.mask)
@@ -397,10 +386,10 @@ class GraphicsItem(QGraphicsObject):
             redVal = pixelRGB[0]
             greenVal = pixelRGB[1]
             blueVal = pixelRGB[2]
-            #if greenVal == 255 and blueVal == 255:
-            #    #This pixel would be white if red channel set to 255
-            #    #so set the green and blue channels to zero
-            #    greenVal = blueVal = 0
+            if greenVal > 240 and blueVal > 240:
+                #This pixel would be white if red channel set to 255
+                #so set the green and blue channels to zero
+                greenVal = blueVal = 0
             value = qRgb(255, greenVal, blueVal)
             self.qImage.setPixel(x, y, value)
             #convert QImage to QPixmap to be able to update image
@@ -484,10 +473,10 @@ class GraphicsItem(QGraphicsObject):
                     redVal = pixelRGB[0]
                     greenVal = pixelRGB[1]
                     blueVal = pixelRGB[2]
-                    #if greenVal == 255 and blueVal == 255:
-                    #    #This pixel would be white if red channel set to 255
-                    #    #so set the green and blue channels to zero
-                    #    greenVal = blueVal = 0
+                    if greenVal > 240 and blueVal > 240:
+                        #This pixel would be white if red channel set to 255
+                        #so set the green and blue channels to zero
+                        greenVal = blueVal = 0
                     value = qRgb(255, greenVal, blueVal)
                     self.qImage.setPixel(x, y, value)
         except Exception as e:
@@ -568,6 +557,21 @@ class GraphicsItem(QGraphicsObject):
         self.mask = np.full((nx, ny), False, dtype=bool)
 
 
+    def isCounterClockWise(self, myPath):
+        #directions from one vertex to the other
+        dirs=myPath.vertices[1:]-myPath.vertices[0:-1]
+        #rot: array of rotations at ech edge
+        rot=np.cross(dirs[:-1],dirs[1:]) 
+        if len(rot[rot>0])==len(rot):
+            #counterclockwise
+            return True
+        elif len(rot[rot<0])==len(rot):
+            #clockwise
+            return False
+        else:
+            assert False, 'no yet implemented: This case applies if myPath is concave'
+
+
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
         logger.info("FreeHandROI.GraphicsItem.createMaskFromDrawnROI called")
         try:
@@ -585,11 +589,16 @@ class GraphicsItem(QGraphicsObject):
             #3.Create a boolean array representing the original pixel array
             #with all elements set to False except those falling within the
             #ROI that are set to True.  
-            #Setting radius=0.1 includes the drawn boundary in the ROI
+            #Setting radius=0.0 does not include the drawn boundary in the ROI
             #ideally radius should = pixel size
-            self.mask = roiPath.contains_points(points, radius=0.1).reshape((nx, ny))
-            #result = np.where(self.mask == True) 
-            #print("true coords ={}".format(list(zip(result[0], result[1])) ))
+            #if self.isCounterClockWise(roiPath):
+            #    rad = -0.1
+            #else:
+            #    rad = 0.0
+
+            self.mask = roiPath.contains_points(points, radius=0.0).reshape((ny, nx))
+            result = np.where(self.mask == True) 
+            print("GraphicsItem true coords ={}".format(list(zip(result[0], result[1])) ))
 
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
