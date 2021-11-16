@@ -7,6 +7,7 @@ from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
 from .Resources import * 
 import logging
+#import numpy as np
 logger = logging.getLogger(__name__)
 
 __version__ = '1.0'
@@ -37,7 +38,6 @@ class GraphicsView(QGraphicsView):
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        self.zoomEnabled = False
         self.currentROIName = None
         self.currentImageNumber = None
         self.dictROIs = ROIs(numberOfImages, self)
@@ -45,6 +45,11 @@ class GraphicsView(QGraphicsView):
         self.mainContextMenu.hovered.connect(self._actionHovered)
         self.pixelSquareSizeMenu = QMenu()
         self.pixelSquareSizeMenu.hovered.connect(self._actionHovered)
+        self.drawEnabled = False
+        self.paintEnabled = False
+        self.eraseEnabled = False
+        self.zoomEnabled = False
+        self.pixelSquareSize = 1
        
         #Following commented out to not display vertical and
         #horizontal scroll bars
@@ -60,7 +65,6 @@ class GraphicsView(QGraphicsView):
 
     def setZoomEnabled(self, boolValue):
         self.zoomEnabled = boolValue
-        self.graphicsItem.zoomEnabled = boolValue
 
 
     def setImage(self, pixelArray, mask = None, path = None):
@@ -78,6 +82,14 @@ class GraphicsView(QGraphicsView):
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.reapplyZoom()
 
+            ##Centre the image on the area where the ROI was drawn
+            #if mask is not None:
+            #    result = np.where(mask == True)
+            #    print("Mask True coords ={}".format(list(zip(result[1], result[0]))))
+            #    #print("Mask True coords ={}".format(list(zip(np.where(mask == True)))))
+            #    print("self.centerOn({},{})".format(float(result[1][0]),float(result[0][0])))
+            #    self.centerOn(float(result[1][0]),float(result[0][0]))
+
             self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
             self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
         except Exception as e:
@@ -91,7 +103,6 @@ class GraphicsView(QGraphicsView):
             totalFactor = factor**self._zoom
             self.scale(totalFactor, totalFactor)
         
-
 
     def zoomFromMouseClicks(self, zoomValue):
         if self.zoomEnabled:
@@ -192,19 +203,19 @@ class GraphicsView(QGraphicsView):
         twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip('Erase/Paint a 21x21 square of pixels')
 
-        if self.graphicsItem.pixelSquareSize == 1:
+        if self.pixelSquareSize == 1:
             onePixel.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 3:
+        elif self.pixelSquareSize == 3:
             threePixels.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 5:
+        elif self.pixelSquareSize == 5:
             fivePixels.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 7:
+        elif self.pixelSquareSize == 7:
             sevenPixels.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 9:
+        elif self.pixelSquareSize == 9:
             ninePixels.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 11:
+        elif self.pixelSquareSize == 11:
             elevenPixels.setChecked(True)
-        elif self.graphicsItem.pixelSquareSize == 21:
+        elif self.pixelSquareSize == 21:
             twentyOnePixels.setChecked(True)
 
         onePixel.triggered.connect(lambda:self.setPixelSquareSize(1, onePixel ))
@@ -226,7 +237,7 @@ class GraphicsView(QGraphicsView):
 
 
     def setPixelSquareSize(self, pixelSquareSize, action):
-        self.graphicsItem.pixelSquareSize = pixelSquareSize
+        self.pixelSquareSize = pixelSquareSize
 
 
     def setUpMainContextMenu(self, event):
@@ -282,7 +293,7 @@ class GraphicsView(QGraphicsView):
         logger.info("freeHandROI.GraphicsView.contextMenuEvent called")
         try:
             if not self.zoomEnabled:
-                if self.graphicsItem.eraseEnabled or self.graphicsItem.paintEnabled:
+                if self.eraseEnabled or self.paintEnabled:
                     self.setUpPixelSquareSizeMenu(event)
                 else:
                     self.setUpMainContextMenu(event)  
@@ -299,15 +310,15 @@ class GraphicsView(QGraphicsView):
     def drawROI(self, fromContextMenu = False):
         logger.info("freeHandROI.GraphicsView.drawROI called")
         try:
-            if not self.graphicsItem.drawEnabled:
+            if not self.drawEnabled:
                 if fromContextMenu:
                     self.sigSetDrawButtonRed.emit(True)
-                self.graphicsItem.drawEnabled = True
+                self.drawEnabled = True
                 self.setZoomEnabled(False)
-                self.graphicsItem.eraseEnabled = False
+                self.eraseEnabled = False
                 self.graphicsItem.paintEnabled = False
             else:
-                self.graphicsItem.drawEnabled = False
+                self.drawEnabled = False
                 if fromContextMenu:
                     self.sigSetDrawButtonRed.emit(False)
         except Exception as e:
@@ -318,16 +329,16 @@ class GraphicsView(QGraphicsView):
     def paintROI(self, fromContextMenu = False):
         logger.info("freeHandROI.GraphicsView.paintROI called")
         try:
-            if not self.graphicsItem.paintEnabled:
+            if not self.paintEnabled:
                 if fromContextMenu:
                     self.sigSetPaintButtonRed.emit(True)
                 self.setZoomEnabled(False)
-                self.graphicsItem.eraseEnabled = False
-                self.graphicsItem.drawEnabled = False
-                self.graphicsItem.paintEnabled = True
-                self.graphicsItem.pixelSquareSize = 1
+                self.eraseEnabled = False
+                self.drawEnabled = False
+                self.paintEnabled = True
+                self.pixelSquareSize = 1
             else:
-                self.graphicsItem.paintEnabled = False
+                self.paintEnabled = False
                 if fromContextMenu:
                     self.sigSetPaintButtonRed.emit(False)
         except Exception as e:
@@ -338,16 +349,16 @@ class GraphicsView(QGraphicsView):
     def eraseROI(self, fromContextMenu = False):
         logger.info("freeHandROI.GraphicsView.eraseROI called")
         try:
-            if not self.graphicsItem.eraseEnabled:
+            if not self.eraseEnabled:
                 if fromContextMenu:
                     self.sigSetEraseButtonRed.emit(True)
-                self.graphicsItem.drawEnabled = False
-                self.graphicsItem.paintEnabled = False
+                self.drawEnabled = False
+                self.paintEnabled = False
                 self.setZoomEnabled(False)
-                self.graphicsItem.eraseEnabled = True
-                self.graphicsItem.pixelSquareSize = 1
+                self.eraseEnabled = True
+                self.pixelSquareSize = 1
             else:
-                self.graphicsItem.eraseEnabled = False
+                self.eraseEnabled = False
                 if fromContextMenu:
                     self.sigSetEraseButtonRed.emit(False)
         except Exception as e:

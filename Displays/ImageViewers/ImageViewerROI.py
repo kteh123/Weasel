@@ -378,15 +378,6 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.exception('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))  
 
 
-    #def resetDrawButton(self):
-    #    self.graphicsView.graphicsItem.drawEnabled = QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-    #    self.graphicsView.graphicsItem.drawEnabled = False
-    #    self.btnDraw.setStyleSheet(
-    #        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-    #        )
-    #    self.btnDraw.isChecked(False)
-
-
     def drawROI(self, checked):
         logger.info("ImageViewerROI.drawROI called.")
         if checked:
@@ -482,7 +473,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            #This event is no longer used
+            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
@@ -515,7 +507,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
             width = self.spinBoxContrast.value()
-            #delta = ev.screenPos() - ev.lastScreenPos()
             if float(centre / np.shape(self.pixelArray)[1]) > 0.01:
                 step_y = float(centre / np.shape(self.pixelArray)[1])
             else:
@@ -741,7 +732,6 @@ class ImageViewerROI(QMdiSubWindow):
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
-            self.setButtonsToDefaultStyle()
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:

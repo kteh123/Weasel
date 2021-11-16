@@ -1,6 +1,6 @@
 MAGNIFYING_GLASS_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/Magnifying_Glass.png'
 PEN_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/pencil.png'
-BRUSH_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/paint-brush.png'
+BRUSH_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/paint_brush.png'
 ERASER_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/erasor.png'
 DELETE_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/delete_icon.png'
 NEW_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/new_icon.png'

@@ -67,11 +67,11 @@ class GraphicsItem(QGraphicsObject):
         self.pixelColour = None
         self.pixelValue = None
         self.mouseMoved = False
-        self.drawEnabled = False
-        self.paintEnabled = False
-        self.eraseEnabled = False
-        self.zoomEnabled = False
-        self.pixelSquareSize = 1
+        #self.drawEnabled = False
+        #self.paintEnabled = False
+        #self.eraseEnabled = False
+        #self.zoomEnabled = False
+        #self.pixelSquareSize = 1
 
 
     def __repr__(self):
@@ -131,19 +131,19 @@ class GraphicsItem(QGraphicsObject):
     def hoverEnterEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.hoverEnterEvent called")
         try:
-            if self.drawEnabled:
+            if self.linkToGraphicsView.drawEnabled:
                 pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.eraseEnabled:
+            if self.linkToGraphicsView.eraseEnabled:
                 pm = QPixmap(ERASER_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.paintEnabled:
+            if self.linkToGraphicsView.paintEnabled:
                 pm = QPixmap(BRUSH_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.zoomEnabled:
+            if self.linkToGraphicsView.zoomEnabled:
                 pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
@@ -203,13 +203,13 @@ class GraphicsItem(QGraphicsObject):
                 self.xMouseCoord = int(event.pos().x())
                 self.yMouseCoord = int(event.pos().y())
                 
-                if self.drawEnabled:
+                if self.linkToGraphicsView.drawEnabled:
                     self.drawROIBoundary()
 
-                if self.eraseEnabled:
+                if self.linkToGraphicsView.eraseEnabled:
                     self.eraseROI()
 
-                if self.paintEnabled:
+                if self.linkToGraphicsView.paintEnabled:
                     self.paintROI()
 
             elif buttons == Qt.RightButton:
@@ -260,7 +260,7 @@ class GraphicsItem(QGraphicsObject):
             self.yMouseCoord = int(event.pos().y())
             button = event.button()
             if (button == Qt.LeftButton):
-                if self.drawEnabled:
+                if self.linkToGraphicsView.drawEnabled:
                     if self.mouseMoved:
                         self.closeAndFillROI()
                     else:
@@ -287,10 +287,10 @@ class GraphicsItem(QGraphicsObject):
                             self.linkToGraphicsView.dictROIs.addMask(self.mask)
                             self.sigRecalculateMeanROI.emit()
 
-                if self.eraseEnabled:
+                if self.linkToGraphicsView.eraseEnabled:
                     self.eraseROI()
                         
-                if self.paintEnabled:
+                if self.linkToGraphicsView.paintEnabled:
                     self.paintROI()
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.mouseReleaseEvent: ' + str(e))
@@ -300,14 +300,14 @@ class GraphicsItem(QGraphicsObject):
     def paintROI(self):
         if self.mask is None:
             self.createBlankMask()
-
-        if self.pixelSquareSize == 1:
+            
+        if self.linkToGraphicsView.pixelSquareSize == 1:
             #indices flipped for setting mask values to
             #fit with the numpy [rows, columns] format
             self.mask[self.yMouseCoord, self.xMouseCoord] = True
             self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
         else:
-            increment = (self.pixelSquareSize - 1)/2
+            increment = (self.linkToGraphicsView.pixelSquareSize - 1)/2
             lowX = int(self.xMouseCoord - increment)
             highX = int(self.xMouseCoord + increment)
             lowY = int(self.yMouseCoord - increment)
@@ -330,13 +330,13 @@ class GraphicsItem(QGraphicsObject):
         #erase mask at this mouse pointer position
         #and set pixel back to original value
         if self.mask is not None:
-            if self.pixelSquareSize == 1:
+            if self.linkToGraphicsView.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
                 #indices flipped for setting mask values to
                 #fit with the numpy [rows, columns] format
                 self.mask[self.yMouseCoord, self.xMouseCoord] = False
             else:
-                increment = (self.pixelSquareSize - 1)/2
+                increment = (self.linkToGraphicsView.pixelSquareSize - 1)/2
                 lowX = int(self.xMouseCoord - increment)
                 highX = int(self.xMouseCoord + increment)
                 lowY = int(self.yMouseCoord - increment)
@@ -509,8 +509,8 @@ class GraphicsItem(QGraphicsObject):
             #Setting radius=0.0 does not include the drawn boundary in the ROI
             self.mask = roiPath.contains_points(points, radius=0.0).reshape((ny, nx))   
 
-            innerROIPoints  = np.where(self.mask == True)
-            print("GraphicsItem true coords ={}".format(list(zip(innerROIPoints[1], innerROIPoints[0])) ))
+            #innerROIPoints  = np.where(self.mask == True)
+            #print("GraphicsItem true coords ={}".format(list(zip(innerROIPoints[1], innerROIPoints[0])) ))
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: ' + str(e))
