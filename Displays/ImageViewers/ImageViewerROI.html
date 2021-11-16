@@ -406,15 +406,6 @@ class ImageViewerROI(QMdiSubWindow):
                 logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
 
 
-    #def resetDrawButton(self):
-    #    self.graphicsView.graphicsItem.drawEnabled = QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-    #    self.graphicsView.graphicsItem.drawEnabled = False
-    #    self.btnDraw.setStyleSheet(
-    #        &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-    #        )
-    #    self.btnDraw.isChecked(False)
-
-
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
@@ -510,7 +501,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            #This event is no longer used
+            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
@@ -543,7 +535,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
             width = self.spinBoxContrast.value()
-            #delta = ev.screenPos() - ev.lastScreenPos()
             if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
                 step_y = float(centre / np.shape(self.pixelArray)[1])
             else:
@@ -769,7 +760,6 @@ class ImageViewerROI(QMdiSubWindow):
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
-            self.setButtonsToDefaultStyle()
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
@@ -1327,15 +1317,6 @@ sliders for browsing series of images.</p></div>
                 logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
 
 
-    #def resetDrawButton(self):
-    #    self.graphicsView.graphicsItem.drawEnabled = QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
-    #    self.graphicsView.graphicsItem.drawEnabled = False
-    #    self.btnDraw.setStyleSheet(
-    #        &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-    #        )
-    #    self.btnDraw.isChecked(False)
-
-
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
@@ -1431,7 +1412,8 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            #This event is no longer used
+            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
@@ -1464,7 +1446,6 @@ sliders for browsing series of images.</p></div>
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
             width = self.spinBoxContrast.value()
-            #delta = ev.screenPos() - ev.lastScreenPos()
             if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
                 step_y = float(centre / np.shape(self.pixelArray)[1])
             else:
@@ -1690,7 +1671,6 @@ sliders for browsing series of images.</p></div>
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
-            self.setButtonsToDefaultStyle()
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
@@ -1963,7 +1943,6 @@ sliders for browsing series of images.</p></div>
         self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
         centre = self.spinBoxIntensity.value()
         width = self.spinBoxContrast.value()
-        #delta = ev.screenPos() - ev.lastScreenPos()
         if float(centre / np.shape(self.pixelArray)[1]) &gt; 0.01:
             step_y = float(centre / np.shape(self.pixelArray)[1])
         else:
@@ -2375,7 +2354,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
         mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
-        self.setButtonsToDefaultStyle()
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
     except Exception as e:
@@ -2642,7 +2620,8 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-        self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
+        #This event is no longer used
+        #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
 
         self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
         
