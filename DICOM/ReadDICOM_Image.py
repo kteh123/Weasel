@@ -316,7 +316,10 @@ def getPixelArray(dataset):
             else:
                 slope = float(getattr(dataset, 'RescaleSlope', 1)) * np.ones(dataset.pixel_array.shape)
                 intercept = float(getattr(dataset, 'RescaleIntercept', 0)) * np.ones(dataset.pixel_array.shape)
-                pixelArray = np.transpose(dataset.pixel_array.astype(np.float32) * slope + intercept)
+                if len(dataset.pixel_array.shape) == 3:
+                    pixelArray = np.rot90(np.array(dataset.pixel_array.astype(np.float32) * slope + intercept), k=1, axes=(0, 1))
+                else:
+                    pixelArray = np.transpose(dataset.pixel_array.astype(np.float32) * slope + intercept)
             if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
                 pixelArray = pixelArray / (slope * dataset[(0x2005, 0x100E)].value)
             del slope, intercept
