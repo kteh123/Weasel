@@ -34,13 +34,13 @@ class GraphicsView(QGraphicsView):
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
         self._zoom = 0
-        self.graphicsItem = None
+        self.graphicsItem  = None #pointer to graphicsItem widget that displays the image
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.currentROIName = None
         self.currentImageNumber = None
-        self.dictROIs = ROIs(numberOfImages, self)
+        self.dictROIs = ROIs(numberOfImages, self) #data structure holding ROI data
         self.mainContextMenu = QMenu()
         self.mainContextMenu.hovered.connect(self._actionHovered)
         self.pixelSquareSizeMenu = QMenu()
@@ -50,7 +50,6 @@ class GraphicsView(QGraphicsView):
         self.eraseEnabled = False
         self.zoomEnabled = False
         self.pixelSquareSize = 1
-       
         #Following commented out to not display vertical and
         #horizontal scroll bars
         #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -70,28 +69,17 @@ class GraphicsView(QGraphicsView):
     def setImage(self, pixelArray, mask = None, path = None):
         logger.info("freeHandROI.GraphicsView.setImage called")
         try:
-            if self.graphicsItem is not None:
-                self.graphicsItem = None
-                self.scene.clear()
-
-            self.graphicsItem = GraphicsItem(pixelArray, mask, path, self)
-       
-            #Give graphicsItem some time to adjust itself
-            QApplication.processEvents()
-            self.scene.addItem(self.graphicsItem)
+            if self.graphicsItem is None:
+                #Create the GraphicsItem object that 
+                #will be used to display all the images
+                self.graphicsItem = GraphicsItem(self)
+                self.scene.addItem(self.graphicsItem)
+                self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
+                self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
+            
+            self.graphicsItem.setImage(pixelArray, mask, path)
             self.fitInView(self.graphicsItem, Qt.KeepAspectRatio) 
             self.reapplyZoom()
-
-            ##Centre the image on the area where the ROI was drawn
-            #if mask is not None:
-            #    result = np.where(mask == True)
-            #    print("Mask True coords ={}".format(list(zip(result[1], result[0]))))
-            #    #print("Mask True coords ={}".format(list(zip(np.where(mask == True)))))
-            #    print("self.centerOn({},{})".format(float(result[1][0]),float(result[0][0])))
-            #    self.centerOn(float(result[1][0]),float(result[0][0]))
-
-            self.graphicsItem.sigZoomIn.connect(lambda: self.zoomFromMouseClicks(ZOOM_IN))
-            self.graphicsItem.sigZoomOut.connect(lambda: self.zoomFromMouseClicks(ZOOM_OUT))
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.setImage: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.setImage: ' + str(e))
@@ -108,11 +96,6 @@ class GraphicsView(QGraphicsView):
         if self.zoomEnabled:
             self.zoomImage(zoomValue)
     
-
-    def fitImageToViewPort(self):
-        self.zoomImage(ZOOM_IN)
-        self.zoomImage(ZOOM_OUT)
-
 
     def zoomImage(self, zoomValue):
         logger.info("freeHandROI.GraphicsView.zoomImage called")
@@ -163,20 +146,6 @@ class GraphicsView(QGraphicsView):
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.fitItemInView: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.fitItemInView: ' + str(e))
-
-
-    def toggleDragMode(self):
-        logger.info("freeHandROI.GraphicsView.toggleDragMode called")
-        try:
-            if self.dragMode() == QGraphicsView.ScrollHandDrag:
-                self.setDragMode(QGraphicsView.NoDrag)
-            else:
-                self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-                self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-                self.setDragMode(QGraphicsView.ScrollHandDrag)
-        except Exception as e:
-            print('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsView.toggleDragMode: ' + str(e))
 
 
     def setUpPixelSquareSizeMenu(self, event):
@@ -289,7 +258,7 @@ class GraphicsView(QGraphicsView):
 
     def contextMenuEvent(self, event):
         #display pop-up context menu when the right mouse button is pressed
-        #as long as zoom is not enabled
+        #and zoom is not enabled
         logger.info("freeHandROI.GraphicsView.contextMenuEvent called")
         try:
             if not self.zoomEnabled:

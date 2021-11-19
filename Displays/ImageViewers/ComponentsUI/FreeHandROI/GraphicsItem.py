@@ -30,16 +30,31 @@ class GraphicsItem(QGraphicsObject):
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
+     
 
-    def __init__(self, pixelArray, roi, path, linkToGraphicsView): 
+    def __init__(self, linkToGraphicsView): 
         super(GraphicsItem, self).__init__()
-        logger.info("GraphicsItem initialised")
+        self.linkToGraphicsView = linkToGraphicsView
+        self.last_x, self.last_y = None, None
+        self.start_x = None
+        self.start_y = None
+        self.pathCoordsList = []
+        self.setAcceptHoverEvents(True)
+        self.listROICoords = None
+        self.xMouseCoord  = None
+        self.yMouseCoord  = None
+        #self.pixelColour = None
+        self.pixelValue = None
+        self.mouseMoved = False
+
+
+    def setImage(self, pixelArray, roi, path):
+        logger.info("GraphicsItem.setImage called")
         self.pixelArray = pixelArray
         if path is not None:
             minValue, maxValue = readLevels(path, self.pixelArray)
         else:
             minValue, maxValue = self.__quickMinMax(self.pixelArray)
-        self.linkToGraphicsView = linkToGraphicsView
         self.contrast = maxValue - minValue
         self.intensity = minValue + (maxValue - minValue)/2
         imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
@@ -50,28 +65,13 @@ class GraphicsItem(QGraphicsObject):
             #add roi to pixel map
             self.addROItoImage(roi)
             self.mask = roi
-
         #The contents of self.pixMap are displayed in this graphics item 
         #in the paint event
         self.pixMap = QPixmap.fromImage(self.qImage)
         self.width = float(self.pixMap.width()) 
         self.height = float(self.pixMap.height())
-        self.last_x, self.last_y = None, None
-        self.start_x = None
-        self.start_y = None
-        self.pathCoordsList = []
-        self.setAcceptHoverEvents(True)
-        self.listROICoords = None
-        self.xMouseCoord  = None
-        self.yMouseCoord  = None
-        self.pixelColour = None
-        self.pixelValue = None
-        self.mouseMoved = False
-        #self.drawEnabled = False
-        #self.paintEnabled = False
-        #self.eraseEnabled = False
-        #self.zoomEnabled = False
-        #self.pixelSquareSize = 1
+        #Calling update() causes the paint event to execute
+        self.update()
 
 
     def __repr__(self):
@@ -167,24 +167,23 @@ class GraphicsItem(QGraphicsObject):
         try:
             self.xMouseCoord = int(event.pos().x())
             self.yMouseCoord = int(event.pos().y())
-            self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
+            #self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
+            self.pixelValue = self.pixelArray[self.xMouseCoord-1, self.yMouseCoord-1]
             self.sigMouseHovered.emit(True)
         except Exception as e:
-            print('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
+            print('Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: '.format(self.xMouseCoord, self.yMouseCoord) + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
        
 
     def drawROIBoundary(self):
-        if self.last_x is None: # First event.
+        if self.last_x is None: # First draw event.
             self.last_x = self.xMouseCoord
             self.last_y = self.yMouseCoord
             self.start_x = self.xMouseCoord
             self.start_y = self.yMouseCoord
             return #  Ignore the first time.
         self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
-        #self.drawStraightLine(self.last_x, self.last_y, 
-         #                     self.xMouseCoord, self.yMouseCoord)
+        
         #Update the current mouse pointer position
         #These values are used to close the ROI
         self.last_x = self.xMouseCoord
@@ -302,7 +301,7 @@ class GraphicsItem(QGraphicsObject):
             self.createBlankMask()
             
         if self.linkToGraphicsView.pixelSquareSize == 1:
-            #indices flipped for setting mask values to
+            #indices reversed for setting mask values to
             #fit with the numpy [rows, columns] format
             self.mask[self.yMouseCoord, self.xMouseCoord] = True
             self.setPixelToRed(self.xMouseCoord, self.yMouseCoord)
@@ -316,7 +315,7 @@ class GraphicsItem(QGraphicsObject):
             for x in range(lowX, highX+1, 1):
                 for y in range(lowY, highY+1, 1):
                     if x > -1 and  y > -1:
-                        #indices flipped for setting mask values to
+                        #indices reversed for setting mask values to
                         #fit with the numpy [rows, columns] format
                         self.mask[y, x] = True
                         self.setPixelToRed(x, y)    
@@ -332,7 +331,7 @@ class GraphicsItem(QGraphicsObject):
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
-                #indices flipped for setting mask values to
+                #indices reversed for setting mask values to
                 #fit with the numpy [rows, columns] format
                 self.mask[self.yMouseCoord, self.xMouseCoord] = False
             else:
@@ -346,7 +345,7 @@ class GraphicsItem(QGraphicsObject):
                     for y in range(lowY, highY+1, 1):
                         if x > -1 and  y > -1:
                             self.resetPixelToOriginalValue(x, y)
-                            #indices flipped for setting mask values to
+                            #indices reversed for setting mask values to
                             #fit with the numpy [rows, columns] format
                             self.mask[y, x] = False
                             
@@ -573,70 +572,4 @@ def readLevels(path, pixelArray):
             print('Error in GraphicsItem.readLevels: ' + str(e))
             logger.error('Error in GraphicsItem.readLevels: ' + str(e))
 
-       #def drawStraightLine(self, startX, startY, endX, endY, colour='red'):
-    #    logger.info("FreeHandROI.GraphicsItem.drawStraightLine called")
-    #    try:
-    #        objPainter = QPainter(self.pixMap)
-    #        objPen = objPainter.pen()
-    #        objPen.setWidth(1) #1 pixel
-    #        if colour == 'red':
-    #            objPen.setColor(QColor("#FF0000")) #red
-    #        else:
-    #            objPen.setColor(QColor("#0000FF")) #blue
-    #        objPainter.setPen(objPen)
-    #        #self.objPainter.setRenderHint(QPainter.Antialiasing)
-    #        objPainter.drawLine(startX, startY, endX, endY)
-    #        objPainter.end()
-    #        self.qImage =  self.pixMap.toImage()
-    #        self.update()
-    #    except Exception as e:
-    #        print('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
-    #        logger.error('Error in FreeHandROI.GraphicsItem.drawStraightLine: ' + str(e))
-
-    #def setROIPathColour(self, colour, listPathCoords):
-    #    """This function is not currently used """
-    #    logger.info("FreeHandROI.GraphicsItem.setROIPathColour called")
-    #    try:
-    #        if listPathCoords is not None:
-    #            for coords in listPathCoords:
-    #                x = coords[0]
-    #                y = coords[1]
-
-    #                pixelColour = self.qImage.pixel(x, y) 
-    #                pixelRGB =  QColor(pixelColour).getRgb()
-    #                redVal = pixelRGB[0]
-    #                greenVal = pixelRGB[1]
-    #                blueVal = pixelRGB[2]
-    #                if greenVal == 255 and blueVal == 255:
-    #                    #This pixel would be white if red channel set to 255
-    #                    #so set the green and blue channels to zero
-    #                    greenVal = blueVal = 0
-    #                value = qRgb(255, greenVal, blueVal)
-
-    #                self.qImage.setPixel(x, y, value)
-    #                #convert QImage to QPixmap to be able to update image
-    #                #with filled ROI
-    #                self.pixMap = QPixmap.fromImage(self.qImage)
-    #                self.update()
-
-    #                #Test if the ROI was not closed when drawn,
-    #                #so it was closed with a staight line.
-    #                lastIndex = len(listPathCoords)-1
-    #                startX = listPathCoords[0][0]
-    #                startY = listPathCoords[0][1]
-    #                endX = listPathCoords[lastIndex][0]
-    #                endY = listPathCoords[lastIndex][1]
-    #                if int(endX) != int(startX) and int(endY) != int(startY):
-    #                    #free hand drawn ROI is not closed, 
-    #                    #so draw a straight line between start and end points
-    #                    self.drawStraightLine(startX, startY, endX, endY, colour=colour)
-    #    except Exception as e:
-    #        print('Error in FreeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
-    #        logger.error('Error in FreeHandROI.GraphicsItem.setROIPathColour: ' + str(e))
-
-    #def removeROIBoundaryLine(self):
-    #    for coords in self.pathCoordsList:
-    #        x = coords[0]
-    #        y = coords[1]
-    #        self.mask[x,y] = False
-    #        self.qImage.setPixel(x, y, self.origQImage.pixel(x, y))
+    
