@@ -622,6 +622,8 @@ class ImageViewer(QMdiSubWindow):
             success = False
             if self.isSeries: 
                 success, minimumValue, maximumValue = self.returnUserSelectedLevels()
+                width = maximumValue - minimumValue
+                centre = minimumValue + (width/2)
             if not success or self.isImage:
                 centre, width, maximumValue, minimumValue = self.readLevelsFromDICOMImage()
 
