@@ -376,9 +376,9 @@ class ImageViewerROI(QMdiSubWindow):
     def eraseROI(self, checked):
         logger.info(&#34;ImageViewerROI.eraseROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.eraseROI()
+            self.setButtonsToDefaultStyle(self.btnErase)
             self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.eraseROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.eraseEnabled = False
@@ -387,7 +387,7 @@ class ImageViewerROI(QMdiSubWindow):
              )
 
 
-    def setButtonsToDefaultStyle(self):
+    def setButtonsToDefaultStyle(self, thisButton=None):
         logger.info(&#34;DisplayImageDrawRIO.setButtonsToDefaultStyle called&#34;)
         try:
             logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
@@ -397,10 +397,12 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.paintEnabled = False
             if len(self.buttonList) &gt; 0:
                 for button in self.buttonList:
-                    #button.setChecked(False)
                     button.setStyleSheet(
                      &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                      )
+                    if button == thisButton:
+                            continue
+                    button.setChecked(False)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
@@ -409,9 +411,9 @@ class ImageViewerROI(QMdiSubWindow):
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.drawROI()
+            self.setButtonsToDefaultStyle(self.btnDraw)
             self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.drawROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.drawEnabled = False
@@ -423,9 +425,9 @@ class ImageViewerROI(QMdiSubWindow):
     def paintROI(self, checked):
         logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.paintROI()
+            self.setButtonsToDefaultStyle(self.btnPaint)
             self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.paintROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.paintEnabled = False
@@ -1287,9 +1289,9 @@ sliders for browsing series of images.</p></div>
     def eraseROI(self, checked):
         logger.info(&#34;ImageViewerROI.eraseROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.eraseROI()
+            self.setButtonsToDefaultStyle(self.btnErase)
             self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.eraseROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.eraseEnabled = False
@@ -1298,7 +1300,7 @@ sliders for browsing series of images.</p></div>
              )
 
 
-    def setButtonsToDefaultStyle(self):
+    def setButtonsToDefaultStyle(self, thisButton=None):
         logger.info(&#34;DisplayImageDrawRIO.setButtonsToDefaultStyle called&#34;)
         try:
             logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
@@ -1308,10 +1310,12 @@ sliders for browsing series of images.</p></div>
             self.graphicsView.graphicsItem.paintEnabled = False
             if len(self.buttonList) &gt; 0:
                 for button in self.buttonList:
-                    #button.setChecked(False)
                     button.setStyleSheet(
                      &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                      )
+                    if button == thisButton:
+                            continue
+                    button.setChecked(False)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  
@@ -1320,9 +1324,9 @@ sliders for browsing series of images.</p></div>
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.drawROI()
+            self.setButtonsToDefaultStyle(self.btnDraw)
             self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.drawROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.drawEnabled = False
@@ -1334,9 +1338,9 @@ sliders for browsing series of images.</p></div>
     def paintROI(self, checked):
         logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
         if checked:
-            self.setButtonsToDefaultStyle()
-            self.graphicsView.paintROI()
+            self.setButtonsToDefaultStyle(self.btnPaint)
             self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+            self.graphicsView.paintROI()
         else:
             QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.graphicsView.graphicsItem.paintEnabled = False
@@ -2107,9 +2111,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def drawROI(self, checked):
     logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
     if checked:
-        self.setButtonsToDefaultStyle()
-        self.graphicsView.drawROI()
+        self.setButtonsToDefaultStyle(self.btnDraw)
         self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+        self.graphicsView.drawROI()
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         self.graphicsView.graphicsItem.drawEnabled = False
@@ -2130,9 +2134,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def eraseROI(self, checked):
     logger.info(&#34;ImageViewerROI.eraseROI called.&#34;)
     if checked:
-        self.setButtonsToDefaultStyle()
-        self.graphicsView.eraseROI()
+        self.setButtonsToDefaultStyle(self.btnErase)
         self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+        self.graphicsView.eraseROI()
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         self.graphicsView.graphicsItem.eraseEnabled = False
@@ -2321,9 +2325,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <pre><code class="python">def paintROI(self, checked):
     logger.info(&#34;ImageViewerROI.paintROI called.&#34;)
     if checked:
-        self.setButtonsToDefaultStyle()
-        self.graphicsView.paintROI()
+        self.setButtonsToDefaultStyle(self.btnPaint)
         self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+        self.graphicsView.paintROI()
     else:
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         self.graphicsView.graphicsItem.paintEnabled = False
@@ -2463,7 +2467,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle"><code class="name flex">
-<span>def <span class="ident">setButtonsToDefaultStyle</span></span>(<span>self)</span>
+<span>def <span class="ident">setButtonsToDefaultStyle</span></span>(<span>self, thisButton=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2471,7 +2475,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setButtonsToDefaultStyle(self):
+<pre><code class="python">def setButtonsToDefaultStyle(self, thisButton=None):
     logger.info(&#34;DisplayImageDrawRIO.setButtonsToDefaultStyle called&#34;)
     try:
         logger.info(&#34;ImageViewerROI.setButtonsToDefaultStyle called.&#34;)
@@ -2481,10 +2485,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.graphicsView.graphicsItem.paintEnabled = False
         if len(self.buttonList) &gt; 0:
             for button in self.buttonList:
-                #button.setChecked(False)
                 button.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
+                if button == thisButton:
+                        continue
+                button.setChecked(False)
     except Exception as e:
             print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
             logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  </code></pre>
