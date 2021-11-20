@@ -104,20 +104,20 @@ def userInput(*fields, title="User input window"):
         Dict[field["label"]] = field["type"]
 
         if field["type"] == "dropdownlist":
-            Dict[field["label"]] += ", " + str(field["value"])
+            Dict[field["label"]] += "," + str(field["value"])
 
         elif field["type"] == "string":
-            Dict[field["label"]] += ", " + str(field["value"])
+            Dict[field["label"]] += "," + str(field["value"])
 
         elif field["type"] == "integer":
-            Dict[field["label"]] += ", " + str(field["value"])
-            Dict[field["label"]] += ", " + str(field["minimum"])
-            Dict[field["label"]] += ", " + str(field["maximum"])
+            Dict[field["label"]] += "," + str(field["value"])
+            Dict[field["label"]] += "," + str(field["minimum"])
+            Dict[field["label"]] += "," + str(field["maximum"])
 
         elif field["type"] == "float":
-            Dict[field["label"]] += ", " + str(field["value"])
-            Dict[field["label"]] += ", " + str(field["minimum"])
-            Dict[field["label"]] += ", " + str(field["maximum"])
+            Dict[field["label"]] += "," + str(field["value"])
+            Dict[field["label"]] += "," + str(field["minimum"])
+            Dict[field["label"]] += "," + str(field["maximum"])
 
     # then build a single list of lists
                 
