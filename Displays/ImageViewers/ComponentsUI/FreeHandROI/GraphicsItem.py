@@ -25,7 +25,6 @@ class GraphicsItem(QGraphicsObject):
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal(bool)
     sigGetDetailsROI = QtCore.Signal()
-    sigReloadImage = QtCore.Signal()
     sigRecalculateMeanROI = QtCore.Signal()
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
@@ -236,7 +235,6 @@ class GraphicsItem(QGraphicsObject):
             #store mask
             self.sigGetDetailsROI.emit()
             self.linkToGraphicsView.dictROIs.addMask(self.mask)
-            #self.sigReloadImage.emit()
 
             self.sigRecalculateMeanROI.emit()
             
