@@ -175,7 +175,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
@@ -339,7 +339,7 @@ class ImageViewerROI(QMdiSubWindow):
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
-                self.reloadImageInNewImageItem()
+                self.loadImageInImageItem()
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
                 logger.exception('Error in ImageViewerROI.loadROI: ' + str(e)) 
@@ -475,12 +475,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            #This event is no longer used
-            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
-
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
-            self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -721,9 +718,9 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
 
             
-    def reloadImageInNewImageItem(self): ###
+    def loadImageInImageItem(self): ###
         try:
-            logger.info("ImageViewerROI.reloadImageInNewImageItem called")
+            logger.info("ImageViewerROI.loadImageInImageItem called")
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
@@ -737,13 +734,13 @@ class ImageViewerROI(QMdiSubWindow):
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
-               print('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
-               logger.exception('Error in ImageViewerROI.reloadImageInNewImageItem: ' + str(e))
+               print('Error in ImageViewerROI.loadImageInImageItem: ' + str(e))
+               logger.exception('Error in ImageViewerROI.loadImageInImageItem: ' + str(e))
     
 
     def deleteROITidyUp(self):
         logger.info("ImageViewerROI.deleteROITidyUp called")
-        self.reloadImageInNewImageItem() 
+        self.loadImageInImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.clear()
@@ -878,7 +875,7 @@ class ImageViewerROI(QMdiSubWindow):
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.reloadImageInNewImageItem()
+                    self.loadImageInImageItem()
                     self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
 
