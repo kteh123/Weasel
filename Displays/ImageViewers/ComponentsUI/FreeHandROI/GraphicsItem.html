@@ -53,7 +53,6 @@ class GraphicsItem(QGraphicsObject):
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal(bool)
     sigGetDetailsROI = QtCore.Signal()
-    sigReloadImage = QtCore.Signal()
     sigRecalculateMeanROI = QtCore.Signal()
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
@@ -264,7 +263,6 @@ class GraphicsItem(QGraphicsObject):
             #store mask
             self.sigGetDetailsROI.emit()
             self.linkToGraphicsView.dictROIs.addMask(self.mask)
-            #self.sigReloadImage.emit()
 
             self.sigRecalculateMeanROI.emit()
             
@@ -684,7 +682,6 @@ def readLevels(path, pixelArray):
     #because QGraphicsObject can emit signals but QGraphicsItem cannot
     sigMouseHovered = QtCore.Signal(bool)
     sigGetDetailsROI = QtCore.Signal()
-    sigReloadImage = QtCore.Signal()
     sigRecalculateMeanROI = QtCore.Signal()
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
@@ -895,7 +892,6 @@ def readLevels(path, pixelArray):
             #store mask
             self.sigGetDetailsROI.emit()
             self.linkToGraphicsView.dictROIs.addMask(self.mask)
-            #self.sigReloadImage.emit()
 
             self.sigRecalculateMeanROI.emit()
             
@@ -1276,7 +1272,6 @@ def readLevels(path, pixelArray):
         #store mask
         self.sigGetDetailsROI.emit()
         self.linkToGraphicsView.dictROIs.addMask(self.mask)
-        #self.sigReloadImage.emit()
 
         self.sigRecalculateMeanROI.emit()
         
@@ -1881,12 +1876,6 @@ def readLevels(path, pixelArray):
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigReloadImage"><code class="name flex">
-<span>def <span class="ident">sigReloadImage</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRightMouseDrag"><code class="name flex">
 <span>def <span class="ident">sigRightMouseDrag</span></span>(<span>...)</span>
 </code></dt>
@@ -1985,7 +1974,6 @@ def readLevels(path, pixelArray):
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigGetDetailsROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigGetDetailsROI">sigGetDetailsROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered">sigMouseHovered</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI">sigRecalculateMeanROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigReloadImage" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigReloadImage">sigReloadImage</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRightMouseDrag" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRightMouseDrag">sigRightMouseDrag</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn">sigZoomIn</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut">sigZoomOut</a></code></li>

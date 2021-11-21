@@ -203,7 +203,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
@@ -367,7 +367,7 @@ class ImageViewerROI(QMdiSubWindow):
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
-                self.reloadImageInNewImageItem()
+                self.loadImageInImageItem()
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -503,12 +503,9 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            #This event is no longer used
-            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
-
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
-            self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -749,9 +746,9 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def reloadImageInNewImageItem(self): ###
+    def loadImageInImageItem(self): ###
         try:
-            logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
+            logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
@@ -765,13 +762,13 @@ class ImageViewerROI(QMdiSubWindow):
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
-               print(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))
-               logger.exception(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))
+               print(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))
+               logger.exception(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))
     
 
     def deleteROITidyUp(self):
         logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-        self.reloadImageInNewImageItem() 
+        self.loadImageInImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.clear()
@@ -906,7 +903,7 @@ class ImageViewerROI(QMdiSubWindow):
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.reloadImageInNewImageItem()
+                    self.loadImageInImageItem()
                     self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
 
@@ -1116,7 +1113,7 @@ sliders for browsing series of images.</p></div>
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+        self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
@@ -1280,7 +1277,7 @@ sliders for browsing series of images.</p></div>
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
-                self.reloadImageInNewImageItem()
+                self.loadImageInImageItem()
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -1416,12 +1413,9 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            #This event is no longer used
-            #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
-
             self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
-            self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
+            self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -1662,9 +1656,9 @@ sliders for browsing series of images.</p></div>
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def reloadImageInNewImageItem(self): ###
+    def loadImageInImageItem(self): ###
         try:
-            logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
+            logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
@@ -1678,13 +1672,13 @@ sliders for browsing series of images.</p></div>
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
         except Exception as e:
-               print(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))
-               logger.exception(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))
+               print(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))
+               logger.exception(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))
     
 
     def deleteROITidyUp(self):
         logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-        self.reloadImageInNewImageItem() 
+        self.loadImageInImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.clear()
@@ -1819,7 +1813,7 @@ sliders for browsing series of images.</p></div>
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.reloadImageInNewImageItem()
+                    self.loadImageInImageItem()
                     self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
 
@@ -1987,7 +1981,7 @@ sliders for browsing series of images.</p></div>
     self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
     self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
     self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-    self.cmbNamesROIs.currentIndexChanged.connect(self.reloadImageInNewImageItem)
+    self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
     self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
 </details>
 </dd>
@@ -2002,7 +1996,7 @@ sliders for browsing series of images.</p></div>
 </summary>
 <pre><code class="python">def deleteROITidyUp(self):
     logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-    self.reloadImageInNewImageItem() 
+    self.loadImageInImageItem() 
     self.displayROIMeanAndStd()
     if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
         self.cmbNamesROIs.clear()
@@ -2056,7 +2050,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                 self.deleteButton.hide()
                 self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                self.reloadImageInNewImageItem()
+                self.loadImageInImageItem()
                 self.lblImageMissing.hide()
                 self.setInitialImageLevelValues()
 
@@ -2201,6 +2195,35 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))</code></pre>
 </details>
 </dd>
+<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem"><code class="name flex">
+<span>def <span class="ident">loadImageInImageItem</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadImageInImageItem(self): ###
+    try:
+        logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
+        self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
+
+        if self.isSeries:  
+            imageNumber = self.mainImageSlider.value()
+        else:
+            imageNumber = 1
+
+        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+        self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
+        self.displayROIMeanAndStd()  
+        self.setUpImageEventHandlers()
+    except Exception as e:
+           print(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))
+           logger.exception(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI"><code class="name flex">
 <span>def <span class="ident">loadROI</span></span>(<span>self)</span>
 </code></dt>
@@ -2307,7 +2330,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             #mask = graphicsView.dictROIs.getMask(region, 1)
             #graphicsView.graphicsItem.reloadMask(mask)
             self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
-            self.reloadImageInNewImageItem()
+            self.loadImageInImageItem()
     except Exception as e:
             print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
             logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) </code></pre>
@@ -2334,35 +2357,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.btnPaint.setStyleSheet(
          &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
          )</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem"><code class="name flex">
-<span>def <span class="ident">reloadImageInNewImageItem</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def reloadImageInNewImageItem(self): ###
-    try:
-        logger.info(&#34;ImageViewerROI.reloadImageInNewImageItem called&#34;)
-        self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
-
-        if self.isSeries:  
-            imageNumber = self.mainImageSlider.value()
-        else:
-            imageNumber = 1
-
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-        self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
-        self.displayROIMeanAndStd()  
-        self.setUpImageEventHandlers()
-    except Exception as e:
-           print(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))
-           logger.exception(&#39;Error in ImageViewerROI.reloadImageInNewImageItem: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask"><code class="name flex">
@@ -2626,12 +2620,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-        #This event is no longer used
-        #self.graphicsView.graphicsItem.sigReloadImage.connect(self.reloadImageInNewImageItem)
-
         self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
         
-        self.graphicsView.sigReloadImage.connect(self.reloadImageInNewImageItem)
+        self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
         self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -3222,9 +3213,9 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI">eraseROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue">getPixelValue</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem">loadImageInImageItem</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI">loadROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI">paintROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.reloadImageInNewImageItem">reloadImageInNewImageItem</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask">replaceMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI">saveROI</a></code></li>
