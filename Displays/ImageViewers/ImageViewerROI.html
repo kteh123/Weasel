@@ -503,7 +503,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
             self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
@@ -518,7 +518,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
                                                            self.setPaintButtonColour(setRed))
 
-            self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
+            #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
@@ -931,6 +931,9 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
         if setRed:
                self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnErase.setChecked(True)
+               self.btnPaint.setChecked(False)
+               self.btnDraw.setChecked(False)
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -938,6 +941,7 @@ class ImageViewerROI(QMdiSubWindow):
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnErase.setChecked(False)
                self.btnErase.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -947,6 +951,9 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
         if setRed:
                self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnDraw.setChecked(True)
+               self.btnPaint.setChecked(False)
+               self.btnErase.setChecked(False)
                self.btnPaint.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -954,6 +961,7 @@ class ImageViewerROI(QMdiSubWindow):
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnDraw.setChecked(False)
                self.btnDraw.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -963,6 +971,9 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
         if setRed:
                self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnPaint.setChecked(True)
+               self.btnDraw.setChecked(False)
+               self.btnErase.setChecked(False)
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -970,6 +981,7 @@ class ImageViewerROI(QMdiSubWindow):
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnPaint.setChecked(False)
                self.btnPaint.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1413,7 +1425,7 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-            self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+            #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
             self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
@@ -1428,7 +1440,7 @@ sliders for browsing series of images.</p></div>
             self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
                                                            self.setPaintButtonColour(setRed))
 
-            self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
+            #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
@@ -1841,6 +1853,9 @@ sliders for browsing series of images.</p></div>
         logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
         if setRed:
                self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnErase.setChecked(True)
+               self.btnPaint.setChecked(False)
+               self.btnDraw.setChecked(False)
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1848,6 +1863,7 @@ sliders for browsing series of images.</p></div>
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnErase.setChecked(False)
                self.btnErase.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1857,6 +1873,9 @@ sliders for browsing series of images.</p></div>
         logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
         if setRed:
                self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnDraw.setChecked(True)
+               self.btnPaint.setChecked(False)
+               self.btnErase.setChecked(False)
                self.btnPaint.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1864,6 +1883,7 @@ sliders for browsing series of images.</p></div>
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnDraw.setChecked(False)
                self.btnDraw.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1873,6 +1893,9 @@ sliders for browsing series of images.</p></div>
         logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
         if setRed:
                self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+               self.btnPaint.setChecked(True)
+               self.btnDraw.setChecked(False)
+               self.btnErase.setChecked(False)
                self.btnDraw.setStyleSheet(
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -1880,6 +1903,7 @@ sliders for browsing series of images.</p></div>
                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
         else:
+               self.btnPaint.setChecked(False)
                self.btnPaint.setStyleSheet(
                  &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
                  )
@@ -2503,6 +2527,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
     if setRed:
            self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
+           self.btnDraw.setChecked(True)
+           self.btnPaint.setChecked(False)
+           self.btnErase.setChecked(False)
            self.btnPaint.setStyleSheet(
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
@@ -2510,6 +2537,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
     else:
+           self.btnDraw.setChecked(False)
            self.btnDraw.setStyleSheet(
              &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )</code></pre>
@@ -2528,6 +2556,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
     if setRed:
            self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
+           self.btnErase.setChecked(True)
+           self.btnPaint.setChecked(False)
+           self.btnDraw.setChecked(False)
            self.btnDraw.setStyleSheet(
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
@@ -2535,6 +2566,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
     else:
+           self.btnErase.setChecked(False)
            self.btnErase.setStyleSheet(
              &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )</code></pre>
@@ -2571,6 +2603,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
     if setRed:
            self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
+           self.btnPaint.setChecked(True)
+           self.btnDraw.setChecked(False)
+           self.btnErase.setChecked(False)
            self.btnDraw.setStyleSheet(
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
@@ -2578,6 +2613,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )
     else:
+           self.btnPaint.setChecked(False)
            self.btnPaint.setStyleSheet(
              &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
              )</code></pre>
@@ -2620,7 +2656,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
 
-        self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
+        #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
         
         self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
@@ -2635,7 +2671,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
                                                        self.setPaintButtonColour(setRed))
 
-        self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
+        #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
         self.graphicsView.sigROIChanged.connect(self.updateROIName)
         self.graphicsView.sigNewROI.connect(lambda newROIName:
                                             self.addNewROItoDropDownList(newROIName))
