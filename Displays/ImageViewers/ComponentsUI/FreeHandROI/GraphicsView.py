@@ -288,7 +288,8 @@ class GraphicsView(QGraphicsView):
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
                 self.paintEnabled = False
-                self.pixelSquareSizeMenu.setEnabled(False)
+                if self.pixelSquareSizeMenu is not None:
+                    self.pixelSquareSizeMenu.setEnabled(False)
             else:
                 self.drawEnabled = False
                 if fromContextMenu:
@@ -308,11 +309,13 @@ class GraphicsView(QGraphicsView):
                 self.eraseEnabled = False
                 self.drawEnabled = False
                 self.paintEnabled = True
-                self.pixelSquareSizeMenu.setEnabled(True)
+                if self.pixelSquareSizeMenu is not None:
+                    self.pixelSquareSizeMenu.setEnabled(True)
                 self.pixelSquareSize = 1
             else:
                 self.paintEnabled = False
-                self.pixelSquareSizeMenu.setEnabled(False)
+                if self.pixelSquareSizeMenu is not None:
+                    self.pixelSquareSizeMenu.setEnabled(False)
                 if fromContextMenu:
                     self.sigSetPaintButtonRed.emit(False)
         except Exception as e:
@@ -330,11 +333,13 @@ class GraphicsView(QGraphicsView):
                 self.paintEnabled = False
                 self.setZoomEnabled(False)
                 self.eraseEnabled = True
-                self.pixelSquareSizeMenu.setEnabled(True)
+                if self.pixelSquareSizeMenu is not None:
+                    self.pixelSquareSizeMenu.setEnabled(True)
                 self.pixelSquareSize = 1
             else:
                 self.eraseEnabled = False
-                self.pixelSquareSizeMenu.setEnabled(False)
+                if self.pixelSquareSizeMenu is not None:
+                    self.pixelSquareSizeMenu.setEnabled(False)
                 if fromContextMenu:
                     self.sigSetEraseButtonRed.emit(False)
         except Exception as e:

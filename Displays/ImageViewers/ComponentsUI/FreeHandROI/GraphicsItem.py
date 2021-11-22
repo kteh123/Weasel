@@ -134,15 +134,15 @@ class GraphicsItem(QGraphicsObject):
                 pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.linkToGraphicsView.eraseEnabled:
+            elif self.linkToGraphicsView.eraseEnabled:
                 pm = QPixmap(ERASER_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.linkToGraphicsView.paintEnabled:
+            elif self.linkToGraphicsView.paintEnabled:
                 pm = QPixmap(BRUSH_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            if self.linkToGraphicsView.zoomEnabled:
+            elif self.linkToGraphicsView.zoomEnabled:
                 pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
