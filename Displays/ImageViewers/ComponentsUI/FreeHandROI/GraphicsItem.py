@@ -146,6 +146,8 @@ class GraphicsItem(QGraphicsObject):
                 pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
+            else:
+                QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
