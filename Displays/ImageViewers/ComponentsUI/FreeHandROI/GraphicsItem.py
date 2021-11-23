@@ -134,20 +134,21 @@ class GraphicsItem(QGraphicsObject):
                 pm = QPixmap(PEN_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            elif self.linkToGraphicsView.eraseEnabled:
+
+            if self.linkToGraphicsView.eraseEnabled:
                 pm = QPixmap(ERASER_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            elif self.linkToGraphicsView.paintEnabled:
+
+            if self.linkToGraphicsView.paintEnabled:
                 pm = QPixmap(BRUSH_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            elif self.linkToGraphicsView.zoomEnabled:
+
+            if self.linkToGraphicsView.zoomEnabled:
                 pm = QPixmap(MAGNIFYING_GLASS_CURSOR)
                 cursor = QCursor(pm, hotX=0, hotY=30)
                 QApplication.setOverrideCursor(cursor)
-            else:
-                QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
