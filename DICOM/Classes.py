@@ -923,6 +923,11 @@ class Series:
                 inputReference = self.referencePathsList[0] if len(self.referencePathsList)==1 else self.referencePathsList
                 outputPath = PixelArrayDICOMTools.writeNewPixelArray(self.objWeasel, pixelArray, inputReference, self.suffix, series_id=series_id, series_name=series_name, series_uid=self.seriesUID, output_dir=output_dir, parametric_map=parametric_map, colourmap=colourmap)
                 self.images = outputPath
+                if self["WindowWidth"] and self["WindowCenter"] and isinstance(value_range, list):
+                    width = value_range[1] - value_range[0]
+                    center = value_range[0] + (width/2)
+                    self["WindowWidth"] = width
+                    self["WindowCenter"] = center
         except Exception as e:
             print('Error in Series.write: ' + str(e))
             logger.exception('Error in Series.write: ' + str(e))
