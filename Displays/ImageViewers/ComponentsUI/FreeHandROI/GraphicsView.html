@@ -47,12 +47,8 @@ ZOOM_OUT = -1
 
 
 class GraphicsView(QGraphicsView):
-    sigContextMenuDisplayed = QtCore.Signal()
     sigReloadImage =  QtCore.Signal()
     sigROIDeleted = QtCore.Signal()
-    sigSetDrawButtonRed = QtCore.Signal(bool)
-    sigSetPaintButtonRed = QtCore.Signal(bool)
-    sigSetEraseButtonRed = QtCore.Signal(bool)
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
     sigUpdateZoom = QtCore.Signal(int)
@@ -199,6 +195,7 @@ class GraphicsView(QGraphicsView):
         twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
 
+        #put a tick in front of a selected menu item
         if self.pixelSquareSize == 1:
             onePixel.setChecked(True)
         elif self.pixelSquareSize == 3:
@@ -237,48 +234,13 @@ class GraphicsView(QGraphicsView):
 
     def setUpMainContextMenu(self, event):
         self.mainContextMenu.clear()
-        self.sigContextMenuDisplayed.emit()
         zoomIn = QAction(&#39;Zoom In&#39;, None)
         zoomIn.setToolTip(&#39;Click to zoom in&#39;)
         zoomOut = QAction(&#39;Zoom Out&#39;, None)
         zoomOut.setToolTip(&#39;Click to zoom out&#39;)
         zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
         zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-        
-        drawROI = QAction(QIcon(PEN_CURSOR), &#39;Draw&#39;, None)
-        drawROI.setCheckable(True)
-        drawROI.setToolTip(&#34;Draw an ROI&#34;)
-        if self.drawEnabled:
-            drawROI.setChecked(True)
-            executeAction = False
-        else:
-            drawROI.setChecked(False)
-            executeAction = True
-        drawROI.triggered.connect(lambda: self.drawROI(executeAction,True))
-
-        paintROI = QAction(QIcon(BRUSH_CURSOR), &#39;Paint&#39;, None)
-        paintROI.setCheckable(True)
-        paintROI.setToolTip(&#34;Paint an ROI&#34;)
-        if self.paintEnabled:
-            paintROI.blockSignals(True)
-            paintROI.setChecked(True)
-            paintROI.blockSignals(False)
-            executeAction = False
-        else:
-            paintROI.setChecked(False)
-            executeAction = True
-        paintROI.triggered.connect(lambda: self.paintROI(executeAction,True))
-        
-        eraseROI  = QAction(QIcon(ERASER_CURSOR), &#39;Eraser&#39;, None)
-        eraseROI.setCheckable(True)
-        if self.eraseEnabled:
-            eraseROI.setChecked(True)
-            executeAction = False
-        else:
-            eraseROI.setChecked(False)
-            executeAction = True
-        eraseROI.setToolTip(&#34;Erase the ROI&#34;)
-        eraseROI.triggered.connect(lambda: self.eraseROI(executeAction, True))
+     
         
         newROI  = QAction(QIcon(NEW_ICON),&#39;New ROI&#39;, None)
         newROI.setToolTip(&#34;Create a new ROI&#34;)
@@ -295,18 +257,11 @@ class GraphicsView(QGraphicsView):
         self.mainContextMenu.addAction(zoomIn)
         self.mainContextMenu.addAction(zoomOut)
         self.mainContextMenu.addSeparator()
-        #Commented out the following 3 menu items
-        #because it is difficult to make them work
-        #with the 3 buttons providing the same 
-        #functionality
-        #self.mainContextMenu.addAction(drawROI)
-        #self.mainContextMenu.addAction(paintROI)
-        #self.mainContextMenu.addAction(eraseROI)
-        #self.mainContextMenu.addSeparator()
         self.mainContextMenu.addAction(newROI)
         self.mainContextMenu.addAction(resetROI)
         self.mainContextMenu.addAction(deleteROI)
         self.mainContextMenu.addSeparator()
+
         self.pixelSquareSizeMenu = self.mainContextMenu.addMenu(&#34;Brush/Eraser Size&#34;)
         self.pixelSquareSizeMenu.setToolTip(&#34;Select Brush/Eraser Size&#34;)
         if self.paintEnabled or self.eraseEnabled:
@@ -334,12 +289,10 @@ class GraphicsView(QGraphicsView):
         QToolTip.showText(QCursor.pos(), tip)
 
 
-    def drawROI(self, enableDraw, fromContextMenu = False):
+    def drawROI(self, enableDraw):
         logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
         try:
             if enableDraw:
-                if fromContextMenu:
-                    self.sigSetDrawButtonRed.emit(True)
                 self.drawEnabled = True
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
@@ -348,19 +301,15 @@ class GraphicsView(QGraphicsView):
                     self.pixelSquareSizeMenu.setEnabled(False)
             else:
                 self.drawEnabled = False
-                if fromContextMenu:
-                    self.sigSetDrawButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))
 
 
-    def paintROI(self, enablePaint, fromContextMenu = False):
+    def paintROI(self, enablePaint):
         logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
         try:
             if enablePaint:
-                if fromContextMenu:
-                    self.sigSetPaintButtonRed.emit(True)
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
                 self.drawEnabled = False
@@ -372,19 +321,15 @@ class GraphicsView(QGraphicsView):
                 self.paintEnabled = False
                 if self.pixelSquareSizeMenu is not None:
                     self.pixelSquareSizeMenu.setEnabled(False)
-                if fromContextMenu:
-                    self.sigSetPaintButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))
 
 
-    def eraseROI(self, enableErase, fromContextMenu = False):
+    def eraseROI(self, enableErase):
         logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
         try:
             if enableErase:
-                if fromContextMenu:
-                    self.sigSetEraseButtonRed.emit(True)
                 self.drawEnabled = False
                 self.paintEnabled = False
                 self.setZoomEnabled(False)
@@ -396,8 +341,6 @@ class GraphicsView(QGraphicsView):
                 self.eraseEnabled = False
                 if self.pixelSquareSizeMenu is not None:
                     self.pixelSquareSizeMenu.setEnabled(False)
-                if fromContextMenu:
-                    self.sigSetEraseButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))
@@ -465,12 +408,8 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class GraphicsView(QGraphicsView):
-    sigContextMenuDisplayed = QtCore.Signal()
     sigReloadImage =  QtCore.Signal()
     sigROIDeleted = QtCore.Signal()
-    sigSetDrawButtonRed = QtCore.Signal(bool)
-    sigSetPaintButtonRed = QtCore.Signal(bool)
-    sigSetEraseButtonRed = QtCore.Signal(bool)
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
     sigUpdateZoom = QtCore.Signal(int)
@@ -617,6 +556,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
 
+        #put a tick in front of a selected menu item
         if self.pixelSquareSize == 1:
             onePixel.setChecked(True)
         elif self.pixelSquareSize == 3:
@@ -655,48 +595,13 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
     def setUpMainContextMenu(self, event):
         self.mainContextMenu.clear()
-        self.sigContextMenuDisplayed.emit()
         zoomIn = QAction(&#39;Zoom In&#39;, None)
         zoomIn.setToolTip(&#39;Click to zoom in&#39;)
         zoomOut = QAction(&#39;Zoom Out&#39;, None)
         zoomOut.setToolTip(&#39;Click to zoom out&#39;)
         zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
         zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-        
-        drawROI = QAction(QIcon(PEN_CURSOR), &#39;Draw&#39;, None)
-        drawROI.setCheckable(True)
-        drawROI.setToolTip(&#34;Draw an ROI&#34;)
-        if self.drawEnabled:
-            drawROI.setChecked(True)
-            executeAction = False
-        else:
-            drawROI.setChecked(False)
-            executeAction = True
-        drawROI.triggered.connect(lambda: self.drawROI(executeAction,True))
-
-        paintROI = QAction(QIcon(BRUSH_CURSOR), &#39;Paint&#39;, None)
-        paintROI.setCheckable(True)
-        paintROI.setToolTip(&#34;Paint an ROI&#34;)
-        if self.paintEnabled:
-            paintROI.blockSignals(True)
-            paintROI.setChecked(True)
-            paintROI.blockSignals(False)
-            executeAction = False
-        else:
-            paintROI.setChecked(False)
-            executeAction = True
-        paintROI.triggered.connect(lambda: self.paintROI(executeAction,True))
-        
-        eraseROI  = QAction(QIcon(ERASER_CURSOR), &#39;Eraser&#39;, None)
-        eraseROI.setCheckable(True)
-        if self.eraseEnabled:
-            eraseROI.setChecked(True)
-            executeAction = False
-        else:
-            eraseROI.setChecked(False)
-            executeAction = True
-        eraseROI.setToolTip(&#34;Erase the ROI&#34;)
-        eraseROI.triggered.connect(lambda: self.eraseROI(executeAction, True))
+     
         
         newROI  = QAction(QIcon(NEW_ICON),&#39;New ROI&#39;, None)
         newROI.setToolTip(&#34;Create a new ROI&#34;)
@@ -713,18 +618,11 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         self.mainContextMenu.addAction(zoomIn)
         self.mainContextMenu.addAction(zoomOut)
         self.mainContextMenu.addSeparator()
-        #Commented out the following 3 menu items
-        #because it is difficult to make them work
-        #with the 3 buttons providing the same 
-        #functionality
-        #self.mainContextMenu.addAction(drawROI)
-        #self.mainContextMenu.addAction(paintROI)
-        #self.mainContextMenu.addAction(eraseROI)
-        #self.mainContextMenu.addSeparator()
         self.mainContextMenu.addAction(newROI)
         self.mainContextMenu.addAction(resetROI)
         self.mainContextMenu.addAction(deleteROI)
         self.mainContextMenu.addSeparator()
+
         self.pixelSquareSizeMenu = self.mainContextMenu.addMenu(&#34;Brush/Eraser Size&#34;)
         self.pixelSquareSizeMenu.setToolTip(&#34;Select Brush/Eraser Size&#34;)
         if self.paintEnabled or self.eraseEnabled:
@@ -752,12 +650,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         QToolTip.showText(QCursor.pos(), tip)
 
 
-    def drawROI(self, enableDraw, fromContextMenu = False):
+    def drawROI(self, enableDraw):
         logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
         try:
             if enableDraw:
-                if fromContextMenu:
-                    self.sigSetDrawButtonRed.emit(True)
                 self.drawEnabled = True
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
@@ -766,19 +662,15 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
                     self.pixelSquareSizeMenu.setEnabled(False)
             else:
                 self.drawEnabled = False
-                if fromContextMenu:
-                    self.sigSetDrawButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))
 
 
-    def paintROI(self, enablePaint, fromContextMenu = False):
+    def paintROI(self, enablePaint):
         logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
         try:
             if enablePaint:
-                if fromContextMenu:
-                    self.sigSetPaintButtonRed.emit(True)
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
                 self.drawEnabled = False
@@ -790,19 +682,15 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
                 self.paintEnabled = False
                 if self.pixelSquareSizeMenu is not None:
                     self.pixelSquareSizeMenu.setEnabled(False)
-                if fromContextMenu:
-                    self.sigSetPaintButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))
 
 
-    def eraseROI(self, enableErase, fromContextMenu = False):
+    def eraseROI(self, enableErase):
         logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
         try:
             if enableErase:
-                if fromContextMenu:
-                    self.sigSetEraseButtonRed.emit(True)
                 self.drawEnabled = False
                 self.paintEnabled = False
                 self.setZoomEnabled(False)
@@ -814,8 +702,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
                 self.eraseEnabled = False
                 if self.pixelSquareSizeMenu is not None:
                     self.pixelSquareSizeMenu.setEnabled(False)
-                if fromContextMenu:
-                    self.sigSetEraseButtonRed.emit(False)
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))
@@ -916,7 +802,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.drawROI"><code class="name flex">
-<span>def <span class="ident">drawROI</span></span>(<span>self, enableDraw, fromContextMenu=False)</span>
+<span>def <span class="ident">drawROI</span></span>(<span>self, enableDraw)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -924,12 +810,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def drawROI(self, enableDraw, fromContextMenu = False):
+<pre><code class="python">def drawROI(self, enableDraw):
     logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
     try:
         if enableDraw:
-            if fromContextMenu:
-                self.sigSetDrawButtonRed.emit(True)
             self.drawEnabled = True
             self.setZoomEnabled(False)
             self.eraseEnabled = False
@@ -938,15 +822,13 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
                 self.pixelSquareSizeMenu.setEnabled(False)
         else:
             self.drawEnabled = False
-            if fromContextMenu:
-                self.sigSetDrawButtonRed.emit(False)
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.drawROI: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.eraseROI"><code class="name flex">
-<span>def <span class="ident">eraseROI</span></span>(<span>self, enableErase, fromContextMenu=False)</span>
+<span>def <span class="ident">eraseROI</span></span>(<span>self, enableErase)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -954,12 +836,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def eraseROI(self, enableErase, fromContextMenu = False):
+<pre><code class="python">def eraseROI(self, enableErase):
     logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
     try:
         if enableErase:
-            if fromContextMenu:
-                self.sigSetEraseButtonRed.emit(True)
             self.drawEnabled = False
             self.paintEnabled = False
             self.setZoomEnabled(False)
@@ -971,8 +851,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             self.eraseEnabled = False
             if self.pixelSquareSizeMenu is not None:
                 self.pixelSquareSizeMenu.setEnabled(False)
-            if fromContextMenu:
-                self.sigSetEraseButtonRed.emit(False)
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.eraseROI: &#39; + str(e))</code></pre>
@@ -1036,7 +914,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.paintROI"><code class="name flex">
-<span>def <span class="ident">paintROI</span></span>(<span>self, enablePaint, fromContextMenu=False)</span>
+<span>def <span class="ident">paintROI</span></span>(<span>self, enablePaint)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1044,12 +922,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def paintROI(self, enablePaint, fromContextMenu = False):
+<pre><code class="python">def paintROI(self, enablePaint):
     logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
     try:
         if enablePaint:
-            if fromContextMenu:
-                self.sigSetPaintButtonRed.emit(True)
             self.setZoomEnabled(False)
             self.eraseEnabled = False
             self.drawEnabled = False
@@ -1061,8 +937,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             self.paintEnabled = False
             if self.pixelSquareSizeMenu is not None:
                 self.pixelSquareSizeMenu.setEnabled(False)
-            if fromContextMenu:
-                self.sigSetPaintButtonRed.emit(False)
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.paintROI: &#39; + str(e))</code></pre>
@@ -1156,48 +1030,13 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 </summary>
 <pre><code class="python">def setUpMainContextMenu(self, event):
     self.mainContextMenu.clear()
-    self.sigContextMenuDisplayed.emit()
     zoomIn = QAction(&#39;Zoom In&#39;, None)
     zoomIn.setToolTip(&#39;Click to zoom in&#39;)
     zoomOut = QAction(&#39;Zoom Out&#39;, None)
     zoomOut.setToolTip(&#39;Click to zoom out&#39;)
     zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
     zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-    
-    drawROI = QAction(QIcon(PEN_CURSOR), &#39;Draw&#39;, None)
-    drawROI.setCheckable(True)
-    drawROI.setToolTip(&#34;Draw an ROI&#34;)
-    if self.drawEnabled:
-        drawROI.setChecked(True)
-        executeAction = False
-    else:
-        drawROI.setChecked(False)
-        executeAction = True
-    drawROI.triggered.connect(lambda: self.drawROI(executeAction,True))
-
-    paintROI = QAction(QIcon(BRUSH_CURSOR), &#39;Paint&#39;, None)
-    paintROI.setCheckable(True)
-    paintROI.setToolTip(&#34;Paint an ROI&#34;)
-    if self.paintEnabled:
-        paintROI.blockSignals(True)
-        paintROI.setChecked(True)
-        paintROI.blockSignals(False)
-        executeAction = False
-    else:
-        paintROI.setChecked(False)
-        executeAction = True
-    paintROI.triggered.connect(lambda: self.paintROI(executeAction,True))
-    
-    eraseROI  = QAction(QIcon(ERASER_CURSOR), &#39;Eraser&#39;, None)
-    eraseROI.setCheckable(True)
-    if self.eraseEnabled:
-        eraseROI.setChecked(True)
-        executeAction = False
-    else:
-        eraseROI.setChecked(False)
-        executeAction = True
-    eraseROI.setToolTip(&#34;Erase the ROI&#34;)
-    eraseROI.triggered.connect(lambda: self.eraseROI(executeAction, True))
+ 
     
     newROI  = QAction(QIcon(NEW_ICON),&#39;New ROI&#39;, None)
     newROI.setToolTip(&#34;Create a new ROI&#34;)
@@ -1214,18 +1053,11 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
     self.mainContextMenu.addAction(zoomIn)
     self.mainContextMenu.addAction(zoomOut)
     self.mainContextMenu.addSeparator()
-    #Commented out the following 3 menu items
-    #because it is difficult to make them work
-    #with the 3 buttons providing the same 
-    #functionality
-    #self.mainContextMenu.addAction(drawROI)
-    #self.mainContextMenu.addAction(paintROI)
-    #self.mainContextMenu.addAction(eraseROI)
-    #self.mainContextMenu.addSeparator()
     self.mainContextMenu.addAction(newROI)
     self.mainContextMenu.addAction(resetROI)
     self.mainContextMenu.addAction(deleteROI)
     self.mainContextMenu.addSeparator()
+
     self.pixelSquareSizeMenu = self.mainContextMenu.addMenu(&#34;Brush/Eraser Size&#34;)
     self.pixelSquareSizeMenu.setToolTip(&#34;Select Brush/Eraser Size&#34;)
     if self.paintEnabled or self.eraseEnabled:
@@ -1269,6 +1101,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
     twentyOnePixels.setCheckable(True)
     twentyOnePixels.setToolTip(&#39;Erase/Paint a 21x21 square of pixels&#39;)
 
+    #put a tick in front of a selected menu item
     if self.pixelSquareSize == 1:
         onePixel.setChecked(True)
     elif self.pixelSquareSize == 3:
@@ -1314,12 +1147,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
     self.zoomEnabled = boolValue</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigContextMenuDisplayed"><code class="name flex">
-<span>def <span class="ident">sigContextMenuDisplayed</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigNewROI"><code class="name flex">
 <span>def <span class="ident">sigNewROI</span></span>(<span>...)</span>
 </code></dt>
@@ -1340,24 +1167,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage"><code class="name flex">
 <span>def <span class="ident">sigReloadImage</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetDrawButtonRed"><code class="name flex">
-<span>def <span class="ident">sigSetDrawButtonRed</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetEraseButtonRed"><code class="name flex">
-<span>def <span class="ident">sigSetEraseButtonRed</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetPaintButtonRed"><code class="name flex">
-<span>def <span class="ident">sigSetPaintButtonRed</span></span>(<span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1466,14 +1275,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setUpMainContextMenu" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setUpMainContextMenu">setUpMainContextMenu</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setUpPixelSquareSizeMenu" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setUpPixelSquareSizeMenu">setUpPixelSquareSizeMenu</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setZoomEnabled" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setZoomEnabled">setZoomEnabled</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigContextMenuDisplayed" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigContextMenuDisplayed">sigContextMenuDisplayed</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigNewROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigNewROI">sigNewROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIChanged" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIChanged">sigROIChanged</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIDeleted" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIDeleted">sigROIDeleted</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage">sigReloadImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetDrawButtonRed" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetDrawButtonRed">sigSetDrawButtonRed</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetEraseButtonRed" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetEraseButtonRed">sigSetEraseButtonRed</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetPaintButtonRed" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigSetPaintButtonRed">sigSetPaintButtonRed</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigUpdateZoom" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigUpdateZoom">sigUpdateZoom</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.wheelEvent" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.wheelEvent">wheelEvent</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.zoomFromMouseClicks" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.zoomFromMouseClicks">zoomFromMouseClicks</a></code></li>

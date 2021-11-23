@@ -501,24 +501,13 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
-
-            #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
             self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
-            self.graphicsView.sigSetDrawButtonRed.connect(lambda setRed:
-                                                          self.setDrawButtonColour(setRed))
-
-            self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
-                                                           self.setEraseButtonColour(setRed))
-
-            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
-                                                           self.setPaintButtonColour(setRed))
-
-            #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
+
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
@@ -924,68 +913,6 @@ class ImageViewerROI(QMdiSubWindow):
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))  
-
-
-    def setEraseButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
-        if setRed:
-               self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnErase.setChecked(True)
-               self.btnPaint.setChecked(False)
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnPaint.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnErase.setChecked(False)
-               self.btnErase.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-
-
-    def setDrawButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
-        if setRed:
-               self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnDraw.blockSignals(True)
-               self.btnDraw.setChecked(True)
-               self.btnDraw.blockSignals(False)
-               self.btnPaint.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnErase.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-
-
-    def setPaintButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
-        if setRed:
-               self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnPaint.setChecked(True)
-               self.btnDraw.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnErase.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnPaint.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
 
 
     def setInitialImageLevelValues(self):
@@ -1424,24 +1351,13 @@ sliders for browsing series of images.</p></div>
             self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
-
-            #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
             self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
-            self.graphicsView.sigSetDrawButtonRed.connect(lambda setRed:
-                                                          self.setDrawButtonColour(setRed))
-
-            self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
-                                                           self.setEraseButtonColour(setRed))
-
-            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
-                                                           self.setPaintButtonColour(setRed))
-
-            #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
+
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
@@ -1847,68 +1763,6 @@ sliders for browsing series of images.</p></div>
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))  
-
-
-    def setEraseButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
-        if setRed:
-               self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnErase.setChecked(True)
-               self.btnPaint.setChecked(False)
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnPaint.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnErase.setChecked(False)
-               self.btnErase.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-
-
-    def setDrawButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
-        if setRed:
-               self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnDraw.blockSignals(True)
-               self.btnDraw.setChecked(True)
-               self.btnDraw.blockSignals(False)
-               self.btnPaint.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnErase.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-
-
-    def setPaintButtonColour(self, setRed):
-        logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
-        if setRed:
-               self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
-               self.btnPaint.setChecked(True)
-               self.btnDraw.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-               self.btnErase.setStyleSheet(
-                &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
-        else:
-               self.btnPaint.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                 &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-                 )
 
 
     def setInitialImageLevelValues(self):
@@ -2515,66 +2369,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setDrawButtonColour"><code class="name flex">
-<span>def <span class="ident">setDrawButtonColour</span></span>(<span>self, setRed)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setDrawButtonColour(self, setRed):
-    logger.info(&#34;DisplayImageDrawRIO.setDrawButtonColour called&#34;)
-    if setRed:
-           self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
-           self.btnDraw.blockSignals(True)
-           self.btnDraw.setChecked(True)
-           self.btnDraw.blockSignals(False)
-           self.btnPaint.setChecked(False)
-           self.btnErase.setChecked(False)
-           self.btnPaint.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-           self.btnErase.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-    else:
-           self.btnDraw.setChecked(False)
-           self.btnDraw.setStyleSheet(
-             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour"><code class="name flex">
-<span>def <span class="ident">setEraseButtonColour</span></span>(<span>self, setRed)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setEraseButtonColour(self, setRed):
-    logger.info(&#34;DisplayImageDrawRIO.setEraseButtonColour called&#34;)
-    if setRed:
-           self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
-           self.btnErase.setChecked(True)
-           self.btnPaint.setChecked(False)
-           self.btnDraw.setChecked(False)
-           self.btnDraw.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-           self.btnPaint.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-    else:
-           self.btnErase.setChecked(False)
-           self.btnErase.setStyleSheet(
-             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )</code></pre>
-</details>
-</dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues"><code class="name flex">
 <span>def <span class="ident">setInitialImageLevelValues</span></span>(<span>self)</span>
 </code></dt>
@@ -2591,35 +2385,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
     self.spinBoxContrast.blockSignals(True)
     self.spinBoxContrast.setValue(self.graphicsView.graphicsItem.contrast)
     self.spinBoxContrast.blockSignals(False)</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour"><code class="name flex">
-<span>def <span class="ident">setPaintButtonColour</span></span>(<span>self, setRed)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setPaintButtonColour(self, setRed):
-    logger.info(&#34;DisplayImageDrawRIO.setPaintButtonColour called&#34;)
-    if setRed:
-           self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
-           self.btnPaint.setChecked(True)
-           self.btnDraw.setChecked(False)
-           self.btnErase.setChecked(False)
-           self.btnDraw.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-           self.btnErase.setStyleSheet(
-            &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )
-    else:
-           self.btnPaint.setChecked(False)
-           self.btnPaint.setStyleSheet(
-             &#34;background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)&#34;
-             )</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView"><code class="name flex">
@@ -2658,24 +2423,13 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
-
-        #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
         
         self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
         self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
-        self.graphicsView.sigSetDrawButtonRed.connect(lambda setRed:
-                                                      self.setDrawButtonColour(setRed))
-
-        self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
-                                                       self.setEraseButtonColour(setRed))
-
-        self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
-                                                       self.setPaintButtonColour(setRed))
-
-        #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
         self.graphicsView.sigROIChanged.connect(self.updateROIName)
+
         self.graphicsView.sigNewROI.connect(lambda newROIName:
                                             self.addNewROItoDropDownList(newROIName))
         self.graphicsView.sigUpdateZoom.connect(lambda increment:
@@ -3259,10 +3013,7 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI">saveROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle">setButtonsToDefaultStyle</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setDrawButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setDrawButtonColour">setDrawButtonColour</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setEraseButtonColour">setEraseButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setPaintButtonColour">setPaintButtonColour</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
