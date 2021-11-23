@@ -473,24 +473,13 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.sigGetDetailsROI.connect(self.updateDetailsROI)
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
-
-            #self.graphicsView.sigContextMenuDisplayed.connect(self.setButtonsToDefaultStyle)
             
             self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
-            self.graphicsView.sigSetDrawButtonRed.connect(lambda setRed:
-                                                          self.setDrawButtonColour(setRed))
-
-            self.graphicsView.sigSetEraseButtonRed.connect(lambda setRed:
-                                                           self.setEraseButtonColour(setRed))
-
-            self.graphicsView.sigSetPaintButtonRed.connect(lambda setRed:
-                                                           self.setPaintButtonColour(setRed))
-
-            #self.graphicsView.sigROIChanged.connect(self.setButtonsToDefaultStyle)
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
+
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
@@ -896,68 +885,6 @@ class ImageViewerROI(QMdiSubWindow):
         except Exception as e:
                 print('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))
                 logger.exception('Error in ImageViewerROI.setUpZoomSlider: ' + str(e))  
-
-
-    def setEraseButtonColour(self, setRed):
-        logger.info("DisplayImageDrawRIO.setEraseButtonColour called")
-        if setRed:
-               self.btnErase.setStyleSheet("background-color: red")
-               self.btnErase.setChecked(True)
-               self.btnPaint.setChecked(False)
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-               self.btnPaint.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-        else:
-               self.btnErase.setChecked(False)
-               self.btnErase.setStyleSheet(
-                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-
-
-    def setDrawButtonColour(self, setRed):
-        logger.info("DisplayImageDrawRIO.setDrawButtonColour called")
-        if setRed:
-               self.btnDraw.setStyleSheet("background-color: red")
-               self.btnDraw.blockSignals(True)
-               self.btnDraw.setChecked(True)
-               self.btnDraw.blockSignals(False)
-               self.btnPaint.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-               self.btnErase.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-        else:
-               self.btnDraw.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-
-
-    def setPaintButtonColour(self, setRed):
-        logger.info("DisplayImageDrawRIO.setPaintButtonColour called")
-        if setRed:
-               self.btnPaint.setStyleSheet("background-color: red")
-               self.btnPaint.setChecked(True)
-               self.btnDraw.setChecked(False)
-               self.btnErase.setChecked(False)
-               self.btnDraw.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-               self.btnErase.setStyleSheet(
-                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
-        else:
-               self.btnPaint.setChecked(False)
-               self.btnPaint.setStyleSheet(
-                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                 )
 
 
     def setInitialImageLevelValues(self):
