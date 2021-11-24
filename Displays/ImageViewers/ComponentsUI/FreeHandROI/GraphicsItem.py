@@ -167,10 +167,10 @@ class GraphicsItem(QGraphicsObject):
     def hoverMoveEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.hoverMoveEvent called")
         try:
-            self.xMouseCoord = int(event.pos().x())
-            self.yMouseCoord = int(event.pos().y())
-            #self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = self.pixelArray[self.xMouseCoord-1, self.yMouseCoord-1]
+            self.xMouseCoord = int(event.pos().x()) #columns
+            self.yMouseCoord = int(event.pos().y()) #rows
+            #self.pixelColour = self.origQImage.pixelColor(self.yMouseCoord,  self.xMouseCoord ).getRgb()[:-1]
+            self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: '.format(self.xMouseCoord, self.yMouseCoord) + str(e))
