@@ -195,10 +195,10 @@ class GraphicsItem(QGraphicsObject):
     def hoverMoveEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverMoveEvent called&#34;)
         try:
-            self.xMouseCoord = int(event.pos().x())
-            self.yMouseCoord = int(event.pos().y())
-            #self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = self.pixelArray[self.xMouseCoord-1, self.yMouseCoord-1]
+            self.xMouseCoord = int(event.pos().x()) #columns
+            self.yMouseCoord = int(event.pos().y()) #rows
+            #self.pixelColour = self.origQImage.pixelColor(self.yMouseCoord,  self.xMouseCoord ).getRgb()[:-1]
+            self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
@@ -827,10 +827,10 @@ def readLevels(path, pixelArray):
     def hoverMoveEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverMoveEvent called&#34;)
         try:
-            self.xMouseCoord = int(event.pos().x())
-            self.yMouseCoord = int(event.pos().y())
-            #self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-            self.pixelValue = self.pixelArray[self.xMouseCoord-1, self.yMouseCoord-1]
+            self.xMouseCoord = int(event.pos().x()) #columns
+            self.yMouseCoord = int(event.pos().y()) #rows
+            #self.pixelColour = self.origQImage.pixelColor(self.yMouseCoord,  self.xMouseCoord ).getRgb()[:-1]
+            self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
@@ -1551,10 +1551,10 @@ def readLevels(path, pixelArray):
 <pre><code class="python">def hoverMoveEvent(self, event):
     logger.info(&#34;FreeHandROI.GraphicsItem.hoverMoveEvent called&#34;)
     try:
-        self.xMouseCoord = int(event.pos().x())
-        self.yMouseCoord = int(event.pos().y())
-        #self.pixelColour = self.origQImage.pixelColor(self.xMouseCoord,  self.yMouseCoord ).getRgb()[:-1]
-        self.pixelValue = self.pixelArray[self.xMouseCoord-1, self.yMouseCoord-1]
+        self.xMouseCoord = int(event.pos().x()) #columns
+        self.yMouseCoord = int(event.pos().y()) #rows
+        #self.pixelColour = self.origQImage.pixelColor(self.yMouseCoord,  self.xMouseCoord ).getRgb()[:-1]
+        self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
         self.sigMouseHovered.emit(True)
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
