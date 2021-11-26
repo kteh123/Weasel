@@ -73,6 +73,7 @@ class GraphicsItem(QGraphicsObject):
         #self.pixelColour = None
         self.pixelValue = None
         self.mouseMoved = False
+        self.mask = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -357,6 +358,7 @@ class GraphicsItem(QGraphicsObject):
     def eraseROI(self):
         #erase mask at this mouse pointer position
         #and set pixel back to original value
+        self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
@@ -513,8 +515,8 @@ class GraphicsItem(QGraphicsObject):
 
     def createBlankMask(self):
         logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
-        ny, nx = np.shape(self.pixelArray)
-        self.mask = np.full((nx, ny), False, dtype=bool)
+        rows, cols = np.shape(self.pixelArray)
+        self.mask = np.full((rows, cols), False, dtype=bool)
 
 
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
@@ -705,6 +707,7 @@ def readLevels(path, pixelArray):
         #self.pixelColour = None
         self.pixelValue = None
         self.mouseMoved = False
+        self.mask = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -989,6 +992,7 @@ def readLevels(path, pixelArray):
     def eraseROI(self):
         #erase mask at this mouse pointer position
         #and set pixel back to original value
+        self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
@@ -1145,8 +1149,8 @@ def readLevels(path, pixelArray):
 
     def createBlankMask(self):
         logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
-        ny, nx = np.shape(self.pixelArray)
-        self.mask = np.full((nx, ny), False, dtype=bool)
+        rows, cols = np.shape(self.pixelArray)
+        self.mask = np.full((rows, cols), False, dtype=bool)
 
 
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
@@ -1303,8 +1307,8 @@ def readLevels(path, pixelArray):
 </summary>
 <pre><code class="python">def createBlankMask(self):
     logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
-    ny, nx = np.shape(self.pixelArray)
-    self.mask = np.full((nx, ny), False, dtype=bool)</code></pre>
+    rows, cols = np.shape(self.pixelArray)
+    self.mask = np.full((rows, cols), False, dtype=bool)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.createMaskFromDrawnROI"><code class="name flex">
@@ -1383,6 +1387,7 @@ def readLevels(path, pixelArray):
 <pre><code class="python">def eraseROI(self):
     #erase mask at this mouse pointer position
     #and set pixel back to original value
+    self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
     if self.mask is not None:
         if self.linkToGraphicsView.pixelSquareSize == 1:
             self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)

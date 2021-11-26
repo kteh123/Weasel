@@ -64,7 +64,7 @@ class ROIs():
     def __repr__(self):
        return &#39;{}&#39;.format(
            self.__class__.__name__)
-
+   
 
     def addMask(self, mask):
         logger.info(&#34;RIO_Storage.addMask called&#34;)
@@ -77,9 +77,8 @@ class ROIs():
                 else:
                     #already contains a mask, so add to an existing ROI 
                     #using boolean OR (|) to get the union 
-                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]  | mask
+                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] | mask
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
-                #self.dictMasks[self.linkToGraphicsView.currentROIName] = self.dictMasks[self.linkToGraphicsView.currentROIName] | mask
             else:
                 #a new ROI
                 #Make a copy of the list of image mask lists
@@ -94,16 +93,10 @@ class ROIs():
 
     def replaceMask(self, mask):
         logger.info(&#34;RIO_Storage.replaceMask called&#34;)
-        #print(&#34;RIO_Storage.replaceMask called self.dictMasks={}&#34;.format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
-                #print(&#34;replaceMask-currentROIName is in self.dictMasks&#34;)
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-                #imageMaskList[imageNumber - 1] = mask
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in old mask ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in new masks ={}&#34;.format(np.where(mask==True)))
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask #&amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in &amp;ed masks ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -112,15 +105,17 @@ class ROIs():
 
     def createListOfBlankMasks(self, mask):
         &#34;&#34;&#34;
-        Creates a list of blank masks (boolean arrays with all
-        elements set to False). Each mask is the same size as
+        Creates a list of blank masks. 
+        
+        Each mask is a boolean array with all
+        elements set to False. It is the same size as
         the DICOM images in the series. There is one mask for
         each image in the series.
         &#34;&#34;&#34;
         try:
             logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
             ny, nx = np.shape(mask)
-            blankMask = np.full((nx, ny), False, dtype=bool)
+            blankMask = np.full((ny, nx), False, dtype=bool)
             return [blankMask for _ in range(self.NumOfImages)]
         except Exception as e:
             print(&#39;Error in ROI_Storage.createListOfBlankMasks: &#39; + str(e))
@@ -148,6 +143,25 @@ class ROIs():
     def setPreviousRegionName(self, regionName):
         logger.info(&#34;RIO_Storage.setPreviousRegionName called&#34;)
         self.prevRegionName = regionName
+
+    
+    def getUpdatedMask(self):
+        logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+        try:
+            regionName = self.linkToGraphicsView.currentROIName
+            imageNumber = self.linkToGraphicsView.currentImageNumber
+            if regionName in self.dictMasks: 
+                mask = self.dictMasks[regionName][imageNumber - 1]
+                if mask.any():
+                    return mask
+                else:
+                    return None
+            else:
+                return None
+        except Exception as e:
+            print(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))
+            logger.exception(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))
+
 
 
     def getMask(self, regionName, imageNumber):
@@ -319,7 +333,7 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
     def __repr__(self):
        return &#39;{}&#39;.format(
            self.__class__.__name__)
-
+   
 
     def addMask(self, mask):
         logger.info(&#34;RIO_Storage.addMask called&#34;)
@@ -332,9 +346,8 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
                 else:
                     #already contains a mask, so add to an existing ROI 
                     #using boolean OR (|) to get the union 
-                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]  | mask
+                    imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] | mask
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
-                #self.dictMasks[self.linkToGraphicsView.currentROIName] = self.dictMasks[self.linkToGraphicsView.currentROIName] | mask
             else:
                 #a new ROI
                 #Make a copy of the list of image mask lists
@@ -349,16 +362,10 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
 
     def replaceMask(self, mask):
         logger.info(&#34;RIO_Storage.replaceMask called&#34;)
-        #print(&#34;RIO_Storage.replaceMask called self.dictMasks={}&#34;.format(self.dictMasks))
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
-                #print(&#34;replaceMask-currentROIName is in self.dictMasks&#34;)
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-                #imageMaskList[imageNumber - 1] = mask
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in old mask ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in new masks ={}&#34;.format(np.where(mask==True)))
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask #&amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
-                #print(&#34;ROI_Storage.replaceMask Coords of True elements in &amp;ed masks ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -367,15 +374,17 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
 
     def createListOfBlankMasks(self, mask):
         &#34;&#34;&#34;
-        Creates a list of blank masks (boolean arrays with all
-        elements set to False). Each mask is the same size as
+        Creates a list of blank masks. 
+        
+        Each mask is a boolean array with all
+        elements set to False. It is the same size as
         the DICOM images in the series. There is one mask for
         each image in the series.
         &#34;&#34;&#34;
         try:
             logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
             ny, nx = np.shape(mask)
-            blankMask = np.full((nx, ny), False, dtype=bool)
+            blankMask = np.full((ny, nx), False, dtype=bool)
             return [blankMask for _ in range(self.NumOfImages)]
         except Exception as e:
             print(&#39;Error in ROI_Storage.createListOfBlankMasks: &#39; + str(e))
@@ -403,6 +412,25 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
     def setPreviousRegionName(self, regionName):
         logger.info(&#34;RIO_Storage.setPreviousRegionName called&#34;)
         self.prevRegionName = regionName
+
+    
+    def getUpdatedMask(self):
+        logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+        try:
+            regionName = self.linkToGraphicsView.currentROIName
+            imageNumber = self.linkToGraphicsView.currentImageNumber
+            if regionName in self.dictMasks: 
+                mask = self.dictMasks[regionName][imageNumber - 1]
+                if mask.any():
+                    return mask
+                else:
+                    return None
+            else:
+                return None
+        except Exception as e:
+            print(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))
+            logger.exception(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))
+
 
 
     def getMask(self, regionName, imageNumber):
@@ -533,9 +561,8 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
             else:
                 #already contains a mask, so add to an existing ROI 
                 #using boolean OR (|) to get the union 
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]  | mask
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] = imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] | mask
             self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
-            #self.dictMasks[self.linkToGraphicsView.currentROIName] = self.dictMasks[self.linkToGraphicsView.currentROIName] | mask
         else:
             #a new ROI
             #Make a copy of the list of image mask lists
@@ -552,8 +579,9 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
 <span>def <span class="ident">createListOfBlankMasks</span></span>(<span>self, mask)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Creates a list of blank masks (boolean arrays with all
-elements set to False). Each mask is the same size as
+<div class="desc"><p>Creates a list of blank masks. </p>
+<p>Each mask is a boolean array with all
+elements set to False. It is the same size as
 the DICOM images in the series. There is one mask for
 each image in the series.</p></div>
 <details class="source">
@@ -562,15 +590,17 @@ each image in the series.</p></div>
 </summary>
 <pre><code class="python">def createListOfBlankMasks(self, mask):
     &#34;&#34;&#34;
-    Creates a list of blank masks (boolean arrays with all
-    elements set to False). Each mask is the same size as
+    Creates a list of blank masks. 
+    
+    Each mask is a boolean array with all
+    elements set to False. It is the same size as
     the DICOM images in the series. There is one mask for
     each image in the series.
     &#34;&#34;&#34;
     try:
         logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
         ny, nx = np.shape(mask)
-        blankMask = np.full((nx, ny), False, dtype=bool)
+        blankMask = np.full((ny, nx), False, dtype=bool)
         return [blankMask for _ in range(self.NumOfImages)]
     except Exception as e:
         print(&#39;Error in ROI_Storage.createListOfBlankMasks: &#39; + str(e))</code></pre>
@@ -656,6 +686,33 @@ each image in the series.</p></div>
         return nextRegionName
     except Exception as e:
             print(&#39;Error in ROI_Storage.getNextRegionName: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getUpdatedMask"><code class="name flex">
+<span>def <span class="ident">getUpdatedMask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getUpdatedMask(self):
+    logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+    try:
+        regionName = self.linkToGraphicsView.currentROIName
+        imageNumber = self.linkToGraphicsView.currentImageNumber
+        if regionName in self.dictMasks: 
+            mask = self.dictMasks[regionName][imageNumber - 1]
+            if mask.any():
+                return mask
+            else:
+                return None
+        else:
+            return None
+    except Exception as e:
+        print(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))
+        logger.exception(&#39;Error in ROI_Storage.getUpdatedMask when imageNumber={}: &#39;.format(imageNumber) + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.hasImageGotMask"><code class="name flex">
@@ -767,16 +824,10 @@ each image in the series.</p></div>
 </summary>
 <pre><code class="python">def replaceMask(self, mask):
     logger.info(&#34;RIO_Storage.replaceMask called&#34;)
-    #print(&#34;RIO_Storage.replaceMask called self.dictMasks={}&#34;.format(self.dictMasks))
     try:
         if self.linkToGraphicsView.currentROIName in self.dictMasks:
-            #print(&#34;replaceMask-currentROIName is in self.dictMasks&#34;)
             imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-            #imageMaskList[imageNumber - 1] = mask
-            #print(&#34;ROI_Storage.replaceMask Coords of True elements in old mask ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
-            #print(&#34;ROI_Storage.replaceMask Coords of True elements in new masks ={}&#34;.format(np.where(mask==True)))
-            imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask #&amp; imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]
-            #print(&#34;ROI_Storage.replaceMask Coords of True elements in &amp;ed masks ={}&#34;.format(np.where(imageMaskList[self.linkToGraphicsView.currentImageNumber - 1]==True)))
+            imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
             self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
     except Exception as e:
         print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -851,6 +902,7 @@ each image in the series.</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getListOfRegions" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getListOfRegions">getListOfRegions</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getMask">getMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getNextRegionName" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getNextRegionName">getNextRegionName</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getUpdatedMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.getUpdatedMask">getUpdatedMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.hasImageGotMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.hasImageGotMask">hasImageGotMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.hasRegionGotMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.hasRegionGotMask">hasRegionGotMask</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.printContentsDictMasks" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.printContentsDictMasks">printContentsDictMasks</a></code></li>
