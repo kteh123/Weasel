@@ -438,7 +438,6 @@ class ImageViewerROI(QMdiSubWindow):
     def displayROIMeanAndStd(self):
         try:
             logger.info("ImageViewerROI.displayROIMeanAndStd called")
-            #print("ImageViewerROI.displayROIMeanAndStd called") ##
             if self.isSeries:  
                 imageNumber = self.mainImageSlider.value()
             else:
@@ -447,9 +446,7 @@ class ImageViewerROI(QMdiSubWindow):
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
-                #print("mask is not none, size={}".format(len(mask)))##
                 mean, std = self.getRoiMeanAndStd(mask, pixelArray)
-                #print("mean ={}, std ={}".format(mean, std)) ##
                 self.roiMeanTxt.setText("Mean: " + str(mean))
                 self.roiStdDevTxt.setText("SD: " + str(std))
             else:

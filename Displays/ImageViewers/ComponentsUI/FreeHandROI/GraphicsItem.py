@@ -45,6 +45,7 @@ class GraphicsItem(QGraphicsObject):
         #self.pixelColour = None
         self.pixelValue = None
         self.mouseMoved = False
+        self.mask = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -329,6 +330,7 @@ class GraphicsItem(QGraphicsObject):
     def eraseROI(self):
         #erase mask at this mouse pointer position
         #and set pixel back to original value
+        self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
                 self.resetPixelToOriginalValue(self.xMouseCoord, self.yMouseCoord)
@@ -485,8 +487,8 @@ class GraphicsItem(QGraphicsObject):
 
     def createBlankMask(self):
         logger.info("FreeHandROI.GraphicsItem.createBlankMask called")
-        ny, nx = np.shape(self.pixelArray)
-        self.mask = np.full((nx, ny), False, dtype=bool)
+        rows, cols = np.shape(self.pixelArray)
+        self.mask = np.full((rows, cols), False, dtype=bool)
 
 
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
