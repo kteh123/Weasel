@@ -35,17 +35,25 @@ logger = logging.getLogger(__name__)
 
 class NavigationToolbar(NavigationToolbar):
     &#34;&#34;&#34;
-    Removes unwanted default buttons in the Navigation Toolbar by creating
-    a subclass of the NavigationToolbar class from from 
-    matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-    that only defines the desired buttons
+    A subclass of the NavigationToolbar class,  
+    matplotlib.backends.backend_qt5agg.NavigationToolbar2QT created to remove 
+    unwanted default buttons and only display the desired buttons
     &#34;&#34;&#34;
     toolitems = [t for t in NavigationToolbar.toolitems if
                  t[0] in (&#39;Home&#39;, &#39;Pan&#39;, &#39;Zoom&#39;, &#39;Save&#39;)]
 
 
 class PlotGraph:
-    &#34;&#34;&#34;Plots an x,y graph&#34;&#34;&#34;
+    &#34;&#34;&#34;An object of this class plots an x,y line graph
+    
+    Inputs:
+        parent - the subwindow or widget hosting the plot
+        xValues - list of x values for the line to be ploted
+        yValuse - list of y values for the line to be ploted
+        xLabel - string containing x axis label 
+        yLabel - string containing y axis label
+        title - string containing plot title
+    &#34;&#34;&#34;
     def __init__(self, parent, xValues, yValues, xLabel, yLabel,  title=&#34;&#34;):
         try:
             self.xValues = xValues
@@ -69,18 +77,9 @@ class PlotGraph:
             logger.error(&#39;Error in class PlotGraph.__init__: &#39; + str(e)) 
 
 
-    def getGraphCanvas(self):
-        return self.canvas
-
-
-    def getGraphToolBar(self):
-        return self.toolbar
-
-
     def setUpSubPlot(self):
         &#34;&#34;&#34;
-        This function draws the matplotlib plot on the GUI
-        for the display of the MR signal/time curves.
+        This function creates the plot axes on self.figure and draws the x,y line.
         &#34;&#34;&#34;
         try:
             logger.info(&#39;Function PlotGraph.setUpPlot called.&#39;)
@@ -106,6 +105,16 @@ class PlotGraph:
         except Exception as e:
                 print(&#39;Error in function PlotGraph.setUpPlot: &#39; + str(e))
                 logger.error(&#39;Error in function PlotGraph.setUpPlot: &#39; + str(e))
+
+
+    def getGraphCanvas(self):
+        &#34;&#34;&#34;Returns the canvas holding the plot for display on a GUI&#34;&#34;&#34;
+        return self.canvas
+
+
+    def getGraphToolBar(self):
+        &#34;&#34;&#34;Returns the plot tool bare for display on a GUI&#34;&#34;&#34;
+        return self.toolbar
 
 
     #def setUpLegendBox(self, objPlot):
@@ -136,10 +145,9 @@ class PlotGraph:
 <span>(</span><span>canvas, parent, coordinates=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Removes unwanted default buttons in the Navigation Toolbar by creating
-a subclass of the NavigationToolbar class from from
-matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-that only defines the desired buttons</p>
+<div class="desc"><p>A subclass of the NavigationToolbar class,<br>
+matplotlib.backends.backend_qt5agg.NavigationToolbar2QT created to remove
+unwanted default buttons and only display the desired buttons</p>
 <p>coordinates: should we show the coordinates on the right?</p></div>
 <details class="source">
 <summary>
@@ -147,10 +155,9 @@ that only defines the desired buttons</p>
 </summary>
 <pre><code class="python">class NavigationToolbar(NavigationToolbar):
     &#34;&#34;&#34;
-    Removes unwanted default buttons in the Navigation Toolbar by creating
-    a subclass of the NavigationToolbar class from from 
-    matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-    that only defines the desired buttons
+    A subclass of the NavigationToolbar class,  
+    matplotlib.backends.backend_qt5agg.NavigationToolbar2QT created to remove 
+    unwanted default buttons and only display the desired buttons
     &#34;&#34;&#34;
     toolitems = [t for t in NavigationToolbar.toolitems if
                  t[0] in (&#39;Home&#39;, &#39;Pan&#39;, &#39;Zoom&#39;, &#39;Save&#39;)]</code></pre>
@@ -179,13 +186,29 @@ that only defines the desired buttons</p>
 <span>(</span><span>parent, xValues, yValues, xLabel, yLabel, title='')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Plots an x,y graph</p></div>
+<div class="desc"><p>An object of this class plots an x,y line graph</p>
+<h2 id="inputs">Inputs</h2>
+<p>parent - the subwindow or widget hosting the plot
+xValues - list of x values for the line to be ploted
+yValuse - list of y values for the line to be ploted
+xLabel - string containing x axis label
+yLabel - string containing y axis label
+title - string containing plot title</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PlotGraph:
-    &#34;&#34;&#34;Plots an x,y graph&#34;&#34;&#34;
+    &#34;&#34;&#34;An object of this class plots an x,y line graph
+    
+    Inputs:
+        parent - the subwindow or widget hosting the plot
+        xValues - list of x values for the line to be ploted
+        yValuse - list of y values for the line to be ploted
+        xLabel - string containing x axis label 
+        yLabel - string containing y axis label
+        title - string containing plot title
+    &#34;&#34;&#34;
     def __init__(self, parent, xValues, yValues, xLabel, yLabel,  title=&#34;&#34;):
         try:
             self.xValues = xValues
@@ -209,18 +232,9 @@ that only defines the desired buttons</p>
             logger.error(&#39;Error in class PlotGraph.__init__: &#39; + str(e)) 
 
 
-    def getGraphCanvas(self):
-        return self.canvas
-
-
-    def getGraphToolBar(self):
-        return self.toolbar
-
-
     def setUpSubPlot(self):
         &#34;&#34;&#34;
-        This function draws the matplotlib plot on the GUI
-        for the display of the MR signal/time curves.
+        This function creates the plot axes on self.figure and draws the x,y line.
         &#34;&#34;&#34;
         try:
             logger.info(&#39;Function PlotGraph.setUpPlot called.&#39;)
@@ -245,7 +259,17 @@ that only defines the desired buttons</p>
 
         except Exception as e:
                 print(&#39;Error in function PlotGraph.setUpPlot: &#39; + str(e))
-                logger.error(&#39;Error in function PlotGraph.setUpPlot: &#39; + str(e))</code></pre>
+                logger.error(&#39;Error in function PlotGraph.setUpPlot: &#39; + str(e))
+
+
+    def getGraphCanvas(self):
+        &#34;&#34;&#34;Returns the canvas holding the plot for display on a GUI&#34;&#34;&#34;
+        return self.canvas
+
+
+    def getGraphToolBar(self):
+        &#34;&#34;&#34;Returns the plot tool bare for display on a GUI&#34;&#34;&#34;
+        return self.toolbar</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -253,12 +277,13 @@ that only defines the desired buttons</p>
 <span>def <span class="ident">getGraphCanvas</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the canvas holding the plot for display on a GUI</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getGraphCanvas(self):
+    &#34;&#34;&#34;Returns the canvas holding the plot for display on a GUI&#34;&#34;&#34;
     return self.canvas</code></pre>
 </details>
 </dd>
@@ -266,12 +291,13 @@ that only defines the desired buttons</p>
 <span>def <span class="ident">getGraphToolBar</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the plot tool bare for display on a GUI</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getGraphToolBar(self):
+    &#34;&#34;&#34;Returns the plot tool bare for display on a GUI&#34;&#34;&#34;
     return self.toolbar</code></pre>
 </details>
 </dd>
@@ -279,16 +305,14 @@ that only defines the desired buttons</p>
 <span>def <span class="ident">setUpSubPlot</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This function draws the matplotlib plot on the GUI
-for the display of the MR signal/time curves.</p></div>
+<div class="desc"><p>This function creates the plot axes on self.figure and draws the x,y line.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpSubPlot(self):
     &#34;&#34;&#34;
-    This function draws the matplotlib plot on the GUI
-    for the display of the MR signal/time curves.
+    This function creates the plot axes on self.figure and draws the x,y line.
     &#34;&#34;&#34;
     try:
         logger.info(&#39;Function PlotGraph.setUpPlot called.&#39;)
