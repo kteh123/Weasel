@@ -1,18 +1,18 @@
 from PyQt5.QtWidgets import (QMdiSubWindow, QVBoxLayout, QFormLayout, QWidget, QLabel, QFrame)
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
-#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-#import matplotlib.pyplot as plt
+
 
 from Displays.GraphPlotter import PlotGraph as plotGraph
-#import sys
 import logging
 logger = logging.getLogger(__name__)
 
 
 def displayTimeCurve(weasel, signalName, maskName,
                      ROI_time_values, ROI_signal_values, xLabel, yLabel,  title="Mean ROI Signal/Time Curve"):
+    """This functions displays a ROI mean signal/time curve
+   
+    The MatPlotLib plot is displayed on a PyQt MDI subwindow"""
     try:
         subWindow = QMdiSubWindow(weasel)
         subWindow.setObjectName = 'Time_Curve_viewer'

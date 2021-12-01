@@ -7,17 +7,25 @@ logger = logging.getLogger(__name__)
 
 class NavigationToolbar(NavigationToolbar):
     """
-    Removes unwanted default buttons in the Navigation Toolbar by creating
-    a subclass of the NavigationToolbar class from from 
-    matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-    that only defines the desired buttons
+    A subclass of the NavigationToolbar class,  
+    matplotlib.backends.backend_qt5agg.NavigationToolbar2QT created to remove 
+    unwanted default buttons and only display the desired buttons
     """
     toolitems = [t for t in NavigationToolbar.toolitems if
                  t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
 
 class PlotGraph:
-    """Plots an x,y graph"""
+    """An object of this class plots an x,y line graph
+    
+    Inputs:
+        parent - the subwindow or widget hosting the plot
+        xValues - list of x values for the line to be ploted
+        yValuse - list of y values for the line to be ploted
+        xLabel - string containing x axis label 
+        yLabel - string containing y axis label
+        title - string containing plot title
+    """
     def __init__(self, parent, xValues, yValues, xLabel, yLabel,  title=""):
         try:
             self.xValues = xValues
@@ -41,18 +49,9 @@ class PlotGraph:
             logger.error('Error in class PlotGraph.__init__: ' + str(e)) 
 
 
-    def getGraphCanvas(self):
-        return self.canvas
-
-
-    def getGraphToolBar(self):
-        return self.toolbar
-
-
     def setUpSubPlot(self):
         """
-        This function draws the matplotlib plot on the GUI
-        for the display of the MR signal/time curves.
+        This function creates the plot axes on self.figure and draws the x,y line.
         """
         try:
             logger.info('Function PlotGraph.setUpPlot called.')
@@ -78,6 +77,16 @@ class PlotGraph:
         except Exception as e:
                 print('Error in function PlotGraph.setUpPlot: ' + str(e))
                 logger.error('Error in function PlotGraph.setUpPlot: ' + str(e))
+
+
+    def getGraphCanvas(self):
+        """Returns the canvas holding the plot for display on a GUI"""
+            return self.canvas
+
+
+    def getGraphToolBar(self):
+        """Returns the plot tool bare for display on a GUI"""
+        return self.toolbar
 
 
     #def setUpLegendBox(self, objPlot):
