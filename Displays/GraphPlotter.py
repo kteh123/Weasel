@@ -81,7 +81,7 @@ class PlotGraph:
 
     def getGraphCanvas(self):
         """Returns the canvas holding the plot for display on a GUI"""
-            return self.canvas
+        return self.canvas
 
 
     def getGraphToolBar(self):
