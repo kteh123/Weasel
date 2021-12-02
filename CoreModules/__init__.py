@@ -3,4 +3,4 @@ import DICOM.DeveloperTools
 import External.ImagingTools
 import Menus.Tutorial
 
-"CoreModules section DOCSTRING Test"
+"""CoreModules section DOCSTRING Test"""
