@@ -25,7 +25,6 @@ api_folder = os.path.join(os.getcwd(), "API")
 coremodules_folder = os.path.join(os.getcwd(), "CoreModules")
 dicom_folder = os.path.join(os.getcwd(), "DICOM")
 displays_folder = os.path.join(os.getcwd(), "Displays")
-library_folder = os.path.join(os.getcwd(), "Library")
 menus_folder = os.path.join(os.getcwd(), "Menus")
 pipelines_folder = os.path.join(os.getcwd(), "Pipelines")
 weasel_file = os.path.join(os.getcwd(), "Weasel.py")
@@ -40,7 +39,6 @@ CopyTree(api_folder, os.path.join(weasel_copy_folder, "API"))
 CopyTree(coremodules_folder, os.path.join(weasel_copy_folder, "CoreModules"))
 CopyTree(dicom_folder, os.path.join(weasel_copy_folder, "DICOM"))
 CopyTree(displays_folder, os.path.join(weasel_copy_folder, "Displays"))
-CopyTree(library_folder, os.path.join(weasel_copy_folder, "Library"))
 CopyTree(menus_folder, os.path.join(weasel_copy_folder, "Menus"))
 CopyTree(pipelines_folder, os.path.join(weasel_copy_folder, "Pipelines"))
 shutil.copyfile(weasel_file, os.path.join(weasel_copy_folder, "Weasel.py"))
@@ -61,18 +59,8 @@ else:
 print("Installing Python packages in the Virtual Environment...")
 os.system(activation_command + ' && pip install -e .')
 
-# Delete failing python files - this is temporary 14/10/2021
-tmp_dicomtest_path = os.path.join(weasel_copy_folder, "CoreModules", "DICOMFolderTest.py")
-tmp_displaytest_path = os.path.join(weasel_copy_folder, "Displays", "MessagingTestMessage.py")
-tmp_displaytest2_path = os.path.join(weasel_copy_folder, "Displays", "MessagingTestProgressBar.py")
-if platform == "win32" or platform == "win64" or os.name == 'nt':
-    os.system("del " + str(tmp_dicomtest_path) + " " + str(tmp_displaytest_path) + " " + str(tmp_displaytest2_path))
-else:
-    os.system("rm -f " + str(tmp_dicomtest_path) + " " + str(tmp_displaytest_path) + " " + str(tmp_displaytest2_path))
-
 print("Creating WEASEL manual using pdoc3...")
 doc_command = "pdoc --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
-#os.system(doc_command)
 os.system(activation_command + ' && ' + doc_command)
 
 print("Moving documentation files to the 'Manual' folder and deleting temporary files...")
