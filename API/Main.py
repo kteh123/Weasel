@@ -6,7 +6,7 @@ from API.ReadWrite import ReadWrite
 from API.UserInterfaceTools import UserInterfaceTools
 
 class WeaselProgrammingInterface( 
-    StaticMethods, # Temporary - these need to move to the library
+    StaticMethods,
     Display, 
     EditMenus, 
     Messaging, 

@@ -29,9 +29,9 @@ string_hidden_imports = ' '.join(['--hidden-import '+ mod + ' ' for mod in hidde
 collect_data_folders = ['External', 'dipy']
 string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect_data_folders])
 if platform == "win32" or platform == "win64" or os.name == 'nt':
-	data_folders = ['API;.', 'CoreModules;.', 'Displays;.', 'Library;.', 'Menus;.', 'Pipelines;.']
+	data_folders = ['API;.', 'CoreModules;.', 'Displays;.', 'Documents;.', 'Menus;.', 'Pipelines;.']
 else:
-	data_folders = ['API:.', 'CoreModules:.', 'Displays:.', 'Library:.', 'Menus:.', 'Pipelines:.']
+	data_folders = ['API:.', 'CoreModules:.', 'Displays:.', 'Documents:.', 'Menus:.', 'Pipelines:.']
 string_data = ' '.join(['--add-data='+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")

@@ -1,5 +1,6 @@
 import CoreModules.WriteXMLfromDICOM
 import DICOM.DeveloperTools
-#import CoreModules.WEASEL.DisplayImageDrawROI
-import Library.ImagingTools
+import External.ImagingTools
 import Menus.Tutorial
+
+"CoreModules section DOCSTRING Test"

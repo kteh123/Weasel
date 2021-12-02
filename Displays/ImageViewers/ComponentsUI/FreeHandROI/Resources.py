@@ -1,14 +1,21 @@
-MAGNIFYING_GLASS_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/Magnifying_Glass.png'
-PEN_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/pencil.png'
-BRUSH_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/paint_brush.png'
-ERASER_CURSOR = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/erasor.png'
-DELETE_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/delete_icon.png'
-NEW_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/new_icon.png'
-RESET_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/reset_icon.png'
-SAVE_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/save_icon.png'
-LOAD_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/load_icon.png'
-EXPORT_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/export.png'
-CONTRAST_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/contrast_icon.png'
-BRIGHTNESS_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/brightness_icon.png'
-APPLY_SERIES_ICON = 'Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/applySeries_icon.png'
+import os, sys, pathlib
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    directory = pathlib.Path(sys._MEIPASS)
+else:
+    directory = os.path.join(pathlib.Path().absolute(), 'Displays')
 
+
+MAGNIFYING_GLASS_CURSOR = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','Magnifying_Glass.png')
+PEN_CURSOR = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','pencil.png')
+BRUSH_CURSOR = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','paint_brush.png')
+ERASER_CURSOR = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','erasor.png')
+DELETE_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','delete_icon.png')
+NEW_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','new_icon.png')
+RESET_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','reset_icon.png')
+SAVE_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','save_icon.png')
+LOAD_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','load_icon.png')
+EXPORT_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','export.png')
+CONTRAST_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','contrast_icon.png')
+BRIGHTNESS_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','brightness_icon.png')
+APPLY_SERIES_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','applySeries_icon.png')
+SLIDER_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','Images','slider_icon.png')
