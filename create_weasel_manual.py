@@ -14,6 +14,7 @@ def CopyTree(src, dst, symlinks=False, ignore=None):
             if not os.path.exists(d) or os.stat(s).st_mtime - os.stat(d).st_mtime > 1:
                 shutil.copy2(s, d)
 
+
 print("Preparing the Folder Structure...")
 docs_folder = os.path.join(os.getcwd(), "Documents")
 manual_folder = os.path.join(docs_folder, "Manual")
