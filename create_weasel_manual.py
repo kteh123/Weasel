@@ -54,13 +54,13 @@ if platform == "win32" or platform == "win64" or os.name == 'nt':
 	activation_command = str(venv_dir) + "\\Scripts\\activate"
 # MacOS and Linux
 else:
-	activation_command = ". " + venv_dir + "/bin/activate"
+	activation_command = ". " + str(venv_dir) + "/bin/activate"
 
 print("Installing Python packages in the Virtual Environment...")
 os.system(activation_command + ' && pip install -e .')
 
 print("Creating WEASEL manual using pdoc3...")
-doc_command = "pdoc --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
+doc_command = "pdoc3 --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
 os.system(activation_command + ' && ' + doc_command)
 
 print("Moving documentation files to the 'Manual' folder and deleting temporary files...")
