@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
 from PyQt5.QtGui import QPixmap, QCursor, QIcon, QToolTip
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
-from .Resources import * 
 import logging
 
 logger = logging.getLogger(__name__)
