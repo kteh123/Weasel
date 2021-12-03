@@ -42,7 +42,6 @@ class GraphicsItem(QGraphicsObject):
         self.listROICoords = None
         self.xMouseCoord  = None
         self.yMouseCoord  = None
-        #self.pixelColour = None
         self.pixelValue = None
         self.mouseMoved = False
         self.mask = None
@@ -170,7 +169,6 @@ class GraphicsItem(QGraphicsObject):
         try:
             self.xMouseCoord = int(event.pos().x()) #columns
             self.yMouseCoord = int(event.pos().y()) #rows
-            #self.pixelColour = self.origQImage.pixelColor(self.yMouseCoord,  self.xMouseCoord ).getRgb()[:-1]
             self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
             self.sigMouseHovered.emit(True)
         except Exception as e:
