@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def userInput(*fields, title="User input window"):
+def userInput(*fields, help_text="", title="User input window"):
     """
     Creates a pop-up window to get user input.
     
@@ -130,7 +130,7 @@ def userInput(*fields, title="User input window"):
 
     # call the inputWindow
             
-    paramList = inputWindow(Dict, title=title, lists=lists)
+    paramList = inputWindow(Dict, title=title, helpText=help_text, lists=lists)
     if paramList is None: 
         return 1, fields
 

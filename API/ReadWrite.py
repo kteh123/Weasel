@@ -93,11 +93,11 @@ class ReadWrite():
         self.treeView.close()  
         self.DICOMFolder = ''  
 
-    def user_input(self, *fields, title="User input window"):
+    def user_input(self, *fields, help_text="", title="User input window"):
         """
         Launches a window to get user input.
         """ 
-        return userInput(*fields, title=title)       
+        return userInput(*fields, help_text=help_text, title=title)       
 
     def data_folder(self):
         """

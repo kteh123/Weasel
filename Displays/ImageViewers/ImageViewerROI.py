@@ -20,16 +20,10 @@ from PyQt5.QtWidgets import (QApplication,
                             QComboBox)
 
 import os
-import scipy
-import matplotlib.pyplot as plt
-from matplotlib import cm
 import numpy as np
 import math
-from scipy.ndimage.morphology import binary_dilation, binary_closing
-from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
@@ -197,8 +191,9 @@ class ImageViewerROI(QMdiSubWindow):
                     msgBox.setWindowTitle("ROI Name Change")
                     msgBox.setText("This name is already in use")
                     msgBox.exec()
+                    self.cmbNamesROIs.blockSignals(True)
                     cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
-
+                    self.cmbNamesROIs.blockSignals(False)
         except Exception as e:
                 print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
                 logger.exception('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
@@ -249,17 +244,14 @@ class ImageViewerROI(QMdiSubWindow):
             #   1. The user first loads a series of DICOM images
             #   2. Then the user chooses the series with the mask that will overlay the current viewer.
 
-            # Prompt Windows to select Series
-            paramDict = {"Series":"listview"}
-            helpMsg = "Select a Series with ROI"
-            #studyID = self.selectedStudy
             study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+            helpMsg = "Select a Series with ROI"
             listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
-            inputDlg = inputDialog.ParameterInputDialog(paramDict, title= "Load ROI", helpText=helpMsg, lists=[listSeries])
-            listParams = inputDlg.returnListParameterValues()
-            if inputDlg.closeInputDialog() == False:
-                # for series ID in listParams[0]: # more than 1 ROI may be selected
-                seriesID = listParams[0][0] # Temporary, only the first ROI
+            list_input = {"type":"listview", "label":"Series", "list": listSeries}
+            cancel, listParams = self.weasel.user_input(list_input, help_text=helpMsg, title="Load ROI")
+            if cancel: return
+            else:
+                seriesID = listSeries[listParams[0]['value'][0]]
                 imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     #targetPath = [i.path for i in self.weasel.images()]
@@ -281,8 +273,6 @@ class ImageViewerROI(QMdiSubWindow):
                     self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                    horizontalFlag = None
-                    verticalFlag = None
                     for maskFile in imagePathList:
                         dataset = ReadDICOM_Image.getDicomDataset(maskFile)
                         maskArray = ReadDICOM_Image.getPixelArray(dataset)
@@ -292,36 +282,12 @@ class ImageViewerROI(QMdiSubWindow):
                             try:
                                 coords = zip(*affineResults)
                                 tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                                #if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
-                                #if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
                             except:
                                 pass
-                    # Will need an Enhanced MRI as example  
-                    #if ~hasattr(dataset_original, 'PerFrameFunctionalGroupsSequence'):
-                        #if horizontalFlag == True:
-                            #struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
-                        #elif verticalFlag == True:
-                            #struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
                     self.weasel.progressBar.set_value(index+2)
                 self.weasel.progressBar.close()
 
-                # Faster approach - 3D and no dilation
-                #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
-                #dataset_original = ReadDICOM_Image.getDicomDataset(targetPath)
-                #dataset = ReadDICOM_Image.getDicomDataset(imagePathList[0])
-                #affineResults = ReadDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
-                #if affineResults:
-                    #try:
-                        #coords = zip(*affineResults)
-                        #maskList[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                    #except:
-                        #pass
-            
                 # First populate the ROI_Storage data structure in a loop
                 self.graphicsView.currentROIName = region
                 for imageNumber in range(len(maskList)):  #To Do
@@ -338,7 +304,9 @@ class ImageViewerROI(QMdiSubWindow):
                 # Redisplay the current image to show the mask
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
+                self.cmbNamesROIs.blockSignals(True)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+                self.cmbNamesROIs.blockSignals(False)
                 self.loadImageInImageItem()
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
@@ -734,9 +702,11 @@ class ImageViewerROI(QMdiSubWindow):
         self.loadImageInImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+            self.cmbNamesROIs.blockSignals(True)
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem("region1")
-            self.cmbNamesROIs.setCurrentIndex(0) 
+            self.cmbNamesROIs.setCurrentIndex(0)
+            self.cmbNamesROIs.blockSignals(False)
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
             self.lblPixelValue.clear()

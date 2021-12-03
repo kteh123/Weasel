@@ -18,4 +18,4 @@ EXPORT_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI'
 CONTRAST_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','contrast_icon.png')
 BRIGHTNESS_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','brightness_icon.png')
 APPLY_SERIES_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','applySeries_icon.png')
-SLIDER_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','Images','slider_icon.png')
+SLIDER_ICON = os.path.join(directory,'ImageViewers','ComponentsUI','FreeHandROI','Icons','slider_icon.png')
