@@ -435,6 +435,11 @@ class ImageViewerROI(QMdiSubWindow):
             logger.exception('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
 
 
+    def clearMeanAndStdDev(self):
+        self.roiMeanTxt.clear()
+        self.roiStdDevTxt.clear()
+
+
     def displayROIMeanAndStd(self):
         try:
             logger.info("ImageViewerROI.displayROIMeanAndStd called")
@@ -450,8 +455,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.roiMeanTxt.setText("Mean: " + str(mean))
                 self.roiStdDevTxt.setText("SD: " + str(std))
             else:
-                self.roiMeanTxt.clear()
-                self.roiStdDevTxt.clear()
+                self.clearMeanAndStdDev()
         except Exception as e:
                 print('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e))
                 logger.exception('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e)) 
@@ -479,6 +483,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
+            self.graphicsView.sigNewROI.connect(self.clearMeanAndStdDev)
+
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                     self.updateZoomSlider(increment))
         except Exception as e:
