@@ -197,8 +197,9 @@ class ImageViewerROI(QMdiSubWindow):
                     msgBox.setWindowTitle("ROI Name Change")
                     msgBox.setText("This name is already in use")
                     msgBox.exec()
+                    self.cmbNamesROIs.blockSignals(True)
                     cmbNamesROIs.setCurrentText(self.graphicsView.dictROIs.prevRegionName)
-
+                    self.cmbNamesROIs.blockSignals(False)
         except Exception as e:
                 print('Error in ImageViewerROI.roiNameChanged: ' + str(e))
                 logger.exception('Error in ImageViewerROI.roiNameChanged: ' + str(e)) 
@@ -338,7 +339,9 @@ class ImageViewerROI(QMdiSubWindow):
                 # Redisplay the current image to show the mask
                 #mask = graphicsView.dictROIs.getMask(region, 1)
                 #graphicsView.graphicsItem.reloadMask(mask)
+                self.cmbNamesROIs.blockSignals(True)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
+                self.cmbNamesROIs.blockSignals(False)
                 self.loadImageInImageItem()
         except Exception as e:
                 print('Error in ImageViewerROI.loadROI: ' + str(e))
@@ -734,9 +737,11 @@ class ImageViewerROI(QMdiSubWindow):
         self.loadImageInImageItem() 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
+            self.cmbNamesROIs.blockSignals(True)
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem("region1")
             self.cmbNamesROIs.setCurrentIndex(0) 
+            self.cmbNamesROIs.blockSignals(False)
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
             self.lblPixelValue.clear()
