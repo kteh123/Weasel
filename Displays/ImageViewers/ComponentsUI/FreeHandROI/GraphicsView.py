@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
 from PyQt5.QtGui import QPixmap, QCursor, QIcon, QToolTip
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
-from .Resources import * 
 import logging
 
 logger = logging.getLogger(__name__)
@@ -37,9 +36,8 @@ class GraphicsView(QGraphicsView):
         self.currentROIName = None
         self.currentImageNumber = None
         self.dictROIs = ROIs(numberOfImages, self) #data structure holding ROI data
-        self.mainContextMenu = QMenu()
-        self.mainContextMenu.hovered.connect(self._actionHovered)
-        self.pixelSquareSizeMenu = None
+        self.pixelSquareSizeMenu = QMenu()
+        self.pixelSquareSizeMenu.hovered.connect(self._actionHovered)
         self.drawEnabled = False
         self.paintEnabled = False
         self.eraseEnabled = False
@@ -143,27 +141,27 @@ class GraphicsView(QGraphicsView):
             logger.error('Error in freeHandROI.GraphicsView.fitItemInView: ' + str(e))
 
 
-    def setUpPixelSquareSizeMenu(self, subMenu):
+    def setUpPixelSquareSizeMenu(self, event):
         self.pixelSquareSizeMenu.clear()
-        onePixel = QAction('One Pixel', None)
+        onePixel = QAction('One Pixel')
         onePixel.setCheckable(True)
         onePixel.setToolTip('Erase/Paint one pixel')
-        threePixels = QAction('3 x 3 Pixels', None)
+        threePixels = QAction('3 x 3 Pixels')
         threePixels.setCheckable(True)
         threePixels.setToolTip('Erase/Paint a 3x3 square of pixels')
-        fivePixels = QAction('5 x 5 Pixels', None)
+        fivePixels = QAction('5 x 5 Pixels')
         fivePixels.setCheckable(True)
         fivePixels.setToolTip('Erase/Paint a 5x5 square of pixels')
-        sevenPixels = QAction('7 x 7 Pixels', None)
+        sevenPixels = QAction('7 x 7 Pixels')
         sevenPixels.setCheckable(True)
         sevenPixels.setToolTip('Erase/Paint a 7x7 square of pixels')
-        ninePixels = QAction('9 x 9 Pixels', None)
+        ninePixels = QAction('9 x 9 Pixels')
         ninePixels.setCheckable(True)
         ninePixels.setToolTip('Erase/Paint a 9x9 square of pixels')
-        elevenPixels = QAction('11 x 11 Pixels', None)
+        elevenPixels = QAction('11 x 11 Pixels')
         elevenPixels.setCheckable(True)
         elevenPixels.setToolTip('Erase/Paint a 11x11 square of pixels')
-        twentyOnePixels = QAction('21 x 21 Pixels', None)
+        twentyOnePixels = QAction('21 x 21 Pixels')
         twentyOnePixels.setCheckable(True)
         twentyOnePixels.setToolTip('Erase/Paint a 21x21 square of pixels')
 
@@ -183,80 +181,48 @@ class GraphicsView(QGraphicsView):
         elif self.pixelSquareSize == 21:
             twentyOnePixels.setChecked(True)
 
-        onePixel.triggered.connect(lambda: self.setPixelSquareSize(1, onePixel ))
-        threePixels.triggered.connect(lambda:  self.setPixelSquareSize(3, threePixels))
-        fivePixels.triggered.connect(lambda:  self.setPixelSquareSize(5, fivePixels))
-        sevenPixels.triggered.connect(lambda:  self.setPixelSquareSize(7, sevenPixels))
-        ninePixels.triggered.connect(lambda:  self.setPixelSquareSize(9, ninePixels))
-        elevenPixels.triggered.connect(lambda:  self.setPixelSquareSize(11, elevenPixels))
-        twentyOnePixels.triggered.connect(lambda:  self.setPixelSquareSize(21, twentyOnePixels))
+        onePixel.triggered.connect(lambda: self.setPixelSquareSize(1))
+        threePixels.triggered.connect(lambda:  self.setPixelSquareSize(3))
+        fivePixels.triggered.connect(lambda:  self.setPixelSquareSize(5))
+        sevenPixels.triggered.connect(lambda:  self.setPixelSquareSize(7))
+        ninePixels.triggered.connect(lambda:  self.setPixelSquareSize(9))
+        elevenPixels.triggered.connect(lambda:  self.setPixelSquareSize(11))
+        twentyOnePixels.triggered.connect(lambda:  self.setPixelSquareSize(21))
         
-        subMenu.addAction(onePixel)
-        subMenu.addAction(threePixels)
-        subMenu.addAction(fivePixels)
-        subMenu.addAction(sevenPixels)
-        subMenu.addAction(ninePixels)
-        subMenu.addAction(elevenPixels)
-        subMenu.addAction(twentyOnePixels)
+        self.pixelSquareSizeMenu.addAction(onePixel)
+        self.pixelSquareSizeMenu.addAction(threePixels)
+        self.pixelSquareSizeMenu.addAction(fivePixels)
+        self.pixelSquareSizeMenu.addAction(sevenPixels)
+        self.pixelSquareSizeMenu.addAction(ninePixels)
+        self.pixelSquareSizeMenu.addAction(elevenPixels)
+        self.pixelSquareSizeMenu.addAction(twentyOnePixels)
+        self.pixelSquareSizeMenu.exec_(event.globalPos())
 
 
-    def setPixelSquareSize(self, pixelSquareSize, action):
+    def setPixelSquareSize(self, pixelSquareSize):
         self.pixelSquareSize = pixelSquareSize
 
 
-    def setUpMainContextMenu(self, event):
-        self.mainContextMenu.clear()
-        zoomIn = QAction('Zoom In', None)
-        zoomIn.setToolTip('Click to zoom in')
-        zoomOut = QAction('Zoom Out', None)
-        zoomOut.setToolTip('Click to zoom out')
-        zoomIn.triggered.connect(lambda: self.zoomImage(ZOOM_IN))
-        zoomOut.triggered.connect(lambda: self.zoomImage(ZOOM_OUT))
-     
-        
-        newROI  = QAction(QIcon(NEW_ICON),'New ROI', None)
-        newROI.setToolTip("Create a new ROI")
-        newROI.triggered.connect(self.newROI)
-        
-        resetROI  = QAction(QIcon(RESET_ICON),'Reset ROI', None)
-        resetROI.setToolTip("Clear drawn ROI from the image")
-        resetROI.triggered.connect(self.resetROI)
-        
-        deleteROI  = QAction(QIcon(DELETE_ICON), 'Delete ROI', None)
-        deleteROI.setToolTip("Delete drawn ROI from the image")
-        deleteROI.triggered.connect(self.deleteROI)
-        
-        self.mainContextMenu.addAction(zoomIn)
-        self.mainContextMenu.addAction(zoomOut)
-        self.mainContextMenu.addSeparator()
-        self.mainContextMenu.addAction(newROI)
-        self.mainContextMenu.addAction(resetROI)
-        self.mainContextMenu.addAction(deleteROI)
-        self.mainContextMenu.addSeparator()
-
-        self.pixelSquareSizeMenu = self.mainContextMenu.addMenu("Brush/Eraser Size")
-        self.pixelSquareSizeMenu.setToolTip("Select Brush/Eraser Size")
-        if self.paintEnabled or self.eraseEnabled:
-            self.pixelSquareSizeMenu.setEnabled(True)
-        else:
-            self.pixelSquareSizeMenu.setEnabled(False)
-        self.setUpPixelSquareSizeMenu(self.pixelSquareSizeMenu)
-        self.mainContextMenu.exec_(event.globalPos())
-
-
     def contextMenuEvent(self, event):
-        #display pop-up context menu when the right mouse button is pressed
-        #and zoom is not enabled
+        """contextMenuEvent is a built in method in PyQt5 for the
+        display of a context menu when the right mouse button is pressed
+
+        Here it displays a pop-up context menu 
+        allowing the user to select the brush/eraser size
+        when zoom is not enabled """
         logger.info("freeHandROI.GraphicsView.contextMenuEvent called")
         try:
             if not self.zoomEnabled:
-                self.setUpMainContextMenu(event)  
+                if self.paintEnabled or self.eraseEnabled:
+                    self.setUpPixelSquareSizeMenu(event)
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.contextMenuEvent: ' + str(e))
             
 
     def _actionHovered(self, action):
+        """Allows the display of a tooltip for the menu 
+        items in the brush/eraser size context menu."""
         tip = action.toolTip()
         QToolTip.showText(QCursor.pos(), tip)
 
@@ -269,8 +235,6 @@ class GraphicsView(QGraphicsView):
                 self.setZoomEnabled(False)
                 self.eraseEnabled = False
                 self.paintEnabled = False
-                if self.pixelSquareSizeMenu is not None:
-                    self.pixelSquareSizeMenu.setEnabled(False)
             else:
                 self.drawEnabled = False
         except Exception as e:
@@ -286,13 +250,10 @@ class GraphicsView(QGraphicsView):
                 self.eraseEnabled = False
                 self.drawEnabled = False
                 self.paintEnabled = True
-                if self.pixelSquareSizeMenu is not None:
-                    self.pixelSquareSizeMenu.setEnabled(True)
+                #default brush size to one pixel
                 self.pixelSquareSize = 1
             else:
                 self.paintEnabled = False
-                if self.pixelSquareSizeMenu is not None:
-                    self.pixelSquareSizeMenu.setEnabled(False)
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.paintROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.paintROI: ' + str(e))
@@ -306,13 +267,10 @@ class GraphicsView(QGraphicsView):
                 self.paintEnabled = False
                 self.setZoomEnabled(False)
                 self.eraseEnabled = True
-                if self.pixelSquareSizeMenu is not None:
-                    self.pixelSquareSizeMenu.setEnabled(True)
+                #default eraser size to one pixel
                 self.pixelSquareSize = 1
             else:
                 self.eraseEnabled = False
-                if self.pixelSquareSizeMenu is not None:
-                    self.pixelSquareSizeMenu.setEnabled(False)
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.eraseROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.eraseROI: ' + str(e))
