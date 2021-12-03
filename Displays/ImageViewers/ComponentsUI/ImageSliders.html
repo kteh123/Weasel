@@ -41,10 +41,10 @@ from PyQt5.QtWidgets import (QMessageBox,
                             QCheckBox)
 import numpy as np
 import copy
-import itertools
 import pandas as pd
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 from DICOM.Classes import Series
+from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import *
 from External.PandasDICOM.DICOM_to_DataFrame import DICOM_to_DataFrame
 import time
 import logging
@@ -56,8 +56,6 @@ __author__ = &#34;Steve Shillitoe&#34;
 listImageTypes = [&#34;SliceLocation&#34;, &#34;AcquisitionTime&#34;, &#34;AcquisitionNumber&#34;, 
                   &#34;FlipAngle&#34;, &#34;InversionTime&#34;, &#34;EchoTime&#34;, &#34;DiffusionBValue&#34;, 
                   &#34;DiffusionGradientOrientation&#34;, (0x2005, 0x1572)] # This last element is a good example of private tag
-
-SLIDER_ICON = &#39;Displays/ImageViewers/ComponentsUI/Images/slider_icon.png&#39; 
 
 class SortedImageSlider(QSlider):
     &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute 

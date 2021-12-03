@@ -135,19 +135,25 @@ def getImageTagValue(imagePath, dicomTag):
             if isinstance(dicomTag, str):
                 try:
                     attribute = dataset.data_element(dicomTag).value
-                    if dataset.data_element(dicomTag).VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset.data_element(dicomTag).VR == &#34;TM&#34;:
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             elif isinstance(dicomTag, tuple):
                 try:
                     attribute = dataset[dicomTag].value
-                    if dataset[dicomTag].VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset[dicomTag].VR == &#34;TM&#34;: 
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             else:
                 try:
                     attribute = dataset[hex(dicomTag)].value
-                    if dataset[hex(dicomTag)].VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset[hex(dicomTag)].VR == &#34;TM&#34;:
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             del dataset
@@ -176,19 +182,25 @@ def getSeriesTagValues(imagePathList, dicomTag):
                 if isinstance(dicomTag, str):
                     try:
                         attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
-                        if datasetList[0].data_element(dicomTag).VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0].data_element(dicomTag).VR == &#34;TM&#34;: 
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 elif isinstance(dicomTag, tuple):
                     try:
                         attributeList = [dataset[dicomTag].value for dataset in datasetList]
-                        if datasetList[0][dicomTag].VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0][dicomTag].VR == &#34;TM&#34;: 
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 else:
                     try:
                         attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                        if datasetList[0][hex(dicomTag)].VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0][hex(dicomTag)].VR == &#34;TM&#34;:
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 attributeList = [0 if x is None else x for x in attributeList]
@@ -976,19 +988,25 @@ Output is : attribute</p></div>
             if isinstance(dicomTag, str):
                 try:
                     attribute = dataset.data_element(dicomTag).value
-                    if dataset.data_element(dicomTag).VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset.data_element(dicomTag).VR == &#34;TM&#34;:
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             elif isinstance(dicomTag, tuple):
                 try:
                     attribute = dataset[dicomTag].value
-                    if dataset[dicomTag].VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset[dicomTag].VR == &#34;TM&#34;: 
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             else:
                 try:
                     attribute = dataset[hex(dicomTag)].value
-                    if dataset[hex(dicomTag)].VR == &#34;TM&#34;: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
+                    if dataset[hex(dicomTag)].VR == &#34;TM&#34;:
+                        if &#34;.&#34; in attribute: attribute = (datetime.strptime(attribute, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds()
+                        else: attribute = (datetime.strptime(attribute, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds()
                 except:
                     return None
             del dataset
@@ -1152,19 +1170,25 @@ Removing these repetitions will be up to the developer of the specific algorithm
                 if isinstance(dicomTag, str):
                     try:
                         attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
-                        if datasetList[0].data_element(dicomTag).VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0].data_element(dicomTag).VR == &#34;TM&#34;: 
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 elif isinstance(dicomTag, tuple):
                     try:
                         attributeList = [dataset[dicomTag].value for dataset in datasetList]
-                        if datasetList[0][dicomTag].VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0][dicomTag].VR == &#34;TM&#34;: 
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 else:
                     try:
                         attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                        if datasetList[0][hex(dicomTag)].VR == &#34;TM&#34;: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if datasetList[0][hex(dicomTag)].VR == &#34;TM&#34;:
+                            if &#34;.&#34; in attributeList[0]: attributeList = [(datetime.strptime(attr, &#34;%H%M%S.%f&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                            else: attributeList = [(datetime.strptime(attr, &#34;%H%M%S&#34;) - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 attributeList = [0 if x is None else x for x in attributeList]

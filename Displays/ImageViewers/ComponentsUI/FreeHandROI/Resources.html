@@ -26,19 +26,27 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">MAGNIFYING_GLASS_CURSOR = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/Magnifying_Glass.png&#39;
-PEN_CURSOR = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/pencil.png&#39;
-BRUSH_CURSOR = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/paint_brush.png&#39;
-ERASER_CURSOR = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/erasor.png&#39;
-DELETE_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/delete_icon.png&#39;
-NEW_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/new_icon.png&#39;
-RESET_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/reset_icon.png&#39;
-SAVE_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/save_icon.png&#39;
-LOAD_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/load_icon.png&#39;
-EXPORT_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/export.png&#39;
-CONTRAST_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/contrast_icon.png&#39;
-BRIGHTNESS_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/brightness_icon.png&#39;
-APPLY_SERIES_ICON = &#39;Displays/ImageViewers/ComponentsUI/FreeHandROI/Icons/applySeries_icon.png&#39;</code></pre>
+<pre><code class="python">import os, sys, pathlib
+if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+    directory = pathlib.Path(sys._MEIPASS)
+else:
+    directory = os.path.join(pathlib.Path().absolute(), &#39;Displays&#39;)
+
+
+MAGNIFYING_GLASS_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;Magnifying_Glass.png&#39;)
+PEN_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;pencil.png&#39;)
+BRUSH_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;paint_brush.png&#39;)
+ERASER_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;erasor.png&#39;)
+DELETE_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;delete_icon.png&#39;)
+NEW_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;new_icon.png&#39;)
+RESET_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;reset_icon.png&#39;)
+SAVE_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;save_icon.png&#39;)
+LOAD_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;load_icon.png&#39;)
+EXPORT_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;export.png&#39;)
+CONTRAST_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;contrast_icon.png&#39;)
+BRIGHTNESS_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;brightness_icon.png&#39;)
+APPLY_SERIES_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;applySeries_icon.png&#39;)
+SLIDER_ICON = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;Images&#39;,&#39;slider_icon.png&#39;)</code></pre>
 </details>
 </section>
 <section>
