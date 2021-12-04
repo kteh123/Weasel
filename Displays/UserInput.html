@@ -36,7 +36,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def userInput(*fields, title=&#34;User input window&#34;):
+def userInput(*fields, help_text=&#34;&#34;, title=&#34;User input window&#34;):
     &#34;&#34;&#34;
     Creates a pop-up window to get user input.
     
@@ -157,7 +157,7 @@ def userInput(*fields, title=&#34;User input window&#34;):
 
     # call the inputWindow
             
-    paramList = inputWindow(Dict, title=title, lists=lists)
+    paramList = inputWindow(Dict, title=title, helpText=help_text, lists=lists)
     if paramList is None: 
         return 1, fields
 
@@ -622,7 +622,7 @@ inputWindow(paramDict, lists=[algorithmList, natureList])</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.UserInput.userInput"><code class="name flex">
-<span>def <span class="ident">userInput</span></span>(<span>*fields, title='User input window')</span>
+<span>def <span class="ident">userInput</span></span>(<span>*fields, help_text='', title='User input window')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a pop-up window to get user input.</p>
@@ -654,7 +654,7 @@ the value selected by the user.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def userInput(*fields, title=&#34;User input window&#34;):
+<pre><code class="python">def userInput(*fields, help_text=&#34;&#34;, title=&#34;User input window&#34;):
     &#34;&#34;&#34;
     Creates a pop-up window to get user input.
     
@@ -775,7 +775,7 @@ the value selected by the user.</p>
 
     # call the inputWindow
             
-    paramList = inputWindow(Dict, title=title, lists=lists)
+    paramList = inputWindow(Dict, title=title, helpText=help_text, lists=lists)
     if paramList is None: 
         return 1, fields
 

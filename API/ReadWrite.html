@@ -121,11 +121,11 @@ class ReadWrite():
         self.treeView.close()  
         self.DICOMFolder = &#39;&#39;  
 
-    def user_input(self, *fields, title=&#34;User input window&#34;):
+    def user_input(self, *fields, help_text=&#34;&#34;, title=&#34;User input window&#34;):
         &#34;&#34;&#34;
         Launches a window to get user input.
         &#34;&#34;&#34; 
-        return userInput(*fields, title=title)       
+        return userInput(*fields, help_text=help_text, title=title)       
 
     def data_folder(self):
         &#34;&#34;&#34;
@@ -274,11 +274,11 @@ class ReadWrite():
         self.treeView.close()  
         self.DICOMFolder = &#39;&#39;  
 
-    def user_input(self, *fields, title=&#34;User input window&#34;):
+    def user_input(self, *fields, help_text=&#34;&#34;, title=&#34;User input window&#34;):
         &#34;&#34;&#34;
         Launches a window to get user input.
         &#34;&#34;&#34; 
-        return userInput(*fields, title=title)       
+        return userInput(*fields, help_text=help_text, title=title)       
 
     def data_folder(self):
         &#34;&#34;&#34;
@@ -579,7 +579,7 @@ class ReadWrite():
 </details>
 </dd>
 <dt id="WEASEL.API.ReadWrite.ReadWrite.user_input"><code class="name flex">
-<span>def <span class="ident">user_input</span></span>(<span>self, *fields, title='User input window')</span>
+<span>def <span class="ident">user_input</span></span>(<span>self, *fields, help_text='', title='User input window')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Launches a window to get user input.</p></div>
@@ -587,11 +587,11 @@ class ReadWrite():
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def user_input(self, *fields, title=&#34;User input window&#34;):
+<pre><code class="python">def user_input(self, *fields, help_text=&#34;&#34;, title=&#34;User input window&#34;):
     &#34;&#34;&#34;
     Launches a window to get user input.
     &#34;&#34;&#34; 
-    return userInput(*fields, title=title)       </code></pre>
+    return userInput(*fields, help_text=help_text, title=title)       </code></pre>
 </details>
 </dd>
 </dl>

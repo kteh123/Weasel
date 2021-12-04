@@ -48,16 +48,10 @@ from PyQt5.QtWidgets import (QApplication,
                             QComboBox)
 
 import os
-import scipy
-import matplotlib.pyplot as plt
-from matplotlib import cm
 import numpy as np
 import math
-from scipy.ndimage.morphology import binary_dilation, binary_closing
-from scipy.stats import iqr
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 import DICOM.SaveDICOM_Image as SaveDICOM_Image
-import Trash.InputDialog as inputDialog # obsolete - replace by user_input
 
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView import GraphicsView
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
@@ -278,17 +272,14 @@ class ImageViewerROI(QMdiSubWindow):
             #   1. The user first loads a series of DICOM images
             #   2. Then the user chooses the series with the mask that will overlay the current viewer.
 
-            # Prompt Windows to select Series
-            paramDict = {&#34;Series&#34;:&#34;listview&#34;}
-            helpMsg = &#34;Select a Series with ROI&#34;
-            #studyID = self.selectedStudy
             study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+            helpMsg = &#34;Select a Series with ROI&#34;
             listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
-            inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
-            listParams = inputDlg.returnListParameterValues()
-            if inputDlg.closeInputDialog() == False:
-                # for series ID in listParams[0]: # more than 1 ROI may be selected
-                seriesID = listParams[0][0] # Temporary, only the first ROI
+            list_input = {&#34;type&#34;:&#34;listview&#34;, &#34;label&#34;:&#34;Series&#34;, &#34;list&#34;: listSeries}
+            cancel, listParams = self.weasel.user_input(list_input, help_text=helpMsg, title=&#34;Load ROI&#34;)
+            if cancel: return
+            else:
+                seriesID = listSeries[listParams[0][&#39;value&#39;][0]]
                 imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     #targetPath = [i.path for i in self.weasel.images()]
@@ -310,8 +301,6 @@ class ImageViewerROI(QMdiSubWindow):
                     self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                    horizontalFlag = None
-                    verticalFlag = None
                     for maskFile in imagePathList:
                         dataset = ReadDICOM_Image.getDicomDataset(maskFile)
                         maskArray = ReadDICOM_Image.getPixelArray(dataset)
@@ -321,36 +310,12 @@ class ImageViewerROI(QMdiSubWindow):
                             try:
                                 coords = zip(*affineResults)
                                 tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                                #if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
-                                #if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
                             except:
                                 pass
-                    # Will need an Enhanced MRI as example  
-                    #if ~hasattr(dataset_original, &#39;PerFrameFunctionalGroupsSequence&#39;):
-                        #if horizontalFlag == True:
-                            #struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
-                        #elif verticalFlag == True:
-                            #struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
                     self.weasel.progressBar.set_value(index+2)
                 self.weasel.progressBar.close()
 
-                # Faster approach - 3D and no dilation
-                #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
-                #dataset_original = ReadDICOM_Image.getDicomDataset(targetPath)
-                #dataset = ReadDICOM_Image.getDicomDataset(imagePathList[0])
-                #affineResults = ReadDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
-                #if affineResults:
-                    #try:
-                        #coords = zip(*affineResults)
-                        #maskList[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                    #except:
-                        #pass
-            
                 # First populate the ROI_Storage data structure in a loop
                 self.graphicsView.currentROIName = region
                 for imageNumber in range(len(maskList)):  #To Do
@@ -768,7 +733,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.cmbNamesROIs.blockSignals(True)
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem(&#34;region1&#34;)
-            self.cmbNamesROIs.setCurrentIndex(0) 
+            self.cmbNamesROIs.setCurrentIndex(0)
             self.cmbNamesROIs.blockSignals(False)
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -1136,17 +1101,14 @@ sliders for browsing series of images.</p></div>
             #   1. The user first loads a series of DICOM images
             #   2. Then the user chooses the series with the mask that will overlay the current viewer.
 
-            # Prompt Windows to select Series
-            paramDict = {&#34;Series&#34;:&#34;listview&#34;}
-            helpMsg = &#34;Select a Series with ROI&#34;
-            #studyID = self.selectedStudy
             study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+            helpMsg = &#34;Select a Series with ROI&#34;
             listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
-            inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
-            listParams = inputDlg.returnListParameterValues()
-            if inputDlg.closeInputDialog() == False:
-                # for series ID in listParams[0]: # more than 1 ROI may be selected
-                seriesID = listParams[0][0] # Temporary, only the first ROI
+            list_input = {&#34;type&#34;:&#34;listview&#34;, &#34;label&#34;:&#34;Series&#34;, &#34;list&#34;: listSeries}
+            cancel, listParams = self.weasel.user_input(list_input, help_text=helpMsg, title=&#34;Load ROI&#34;)
+            if cancel: return
+            else:
+                seriesID = listSeries[listParams[0][&#39;value&#39;][0]]
                 imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
                 if self.weasel.series != []:
                     #targetPath = [i.path for i in self.weasel.images()]
@@ -1168,8 +1130,6 @@ sliders for browsing series of images.</p></div>
                     self.weasel.progressBar.set_value(index + 1)
                     dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                     tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                    horizontalFlag = None
-                    verticalFlag = None
                     for maskFile in imagePathList:
                         dataset = ReadDICOM_Image.getDicomDataset(maskFile)
                         maskArray = ReadDICOM_Image.getPixelArray(dataset)
@@ -1179,36 +1139,12 @@ sliders for browsing series of images.</p></div>
                             try:
                                 coords = zip(*affineResults)
                                 tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                                #if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
-                                #if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
                             except:
                                 pass
-                    # Will need an Enhanced MRI as example  
-                    #if ~hasattr(dataset_original, &#39;PerFrameFunctionalGroupsSequence&#39;):
-                        #if horizontalFlag == True:
-                            #struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
-                        #elif verticalFlag == True:
-                            #struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
-                            #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                            #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                     maskList.append(tempArray)
                     self.weasel.progressBar.set_value(index+2)
                 self.weasel.progressBar.close()
 
-                # Faster approach - 3D and no dilation
-                #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
-                #dataset_original = ReadDICOM_Image.getDicomDataset(targetPath)
-                #dataset = ReadDICOM_Image.getDicomDataset(imagePathList[0])
-                #affineResults = ReadDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
-                #if affineResults:
-                    #try:
-                        #coords = zip(*affineResults)
-                        #maskList[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                    #except:
-                        #pass
-            
                 # First populate the ROI_Storage data structure in a loop
                 self.graphicsView.currentROIName = region
                 for imageNumber in range(len(maskList)):  #To Do
@@ -1626,7 +1562,7 @@ sliders for browsing series of images.</p></div>
             self.cmbNamesROIs.blockSignals(True)
             self.cmbNamesROIs.clear()
             self.cmbNamesROIs.addItem(&#34;region1&#34;)
-            self.cmbNamesROIs.setCurrentIndex(0) 
+            self.cmbNamesROIs.setCurrentIndex(0)
             self.cmbNamesROIs.blockSignals(False)
             self.roiMeanTxt.clear()
             self.roiStdDevTxt.clear()
@@ -1912,7 +1848,7 @@ sliders for browsing series of images.</p></div>
         self.cmbNamesROIs.blockSignals(True)
         self.cmbNamesROIs.clear()
         self.cmbNamesROIs.addItem(&#34;region1&#34;)
-        self.cmbNamesROIs.setCurrentIndex(0) 
+        self.cmbNamesROIs.setCurrentIndex(0)
         self.cmbNamesROIs.blockSignals(False)
         self.roiMeanTxt.clear()
         self.roiStdDevTxt.clear()
@@ -2149,17 +2085,14 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         #   1. The user first loads a series of DICOM images
         #   2. Then the user chooses the series with the mask that will overlay the current viewer.
 
-        # Prompt Windows to select Series
-        paramDict = {&#34;Series&#34;:&#34;listview&#34;}
-        helpMsg = &#34;Select a Series with ROI&#34;
-        #studyID = self.selectedStudy
         study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
+        helpMsg = &#34;Select a Series with ROI&#34;
         listSeries = [series.attrib[&#39;id&#39;] for series in study] # if &#39;ROI&#39; in series.attrib[&#39;id&#39;]]
-        inputDlg = inputDialog.ParameterInputDialog(paramDict, title= &#34;Load ROI&#34;, helpText=helpMsg, lists=[listSeries])
-        listParams = inputDlg.returnListParameterValues()
-        if inputDlg.closeInputDialog() == False:
-            # for series ID in listParams[0]: # more than 1 ROI may be selected
-            seriesID = listParams[0][0] # Temporary, only the first ROI
+        list_input = {&#34;type&#34;:&#34;listview&#34;, &#34;label&#34;:&#34;Series&#34;, &#34;list&#34;: listSeries}
+        cancel, listParams = self.weasel.user_input(list_input, help_text=helpMsg, title=&#34;Load ROI&#34;)
+        if cancel: return
+        else:
+            seriesID = listSeries[listParams[0][&#39;value&#39;][0]]
             imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
             if self.weasel.series != []:
                 #targetPath = [i.path for i in self.weasel.images()]
@@ -2181,8 +2114,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                 self.weasel.progressBar.set_value(index + 1)
                 dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
                 tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                horizontalFlag = None
-                verticalFlag = None
                 for maskFile in imagePathList:
                     dataset = ReadDICOM_Image.getDicomDataset(maskFile)
                     maskArray = ReadDICOM_Image.getPixelArray(dataset)
@@ -2192,36 +2123,12 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                         try:
                             coords = zip(*affineResults)
                             tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                            #if len(np.unique([idx[0] for idx in affineResults])) == 1 and len(np.unique([idx[1] for idx in affineResults])) != 1: horizontalFlag = True
-                            #if len(np.unique([idx[1] for idx in affineResults])) == 1 and len(np.unique([idx[0] for idx in affineResults])) != 1: verticalFlag = True
                         except:
                             pass
-                # Will need an Enhanced MRI as example  
-                #if ~hasattr(dataset_original, &#39;PerFrameFunctionalGroupsSequence&#39;):
-                    #if horizontalFlag == True:
-                        #struct_elm = np.ones((int(dataset_original.SliceThickness / dataset.PixelSpacing[0]), 1)) # Change /2 value here
-                        #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                        #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
-                    #elif verticalFlag == True:
-                        #struct_elm = np.ones((1, int(dataset_original.SliceThickness / dataset.PixelSpacing[1]))) # Change /2 value here
-                        #tempArray = binary_dilation(tempArray, structure=struct_elm).astype(int)
-                        #tempArray = binary_closing(tempArray, structure=struct_elm).astype(int)
                 maskList.append(tempArray)
                 self.weasel.progressBar.set_value(index+2)
             self.weasel.progressBar.close()
 
-            # Faster approach - 3D and no dilation
-            #maskList = np.zeros(np.shape(ReadDICOM_Image.returnSeriesPixelArray(targetPath)))
-            #dataset_original = ReadDICOM_Image.getDicomDataset(targetPath)
-            #dataset = ReadDICOM_Image.getDicomDataset(imagePathList[0])
-            #affineResults = ReadDICOM_Image.mapMaskToImage(maskInput, dataset, dataset_original)
-            #if affineResults:
-                #try:
-                    #coords = zip(*affineResults)
-                    #maskList[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                #except:
-                    #pass
-        
             # First populate the ROI_Storage data structure in a loop
             self.graphicsView.currentROIName = region
             for imageNumber in range(len(maskList)):  #To Do
