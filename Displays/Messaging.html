@@ -40,7 +40,8 @@ class Message():
 
     def __init__(self,
             parent = None,
-            message = &#34;Your message here&#34;):
+            message = &#34;Your message here&#34;,
+            title = &#34;Message ...&#34;):
 
         self.parent = parent
 
@@ -58,7 +59,7 @@ class Message():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName(&#34;Message&#34;)
-            self.msgSubWindow.setWindowTitle(&#34;Message..&#34;)
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()
@@ -81,7 +82,8 @@ class ProgressBar():
             parent = None,
             value = 0,
             maximum = 100,
-            message = &#34;Your message here&#34;):
+            message = &#34;Your message here&#34;,
+            title = &#34;Progress bar&#34;):
 
         self.parent = parent
 
@@ -103,7 +105,7 @@ class ProgressBar():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName(&#34;Progress bar&#34;)
-            self.msgSubWindow.setWindowTitle(&#34;Progress bar&#34;)
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()
@@ -135,7 +137,7 @@ class ProgressBar():
 <dl>
 <dt id="WEASEL.Displays.Messaging.Message"><code class="flex name class">
 <span>class <span class="ident">Message</span></span>
-<span>(</span><span>parent=None, message='Your message here')</span>
+<span>(</span><span>parent=None, message='Your message here', title='Message ...')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -147,7 +149,8 @@ class ProgressBar():
 
     def __init__(self,
             parent = None,
-            message = &#34;Your message here&#34;):
+            message = &#34;Your message here&#34;,
+            title = &#34;Message ...&#34;):
 
         self.parent = parent
 
@@ -165,7 +168,7 @@ class ProgressBar():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName(&#34;Message&#34;)
-            self.msgSubWindow.setWindowTitle(&#34;Message..&#34;)
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()
@@ -214,7 +217,7 @@ class ProgressBar():
 </dd>
 <dt id="WEASEL.Displays.Messaging.ProgressBar"><code class="flex name class">
 <span>class <span class="ident">ProgressBar</span></span>
-<span>(</span><span>parent=None, value=0, maximum=100, message='Your message here')</span>
+<span>(</span><span>parent=None, value=0, maximum=100, message='Your message here', title='Progress bar')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -228,7 +231,8 @@ class ProgressBar():
             parent = None,
             value = 0,
             maximum = 100,
-            message = &#34;Your message here&#34;):
+            message = &#34;Your message here&#34;,
+            title = &#34;Progress bar&#34;):
 
         self.parent = parent
 
@@ -250,7 +254,7 @@ class ProgressBar():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName(&#34;Progress bar&#34;)
-            self.msgSubWindow.setWindowTitle(&#34;Progress bar&#34;)
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()

@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># from tqdm import trange, tqdm
+<pre><code class="python">from tqdm import trange, tqdm
 
 from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (QApplication, QMessageBox)
@@ -50,7 +50,7 @@ class Messaging():
         &#34;&#34;&#34;
         Restores the cursor into an arrow after it was set to hourglass 
         &#34;&#34;&#34;   
-        QApplication.restoreOverrideCursor()     
+        QApplication.restoreOverrideCursor()
 
     def information(self, msg=&#34;Message in the box&#34;, title=&#34;Window Title&#34;):
         &#34;&#34;&#34;
@@ -121,7 +121,17 @@ class Messaging():
             print(title + &#34;: &#34; + msg)
             print(&#34;=====================================&#34;)
         else:
-            self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;)
+            self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;, title = title)
+
+    def update_message(self, msg=None):
+        &#34;&#34;&#34;
+        Updates the message window with a new message.
+        &#34;&#34;&#34;
+        if self.cmd == True:
+            if msg is not None: print(msg)
+        else:
+            if msg is not None:
+                self.msgWindow.set_message(msg)
 
     def close_message(self):
         &#34;&#34;&#34;
@@ -153,7 +163,8 @@ class Messaging():
                 parent = self, 
                 message = (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), 
                 value = index, 
-                maximum = max)
+                maximum = max,
+                title = title)
 
     def update_progress_bar(self, index=0, msg=None):
         &#34;&#34;&#34;
@@ -164,6 +175,8 @@ class Messaging():
             self.tqdm_prog.update(index)
         else:
             self.progressBar.set_value(index)
+            if msg is not None:
+                self.progressBar.set_message(msg)
 
     def close_progress_bar(self):
         &#34;&#34;&#34;
@@ -215,7 +228,7 @@ class Messaging():
         &#34;&#34;&#34;
         Restores the cursor into an arrow after it was set to hourglass 
         &#34;&#34;&#34;   
-        QApplication.restoreOverrideCursor()     
+        QApplication.restoreOverrideCursor()
 
     def information(self, msg=&#34;Message in the box&#34;, title=&#34;Window Title&#34;):
         &#34;&#34;&#34;
@@ -286,7 +299,17 @@ class Messaging():
             print(title + &#34;: &#34; + msg)
             print(&#34;=====================================&#34;)
         else:
-            self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;)
+            self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;, title = title)
+
+    def update_message(self, msg=None):
+        &#34;&#34;&#34;
+        Updates the message window with a new message.
+        &#34;&#34;&#34;
+        if self.cmd == True:
+            if msg is not None: print(msg)
+        else:
+            if msg is not None:
+                self.msgWindow.set_message(msg)
 
     def close_message(self):
         &#34;&#34;&#34;
@@ -318,7 +341,8 @@ class Messaging():
                 parent = self, 
                 message = (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), 
                 value = index, 
-                maximum = max)
+                maximum = max,
+                title = title)
 
     def update_progress_bar(self, index=0, msg=None):
         &#34;&#34;&#34;
@@ -329,6 +353,8 @@ class Messaging():
             self.tqdm_prog.update(index)
         else:
             self.progressBar.set_value(index)
+            if msg is not None:
+                self.progressBar.set_message(msg)
 
     def close_progress_bar(self):
         &#34;&#34;&#34;
@@ -414,7 +440,7 @@ class Messaging():
     &#34;&#34;&#34;
     Restores the cursor into an arrow after it was set to hourglass 
     &#34;&#34;&#34;   
-    QApplication.restoreOverrideCursor()     </code></pre>
+    QApplication.restoreOverrideCursor()</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.Messaging.Messaging.error"><code class="name flex">
@@ -479,7 +505,7 @@ class Messaging():
         print(title + &#34;: &#34; + msg)
         print(&#34;=====================================&#34;)
     else:
-        self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;)</code></pre>
+        self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;, title = title)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.Messaging.Messaging.progress_bar"><code class="name flex">
@@ -518,7 +544,8 @@ and then update_progress_bar inside the iteration</p></div>
             parent = self, 
             message = (&#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;).format(index), 
             value = index, 
-            maximum = max)</code></pre>
+            maximum = max,
+            title = title)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.Messaging.Messaging.question"><code class="name flex">
@@ -573,6 +600,26 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
     self.statusBar.showMessage(msg)</code></pre>
 </details>
 </dd>
+<dt id="WEASEL.API.Messaging.Messaging.update_message"><code class="name flex">
+<span>def <span class="ident">update_message</span></span>(<span>self, msg=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates the message window with a new message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_message(self, msg=None):
+    &#34;&#34;&#34;
+    Updates the message window with a new message.
+    &#34;&#34;&#34;
+    if self.cmd == True:
+        if msg is not None: print(msg)
+    else:
+        if msg is not None:
+            self.msgWindow.set_message(msg)</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.API.Messaging.Messaging.update_progress_bar"><code class="name flex">
 <span>def <span class="ident">update_progress_bar</span></span>(<span>self, index=0, msg=None)</span>
 </code></dt>
@@ -590,7 +637,9 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
         if msg is not None: print(msg)
         self.tqdm_prog.update(index)
     else:
-        self.progressBar.set_value(index)</code></pre>
+        self.progressBar.set_value(index)
+        if msg is not None:
+            self.progressBar.set_message(msg)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.Messaging.Messaging.warning"><code class="name flex">
@@ -646,6 +695,7 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
 <li><code><a title="WEASEL.API.Messaging.Messaging.progress_bar" href="#WEASEL.API.Messaging.Messaging.progress_bar">progress_bar</a></code></li>
 <li><code><a title="WEASEL.API.Messaging.Messaging.question" href="#WEASEL.API.Messaging.Messaging.question">question</a></code></li>
 <li><code><a title="WEASEL.API.Messaging.Messaging.set_status" href="#WEASEL.API.Messaging.Messaging.set_status">set_status</a></code></li>
+<li><code><a title="WEASEL.API.Messaging.Messaging.update_message" href="#WEASEL.API.Messaging.Messaging.update_message">update_message</a></code></li>
 <li><code><a title="WEASEL.API.Messaging.Messaging.update_progress_bar" href="#WEASEL.API.Messaging.Messaging.update_progress_bar">update_progress_bar</a></code></li>
 <li><code><a title="WEASEL.API.Messaging.Messaging.warning" href="#WEASEL.API.Messaging.Messaging.warning">warning</a></code></li>
 </ul>

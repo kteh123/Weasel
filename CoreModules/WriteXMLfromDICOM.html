@@ -38,8 +38,6 @@ from pydicom import Dataset, DataElement, dcmread
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import defaultdict
-import Trash.MessageWindow as messageWindow
-
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox)
 
 import logging
@@ -101,7 +99,7 @@ def scan_tree(scan_directory):
             yield entry
 
 
-def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
+def get_scan_data(scan_directory, progBarMsg, self):
     &#34;&#34;&#34;This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     &#34;&#34;&#34;
@@ -112,13 +110,13 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
         file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
         file_list.sort(key=natural_keys)
         multiframe_files_list = list()
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
+        self.progress_bar(max=len(file_list), index=0, msg=progBarMsg, title=&#34;Loading DICOM&#34;)
         fileCounter = 0
         multiframeCounter = 0
         for filepath in file_list:
             try:
                 fileCounter += 1
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+                self.update_progress_bar(index=fileCounter)
                 list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;AcquisitionTime&#39;,
                              &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
                              &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;PerFrameFunctionalGroupsSequence&#39;,
@@ -154,8 +152,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                         if buttonReply == QMessageBox.Cancel:
                             print(&#34;User chose not to convert Multiframe DICOM. Loading process halted.&#34;)
-                            msgWindow.hideProgressBar(self)
-                            msgWindow.closeMessageSubWindow(self)
+                            self.close_progress_bar()
                             return None, None
                     if os.name ==&#39;nt&#39;:
                         multiframeScript = &#39;emf2sf.bat&#39;
@@ -182,7 +179,7 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     #elif hasattr(dataset, &#39;SequenceName&#39;):
                     #    fileBaseFlag = fileBase + &#34;00_&#34; + str(dataset.SequenceName)
                     # Run the dcm4che emf2sf
-                    msgWindow.displayMessageSubWindow(self, &#34;Multiframe DICOM detected. Converting to single frame ...&#34;)
+                    self.update_progress_bar(index=fileCounter, msg=&#34;Multiframe DICOM detected. Converting to single frame ...&#34;)
                     multiframeCommand = [multiframeProgram, &#34;--inst-no&#34;, &#34;&#39;%s&#39;&#34;, &#34;--not-chseries&#34;, &#34;--out-dir&#34;, multiframeDir, &#34;--out-file&#34;, fileBaseFlag, filepath]
                     try:
                         commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
@@ -197,9 +194,6 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
                         # Discussion about removing the original file or not
                         os.remove(filepath)
-                        msgWindow.displayMessageSubWindow(self, progBarMsg)
-                        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
-                        msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                     else:
                         print(&#39;Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n&#39;\
                               &#39;The DICOM file &#39; + filepath + &#39; was not deleted.&#39;)
@@ -211,39 +205,39 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
                     list_dicom.extend([dataset])
             except:
                 continue
-        
+        self.close_progress_bar()
         # The following segment is to deal with the multiframe images if there is any.
         # The np.unique removes files that might have appended more than once previously
         fileCounter = 0
-        for singleframe in np.unique(multiframe_files_list):
-            try:
-                fileCounter += 1
-                msgWindow.displayMessageSubWindow(self, &#34;Reading {} single frame DICOM files converted earlier&#34;.format(len(np.unique(multiframe_files_list))))
-                msgWindow.setMsgWindowProgBarMaxValue(self, len(np.unique(multiframe_files_list)))
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-                list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;SliceLocation&#39;, (0x2001, 0x100a),
-                             &#39;AcquisitionTime&#39;, &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
-                             &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;]
-                dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
-                # The multiframe converter stores SliceLocation in tag (0x2001, 0x100a), so this step is to store it in SliceLocation.
-                dicomTag = (0x2001, 0x100a)
-                sliceValue = dataset[dicomTag].value
-                if not hasattr(dataset, &#39;SliceLocation&#39;):
-                    elem = DataElement(0x00201041, &#39;DS&#39;, sliceValue)
-                    with dcmread(singleframe, force=True) as ds:
-                        ds.add(elem)
-                        ds.save_as(singleframe)
-                dataset.SliceLocation = sliceValue
-                if (hasattr(dataset, &#39;InstanceNumber&#39;) and hasattr(dataset, &#39;SOPInstanceUID&#39;) and 
-                    any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;])
-                    and (&#39;DIRFILE&#39; not in singleframe) and (&#39;DICOMDIR&#39; not in singleframe)):
-                    list_paths.extend([singleframe])
-                    list_dicom.extend([dataset])
-            except:
-                continue
-
+        if len(np.unique(multiframe_files_list)) &gt; 0:
+            self.progress_bar(max=len(np.unique(multiframe_files_list)), index=0, msg=&#34;Reading {} single frame DICOM files converted earlier&#34;.format(len(np.unique(multiframe_files_list))), title=&#34;Load ROI&#34;)
+            for singleframe in np.unique(multiframe_files_list):
+                try:
+                    fileCounter += 1
+                    self.update_progress_bar(index=fileCounter)
+                    list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;SliceLocation&#39;, (0x2001, 0x100a),
+                                 &#39;AcquisitionTime&#39;, &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
+                                 &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;]
+                    dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
+                    # The multiframe converter stores SliceLocation in tag (0x2001, 0x100a), so this step is to store it in SliceLocation.
+                    dicomTag = (0x2001, 0x100a)
+                    sliceValue = dataset[dicomTag].value
+                    if not hasattr(dataset, &#39;SliceLocation&#39;):
+                        elem = DataElement(0x00201041, &#39;DS&#39;, sliceValue)
+                        with dcmread(singleframe, force=True) as ds:
+                            ds.add(elem)
+                            ds.save_as(singleframe)
+                    dataset.SliceLocation = sliceValue
+                    if (hasattr(dataset, &#39;InstanceNumber&#39;) and hasattr(dataset, &#39;SOPInstanceUID&#39;) and 
+                        any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;])
+                        and (&#39;DIRFILE&#39; not in singleframe) and (&#39;DICOMDIR&#39; not in singleframe)):
+                        list_paths.extend([singleframe])
+                        list_dicom.extend([dataset])
+                except:
+                    continue
+            self.close_progress_bar()
         if len(list_dicom) == 0:
-            msgWindow.displayMessageSubWindow(self, &#34;No DICOM files present in the selected folder&#34;)
+            self.message(msg=&#34;No DICOM files present in the selected folder&#34;)
             raise FileNotFoundError(&#39;No DICOM files present in the selected folder&#39;)
 
         return list_dicom, list_paths
@@ -255,40 +249,23 @@ def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
 def get_study_series(dicom):
     try:
         logger.info(&#34;WriteXMLfromDICOM.get_study_series called&#34;)
-        #if hasattr(dicom, &#39;PatientID&#39;):
         subject = str(dicom.PatientID)
-        #elif hasattr(dicom, &#39;PatientName&#39;):
-        #    subject = str(dicom.PatientName)
-        #else:
-        #    subject = &#34;No Subject Name&#34;
         study = str(dicom.StudyDate) + &#34;_&#34; + str(dicom.StudyTime).split(&#34;.&#34;)[0] + &#34;_&#34; + str(dicom.StudyDescription)
         sequence = str(dicom.SeriesDescription)
-        #if hasattr(dicom, &#34;SeriesDescription&#34;):
-        #elif hasattr(dicom, &#34;SequenceName&#34;):
-        #    sequence = str(dicom.SequenceName)
-        #elif hasattr(dicom, &#34;ProtocolName&#34;):
-        #    sequence = str(dicom.ProtocolName)
-        #else:
-        #    sequence = &#34;No Sequence Name&#34;
         series_number = str(dicom.SeriesNumber)
         study_uid = str(dicom.StudyInstanceUID)
         series_uid = str(dicom.SeriesInstanceUID)
-
         return subject, study, sequence, series_number, study_uid, series_uid
     except Exception as e:
         print(&#39;Error in WriteXMLfromDICOM.get_study_series: &#39; + str(e))
         logger.exception(&#39;Error in WriteXMLfromDICOM.get_study_series: &#39; + str(e))
 
 
-def build_dictionary(list_dicom, msgWindow, self):
+def build_dictionary(list_dicom):
     try:
         logger.info(&#34;WriteXMLfromDICOM.build_dictionary called&#34;)
         xml_dict = {}
-        fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for dicomfile in list_dicom:
-            fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number, _, _ = get_study_series(dicomfile)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
@@ -302,7 +279,7 @@ def build_dictionary(list_dicom, msgWindow, self):
         logger.exception(&#39;Error in WriteXMLfromDICOM.build_dictionary: &#39; + str(e))
 
 
-def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
+def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
     &#34;&#34;&#34;This method opens all DICOM files in the given list and saves 
         information from each file individually to an XML tree/structure.
     &#34;&#34;&#34;
@@ -324,11 +301,7 @@ def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
                     series_element = ET.SubElement(study_element, &#39;series&#39;)
                     series_element.set(&#39;id&#39;, series)
                     series_element.set(&#39;checked&#39;, &#39;False&#39;)  #added by SS 16.03.21
-        fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for index, dicomfile in enumerate(list_dicom):
-            fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number, study_uid, series_uid = get_study_series(dicomfile)
             subject_search_string = &#34;./*[@id=&#39;&#34; + subject + &#34;&#39;]&#34;
             study_root = DICOM_XML_object.find(subject_search_string)
@@ -446,16 +419,15 @@ def makeDICOM_XML_File(self, scan_directory):
                     + &#39;subdirectory(s)&#39;
 
             progBarMsg = &#34;Collecting {} files from the {}&#34;.format(numFiles, folder)
-            messageWindow.displayMessageSubWindow(self, progBarMsg)
-            scans, paths = get_scan_data(scan_directory, messageWindow, progBarMsg, self)
+            scans, paths = get_scan_data(scan_directory, progBarMsg, self)
             if scans and paths:
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Reading data from each DICOM file&lt;/H4&gt;&#34;)
-                dictionary = build_dictionary(scans, messageWindow, self)
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Writing DICOM data to an XML file&lt;/H4&gt;&#34;)
-                xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Saving XML file&lt;/H4&gt;&#34;)
+                self.message(msg=&#34;Reading data from each DICOM file&#34;, title=&#34;Loading DICOM&#34;)
+                dictionary = build_dictionary(scans)
+                self.update_message(&#34;Writing DICOM data to an XML file&#34;)
+                xml = open_dicom_to_xml(dictionary, scans, paths)
+                self.update_message(&#34;Saving XML file&#34;)
                 fullFilePath = create_XML_file(xml, scan_directory)
-                self.msgSubWindow.close()
+                self.close_message()
                 end_time=time.time()
                 xmlCreationTime = end_time - start_time 
                 #print(&#39;XML file creation time = {}&#39;.format(xmlCreationTime))
@@ -493,7 +465,7 @@ def makeDICOM_XML_File(self, scan_directory):
 </details>
 </dd>
 <dt id="WEASEL.CoreModules.WriteXMLfromDICOM.build_dictionary"><code class="name flex">
-<span>def <span class="ident">build_dictionary</span></span>(<span>list_dicom, msgWindow, self)</span>
+<span>def <span class="ident">build_dictionary</span></span>(<span>list_dicom)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -501,15 +473,11 @@ def makeDICOM_XML_File(self, scan_directory):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def build_dictionary(list_dicom, msgWindow, self):
+<pre><code class="python">def build_dictionary(list_dicom):
     try:
         logger.info(&#34;WriteXMLfromDICOM.build_dictionary called&#34;)
         xml_dict = {}
-        fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for dicomfile in list_dicom:
-            fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number, _, _ = get_study_series(dicomfile)
             if subject not in xml_dict:
                 xml_dict[subject] = defaultdict(list)
@@ -632,7 +600,7 @@ user to select the folder holding the DICOM files</p></div>
 </details>
 </dd>
 <dt id="WEASEL.CoreModules.WriteXMLfromDICOM.get_scan_data"><code class="name flex">
-<span>def <span class="ident">get_scan_data</span></span>(<span>scan_directory, msgWindow, progBarMsg, self)</span>
+<span>def <span class="ident">get_scan_data</span></span>(<span>scan_directory, progBarMsg, self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This method opens all DICOM files in the provided path recursively and saves
@@ -641,7 +609,7 @@ each file individually as a variable into a list/array.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_scan_data(scan_directory, msgWindow, progBarMsg, self):
+<pre><code class="python">def get_scan_data(scan_directory, progBarMsg, self):
     &#34;&#34;&#34;This method opens all DICOM files in the provided path recursively and saves 
         each file individually as a variable into a list/array.
     &#34;&#34;&#34;
@@ -652,13 +620,13 @@ each file individually as a variable into a list/array.</p></div>
         file_list = [item.path for item in scan_tree(scan_directory) if item.is_file()]
         file_list.sort(key=natural_keys)
         multiframe_files_list = list()
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
+        self.progress_bar(max=len(file_list), index=0, msg=progBarMsg, title=&#34;Loading DICOM&#34;)
         fileCounter = 0
         multiframeCounter = 0
         for filepath in file_list:
             try:
                 fileCounter += 1
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
+                self.update_progress_bar(index=fileCounter)
                 list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;AcquisitionTime&#39;,
                              &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
                              &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;PerFrameFunctionalGroupsSequence&#39;,
@@ -694,8 +662,7 @@ each file individually as a variable into a list/array.</p></div>
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                         if buttonReply == QMessageBox.Cancel:
                             print(&#34;User chose not to convert Multiframe DICOM. Loading process halted.&#34;)
-                            msgWindow.hideProgressBar(self)
-                            msgWindow.closeMessageSubWindow(self)
+                            self.close_progress_bar()
                             return None, None
                     if os.name ==&#39;nt&#39;:
                         multiframeScript = &#39;emf2sf.bat&#39;
@@ -722,7 +689,7 @@ each file individually as a variable into a list/array.</p></div>
                     #elif hasattr(dataset, &#39;SequenceName&#39;):
                     #    fileBaseFlag = fileBase + &#34;00_&#34; + str(dataset.SequenceName)
                     # Run the dcm4che emf2sf
-                    msgWindow.displayMessageSubWindow(self, &#34;Multiframe DICOM detected. Converting to single frame ...&#34;)
+                    self.update_progress_bar(index=fileCounter, msg=&#34;Multiframe DICOM detected. Converting to single frame ...&#34;)
                     multiframeCommand = [multiframeProgram, &#34;--inst-no&#34;, &#34;&#39;%s&#39;&#34;, &#34;--not-chseries&#34;, &#34;--out-dir&#34;, multiframeDir, &#34;--out-file&#34;, fileBaseFlag, filepath]
                     try:
                         commandResult = subprocess.call(multiframeCommand, stdout=subprocess.PIPE)
@@ -737,9 +704,6 @@ each file individually as a variable into a list/array.</p></div>
                                 multiframe_files_list.append(os.path.join(multiframeDir, new_file))
                         # Discussion about removing the original file or not
                         os.remove(filepath)
-                        msgWindow.displayMessageSubWindow(self, progBarMsg)
-                        msgWindow.setMsgWindowProgBarMaxValue(self, len(file_list))
-                        msgWindow.setMsgWindowProgBarValue(self, fileCounter)
                     else:
                         print(&#39;Error in dcm4che: Could not split the detected Multi-frame DICOM file.\n&#39;\
                               &#39;The DICOM file &#39; + filepath + &#39; was not deleted.&#39;)
@@ -751,39 +715,39 @@ each file individually as a variable into a list/array.</p></div>
                     list_dicom.extend([dataset])
             except:
                 continue
-        
+        self.close_progress_bar()
         # The following segment is to deal with the multiframe images if there is any.
         # The np.unique removes files that might have appended more than once previously
         fileCounter = 0
-        for singleframe in np.unique(multiframe_files_list):
-            try:
-                fileCounter += 1
-                msgWindow.displayMessageSubWindow(self, &#34;Reading {} single frame DICOM files converted earlier&#34;.format(len(np.unique(multiframe_files_list))))
-                msgWindow.setMsgWindowProgBarMaxValue(self, len(np.unique(multiframe_files_list)))
-                msgWindow.setMsgWindowProgBarValue(self, fileCounter)
-                list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;SliceLocation&#39;, (0x2001, 0x100a),
-                             &#39;AcquisitionTime&#39;, &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
-                             &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;]
-                dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
-                # The multiframe converter stores SliceLocation in tag (0x2001, 0x100a), so this step is to store it in SliceLocation.
-                dicomTag = (0x2001, 0x100a)
-                sliceValue = dataset[dicomTag].value
-                if not hasattr(dataset, &#39;SliceLocation&#39;):
-                    elem = DataElement(0x00201041, &#39;DS&#39;, sliceValue)
-                    with dcmread(singleframe, force=True) as ds:
-                        ds.add(elem)
-                        ds.save_as(singleframe)
-                dataset.SliceLocation = sliceValue
-                if (hasattr(dataset, &#39;InstanceNumber&#39;) and hasattr(dataset, &#39;SOPInstanceUID&#39;) and 
-                    any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;])
-                    and (&#39;DIRFILE&#39; not in singleframe) and (&#39;DICOMDIR&#39; not in singleframe)):
-                    list_paths.extend([singleframe])
-                    list_dicom.extend([dataset])
-            except:
-                continue
-
+        if len(np.unique(multiframe_files_list)) &gt; 0:
+            self.progress_bar(max=len(np.unique(multiframe_files_list)), index=0, msg=&#34;Reading {} single frame DICOM files converted earlier&#34;.format(len(np.unique(multiframe_files_list))), title=&#34;Load ROI&#34;)
+            for singleframe in np.unique(multiframe_files_list):
+                try:
+                    fileCounter += 1
+                    self.update_progress_bar(index=fileCounter)
+                    list_tags = [&#39;InstanceNumber&#39;, &#39;SOPInstanceUID&#39;, &#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;, &#39;SliceLocation&#39;, (0x2001, 0x100a),
+                                 &#39;AcquisitionTime&#39;, &#39;AcquisitionDate&#39;, &#39;SeriesTime&#39;, &#39;SeriesDate&#39;, &#39;PatientName&#39;, &#39;PatientID&#39;, &#39;StudyDate&#39;, &#39;StudyTime&#39;, 
+                                 &#39;SeriesDescription&#39;, &#39;StudyDescription&#39;, &#39;SequenceName&#39;, &#39;ProtocolName&#39;, &#39;SeriesNumber&#39;, &#39;StudyInstanceUID&#39;, &#39;SeriesInstanceUID&#39;]
+                    dataset = dcmread(singleframe, specific_tags=list_tags) # Check the force=True flag once in a while
+                    # The multiframe converter stores SliceLocation in tag (0x2001, 0x100a), so this step is to store it in SliceLocation.
+                    dicomTag = (0x2001, 0x100a)
+                    sliceValue = dataset[dicomTag].value
+                    if not hasattr(dataset, &#39;SliceLocation&#39;):
+                        elem = DataElement(0x00201041, &#39;DS&#39;, sliceValue)
+                        with dcmread(singleframe, force=True) as ds:
+                            ds.add(elem)
+                            ds.save_as(singleframe)
+                    dataset.SliceLocation = sliceValue
+                    if (hasattr(dataset, &#39;InstanceNumber&#39;) and hasattr(dataset, &#39;SOPInstanceUID&#39;) and 
+                        any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;])
+                        and (&#39;DIRFILE&#39; not in singleframe) and (&#39;DICOMDIR&#39; not in singleframe)):
+                        list_paths.extend([singleframe])
+                        list_dicom.extend([dataset])
+                except:
+                    continue
+            self.close_progress_bar()
         if len(list_dicom) == 0:
-            msgWindow.displayMessageSubWindow(self, &#34;No DICOM files present in the selected folder&#34;)
+            self.message(msg=&#34;No DICOM files present in the selected folder&#34;)
             raise FileNotFoundError(&#39;No DICOM files present in the selected folder&#39;)
 
         return list_dicom, list_paths
@@ -804,25 +768,12 @@ each file individually as a variable into a list/array.</p></div>
 <pre><code class="python">def get_study_series(dicom):
     try:
         logger.info(&#34;WriteXMLfromDICOM.get_study_series called&#34;)
-        #if hasattr(dicom, &#39;PatientID&#39;):
         subject = str(dicom.PatientID)
-        #elif hasattr(dicom, &#39;PatientName&#39;):
-        #    subject = str(dicom.PatientName)
-        #else:
-        #    subject = &#34;No Subject Name&#34;
         study = str(dicom.StudyDate) + &#34;_&#34; + str(dicom.StudyTime).split(&#34;.&#34;)[0] + &#34;_&#34; + str(dicom.StudyDescription)
         sequence = str(dicom.SeriesDescription)
-        #if hasattr(dicom, &#34;SeriesDescription&#34;):
-        #elif hasattr(dicom, &#34;SequenceName&#34;):
-        #    sequence = str(dicom.SequenceName)
-        #elif hasattr(dicom, &#34;ProtocolName&#34;):
-        #    sequence = str(dicom.ProtocolName)
-        #else:
-        #    sequence = &#34;No Sequence Name&#34;
         series_number = str(dicom.SeriesNumber)
         study_uid = str(dicom.StudyInstanceUID)
         series_uid = str(dicom.SeriesInstanceUID)
-
         return subject, study, sequence, series_number, study_uid, series_uid
     except Exception as e:
         print(&#39;Error in WriteXMLfromDICOM.get_study_series: &#39; + str(e))
@@ -858,16 +809,15 @@ which takes it's name from the scan folder.</p></div>
                     + &#39;subdirectory(s)&#39;
 
             progBarMsg = &#34;Collecting {} files from the {}&#34;.format(numFiles, folder)
-            messageWindow.displayMessageSubWindow(self, progBarMsg)
-            scans, paths = get_scan_data(scan_directory, messageWindow, progBarMsg, self)
+            scans, paths = get_scan_data(scan_directory, progBarMsg, self)
             if scans and paths:
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Reading data from each DICOM file&lt;/H4&gt;&#34;)
-                dictionary = build_dictionary(scans, messageWindow, self)
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Writing DICOM data to an XML file&lt;/H4&gt;&#34;)
-                xml = open_dicom_to_xml(dictionary, scans, paths, messageWindow, self)
-                messageWindow.displayMessageSubWindow(self,&#34;&lt;H4&gt;Saving XML file&lt;/H4&gt;&#34;)
+                self.message(msg=&#34;Reading data from each DICOM file&#34;, title=&#34;Loading DICOM&#34;)
+                dictionary = build_dictionary(scans)
+                self.update_message(&#34;Writing DICOM data to an XML file&#34;)
+                xml = open_dicom_to_xml(dictionary, scans, paths)
+                self.update_message(&#34;Saving XML file&#34;)
                 fullFilePath = create_XML_file(xml, scan_directory)
-                self.msgSubWindow.close()
+                self.close_message()
                 end_time=time.time()
                 xmlCreationTime = end_time - start_time 
                 #print(&#39;XML file creation time = {}&#39;.format(xmlCreationTime))
@@ -902,7 +852,7 @@ float regex comes from <a href="https://stackoverflow.com/a/12643073/190597">htt
 </details>
 </dd>
 <dt id="WEASEL.CoreModules.WriteXMLfromDICOM.open_dicom_to_xml"><code class="name flex">
-<span>def <span class="ident">open_dicom_to_xml</span></span>(<span>xml_dict, list_dicom, list_paths, msgWindow, self)</span>
+<span>def <span class="ident">open_dicom_to_xml</span></span>(<span>xml_dict, list_dicom, list_paths)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This method opens all DICOM files in the given list and saves
@@ -911,7 +861,7 @@ information from each file individually to an XML tree/structure.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def open_dicom_to_xml(xml_dict, list_dicom, list_paths, msgWindow, self):
+<pre><code class="python">def open_dicom_to_xml(xml_dict, list_dicom, list_paths):
     &#34;&#34;&#34;This method opens all DICOM files in the given list and saves 
         information from each file individually to an XML tree/structure.
     &#34;&#34;&#34;
@@ -933,11 +883,7 @@ information from each file individually to an XML tree/structure.</p></div>
                     series_element = ET.SubElement(study_element, &#39;series&#39;)
                     series_element.set(&#39;id&#39;, series)
                     series_element.set(&#39;checked&#39;, &#39;False&#39;)  #added by SS 16.03.21
-        fileCounter = 0
-        msgWindow.setMsgWindowProgBarMaxValue(self, len(list_dicom))
         for index, dicomfile in enumerate(list_dicom):
-            fileCounter += 1
-            msgWindow.setMsgWindowProgBarValue(self, fileCounter)
             subject, study, sequence, series_number, study_uid, series_uid = get_study_series(dicomfile)
             subject_search_string = &#34;./*[@id=&#39;&#34; + subject + &#34;&#39;]&#34;
             study_root = DICOM_XML_object.find(subject_search_string)
