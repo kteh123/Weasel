@@ -172,8 +172,11 @@ class GraphicsItem(QGraphicsObject):
         try:
             self.xMouseCoord = int(event.pos().x()) #columns
             self.yMouseCoord = int(event.pos().y()) #rows
-            self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
-            self.sigMouseHovered.emit(True)
+            maxRow, maxCol = self.pixelArray.shape
+            if self.yMouseCoord < maxRow and self.xMouseCoord < maxCol:
+                #only get pixel value when mouse pointer is over the image
+                self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
+                self.sigMouseHovered.emit(True)
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: '.format(self.xMouseCoord, self.yMouseCoord) + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.hoverMoveEvent: ' + str(e))
