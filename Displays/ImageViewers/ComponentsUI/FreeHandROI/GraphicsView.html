@@ -340,7 +340,7 @@ class GraphicsView(QGraphicsView):
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
-            self.sigReloadImage.emit()
+            #self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
@@ -661,7 +661,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
-            self.sigReloadImage.emit()
+            #self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
@@ -725,7 +725,7 @@ when zoom is not enabled</p></div>
         self.sigROIChanged.emit()
         self.dictROIs.deleteMask(self.currentROIName)
         self.sigROIDeleted.emit()
-        self.sigReloadImage.emit()
+        #self.sigReloadImage.emit()
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
