@@ -238,11 +238,15 @@ class TreeView():
 
 
     def callUnCheckTreeViewItems(self):
-        logger.info("TreeView.callUnCheckTreeViewItems called")
-        QApplication.setOverrideCursor(Qt.WaitCursor)
-        root = self.widget.invisibleRootItem()
-        self._unCheckTreeViewItems(root)
-        QApplication.restoreOverrideCursor()
+        try:
+            logger.info("TreeView.callUnCheckTreeViewItems called")
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            root = self.widget.invisibleRootItem()
+            self._unCheckTreeViewItems(root)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            print('Error in TreeView.callUnCheckTreeViewItems: ' + str(e))
+            logger.exception('Error in TreeView.callUnCheckTreeViewItems: ' + str(e))
 
 
     def _unCheckTreeViewItems(self, item):
@@ -253,7 +257,7 @@ class TreeView():
         ****************
         item  - A QTreeWidgetItem 
         """
-        logger.info("TreeView.unCheckTreeViewItems called")
+        logger.info("TreeView._unCheckTreeViewItems called")
         try:
             if item.childCount() > 0:
                 itemCount = item.childCount()
@@ -263,10 +267,10 @@ class TreeView():
                     childItem.setCheckState(0, Qt.Unchecked)
                     self._saveCheckedState(childItem)
                     item.treeWidget().blockSignals(False)
-                    self.unCheckTreeViewItems(childItem)
+                    self._unCheckTreeViewItems(childItem)
         except Exception as e:
-            print('Error in TreeView.unCheckTreeViewItems: ' + str(e))
-            logger.exception('Error in TreeView.unCheckTreeViewItems: ' + str(e))
+            print('Error in TreeView._unCheckTreeViewItems: ' + str(e))
+            logger.exception('Error in TreeView._unCheckTreeViewItems: ' + str(e))
 
 
     def expand(self):
