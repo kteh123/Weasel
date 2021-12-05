@@ -49,6 +49,9 @@ class GraphicsItem(QGraphicsObject):
 
     def setImage(self, pixelArray, roi, path):
         logger.info("GraphicsItem.setImage called")
+        self.origQImage = None
+        self.qImage = None
+        self.mask = None
         self.pixelArray = pixelArray
         if path is not None:
             minValue, maxValue = readLevels(path, self.pixelArray)
@@ -59,7 +62,6 @@ class GraphicsItem(QGraphicsObject):
         imgData, alpha = makeARGB(data=self.pixelArray, levels=[minValue, maxValue])
         self.origQImage = makeQImage(imgData, alpha)
         self.qImage = makeQImage(imgData, alpha)
-        self.mask = None
         if roi is not None:
             #add roi to pixel map
             self.addROItoImage(roi)
@@ -96,6 +98,7 @@ class GraphicsItem(QGraphicsObject):
 
 
     def paint(self, painter, option, widget):
+        """Built in PyQt function used to render the DICOM image"""
         logger.info("FreeHandROI.GraphicsItem.paint called")
         try:
             painter.setOpacity(1)
@@ -106,7 +109,7 @@ class GraphicsItem(QGraphicsObject):
         
 
     def boundingRect(self): 
-        logger.info("FreeHandROI.GraphicsItem.boundingRect called")
+        """Built in PyQt function used to render the DICOM image"""
         return QRectF(0,0,self.width, self.height)
 
 
@@ -402,6 +405,7 @@ class GraphicsItem(QGraphicsObject):
         try:
             self.qImage = None
             self.pixMap = None
+            self.mask = None
             self.qImage = self.origQImage
             self.pixMap = QPixmap.fromImage(self.qImage)
             self.update()
@@ -457,6 +461,7 @@ class GraphicsItem(QGraphicsObject):
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.addROItoImage: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.addROItoImage: ' + str(e))
+
 
     def getRoiMeanAndStd(self):
         logger.info("FreeHandROI.GraphicsItem.getRoiMeanAndStd called")
