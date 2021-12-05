@@ -691,10 +691,13 @@ class ImageViewerROI(QMdiSubWindow):
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
-            mask = None
-            if addMask  == True:
+            if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            
+            else:
+                #This is used when an image without ROIs needs to be displayed
+                #after the add new ROI button is clicked
+                mask = None
+
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
