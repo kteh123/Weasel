@@ -161,7 +161,8 @@ class ImageViewerROI(QMdiSubWindow):
 
     def connectSlotToSignalForROITools(self):
         self.btnDeleteROI.clicked.connect(self.graphicsView.deleteROI)
-        self.btnNewROI.clicked.connect(self.graphicsView.newROI)
+        self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
+        self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
         self.btnResetROI.clicked.connect(self.graphicsView.resetROI)
         self.btnSaveROI.clicked.connect(self.saveROI)
         self.btnLoad.clicked.connect(self.loadROI)
@@ -677,7 +678,7 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
 
             
-    def loadImageInImageItem(self): ###
+    def loadImageInImageItem(self, addMask=True): 
         try:
             logger.info("ImageViewerROI.loadImageInImageItem called")
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -688,7 +689,11 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
+                #always display the first ROI
+                mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            elif addMask == False:
+                mask = None
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -758,7 +763,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpGraphicsView(self):
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView) 
+        self.mainVerticalLayout.addWidget(self.graphicsView)         
 
 
     def setUpLevelsSpinBoxes(self):

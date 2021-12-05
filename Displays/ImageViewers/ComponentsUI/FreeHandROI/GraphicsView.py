@@ -121,7 +121,7 @@ class GraphicsView(QGraphicsView):
         self.zoomImage(event.angleDelta().y())
 
 
-    def fitItemInView(self):#, scale=True
+    def fitItemInView(self):
         logger.info("freeHandROI.GraphicsView.fitItemInView called")
         try:
             if self.graphicsItem is not None:
@@ -283,7 +283,6 @@ class GraphicsView(QGraphicsView):
             if self.dictROIs.hasRegionGotMask(self.currentROIName):
                 newRegion = self.dictROIs.getNextRegionName()
                 self.sigNewROI.emit(newRegion)
-                self.graphicsItem.reloadImage()
             else:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle("Add new ROI")
@@ -309,9 +308,11 @@ class GraphicsView(QGraphicsView):
     def deleteROI(self):
         logger.info("freeHandROI.GraphicsView.deleteROI called")
         try:
+            #print("Delete ROI {}".format(self.currentROIName))
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
+            self.sigReloadImage.emit()
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
