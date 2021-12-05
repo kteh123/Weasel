@@ -12,7 +12,8 @@ class Message():
 
     def __init__(self,
             parent = None,
-            message = "Your message here"):
+            message = "Your message here",
+            title = "Message ..."):
 
         self.parent = parent
 
@@ -30,7 +31,7 @@ class Message():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName("Message")
-            self.msgSubWindow.setWindowTitle("Message..")
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()
@@ -53,7 +54,8 @@ class ProgressBar():
             parent = None,
             value = 0,
             maximum = 100,
-            message = "Your message here"):
+            message = "Your message here",
+            title = "Progress bar"):
 
         self.parent = parent
 
@@ -75,7 +77,7 @@ class ProgressBar():
             self.msgSubWindow = QMdiSubWindow(parent.mdiArea)
             self.msgSubWindow.setAttribute(Qt.WA_DeleteOnClose)
             self.msgSubWindow.setObjectName("Progress bar")
-            self.msgSubWindow.setWindowTitle("Progress bar")
+            self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
              
         self.widget.show()
