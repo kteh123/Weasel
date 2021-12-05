@@ -719,10 +719,13 @@ class ImageViewerROI(QMdiSubWindow):
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
-            mask = None
-            if addMask  == True:
+            if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            
+            else:
+                #This is used when an image without ROIs needs to be displayed
+                #after the add new ROI button is clicked
+                mask = None
+
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -1554,10 +1557,13 @@ sliders for browsing series of images.</p></div>
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
-            mask = None
-            if addMask  == True:
+            if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            
+            else:
+                #This is used when an image without ROIs needs to be displayed
+                #after the add new ROI button is clicked
+                mask = None
+
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -2075,10 +2081,13 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
-        mask = None
-        if addMask  == True:
+        if addMask:
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-        
+        else:
+            #This is used when an image without ROIs needs to be displayed
+            #after the add new ROI button is clicked
+            mask = None
+
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
