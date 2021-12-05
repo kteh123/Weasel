@@ -30,6 +30,7 @@
 from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
 from Menus.Help import main as menuHelp
+from Menus.XNAT import main as menuXnat
 
 class EditMenus():
     &#34;&#34;&#34;
@@ -64,7 +65,13 @@ class EditMenus():
         &#34;&#34;&#34;
         Returns the default help menu
         &#34;&#34;&#34;    
-        return menuHelp(self) 
+        return menuHelp(self)
+    
+    def menu_xnat(self):
+        &#34;&#34;&#34;
+        Returns the default XNAT menu
+        &#34;&#34;&#34;    
+        return menuXnat(self) 
 
     def refresh_menus(self):
         &#34;&#34;&#34;
@@ -130,7 +137,13 @@ class EditMenus():
         &#34;&#34;&#34;
         Returns the default help menu
         &#34;&#34;&#34;    
-        return menuHelp(self) 
+        return menuHelp(self)
+    
+    def menu_xnat(self):
+        &#34;&#34;&#34;
+        Returns the default XNAT menu
+        &#34;&#34;&#34;    
+        return menuXnat(self) 
 
     def refresh_menus(self):
         &#34;&#34;&#34;
@@ -207,7 +220,7 @@ class EditMenus():
     &#34;&#34;&#34;
     Returns the default help menu
     &#34;&#34;&#34;    
-    return menuHelp(self) </code></pre>
+    return menuHelp(self)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.EditMenus.EditMenus.menu_view"><code class="name flex">
@@ -224,6 +237,22 @@ class EditMenus():
     Returns the default view menu
     &#34;&#34;&#34;    
     return menuView(self) </code></pre>
+</details>
+</dd>
+<dt id="WEASEL.API.EditMenus.EditMenus.menu_xnat"><code class="name flex">
+<span>def <span class="ident">menu_xnat</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the default XNAT menu</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def menu_xnat(self):
+    &#34;&#34;&#34;
+    Returns the default XNAT menu
+    &#34;&#34;&#34;    
+    return menuXnat(self) </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.API.EditMenus.EditMenus.refresh_menus"><code class="name flex">
@@ -274,6 +303,7 @@ class EditMenus():
 <li><code><a title="WEASEL.API.EditMenus.EditMenus.menu_file" href="#WEASEL.API.EditMenus.EditMenus.menu_file">menu_file</a></code></li>
 <li><code><a title="WEASEL.API.EditMenus.EditMenus.menu_help" href="#WEASEL.API.EditMenus.EditMenus.menu_help">menu_help</a></code></li>
 <li><code><a title="WEASEL.API.EditMenus.EditMenus.menu_view" href="#WEASEL.API.EditMenus.EditMenus.menu_view">menu_view</a></code></li>
+<li><code><a title="WEASEL.API.EditMenus.EditMenus.menu_xnat" href="#WEASEL.API.EditMenus.EditMenus.menu_xnat">menu_xnat</a></code></li>
 <li><code><a title="WEASEL.API.EditMenus.EditMenus.refresh_menus" href="#WEASEL.API.EditMenus.EditMenus.refresh_menus">refresh_menus</a></code></li>
 </ul>
 </li>
