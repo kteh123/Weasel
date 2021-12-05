@@ -189,7 +189,8 @@ class ImageViewerROI(QMdiSubWindow):
 
     def connectSlotToSignalForROITools(self):
         self.btnDeleteROI.clicked.connect(self.graphicsView.deleteROI)
-        self.btnNewROI.clicked.connect(self.graphicsView.newROI)
+        self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
+        self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
         self.btnResetROI.clicked.connect(self.graphicsView.resetROI)
         self.btnSaveROI.clicked.connect(self.saveROI)
         self.btnLoad.clicked.connect(self.loadROI)
@@ -705,7 +706,7 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def loadImageInImageItem(self): ###
+    def loadImageInImageItem(self, addMask=True): 
         try:
             logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -716,7 +717,11 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
+                #always display the first ROI
+                mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            elif addMask == False:
+                mask = None
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -786,7 +791,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def setUpGraphicsView(self):
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView) 
+        self.mainVerticalLayout.addWidget(self.graphicsView)         
 
 
     def setUpLevelsSpinBoxes(self):
@@ -1018,7 +1023,8 @@ sliders for browsing series of images.</p></div>
 
     def connectSlotToSignalForROITools(self):
         self.btnDeleteROI.clicked.connect(self.graphicsView.deleteROI)
-        self.btnNewROI.clicked.connect(self.graphicsView.newROI)
+        self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
+        self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
         self.btnResetROI.clicked.connect(self.graphicsView.resetROI)
         self.btnSaveROI.clicked.connect(self.saveROI)
         self.btnLoad.clicked.connect(self.loadROI)
@@ -1534,7 +1540,7 @@ sliders for browsing series of images.</p></div>
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def loadImageInImageItem(self): ###
+    def loadImageInImageItem(self, addMask=True): 
         try:
             logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -1545,7 +1551,11 @@ sliders for browsing series of images.</p></div>
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
+                #always display the first ROI
+                mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+            elif addMask == False:
+                mask = None
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -1615,7 +1625,7 @@ sliders for browsing series of images.</p></div>
 
     def setUpGraphicsView(self):
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView) 
+        self.mainVerticalLayout.addWidget(self.graphicsView)         
 
 
     def setUpLevelsSpinBoxes(self):
@@ -1819,7 +1829,8 @@ sliders for browsing series of images.</p></div>
 </summary>
 <pre><code class="python">def connectSlotToSignalForROITools(self):
     self.btnDeleteROI.clicked.connect(self.graphicsView.deleteROI)
-    self.btnNewROI.clicked.connect(self.graphicsView.newROI)
+    self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
+    self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
     self.btnResetROI.clicked.connect(self.graphicsView.resetROI)
     self.btnSaveROI.clicked.connect(self.saveROI)
     self.btnLoad.clicked.connect(self.loadROI)
@@ -2041,7 +2052,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem"><code class="name flex">
-<span>def <span class="ident">loadImageInImageItem</span></span>(<span>self)</span>
+<span>def <span class="ident">loadImageInImageItem</span></span>(<span>self, addMask=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2049,7 +2060,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def loadImageInImageItem(self): ###
+<pre><code class="python">def loadImageInImageItem(self, addMask=True): 
     try:
         logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
         self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
@@ -2060,7 +2071,11 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             imageNumber = 1
 
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+        if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
+            #always display the first ROI
+            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
+        elif addMask == False:
+            mask = None
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
@@ -2336,7 +2351,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def setUpGraphicsView(self):
     self.graphicsView = GraphicsView(self.numberOfImages)
-    self.mainVerticalLayout.addWidget(self.graphicsView) </code></pre>
+    self.mainVerticalLayout.addWidget(self.graphicsView)         </code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers"><code class="name flex">

@@ -149,7 +149,7 @@ class GraphicsView(QGraphicsView):
         self.zoomImage(event.angleDelta().y())
 
 
-    def fitItemInView(self):#, scale=True
+    def fitItemInView(self):
         logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
         try:
             if self.graphicsItem is not None:
@@ -311,7 +311,6 @@ class GraphicsView(QGraphicsView):
             if self.dictROIs.hasRegionGotMask(self.currentROIName):
                 newRegion = self.dictROIs.getNextRegionName()
                 self.sigNewROI.emit(newRegion)
-                self.graphicsItem.reloadImage()
             else:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle(&#34;Add new ROI&#34;)
@@ -337,9 +336,11 @@ class GraphicsView(QGraphicsView):
     def deleteROI(self):
         logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
         try:
+            #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
+            self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
@@ -469,7 +470,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
         self.zoomImage(event.angleDelta().y())
 
 
-    def fitItemInView(self):#, scale=True
+    def fitItemInView(self):
         logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
         try:
             if self.graphicsItem is not None:
@@ -631,7 +632,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             if self.dictROIs.hasRegionGotMask(self.currentROIName):
                 newRegion = self.dictROIs.getNextRegionName()
                 self.sigNewROI.emit(newRegion)
-                self.graphicsItem.reloadImage()
             else:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle(&#34;Add new ROI&#34;)
@@ -657,9 +657,11 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
     def deleteROI(self):
         logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
         try:
+            #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
+            self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
             logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
@@ -719,9 +721,11 @@ when zoom is not enabled</p></div>
 <pre><code class="python">def deleteROI(self):
     logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
     try:
+        #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
         self.sigROIChanged.emit()
         self.dictROIs.deleteMask(self.currentROIName)
         self.sigROIDeleted.emit()
+        self.sigReloadImage.emit()
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
@@ -786,7 +790,7 @@ when zoom is not enabled</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fitItemInView(self):#, scale=True
+<pre><code class="python">def fitItemInView(self):
     logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
     try:
         if self.graphicsItem is not None:
@@ -822,7 +826,6 @@ when zoom is not enabled</p></div>
         if self.dictROIs.hasRegionGotMask(self.currentROIName):
             newRegion = self.dictROIs.getNextRegionName()
             self.sigNewROI.emit(newRegion)
-            self.graphicsItem.reloadImage()
         else:
             msgBox = QMessageBox()
             msgBox.setWindowTitle(&#34;Add new ROI&#34;)
