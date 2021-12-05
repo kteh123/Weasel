@@ -30,6 +30,13 @@ def main(weasel):
         pipeline = 'File__ResetTreeView',
         context = True)
 
+    menu.item(
+        label = "Save selections",
+        shortcut = 'Ctrl+A',
+        tooltip = "Save checked images for future sessions",
+        pipeline = 'File__SaveTreeView',
+        context = True)
+        
     menu.separator()
 
     menu.item(

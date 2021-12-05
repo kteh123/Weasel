@@ -8,11 +8,8 @@ def main(weasel):
     weasel.menu_edit()
 
     menu_demo(weasel)
-
+    
+    weasel.menu_xnat()
+    
     weasel.menu_help()
-    
-
-    
-    
-
   

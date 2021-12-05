@@ -2,6 +2,7 @@ from Menus.File import main as menuFile
 from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
 from Menus.Help import main as menuHelp
+from Menus.XNAT import main as menuXnat
 
 class EditMenus():
     """
@@ -36,7 +37,13 @@ class EditMenus():
         """
         Returns the default help menu
         """    
-        return menuHelp(self) 
+        return menuHelp(self)
+    
+    def menu_xnat(self):
+        """
+        Returns the default XNAT menu
+        """    
+        return menuXnat(self) 
 
     def refresh_menus(self):
         """
