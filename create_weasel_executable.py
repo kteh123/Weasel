@@ -24,7 +24,7 @@ print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
 print("Creating list of hidden-imports and data to collect and add...")
-hidden_modules = ['Displays.ImageViewers.ImageViewerROI', 'xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'ukat']
+hidden_modules = ['Displays.ImageViewers.ImageViewerROI', 'Menus.Demo', 'xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'ukat']
 string_hidden_imports = ' '.join(['--hidden-import '+ mod + ' ' for mod in hidden_modules])
 collect_data_folders = ['External', 'dipy']
 string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect_data_folders])
