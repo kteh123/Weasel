@@ -234,10 +234,11 @@ class ROIs():
 
     def printContentsDictMasks(self):
         print("Contents of self.dictMasks")
-        numMasks = 0
         for key, value in self.dictMasks.items():
+            numMasks = 0
             for item in value:
                 if item.any():
                     numMasks +=1
-
-            print(key, ' : ', numMasks)
+                    result = np.where(item == True)
+                    numTrueValues = list(zip(result[1], result[0]))
+            print(key, ' : ', numMasks, ' Number True Coords: {}'.format(numTrueValues))
