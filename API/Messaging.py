@@ -1,4 +1,4 @@
-# from tqdm import trange, tqdm
+from tqdm import trange, tqdm
 
 from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (QApplication, QMessageBox)
@@ -22,7 +22,7 @@ class Messaging():
         """
         Restores the cursor into an arrow after it was set to hourglass 
         """   
-        QApplication.restoreOverrideCursor()     
+        QApplication.restoreOverrideCursor()
 
     def information(self, msg="Message in the box", title="Window Title"):
         """
@@ -93,7 +93,17 @@ class Messaging():
             print(title + ": " + msg)
             print("=====================================")
         else:
-            self.msgWindow = Message(parent = self, message = "<H4>" + msg + "</H4>")
+            self.msgWindow = Message(parent = self, message = "<H4>" + msg + "</H4>", title = title)
+
+    def update_message(self, msg=None):
+        """
+        Updates the message window with a new message.
+        """
+        if self.cmd == True:
+            if msg is not None: print(msg)
+        else:
+            if msg is not None:
+                self.msgWindow.set_message(msg)
 
     def close_message(self):
         """
@@ -125,7 +135,8 @@ class Messaging():
                 parent = self, 
                 message = ("<H4>" + msg + "</H4>").format(index), 
                 value = index, 
-                maximum = max)
+                maximum = max,
+                title = title)
 
     def update_progress_bar(self, index=0, msg=None):
         """
@@ -136,6 +147,8 @@ class Messaging():
             self.tqdm_prog.update(index)
         else:
             self.progressBar.set_value(index)
+            if msg is not None:
+                self.progressBar.set_message(msg)
 
     def close_progress_bar(self):
         """
