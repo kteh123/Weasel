@@ -198,7 +198,7 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
+        self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
@@ -336,7 +336,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.cmbNamesROIs.blockSignals(True)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
                 self.cmbNamesROIs.blockSignals(False)
-                self.loadImageInImageItem()
+                self.loadImageInImageItem(True)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -472,7 +472,7 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
             
-            self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
+            self.graphicsView.sigReloadImage.connect(lambda: self.loadImageInImageItem(True))
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -706,9 +706,10 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def loadImageInImageItem(self, addMask=True): 
+    def loadImageInImageItem(self, addMask): 
         try:
             logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
+            
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
@@ -717,11 +718,11 @@ class ImageViewerROI(QMdiSubWindow):
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
-                #always display the first ROI
+
+            mask = None
+            if addMask  == True:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            elif addMask == False:
-                mask = None
+            
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -732,7 +733,7 @@ class ImageViewerROI(QMdiSubWindow):
 
     def deleteROITidyUp(self):
         logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-        self.loadImageInImageItem() 
+        self.loadImageInImageItem(True) 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.blockSignals(True)
@@ -869,7 +870,7 @@ class ImageViewerROI(QMdiSubWindow):
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.loadImageInImageItem()
+                    self.loadImageInImageItem(True)
                     self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
 
@@ -1032,7 +1033,7 @@ sliders for browsing series of images.</p></div>
         self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-        self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
+        self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
@@ -1170,7 +1171,7 @@ sliders for browsing series of images.</p></div>
                 self.cmbNamesROIs.blockSignals(True)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
                 self.cmbNamesROIs.blockSignals(False)
-                self.loadImageInImageItem()
+                self.loadImageInImageItem(True)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) 
@@ -1306,7 +1307,7 @@ sliders for browsing series of images.</p></div>
 
             self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
             
-            self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
+            self.graphicsView.sigReloadImage.connect(lambda: self.loadImageInImageItem(True))
 
             self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
@@ -1540,9 +1541,10 @@ sliders for browsing series of images.</p></div>
                logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) 
 
             
-    def loadImageInImageItem(self, addMask=True): 
+    def loadImageInImageItem(self, addMask): 
         try:
             logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
+            
             self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
             if self.isSeries:  
@@ -1551,11 +1553,11 @@ sliders for browsing series of images.</p></div>
                 imageNumber = 1
 
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
-                #always display the first ROI
+
+            mask = None
+            if addMask  == True:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            elif addMask == False:
-                mask = None
+            
             self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
             self.displayROIMeanAndStd()  
             self.setUpImageEventHandlers()
@@ -1566,7 +1568,7 @@ sliders for browsing series of images.</p></div>
 
     def deleteROITidyUp(self):
         logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-        self.loadImageInImageItem() 
+        self.loadImageInImageItem(True) 
         self.displayROIMeanAndStd()
         if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
             self.cmbNamesROIs.blockSignals(True)
@@ -1703,7 +1705,7 @@ sliders for browsing series of images.</p></div>
                     self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
-                    self.loadImageInImageItem()
+                    self.loadImageInImageItem(True)
                     self.lblImageMissing.hide()
                     self.setInitialImageLevelValues()
 
@@ -1838,7 +1840,7 @@ sliders for browsing series of images.</p></div>
     self.btnDraw.clicked.connect(lambda checked: self.drawROI(checked))
     self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
     self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
-    self.cmbNamesROIs.currentIndexChanged.connect(self.loadImageInImageItem)
+    self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
     self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
 </details>
 </dd>
@@ -1853,7 +1855,7 @@ sliders for browsing series of images.</p></div>
 </summary>
 <pre><code class="python">def deleteROITidyUp(self):
     logger.info(&#34;ImageViewerROI.deleteROITidyUp called&#34;)
-    self.loadImageInImageItem() 
+    self.loadImageInImageItem(True) 
     self.displayROIMeanAndStd()
     if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
         self.cmbNamesROIs.blockSignals(True)
@@ -1909,7 +1911,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
                 self.deleteButton.hide()
                 self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
-                self.loadImageInImageItem()
+                self.loadImageInImageItem(True)
                 self.lblImageMissing.hide()
                 self.setInitialImageLevelValues()
 
@@ -2052,7 +2054,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem"><code class="name flex">
-<span>def <span class="ident">loadImageInImageItem</span></span>(<span>self, addMask=True)</span>
+<span>def <span class="ident">loadImageInImageItem</span></span>(<span>self, addMask)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2060,9 +2062,10 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def loadImageInImageItem(self, addMask=True): 
+<pre><code class="python">def loadImageInImageItem(self, addMask): 
     try:
         logger.info(&#34;ImageViewerROI.loadImageInImageItem called&#34;)
+        
         self.graphicsView.dictROIs.setPreviousRegionName(self.cmbNamesROIs.currentText())
 
         if self.isSeries:  
@@ -2071,11 +2074,11 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             imageNumber = 1
 
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-        if addMask  == True or self.cmbNamesROIs.currentIndex() == 0:
-            #always display the first ROI
+
+        mask = None
+        if addMask  == True:
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-        elif addMask == False:
-            mask = None
+        
         self.graphicsView.setImage(self.pixelArray, mask, self.selectedImagePath)
         self.displayROIMeanAndStd()  
         self.setUpImageEventHandlers()
@@ -2163,7 +2166,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             self.cmbNamesROIs.blockSignals(True)
             self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
             self.cmbNamesROIs.blockSignals(False)
-            self.loadImageInImageItem()
+            self.loadImageInImageItem(True)
     except Exception as e:
             print(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e))
             logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) </code></pre>
@@ -2377,7 +2380,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 
         self.graphicsView.graphicsItem.sigRecalculateMeanROI.connect(self.displayROIMeanAndStd)
         
-        self.graphicsView.sigReloadImage.connect(self.loadImageInImageItem)
+        self.graphicsView.sigReloadImage.connect(lambda: self.loadImageInImageItem(True))
 
         self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
 
