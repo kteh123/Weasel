@@ -312,7 +312,7 @@ class GraphicsView(QGraphicsView):
             self.sigROIChanged.emit()
             self.dictROIs.deleteMask(self.currentROIName)
             self.sigROIDeleted.emit()
-            self.sigReloadImage.emit()
+            #self.sigReloadImage.emit()
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
