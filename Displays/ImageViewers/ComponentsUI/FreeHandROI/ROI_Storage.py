@@ -31,6 +31,9 @@ class ROIs():
         self.linkToGraphicsView = linkToGraphicsView
         logger.info("RIO_Storage object created")
 
+    
+    def resetRegionNumber(self):
+        self.regionNumber = 1
 
 
     def __repr__(self):

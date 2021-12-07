@@ -160,7 +160,7 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def connectSlotToSignalForROITools(self):
-        self.btnDeleteROI.clicked.connect(self.graphicsView.deleteROI)
+        self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
         self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
         self.btnResetROI.clicked.connect(self.graphicsView.resetROI)
@@ -172,6 +172,40 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
+
+
+    def deleteROI(self):
+        try:
+            logger.info("ImageViewerROI.deleteROI called")
+            preDeleteCurrentIndex = self.cmbNamesROIs.currentIndex()
+            self.graphicsView.dictROIs.deleteMask(self.cmbNamesROIs.currentText())
+            #Remove ROI from drop down list
+            self.cmbNamesROIs.blockSignals(True)
+            self.cmbNamesROIs.removeItem(self.cmbNamesROIs.currentIndex())
+            self.cmbNamesROIs.blockSignals(False)
+            #If the default first ROI is removed, add it back
+            if self.cmbNamesROIs.currentIndex() == -1: 
+                self.cmbNamesROIs.blockSignals(True)
+                self.cmbNamesROIs.clear()
+                self.cmbNamesROIs.addItem("region1")
+                self.cmbNamesROIs.setCurrentIndex(0)
+                self.cmbNamesROIs.blockSignals(False)
+                self.clearPixelValueMeanAndStdDev()
+                self.graphicsView.dictROIs.resetRegionNumber()  
+            else:
+                if preDeleteCurrentIndex == 0:
+                    #deleting the first ROI in the list,
+                    #select the next ROI in the list for display
+                    newIndex = 0
+                else:
+                    #select the previous ROI in the list for display
+                    newIndex = preDeleteCurrentIndex - 1
+                self.cmbNamesROIs.setCurrentIndex(newIndex)
+            self.loadImageInImageItem(True) 
+            self.displayROIMeanAndStd()
+        except Exception as e:
+            print('Error in ImageViewerROI.deleteROI: ' + str(e))
+            logger.exception('Error in ImageViewerROI.deleteROI: ' + str(e)) 
 
 
     def roiNameChanged(self, newText):
@@ -404,9 +438,10 @@ class ImageViewerROI(QMdiSubWindow):
             logger.exception('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
 
 
-    def clearMeanAndStdDev(self):
+    def clearPixelValueMeanAndStdDev(self):
         self.roiMeanTxt.clear()
         self.roiStdDevTxt.clear()
+        self.lblPixelValue.clear()
 
 
     def displayROIMeanAndStd(self):
@@ -424,7 +459,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.roiMeanTxt.setText("Mean: " + str(mean))
                 self.roiStdDevTxt.setText("SD: " + str(std))
             else:
-                self.clearMeanAndStdDev()
+                self.clearPixelValueMeanAndStdDev()
         except Exception as e:
                 print('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e))
                 logger.exception('Error in ImageViewerROI.displayROIMeanAndStd: ' + str(e)) 
@@ -446,13 +481,11 @@ class ImageViewerROI(QMdiSubWindow):
             
             self.graphicsView.sigReloadImage.connect(lambda: self.loadImageInImageItem(True))
 
-            self.graphicsView.sigROIDeleted.connect(self.deleteROITidyUp)
-
             self.graphicsView.sigROIChanged.connect(self.updateROIName)
 
             self.graphicsView.sigNewROI.connect(lambda newROIName:
                                                 self.addNewROItoDropDownList(newROIName))
-            self.graphicsView.sigNewROI.connect(self.clearMeanAndStdDev)
+            self.graphicsView.sigNewROI.connect(self.clearPixelValueMeanAndStdDev)
 
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                     self.updateZoomSlider(increment))
@@ -705,31 +738,6 @@ class ImageViewerROI(QMdiSubWindow):
                print('Error in ImageViewerROI.loadImageInImageItem: ' + str(e))
                logger.exception('Error in ImageViewerROI.loadImageInImageItem: ' + str(e))
     
-
-    def deleteROITidyUp(self):
-        logger.info("ImageViewerROI.deleteROITidyUp called")
-        self.loadImageInImageItem(True) 
-        self.displayROIMeanAndStd()
-        if self.cmbNamesROIs.currentIndex() == 0 and self.cmbNamesROIs.count() == 1: 
-            self.cmbNamesROIs.blockSignals(True)
-            self.cmbNamesROIs.clear()
-            self.cmbNamesROIs.addItem("region1")
-            self.cmbNamesROIs.setCurrentIndex(0)
-            self.cmbNamesROIs.blockSignals(False)
-            self.roiMeanTxt.clear()
-            self.roiStdDevTxt.clear()
-            self.lblPixelValue.clear()
-        else:
-            if self.isSeries:  
-                imageNumber = self.mainImageSlider.value()
-            else:
-                imageNumber = 1
-            self.cmbNamesROIs.blockSignals(True)
-            self.cmbNamesROIs.removeItem(self.cmbNamesROIs.currentIndex())
-            self.cmbNamesROIs.blockSignals(False)
-            mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
-            self.graphicsView.graphicsItem.reloadMask(mask)
-
 
     def setUpImageLevelsLayout(self):
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
