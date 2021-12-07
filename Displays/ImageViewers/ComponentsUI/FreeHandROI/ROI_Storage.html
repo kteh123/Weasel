@@ -59,6 +59,9 @@ class ROIs():
         self.linkToGraphicsView = linkToGraphicsView
         logger.info(&#34;RIO_Storage object created&#34;)
 
+    
+    def resetRegionNumber(self):
+        self.regionNumber = 1
 
 
     def __repr__(self):
@@ -329,6 +332,9 @@ the ROI in the mask in the list corresponding to that image are set to True.</p>
         self.linkToGraphicsView = linkToGraphicsView
         logger.info(&#34;RIO_Storage object created&#34;)
 
+    
+    def resetRegionNumber(self):
+        self.regionNumber = 1
 
 
     def __repr__(self):
@@ -837,6 +843,19 @@ each image in the series.</p></div>
         logger.exception(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))</code></pre>
 </details>
 </dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.resetRegionNumber"><code class="name flex">
+<span>def <span class="ident">resetRegionNumber</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resetRegionNumber(self):
+    self.regionNumber = 1</code></pre>
+</details>
+</dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.returnListImagesWithMasks"><code class="name flex">
 <span>def <span class="ident">returnListImagesWithMasks</span></span>(<span>self, regionName)</span>
 </code></dt>
@@ -911,6 +930,7 @@ each image in the series.</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.printContentsDictMasks" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.printContentsDictMasks">printContentsDictMasks</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.renameDictionaryKey" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.renameDictionaryKey">renameDictionaryKey</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.replaceMask" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.replaceMask">replaceMask</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.resetRegionNumber" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.resetRegionNumber">resetRegionNumber</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.returnListImagesWithMasks" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.returnListImagesWithMasks">returnListImagesWithMasks</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.setPreviousRegionName" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.setPreviousRegionName">setPreviousRegionName</a></code></li>
 </ul>

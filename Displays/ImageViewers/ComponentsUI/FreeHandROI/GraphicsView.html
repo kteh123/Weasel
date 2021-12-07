@@ -47,7 +47,6 @@ ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
     sigReloadImage =  QtCore.Signal()
-    sigROIDeleted = QtCore.Signal()
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
     sigUpdateZoom = QtCore.Signal(int)
@@ -330,20 +329,7 @@ class GraphicsView(QGraphicsView):
             self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))
-            logger.error(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))
-
-
-    def deleteROI(self):
-        logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
-        try:
-            #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
-            self.sigROIChanged.emit()
-            self.dictROIs.deleteMask(self.currentROIName)
-            self.sigROIDeleted.emit()
-            #self.sigReloadImage.emit()
-        except Exception as e:
-            print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
-            logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
+            logger.error(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))</code></pre>
 </details>
 </section>
 <section>
@@ -368,7 +354,6 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 </summary>
 <pre><code class="python">class GraphicsView(QGraphicsView):
     sigReloadImage =  QtCore.Signal()
-    sigROIDeleted = QtCore.Signal()
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
     sigUpdateZoom = QtCore.Signal(int)
@@ -651,20 +636,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             self.sigReloadImage.emit()
         except Exception as e:
             print(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))
-            logger.error(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))
-
-
-    def deleteROI(self):
-        logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
-        try:
-            #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
-            self.sigROIChanged.emit()
-            self.dictROIs.deleteMask(self.currentROIName)
-            self.sigROIDeleted.emit()
-            #self.sigReloadImage.emit()
-        except Exception as e:
-            print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
-            logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
+            logger.error(&#39;Error in freeHandROI.GraphicsView.resetROI: &#39; + str(e))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -707,28 +679,6 @@ when zoom is not enabled</p></div>
     except Exception as e:
         print(&#39;Error in freeHandROI.GraphicsView.contextMenuEvent: &#39; + str(e))
         logger.error(&#39;Error in freeHandROI.GraphicsView.contextMenuEvent: &#39; + str(e))</code></pre>
-</details>
-</dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.deleteROI"><code class="name flex">
-<span>def <span class="ident">deleteROI</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def deleteROI(self):
-    logger.info(&#34;freeHandROI.GraphicsView.deleteROI called&#34;)
-    try:
-        #print(&#34;Delete ROI {}&#34;.format(self.currentROIName))
-        self.sigROIChanged.emit()
-        self.dictROIs.deleteMask(self.currentROIName)
-        self.sigROIDeleted.emit()
-        #self.sigReloadImage.emit()
-    except Exception as e:
-        print(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))
-        logger.error(&#39;Error in freeHandROI.GraphicsView.deleteROI: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.drawROI"><code class="name flex">
@@ -1032,12 +982,6 @@ when zoom is not enabled</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIDeleted"><code class="name flex">
-<span>def <span class="ident">sigROIDeleted</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage"><code class="name flex">
 <span>def <span class="ident">sigReloadImage</span></span>(<span>...)</span>
 </code></dt>
@@ -1135,7 +1079,6 @@ when zoom is not enabled</p></div>
 <h4><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView">GraphicsView</a></code></h4>
 <ul class="">
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.contextMenuEvent" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.contextMenuEvent">contextMenuEvent</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.deleteROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.deleteROI">deleteROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.drawROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.drawROI">drawROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.eraseROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.eraseROI">eraseROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.fitItemInView" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.fitItemInView">fitItemInView</a></code></li>
@@ -1149,7 +1092,6 @@ when zoom is not enabled</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setZoomEnabled" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.setZoomEnabled">setZoomEnabled</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigNewROI" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigNewROI">sigNewROI</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIChanged" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIChanged">sigROIChanged</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIDeleted" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigROIDeleted">sigROIDeleted</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigReloadImage">sigReloadImage</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigUpdateZoom" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.sigUpdateZoom">sigUpdateZoom</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.wheelEvent" href="#WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.wheelEvent">wheelEvent</a></code></li>
