@@ -655,7 +655,7 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnResetROI.setIcon(QIcon(QPixmap(RESET_ICON)))
 
             self.btnSaveROI = QPushButton()
-            self.btnSaveROI.setToolTip('Saves the ROI in DICOM format')
+            self.btnSaveROI.setToolTip('Saves the current ROI in DICOM format')
             self.btnSaveROI.setIcon(QIcon(QPixmap(SAVE_ICON)))
 
             self.btnLoad = QPushButton()
