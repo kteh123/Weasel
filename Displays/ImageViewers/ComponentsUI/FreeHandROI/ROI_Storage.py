@@ -9,8 +9,10 @@ __author__ = 'Steve Shillitoe'
 class ROIs():
     """An object instanciated from this class in the GraphicsView class
    is used to store the masks on an image that form a Region of Interest, ROI.
-   An ROI is given a name by the user and it may extend over 1 or more images
-   but on each image it may have a different shape and position.
+
+   Weasel gives an ROI a default name but it can be renamed by the user.
+   An ROI may extend over 1 or more images and on each image it may have 
+   a different shape and position.
 
    A mask is a boolean array that is the same size as the DICOM images. 
    A blank mask contains only False values.  When an ROI is drawn on an
@@ -20,10 +22,11 @@ class ROIs():
    Mask data is stored in a Python dictionary, where the key is the 
    ROI's name and the value a list of masks, one mask for each image
    in the DICOM series. Initially all the masks in this list are blank.
-   When an ROI is drawn on an image, the array elements that correlate with
+   When an ROI is drawn on an image, the array elements that correspond to
    the ROI in the mask in the list corresponding to that image are set to True.
    """
     def __init__(self, numberOfImages, linkToGraphicsView):
+        """Instantiates an ROIs object"""
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
@@ -31,6 +34,12 @@ class ROIs():
         self.linkToGraphicsView = linkToGraphicsView
         logger.info("RIO_Storage object created")
 
+    
+    def resetRegionNumber(self):
+        """Resets the regionNumber property to 1. It is incremented
+        by 1, each time a new ROI is created with the default name
+        region[regionNumber]"""
+        self.regionNumber = 1
 
 
     def __repr__(self):

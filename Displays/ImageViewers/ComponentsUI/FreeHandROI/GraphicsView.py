@@ -19,7 +19,6 @@ ZOOM_OUT = -1
 
 class GraphicsView(QGraphicsView):
     sigReloadImage =  QtCore.Signal()
-    sigROIDeleted = QtCore.Signal()
     sigROIChanged = QtCore.Signal()
     sigNewROI = QtCore.Signal(str)
     sigUpdateZoom = QtCore.Signal(int)
@@ -303,16 +302,3 @@ class GraphicsView(QGraphicsView):
         except Exception as e:
             print('Error in freeHandROI.GraphicsView.resetROI: ' + str(e))
             logger.error('Error in freeHandROI.GraphicsView.resetROI: ' + str(e))
-
-
-    def deleteROI(self):
-        logger.info("freeHandROI.GraphicsView.deleteROI called")
-        try:
-            #print("Delete ROI {}".format(self.currentROIName))
-            self.sigROIChanged.emit()
-            self.dictROIs.deleteMask(self.currentROIName)
-            self.sigROIDeleted.emit()
-            #self.sigReloadImage.emit()
-        except Exception as e:
-            print('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
-            logger.error('Error in freeHandROI.GraphicsView.deleteROI: ' + str(e))
