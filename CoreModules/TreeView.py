@@ -41,6 +41,7 @@ class TreeView():
                 self.widget.itemDoubleClicked.connect(lambda item, col: self._displayImage(item, col))
                 self.widget.customContextMenuRequested.connect(lambda pos: self._displayContextMenu(pos))
                 self.widget.itemClicked.connect(lambda item, col: self._itemClickedEvent(item, col))
+                self.widget.itemExpanded.connect(lambda: self.widget.resizeColumnToContents(0))
 
                 self._buildTreeView()
 
@@ -51,6 +52,11 @@ class TreeView():
                 self.treeViewColumnWidths[1] = self.widget.columnWidth(1)
                 self.treeViewColumnWidths[2] = self.widget.columnWidth(2)
                 self.treeViewColumnWidths[3] = self.widget.columnWidth(3)
+
+                self.widget.header().setSectionResizeMode(0, QHeaderView.Interactive)
+                self.widget.header().setSectionResizeMode(1, QHeaderView.Interactive)
+                self.widget.header().setSectionResizeMode(2, QHeaderView.Interactive)
+                self.widget.header().setSectionResizeMode(3, QHeaderView.Interactive)
 
                 if self.weasel.cmd == False:
                     #Display tree view in left-hand side docked widget

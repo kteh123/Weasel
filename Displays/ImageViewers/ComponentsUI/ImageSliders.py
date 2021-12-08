@@ -172,12 +172,14 @@ class ImageSliders(QObject):
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
             
-            if maxNumberImages < 4:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
-            elif maxNumberImages > 3 and maxNumberImages < 11:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
-            else:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
+            # Should be deleted, this is forcing the whole subwindow to have a fixed width
+            # based on the MDI and it compromises window/image resizing
+            #if maxNumberImages < 4:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
+            #elif maxNumberImages > 3 and maxNumberImages < 11:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
+            #else:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -475,7 +477,7 @@ class ImageSliders(QObject):
             logger.exception('Error in ImageSliders.__multipleImageSliderMoved: ' + str(e))
            
 
-    def __imageDeleted(self, newImagePathList):
+    def imageDeleted(self, newImagePathList):
         try:
             #newImagePathList is the original image file path list
             #but with the file path of the deleted image removed.

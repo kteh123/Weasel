@@ -97,9 +97,10 @@ class ImageViewer(QMdiSubWindow):
                                           Qt.WindowMaximizeButtonHint)
         
             height, width = self.weasel.getMDIAreaDimensions()
-            self.subWindowWidth = width
+            #self.subWindowWidth = width
             #Set dimensions of the subwindow to fit the MDI area
             self.setGeometry(0, 0, width, height)
+            #Consider using  0, 0, width/2, width/2 if not happy with initial size
             #Add subwindow to MDI
             self.weasel.mdiArea.addSubWindow(self)
              
@@ -431,7 +432,7 @@ class ImageViewer(QMdiSubWindow):
                         self.studyID, self.seriesID, self.selectedImagePath)
 
                 #Update tree view with xml file modified above
-                treeView.refreshDICOMStudiesTreeView(self.weasel)
+                self.weasel.treeView.refreshDICOMStudiesTreeView()
 
         except Exception as e:
             print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
@@ -501,7 +502,7 @@ class ImageViewer(QMdiSubWindow):
                     self.weasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
                         self.studyID, self.seriesID, self.selectedImagePath)
                 #Update tree view with xml file modified above
-                treeView.refreshDICOMStudiesTreeView(self.weasel)
+                self.weasel.treeView.refreshDICOMStudiesTreeView()
         except Exception as e:
             print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
             logger.error('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
