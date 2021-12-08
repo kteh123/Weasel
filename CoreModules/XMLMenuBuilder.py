@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QAction, QToolTip 
-from PyQt5.QtGui import QCursor, QIcon 
+from PyQt5.QtGui import QCursor, QIcon
+import os
 import sys
 import importlib
 import logging
@@ -37,7 +38,9 @@ def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
         else:
             if item.find('icon') is not None:
                 icon = item.find('icon').text
-                weasel.menuItem = QAction(QIcon(icon), item.find('label').text, weasel)
+                if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): base_path = sys._MEIPASS
+                else: base_path = "."
+                weasel.menuItem = QAction(QIcon(os.path.join(base_path, icon)), item.find('label').text, weasel)
             else:
                 weasel.menuItem = QAction(item.find('label').text, weasel)
             if item.find('shortcut') is not None:

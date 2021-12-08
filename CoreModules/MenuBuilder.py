@@ -78,7 +78,9 @@ class SubMenuBuilder:
                icon = None):
         try:
             if icon is not None:
-                self.menuItem = QAction(QIcon(icon), label, self.weasel)
+                if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): base_path = sys._MEIPASS
+                else: base_path = "."
+                self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
             else:
                 self.menuItem = QAction(label, self.weasel)
 

@@ -17,10 +17,6 @@ if hasattr(Qt, 'AA_EnableHighDpiScaling'):
 if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
-#Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
-#path[0] is the current working directory
-#pathlib.Path().absolute() is the current directory where the script is located. 
-#It doesn't matter if it's Python SYS or Windows SYS
 
 #os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.dirname(sys.argv[0]))
@@ -35,11 +31,12 @@ sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.StyleSheet as styleSheet
 from CoreModules.XMLConfigReader import XMLConfigReader
+from CoreModules.WeaselXMLReader import WeaselXMLReader
 from CoreModules.TreeView import TreeView
 from CoreModules.MenuBuilder import MenuBuilder
 from API.Main import WeaselProgrammingInterface
 
-__version__ = '1.0'
+__version__ = '0.2'
 __author__ = 'Steve Shillitoe & Joao Sousa'
 
 
@@ -68,7 +65,6 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.cmd = False
         self.showFullScreen()
         self.setWindowTitle("WEASEL")
-        self.setWindowIcon(QIcon(os.path.join("Documents","images", "favicon.ico")))
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
@@ -177,7 +173,9 @@ def main():
         weaselCommandLine.run()
     else:
         app = QApplication(sys.argv)
-        app.setWindowIcon(QIcon(os.path.join("Documents","images", "favicon.ico")))
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): base_path = sys._MEIPASS
+        else: base_path = "."
+        app.setWindowIcon(QIcon(os.path.join(base_path, "Documents","images","favicon.ico")))
         winMDI = Weasel()
         winMDI.showMaximized()
         sys.exit(app.exec())

@@ -1,6 +1,6 @@
 import os, sys, pathlib
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    directory = pathlib.Path(sys._MEIPASS)
+    directory = os.path.join(sys._MEIPASS, 'Displays')
 else:
     directory = os.path.join(pathlib.Path().absolute(), 'Displays')
 
