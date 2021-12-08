@@ -200,12 +200,14 @@ class ImageSliders(QObject):
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
             
-            if maxNumberImages &lt; 4:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
-            elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
-            else:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
+            # Should be deleted, this is forcing the whole subwindow to have a fixed width
+            # based on the MDI and it compromises window/image resizing
+            #if maxNumberImages &lt; 4:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
+            #elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
+            #else:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -503,7 +505,7 @@ class ImageSliders(QObject):
             logger.exception(&#39;Error in ImageSliders.__multipleImageSliderMoved: &#39; + str(e))
            
 
-    def __imageDeleted(self, newImagePathList):
+    def imageDeleted(self, newImagePathList):
         try:
             #newImagePathList is the original image file path list
             #but with the file path of the deleted image removed.
@@ -652,12 +654,14 @@ navigating a DICOM series of images.</p></div>
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
             
-            if maxNumberImages &lt; 4:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
-            elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
-            else:
-                self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
+            # Should be deleted, this is forcing the whole subwindow to have a fixed width
+            # based on the MDI and it compromises window/image resizing
+            #if maxNumberImages &lt; 4:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
+            #elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
+            #else:
+            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
         
             self.imageNumberLabel = QLabel()
         
@@ -955,7 +959,7 @@ navigating a DICOM series of images.</p></div>
             logger.exception(&#39;Error in ImageSliders.__multipleImageSliderMoved: &#39; + str(e))
            
 
-    def __imageDeleted(self, newImagePathList):
+    def imageDeleted(self, newImagePathList):
         try:
             #newImagePathList is the original image file path list
             #but with the file path of the deleted image removed.
@@ -1050,6 +1054,39 @@ slider to Weasel</p></div>
     &#34;&#34;&#34;A public function that passes the main image 
     slider to Weasel&#34;&#34;&#34;
     return self.mainImageSlider</code></pre>
+</details>
+</dd>
+<dt id="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.imageDeleted"><code class="name flex">
+<span>def <span class="ident">imageDeleted</span></span>(<span>self, newImagePathList)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def imageDeleted(self, newImagePathList):
+    try:
+        #newImagePathList is the original image file path list
+        #but with the file path of the deleted image removed.
+        self.imagePathList = newImagePathList
+        self.mainImageSlider.setMaximum(len(newImagePathList))
+        imageNumber = self.mainImageSlider.value()
+        imageIndex = imageNumber - 1
+        self.selectedImagePath = self.imagePathList[imageIndex]
+        #Send the new current image to the parent application
+        self.sliderMoved.emit(self.selectedImagePath)
+        
+        #To Do 
+        #adjust the lists attached to sorted image list sliders
+        #by removing the deleted image from the slider if present
+        #and calling setMaximum(len(image list)) for each slider
+        if len(self.listSortedImageSliders) &gt; 0:
+            tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+            self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
+            self.__updateSliders()
+    except Exception as e:
+        print(&#39;Error in ImageSliders.__imageDeleted: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.sliderMoved"><code class="name flex">
@@ -1192,6 +1229,7 @@ which identifies what the image subset has been filtered for.</p></div>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getCheckBoxColumnNumber" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getCheckBoxColumnNumber">getCheckBoxColumnNumber</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getCustomSliderWidget" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getCustomSliderWidget">getCustomSliderWidget</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getMainSlider" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.getMainSlider">getMainSlider</a></code></li>
+<li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.imageDeleted" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.imageDeleted">imageDeleted</a></code></li>
 <li><code><a title="WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.sliderMoved" href="#WEASEL.Displays.ImageViewers.ComponentsUI.ImageSliders.ImageSliders.sliderMoved">sliderMoved</a></code></li>
 </ul>
 </li>
