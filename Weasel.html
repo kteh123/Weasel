@@ -45,10 +45,6 @@ if hasattr(Qt, &#39;AA_EnableHighDpiScaling&#39;):
 if hasattr(Qt, &#39;AA_UseHighDpiPixmaps&#39;):
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
-#Add folders CoreModules  Developer/ModelLibrary to the Module Search Path. 
-#path[0] is the current working directory
-#pathlib.Path().absolute() is the current directory where the script is located. 
-#It doesn&#39;t matter if it&#39;s Python SYS or Windows SYS
 
 #os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append(os.path.dirname(sys.argv[0]))
@@ -63,11 +59,12 @@ sys.path.append(os.path.dirname(sys.path[0])) # Add the parent directory to sys
 
 import CoreModules.StyleSheet as styleSheet
 from CoreModules.XMLConfigReader import XMLConfigReader
+from CoreModules.WeaselXMLReader import WeaselXMLReader
 from CoreModules.TreeView import TreeView
 from CoreModules.MenuBuilder import MenuBuilder
 from API.Main import WeaselProgrammingInterface
 
-__version__ = &#39;1.0&#39;
+__version__ = &#39;0.2&#39;
 __author__ = &#39;Steve Shillitoe &amp; Joao Sousa&#39;
 
 
@@ -96,7 +93,6 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.cmd = False
         self.showFullScreen()
         self.setWindowTitle(&#34;WEASEL&#34;)
-        self.setWindowIcon(QIcon(os.path.join(&#34;Documents&#34;,&#34;images&#34;, &#34;favicon.ico&#34;)))
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
@@ -205,7 +201,9 @@ def main():
         weaselCommandLine.run()
     else:
         app = QApplication(sys.argv)
-        app.setWindowIcon(QIcon(os.path.join(&#34;Documents&#34;,&#34;images&#34;, &#34;favicon.ico&#34;)))
+        if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
+        else: base_path = &#34;.&#34;
+        app.setWindowIcon(QIcon(os.path.join(base_path, &#34;Documents&#34;,&#34;images&#34;,&#34;favicon.ico&#34;)))
         winMDI = Weasel()
         winMDI.showMaximized()
         sys.exit(app.exec())
@@ -250,7 +248,9 @@ if __name__ == &#39;__main__&#39;:
         weaselCommandLine.run()
     else:
         app = QApplication(sys.argv)
-        app.setWindowIcon(QIcon(os.path.join(&#34;Documents&#34;,&#34;images&#34;, &#34;favicon.ico&#34;)))
+        if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
+        else: base_path = &#34;.&#34;
+        app.setWindowIcon(QIcon(os.path.join(base_path, &#34;Documents&#34;,&#34;images&#34;,&#34;favicon.ico&#34;)))
         winMDI = Weasel()
         winMDI.showMaximized()
         sys.exit(app.exec())</code></pre>
@@ -284,7 +284,6 @@ if __name__ == &#39;__main__&#39;:
         self.cmd = False
         self.showFullScreen()
         self.setWindowTitle(&#34;WEASEL&#34;)
-        self.setWindowIcon(QIcon(os.path.join(&#34;Documents&#34;,&#34;images&#34;, &#34;favicon.ico&#34;)))
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))

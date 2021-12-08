@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">import os, sys, pathlib
 if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
-    directory = pathlib.Path(sys._MEIPASS)
+    directory = os.path.join(sys._MEIPASS, &#39;Displays&#39;)
 else:
     directory = os.path.join(pathlib.Path().absolute(), &#39;Displays&#39;)
 

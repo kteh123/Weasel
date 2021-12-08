@@ -106,7 +106,9 @@ class SubMenuBuilder:
                icon = None):
         try:
             if icon is not None:
-                self.menuItem = QAction(QIcon(icon), label, self.weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
+                else: base_path = &#34;.&#34;
+                self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
             else:
                 self.menuItem = QAction(label, self.weasel)
 
@@ -378,7 +380,9 @@ def isXMLFile(fileName):
                icon = None):
         try:
             if icon is not None:
-                self.menuItem = QAction(QIcon(icon), label, self.weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
+                else: base_path = &#34;.&#34;
+                self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
             else:
                 self.menuItem = QAction(label, self.weasel)
 
@@ -434,7 +438,9 @@ def isXMLFile(fileName):
            icon = None):
     try:
         if icon is not None:
-            self.menuItem = QAction(QIcon(icon), label, self.weasel)
+            if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
+            else: base_path = &#34;.&#34;
+            self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
         else:
             self.menuItem = QAction(label, self.weasel)
 
