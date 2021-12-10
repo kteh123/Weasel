@@ -8,10 +8,6 @@ that forms the backbone of the Weasel GUI.
 
 2. The Weasel_CMD class that is used when Weasel is run as a 
 command line program. 
-
-
-
-
 """
 
 from PyQt5.QtWidgets import (QApplication,                         
@@ -71,7 +67,7 @@ logger = logging.getLogger(__name__)
 class Weasel(QMainWindow, WeaselProgrammingInterface):
 
     def __init__(self): 
-        """Creates the MDI container."""
+        """Creates the MDI container that forms the Weasel GUI."""
         super().__init__()
         print("=====================================")
         print("MESSAGE TO THE USER:")
@@ -174,9 +170,11 @@ class Weasel_CMD(WeaselProgrammingInterface):
         return
 
 def main():
-    """Creates an object of the Weasel class in order to create the Weasel GUI
-    or it creates an object of the Weasel_CMD class in order to run Weasel in 
-    command-line mode"""
+    """Creates an object of one of the following classes:
+        1. Weasel class to create the Weasel GUI or
+         
+        2. Weasel_CMD class to run Weasel in command-line mode.
+    """
 
     example_text = example_text = '''example usage:
         python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"
