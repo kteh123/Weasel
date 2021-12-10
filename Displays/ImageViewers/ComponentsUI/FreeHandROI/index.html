@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This custom, composite widget allows the user to draw around and/or
+paint a ROI …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,6 +23,65 @@
 <h1 class="title">Module <code>WEASEL.Displays.ImageViewers.ComponentsUI.FreeHandROI</code></h1>
 </header>
 <section id="section-intro">
+<p>This custom, composite widget allows the user to draw around and/or
+paint a ROI.
+</p>
+<p>The user may draw around the boundary of the ROI and it is automatically
+flood filled.
+If the start and end positions of the drawn boundary do
+not meet, they are automatically connected by a straight line prior to
+flood filling.</p>
+<p>The user may also adjust the size of the ROI using an eraser tool.
+The size of the paint and eraser tools may be changed by right-clicking
+on the image and selecting a size from a pop-up context menu. </p>
+<p>The image is displayed in an instance of the GraphicsItem class,
+which is contained in an instance of the GraphicView class.
+An instance of the
+GraphicView class forms a custom widget that is
+added to a layout on the MDI subwindow used to display the image.</p>
+<p>ROI_Storage.py contains the class ROIs that provides a data structure
+for storing ROI data.
+It links ROI name to the ROI drawn on 1 or more
+images in a series. </p>
+<p>The Icons folder contains the graphic files containing the icons used
+identify buttons on the MDI subwindow and to change the appearance of the
+mouse pointer when the zoom, draw, paint and eraser functions are selected.</p>
+<p>In Resources.py, constants are defined that hold strings containing the file paths to
+the above icons.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+This custom, composite widget allows the user to draw around and/or
+paint a ROI.  
+
+The user may draw around the boundary of the ROI and it is automatically
+flood filled.  If the start and end positions of the drawn boundary do
+not meet, they are automatically connected by a straight line prior to 
+flood filling.
+
+The user may also adjust the size of the ROI using an eraser tool.
+The size of the paint and eraser tools may be changed by right-clicking 
+on the image and selecting a size from a pop-up context menu. 
+
+The image is displayed in an instance of the GraphicsItem class, 
+which is contained in an instance of the GraphicView class. 
+An instance of the  GraphicView class forms a custom widget that is
+added to a layout on the MDI subwindow used to display the image.
+
+ROI_Storage.py contains the class ROIs that provides a data structure 
+for storing ROI data.  It links ROI name to the ROI drawn on 1 or more
+images in a series. 
+
+The Icons folder contains the graphic files containing the icons used 
+identify buttons on the MDI subwindow and to change the appearance of the
+mouse pointer when the zoom, draw, paint and eraser functions are selected.
+
+In Resources.py, constants are defined that hold strings containing the file paths to
+the above icons. 
+&#34;&#34;&#34;</code></pre>
+</details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
