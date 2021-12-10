@@ -1,1 +1,1 @@
-"""Test docstring pdoc3 Display"""
+"""TEST docstring pdoc3 Display"""

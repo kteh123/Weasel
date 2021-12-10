@@ -26,7 +26,13 @@ class ROIs():
    the ROI in the mask in the list corresponding to that image are set to True.
    """
     def __init__(self, numberOfImages, linkToGraphicsView):
-        """Instantiates an ROIs object"""
+        """Instantiates an ROIs object
+        
+        arguments:
+            numberOfImages - number of images in the DICOM series
+            linkToGraphicsView - an object reference to the GraphicView
+                                object hosting the ROIs object
+        """
         self.dictMasks = {}
         self.regionNumber = 1
         self.prevRegionName = "region1"
@@ -48,6 +54,8 @@ class ROIs():
    
 
     def addMask(self, mask):
+        """Overwrites the blank mask corresponding to a given image in the list of 
+        initially blank masks with the updated mask containing the ROI"""
         logger.info("RIO_Storage.addMask called")
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
