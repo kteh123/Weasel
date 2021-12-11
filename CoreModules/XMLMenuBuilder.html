@@ -66,9 +66,11 @@ def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
         else:
             if item.find(&#39;icon&#39;) is not None:
                 icon = item.find(&#39;icon&#39;).text
-                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
-                else: base_path = &#34;.&#34;
-                weasel.menuItem = QAction(QIcon(os.path.join(base_path, icon)), item.find(&#39;label&#39;).text, weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+                    if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                    else: icon_path = icon
+                else: icon_path = icon
+                weasel.menuItem = QAction(QIcon(icon_path), item.find(&#39;label&#39;).text, weasel)
             else:
                 weasel.menuItem = QAction(item.find(&#39;label&#39;).text, weasel)
             if item.find(&#39;shortcut&#39;) is not None:
@@ -256,9 +258,11 @@ def buildContextMenu(weasel, menuXMLFile):
         else:
             if item.find(&#39;icon&#39;) is not None:
                 icon = item.find(&#39;icon&#39;).text
-                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
-                else: base_path = &#34;.&#34;
-                weasel.menuItem = QAction(QIcon(os.path.join(base_path, icon)), item.find(&#39;label&#39;).text, weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+                    if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                    else: icon_path = icon
+                else: icon_path = icon
+                weasel.menuItem = QAction(QIcon(icon_path), item.find(&#39;label&#39;).text, weasel)
             else:
                 weasel.menuItem = QAction(item.find(&#39;label&#39;).text, weasel)
             if item.find(&#39;shortcut&#39;) is not None:

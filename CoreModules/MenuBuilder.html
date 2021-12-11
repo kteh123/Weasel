@@ -106,9 +106,11 @@ class SubMenuBuilder:
                icon = None):
         try:
             if icon is not None:
-                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
-                else: base_path = &#34;.&#34;
-                self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+                    if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                    else: icon_path = icon
+                else: icon_path = icon
+                self.menuItem = QAction(QIcon(icon_path), label, self.weasel)
             else:
                 self.menuItem = QAction(label, self.weasel)
 
@@ -380,9 +382,11 @@ def isXMLFile(fileName):
                icon = None):
         try:
             if icon is not None:
-                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
-                else: base_path = &#34;.&#34;
-                self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
+                if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+                    if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                    else: icon_path = icon
+                else: icon_path = icon
+                self.menuItem = QAction(QIcon(icon_path), label, self.weasel)
             else:
                 self.menuItem = QAction(label, self.weasel)
 
@@ -438,9 +442,11 @@ def isXMLFile(fileName):
            icon = None):
     try:
         if icon is not None:
-            if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;): base_path = sys._MEIPASS
-            else: base_path = &#34;.&#34;
-            self.menuItem = QAction(QIcon(os.path.join(base_path, icon)), label, self.weasel)
+            if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
+                if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                else: icon_path = icon
+            else: icon_path = icon
+            self.menuItem = QAction(QIcon(icon_path), label, self.weasel)
         else:
             self.menuItem = QAction(label, self.weasel)
 
