@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 # Write the name of the extra Python Packages for development here
-extra_requirements = ['dipy>=1.3.0', 'fslpy>=3.0.0', 'scikit-image>=0.18.1', 'scikit-learn>=0.21.3', 'tqdm>=4.40.0', 'ukat', 'itk-elastix']
+extra_requirements = ['dipy>=1.3.0', 'fslpy>=3.0.0', 'scikit-image>=0.18.1', 'scikit-learn>=0.21.3', 'tqdm>=4.40.0', 'ukat']
 
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""

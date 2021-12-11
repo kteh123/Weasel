@@ -41,16 +41,10 @@ __author__ = 'Steve Shillitoe & Joao Sousa'
 
 
 #Create and configure the logger
-#First delete the previous log file if there is one
-LOG_FILE_NAME = "Activity_Log.log"
-if os.path.exists(LOG_FILE_NAME) and current_process().name == 'MainProcess':
-    os.remove(LOG_FILE_NAME)
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-logging.basicConfig(filename=LOG_FILE_NAME, 
-                level=logging.INFO, 
-                format=LOG_FORMAT)
+LOG_FILE_NAME = os.path.join(os.path.dirname(sys.argv[0]), "Activity_Log.log")
+logging.basicConfig(filename=LOG_FILE_NAME, filemode='w', format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
-
 
 class Weasel(QMainWindow, WeaselProgrammingInterface):
 

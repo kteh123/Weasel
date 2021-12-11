@@ -38,9 +38,11 @@ def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
         else:
             if item.find('icon') is not None:
                 icon = item.find('icon').text
-                if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): base_path = sys._MEIPASS
-                else: base_path = "."
-                weasel.menuItem = QAction(QIcon(os.path.join(base_path, icon)), item.find('label').text, weasel)
+                if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+                    if os.path.exists(os.path.join(sys._MEIPASS, icon)): icon_path = os.path.join(sys._MEIPASS, icon)
+                    else: icon_path = icon
+                else: icon_path = icon
+                weasel.menuItem = QAction(QIcon(icon_path), item.find('label').text, weasel)
             else:
                 weasel.menuItem = QAction(item.find('label').text, weasel)
             if item.find('shortcut') is not None:
