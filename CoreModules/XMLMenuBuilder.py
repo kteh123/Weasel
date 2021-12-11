@@ -1,3 +1,8 @@
+"""
+Module of helper functions for building the menus in the menu bar of the MDI 
+using the definition in an XML file.
+"""
+
 from PyQt5.QtWidgets import QAction, QToolTip 
 from PyQt5.QtGui import QCursor, QIcon
 import os

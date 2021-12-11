@@ -1,3 +1,6 @@
+"""
+Class for reading the XML file containing the definition of the Weasel menus.
+"""
 import xml.etree.cElementTree as ET  
 import logging
 import os
