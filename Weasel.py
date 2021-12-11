@@ -1,3 +1,15 @@
+"""Weasel.py is the start-up file of the Weasel application. 
+
+It contains the definition of:
+
+1. The Weasel class that inherits from PyQt5's QMainWindow class 
+in order to create the Multiple Document Interface (MDI)
+that forms the backbone of the Weasel GUI.
+
+2. The Weasel_CMD class that is used when Weasel is run as a 
+command line program. 
+"""
+
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
         QMdiSubWindow, QMainWindow, QMenu,
@@ -49,7 +61,7 @@ logger = logging.getLogger(__name__)
 class Weasel(QMainWindow, WeaselProgrammingInterface):
 
     def __init__(self): 
-        """Creates the MDI container."""
+        """Creates the MDI container that forms the Weasel GUI."""
         super().__init__()
         print("=====================================")
         print("MESSAGE TO THE USER:")
@@ -85,7 +97,8 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
 
 
     def __repr__(self):
-       return '{}'.format(self.__class__.__name__)
+        """Returns a string representation of objects of this class""" 
+        return '{}'.format(self.__class__.__name__)
 
 
 
@@ -129,9 +142,11 @@ class Weasel_CMD(WeaselProgrammingInterface):
             logger.info("WEASEL CMD not created due to invalid arguments.")
 
     def __repr__(self):
-       return '{}'.format(self.__class__.__name__)
+        """Returns a string representation of objects of this class""" 
+        return '{}'.format(self.__class__.__name__)
 
     def run(self):
+        """Runs Weasel in command-line mode"""
         if self.XMLDicomFile and self.PythonFile:
             print("=====================================")
             print("Script in " + self.PythonFile + " started ...")
@@ -149,6 +164,12 @@ class Weasel_CMD(WeaselProgrammingInterface):
         return
 
 def main():
+    """Creates an object of one of the following classes:
+        1. Weasel class to create the Weasel GUI or
+         
+        2. Weasel_CMD class to run Weasel in command-line mode.
+    """
+
     example_text = example_text = '''example usage:
         python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"
         Weasel.exe -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"'''
