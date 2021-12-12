@@ -1,8 +1,3 @@
-import CoreModules.WriteXMLfromDICOM
-import DICOM.DeveloperTools
-import External.ImagingTools
-import Menus.Tutorial
-
 """
 These modules are an important part of the Weasel infrastructure.  Users are
 recommended not to amend these modules.
@@ -19,3 +14,9 @@ XMLMenuBuilder.py - Module of helper functions for building the menus in the men
         using the definition in an XML file.
 XMLMenuReader.py - Class for reading the XML file containing the definition of the Weasel menus.
 """
+
+import CoreModules.WriteXMLfromDICOM
+import DICOM.DeveloperTools
+import External.ImagingTools
+import Menus.Tutorial
+
