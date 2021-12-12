@@ -1,3 +1,4 @@
+"""A standard Weasel menu providing functions to download and upload DICOM data from/to XNAT."""
 def main(weasel):
 
     menu = weasel.menu("XNAT")  
