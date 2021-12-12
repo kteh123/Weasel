@@ -1,3 +1,4 @@
+"""A standard Weasel menu providing access to Help"""
 def main(weasel):
 
     menu = weasel.menu("Help")  
