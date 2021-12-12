@@ -1,4 +1,4 @@
-"""Contains modules support the display of the following in an MDI subwindow:
+"""Contains modules that support the display of the following in an MDI subwindow:
 
 1. DICOM images, individually and in a series. These are in the ImageViewers folder.
 
