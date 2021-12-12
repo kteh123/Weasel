@@ -33,10 +33,10 @@ if platform == "win32" or platform == "win64" or os.name == 'nt':
 else:
 	data_folders = ['API:./API', 'CoreModules:./CoreModules', 'Displays:./Displays', 'Documents:./Documents', 'Menus:./Menus', 'Pipelines:./Pipelines']
 string_data = ' '.join(['--add-data='+ mod + ' ' for mod in data_folders])
-string_binary = ' '.join(['--add-binary='+ mod + ' ' for mod in data_folders])
+#string_binary = ' '.join(['--add-binary='+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")
-os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_collect_data + ' ' + string_data + ' ' + string_binary + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
+os.system(activation_command + ' && pyinstaller ' + string_hidden_imports + ' ' + string_collect_data + ' ' + string_data + ' --clean --onefile -i ' + str(icon_file) + ' Weasel.py')
 
 print("Cleaning up compilation files...")
 # Windows
