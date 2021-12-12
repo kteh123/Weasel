@@ -1,3 +1,4 @@
+"""A standard Weasel menu providing functions to access data in DICOM folders."""
 def main(weasel):
    
     menu = weasel.menu("File")
