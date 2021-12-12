@@ -1,3 +1,4 @@
+"""A standard Weasel menu providing functions to edit images and series."""
 def main(weasel):
     
     menu = weasel.menu("Edit")
