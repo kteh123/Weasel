@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.CoreModules.MenuBuilder API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Class for building the menus in the menu bar of Weasel …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,18 @@
 <h1 class="title">Module <code>WEASEL.CoreModules.MenuBuilder</code></h1>
 </header>
 <section id="section-intro">
+<p>Class for building the menus in the menu bar of Weasel.</p>
+<p>class MenuBuilder generates the menus defined either in an XML file or
+a Python script.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">   
+<pre><code class="python">&#34;&#34;&#34;Class for building the menus in the menu bar of Weasel.
+
+class MenuBuilder generates the menus defined either in an XML file or
+a Python script.
+&#34;&#34;&#34;
 import CoreModules.XMLMenuBuilder as xmlMenuBuilder
 
 from PyQt5.QtWidgets import QAction, QMenu, QToolTip 
@@ -257,39 +264,7 @@ def isXMLFile(fileName):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class MenuBuilder():
-
-    def __init__(self, weasel):
-
-        self.weasel = weasel
-        self.context = QMenu(weasel)
-        self.listMenus = []
-        self.listPythonFiles = returnListPythonFiles()
-
-    def buildMenus(self):
-        try:
-            menuConfigFile = self.weasel.objConfigXMLReader.getMenuConfigFile()
-            if menuConfigFile:
-                #a menu config file has been defined
-                if isPythonFile(menuConfigFile):
-                    moduleFileName = [pythonFilePath 
-                                        for pythonFilePath in self.listPythonFiles 
-                                        if menuConfigFile in pythonFilePath][0]
-                    spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
-                    objFunction = getattr(module, &#34;main&#34;)
-                    #execute python functions to build the menus and menu items
-                    objFunction(self.weasel)
-                elif isXMLFile(menuConfigFile):
-                    xmlMenuBuilder.setupMenus(self.weasel, menuConfigFile)
-                    xmlMenuBuilder.buildContextMenu(self.weasel, menuConfigFile)
-        except Exception as e:
-            print(&#39;Error in MenuBuilder.buildMenus: &#39; + str(e)) 
-            logger.exception(&#39;Error in MenuBuilder.buildMenus: &#39; + str(e)) 
-
-    def newSubMenu(self, label):
-        return SubMenuBuilder(self.weasel, label)</code></pre>
+<pre><code class="python">class MenuBuilder generates the menus defined either in an XML file or</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
