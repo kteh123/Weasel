@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.CoreModules.TreeView API documentation</title>
-<meta name="description" content="class TreeView uses an XML file that describes a DICOM file structure to build a
+<meta name="description" content="Class TreeView uses an XML file that describes a DICOM file structure to build a
 tree view showing a visual representation of that file structure." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -23,13 +23,13 @@ tree view showing a visual representation of that file structure." />
 <h1 class="title">Module <code>WEASEL.CoreModules.TreeView</code></h1>
 </header>
 <section id="section-intro">
-<p>class TreeView uses an XML file that describes a DICOM file structure to build a
+<p>Class TreeView uses an XML file that describes a DICOM file structure to build a
 tree view showing a visual representation of that file structure.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;class TreeView uses an XML file that describes a DICOM file structure to build a
+<pre><code class="python">&#34;&#34;&#34;Class TreeView uses an XML file that describes a DICOM file structure to build a
     tree view showing a visual representation of that file structure.&#34;&#34;&#34;
 
 from PyQt5.QtCore import  Qt
@@ -49,7 +49,7 @@ __author__ = &#34;Steve Shillitoe&#34;
 
 
 class TreeView():
-    &#34;&#34;&#34;class TreeView uses an XML file that describes a DICOM file structure to build a
+    &#34;&#34;&#34;Class TreeView uses an XML file that describes a DICOM file structure to build a
     tree view showing a visual representation of that file structure.&#34;&#34;&#34;
 
     def __init__(self, weasel, XML_File_Path):
@@ -179,6 +179,11 @@ class TreeView():
             return item 
 
     def _displayImage(self, item, col):
+        &#34;&#34;&#34;
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
         if col == 1:
             id = self.weasel.objXMLReader.objectID(item.element)
             if item.element.tag == &#39;image&#39;:
@@ -203,6 +208,10 @@ class TreeView():
         and when a tree view item is checked, it is also selected.
         This function also sets boolean flags that indicate if a 
         subject, study, series or image is checked.
+
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         &#34;&#34;&#34;
         try:
             logger.info(&#34;TreeView.itemClickedEvent called.&#34;)
@@ -293,9 +302,9 @@ class TreeView():
         &#34;&#34;&#34;This function uses recursion to set the state of child checkboxes 
         of item to unchecked.
         
-        Input Parameters
+         Input Parameters
         ****************
-        item  - A QTreeWidgetItem 
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         &#34;&#34;&#34;
         logger.info(&#34;TreeView._unCheckTreeViewItems called&#34;)
         try:
@@ -348,6 +357,11 @@ class TreeView():
 
 
     def _saveCheckedState(self, item):
+        &#34;&#34;&#34;
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;TreeView.saveCheckedState called.&#34;)
             if item.checkState(0) == Qt.Checked:
@@ -418,7 +432,7 @@ def _areAllChildrenChecked(item):
     ****************
     item  - A QTreeWidgetItem whose checkbox state has just changed
 
-    Output Parameter
+    Returns
     *****************
     True or False
     &#34;&#34;&#34;
@@ -448,14 +462,14 @@ def _areAllChildrenChecked(item):
 <span>(</span><span>weasel, XML_File_Path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>class TreeView uses an XML file that describes a DICOM file structure to build a
+<div class="desc"><p>Class TreeView uses an XML file that describes a DICOM file structure to build a
 tree view showing a visual representation of that file structure.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class TreeView():
-    &#34;&#34;&#34;class TreeView uses an XML file that describes a DICOM file structure to build a
+    &#34;&#34;&#34;Class TreeView uses an XML file that describes a DICOM file structure to build a
     tree view showing a visual representation of that file structure.&#34;&#34;&#34;
 
     def __init__(self, weasel, XML_File_Path):
@@ -585,6 +599,11 @@ tree view showing a visual representation of that file structure.</p></div>
             return item 
 
     def _displayImage(self, item, col):
+        &#34;&#34;&#34;
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
         if col == 1:
             id = self.weasel.objXMLReader.objectID(item.element)
             if item.element.tag == &#39;image&#39;:
@@ -609,6 +628,10 @@ tree view showing a visual representation of that file structure.</p></div>
         and when a tree view item is checked, it is also selected.
         This function also sets boolean flags that indicate if a 
         subject, study, series or image is checked.
+
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         &#34;&#34;&#34;
         try:
             logger.info(&#34;TreeView.itemClickedEvent called.&#34;)
@@ -699,9 +722,9 @@ tree view showing a visual representation of that file structure.</p></div>
         &#34;&#34;&#34;This function uses recursion to set the state of child checkboxes 
         of item to unchecked.
         
-        Input Parameters
+         Input Parameters
         ****************
-        item  - A QTreeWidgetItem 
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         &#34;&#34;&#34;
         logger.info(&#34;TreeView._unCheckTreeViewItems called&#34;)
         try:
@@ -754,6 +777,11 @@ tree view showing a visual representation of that file structure.</p></div>
 
 
     def _saveCheckedState(self, item):
+        &#34;&#34;&#34;
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;TreeView.saveCheckedState called.&#34;)
             if item.checkState(0) == Qt.Checked:
