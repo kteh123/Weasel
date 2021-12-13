@@ -17,6 +17,6 @@ XMLMenuReader.py - Class for reading the XML file containing the definition of t
 
 import CoreModules.WriteXMLfromDICOM
 import DICOM.DeveloperTools
-import External.ImagingTools
+import External.Tools.ImageProcessing
 import Menus.Tutorial
 

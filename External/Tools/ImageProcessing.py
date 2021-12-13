@@ -37,21 +37,21 @@ def invertAlgorithm(pixelArray, dataset):
         totalBytes = dataset.BitsAllocated
         return np.invert(pixelArray.astype('int' + str(totalBytes)))
     except Exception as e:
-        print('Error in function ImagingTools.invertAlgorithm: ' + str(e))
+        print('Error in function ImageProcessing.invertAlgorithm: ' + str(e))
 
 
 def squareAlgorithm(pixelArray, dataset = None):
     try:
         return np.square(pixelArray)
     except Exception as e:
-        print('Error in function ImagingTools.squareAlgorithm: ' + str(e))
+        print('Error in function ImageProcessing.squareAlgorithm: ' + str(e))
 
 
 def gaussianFilter(pixelArray, sigma):
     try:
         return scipy.ndimage.gaussian_filter(pixelArray, sigma)
     except Exception as e:
-        print('Error in function ImagingTools.gaussianFilter: ' + str(e))
+        print('Error in function ImageProcessing.gaussianFilter: ' + str(e))
 
 
 def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):

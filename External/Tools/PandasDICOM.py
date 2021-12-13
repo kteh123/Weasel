@@ -1,4 +1,52 @@
+import pandas
+import pydicom
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
+
+
+def DICOM_to_DataFrame(files, tags=[]):
+    """Summarises a DICOM folder as a DataFrame.
+
+    Parameters
+    ----------
+    files -- a list of filepaths to DICOM files
+    tags -- a list of tags to be read. If not provided, a default list is used
+
+    Returns
+    -------
+    A Pandas dataframe with one row per file
+    The index is the file path 
+    Each column corresponds to a Tag in the list of Tags
+    """
+
+    if tags == []:
+        tags = [ 
+            'PatientID', 'StudyInstanceUID', 'SeriesInstanceUID', 'SOPInstanceUID', 
+            'PatientName', 'StudyDescription', 'SeriesDescription', 'SeriesNumber', 'InstanceNumber', 
+            'StudyDate', 'SeriesDate', 'AcquisitionDate',
+            'StudyTime', 'SeriesTime', 'AcquisitionTime' ] 
+
+    array = []
+    dicom_files = []
+    
+    for filepath in files:
+        dataset = pydicom.dcmread(filepath, force=True)
+        if isinstance(dataset, pydicom.dataset.FileDataset):
+            if 'TransferSyntaxUID' in dataset.file_meta:
+                row = []
+                for tag in tags:
+                    # If DICOM is multiframe
+                    if tag not in dataset and tag == "SliceLocation":
+                        value = dataset[(0x2001, 0x100a)].value
+                    elif tag not in dataset:
+                        value = None
+                    else:
+                        value = dataset[tag].value
+                    row.append(value)
+                array.append(row)
+                dicom_files.append(filepath) 
+
+    return pandas.DataFrame(array, index=dicom_files, columns=tags)
 
 
 def DataFrame_to_ElementTree(data_frame):
@@ -83,4 +131,35 @@ def data_labels(image):
     return subject_label, study_label, series_label, image_label, SeriesDate, SeriesTime, AcquisitionTime, AcquisitionDate
 
 
+def write_dataframe(data_frame, file):
+    """ Writes a DataFrame as a CSV file"""
 
+    data_frame.to_csv(file)
+
+
+def read_dataframe(file):
+    """ Reads a DataFrame from a CSV file """  
+    
+    return pandas.read_csv(file, index_col=0)
+
+
+def write_elementtree(element_tree, xml_file):
+    """Saves an ElementTree as an XML file
+
+    Parameters:
+    ----------
+    element_tree: An XML ElementTree
+    xml_file: path to the xml file
+    """
+
+    xml_string = ET.tostring(element_tree, encoding='utf-8')
+    xml_string = minidom.parseString(xml_string).toprettyxml(encoding="utf-8", indent="  ")
+    
+    with open(xml_file, "wb") as f:
+        f.write(xml_string) 
+
+
+def read_elementtree(xml_file):
+    """Creates an ElementTree from an XML file""" 
+
+    return ET.parse(xml_file)

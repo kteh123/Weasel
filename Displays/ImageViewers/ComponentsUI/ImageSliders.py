@@ -17,7 +17,7 @@ import pandas as pd
 import DICOM.ReadDICOM_Image as ReadDICOM_Image
 from DICOM.Classes import Series
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import *
-from External.PandasDICOM.DICOM_to_DataFrame import DICOM_to_DataFrame
+from External.Tools.PandasDICOM import DICOM_to_DataFrame
 import time
 import logging
 logger = logging.getLogger(__name__)

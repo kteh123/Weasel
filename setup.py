@@ -32,9 +32,9 @@ class CleanCommand(Command):
 setup(
     # Software Info
     name="Weasel",
-    author='Steven Shillitoe & Joao Sousa',
-    author_email='s.shillitoe@sheffield.ac.uk & j.g.sousa@sheffield.ac.uk',
-    version="1.0",
+    author='Steven Shillitoe, Joao Sousa & Steven Sourbron',
+    author_email='s.shillitoe@sheffield.ac.uk, j.g.sousa@sheffield.ac.uk, s.sourbron@sheffield.ac.uk',
+    version="0.2",
     description="Prototyping Medical Imaging Applications.",
     long_description = long_description,
     long_description_content_type='text/markdown',

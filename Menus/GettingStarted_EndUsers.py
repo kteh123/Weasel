@@ -1,5 +1,5 @@
 
-from Menus.Demo import main as menu_demo
+from Menus.Tutorial import main as menu_tutorial
 
 def main(weasel):
    
@@ -7,7 +7,7 @@ def main(weasel):
     weasel.menu_view()
     weasel.menu_edit()
 
-    menu_demo(weasel)
+    menu_tutorial(weasel)
     
     weasel.menu_xnat()
     
