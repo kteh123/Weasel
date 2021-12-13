@@ -4,7 +4,7 @@
 ![Software](https://img.shields.io/badge/Software-DICOM%20Viewer-green)
 ![Status](https://img.shields.io/badge/Status-Prototype-orange)
 
-# Weasel
+# [Weasel](https://weasel.pro/)
 
 **!!!!!!!!!!!!!! UNDER CONSTRUCTION !!!!!!!!!!!!!!!!!**
 
