@@ -1,4 +1,4 @@
-"""class TreeView uses an XML file that describes a DICOM file structure to build a
+"""Class TreeView uses an XML file that describes a DICOM file structure to build a
     tree view showing a visual representation of that file structure."""
 
 from PyQt5.QtCore import  Qt
@@ -18,7 +18,7 @@ __author__ = "Steve Shillitoe"
 
 
 class TreeView():
-    """class TreeView uses an XML file that describes a DICOM file structure to build a
+    """Class TreeView uses an XML file that describes a DICOM file structure to build a
     tree view showing a visual representation of that file structure."""
 
     def __init__(self, weasel, XML_File_Path):
@@ -148,6 +148,11 @@ class TreeView():
             return item 
 
     def _displayImage(self, item, col):
+        """
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        """
         if col == 1:
             id = self.weasel.objXMLReader.objectID(item.element)
             if item.element.tag == 'image':
@@ -172,6 +177,10 @@ class TreeView():
         and when a tree view item is checked, it is also selected.
         This function also sets boolean flags that indicate if a 
         subject, study, series or image is checked.
+
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         """
         try:
             logger.info("TreeView.itemClickedEvent called.")
@@ -262,9 +271,9 @@ class TreeView():
         """This function uses recursion to set the state of child checkboxes 
         of item to unchecked.
         
-        Input Parameters
+         Input Parameters
         ****************
-        item  - A QTreeWidgetItem 
+        item  - A QTreeWidgetItem whose checkbox state has just changed
         """
         logger.info("TreeView._unCheckTreeViewItems called")
         try:
@@ -317,6 +326,11 @@ class TreeView():
 
 
     def _saveCheckedState(self, item):
+        """
+         Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        """
         try:
             logger.info("TreeView.saveCheckedState called.")
             if item.checkState(0) == Qt.Checked:
@@ -387,7 +401,7 @@ def _areAllChildrenChecked(item):
     ****************
     item  - A QTreeWidgetItem whose checkbox state has just changed
 
-    Output Parameter
+    Returns
     *****************
     True or False
     """
