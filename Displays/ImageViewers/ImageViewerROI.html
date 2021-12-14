@@ -241,7 +241,34 @@ class ImageViewerROI(QMdiSubWindow):
         and loadImageInImageItem.  The latter function because the clean version of the image
         needs to be displayed.
 
+        Reset ROI button clicked event connected to the resetROI function of the graphicsView object
 
+        Save ROI button clicked event connected to the saveROI function
+
+        Load ROI button clicked event connected to the loadROI function
+
+        Erase ROI button clicked event connected to the eraseROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        Erase ROI button is passed into this function.
+
+        Draw ROI button clicked event connected to the drawROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        draw ROI button is passed into this function.
+
+        Paint ROI button clicked event connected to the paintROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        paint ROI button is passed into this function.
+
+        Zoom button clicked event connected to the zoomImage function.  
+        The boolean variable, Checked, that represents the checked state of the
+        zoom button is passed into this function.
+
+        ROI names combo box currentIndexChanged event connected to the 
+        loadImageInImageItem function with the addMask argument set to True,
+        so as to display the mask associated with the selected ROI with the image.
+
+        ROI names combo box editTextChanged event connected to the roiNameChanged fuction.
+        This event is &#39;fired&#39; when the user edits the name of the current RIO. 
         &#34;&#34;&#34;
         self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
@@ -1151,7 +1178,34 @@ vertical layout created in the function setUpMainLayout.</p></div>
         and loadImageInImageItem.  The latter function because the clean version of the image
         needs to be displayed.
 
+        Reset ROI button clicked event connected to the resetROI function of the graphicsView object
 
+        Save ROI button clicked event connected to the saveROI function
+
+        Load ROI button clicked event connected to the loadROI function
+
+        Erase ROI button clicked event connected to the eraseROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        Erase ROI button is passed into this function.
+
+        Draw ROI button clicked event connected to the drawROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        draw ROI button is passed into this function.
+
+        Paint ROI button clicked event connected to the paintROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        paint ROI button is passed into this function.
+
+        Zoom button clicked event connected to the zoomImage function.  
+        The boolean variable, Checked, that represents the checked state of the
+        zoom button is passed into this function.
+
+        ROI names combo box currentIndexChanged event connected to the 
+        loadImageInImageItem function with the addMask argument set to True,
+        so as to display the mask associated with the selected ROI with the image.
+
+        ROI names combo box editTextChanged event connected to the roiNameChanged fuction.
+        This event is &#39;fired&#39; when the user edits the name of the current RIO. 
         &#34;&#34;&#34;
         self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
@@ -1985,7 +2039,27 @@ and editTextChanged events. </p>
 <p>New ROI button clicked event connected to newROI function of the graphicsView object
 and loadImageInImageItem.
 The latter function because the clean version of the image
-needs to be displayed.</p></div>
+needs to be displayed.</p>
+<p>Reset ROI button clicked event connected to the resetROI function of the graphicsView object</p>
+<p>Save ROI button clicked event connected to the saveROI function</p>
+<p>Load ROI button clicked event connected to the loadROI function</p>
+<p>Erase ROI button clicked event connected to the eraseROI function.<br>
+The boolean variable, Checked, that represents the checked state of the
+Erase ROI button is passed into this function.</p>
+<p>Draw ROI button clicked event connected to the drawROI function.<br>
+The boolean variable, Checked, that represents the checked state of the
+draw ROI button is passed into this function.</p>
+<p>Paint ROI button clicked event connected to the paintROI function.<br>
+The boolean variable, Checked, that represents the checked state of the
+paint ROI button is passed into this function.</p>
+<p>Zoom button clicked event connected to the zoomImage function.<br>
+The boolean variable, Checked, that represents the checked state of the
+zoom button is passed into this function.</p>
+<p>ROI names combo box currentIndexChanged event connected to the
+loadImageInImageItem function with the addMask argument set to True,
+so as to display the mask associated with the selected ROI with the image.</p>
+<p>ROI names combo box editTextChanged event connected to the roiNameChanged fuction.
+This event is 'fired' when the user edits the name of the current RIO.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2002,7 +2076,34 @@ needs to be displayed.</p></div>
     and loadImageInImageItem.  The latter function because the clean version of the image
     needs to be displayed.
 
+    Reset ROI button clicked event connected to the resetROI function of the graphicsView object
 
+    Save ROI button clicked event connected to the saveROI function
+
+    Load ROI button clicked event connected to the loadROI function
+
+    Erase ROI button clicked event connected to the eraseROI function.  
+    The boolean variable, Checked, that represents the checked state of the
+    Erase ROI button is passed into this function.
+
+    Draw ROI button clicked event connected to the drawROI function.  
+    The boolean variable, Checked, that represents the checked state of the
+    draw ROI button is passed into this function.
+
+    Paint ROI button clicked event connected to the paintROI function.  
+    The boolean variable, Checked, that represents the checked state of the
+    paint ROI button is passed into this function.
+
+    Zoom button clicked event connected to the zoomImage function.  
+    The boolean variable, Checked, that represents the checked state of the
+    zoom button is passed into this function.
+
+    ROI names combo box currentIndexChanged event connected to the 
+    loadImageInImageItem function with the addMask argument set to True,
+    so as to display the mask associated with the selected ROI with the image.
+
+    ROI names combo box editTextChanged event connected to the roiNameChanged fuction.
+    This event is &#39;fired&#39; when the user edits the name of the current RIO. 
     &#34;&#34;&#34;
     self.btnDeleteROI.clicked.connect(self.deleteROI)
     self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
