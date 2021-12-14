@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Displays.ImageViewers.ImageViewerROI API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Class ImageViewerROI creates an MDI subwindow for viewing an image or series of images
+with the facility to draw a Region of Interest ROI on the image." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +23,16 @@
 <h1 class="title">Module <code>WEASEL.Displays.ImageViewers.ImageViewerROI</code></h1>
 </header>
 <section id="section-intro">
+<p>Class ImageViewerROI creates an MDI subwindow for viewing an image or series of images
+with the facility to draw a Region of Interest ROI on the image.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PyQt5 import QtCore 
+<pre><code class="python">&#34;&#34;&#34;Class ImageViewerROI creates an MDI subwindow for viewing an image or series of images 
+    with the facility to draw a Region of Interest ROI on the image.
+&#34;&#34;&#34;
+from PyQt5 import QtCore 
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap, QIcon, QCursor
 from PyQt5.QtCore import (Qt, pyqtSignal)
@@ -65,11 +71,15 @@ logger = logging.getLogger(__name__)
 __author__ = &#34;Steve Shillitoe&#34;
 #September 2021
 
-#Subclassing QSlider so that the direction (Forward, Backward) of 
-#slider travel is returned to the calling function
-#This class is used to create a hidden slider used 
-#for zooming the image
 class Slider(QSlider):
+    &#34;&#34;&#34;
+    A subclass of the PyQt5 class QSlider 
+    so that the direction (Forward, Backward) of 
+    slider travel is returned to the calling function.
+
+    This class is used to create a hidden slider used 
+    for zooming the image.
+    &#34;&#34;&#34;
     Nothing, Forward, Backward = 0, 1, -1
     directionChanged = pyqtSignal(int)
     def __init__(self, parent=None):
@@ -79,6 +89,9 @@ class Slider(QSlider):
         self.valueChanged.connect(self.onValueChanged)
 
     def onValueChanged(self, value):
+        &#34;&#34;&#34;
+
+        &#34;&#34;&#34;
         current = value/self.maximum()
         direction = Slider.Forward if self.last &lt; current else Slider.Backward
         if self._direction != direction:
@@ -92,10 +105,23 @@ class Slider(QSlider):
 
 class ImageViewerROI(QMdiSubWindow):
     &#34;&#34;&#34;This class creates a subwindow for viewing an image or series of images with
-    the facility to draw a ROI on the image.  It also has multiple
+    the facility to draw an ROI on the image.  It also has multiple
     sliders for browsing series of images.&#34;&#34;&#34;
 
     def __init__(self, weasel, dcm): 
+        &#34;&#34;&#34;
+        When an object is created from the class ImageViewerROI, this function is called.
+        It creates the MDI subwindow and adds it to the Weasel MDI area.
+
+        If a series is to be viewed:
+
+        1. It creates sliders for navigating the images in the series. There will be a
+            main slider for navigating the whole DICOM series and auxiliary sliders to
+            navigate subsets of images sorted by DICOM attributes.
+
+        All the inner layouts and widgets are contained within one outer
+        vertical layout created in the function setUpMainLayout.
+        &#34;&#34;&#34;
         try:
             super().__init__()
             self.subjectID = dcm.subjectID
@@ -155,6 +181,11 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpMainLayout(self):
+        &#34;&#34;&#34;
+        All the inner layouts and widgets are contained within one outer
+        vertical layout called self.mainVerticalLayout that is created in 
+        this function.
+        &#34;&#34;&#34;
         try:
             self.mainVerticalLayout = QVBoxLayout()
             self.widget = QWidget()
@@ -166,6 +197,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpRoiToolsLayout(self):
+        &#34;&#34;&#34;
+        Creates a horizontal layout to contain the RIO tools
+        buttons &amp; adds it to the ROI tools group box.
+        &#34;&#34;&#34;
         self.roiToolsLayout = QHBoxLayout()
         self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
@@ -175,6 +210,13 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpROIDropDownList(self):
+        &#34;&#34;&#34;
+        Creates the ROI names drop down list or combo box with the default first
+        ROI name, region1.
+        The combo box is editable, so the user may change this default name.
+        When the user presses the add ROI button, a new default ROI is added at 
+        the end of the list in the combo box with the format regionX, where X is a number. 
+        &#34;&#34;&#34;
         self.cmbNamesROIs = QComboBox()
         self.cmbNamesROIs.setDuplicatesEnabled(False)
         self.cmbNamesROIs.addItem(&#34;region1&#34;)
@@ -188,6 +230,19 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def connectSlotToSignalForROITools(self):
+        &#34;&#34;&#34;
+        Connects relevant functions to the clicked event of the RIO tools buttons
+        and for the RIO names drop down list connects functions to its currentIndexChanged
+        and editTextChanged events. 
+
+        Delete button clicked event connected to self.deleteROI
+
+        New ROI button clicked event connected to newROI function of the graphicsView object 
+        and loadImageInImageItem.  The latter function because the clean version of the image
+        needs to be displayed.
+
+
+        &#34;&#34;&#34;
         self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
         self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
@@ -775,6 +830,18 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpTopRowLayout(self):
+        &#34;&#34;&#34;
+        In this function the horizontal layout is created and added to the
+        main vertical layout. 
+        This horizontal layout is used to contain the following in one row at the
+        top of the MDI subwindow:
+            1. The ROI tools group box. A row of buttons to enable 
+            2. The image levels group box. Two spinboxes for the adjustment of image contrast and intensity
+                in a group box.
+            3. The pixel levels group box. A label displaying the  pixel value under the mouse pointer
+                and its position in a group box.  
+            4. The zoom amount group box.  A label displaying the zoom amount in a group box
+        &#34;&#34;&#34;
         try:
             self.topRowMainLayout = QHBoxLayout()
             
@@ -929,19 +996,42 @@ class ImageViewerROI(QMdiSubWindow):
 </code></dt>
 <dd>
 <div class="desc"><p>This class creates a subwindow for viewing an image or series of images with
-the facility to draw a ROI on the image.
+the facility to draw an ROI on the image.
 It also has multiple
-sliders for browsing series of images.</p></div>
+sliders for browsing series of images.</p>
+<p>When an object is created from the class ImageViewerROI, this function is called.
+It creates the MDI subwindow and adds it to the Weasel MDI area.</p>
+<p>If a series is to be viewed:</p>
+<ol>
+<li>It creates sliders for navigating the images in the series. There will be a
+main slider for navigating the whole DICOM series and auxiliary sliders to
+navigate subsets of images sorted by DICOM attributes.</li>
+</ol>
+<p>All the inner layouts and widgets are contained within one outer
+vertical layout created in the function setUpMainLayout.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ImageViewerROI(QMdiSubWindow):
     &#34;&#34;&#34;This class creates a subwindow for viewing an image or series of images with
-    the facility to draw a ROI on the image.  It also has multiple
+    the facility to draw an ROI on the image.  It also has multiple
     sliders for browsing series of images.&#34;&#34;&#34;
 
     def __init__(self, weasel, dcm): 
+        &#34;&#34;&#34;
+        When an object is created from the class ImageViewerROI, this function is called.
+        It creates the MDI subwindow and adds it to the Weasel MDI area.
+
+        If a series is to be viewed:
+
+        1. It creates sliders for navigating the images in the series. There will be a
+            main slider for navigating the whole DICOM series and auxiliary sliders to
+            navigate subsets of images sorted by DICOM attributes.
+
+        All the inner layouts and widgets are contained within one outer
+        vertical layout created in the function setUpMainLayout.
+        &#34;&#34;&#34;
         try:
             super().__init__()
             self.subjectID = dcm.subjectID
@@ -1001,6 +1091,11 @@ sliders for browsing series of images.</p></div>
 
 
     def setUpMainLayout(self):
+        &#34;&#34;&#34;
+        All the inner layouts and widgets are contained within one outer
+        vertical layout called self.mainVerticalLayout that is created in 
+        this function.
+        &#34;&#34;&#34;
         try:
             self.mainVerticalLayout = QVBoxLayout()
             self.widget = QWidget()
@@ -1012,6 +1107,10 @@ sliders for browsing series of images.</p></div>
 
 
     def setUpRoiToolsLayout(self):
+        &#34;&#34;&#34;
+        Creates a horizontal layout to contain the RIO tools
+        buttons &amp; adds it to the ROI tools group box.
+        &#34;&#34;&#34;
         self.roiToolsLayout = QHBoxLayout()
         self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
         self.roiToolsLayout.setSpacing(0)
@@ -1021,6 +1120,13 @@ sliders for browsing series of images.</p></div>
 
 
     def setUpROIDropDownList(self):
+        &#34;&#34;&#34;
+        Creates the ROI names drop down list or combo box with the default first
+        ROI name, region1.
+        The combo box is editable, so the user may change this default name.
+        When the user presses the add ROI button, a new default ROI is added at 
+        the end of the list in the combo box with the format regionX, where X is a number. 
+        &#34;&#34;&#34;
         self.cmbNamesROIs = QComboBox()
         self.cmbNamesROIs.setDuplicatesEnabled(False)
         self.cmbNamesROIs.addItem(&#34;region1&#34;)
@@ -1034,6 +1140,19 @@ sliders for browsing series of images.</p></div>
 
 
     def connectSlotToSignalForROITools(self):
+        &#34;&#34;&#34;
+        Connects relevant functions to the clicked event of the RIO tools buttons
+        and for the RIO names drop down list connects functions to its currentIndexChanged
+        and editTextChanged events. 
+
+        Delete button clicked event connected to self.deleteROI
+
+        New ROI button clicked event connected to newROI function of the graphicsView object 
+        and loadImageInImageItem.  The latter function because the clean version of the image
+        needs to be displayed.
+
+
+        &#34;&#34;&#34;
         self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
         self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
@@ -1621,6 +1740,18 @@ sliders for browsing series of images.</p></div>
 
 
     def setUpTopRowLayout(self):
+        &#34;&#34;&#34;
+        In this function the horizontal layout is created and added to the
+        main vertical layout. 
+        This horizontal layout is used to contain the following in one row at the
+        top of the MDI subwindow:
+            1. The ROI tools group box. A row of buttons to enable 
+            2. The image levels group box. Two spinboxes for the adjustment of image contrast and intensity
+                in a group box.
+            3. The pixel levels group box. A label displaying the  pixel value under the mouse pointer
+                and its position in a group box.  
+            4. The zoom amount group box.  A label displaying the zoom amount in a group box
+        &#34;&#34;&#34;
         try:
             self.topRowMainLayout = QHBoxLayout()
             
@@ -1847,12 +1978,32 @@ sliders for browsing series of images.</p></div>
 <span>def <span class="ident">connectSlotToSignalForROITools</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Connects relevant functions to the clicked event of the RIO tools buttons
+and for the RIO names drop down list connects functions to its currentIndexChanged
+and editTextChanged events. </p>
+<p>Delete button clicked event connected to self.deleteROI</p>
+<p>New ROI button clicked event connected to newROI function of the graphicsView object
+and loadImageInImageItem.
+The latter function because the clean version of the image
+needs to be displayed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def connectSlotToSignalForROITools(self):
+    &#34;&#34;&#34;
+    Connects relevant functions to the clicked event of the RIO tools buttons
+    and for the RIO names drop down list connects functions to its currentIndexChanged
+    and editTextChanged events. 
+
+    Delete button clicked event connected to self.deleteROI
+
+    New ROI button clicked event connected to newROI function of the graphicsView object 
+    and loadImageInImageItem.  The latter function because the clean version of the image
+    needs to be displayed.
+
+
+    &#34;&#34;&#34;
     self.btnDeleteROI.clicked.connect(self.deleteROI)
     self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
     self.btnNewROI.clicked.connect(lambda: self.loadImageInImageItem(False))
@@ -2505,12 +2656,19 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">setUpMainLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>All the inner layouts and widgets are contained within one outer
+vertical layout called self.mainVerticalLayout that is created in
+this function.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpMainLayout(self):
+    &#34;&#34;&#34;
+    All the inner layouts and widgets are contained within one outer
+    vertical layout called self.mainVerticalLayout that is created in 
+    this function.
+    &#34;&#34;&#34;
     try:
         self.mainVerticalLayout = QVBoxLayout()
         self.widget = QWidget()
@@ -2626,12 +2784,23 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">setUpROIDropDownList</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the ROI names drop down list or combo box with the default first
+ROI name, region1.
+The combo box is editable, so the user may change this default name.
+When the user presses the add ROI button, a new default ROI is added at
+the end of the list in the combo box with the format regionX, where X is a number.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpROIDropDownList(self):
+    &#34;&#34;&#34;
+    Creates the ROI names drop down list or combo box with the default first
+    ROI name, region1.
+    The combo box is editable, so the user may change this default name.
+    When the user presses the add ROI button, a new default ROI is added at 
+    the end of the list in the combo box with the format regionX, where X is a number. 
+    &#34;&#34;&#34;
     self.cmbNamesROIs = QComboBox()
     self.cmbNamesROIs.setDuplicatesEnabled(False)
     self.cmbNamesROIs.addItem(&#34;region1&#34;)
@@ -2648,12 +2817,17 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">setUpRoiToolsLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a horizontal layout to contain the RIO tools
+buttons &amp; adds it to the ROI tools group box.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpRoiToolsLayout(self):
+    &#34;&#34;&#34;
+    Creates a horizontal layout to contain the RIO tools
+    buttons &amp; adds it to the ROI tools group box.
+    &#34;&#34;&#34;
     self.roiToolsLayout = QHBoxLayout()
     self.roiToolsLayout.setContentsMargins(0, 0, 0, 0)
     self.roiToolsLayout.setSpacing(0)
@@ -2666,12 +2840,35 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">setUpTopRowLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>In this function the horizontal layout is created and added to the
+main vertical layout.
+This horizontal layout is used to contain the following in one row at the
+top of the MDI subwindow:
+1. The ROI tools group box. A row of buttons to enable
+2. The image levels group box. Two spinboxes for the adjustment of image contrast and intensity
+in a group box.
+3. The pixel levels group box. A label displaying the
+pixel value under the mouse pointer
+and its position in a group box.<br>
+4. The zoom amount group box.
+A label displaying the zoom amount in a group box</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpTopRowLayout(self):
+    &#34;&#34;&#34;
+    In this function the horizontal layout is created and added to the
+    main vertical layout. 
+    This horizontal layout is used to contain the following in one row at the
+    top of the MDI subwindow:
+        1. The ROI tools group box. A row of buttons to enable 
+        2. The image levels group box. Two spinboxes for the adjustment of image contrast and intensity
+            in a group box.
+        3. The pixel levels group box. A label displaying the  pixel value under the mouse pointer
+            and its position in a group box.  
+        4. The zoom amount group box.  A label displaying the zoom amount in a group box
+    &#34;&#34;&#34;
     try:
         self.topRowMainLayout = QHBoxLayout()
         
@@ -2876,13 +3073,24 @@ zoom value</p></div>
 <span>(</span><span>parent=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>QSlider(parent: QWidget = None)
-QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
+<div class="desc"><p>A subclass of the PyQt5 class QSlider
+so that the direction (Forward, Backward) of
+slider travel is returned to the calling function.</p>
+<p>This class is used to create a hidden slider used
+for zooming the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Slider(QSlider):
+    &#34;&#34;&#34;
+    A subclass of the PyQt5 class QSlider 
+    so that the direction (Forward, Backward) of 
+    slider travel is returned to the calling function.
+
+    This class is used to create a hidden slider used 
+    for zooming the image.
+    &#34;&#34;&#34;
     Nothing, Forward, Backward = 0, 1, -1
     directionChanged = pyqtSignal(int)
     def __init__(self, parent=None):
@@ -2892,6 +3100,9 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
         self.valueChanged.connect(self.onValueChanged)
 
     def onValueChanged(self, value):
+        &#34;&#34;&#34;
+
+        &#34;&#34;&#34;
         current = value/self.maximum()
         direction = Slider.Forward if self.last &lt; current else Slider.Backward
         if self._direction != direction:
@@ -2958,6 +3169,9 @@ QSlider(Qt.Orientation, parent: QWidget = None)</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def onValueChanged(self, value):
+    &#34;&#34;&#34;
+
+    &#34;&#34;&#34;
     current = value/self.maximum()
     direction = Slider.Forward if self.last &lt; current else Slider.Backward
     if self._direction != direction:

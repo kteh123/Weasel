@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.Pipelines.Edit__DeleteSubject API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Creates a copy of the checked studies showing progress with a status bar." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,16 +22,14 @@
 <h1 class="title">Module <code>WEASEL.Pipelines.Edit__DeleteSubject</code></h1>
 </header>
 <section id="section-intro">
+<p>Creates a copy of the checked studies showing progress with a status bar.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">    
-#**************************************************************************
-# Template part of a tutorial 
-# Creates a copy of the checked studies
-# showing progress with a status bar 
-#***************************************************************************
+<pre><code class="python">&#34;&#34;&#34;
+Creates a copy of the checked studies showing progress with a status bar.
+&#34;&#34;&#34;
 
 def main(weasel):
     list_of_subjects = weasel.subjects()                # get the list of studies checked by the user
