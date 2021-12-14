@@ -1,3 +1,8 @@
+"""Class ImageViewer creates an MDI subwindow for viewing an image or series of images 
+    with the facility to change the colour table applied to the image
+    and adjust the image intensity and contrast.  
+    It also has multiple sliders for browsing series of images."""
+
 from PyQt5 import QtCore 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap, QIcon,  QCursor
@@ -36,7 +41,6 @@ from Displays.ImageViewers.ComponentsUI.PixelValueLabel import PixelValueCompone
 from Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes import ImageLevelsSpinBoxes as imageLevelsSpinBoxes
 from Displays.ImageViewers.ComponentsUI.FreeHandROI.Resources import * 
 
-import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -60,11 +64,29 @@ listColours = ['gray', 'cividis',  'magma', 'plasma', 'viridis',
 
 
 class ImageViewer(QMdiSubWindow):
-    """This class creates a subwindow for viewing an image or series of images with
-    the facility to change the colour table applied to the image.  It also has multiple
-    sliders for browsing series of images."""
+    """This class inherits from the PyQt5 class QMdiSubWindow to create
+    an MDI subwindow for viewing an image or series of images.
+    It has the facility to change the colour table applied to the image
+    and adjust the image intensity and contrast.  
+    It also has multiple sliders for browsing series of images."""
 
     def __init__(self, weasel, dcm): 
+        """
+        When an object is created from the class ImageViewer, this function is called.
+        It creates the MDI subwindow and adds it to the Weasel MDI area.
+
+        If a series is to be viewed:
+
+        1. It creates a data structure for storing user selected colour table 
+            and image contrast and intensity data.
+
+        2. It creates sliders for navigating the images in the series. There will be a
+            main slider for navigating the whole DICOM series and auxiliary sliders to
+            navigate subsets of images sorted by DICOM attributes.
+
+        All the inner layouts and widgets are contained within one outer
+        vertical layout created in the function setUpMainLayout.
+        """
         try:
             super().__init__()
 
@@ -132,6 +154,11 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpMainLayout(self):
+        """
+        All the inner layouts and widgets are contained within one outer
+        vertical layout called self.mainVerticalLayout that is created in 
+        this function.
+        """
         try:
             self.mainVerticalLayout = QVBoxLayout()
             self.widget = QWidget()
@@ -145,7 +172,6 @@ class ImageViewer(QMdiSubWindow):
     def setUpImageSliders(self):
         try:
             logger.info("ImageViewer.setpUpImageSliders called.")
-            start = time.perf_counter()
             #create an instance of the ImageSliders class
             self.slidersWidget = imageSliders(self.weasel, 
                                              self.subjectID, 
@@ -165,9 +191,7 @@ class ImageViewer(QMdiSubWindow):
             self.slidersWidget.sliderMoved.connect(lambda imagePath: 
                                                    self.displayPixelArrayOfSingleImage(imagePath))
             #Display the first image in the viewer
-            #self.displayPixelArrayOfSingleImage(self.imagePathList[0])
             self.slidersWidget.displayFirstImage()
-            #print("ImageViewer.setUpImageSliders time = {} seconds".format(time.perf_counter()-start))
         except Exception as e:
             print('Error in ImageViewer.setUpImageSliders: ' + str(e))
             logger.error('Error in ImageViewer.setUpImageSliders: ' + str(e))
@@ -224,7 +248,6 @@ class ImageViewer(QMdiSubWindow):
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
         self.colourTableGroupBox = QGroupBox()
-        #self.colourTableGroupBox.setFixedWidth(300)
         self.colourTableGroupBox.setFixedHeight(50)
         self.colourTableGroupBox.setLayout(self.colourTableLayout)
 
@@ -261,6 +284,14 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpImageLevelsGroupBox(self):
+        """
+        Creates an instance of the imageLevelsSpinBoxes
+        custom composite component that
+        comprises a horizontal layout containing two spinboxes, 
+        one for adjusting the image intensity, 
+        the other for adjusting the image contrast. 
+        This composite component is added to a group box
+        """
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
         self.imageLevelsGroupBox.setFixedWidth(200)
@@ -270,6 +301,15 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpTopRowLayout(self):
+        """
+        In this function the horizontal layout is created and added to the
+        main vertical layout. 
+        This horizontal layout is used to contain the following in one row at the
+        top of the MDI subwindow:
+            1. The colour table group box
+            2. The image levels group box
+            3. The pixel levels group box
+        """
         try:
             self.topRowMainLayout = QHBoxLayout()
 
@@ -292,6 +332,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpGraphicsView(self):
+        """
+        Using the PyQtGraph package, creates a graphicsView widget for displaying DICOM images and adds
+        it to the main vertical layout.
+        """
         try:
             self.graphicsView = pg.ImageView(view=pg.PlotItem()) #view=pg.PlotItem() adds axes to image
             self.mainVerticalLayout.addWidget(self.graphicsView, stretch=1)
@@ -362,6 +406,12 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpLevelsSpinBoxes(self):
+        """Connects the valueChanged event of the two spinboxes used to adjust
+           image contrast and intensity to the updateImageLevels function that updates 
+           the contrast and intensity of the image.  Additionally, if a DICOM series
+           is being viewed, the valueChanged event is connected to a function that saves
+           the user selected image levels.
+        """
         try:
             self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes()
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
@@ -375,6 +425,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpHistogram(self):
+        """
+        Connects the histogram object on the right-handside of the image to the
+        2 levels spinboxes, so they are updated when the histogram is adjusted.
+        """
         self.histogramObject = self.graphicsView.getHistogramWidget().getHistogram()
         self.histogramObject.sigLevelsChanged.connect(self.getHistogramLevels)
         self.graphicsView.ui.roiBtn.hide()
@@ -659,7 +713,6 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewer.displayPixelArrayOfSingleImage called")
-            start = time.perf_counter()
             self.selectedImagePath = imagePath
             imageName = os.path.basename(self.selectedImagePath)
             self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
