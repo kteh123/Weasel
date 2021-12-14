@@ -1,10 +1,6 @@
-
-    
-#**************************************************************************
-# Template part of a tutorial 
-# Merges the Images checked by the user into a new series under the same study,
-# Preserving a copy of the original images in the original series
-#***************************************************************************
+"""
+Merges the Images checked by the user into a new series under the same study, preserving a copy of the original images in the original series.
+"""
 
 def main(weasel):
     

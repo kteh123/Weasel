@@ -1,4 +1,6 @@
-
+"""
+Saves the pixel arrays of the checked images/series as .nii.gz files.
+"""
 
 def main(weasel):
     try:

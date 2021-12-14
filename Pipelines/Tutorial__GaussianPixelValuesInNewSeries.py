@@ -1,8 +1,7 @@
+"""
+Apply Gaussian filter to a number of selected images in new series.
+"""
 
-    
-#**************************************************************************
-# Apply Gaussian filter to a number of selected images in new series
-#***************************************************************************
 import scipy.ndimage as ndimage
 
 def main(weasel):

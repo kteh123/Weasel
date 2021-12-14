@@ -1,12 +1,14 @@
+"""
+Displays a subwindow in the Weasel GUI containing a viewer of the selected images.
+
+If a series is selected, it displays a subwindow per series containing a slider (or multiple) that allows to scroll through the images belonging to the series.
+"""
 
 from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
-
 import logging
 logger = logging.getLogger(__name__)
 
 __author__ = "Steve Shillitoe"
-#September 2021
-
 
 def main(weasel):
     try:

@@ -1,8 +1,7 @@
-
+"""
+Closes all the sub windows that are currently open in the Weasel GUI.
+""" 
 
 def main(weasel):  
-    """
-    Closes all the sub windows that are currently open.
-    """ 
     weasel.close_subwindows()
         

@@ -1,7 +1,7 @@
-
-    
+"""
+This help button forwards the user to the website https://weasel.pro.
+"""
 import webbrowser
-#webbrowser.get('chrome').open("Weasel.pro")
 
 def isEnabled(weasel):
     return True

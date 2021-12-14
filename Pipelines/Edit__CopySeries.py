@@ -1,11 +1,6 @@
-
-    
-#**************************************************************************
-# Creates a copy of all of the checked series
-# as siblings in the same study
-# showing progress with a status bar 
-# and displaying the copied series
-#***************************************************************************
+"""
+Creates a copy of all of the checked series as siblings in the same study showing progress with a status bar and displaying the copied series.
+"""
 
 def main(weasel):
     list_of_series = weasel.series()                  # get the list of series checked by the user

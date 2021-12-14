@@ -1,3 +1,6 @@
+"""
+Reopen and load the DICOM folder and presented in the display.
+"""
 
 import logging
 logger = logging.getLogger(__name__)
@@ -10,12 +13,4 @@ def main(weasel):
     except Exception as e:
         print('Error in function ReadDICOM.main: ' + str(e))
         logger.error('Error in function ReadDICOM.main: ' + str(e))
-
-
-
-
-
-
-
-
 

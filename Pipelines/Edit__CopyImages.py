@@ -1,9 +1,6 @@
-
-
-#**************************************************************************
-# Creates a copy of the checked images in the same series
-# showing progress with a status bar
-#***************************************************************************
+"""
+Creates a copy of the checked images in the same series showing progress with a status bar.
+"""
 
 def main(weasel):
 

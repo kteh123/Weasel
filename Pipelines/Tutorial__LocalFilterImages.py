@@ -1,11 +1,6 @@
-
-
-#**************************************************************************
-# Template part of a tutorial 
-# Applies a local filter to checked images and saves them in a new series, 
-# image by image and showing a progress bar. 
-# Filter settings are derived through user input.
-#***************************************************************************
+"""
+Applies a local filter to checked images and saves them in a new series, image by image and showing a progress bar. Filter settings are derived through user input.
+"""
 
 import scipy.ndimage as ndimage
 from scipy.signal import wiener

@@ -1,10 +1,6 @@
-
-    
-#**************************************************************************
-# Template part of a tutorial 
-# Creates a copy of the checked studies
-# showing progress with a status bar 
-#***************************************************************************
+"""
+Creates a copy of the checked studies showing progress with a status bar.
+"""
 
 def main(weasel):
     list_of_studies = weasel.studies()                # get the list of studies checked by the user

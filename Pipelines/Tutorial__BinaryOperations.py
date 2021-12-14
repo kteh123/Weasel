@@ -1,10 +1,6 @@
-
-    
-#**************************************************************************
-# Template part of a tutorial 
-# Performs a binary operation on two images and saves them in a new series, 
-# image by image and showing a progress bar. 
-#**************************************************************************
+"""
+Performs a binary operation on two images and saves them in a new series, image by image and showing a progress bar. 
+"""
 
 def main(weasel):
     images = weasel.images()

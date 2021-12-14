@@ -1,9 +1,7 @@
 
-#**************************************************************************
-# Template part of a tutorial 
-# Anonymises the checked images
-# showing progress with a status bar 
-#***************************************************************************
+"""
+Anonymises the checked images showing progress with a status bar.
+"""
 
 import pydicom
 from pydicom.dataset import Dataset

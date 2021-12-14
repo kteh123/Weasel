@@ -1,4 +1,6 @@
-
+"""
+Saves the pixel arrays of the checked images/series as .csv files.
+"""
 
 def main(weasel):
     try:

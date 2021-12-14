@@ -1,8 +1,6 @@
-#****************************************************************
-# Create new series holding images of the same slice location
-# If images are selected from multiple studies  
-# then a new series is created inside each study
-#****************************************************************
+"""
+Create new series holding images of the same slice location. If images are selected from multiple studies then a new series is created inside each study.
+"""
 
 def enable(weasel):
     return False

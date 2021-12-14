@@ -1,10 +1,6 @@
-
-    
-#**************************************************************************
-# Inverts the images in a number of selected series
-# and saves them in a new series, 
-# series by series and showing a progress bar
-#***************************************************************************
+"""
+Inverts the images in a number of selected series and saves them in a new series, series by series and showing a progress bar.
+"""
 
 def main(weasel):
 

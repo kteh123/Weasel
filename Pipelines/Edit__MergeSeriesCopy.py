@@ -1,9 +1,6 @@
-
-    
-#**************************************************************************
-# Merges the series checked by the user 
-# into a new series under the same study
-#***************************************************************************
+"""
+Merges the series checked by the user into a new series under the same study.
+"""
 
 def main(weasel):
 
