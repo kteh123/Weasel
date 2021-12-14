@@ -1,16 +1,15 @@
-from tqdm import trange, tqdm
+"""
+An API with GUI elements for messaging to the user. 
+"""
 
+from tqdm import trange, tqdm
 from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (QApplication, QMessageBox)
 from PyQt5.QtCore import  Qt
-
 from Displays.Messaging import (Message, ProgressBar)
 
 
 class Messaging():
-    """
-    An API with GUI elements for messaging to the user. 
-    """
 
     def cursor_arrow_to_hourglass(self):
         """

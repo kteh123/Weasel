@@ -1,3 +1,9 @@
+"""
+This class contains functions that read the items selected in the User Interface and return variables that are used in processing pipelines. 
+
+It also contains functions that allow the user to insert inputs and give an update of the pipeline steps through message windows. 
+"""
+
 import os
 import logging
 from PyQt5.QtWidgets import (QMessageBox, QFileDialog)
@@ -7,12 +13,6 @@ from DICOM.DeveloperTools import PixelArrayDICOMTools
 logger = logging.getLogger(__name__)
 
 class UserInterfaceTools():
-    """
-    This class contains functions that read the items selected in the User Interface
-    and return variables that are used in processing pipelines. It also contains functions
-    that allow the user to insert inputs and give an update of the pipeline steps through
-    message windows. 
-    """
     
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
@@ -25,7 +25,7 @@ class UserInterfaceTools():
 
     def displayMetadata(self, inputPath):
         """
-        Display the metadata in "inputPath" in the User Interface.
+        Displays the metadata in "inputPath" in the User Interface.
         If "inputPath" is a list, then it displays the metadata of the first image.
         """
         logger.info("UserInterfaceTools.displayMetadata called")

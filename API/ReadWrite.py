@@ -1,3 +1,7 @@
+"""
+Collection of methods for reading and writing DICOM within a Pipeline.
+"""
+
 import os
 from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
@@ -8,9 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ReadWrite():
-    """
-    Methods for reading and writing within a Pipeline 
-    """
+
     def log(self, message):
         print(message)
         logger.info(message)
@@ -101,7 +103,7 @@ class ReadWrite():
 
     def data_folder(self):
         """
-        Returns the default folder for saving & loading data
+        Returns the default folder for saving & loading data.
         """
         return self.weaselDataFolder
     

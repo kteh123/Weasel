@@ -1,3 +1,6 @@
+"""
+A temporary class for some static methods that need to move to Library. 
+"""
 
 import re
 import subprocess
@@ -7,9 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class StaticMethods():
-    """
-    A temporary class for some static methods that need to move to Library. 
-    """
 
     @staticmethod
     def unique_elements(inputList):

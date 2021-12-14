@@ -1,3 +1,7 @@
+"""
+Programming interfaces for the Weasel menus. 
+"""
+
 from Menus.File import main as menuFile
 from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
@@ -5,9 +9,6 @@ from Menus.Help import main as menuHelp
 from Menus.XNAT import main as menuXnat
 
 class EditMenus():
-    """
-    Programming interfaces for the Weasel menus. 
-    """
 
     def menu(self, label = "Menu"):
         """

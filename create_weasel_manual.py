@@ -30,6 +30,7 @@ pipelines_folder = os.path.join(os.getcwd(), "Pipelines")
 external_folder = os.path.join(os.getcwd(), "External", "Tools")
 weasel_file = os.path.join(os.getcwd(), "Weasel.py")
 init_file = os.path.join(docs_folder, "__init__.py")
+external_file = os.path.join(os.getcwd(), "External", "__init__.py")
 
 print("Deleting contents inside the 'Manual' folder")
 if os.path.exists(manual_folder):
@@ -45,7 +46,8 @@ CopyTree(menus_folder, os.path.join(weasel_copy_folder, "Menus"))
 CopyTree(pipelines_folder, os.path.join(weasel_copy_folder, "Pipelines"))
 CopyTree(external_folder, os.path.join(weasel_copy_folder, "External", "Tools"))
 shutil.copyfile(weasel_file, os.path.join(weasel_copy_folder, "Weasel.py"))
-shutil.copyfile(init_file, os.path.join(weasel_copy_folder,  "__init__.py"))
+shutil.copyfile(init_file, os.path.join(weasel_copy_folder, "__init__.py"))
+shutil.copyfile(external_file, os.path.join(weasel_copy_folder, "External", "__init__.py"))
 
 print("Creating Python Virtual Environment for the occasion...")
 venv_dir = os.path.join(os.getcwd(), "venv")

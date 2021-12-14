@@ -1,3 +1,7 @@
+"""
+Programming interfaces for modifying the Weasel GUI windows and displays elements. 
+"""
+
 import Displays.MeanROITimeCurveViewer as curveViewer
 from Displays.ImageViewers.ImageViewer import ImageViewer as imageViewer
 
@@ -10,9 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class Display():
-    """
-    Programming interfaces for modifying the Weasel GUI elements. 
-    """
 
     def display(self, dcm):
         """
