@@ -244,6 +244,21 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpColourTableGroupBox(self):
+        """
+        Creates a horizontal layout and places it within the colour table group box.
+        The following widgets are added to the horizontal layout, from left to right:
+            1. Drop down list of colour table names.
+            2. Apply user selection button. Applies user selected colour table & image
+                levels to the whole series of images. Only displayed when viewing a 
+                series of images. 
+            3. Save user selection button. Save user selected colour table & image
+                levels to the DICOM series.
+            4. Export image button.  Exports the image with its current appearance to
+                an external graphics file.
+            5. Image reset button. Removes user selected colour table & image levels
+                from the image.
+            6. Delete image button. Deletes the current image. 
+        """
         self.colourTableLayout = QHBoxLayout()
         self.colourTableLayout.setContentsMargins(0, 2, 0, 0)
         self.colourTableLayout.setSpacing(5)
@@ -255,7 +270,7 @@ class ImageViewer(QMdiSubWindow):
 
         self.setUpApplyUserSelectionButton()
 
-        self.setUpUpdateUserSelectionToDICOMButton()  #To Do
+        self.setUpUpdateUserSelectionToDICOMButton()  
   
         self.setUpExportImageButton()
 
@@ -306,9 +321,11 @@ class ImageViewer(QMdiSubWindow):
         main vertical layout. 
         This horizontal layout is used to contain the following in one row at the
         top of the MDI subwindow:
-            1. The colour table group box
-            2. The image levels group box
-            3. The pixel levels group box
+            1. The colour table group box.  A dropdown list of colour table names and buttons for related functions
+            2. The image levels group box. Two spinboxes for the adjustment of image contrast and intensity
+                in a group box.
+            3. The pixel levels group box. A label displaying the  pixel value under the mouse pointer
+                and its position in a group box.  
         """
         try:
             self.topRowMainLayout = QHBoxLayout()
