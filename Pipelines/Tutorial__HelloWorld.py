@@ -1,3 +1,7 @@
+"""
+Displays a message window in the Weasel GUI saying "Hello World".
+"""
+
 def enable(weasel):
     return True
 

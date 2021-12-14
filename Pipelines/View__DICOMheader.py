@@ -1,4 +1,6 @@
-
+"""
+Creates a subwindow that displays a DICOM image's metadata.
+"""
     
 import logging
 logger = logging.getLogger(__name__)
@@ -6,7 +8,6 @@ logger = logging.getLogger(__name__)
 from Displays.ViewMetaData import displayMetaDataSubWindow
 
 def main(weasel):
-    """Creates a subwindow that displays a DICOM image's metadata. """
     try:
         logger.info("View__DICOMheader called")
         series_list = weasel.series()

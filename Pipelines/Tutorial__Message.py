@@ -1,3 +1,6 @@
+"""
+Tutorial showing the use of the Message Window in the Weasel GUI.
+"""
 
 from Displays.Messaging import Message
 

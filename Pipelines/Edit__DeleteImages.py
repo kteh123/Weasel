@@ -1,10 +1,6 @@
-
-
-#**************************************************************************
-# Template part of a tutorial 
-# Deletes the selected images
-# showing progress with a status bar 
-#***************************************************************************
+"""
+Deletes the selected images showing progress with a status bar.
+"""
 
 def main(weasel):
     list_of_images = weasel.images()                 # get the list of images checked by the user

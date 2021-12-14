@@ -1,8 +1,7 @@
+"""
+Thresholds a number of selected images into a new series.
+"""
 
-    
-#**************************************************************************
-# Thresholds a number of selected images into a new series
-#***************************************************************************
 import numpy as np
 
 def main(weasel):

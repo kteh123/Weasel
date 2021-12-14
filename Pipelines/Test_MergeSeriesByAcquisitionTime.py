@@ -1,7 +1,7 @@
-#****************************************************************
-# Find all series with the same acquisition time
-# and merge them into a new series of the same study
-#****************************************************************
+"""
+Find all series with the same acquisition time and merge them into a new series of the same study.
+"""
+
 import numpy as np
 
 def enable(weasel):

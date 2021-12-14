@@ -1,9 +1,6 @@
-
-
-#**************************************************************************
-# Inverts a number of selected images in place, 
-# image by image and showing a progress bar
-#***************************************************************************
+"""
+Inverts a number of selected images in place, image by image and showing a progress bar.
+"""
 
 def main(weasel):
     list_of_images = weasel.images()    # get the list of images checked by the user

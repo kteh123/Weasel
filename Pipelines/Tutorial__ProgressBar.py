@@ -1,6 +1,6 @@
-#**************************************************************************
-# Tutorial showing the use of the progress Bar
-#***************************************************************************
+"""
+Tutorial showing the use of the Progress Bar in the Weasel GUI.
+"""
 
 
 from Displays.Messaging import ProgressBar

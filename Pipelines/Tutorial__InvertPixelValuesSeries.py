@@ -1,9 +1,6 @@
-
-    
-#**************************************************************************
-# Inverts a number of selected images in place, 
-# series by series and showing a progress bar
-#***************************************************************************
+"""
+Inverts a number of selected images in place, series by series and showing a progress bar.
+"""
 
 def main(weasel):
     list_of_series = weasel.series()    # get the list of all series checked by the user

@@ -1,9 +1,6 @@
-    
-#**************************************************************************
-# Template part of a tutorial 
-# Deletes the selected series
-# showing progress with a status bar 
-#***************************************************************************
+"""
+Deletes the selected series showing progress with a status bar.
+"""
 
 def main(weasel):
     list_of_series = weasel.series()                

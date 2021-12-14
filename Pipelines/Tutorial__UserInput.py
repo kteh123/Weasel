@@ -1,9 +1,6 @@
-
-
-#**************************************************************************
-# Tutorial showing the use of user_input()
-# Runs the user input window in various configurations
-#***************************************************************************
+"""
+Tutorial showing the use of user_input(). It runs the user input window in various configurations.
+"""
 
 def main(weasel):
 

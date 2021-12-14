@@ -1,3 +1,7 @@
+"""
+Prompts an Input Window where the user can insert their XNAT portal credentials and download or upload the selected DICOM images.
+"""
+
 import os
 import datetime
 import zipfile
