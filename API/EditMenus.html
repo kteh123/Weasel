@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.API.EditMenus API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Programming interfaces for the Weasel menus." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,20 +22,22 @@
 <h1 class="title">Module <code>WEASEL.API.EditMenus</code></h1>
 </header>
 <section id="section-intro">
+<p>Programming interfaces for the Weasel menus.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from Menus.File import main as menuFile
+<pre><code class="python">&#34;&#34;&#34;
+Programming interfaces for the Weasel menus. 
+&#34;&#34;&#34;
+
+from Menus.File import main as menuFile
 from Menus.View import main as menuView
 from Menus.Edit import main as menuEdit
 from Menus.Help import main as menuHelp
 from Menus.XNAT import main as menuXnat
 
 class EditMenus():
-    &#34;&#34;&#34;
-    Programming interfaces for the Weasel menus. 
-    &#34;&#34;&#34;
 
     def menu(self, label = &#34;Menu&#34;):
         &#34;&#34;&#34;
@@ -99,15 +101,12 @@ class EditMenus():
 <span>class <span class="ident">EditMenus</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Programming interfaces for the Weasel menus.</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class EditMenus():
-    &#34;&#34;&#34;
-    Programming interfaces for the Weasel menus. 
-    &#34;&#34;&#34;
 
     def menu(self, label = &#34;Menu&#34;):
         &#34;&#34;&#34;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.API.ReadWrite API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Collection of methods for reading and writing DICOM within a Pipeline." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,16 @@
 <h1 class="title">Module <code>WEASEL.API.ReadWrite</code></h1>
 </header>
 <section id="section-intro">
+<p>Collection of methods for reading and writing DICOM within a Pipeline.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+Collection of methods for reading and writing DICOM within a Pipeline.
+&#34;&#34;&#34;
+
+import os
 from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.TreeView import TreeView
@@ -36,9 +41,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ReadWrite():
-    &#34;&#34;&#34;
-    Methods for reading and writing within a Pipeline 
-    &#34;&#34;&#34;
+
     def log(self, message):
         print(message)
         logger.info(message)
@@ -129,7 +132,7 @@ class ReadWrite():
 
     def data_folder(self):
         &#34;&#34;&#34;
-        Returns the default folder for saving &amp; loading data
+        Returns the default folder for saving &amp; loading data.
         &#34;&#34;&#34;
         return self.weaselDataFolder
     
@@ -183,15 +186,13 @@ class ReadWrite():
 <span>class <span class="ident">ReadWrite</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Methods for reading and writing within a Pipeline</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ReadWrite():
-    &#34;&#34;&#34;
-    Methods for reading and writing within a Pipeline 
-    &#34;&#34;&#34;
+
     def log(self, message):
         print(message)
         logger.info(message)
@@ -282,7 +283,7 @@ class ReadWrite():
 
     def data_folder(self):
         &#34;&#34;&#34;
-        Returns the default folder for saving &amp; loading data
+        Returns the default folder for saving &amp; loading data.
         &#34;&#34;&#34;
         return self.weaselDataFolder
     
@@ -346,14 +347,14 @@ class ReadWrite():
 <span>def <span class="ident">data_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the default folder for saving &amp; loading data</p></div>
+<div class="desc"><p>Returns the default folder for saving &amp; loading data.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def data_folder(self):
     &#34;&#34;&#34;
-    Returns the default folder for saving &amp; loading data
+    Returns the default folder for saving &amp; loading data.
     &#34;&#34;&#34;
     return self.weaselDataFolder</code></pre>
 </details>
