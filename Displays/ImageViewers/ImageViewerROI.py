@@ -210,7 +210,34 @@ class ImageViewerROI(QMdiSubWindow):
         and loadImageInImageItem.  The latter function because the clean version of the image
         needs to be displayed.
 
+        Reset ROI button clicked event connected to the resetROI function of the graphicsView object
 
+        Save ROI button clicked event connected to the saveROI function
+
+        Load ROI button clicked event connected to the loadROI function
+
+        Erase ROI button clicked event connected to the eraseROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        Erase ROI button is passed into this function.
+
+        Draw ROI button clicked event connected to the drawROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        draw ROI button is passed into this function.
+
+        Paint ROI button clicked event connected to the paintROI function.  
+        The boolean variable, Checked, that represents the checked state of the
+        paint ROI button is passed into this function.
+
+        Zoom button clicked event connected to the zoomImage function.  
+        The boolean variable, Checked, that represents the checked state of the
+        zoom button is passed into this function.
+
+        ROI names combo box currentIndexChanged event connected to the 
+        loadImageInImageItem function with the addMask argument set to True,
+        so as to display the mask associated with the selected ROI with the image.
+
+        ROI names combo box editTextChanged event connected to the roiNameChanged fuction.
+        This event is 'fired' when the user edits the name of the current RIO. 
         """
         self.btnDeleteROI.clicked.connect(self.deleteROI)
         self.btnNewROI.clicked.connect(self.graphicsView.newROI) 
