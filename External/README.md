@@ -4,3 +4,5 @@ Each one has a folder allocated, which contains their own README.md file with th
 
 - dcm4che Version 5.23.1
 - pyqtgraph Version 0.9.11
+
+It also contains a folder named "Tools" that consists of python scripts that can be auxiliary in pipelines development.

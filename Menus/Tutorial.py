@@ -1,3 +1,4 @@
+"""A standard Weasel menu providing functions that showcase simple algorithms and accessible examples on how to write your own processing pipeline."""
 def main(weasel):
    
     menu = weasel.menu("Tutorial")

@@ -1,9 +1,14 @@
+"""
+This script contains several image processing auxiliary functions that could be used in image processing pipelines development.
+
+At the moment, none of the functions is being used in Weasel or in any examples in Tutorial. 
+
+However, the idea is that the list of functions in this file grows and can be used as support in developer pipelines.
+"""
+
 import numpy as np
 import scipy.ndimage
 
-# AT THE MOMENT (16TH APRIL 2021) ONLY A COUPLE OF FUNCTIONS ARE BEING USED. THIS MAY BECOME EITHER REDUNDANT OR MORE RELEVANT IN THE FUTURE
-
-# IT CAN BECOME A STATS EXTRACTOR OR A SET OF HELPER FUNCTIONS FOR PLOTTING
 
 def convertToPiRange(pixelArray):
     """
@@ -33,6 +38,17 @@ def convertToPiRange(pixelArray):
 
 
 def invertAlgorithm(pixelArray, dataset):
+    """
+    Inverts the image values.
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    inverted pixel_array : np.ndarray
+    """
     try:
         totalBytes = dataset.BitsAllocated
         return np.invert(pixelArray.astype('int' + str(totalBytes)))
@@ -40,7 +56,18 @@ def invertAlgorithm(pixelArray, dataset):
         print('Error in function ImageProcessing.invertAlgorithm: ' + str(e))
 
 
-def squareAlgorithm(pixelArray, dataset = None):
+def squareAlgorithm(pixelArray):
+    """
+    Squares the image values.
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    squared pixel_array : np.ndarray
+    """
     try:
         return np.square(pixelArray)
     except Exception as e:
@@ -48,6 +75,17 @@ def squareAlgorithm(pixelArray, dataset = None):
 
 
 def gaussianFilter(pixelArray, sigma):
+    """
+    Applies a gaussian filter with a standard deviation for gaussian kernel of `sigma` to the image.
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    filtered pixel_array : np.ndarray
+    """
     try:
         return scipy.ndimage.gaussian_filter(pixelArray, sigma)
     except Exception as e:
@@ -55,12 +93,21 @@ def gaussianFilter(pixelArray, sigma):
 
 
 def thresholdPixelArray(pixelArray, lower_threshold, upper_threshold):
+    """
+    Applies a threshold to the image based on the given `lower_threshold` and `upper_threshold` and returns a binary image.
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    binary pixel_array : np.ndarray
+    """
     if (lower_threshold < 0 or lower_threshold > 100):
-        print("Raise lower t error")
-    elif (upper_threshold < 0 or upper_threshold > 100):
-        print("Raise lower t error")
+        print("Raise lower threshold error")
     elif (upper_threshold < lower_threshold):
-        print("Raise lower greater than upper t")
+        print("Raise lower threshold greater than upper threshold error")
     
     maximum_value = np.amax(pixelArray)
     minimum_value = np.amin(pixelArray)

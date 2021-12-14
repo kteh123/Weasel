@@ -2,8 +2,6 @@
 Modules that contain the definition of the items forming 
 a menu in the Weasel GUI menu bar.
 
-Demo.py - Contains the definition of the items in the Demo menu.
-
 Edit.py - Contains the definition of the items in the Edit menu,
             used to edit images and series.
 

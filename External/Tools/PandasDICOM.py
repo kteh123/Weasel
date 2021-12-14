@@ -1,3 +1,9 @@
+"""
+This script contains functions that read DICOM files and convert their information into a DataFrame (pandas/csv) or into an ElementTree (Treeview in Weasel).
+
+At the moment, this is only used to set up the various DICOM tags in the image sliders in the multi-dimensional viewers of Weasel.
+"""
+
 import pandas
 import pydicom
 import xml.etree.ElementTree as ET

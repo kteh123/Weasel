@@ -1,6 +1,7 @@
 """ 
-Template menu illustrating the different approaches 
-to building menus through the Weasel Programming Interface
+This custom menu illustrates a different approach to building menus through the Weasel Programming Interface.
+
+It uses the Weasel default menus "File", View", "Edit", "Tutorial" and "Help" plus 2 custom menus. One named "Favourites" containing scripts in Pipelines already used in default menus. The other is named "WIP" which contains 2 python scripts that aren't called in any default menu and showcase how to write a developer pipeline.
 """
 
 # Insert a menu from a local menu library

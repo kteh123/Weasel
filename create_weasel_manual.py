@@ -18,7 +18,7 @@ def CopyTree(src, dst, symlinks=False, ignore=None):
 print("Preparing the Folder Structure...")
 docs_folder = os.path.join(os.getcwd(), "Documents")
 manual_folder = os.path.join(docs_folder, "Manual")
-temporary_folder = os.path.join(docs_folder, "temp") 
+temporary_folder = os.path.join(docs_folder, "temp")
 weasel_copy_folder = os.path.join(temporary_folder, "WEASEL")
 #############################################################
 api_folder = os.path.join(os.getcwd(), "API")
@@ -28,6 +28,7 @@ displays_folder = os.path.join(os.getcwd(), "Displays")
 menus_folder = os.path.join(os.getcwd(), "Menus")
 pipelines_folder = os.path.join(os.getcwd(), "Pipelines")
 weasel_file = os.path.join(os.getcwd(), "Weasel.py")
+init_file = os.path.join(docs_folder, "__init__.py")
 
 print("Deleting contents inside the 'Manual' folder")
 if os.path.exists(manual_folder):
@@ -42,6 +43,7 @@ CopyTree(displays_folder, os.path.join(weasel_copy_folder, "Displays"))
 CopyTree(menus_folder, os.path.join(weasel_copy_folder, "Menus"))
 CopyTree(pipelines_folder, os.path.join(weasel_copy_folder, "Pipelines"))
 shutil.copyfile(weasel_file, os.path.join(weasel_copy_folder, "Weasel.py"))
+shutil.copyfile(init_file, os.path.join(weasel_copy_folder,  "__init__.py"))
 
 print("Creating Python Virtual Environment for the occasion...")
 venv_dir = os.path.join(os.getcwd(), "venv")
