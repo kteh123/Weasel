@@ -53,16 +53,19 @@ myMenu = weasel.menu("My Menu")
 Items in this menu are created with the following function call,
 
     myMenu.item(
+
         label = 'My Menu Item',
+
         tooltip = 'My menu item allows the user to .......',
+
         pipeline = 'My_Module_Name')
 
-where label - Menu item name in the drop down menu.
+where label = Menu item name in the drop down menu.
 
-      tooltip - Menu item tooltip displayed when the mouse pointer 
+      tooltip = Menu item tooltip displayed when the mouse pointer 
                 hovers over the menu item.
 
-      pipeline - The name of the Python module without the .py extension
+      pipeline = The name of the Python module without the .py extension
                 that contains the functionality invoked by the this menu item.
                 When this menu item is selected, it expects to call a function 
                 called main in this module.  Therefore, this module must 
