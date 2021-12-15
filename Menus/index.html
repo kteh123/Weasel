@@ -57,29 +57,34 @@ weasel.menu_help()  help menu
 <p>The following function call will create a new menu called "My Menu"
 in the menu bar,</p>
 <p>myMenu = weasel.menu("My Menu")</p>
-<p>Items in this menu are created with the following function call,
-myMenu.item(
-label = 'My Menu Item',
-tooltip = 'My menu item allows the user to .......',
-pipeline = 'My_Module_Name')</p>
-<p>where label - Menu item name in the drop down menu.
-tooltip - Menu item tooltip displayed when the mouse pointer
-hovers over the menu item.
-pipeline - The name of the Python module without the .py extension
-that contains the functionality invoked by the this menu item.
-When this menu item is selected, it expects to call a function
-called main in this module.
-Therefore, this module must
-contain a function with the definition
-def main(weasel):
-that contains the logic underpinning the functionality of this
-menu item.</p>
+<p>Items in this menu are created with the following function call,</p>
+<pre><code>myMenu.item(
+    label = 'My Menu Item',
+    tooltip = 'My menu item allows the user to .......',
+    pipeline = 'My_Module_Name')
+</code></pre>
+<p>where label - Menu item name in the drop down menu.</p>
+<pre><code>  tooltip - Menu item tooltip displayed when the mouse pointer 
+            hovers over the menu item.
+
+  pipeline - The name of the Python module without the .py extension
+            that contains the functionality invoked by the this menu item.
+            When this menu item is selected, it expects to call a function 
+            called main in this module.  Therefore, this module must 
+            contain a function with the definition
+
+                def main(weasel):
+
+            that contains the logic underpinning the functionality of this
+            menu item.
+</code></pre>
 <p>The following function call will draw a horizontal line in the menu
-to separate different parts
-menu.separator()</p>
+to separate different parts</p>
+<pre><code>menu.separator()
+</code></pre>
 <p>The name of the new menu file must be included in the config.xml file, that is
-in the root of the Weasel source code, enclosed in \&lt;menu_config_file> tags thus</p>
-<pre><code>\&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file\&gt;
+in the root of the Weasel source code, enclosed in <menu_config_file> tags thus</p>
+<pre><code>&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file&gt;
 </code></pre>
 <p>Menus.xml is an xml definition of several menus in the menu bar of Weasel</p>
 <details class="source">
@@ -139,31 +144,37 @@ in the menu bar,
 myMenu = weasel.menu(&#34;My Menu&#34;)
 
 Items in this menu are created with the following function call,
+
     myMenu.item(
         label = &#39;My Menu Item&#39;,
         tooltip = &#39;My menu item allows the user to .......&#39;,
         pipeline = &#39;My_Module_Name&#39;)
 
 where label - Menu item name in the drop down menu.
+
       tooltip - Menu item tooltip displayed when the mouse pointer 
                 hovers over the menu item.
+
       pipeline - The name of the Python module without the .py extension
                 that contains the functionality invoked by the this menu item.
                 When this menu item is selected, it expects to call a function 
                 called main in this module.  Therefore, this module must 
                 contain a function with the definition 
+
                     def main(weasel):
+
                 that contains the logic underpinning the functionality of this
                 menu item.
 
 The following function call will draw a horizontal line in the menu 
 to separate different parts
+
     menu.separator()
 
 The name of the new menu file must be included in the config.xml file, that is 
-in the root of the Weasel source code, enclosed in \&lt;menu_config_file\&gt; tags thus
+in the root of the Weasel source code, enclosed in &lt;menu_config_file&gt; tags thus
 
-    \&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file\&gt;
+    &lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file&gt;
 
 Menus.xml is an xml definition of several menus in the menu bar of Weasel
 &#34;&#34;&#34;</code></pre>
