@@ -1,3 +1,7 @@
+"""
+Collection of functions that save meaningful content (related to image, colourmap, dates and times, acquisiton, etc.) into DICOM files.
+"""
+
 import os
 import numpy as np
 import pydicom
@@ -82,6 +86,9 @@ def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_i
 
 def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
                 imagePath='', seriesID='', studyID='', colourmap=None, lut=None):
+    """This method is used in the Displays module. It saves the image in the viewer to DICOM, 
+        with the intensity and contrast values and colourmap set in the viewer.
+    """
     logger.info("SaveDICOM_Image.updateSingleDicomImage called")
     try:
         logger.info("In SaveDICOM_Image.updateSingleDicomImage")
@@ -174,6 +181,11 @@ def generateUIDs(dataset, seriesNumber=None, studyUID=None):
 
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
+    """
+    This method writes the `newValue` into the `dicomTag` in `imagePath`.
+    If `dicomTag` exists in `imagePath`, this will overwrite.
+    Otherwise, it will create `dicomTag` and store the `newValue`.
+    """
     logger.info("SaveDICOM_Image.overwriteDicomFileTag called")
     try:
         if isinstance(imagePath, list):
@@ -256,6 +268,8 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
 
 
 def createNewPixelArray(imageArray, dataset):
+    """This method saves the imageArray into the `dataset` input argument based on other DICOM parameters in `dataset`.
+    """
     logger.info("SaveDICOM_Image.createNewPixelArray called")
     try:
         # Delete 'Philips Rescale Slope' tag if it exists

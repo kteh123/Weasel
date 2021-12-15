@@ -1,3 +1,9 @@
+"""
+This module is a collection of functions that work on DICOM files and are auxiliary to the DICOM `Classes.py`.
+
+In other words, this is a wrapper of the `ReadDICOM_Image.py` and `SaveDICOM_Image.py` that is applied to define the medical image classes (see where it's used in `Classes.py`).
+"""
+
 import os
 import numpy as np
 import random
@@ -9,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class GenericDICOMTools:
-
+    """
+    Collection of functions that take one or more DICOM files as input and perform operations in the context of the Weasel GUI.
+    """
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
 
@@ -239,6 +247,9 @@ class GenericDICOMTools:
         
 
 class PixelArrayDICOMTools:
+    """
+    Collection of functions that read, process and write images (PixelArray) from/into the input DICOM files in the context of the Weasel GUI.
+    """
 
     def __repr__(self):
        return '{}'.format(self.__class__.__name__)
