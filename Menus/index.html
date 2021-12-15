@@ -28,17 +28,17 @@ menu bar at the top of the Weasel GUI. </p>
 <p>The following files contain the definition of standard Weasel menus
 that allow the user to access key Weasel functionality
 (see individual files for more details):</p>
-<p>File.py - Definition of the File menu
-Edit.py - Definition of the Edit menu
-Help.py - Definition of the Help menu
-View.py - Definition of the View menu
-XNAT.py - Definition of the XNAT menu
-Tutorial.py - Definition the Tutorial menu. </p>
+<p>File.py - Definition of the File menu</p>
+<p>Edit.py - Definition of the Edit menu</p>
+<p>Help.py - Definition of the Help menu</p>
+<p>View.py - Definition of the View menu</p>
+<p>XNAT.py - Definition of the XNAT menu</p>
+<p>Tutorial.py - Definition the Tutorial menu. </p>
 <p>The above files can be combined in an overarching menu file
 that defines all the menus in the menu bar. The following files
 are examples of this:</p>
-<p>GettingStarted_Developers.py
-GettingStarted_EndUsers.py</p>
+<p>GettingStarted_Developers.py</p>
+<p>GettingStarted_EndUsers.py</p>
 <p>A developer may create their own bespoke menu file similiar to these
 2 files including their own menus as well as including any or all
 of the above standard Weasel menus. To do this a developer may wish
@@ -48,11 +48,11 @@ with the argument weasel; thus,</p>
 <p>def main(weasel):</p>
 <p>within the main function, the following function calls will include
 the standard Weasel menus,</p>
-<pre><code>weasel.menu_file()  #file menu
-weasel.menu_view()  #view menu
-weasel.menu_edit()  #edit menu
-weasel.menu_xnat()  #XNAT menu
-weasel.menu_help()  #help menu
+<pre><code>weasel.menu_file()  file menu
+weasel.menu_view()  view menu
+weasel.menu_edit()  edit menu
+weasel.menu_xnat()  XNAT menu
+weasel.menu_help()  help menu
 </code></pre>
 <p>The following function call will create a new menu called "My Menu"
 in the menu bar,</p>
@@ -78,8 +78,8 @@ menu item.</p>
 to separate different parts
 menu.separator()</p>
 <p>The name of the new menu file must be included in the config.xml file, that is
-in the root of the Weasel source code, enclosed in <menu_config_file> tags thus</p>
-<pre><code>&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file&gt;
+in the root of the Weasel source code, enclosed in \&lt;menu_config_file> tags thus</p>
+<pre><code>\&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file\&gt;
 </code></pre>
 <p>Menus.xml is an xml definition of several menus in the menu bar of Weasel</p>
 <details class="source">
@@ -95,10 +95,15 @@ that allow the user to access key Weasel functionality
 (see individual files for more details):
 
 File.py - Definition of the File menu
+
 Edit.py - Definition of the Edit menu
+
 Help.py - Definition of the Help menu
+
 View.py - Definition of the View menu
+
 XNAT.py - Definition of the XNAT menu
+
 Tutorial.py - Definition the Tutorial menu. 
 
 The above files can be combined in an overarching menu file 
@@ -106,6 +111,7 @@ that defines all the menus in the menu bar. The following files
 are examples of this:
  
 GettingStarted_Developers.py
+
 GettingStarted_EndUsers.py
 
 A developer may create their own bespoke menu file similiar to these
@@ -121,11 +127,11 @@ def main(weasel):
 within the main function, the following function calls will include 
 the standard Weasel menus,
 
-    weasel.menu_file()  #file menu
-    weasel.menu_view()  #view menu
-    weasel.menu_edit()  #edit menu
-    weasel.menu_xnat()  #XNAT menu
-    weasel.menu_help()  #help menu
+    weasel.menu_file()  file menu
+    weasel.menu_view()  view menu
+    weasel.menu_edit()  edit menu
+    weasel.menu_xnat()  XNAT menu
+    weasel.menu_help()  help menu
 
 The following function call will create a new menu called &#34;My Menu&#34; 
 in the menu bar,
@@ -155,9 +161,9 @@ to separate different parts
     menu.separator()
 
 The name of the new menu file must be included in the config.xml file, that is 
-in the root of the Weasel source code, enclosed in &lt;menu_config_file&gt; tags thus
+in the root of the Weasel source code, enclosed in \&lt;menu_config_file\&gt; tags thus
 
-    &lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file&gt;
+    \&lt;menu_config_file&gt;GettingStarted_EndUsers.py&lt;/menu_config_file\&gt;
 
 Menus.xml is an xml definition of several menus in the menu bar of Weasel
 &#34;&#34;&#34;</code></pre>
