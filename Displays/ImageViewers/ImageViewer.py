@@ -644,6 +644,17 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getColourTableForThisImage(self):
+        """
+        This function sets the class property, self.colourTable with the name of the
+        colour table applied to the image or series being viewed.
+
+        If the user has already selected a colour table for the image or series,
+        then self.colourTable is set with its name.
+
+        Otherwise, the name of the colour table in the DICOM file is retrieved and
+        self.colourTable is set to this value. Likewise the Look Up Table is retrieved
+        and used to set the value of self.lut
+        """
         try:
             logger.info("ImageViewer.getColourTableForThisImage called")
             if self.isSeries:
@@ -664,6 +675,9 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getAndSetLevels(self):
+        """
+
+        """
         try:
             success = False
             if self.isSeries: 
@@ -864,7 +878,8 @@ class ImageViewer(QMdiSubWindow):
         """
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
-        Output parameters
+        
+        Returns
         *****************
         success - boolean, set to true if level values are successfully retrieved
         maximumValue - Maximum pixel value in the image
@@ -938,7 +953,8 @@ class ImageViewer(QMdiSubWindow):
 
     def readLevelsFromDICOMImage(self): 
         """Reads levels directly from the DICOM image
-        Output Parameters
+
+        Returns
         *****************
         centre - Image intensity
         width - Image contrast
