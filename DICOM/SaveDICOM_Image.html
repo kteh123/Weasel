@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.DICOM.SaveDICOM_Image API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Collection of functions that save meaningful content (related to image, colourmap, dates and times, acquisiton, etc.) into DICOM files." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,16 @@
 <h1 class="title">Module <code>WEASEL.DICOM.SaveDICOM_Image</code></h1>
 </header>
 <section id="section-intro">
+<p>Collection of functions that save meaningful content (related to image, colourmap, dates and times, acquisiton, etc.) into DICOM files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+Collection of functions that save meaningful content (related to image, colourmap, dates and times, acquisiton, etc.) into DICOM files.
+&#34;&#34;&#34;
+
+import os
 import numpy as np
 import pydicom
 from pydicom.dataset import Dataset, FileDataset
@@ -110,6 +115,9 @@ def saveNewSingleDicomImage(newFilePath, imagePath, pixelArray, suffix, series_i
 
 def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
                 imagePath=&#39;&#39;, seriesID=&#39;&#39;, studyID=&#39;&#39;, colourmap=None, lut=None):
+    &#34;&#34;&#34;This method is used in the Displays module. It saves the image in the viewer to DICOM, 
+        with the intensity and contrast values and colourmap set in the viewer.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.updateSingleDicomImage called&#34;)
     try:
         logger.info(&#34;In SaveDICOM_Image.updateSingleDicomImage&#34;)
@@ -202,6 +210,11 @@ def generateUIDs(dataset, seriesNumber=None, studyUID=None):
 
 
 def overwriteDicomFileTag(imagePath, dicomTag, newValue):
+    &#34;&#34;&#34;
+    This method writes the `newValue` into the `dicomTag` in `imagePath`.
+    If `dicomTag` exists in `imagePath`, this will overwrite.
+    Otherwise, it will create `dicomTag` and store the `newValue`.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.overwriteDicomFileTag called&#34;)
     try:
         if isinstance(imagePath, list):
@@ -284,6 +297,8 @@ def overwriteDicomFileTag(imagePath, dicomTag, newValue):
 
 
 def createNewPixelArray(imageArray, dataset):
+    &#34;&#34;&#34;This method saves the imageArray into the `dataset` input argument based on other DICOM parameters in `dataset`.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.createNewPixelArray called&#34;)
     try:
         # Delete &#39;Philips Rescale Slope&#39; tag if it exists
@@ -644,12 +659,14 @@ def saveDicomToFile(dicomData, output_path=None):
 <span>def <span class="ident">createNewPixelArray</span></span>(<span>imageArray, dataset)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method saves the imageArray into the <code>dataset</code> input argument based on other DICOM parameters in <code>dataset</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def createNewPixelArray(imageArray, dataset):
+    &#34;&#34;&#34;This method saves the imageArray into the `dataset` input argument based on other DICOM parameters in `dataset`.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.createNewPixelArray called&#34;)
     try:
         # Delete &#39;Philips Rescale Slope&#39; tag if it exists
@@ -961,12 +978,19 @@ The InstanceUID is generated based on SeriesUID.</p></div>
 <span>def <span class="ident">overwriteDicomFileTag</span></span>(<span>imagePath, dicomTag, newValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method writes the <code>newValue</code> into the <code>dicomTag</code> in <code>imagePath</code>.
+If <code>dicomTag</code> exists in <code>imagePath</code>, this will overwrite.
+Otherwise, it will create <code>dicomTag</code> and store the <code>newValue</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def overwriteDicomFileTag(imagePath, dicomTag, newValue):
+    &#34;&#34;&#34;
+    This method writes the `newValue` into the `dicomTag` in `imagePath`.
+    If `dicomTag` exists in `imagePath`, this will overwrite.
+    Otherwise, it will create `dicomTag` and store the `newValue`.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.overwriteDicomFileTag called&#34;)
     try:
         if isinstance(imagePath, list):
@@ -1303,13 +1327,17 @@ new colourmap selected in the interface. It will have more features in the futur
 <span>def <span class="ident">updateSingleDicomImage</span></span>(<span>objWeasel, spinBoxIntensity, spinBoxContrast, imagePath='', seriesID='', studyID='', colourmap=None, lut=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method is used in the Displays module. It saves the image in the viewer to DICOM,
+with the intensity and contrast values and colourmap set in the viewer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def updateSingleDicomImage(objWeasel, spinBoxIntensity, spinBoxContrast, 
                 imagePath=&#39;&#39;, seriesID=&#39;&#39;, studyID=&#39;&#39;, colourmap=None, lut=None):
+    &#34;&#34;&#34;This method is used in the Displays module. It saves the image in the viewer to DICOM, 
+        with the intensity and contrast values and colourmap set in the viewer.
+    &#34;&#34;&#34;
     logger.info(&#34;SaveDICOM_Image.updateSingleDicomImage called&#34;)
     try:
         logger.info(&#34;In SaveDICOM_Image.updateSingleDicomImage&#34;)

@@ -59,15 +59,18 @@ in the menu bar,</p>
 <p>myMenu = weasel.menu("My Menu")</p>
 <p>Items in this menu are created with the following function call,</p>
 <pre><code>myMenu.item(
+
     label = 'My Menu Item',
+
     tooltip = 'My menu item allows the user to .......',
+
     pipeline = 'My_Module_Name')
 </code></pre>
-<p>where label - Menu item name in the drop down menu.</p>
-<pre><code>  tooltip - Menu item tooltip displayed when the mouse pointer 
+<p>where label = Menu item name in the drop down menu.</p>
+<pre><code>  tooltip = Menu item tooltip displayed when the mouse pointer 
             hovers over the menu item.
 
-  pipeline - The name of the Python module without the .py extension
+  pipeline = The name of the Python module without the .py extension
             that contains the functionality invoked by the this menu item.
             When this menu item is selected, it expects to call a function 
             called main in this module.  Therefore, this module must 
@@ -146,16 +149,19 @@ myMenu = weasel.menu(&#34;My Menu&#34;)
 Items in this menu are created with the following function call,
 
     myMenu.item(
+
         label = &#39;My Menu Item&#39;,
+
         tooltip = &#39;My menu item allows the user to .......&#39;,
+
         pipeline = &#39;My_Module_Name&#39;)
 
-where label - Menu item name in the drop down menu.
+where label = Menu item name in the drop down menu.
 
-      tooltip - Menu item tooltip displayed when the mouse pointer 
+      tooltip = Menu item tooltip displayed when the mouse pointer 
                 hovers over the menu item.
 
-      pipeline - The name of the Python module without the .py extension
+      pipeline = The name of the Python module without the .py extension
                 that contains the functionality invoked by the this menu item.
                 When this menu item is selected, it expects to call a function 
                 called main in this module.  Therefore, this module must 

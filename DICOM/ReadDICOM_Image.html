@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>WEASEL.DICOM.ReadDICOM_Image API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Collection of functions that read DICOM files and return meaningful content stored in these files (related to image, colourmap, dates and times, …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,16 @@
 <h1 class="title">Module <code>WEASEL.DICOM.ReadDICOM_Image</code></h1>
 </header>
 <section id="section-intro">
+<p>Collection of functions that read DICOM files and return meaningful content stored in these files (related to image, colourmap, dates and times, acquisiton, etc.).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+Collection of functions that read DICOM files and return meaningful content stored in these files (related to image, colourmap, dates and times, acquisiton, etc.).
+&#34;&#34;&#34;
+
+import os
 import struct
 import numpy as np
 from datetime import datetime
@@ -87,6 +92,7 @@ def returnSeriesPixelArray(imagePathList):
 
 
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
+    &#34;&#34;&#34;This method splits and sorts the slices in the variable `dataset`. In this case, `dataset` is an Enhanced DICOM object.&#34;&#34;&#34;
     try:
         if any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;]) and hasattr(dataset, &#39;PerFrameFunctionalGroupsSequence&#39;):
             originalArray = getPixelArray(dataset)
@@ -415,6 +421,8 @@ def getAffineArray(dataset):
 
 
 def mapMaskToImage(mask, datasetMask, datasetTarget):
+    &#34;&#34;&#34;This method takes a binary mask pixel_array and returns a list of indexes
+        of the True values of the mask in the coordinate system of the `datasetTarget`&#34;&#34;&#34;
     logger.info(&#34;ReadDICOM_Image.mapMaskToImage called&#34;)
     try:
         affineTarget = getAffineArray(datasetTarget)
@@ -430,6 +438,10 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
         logger.exception(&#39;Error in ReadDICOM_Image.mapMaskToImage: &#39; + str(e))
 
 def mapCoordinates(indexes, affineTarget, affineMask):
+    &#34;&#34;&#34;This method returns a list of indexes that results from mapping the input argument 
+        `indexes` to the coordinate system of the target image.
+    &#34;&#34;&#34;
+    logger.info(&#34;ReadDICOM_Image.mapCoordinates called&#34;)
     try:
         coords = [[index[0], index[1], 0] for index in indexes]
         newCoord = np.round(applyAffine(affineTarget, affineMask, np.array(coords)), 3).astype(int)
@@ -448,26 +460,10 @@ def mapCoordinates(indexes, affineTarget, affineMask):
         print(&#39;Error in function ReadDICOM_Image.mapCoordinates: &#39; + str(e))
         logger.exception(&#39;Error in ReadDICOM_Image.mapCoordinates: &#39; + str(e))
 
-#https://theaisummer.com/medical-image-coordinates/
-#import scipy
-#def transform_coordinate_space(modality_1, modality_2):
-#   &#34;&#34;&#34;
-#   Transfers coordinate space from modality_2 to modality_1
-#   Input images are in nifty/nibabel format (.nii or .nii.gz)
-#   &#34;&#34;&#34;
-#   aff_t1 = modality_1.affine
-#   aff_t2 = modality_2.affine
-#   inv_af_2 = np.linalg.inv(aff_t2)
-#   out_shape = modality_1.get_fdata().shape
-#
-#   # desired transformation
-#   T = inv_af_2.dot(aff_t1)
-#
-#   # apply transformation
-#   transformed_img = scipy.ndimage.affine_transform(modality_2.get_fdata(), T, output_shape=out_shape)
-#   return transformed_img
 
 def applyAffine(affineReference, affineTarget, coordinates):
+    &#34;&#34;&#34;This method uses the affines from the reference image and from the target image and 
+        calculates the new spatial values of the `coordinates` input argument in the target image coordinate system.&#34;&#34;&#34;
     logger.info(&#34;ReadDICOM_Image.applyAffine called&#34;)
     try:
         maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
@@ -668,12 +664,15 @@ def checkAcquisitionType(dataset):
 <span>def <span class="ident">applyAffine</span></span>(<span>affineReference, affineTarget, coordinates)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method uses the affines from the reference image and from the target image and
+calculates the new spatial values of the <code>coordinates</code> input argument in the target image coordinate system.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def applyAffine(affineReference, affineTarget, coordinates):
+    &#34;&#34;&#34;This method uses the affines from the reference image and from the target image and 
+        calculates the new spatial values of the `coordinates` input argument in the target image coordinate system.&#34;&#34;&#34;
     logger.info(&#34;ReadDICOM_Image.applyAffine called&#34;)
     try:
         maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
@@ -1022,12 +1021,13 @@ Output is : attribute</p></div>
 <span>def <span class="ident">getMultiframeBySlices</span></span>(<span>dataset, sliceList=None, sort=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method splits and sorts the slices in the variable <code>dataset</code>. In this case, <code>dataset</code> is an Enhanced DICOM object.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getMultiframeBySlices(dataset, sliceList=None, sort=False):
+    &#34;&#34;&#34;This method splits and sorts the slices in the variable `dataset`. In this case, `dataset` is an Enhanced DICOM object.&#34;&#34;&#34;
     try:
         if any(hasattr(dataset, attr) for attr in [&#39;PixelData&#39;, &#39;FloatPixelData&#39;, &#39;DoubleFloatPixelData&#39;]) and hasattr(dataset, &#39;PerFrameFunctionalGroupsSequence&#39;):
             originalArray = getPixelArray(dataset)
@@ -1254,12 +1254,17 @@ Removing these repetitions will be up to the developer of the specific algorithm
 <span>def <span class="ident">mapCoordinates</span></span>(<span>indexes, affineTarget, affineMask)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method returns a list of indexes that results from mapping the input argument
+<code>indexes</code> to the coordinate system of the target image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mapCoordinates(indexes, affineTarget, affineMask):
+    &#34;&#34;&#34;This method returns a list of indexes that results from mapping the input argument 
+        `indexes` to the coordinate system of the target image.
+    &#34;&#34;&#34;
+    logger.info(&#34;ReadDICOM_Image.mapCoordinates called&#34;)
     try:
         coords = [[index[0], index[1], 0] for index in indexes]
         newCoord = np.round(applyAffine(affineTarget, affineMask, np.array(coords)), 3).astype(int)
@@ -1283,12 +1288,15 @@ Removing these repetitions will be up to the developer of the specific algorithm
 <span>def <span class="ident">mapMaskToImage</span></span>(<span>mask, datasetMask, datasetTarget)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method takes a binary mask pixel_array and returns a list of indexes
+of the True values of the mask in the coordinate system of the <code>datasetTarget</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mapMaskToImage(mask, datasetMask, datasetTarget):
+    &#34;&#34;&#34;This method takes a binary mask pixel_array and returns a list of indexes
+        of the True values of the mask in the coordinate system of the `datasetTarget`&#34;&#34;&#34;
     logger.info(&#34;ReadDICOM_Image.mapMaskToImage called&#34;)
     try:
         affineTarget = getAffineArray(datasetTarget)
