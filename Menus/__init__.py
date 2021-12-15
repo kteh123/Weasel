@@ -7,10 +7,15 @@ that allow the user to access key Weasel functionality
 (see individual files for more details):
 
 File.py - Definition of the File menu
+
 Edit.py - Definition of the Edit menu
+
 Help.py - Definition of the Help menu
+
 View.py - Definition of the View menu
+
 XNAT.py - Definition of the XNAT menu
+
 Tutorial.py - Definition the Tutorial menu. 
 
 The above files can be combined in an overarching menu file 
@@ -18,6 +23,7 @@ that defines all the menus in the menu bar. The following files
 are examples of this:
  
 GettingStarted_Developers.py
+
 GettingStarted_EndUsers.py
 
 A developer may create their own bespoke menu file similiar to these
@@ -33,11 +39,11 @@ def main(weasel):
 within the main function, the following function calls will include 
 the standard Weasel menus,
 
-    weasel.menu_file()  #file menu
-    weasel.menu_view()  #view menu
-    weasel.menu_edit()  #edit menu
-    weasel.menu_xnat()  #XNAT menu
-    weasel.menu_help()  #help menu
+    weasel.menu_file()  file menu
+    weasel.menu_view()  view menu
+    weasel.menu_edit()  edit menu
+    weasel.menu_xnat()  XNAT menu
+    weasel.menu_help()  help menu
 
 The following function call will create a new menu called "My Menu" 
 in the menu bar,
@@ -67,9 +73,9 @@ to separate different parts
     menu.separator()
 
 The name of the new menu file must be included in the config.xml file, that is 
-in the root of the Weasel source code, enclosed in <menu_config_file> tags thus
+in the root of the Weasel source code, enclosed in \<menu_config_file\> tags thus
 
-    <menu_config_file>GettingStarted_EndUsers.py</menu_config_file>
+    \<menu_config_file>GettingStarted_EndUsers.py</menu_config_file\>
 
 Menus.xml is an xml definition of several menus in the menu bar of Weasel
 """
