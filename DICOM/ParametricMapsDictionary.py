@@ -1,3 +1,11 @@
+"""
+This module is used in `SaveDICOM_Image.py` and used as the optional argument `parametric_map` in write functions of `Classes.py` and in "writeNewPixelArray" of `DeveloperTools.py`.
+
+The functions in this module capture special versions of DICOM with unique parameters/attributes/values.
+
+**How to use:** provide the parametric_map in the functions mentioned previously as a string. This string is the name of one of the functions in the ParametricClass (eg. parametric_map="RGB" or parametric_map="SEG")
+"""
+
 import pydicom
 from pydicom.dataset import Dataset
 from pydicom.sequence import Sequence

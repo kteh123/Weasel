@@ -1,3 +1,19 @@
+"""
+The medical image classes are defined in this module:
+
+    - ImagesList
+    - SeriesList
+    - StudyList
+    - SubjectList
+    - Project
+    - Subject
+    - Study
+    - Series
+    - Image
+
+The functions and attributes that compose these classes make use of functions defined in `ReadDICOM_Image.py`, `SaveDICOM_Image.py`, `DeveloperTools.py`, `CoreModules.TreeView.py` and `CoreModules.WeaselXMLReader.py`. There are also some applications of the API module using the global Weasel variable.
+"""
+
 import os
 import datetime
 import numpy as np
@@ -323,6 +339,12 @@ class SubjectList(ListOfDicomObjects):
         return childrenList
 
 class Project:
+    """This class is the top-level of the TreeView hierarchy. It bundles all scans opened in the Weasel GUI.
+
+        Parameters
+        ----------
+        objWeasel : the Weasel global variable
+    """
     def __init__(self, objWeasel):
         self.objWeasel = objWeasel
     
@@ -350,6 +372,16 @@ class Project:
 
 
 class Subject:
+    """This class encloses all DICOM files that share the same tag value of "PatientID".
+
+        Parameters
+        ----------
+        objWeasel : the Weasel global variable
+        subjectID : string
+            This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.
+        suffix : string (optional)
+            This is the text to append to subjectID if a new Subject() class is created.
+    """
     __slots__ = ('objWeasel', 'subjectID', 'suffix')
     def __init__(self, objWeasel, subjectID, suffix=None):
         self.objWeasel = objWeasel
@@ -535,6 +567,20 @@ class Subject:
 
 
 class Study:
+    """This class encloses all DICOM files that share the same tag value of "StudyInstanceUID", "StudyDescription", "StudyDate" and "StudyTime".
+
+        Parameters
+        ----------
+        objWeasel : the Weasel global variable
+        subjectID : string
+            This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.
+        studyID : string
+            This is the name or identification of the study, which is stored in the "StudyDescription" DICOM tag.
+        studyUID : string (optional)
+            This is the unique identification of the study, which is stored in the "StudyInstanceUID" DICOM tag.
+        suffix : string (optional)
+            This is the text to append to subjectID if a new Study() class is created.
+    """
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'studyUID', 'suffix')
     def __init__(self, objWeasel, subjectID, studyID, studyUID=None, suffix=None):
         self.objWeasel = objWeasel
@@ -758,6 +804,27 @@ class Study:
 
 
 class Series:
+    """This class encloses all DICOM files that share the same tag value of "StudyInstanceUID", "StudyDescription", "StudyDate" and "StudyTime".
+
+        Parameters
+        ----------
+        objWeasel : the Weasel global variable
+        subjectID : string
+            This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.
+        studyID : string
+            This is the name or identification of the study, which is stored in the "StudyDescription" DICOM tag.
+        seriesID : string
+            This is the name or identification of the series, which is stored in the "SeriesDescription" DICOM tag.
+        listPaths : list(string) (optional)
+            This is a list containing the file paths of the DICOM files that belong to the Series() instance created.
+            This class creates the list based on the Weasel GUI TreeView selection if it's not given.
+        studyUID : string (optional)
+            This is the unique identification of the study, which is stored in the "StudyInstanceUID" DICOM tag.
+        seriesUID : string (optional)
+            This is the unique identification of the study, which is stored in the "SeriesInstanceUID" DICOM tag.
+        suffix : string (optional)
+            This is the text to append to subjectID if a new Series() class is created.
+    """
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'studyUID', 'seriesUID', 
                  'images', 'suffix', 'referencePathsList')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, listPaths=None, studyUID=None, seriesUID=None, suffix=None):
@@ -1199,32 +1266,6 @@ class Series:
             print('Error in Series.Mask: ' + str(e))
             logger.exception('Error in Series.Mask: ' + str(e))
 
-    #@PixelArray.setter
-    #def PixelArray(self, ROI=None):
-    #    logger.info("Series.PixelArray called")
-    #    try:
-    #        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.images)
-    #        #if self.Multiframe:    
-    #        #    tempArray = []
-    #        #    for index in self.indices:
-    #        #        tempArray.append(pixelArray[index, ...])
-    #        #    pixelArray = np.array(tempArray)
-    #        #    del tempArray
-    #        if isinstance(ROI, Series):
-    #            mask = np.zeros(np.shape(pixelArray))
-    #            coords = ROI.ROIindices
-    #            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-    #            #pixelArray = pixelArray * mask
-    #            pixelArray = np.extract(mask.astype(bool), pixelArray)
-    #        elif ROI == None:
-    #            pass
-    #        else:
-    #            warnings.warn("The input argument ROI should be a Series instance.") 
-    #        return pixelArray
-    #    except Exception as e:
-    #        print('Error in Series.PixelArray: ' + str(e))
-    #        logger.exception('Error in Series.PixelArray: ' + str(e))
-
     @property
     def Affine(self):
         logger.info("Series.Affine called")
@@ -1417,6 +1458,22 @@ class Series:
 
 
 class Image:
+    """This class corresponds to 1 DICOM file that belongs to its parent Subject, Study and Series.
+
+        Parameters
+        ----------
+        objWeasel : the Weasel global variable
+        subjectID : string
+            This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.
+        studyID : string
+            This is the name or identification of the study, which is stored in the "StudyDescription" DICOM tag.
+        seriesID : string
+            This is the name or identification of the series, which is stored in the "SeriesDescription" DICOM tag.
+        path : string
+            This is the file path to the DICOM file represented in this Image() class.
+        suffix : string (optional)
+            This is the text to append to subjectID if a new Image() class is created.
+    """
     __slots__ = ('objWeasel', 'subjectID', 'studyID', 'seriesID', 'path', 'seriesUID',
                  'studyUID', 'suffix', 'referencePath')
     def __init__(self, objWeasel, subjectID, studyID, seriesID, path, suffix=None):
@@ -1676,26 +1733,6 @@ class Image:
         except Exception as e:
             print('Error in Image.Mask: ' + str(e))
             logger.exception('Error in Image.Mask: ' + str(e))
-    
-    #@property
-    #def PixelArray(self, ROI=None):
-    #    logger.info("Image.PixelArray called")
-    #    try:
-    #        pixelArray = PixelArrayDICOMTools.getPixelArrayFromDICOM(self.path)
-    #        if isinstance(ROI, Image):
-    #            mask = np.zeros(np.shape(pixelArray))
-    #            coords = ROI.ROIindices
-    #            mask[tuple(zip(*coords))] = list(np.ones(len(coords)).flatten())
-    #            #pixelArray = pixelArray * mask
-    #            pixelArray = np.extract(mask.astype(bool), pixelArray)
-    #        elif ROI == None:
-    #            pass
-    #        else:
-    #            warnings.warn("The input argument ROI should be an Image instance.") 
-    #        return pixelArray
-    #    except Exception as e:
-    #        print('Error in Image.PixelArray: ' + str(e))
-    #        logger.exception('Error in Image.PixelArray: ' + str(e))
     
     @property
     def ROIindices(self):

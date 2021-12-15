@@ -1,3 +1,7 @@
+"""
+Collection of functions that read DICOM files and return meaningful content stored in these files (related to image, colourmap, dates and times, acquisiton, etc.).
+"""
+
 import os
 import struct
 import numpy as np
@@ -59,6 +63,7 @@ def returnSeriesPixelArray(imagePathList):
 
 
 def getMultiframeBySlices(dataset, sliceList=None, sort=False):
+    """This method splits and sorts the slices in the variable `dataset`. In this case, `dataset` is an Enhanced DICOM object."""
     try:
         if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']) and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
             originalArray = getPixelArray(dataset)
@@ -387,6 +392,8 @@ def getAffineArray(dataset):
 
 
 def mapMaskToImage(mask, datasetMask, datasetTarget):
+    """This method takes a binary mask pixel_array and returns a list of indexes
+        of the True values of the mask in the coordinate system of the `datasetTarget`"""
     logger.info("ReadDICOM_Image.mapMaskToImage called")
     try:
         affineTarget = getAffineArray(datasetTarget)
@@ -402,6 +409,10 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
         logger.exception('Error in ReadDICOM_Image.mapMaskToImage: ' + str(e))
 
 def mapCoordinates(indexes, affineTarget, affineMask):
+    """This method returns a list of indexes that results from mapping the input argument 
+        `indexes` to the coordinate system of the target image.
+    """
+    logger.info("ReadDICOM_Image.mapCoordinates called")
     try:
         coords = [[index[0], index[1], 0] for index in indexes]
         newCoord = np.round(applyAffine(affineTarget, affineMask, np.array(coords)), 3).astype(int)
@@ -420,26 +431,10 @@ def mapCoordinates(indexes, affineTarget, affineMask):
         print('Error in function ReadDICOM_Image.mapCoordinates: ' + str(e))
         logger.exception('Error in ReadDICOM_Image.mapCoordinates: ' + str(e))
 
-#https://theaisummer.com/medical-image-coordinates/
-#import scipy
-#def transform_coordinate_space(modality_1, modality_2):
-#   """
-#   Transfers coordinate space from modality_2 to modality_1
-#   Input images are in nifty/nibabel format (.nii or .nii.gz)
-#   """
-#   aff_t1 = modality_1.affine
-#   aff_t2 = modality_2.affine
-#   inv_af_2 = np.linalg.inv(aff_t2)
-#   out_shape = modality_1.get_fdata().shape
-#
-#   # desired transformation
-#   T = inv_af_2.dot(aff_t1)
-#
-#   # apply transformation
-#   transformed_img = scipy.ndimage.affine_transform(modality_2.get_fdata(), T, output_shape=out_shape)
-#   return transformed_img
 
 def applyAffine(affineReference, affineTarget, coordinates):
+    """This method uses the affines from the reference image and from the target image and 
+        calculates the new spatial values of the `coordinates` input argument in the target image coordinate system."""
     logger.info("ReadDICOM_Image.applyAffine called")
     try:
         maskToTarget = np.linalg.inv(affineReference).dot(affineTarget)
