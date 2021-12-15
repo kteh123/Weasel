@@ -66,11 +66,11 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         print("=====================================")
         print("MESSAGE TO THE USER:")
         print("=====================================")
-        print("This terminal window is required to be open for WEASEL to run and should not be closed.")
-        print("WEASEL should take approximately 30 seconds to start.")
+        print("This terminal window is required to be open for Weasel to run and should not be closed.")
+        print("Weasel should take approximately 30 seconds to start.")
         self.cmd = False
         self.showFullScreen()
-        self.setWindowTitle("WEASEL")
+        self.setWindowTitle("Weasel")
         self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setLayout(QVBoxLayout(self.centralwidget))
@@ -93,7 +93,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.menuBuilder.buildMenus()
         
         self.setStyleSheet(styleSheet.TRISTAN_GREY)
-        logger.info("WEASEL GUI created successfully.")
+        logger.info("Weasel GUI created successfully.")
 
 
     def __repr__(self):
@@ -105,9 +105,9 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
 class Weasel_CMD(WeaselProgrammingInterface):
 
     def __init__(self, arguments):
-        """Creates the WEASEL Command-line class."""
+        """Creates the Weasel Command-line class."""
         print("=====================================")
-        print("WEASEL Command-line Mode")
+        print("Weasel Command-line Mode")
         print("=====================================")
         if arguments.xml_dicom and arguments.python_script:
             if arguments.xml_dicom.endswith(".xml") and arguments.python_script.endswith(".py"):
@@ -123,7 +123,7 @@ class Weasel_CMD(WeaselProgrammingInterface):
                 # XML reader object to process XML DICOM data file
                 self.treeView = TreeView(self, arguments.xml_dicom)
 
-                logger.info("WEASEL CMD created successfully.")
+                logger.info("Weasel CMD created successfully.")
             else:
                 print("=====================================")
                 print("Invalid input arguments given.")
@@ -131,7 +131,7 @@ class Weasel_CMD(WeaselProgrammingInterface):
                 print("=====================================")
                 self.XMLDicomFile = None
                 self.PythonFile = None
-                logger.info("WEASEL CMD not created due to invalid arguments.")
+                logger.info("Weasel CMD not created due to invalid arguments.")
         else:
             print("=====================================")
             print("Invalid input arguments given.")
@@ -139,7 +139,7 @@ class Weasel_CMD(WeaselProgrammingInterface):
             print("=====================================")
             self.XMLDicomFile = None
             self.PythonFile = None
-            logger.info("WEASEL CMD not created due to invalid arguments.")
+            logger.info("Weasel CMD not created due to invalid arguments.")
 
     def __repr__(self):
         """Returns a string representation of objects of this class""" 
@@ -174,11 +174,11 @@ def main():
         python Weasel.py -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"
         Weasel.exe -c -d "path/to/xml/dicom.xml" -s "path/to/analyis/script.py"'''
     parser = argparse.ArgumentParser(prog='Weasel',
-                                 description='WEASEL Command-line Mode',
+                                 description='Weasel Command-line Mode',
                                  epilog=example_text,
                                  formatter_class=argparse.RawDescriptionHelpFormatter,
                                  usage='Weasel.py/.exe [-h] [-c] [-d] XML_DATA_PATH [-s] PYTHON_SCRIPT_PATH' )
-    parser.add_argument('-c', '--command-line', action='store_true', help='Start WEASEL in command-line mode')
+    parser.add_argument('-c', '--command-line', action='store_true', help='Start Weasel in command-line mode')
     parser.add_argument('-d', '--xml-dicom', type=str, metavar='', required=False, help='Path to the XML file with the DICOM filepaths')
     parser.add_argument('-s', '--python-script', type=str, metavar='', required=False, help='Path to the Python file with the analysis script (menu) to process')
     args = parser.parse_args()

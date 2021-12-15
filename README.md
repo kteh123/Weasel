@@ -33,7 +33,7 @@ There are 2 options downloading and installing Weasel requirements:
 #### Option 1
 Download and install everything in one go by opening a Terminal (MacOS and Linux) or a CMD (Windows) and type in the following command:
 
-`pip install -e git+https://github.com/QIB-Sheffield/WEASEL#egg=WEASEL --src <download_path>`
+`pip install -e git+https://github.com/QIB-Sheffield/Weasel#egg=Weasel --src <download_path>`
 
 After the installation is finished, it's recommended that you go to the directory where Weasel was installed
 

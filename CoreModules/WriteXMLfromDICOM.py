@@ -120,7 +120,7 @@ def get_scan_data(scan_directory, progBarMsg, self):
                     multiframeCounter += 1
                     if multiframeCounter == 1:
                         buttonReply = QMessageBox.question(self, "Multiframe DICOM files found",
-                                      "WEASEL detected the existence of multiframe DICOM in the selected directory and will convert these. This operation requires overwriting the original files. Do you wish to proceed?", 
+                                      "Weasel detected the existence of multiframe DICOM in the selected directory and will convert these. This operation requires overwriting the original files. Do you wish to proceed?", 
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                         if buttonReply == QMessageBox.Cancel:
                             print("User chose not to convert Multiframe DICOM. Loading process halted.")

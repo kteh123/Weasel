@@ -19,7 +19,7 @@ print("Preparing the Folder Structure...")
 docs_folder = os.path.join(os.getcwd(), "Documents")
 manual_folder = os.path.join(docs_folder, "Manual")
 temporary_folder = os.path.join(docs_folder, "temp")
-weasel_copy_folder = os.path.join(temporary_folder, "WEASEL")
+weasel_copy_folder = os.path.join(temporary_folder, "Weasel")
 #############################################################
 api_folder = os.path.join(os.getcwd(), "API")
 coremodules_folder = os.path.join(os.getcwd(), "CoreModules")
@@ -65,7 +65,7 @@ else:
 print("Installing Python packages in the Virtual Environment...")
 os.system(activation_command + ' && pip install -e .')
 
-print("Creating WEASEL manual using pdoc3...")
+print("Creating Weasel manual using pdoc3...")
 doc_command = "pdoc3 --html --force --output-dir " + str(docs_folder) + " " + str(weasel_copy_folder)
 os.system(activation_command + ' && ' + doc_command)
 
@@ -73,6 +73,6 @@ print("Moving documentation files to the 'Manual' folder and deleting temporary 
 shutil.rmtree(temporary_folder)
 shutil.rmtree(venv_dir)
 shutil.rmtree("Weasel.egg-info")
-shutil.move(os.path.join(docs_folder, "WEASEL"), manual_folder)
+shutil.move(os.path.join(docs_folder, "Weasel"), manual_folder)
 
 print("HTML documentation files successfully created and saved in the 'Manual' folder!")

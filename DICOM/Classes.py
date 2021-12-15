@@ -1422,7 +1422,7 @@ class Series:
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
+            # The transpose is necessary in this case to be in line with the rest of Weasel. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
         except Exception as e:
@@ -1830,7 +1830,7 @@ class Image:
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), affine=self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL.
+            # The transpose is necessary in this case to be in line with the rest of Weasel.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + '/' + filename + '.nii.gz')
         except Exception as e:

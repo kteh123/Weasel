@@ -173,7 +173,7 @@ def inputWindow(paramDict, title="Input Parameters", helpText="", lists=None):
     thresholdDICOM_Image.py as it contains a good example of validation of the input parameters.
 
     This function is a wrap of function "ParameterInputDialog" and you can consult it's detailed documentation
-    in CoreModules/WEASEL/InputDialog.py.
+    in CoreModules/Weasel/InputDialog.py.
 
     Parameters
     ----------
@@ -334,7 +334,7 @@ class ParameterInputDialog(QDialog):
                 paramType, value1, value2, value3 = self.getParamData(paramDict[key].lower())
                 if paramType not in ("integer", "float", "string", "dropdownlist", "listview"):
                     #This unit test is for developers who mistype the above 3 parameter 
-                    #types when they are developing new WEASEL tools that need
+                    #types when they are developing new Weasel tools that need
                     #an input dialog
                     raise IncorrectParameterTypeError
                 if paramType == "integer":

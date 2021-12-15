@@ -1,6 +1,6 @@
 # Description of Documents repository
 
-This repository hosts the images and icons that are used by Weasel. This folder is also used to host temporary files when generating the documentation for the Github Page [here](https://qib-sheffield.github.io/WEASEL/). 
+This repository hosts the images and icons that are used by Weasel. This folder is also used to host temporary files when generating the documentation for the Github Page [here](https://qib-sheffield.github.io/Weasel/). 
 
 # Weasel Reference Manual
 

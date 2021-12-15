@@ -5,7 +5,7 @@ It uses the Weasel default menus "File", View", "Edit", "Tutorial" and "Help" pl
 """
 
 # Insert a menu from a local menu library
-# In external applications, do not import from WEASEL/Menus
+# In external applications, do not import from Weasel/Menus
 # as this can evolve. Only import your own menus library.
 from Menus.Tutorial import main as menu_tutorial
 
