@@ -1,3 +1,9 @@
+"""
+The string WEASEL_GREY contains the Cascading Style Sheet (CSS) commands that
+define the appearance and behaviour of the PyQt widgets in the Weasel GUI.
+
+The CSS commands are applied to each PyQt widget.
+"""
 
 WEASEL_GREY = """
                 QPushButton {
