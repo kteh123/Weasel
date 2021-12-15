@@ -51,31 +51,37 @@ in the menu bar,
 myMenu = weasel.menu("My Menu")
 
 Items in this menu are created with the following function call,
+
     myMenu.item(
         label = 'My Menu Item',
         tooltip = 'My menu item allows the user to .......',
         pipeline = 'My_Module_Name')
 
 where label - Menu item name in the drop down menu.
+
       tooltip - Menu item tooltip displayed when the mouse pointer 
                 hovers over the menu item.
+
       pipeline - The name of the Python module without the .py extension
                 that contains the functionality invoked by the this menu item.
                 When this menu item is selected, it expects to call a function 
                 called main in this module.  Therefore, this module must 
                 contain a function with the definition 
+
                     def main(weasel):
+
                 that contains the logic underpinning the functionality of this
                 menu item.
 
 The following function call will draw a horizontal line in the menu 
 to separate different parts
+
     menu.separator()
 
 The name of the new menu file must be included in the config.xml file, that is 
-in the root of the Weasel source code, enclosed in \<menu_config_file\> tags thus
+in the root of the Weasel source code, enclosed in <menu_config_file> tags thus
 
-    \<menu_config_file>GettingStarted_EndUsers.py</menu_config_file\>
+    <menu_config_file>GettingStarted_EndUsers.py</menu_config_file>
 
 Menus.xml is an xml definition of several menus in the menu bar of Weasel
 """
