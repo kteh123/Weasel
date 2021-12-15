@@ -14,10 +14,16 @@ logger = logging.getLogger(__name__)
 class ReadWrite():
 
     def log(self, message):
+        """
+        Prints the content in the input argument "message" to the terminal and logs that information into the "Activity_Log.log" file.
+        """
         print(message)
         logger.info(message)
 
     def log_error(self, message):
+        """
+        Prints the content in the input argument "message" to the terminal and logs that error and its details into the "Activity_Log.log" file.
+        """
         print(message)
         logger.exception(message)
 

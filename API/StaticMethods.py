@@ -32,8 +32,9 @@ class StaticMethods():
     
     @staticmethod
     def pip_install_external_package(package_name, module_name=None):
-        # For example, "pip install ukat" and "import ukat"
-        # But "pip install opencv-python" and "import cv2"
+        """
+        Installs the python package in "package_name" and loads it and imports it into the script where it's called.
+        """
         try:
             try:
                 subprocess.check_call(["pip", "install", package_name])
