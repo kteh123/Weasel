@@ -88,6 +88,7 @@ class Slider(QSlider):
         self.last = self.value()/self.maximum()
         self.valueChanged.connect(self.onValueChanged)
 
+
     def onValueChanged(self, value):
         &#34;&#34;&#34;
 
@@ -98,6 +99,7 @@ class Slider(QSlider):
             self.directionChanged.emit(direction)
             self._direction = direction
         self.last = current
+
 
     def direction(self):
         return self._direction
@@ -671,11 +673,19 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def updateROIName(self):
+        &#34;&#34;&#34;
+        This function is connected to the sigROIChanged signal of the graphicsView object.
+        It is called when the graphicsView object needs to have the current ROI name.
+        &#34;&#34;&#34;
         logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
         self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
 
     
     def setUpPixelValueGroupBox(self):
+        &#34;&#34;&#34;
+        Creates a composite widget in a layout from the PixelValueComponent class
+        and adds it to the pixelValueGroupBox group box
+        &#34;&#34;&#34;
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -684,6 +694,12 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpZoomGroupBox(self):
+        &#34;&#34;&#34;
+        Sets up the label displaying the value of the image zoom.
+
+        A QLabel widget is created and added to its own horizontal layout.
+        This layout is added to a QGroupBox with the legend &#34;Zoom&#34;
+        &#34;&#34;&#34;
         self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
         self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
         layout = QHBoxLayout()
@@ -696,6 +712,12 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def getPixelValue(self, mouseOverImage):
+        &#34;&#34;&#34;
+        This function checks that the mouse pointer is over the
+        image and when it is, it determines the value of the pixel
+        under the mouse pointer and displays this in the label
+        lblPixelValue together with the x,y coordinates of the mouse pointer.
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
@@ -927,6 +949,13 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpImageSliders(self):
+        &#34;&#34;&#34;
+        Creates an instance of the custom, composite sliders 
+        widget from the ImageSliders class and adds it to the 
+        main vertical layout. 
+        Also, connects its sliderMoved event to the function
+        self.displayPixelArrayOfSingleImage(imagePath).
+        &#34;&#34;&#34;
         try:
             #create an instance of the ImageSliders class
             self.slidersWidget = imageSliders(self.weasel, 
@@ -1608,11 +1637,19 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def updateROIName(self):
+        &#34;&#34;&#34;
+        This function is connected to the sigROIChanged signal of the graphicsView object.
+        It is called when the graphicsView object needs to have the current ROI name.
+        &#34;&#34;&#34;
         logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
         self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
 
     
     def setUpPixelValueGroupBox(self):
+        &#34;&#34;&#34;
+        Creates a composite widget in a layout from the PixelValueComponent class
+        and adds it to the pixelValueGroupBox group box
+        &#34;&#34;&#34;
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -1621,6 +1658,12 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def setUpZoomGroupBox(self):
+        &#34;&#34;&#34;
+        Sets up the label displaying the value of the image zoom.
+
+        A QLabel widget is created and added to its own horizontal layout.
+        This layout is added to a QGroupBox with the legend &#34;Zoom&#34;
+        &#34;&#34;&#34;
         self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
         self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
         layout = QHBoxLayout()
@@ -1633,6 +1676,12 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def getPixelValue(self, mouseOverImage):
+        &#34;&#34;&#34;
+        This function checks that the mouse pointer is over the
+        image and when it is, it determines the value of the pixel
+        under the mouse pointer and displays this in the label
+        lblPixelValue together with the x,y coordinates of the mouse pointer.
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
             if mouseOverImage:
@@ -1864,6 +1913,13 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def setUpImageSliders(self):
+        &#34;&#34;&#34;
+        Creates an instance of the custom, composite sliders 
+        widget from the ImageSliders class and adds it to the 
+        main vertical layout. 
+        Also, connects its sliderMoved event to the function
+        self.displayPixelArrayOfSingleImage(imagePath).
+        &#34;&#34;&#34;
         try:
             #create an instance of the ImageSliders class
             self.slidersWidget = imageSliders(self.weasel, 
@@ -2285,12 +2341,21 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">getPixelValue</span></span>(<span>self, mouseOverImage)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function checks that the mouse pointer is over the
+image and when it is, it determines the value of the pixel
+under the mouse pointer and displays this in the label
+lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getPixelValue(self, mouseOverImage):
+    &#34;&#34;&#34;
+    This function checks that the mouse pointer is over the
+    image and when it is, it determines the value of the pixel
+    under the mouse pointer and displays this in the label
+    lblPixelValue together with the x,y coordinates of the mouse pointer.
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;ImageViewerROI.getPixelValue called&#34;)
         if mouseOverImage:
@@ -2702,12 +2767,23 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 <span>def <span class="ident">setUpImageSliders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates an instance of the custom, composite sliders
+widget from the ImageSliders class and adds it to the
+main vertical layout.
+Also, connects its sliderMoved event to the function
+self.displayPixelArrayOfSingleImage(imagePath).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpImageSliders(self):
+    &#34;&#34;&#34;
+    Creates an instance of the custom, composite sliders 
+    widget from the ImageSliders class and adds it to the 
+    main vertical layout. 
+    Also, connects its sliderMoved event to the function
+    self.displayPixelArrayOfSingleImage(imagePath).
+    &#34;&#34;&#34;
     try:
         #create an instance of the ImageSliders class
         self.slidersWidget = imageSliders(self.weasel, 
@@ -2784,12 +2860,17 @@ this function.</p></div>
 <span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a composite widget in a layout from the PixelValueComponent class
+and adds it to the pixelValueGroupBox group box</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpPixelValueGroupBox(self):
+    &#34;&#34;&#34;
+    Creates a composite widget in a layout from the PixelValueComponent class
+    and adds it to the pixelValueGroupBox group box
+    &#34;&#34;&#34;
     pixelValueComponent = PixelValueComponent()
     self.lblPixelValue = pixelValueComponent.getLabel()
     self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -3000,12 +3081,20 @@ A label displaying the zoom amount in a group box</p></div>
 <span>def <span class="ident">setUpZoomGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets up the label displaying the value of the image zoom.</p>
+<p>A QLabel widget is created and added to its own horizontal layout.
+This layout is added to a QGroupBox with the legend "Zoom"</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpZoomGroupBox(self):
+    &#34;&#34;&#34;
+    Sets up the label displaying the value of the image zoom.
+
+    A QLabel widget is created and added to its own horizontal layout.
+    This layout is added to a QGroupBox with the legend &#34;Zoom&#34;
+    &#34;&#34;&#34;
     self.zoomValueLabel = QLabel(&#34;&lt;H4&gt;100%&lt;/H4&gt;&#34;)
     self.zoomValueLabel.setStyleSheet(&#34;color:red; padding-left:1; margin-left:1; font-size:8pt;&#34;)
     layout = QHBoxLayout()
@@ -3092,12 +3181,17 @@ A label displaying the zoom amount in a group box</p></div>
 <span>def <span class="ident">updateROIName</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function is connected to the sigROIChanged signal of the graphicsView object.
+It is called when the graphicsView object needs to have the current ROI name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def updateROIName(self):
+    &#34;&#34;&#34;
+    This function is connected to the sigROIChanged signal of the graphicsView object.
+    It is called when the graphicsView object needs to have the current ROI name.
+    &#34;&#34;&#34;
     logger.info(&#34;ImageViewerROI.updateROIName called.&#34;)
     self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()</code></pre>
 </details>
@@ -3200,6 +3294,7 @@ for zooming the image.</p></div>
         self.last = self.value()/self.maximum()
         self.valueChanged.connect(self.onValueChanged)
 
+
     def onValueChanged(self, value):
         &#34;&#34;&#34;
 
@@ -3210,6 +3305,7 @@ for zooming the image.</p></div>
             self.directionChanged.emit(direction)
             self._direction = direction
         self.last = current
+
 
     def direction(self):
         return self._direction</code></pre>

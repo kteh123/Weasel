@@ -204,6 +204,13 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpImageSliders(self):
+        &#34;&#34;&#34;
+        Creates an instance of the custom, composite sliders 
+        widget from the ImageSliders class and adds it to the 
+        main vertical layout. 
+        Also, connects its sliderMoved event to the function
+        self.displayPixelArrayOfSingleImage(imagePath).
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewer.setpUpImageSliders called.&#34;)
             #create an instance of the ImageSliders class
@@ -231,7 +238,20 @@ class ImageViewer(QMdiSubWindow):
             logger.error(&#39;Error in ImageViewer.setUpImageSliders: &#39; + str(e))
 
 
-    def setUpColourTableDropDown(self):                                                  
+    def setUpColourTableDropDown(self):  
+        &#34;&#34;&#34;
+        Configures the colour tables drop down list, cmbColours.
+
+        Adds the colour tables names stored in the list listColours to the cmbColours combo box.
+        Sets the cmbColours combo box tool tip.
+        If only an image is being viewed, the currentIndexChanged event is connected to the 
+        applyColourTableToAnImage function. Thus when a new colour table is selected it is 
+        applied to the image. 
+        If a series is being viewed, the  currentIndexChanged event is connected to the 
+        applyColourTableToSeries function. Thus when a new colour table is selected it is 
+        applied to every image in the series. 
+        Finally adds the cmbColours combo box to the colour table Layout.
+        &#34;&#34;&#34;
         self.cmbColours.blockSignals(True)
         self.cmbColours.addItems(listColours)
         self.cmbColours.setCurrentIndex(0)
@@ -241,11 +261,14 @@ class ImageViewer(QMdiSubWindow):
             self.cmbColours.currentIndexChanged.connect(self.applyColourTableToAnImage)
         elif self.isSeries:
             self.cmbColours.currentIndexChanged.connect(self.applyColourTableToSeries)
-
         self.colourTableLayout.addWidget(self.cmbColours)
 
 
     def setUpApplyUserSelectionButton(self):
+        &#34;&#34;&#34;
+        Creates the apply user selection button, which when clicked
+        applies the user selected colour table and image levels to the whole series.
+        &#34;&#34;&#34;
         self.btnApply = QPushButton() 
         self.btnApply.setCheckable(True)
         self.btnApply.setIcon(QIcon(QPixmap(APPLY_SERIES_ICON)))
@@ -255,6 +278,11 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpUpdateUserSelectionToDICOMButton(self):
+        &#34;&#34;&#34;
+        Creates the update button, which when clicked
+        saves user selected colour table and image levels to a
+        DICOM image or series, depending on which is being viewed.
+        &#34;&#34;&#34;
         self.btnUpdate = QPushButton() 
         self.btnUpdate.setIcon(QIcon(QPixmap(SAVE_ICON)))
         self.btnUpdate.setToolTip(&#39;Update DICOM with the new colour table, contrast &amp; intensity levels&#39;)
@@ -265,16 +293,24 @@ class ImageViewer(QMdiSubWindow):
 
 
     def setUpExportImageButton(self):
+        &#34;&#34;&#34;
+        Creates the export button, which when clicked exports the
+        image to an external graphics file.
+        &#34;&#34;&#34;
         self.btnExport = QPushButton() 
         self.btnExport.setIcon(QIcon(QPixmap(EXPORT_ICON)))
-        self.btnExport.setToolTip(&#39;Exports the image to an external graphic file.&#39;)
+        self.btnExport.setToolTip(&#39;Exports the image to an external graphics file.&#39;)
         self.btnExport.clicked.connect(self.exportImage)
 
 
     def setUpResetButton(self):
+        &#34;&#34;&#34;
+        Creates the reset button, which when clicked resets an image&#39;s colour table
+        and levels to those in the DICOM file.
+        &#34;&#34;&#34;
         self.btnReset = QPushButton() 
         self.btnReset.setIcon(QIcon(QPixmap(RESET_ICON)))
-        self.btnReset.setToolTip(&#39;Return to colour tables and levels in the DICOM file&#39;)
+        self.btnReset.setToolTip(&#39;Return to the colour tables and levels in the DICOM file&#39;)
 
 
     def setUpColourTableGroupBox(self):
@@ -408,7 +444,11 @@ class ImageViewer(QMdiSubWindow):
             logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
  
 
-    def setUpPixelValueGroupBox(self):
+    def setUpPixelValueGroupBox(self): 
+        &#34;&#34;&#34;
+        Creates a composite widget in a layout from the PixelValueComponent class
+        and adds it to the pixelValueGroupBox group box
+        &#34;&#34;&#34;
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -421,7 +461,7 @@ class ImageViewer(QMdiSubWindow):
         This function checks that the mouse pointer is over the
         image and when it is, it determines the value of the pixel
         under the mouse pointer and displays this in the label
-        lblPixelValue.
+        lblPixelValue together with the x,y coordinates of the mouse pointer.
         &#34;&#34;&#34;
         try:
             container =  self.graphicsView.getView()
@@ -1320,6 +1360,13 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def setUpImageSliders(self):
+        &#34;&#34;&#34;
+        Creates an instance of the custom, composite sliders 
+        widget from the ImageSliders class and adds it to the 
+        main vertical layout. 
+        Also, connects its sliderMoved event to the function
+        self.displayPixelArrayOfSingleImage(imagePath).
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewer.setpUpImageSliders called.&#34;)
             #create an instance of the ImageSliders class
@@ -1347,7 +1394,20 @@ vertical layout created in the function setUpMainLayout.</p></div>
             logger.error(&#39;Error in ImageViewer.setUpImageSliders: &#39; + str(e))
 
 
-    def setUpColourTableDropDown(self):                                                  
+    def setUpColourTableDropDown(self):  
+        &#34;&#34;&#34;
+        Configures the colour tables drop down list, cmbColours.
+
+        Adds the colour tables names stored in the list listColours to the cmbColours combo box.
+        Sets the cmbColours combo box tool tip.
+        If only an image is being viewed, the currentIndexChanged event is connected to the 
+        applyColourTableToAnImage function. Thus when a new colour table is selected it is 
+        applied to the image. 
+        If a series is being viewed, the  currentIndexChanged event is connected to the 
+        applyColourTableToSeries function. Thus when a new colour table is selected it is 
+        applied to every image in the series. 
+        Finally adds the cmbColours combo box to the colour table Layout.
+        &#34;&#34;&#34;
         self.cmbColours.blockSignals(True)
         self.cmbColours.addItems(listColours)
         self.cmbColours.setCurrentIndex(0)
@@ -1357,11 +1417,14 @@ vertical layout created in the function setUpMainLayout.</p></div>
             self.cmbColours.currentIndexChanged.connect(self.applyColourTableToAnImage)
         elif self.isSeries:
             self.cmbColours.currentIndexChanged.connect(self.applyColourTableToSeries)
-
         self.colourTableLayout.addWidget(self.cmbColours)
 
 
     def setUpApplyUserSelectionButton(self):
+        &#34;&#34;&#34;
+        Creates the apply user selection button, which when clicked
+        applies the user selected colour table and image levels to the whole series.
+        &#34;&#34;&#34;
         self.btnApply = QPushButton() 
         self.btnApply.setCheckable(True)
         self.btnApply.setIcon(QIcon(QPixmap(APPLY_SERIES_ICON)))
@@ -1371,6 +1434,11 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def setUpUpdateUserSelectionToDICOMButton(self):
+        &#34;&#34;&#34;
+        Creates the update button, which when clicked
+        saves user selected colour table and image levels to a
+        DICOM image or series, depending on which is being viewed.
+        &#34;&#34;&#34;
         self.btnUpdate = QPushButton() 
         self.btnUpdate.setIcon(QIcon(QPixmap(SAVE_ICON)))
         self.btnUpdate.setToolTip(&#39;Update DICOM with the new colour table, contrast &amp; intensity levels&#39;)
@@ -1381,16 +1449,24 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def setUpExportImageButton(self):
+        &#34;&#34;&#34;
+        Creates the export button, which when clicked exports the
+        image to an external graphics file.
+        &#34;&#34;&#34;
         self.btnExport = QPushButton() 
         self.btnExport.setIcon(QIcon(QPixmap(EXPORT_ICON)))
-        self.btnExport.setToolTip(&#39;Exports the image to an external graphic file.&#39;)
+        self.btnExport.setToolTip(&#39;Exports the image to an external graphics file.&#39;)
         self.btnExport.clicked.connect(self.exportImage)
 
 
     def setUpResetButton(self):
+        &#34;&#34;&#34;
+        Creates the reset button, which when clicked resets an image&#39;s colour table
+        and levels to those in the DICOM file.
+        &#34;&#34;&#34;
         self.btnReset = QPushButton() 
         self.btnReset.setIcon(QIcon(QPixmap(RESET_ICON)))
-        self.btnReset.setToolTip(&#39;Return to colour tables and levels in the DICOM file&#39;)
+        self.btnReset.setToolTip(&#39;Return to the colour tables and levels in the DICOM file&#39;)
 
 
     def setUpColourTableGroupBox(self):
@@ -1524,7 +1600,11 @@ vertical layout created in the function setUpMainLayout.</p></div>
             logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))
  
 
-    def setUpPixelValueGroupBox(self):
+    def setUpPixelValueGroupBox(self): 
+        &#34;&#34;&#34;
+        Creates a composite widget in a layout from the PixelValueComponent class
+        and adds it to the pixelValueGroupBox group box
+        &#34;&#34;&#34;
         pixelValueComponent = PixelValueComponent()
         self.lblPixelValue = pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -1537,7 +1617,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
         This function checks that the mouse pointer is over the
         image and when it is, it determines the value of the pixel
         under the mouse pointer and displays this in the label
-        lblPixelValue.
+        lblPixelValue together with the x,y coordinates of the mouse pointer.
         &#34;&#34;&#34;
         try:
             container =  self.graphicsView.getView()
@@ -2866,7 +2946,7 @@ Then the contrast &amp; intensity spinboxes are set to these values.</p></div>
 <div class="desc"><p>This function checks that the mouse pointer is over the
 image and when it is, it determines the value of the pixel
 under the mouse pointer and displays this in the label
-lblPixelValue.</p></div>
+lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2876,7 +2956,7 @@ lblPixelValue.</p></div>
     This function checks that the mouse pointer is over the
     image and when it is, it determines the value of the pixel
     under the mouse pointer and displays this in the label
-    lblPixelValue.
+    lblPixelValue together with the x,y coordinates of the mouse pointer.
     &#34;&#34;&#34;
     try:
         container =  self.graphicsView.getView()
@@ -3084,12 +3164,17 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 <span>def <span class="ident">setUpApplyUserSelectionButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the apply user selection button, which when clicked
+applies the user selected colour table and image levels to the whole series.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpApplyUserSelectionButton(self):
+    &#34;&#34;&#34;
+    Creates the apply user selection button, which when clicked
+    applies the user selected colour table and image levels to the whole series.
+    &#34;&#34;&#34;
     self.btnApply = QPushButton() 
     self.btnApply.setCheckable(True)
     self.btnApply.setIcon(QIcon(QPixmap(APPLY_SERIES_ICON)))
@@ -3102,12 +3187,35 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
 <span>def <span class="ident">setUpColourTableDropDown</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Configures the colour tables drop down list, cmbColours.</p>
+<p>Adds the colour tables names stored in the list listColours to the cmbColours combo box.
+Sets the cmbColours combo box tool tip.
+If only an image is being viewed, the currentIndexChanged event is connected to the
+applyColourTableToAnImage function. Thus when a new colour table is selected it is
+applied to the image.
+If a series is being viewed, the
+currentIndexChanged event is connected to the
+applyColourTableToSeries function. Thus when a new colour table is selected it is
+applied to every image in the series.
+Finally adds the cmbColours combo box to the colour table Layout.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setUpColourTableDropDown(self):                                                  
+<pre><code class="python">def setUpColourTableDropDown(self):  
+    &#34;&#34;&#34;
+    Configures the colour tables drop down list, cmbColours.
+
+    Adds the colour tables names stored in the list listColours to the cmbColours combo box.
+    Sets the cmbColours combo box tool tip.
+    If only an image is being viewed, the currentIndexChanged event is connected to the 
+    applyColourTableToAnImage function. Thus when a new colour table is selected it is 
+    applied to the image. 
+    If a series is being viewed, the  currentIndexChanged event is connected to the 
+    applyColourTableToSeries function. Thus when a new colour table is selected it is 
+    applied to every image in the series. 
+    Finally adds the cmbColours combo box to the colour table Layout.
+    &#34;&#34;&#34;
     self.cmbColours.blockSignals(True)
     self.cmbColours.addItems(listColours)
     self.cmbColours.setCurrentIndex(0)
@@ -3117,7 +3225,6 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
         self.cmbColours.currentIndexChanged.connect(self.applyColourTableToAnImage)
     elif self.isSeries:
         self.cmbColours.currentIndexChanged.connect(self.applyColourTableToSeries)
-
     self.colourTableLayout.addWidget(self.cmbColours)</code></pre>
 </details>
 </dd>
@@ -3224,15 +3331,20 @@ from the image.
 <span>def <span class="ident">setUpExportImageButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the export button, which when clicked exports the
+image to an external graphics file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpExportImageButton(self):
+    &#34;&#34;&#34;
+    Creates the export button, which when clicked exports the
+    image to an external graphics file.
+    &#34;&#34;&#34;
     self.btnExport = QPushButton() 
     self.btnExport.setIcon(QIcon(QPixmap(EXPORT_ICON)))
-    self.btnExport.setToolTip(&#39;Exports the image to an external graphic file.&#39;)
+    self.btnExport.setToolTip(&#39;Exports the image to an external graphics file.&#39;)
     self.btnExport.clicked.connect(self.exportImage)</code></pre>
 </details>
 </dd>
@@ -3315,12 +3427,23 @@ This composite component is added to a group box</p></div>
 <span>def <span class="ident">setUpImageSliders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates an instance of the custom, composite sliders
+widget from the ImageSliders class and adds it to the
+main vertical layout.
+Also, connects its sliderMoved event to the function
+self.displayPixelArrayOfSingleImage(imagePath).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpImageSliders(self):
+    &#34;&#34;&#34;
+    Creates an instance of the custom, composite sliders 
+    widget from the ImageSliders class and adds it to the 
+    main vertical layout. 
+    Also, connects its sliderMoved event to the function
+    self.displayPixelArrayOfSingleImage(imagePath).
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;ImageViewer.setpUpImageSliders called.&#34;)
         #create an instance of the ImageSliders class
@@ -3412,12 +3535,17 @@ this function.</p></div>
 <span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a composite widget in a layout from the PixelValueComponent class
+and adds it to the pixelValueGroupBox group box</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setUpPixelValueGroupBox(self):
+<pre><code class="python">def setUpPixelValueGroupBox(self): 
+    &#34;&#34;&#34;
+    Creates a composite widget in a layout from the PixelValueComponent class
+    and adds it to the pixelValueGroupBox group box
+    &#34;&#34;&#34;
     pixelValueComponent = PixelValueComponent()
     self.lblPixelValue = pixelValueComponent.getLabel()
     self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
@@ -3429,15 +3557,20 @@ this function.</p></div>
 <span>def <span class="ident">setUpResetButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the reset button, which when clicked resets an image's colour table
+and levels to those in the DICOM file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpResetButton(self):
+    &#34;&#34;&#34;
+    Creates the reset button, which when clicked resets an image&#39;s colour table
+    and levels to those in the DICOM file.
+    &#34;&#34;&#34;
     self.btnReset = QPushButton() 
     self.btnReset.setIcon(QIcon(QPixmap(RESET_ICON)))
-    self.btnReset.setToolTip(&#39;Return to colour tables and levels in the DICOM file&#39;)</code></pre>
+    self.btnReset.setToolTip(&#39;Return to the colour tables and levels in the DICOM file&#39;)</code></pre>
 </details>
 </dd>
 <dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout"><code class="name flex">
@@ -3496,12 +3629,19 @@ and its position in a group box.</p></div>
 <span>def <span class="ident">setUpUpdateUserSelectionToDICOMButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the update button, which when clicked
+saves user selected colour table and image levels to a
+DICOM image or series, depending on which is being viewed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpUpdateUserSelectionToDICOMButton(self):
+    &#34;&#34;&#34;
+    Creates the update button, which when clicked
+    saves user selected colour table and image levels to a
+    DICOM image or series, depending on which is being viewed.
+    &#34;&#34;&#34;
     self.btnUpdate = QPushButton() 
     self.btnUpdate.setIcon(QIcon(QPixmap(SAVE_ICON)))
     self.btnUpdate.setToolTip(&#39;Update DICOM with the new colour table, contrast &amp; intensity levels&#39;)
