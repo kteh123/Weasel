@@ -92,7 +92,7 @@ class Weasel(QMainWindow, WeaselProgrammingInterface):
         self.weaselDataFolder = self.objConfigXMLReader.getWeaselDataFolder()
         self.menuBuilder.buildMenus()
         
-        self.setStyleSheet(styleSheet.TRISTAN_GREY)
+        self.setStyleSheet(styleSheet.WEASEL_GREY)
         logger.info("Weasel GUI created successfully.")
 
 
