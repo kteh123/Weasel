@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.External.Tools.PandasDICOM API documentation</title>
+<title>Weasel.External.Tools.PandasDICOM API documentation</title>
 <meta name="description" content="This script contains functions that read DICOM files and convert their information into a DataFrame (pandas/csv) or into an ElementTree (Treeview in …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.External.Tools.PandasDICOM</code></h1>
+<h1 class="title">Module <code>Weasel.External.Tools.PandasDICOM</code></h1>
 </header>
 <section id="section-intro">
 <p>This script contains functions that read DICOM files and convert their information into a DataFrame (pandas/csv) or into an ElementTree (Treeview in Weasel).</p>
@@ -208,7 +208,7 @@ def read_elementtree(xml_file):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="WEASEL.External.Tools.PandasDICOM.DICOM_to_DataFrame"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.DICOM_to_DataFrame"><code class="name flex">
 <span>def <span class="ident">DICOM_to_DataFrame</span></span>(<span>files, tags=[])</span>
 </code></dt>
 <dd>
@@ -274,7 +274,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     return pandas.DataFrame(array, index=dicom_files, columns=tags)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.DataFrame_to_ElementTree"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.DataFrame_to_ElementTree"><code class="name flex">
 <span>def <span class="ident">DataFrame_to_ElementTree</span></span>(<span>data_frame)</span>
 </code></dt>
 <dd>
@@ -341,7 +341,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     return element_tree</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.data_labels"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.data_labels"><code class="name flex">
 <span>def <span class="ident">data_labels</span></span>(<span>image)</span>
 </code></dt>
 <dd>
@@ -382,7 +382,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     return subject_label, study_label, series_label, image_label, SeriesDate, SeriesTime, AcquisitionTime, AcquisitionDate</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.read_dataframe"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.read_dataframe"><code class="name flex">
 <span>def <span class="ident">read_dataframe</span></span>(<span>file)</span>
 </code></dt>
 <dd>
@@ -397,7 +397,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     return pandas.read_csv(file, index_col=0)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.read_elementtree"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.read_elementtree"><code class="name flex">
 <span>def <span class="ident">read_elementtree</span></span>(<span>xml_file)</span>
 </code></dt>
 <dd>
@@ -412,7 +412,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     return ET.parse(xml_file)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.write_dataframe"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.write_dataframe"><code class="name flex">
 <span>def <span class="ident">write_dataframe</span></span>(<span>data_frame, file)</span>
 </code></dt>
 <dd>
@@ -427,7 +427,7 @@ tags &ndash; a list of tags to be read. If not provided, a default list is used<
     data_frame.to_csv(file)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.External.Tools.PandasDICOM.write_elementtree"><code class="name flex">
+<dt id="Weasel.External.Tools.PandasDICOM.write_elementtree"><code class="name flex">
 <span>def <span class="ident">write_elementtree</span></span>(<span>element_tree, xml_file)</span>
 </code></dt>
 <dd>
@@ -468,18 +468,18 @@ xml_file: path to the xml file</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.External.Tools" href="index.html">WEASEL.External.Tools</a></code></li>
+<li><code><a title="Weasel.External.Tools" href="index.html">Weasel.External.Tools</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.DICOM_to_DataFrame" href="#WEASEL.External.Tools.PandasDICOM.DICOM_to_DataFrame">DICOM_to_DataFrame</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.DataFrame_to_ElementTree" href="#WEASEL.External.Tools.PandasDICOM.DataFrame_to_ElementTree">DataFrame_to_ElementTree</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.data_labels" href="#WEASEL.External.Tools.PandasDICOM.data_labels">data_labels</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.read_dataframe" href="#WEASEL.External.Tools.PandasDICOM.read_dataframe">read_dataframe</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.read_elementtree" href="#WEASEL.External.Tools.PandasDICOM.read_elementtree">read_elementtree</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.write_dataframe" href="#WEASEL.External.Tools.PandasDICOM.write_dataframe">write_dataframe</a></code></li>
-<li><code><a title="WEASEL.External.Tools.PandasDICOM.write_elementtree" href="#WEASEL.External.Tools.PandasDICOM.write_elementtree">write_elementtree</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.DICOM_to_DataFrame" href="#Weasel.External.Tools.PandasDICOM.DICOM_to_DataFrame">DICOM_to_DataFrame</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.DataFrame_to_ElementTree" href="#Weasel.External.Tools.PandasDICOM.DataFrame_to_ElementTree">DataFrame_to_ElementTree</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.data_labels" href="#Weasel.External.Tools.PandasDICOM.data_labels">data_labels</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.read_dataframe" href="#Weasel.External.Tools.PandasDICOM.read_dataframe">read_dataframe</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.read_elementtree" href="#Weasel.External.Tools.PandasDICOM.read_elementtree">read_elementtree</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.write_dataframe" href="#Weasel.External.Tools.PandasDICOM.write_dataframe">write_dataframe</a></code></li>
+<li><code><a title="Weasel.External.Tools.PandasDICOM.write_elementtree" href="#Weasel.External.Tools.PandasDICOM.write_elementtree">write_elementtree</a></code></li>
 </ul>
 </li>
 </ul>

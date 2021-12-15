@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.Displays.ImageViewers.ImageViewer API documentation</title>
+<title>Weasel.Displays.ImageViewers.ImageViewer API documentation</title>
 <meta name="description" content="Class ImageViewer creates an MDI subwindow for viewing an image or series of images
 with the facility to change the colour table applied to the
 …" />
@@ -21,7 +21,7 @@ with the facility to change the colour table applied to the
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.Displays.ImageViewers.ImageViewer</code></h1>
+<h1 class="title">Module <code>Weasel.Displays.ImageViewers.ImageViewer</code></h1>
 </header>
 <section id="section-intro">
 <p>Class ImageViewer creates an MDI subwindow for viewing an image or series of images
@@ -1223,7 +1223,7 @@ class ImageViewer(QMdiSubWindow):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer"><code class="flex name class">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer"><code class="flex name class">
 <span>class <span class="ident">ImageViewer</span></span>
 <span>(</span><span>weasel, dcm)</span>
 </code></dt>
@@ -2380,7 +2380,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag"><code class="name flex">
 <span>def <span class="ident">adjustLevelsByRightButtonDrag</span></span>(<span>self, ev)</span>
 </code></dt>
 <dd>
@@ -2416,7 +2416,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
         logger.exception(&#39;Error in ImageViewer.adjustLevelsByRightButtonDrag: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage"><code class="name flex">
 <span>def <span class="ident">applyColourTableToAnImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2433,7 +2433,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
     self.setPgColourMap()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries"><code class="name flex">
 <span>def <span class="ident">applyColourTableToSeries</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2466,7 +2466,7 @@ the whole series of DICOM images by setting a boolean flag to True.</p></div>
         logger.error(&#39;Error in ImageViewer.applyColourTableToSeries: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection"><code class="name flex">
 <span>def <span class="ident">clearUserSelection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2499,7 +2499,7 @@ They are reset to the default values of
     self.slidersWidget.getMainSlider().setValue(imageNumber)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer"><code class="name flex">
 <span>def <span class="ident">deleteImageInMultiImageViewer</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2568,7 +2568,7 @@ reference to it in the XML file and removes it from the image viewer.</p></div>
         logger.error(&#39;Error in ImageViewer.deleteImageInMultiImageViewer: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old"><code class="name flex">
 <span>def <span class="ident">deleteImageInMultiImageViewer_old</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2648,7 +2648,7 @@ reference to it in the XML file and removes it from the image viewer.</p></div>
         logger.error(&#39;Error in ImageViewer.deleteImageInMultiImageViewer: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox"><code class="name flex">
 <span>def <span class="ident">displayColourTableInComboBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2674,7 +2674,7 @@ variable colourTable.</p></div>
             logger.error(&#39;Error in ImageViewer.displayColourTableInComboBox: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage"><code class="name flex">
 <span>def <span class="ident">displayPixelArrayOfSingleImage</span></span>(<span>self, imagePath)</span>
 </code></dt>
 <dd>
@@ -2743,7 +2743,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         logger.exception(&#39;Error in ImageViewer.displayPixelArrayOfSingleImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage"><code class="name flex">
 <span>def <span class="ident">exportImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2783,7 +2783,7 @@ the name of the image colour table and the image levels.</p></div>
         logger.error(&#39;Error in ImageViewer.exportImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib"><code class="name flex">
 <span>def <span class="ident">exportImageViaMatplotlib</span></span>(<span>self, fileName)</span>
 </code></dt>
 <dd>
@@ -2825,7 +2825,7 @@ and its colour table in a png file with the path+filename in fileName. </p>
         logger.error(&#39;Error in ImageViewer.exportImageViaMatplotlib: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels"><code class="name flex">
 <span>def <span class="ident">getAndSetLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2854,7 +2854,7 @@ and its colour table in a png file with the path+filename in fileName. </p>
         logger.exception(&#39;Error in ImageViewer.getAndSetLevels: &#39; + str(e))  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize"><code class="name flex">
 <span>def <span class="ident">getAndSetLevelsSpinBoxStepSize</span></span>(<span>self, maximumValue, minimumValue)</span>
 </code></dt>
 <dd>
@@ -2877,7 +2877,7 @@ and its colour table in a png file with the path+filename in fileName. </p>
         logger.exception(&#39;Error in ImageViewer.getAndSetLevelsSpinBoxStepSize: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage"><code class="name flex">
 <span>def <span class="ident">getColourTableForThisImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2906,7 +2906,7 @@ and its colour table in a png file with the path+filename in fileName. </p>
             logger.error(&#39;Error in ImageViewer.getColourTableForThisImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels"><code class="name flex">
 <span>def <span class="ident">getHistogramLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2939,7 +2939,7 @@ Then the contrast &amp; intensity spinboxes are set to these values.</p></div>
     self.spinBoxContrast.setValue(width)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue"><code class="name flex">
 <span>def <span class="ident">getPixelValue</span></span>(<span>self, pos, imageNumber=1)</span>
 </code></dt>
 <dd>
@@ -2991,7 +2991,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
         logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage"><code class="name flex">
 <span>def <span class="ident">readLevelsFromDICOMImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3058,7 +3058,7 @@ minimumValue - Minimum pixel value in the image</p></div>
         logger.error(&#39;Error in ImageViewer.readLevelsFromDICOMImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels"><code class="name flex">
 <span>def <span class="ident">returnUserSelectedLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3119,7 +3119,7 @@ minimumValue - Minimum pixel value in the image</p></div>
         logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap"><code class="name flex">
 <span>def <span class="ident">setPgColourMap</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3160,7 +3160,7 @@ a colour map that can be used by the pyqtGraph imageView widget.</p></div>
         logger.error(&#39;Error in ImageViewer.setPgColourMap: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton"><code class="name flex">
 <span>def <span class="ident">setUpApplyUserSelectionButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3183,7 +3183,7 @@ applies the user selected colour table and image levels to the whole series.</p>
     self.btnApply.clicked.connect(self.applyColourTableToSeries)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown"><code class="name flex">
 <span>def <span class="ident">setUpColourTableDropDown</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3228,7 +3228,7 @@ Finally adds the cmbColours combo box to the colour table Layout.</p></div>
     self.colourTableLayout.addWidget(self.cmbColours)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox"><code class="name flex">
 <span>def <span class="ident">setUpColourTableGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3305,7 +3305,7 @@ from the image.
         self.cmbColours.activated.connect(self.updateImageUserSelection)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton"><code class="name flex">
 <span>def <span class="ident">setUpDeleteImageButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3327,7 +3327,7 @@ from the image.
         logger.error(&#39;Error in ImageViewer.setUpDeleteImageButton: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton"><code class="name flex">
 <span>def <span class="ident">setUpExportImageButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3348,7 +3348,7 @@ image to an external graphics file.</p></div>
     self.btnExport.clicked.connect(self.exportImage)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView"><code class="name flex">
 <span>def <span class="ident">setUpGraphicsView</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3371,7 +3371,7 @@ it to the main vertical layout.</p></div>
         logger.error(&#39;Error in ImageViewer.setUpGraphicsView: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram"><code class="name flex">
 <span>def <span class="ident">setUpHistogram</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3392,7 +3392,7 @@ it to the main vertical layout.</p></div>
     self.graphicsView.ui.menuBtn.hide()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox"><code class="name flex">
 <span>def <span class="ident">setUpImageLevelsGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3423,7 +3423,7 @@ This composite component is added to a group box</p></div>
         self.levelsCompositeComponentLayout.getCompositeComponent())</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders"><code class="name flex">
 <span>def <span class="ident">setUpImageSliders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3471,7 +3471,7 @@ self.displayPixelArrayOfSingleImage(imagePath).</p></div>
         logger.error(&#39;Error in ImageViewer.setUpImageSliders: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes"><code class="name flex">
 <span>def <span class="ident">setUpLevelsSpinBoxes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3504,7 +3504,7 @@ the user selected image levels.</p></div>
         logger.error(&#39;Error in ImageViewer.setUpLevelsSpinBoxes: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout"><code class="name flex">
 <span>def <span class="ident">setUpMainLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3531,7 +3531,7 @@ this function.</p></div>
         logger.error(&#39;Error in ImageViewer.setUpMainLayout: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox"><code class="name flex">
 <span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3553,7 +3553,7 @@ and adds it to the pixelValueGroupBox group box</p></div>
     self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton"><code class="name flex">
 <span>def <span class="ident">setUpResetButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3573,7 +3573,7 @@ and levels to those in the DICOM file.</p></div>
     self.btnReset.setToolTip(&#39;Return to the colour tables and levels in the DICOM file&#39;)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout"><code class="name flex">
 <span>def <span class="ident">setUpTopRowLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3625,7 +3625,7 @@ and its position in a group box.</p></div>
         logger.error(&#39;Error in ImageViewer.setUpTopRowLayout: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton"><code class="name flex">
 <span>def <span class="ident">setUpUpdateUserSelectionToDICOMButton</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3651,7 +3651,7 @@ DICOM image or series, depending on which is being viewed.</p></div>
         self.btnUpdate.clicked.connect(self.updateDicomSeries)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries"><code class="name flex">
 <span>def <span class="ident">updateDicomSeries</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3687,7 +3687,7 @@ updateWholeDicomSeries &amp; updateDicomSeriesImageByImage.</p></div>
         logger.error(&#39;Error in ImageViewer.updateDicomSeries: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage"><code class="name flex">
 <span>def <span class="ident">updateDicomSeriesImageByImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3730,7 +3730,7 @@ a different table and set of levels</p></div>
         print(&#39;Error in ImageViewer.updateDicomSeriesImageByImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels"><code class="name flex">
 <span>def <span class="ident">updateImageLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3757,7 +3757,7 @@ this function sets the corresponding values in the image being viewed.</p></div>
         logger.error(&#39;Error in ImageViewer.updateImageLevels: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection"><code class="name flex">
 <span>def <span class="ident">updateImageUserSelection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3793,7 +3793,7 @@ this function sets the corresponding values in the image being viewed.</p></div>
         logger.error(&#39;Error in ImageViewer.updateImageUserSelection: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage"><code class="name flex">
 <span>def <span class="ident">updateSingleDicomImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3826,7 +3826,7 @@ is clicked and the user is viewing a singe DICOM image.</p></div>
         logger.error(&#39;Error in ImageViewer.updateSingleDicomImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries"><code class="name flex">
 <span>def <span class="ident">updateWholeDicomSeries</span></span>(<span>self, levels)</span>
 </code></dt>
 <dd>
@@ -3885,53 +3885,53 @@ one set of levels</p>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.Displays.ImageViewers" href="index.html">WEASEL.Displays.ImageViewers</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers" href="index.html">Weasel.Displays.ImageViewers</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer">ImageViewer</a></code></h4>
+<h4><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer">ImageViewer</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag">adjustLevelsByRightButtonDrag</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage">applyColourTableToAnImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries">applyColourTableToSeries</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection">clearUserSelection</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer">deleteImageInMultiImageViewer</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old">deleteImageInMultiImageViewer_old</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox">displayColourTableInComboBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage">exportImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib">exportImageViaMatplotlib</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels">getAndSetLevels</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize">getAndSetLevelsSpinBoxStepSize</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage">getColourTableForThisImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels">getHistogramLevels</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue">getPixelValue</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage">readLevelsFromDICOMImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels">returnUserSelectedLevels</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap">setPgColourMap</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton">setUpApplyUserSelectionButton</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown">setUpColourTableDropDown</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox">setUpColourTableGroupBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton">setUpDeleteImageButton</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton">setUpExportImageButton</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView">setUpGraphicsView</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram">setUpHistogram</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox">setUpImageLevelsGroupBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders">setUpImageSliders</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout">setUpMainLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton">setUpResetButton</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton">setUpUpdateUserSelectionToDICOMButton</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries">updateDicomSeries</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage">updateDicomSeriesImageByImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels">updateImageLevels</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection">updateImageUserSelection</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage">updateSingleDicomImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries" href="#WEASEL.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries">updateWholeDicomSeries</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.adjustLevelsByRightButtonDrag">adjustLevelsByRightButtonDrag</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToAnImage">applyColourTableToAnImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.applyColourTableToSeries">applyColourTableToSeries</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.clearUserSelection">clearUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer">deleteImageInMultiImageViewer</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.deleteImageInMultiImageViewer_old">deleteImageInMultiImageViewer_old</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayColourTableInComboBox">displayColourTableInComboBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImage">exportImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.exportImageViaMatplotlib">exportImageViaMatplotlib</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevels">getAndSetLevels</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getAndSetLevelsSpinBoxStepSize">getAndSetLevelsSpinBoxStepSize</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getColourTableForThisImage">getColourTableForThisImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getHistogramLevels">getHistogramLevels</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.getPixelValue">getPixelValue</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.readLevelsFromDICOMImage">readLevelsFromDICOMImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.returnUserSelectedLevels">returnUserSelectedLevels</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setPgColourMap">setPgColourMap</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpApplyUserSelectionButton">setUpApplyUserSelectionButton</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableDropDown">setUpColourTableDropDown</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpColourTableGroupBox">setUpColourTableGroupBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpDeleteImageButton">setUpDeleteImageButton</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpExportImageButton">setUpExportImageButton</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpGraphicsView">setUpGraphicsView</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpHistogram">setUpHistogram</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageLevelsGroupBox">setUpImageLevelsGroupBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpImageSliders">setUpImageSliders</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpMainLayout">setUpMainLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton">setUpResetButton</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpUpdateUserSelectionToDICOMButton">setUpUpdateUserSelectionToDICOMButton</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeries">updateDicomSeries</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateDicomSeriesImageByImage">updateDicomSeriesImageByImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageLevels">updateImageLevels</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateImageUserSelection">updateImageUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateSingleDicomImage">updateSingleDicomImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries" href="#Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.updateWholeDicomSeries">updateWholeDicomSeries</a></code></li>
 </ul>
 </li>
 </ul>

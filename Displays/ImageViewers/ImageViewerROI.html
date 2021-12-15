@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.Displays.ImageViewers.ImageViewerROI API documentation</title>
+<title>Weasel.Displays.ImageViewers.ImageViewerROI API documentation</title>
 <meta name="description" content="Class ImageViewerROI creates an MDI subwindow for viewing an image or series of images
 with the facility to draw a Region of Interest ROI on the image." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -20,7 +20,7 @@ with the facility to draw a Region of Interest ROI on the image." />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.Displays.ImageViewers.ImageViewerROI</code></h1>
+<h1 class="title">Module <code>Weasel.Displays.ImageViewers.ImageViewerROI</code></h1>
 </header>
 <section id="section-intro">
 <p>Class ImageViewerROI creates an MDI subwindow for viewing an image or series of images
@@ -1046,7 +1046,7 @@ class ImageViewerROI(QMdiSubWindow):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI"><code class="flex name class">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI"><code class="flex name class">
 <span>class <span class="ident">ImageViewerROI</span></span>
 <span>(</span><span>weasel, dcm)</span>
 </code></dt>
@@ -2011,7 +2011,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList"><code class="name flex">
 <span>def <span class="ident">addNewROItoDropDownList</span></span>(<span>self, newRegion)</span>
 </code></dt>
 <dd>
@@ -2034,7 +2034,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
         self.cmbNamesROIs.blockSignals(False)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag"><code class="name flex">
 <span>def <span class="ident">adjustLevelsByRightMouseButtonDrag</span></span>(<span>self, deltaX, deltaY)</span>
 </code></dt>
 <dd>
@@ -2069,7 +2069,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.adjustLevelsByRightMouseButtonDrag: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev"><code class="name flex">
 <span>def <span class="ident">clearPixelValueMeanAndStdDev</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2084,7 +2084,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
     self.lblPixelValue.clear()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools"><code class="name flex">
 <span>def <span class="ident">connectSlotToSignalForROITools</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2175,7 +2175,7 @@ This event is 'fired' when the user edits the name of the current RIO.</p></div>
     self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI"><code class="name flex">
 <span>def <span class="ident">deleteROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2218,7 +2218,7 @@ This event is 'fired' when the user edits the name of the current RIO.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.deleteROI: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage"><code class="name flex">
 <span>def <span class="ident">displayPixelArrayOfSingleImage</span></span>(<span>self, imagePath)</span>
 </code></dt>
 <dd>
@@ -2260,7 +2260,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.displayPixelArrayOfSingleImage: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd"><code class="name flex">
 <span>def <span class="ident">displayROIMeanAndStd</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2290,7 +2290,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.displayROIMeanAndStd: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI"><code class="name flex">
 <span>def <span class="ident">drawROI</span></span>(<span>self, checked)</span>
 </code></dt>
 <dd>
@@ -2314,7 +2314,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
          )</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI"><code class="name flex">
 <span>def <span class="ident">eraseROI</span></span>(<span>self, checked)</span>
 </code></dt>
 <dd>
@@ -2337,7 +2337,7 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
          )</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue"><code class="name flex">
 <span>def <span class="ident">getPixelValue</span></span>(<span>self, mouseOverImage)</span>
 </code></dt>
 <dd>
@@ -2382,7 +2382,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.getPixelValue: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd"><code class="name flex">
 <span>def <span class="ident">getRoiMeanAndStd</span></span>(<span>self, mask, pixelArray)</span>
 </code></dt>
 <dd>
@@ -2402,7 +2402,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.getRoiMeanAndStd: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem"><code class="name flex">
 <span>def <span class="ident">loadImageInImageItem</span></span>(<span>self, addMask)</span>
 </code></dt>
 <dd>
@@ -2439,7 +2439,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
            logger.exception(&#39;Error in ImageViewerROI.loadImageInImageItem: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI"><code class="name flex">
 <span>def <span class="ident">loadROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2524,7 +2524,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.loadROI: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI"><code class="name flex">
 <span>def <span class="ident">paintROI</span></span>(<span>self, checked)</span>
 </code></dt>
 <dd>
@@ -2547,7 +2547,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
          )</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask"><code class="name flex">
 <span>def <span class="ident">replaceMask</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2567,7 +2567,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
     self.graphicsView.dictROIs.replaceMask(regionName, mask, imageNumber)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged"><code class="name flex">
 <span>def <span class="ident">roiNameChanged</span></span>(<span>self, newText)</span>
 </code></dt>
 <dd>
@@ -2602,7 +2602,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.roiNameChanged: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI"><code class="name flex">
 <span>def <span class="ident">saveROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2649,7 +2649,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.saveROI: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle"><code class="name flex">
 <span>def <span class="ident">setButtonsToDefaultStyle</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2677,7 +2677,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues"><code class="name flex">
 <span>def <span class="ident">setInitialImageLevelValues</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2695,7 +2695,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
     self.spinBoxContrast.blockSignals(False)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView"><code class="name flex">
 <span>def <span class="ident">setUpGraphicsView</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2709,7 +2709,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
     self.mainVerticalLayout.addWidget(self.graphicsView)         </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers"><code class="name flex">
 <span>def <span class="ident">setUpImageEventHandlers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2747,7 +2747,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
             logger.exception(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout"><code class="name flex">
 <span>def <span class="ident">setUpImageLevelsLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2763,7 +2763,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
     self.imageLevelsGroupBox.setLayout(self.levelsCompositeComponentLayout.getCompositeComponent())</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders"><code class="name flex">
 <span>def <span class="ident">setUpImageSliders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2810,7 +2810,7 @@ self.displayPixelArrayOfSingleImage(imagePath).</p></div>
         logger.exception(&#39;Error in ImageViewerROI.setUpImageSliders: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes"><code class="name flex">
 <span>def <span class="ident">setUpLevelsSpinBoxes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2829,7 +2829,7 @@ self.displayPixelArrayOfSingleImage(imagePath).</p></div>
         logger.exception(&#39;Error in ImageViewerROI.setUpLevelsSpinBoxes: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout"><code class="name flex">
 <span>def <span class="ident">setUpMainLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2856,7 +2856,7 @@ this function.</p></div>
         logger.exception(&#39;Error in ImageViewerROI.setUpMainLayout: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox"><code class="name flex">
 <span>def <span class="ident">setUpPixelValueGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2878,7 +2878,7 @@ and adds it to the pixelValueGroupBox group box</p></div>
     self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout()) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons"><code class="name flex">
 <span>def <span class="ident">setUpROIButtons</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2962,7 +2962,7 @@ and adds it to the pixelValueGroupBox group box</p></div>
            logger.exception(&#39;Error in ImageViewerROI.setUpROIButtons: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList"><code class="name flex">
 <span>def <span class="ident">setUpROIDropDownList</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2995,7 +2995,7 @@ the end of the list in the combo box with the format regionX, where X is a numbe
     self.cmbNamesROIs.setInsertPolicy(QComboBox.InsertAtCurrent)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout"><code class="name flex">
 <span>def <span class="ident">setUpRoiToolsLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3018,7 +3018,7 @@ buttons &amp; adds it to the ROI tools group box.</p></div>
     self.roiToolsGroupBox.setLayout(self.roiToolsLayout)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout"><code class="name flex">
 <span>def <span class="ident">setUpTopRowLayout</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3077,7 +3077,7 @@ A label displaying the zoom amount in a group box</p></div>
         logger.exception(&#39;Error in ImageViewerROI.setUpTopRowLayout: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox"><code class="name flex">
 <span>def <span class="ident">setUpZoomGroupBox</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3106,7 +3106,7 @@ This layout is added to a QGroupBox with the legend "Zoom"</p></div>
     self.zoomGroupBox.setLayout(layout) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider"><code class="name flex">
 <span>def <span class="ident">setUpZoomSlider</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3130,7 +3130,7 @@ This layout is added to a QGroupBox with the legend "Zoom"</p></div>
             logger.exception(&#39;Error in ImageViewerROI.setUpZoomSlider: &#39; + str(e))  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI"><code class="name flex">
 <span>def <span class="ident">updateDetailsROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3152,7 +3152,7 @@ This layout is added to a QGroupBox with the legend "Zoom"</p></div>
             logger.exception(&#39;Error in ImageViewerROI.updateDetailsROI: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels"><code class="name flex">
 <span>def <span class="ident">updateImageLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3177,7 +3177,7 @@ This layout is added to a QGroupBox with the legend "Zoom"</p></div>
         logger.exception(&#39;Error in ImageViewerROI.updateImageLevels: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName"><code class="name flex">
 <span>def <span class="ident">updateROIName</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3196,7 +3196,7 @@ It is called when the graphicsView object needs to have the current ROI name.</p
     self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider"><code class="name flex">
 <span>def <span class="ident">updateZoomSlider</span></span>(<span>self, increment)</span>
 </code></dt>
 <dd>
@@ -3235,7 +3235,7 @@ zoom value</p></div>
             logger.exception(&#39;Error in ImageViewerROI.updateZoomSlider: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage"><code class="name flex">
 <span>def <span class="ident">zoomImage</span></span>(<span>self, checked)</span>
 </code></dt>
 <dd>
@@ -3263,7 +3263,7 @@ zoom value</p></div>
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider"><code class="flex name class">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider"><code class="flex name class">
 <span>class <span class="ident">Slider</span></span>
 <span>(</span><span>parent=None)</span>
 </code></dt>
@@ -3322,22 +3322,22 @@ for zooming the image.</p></div>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Backward"><code class="name">var <span class="ident">Backward</span></code></dt>
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Backward"><code class="name">var <span class="ident">Backward</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Forward"><code class="name">var <span class="ident">Forward</span></code></dt>
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Forward"><code class="name">var <span class="ident">Forward</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Nothing"><code class="name">var <span class="ident">Nothing</span></code></dt>
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Nothing"><code class="name">var <span class="ident">Nothing</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.direction"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.direction"><code class="name flex">
 <span>def <span class="ident">direction</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3350,13 +3350,13 @@ for zooming the image.</p></div>
     return self._direction</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged"><code class="name flex">
 <span>def <span class="ident">directionChanged</span></span>(<span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged"><code class="name flex">
 <span>def <span class="ident">onValueChanged</span></span>(<span>self, value)</span>
 </code></dt>
 <dd>
@@ -3390,62 +3390,62 @@ for zooming the image.</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.Displays.ImageViewers" href="index.html">WEASEL.Displays.ImageViewers</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers" href="index.html">Weasel.Displays.ImageViewers</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI">ImageViewerROI</a></code></h4>
+<h4><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI">ImageViewerROI</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList">addNewROItoDropDownList</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag">adjustLevelsByRightMouseButtonDrag</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev">clearPixelValueMeanAndStdDev</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools">connectSlotToSignalForROITools</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI">deleteROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd">displayROIMeanAndStd</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI">drawROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI">eraseROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue">getPixelValue</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem">loadImageInImageItem</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI">loadROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI">paintROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask">replaceMask</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI">saveROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle">setButtonsToDefaultStyle</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders">setUpImageSliders</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout">setUpMainLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons">setUpROIButtons</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList">setUpROIDropDownList</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout">setUpRoiToolsLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox">setUpZoomGroupBox</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider">setUpZoomSlider</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI">updateDetailsROI</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels">updateImageLevels</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName">updateROIName</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider">updateZoomSlider</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage">zoomImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.addNewROItoDropDownList">addNewROItoDropDownList</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.adjustLevelsByRightMouseButtonDrag">adjustLevelsByRightMouseButtonDrag</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.clearPixelValueMeanAndStdDev">clearPixelValueMeanAndStdDev</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.connectSlotToSignalForROITools">connectSlotToSignalForROITools</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.deleteROI">deleteROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayPixelArrayOfSingleImage">displayPixelArrayOfSingleImage</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.displayROIMeanAndStd">displayROIMeanAndStd</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.drawROI">drawROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.eraseROI">eraseROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getPixelValue">getPixelValue</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadImageInImageItem">loadImageInImageItem</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.loadROI">loadROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.paintROI">paintROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.replaceMask">replaceMask</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI">saveROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle">setButtonsToDefaultStyle</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageLevelsLayout">setUpImageLevelsLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageSliders">setUpImageSliders</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpLevelsSpinBoxes">setUpLevelsSpinBoxes</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpMainLayout">setUpMainLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpPixelValueGroupBox">setUpPixelValueGroupBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIButtons">setUpROIButtons</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpROIDropDownList">setUpROIDropDownList</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpRoiToolsLayout">setUpRoiToolsLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpTopRowLayout">setUpTopRowLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomGroupBox">setUpZoomGroupBox</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpZoomSlider">setUpZoomSlider</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateDetailsROI">updateDetailsROI</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateImageLevels">updateImageLevels</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateROIName">updateROIName</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.updateZoomSlider">updateZoomSlider</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.zoomImage">zoomImage</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider">Slider</a></code></h4>
+<h4><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider">Slider</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Backward" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Backward">Backward</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Forward" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Forward">Forward</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Nothing" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.Nothing">Nothing</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.direction" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.direction">direction</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged">directionChanged</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged" href="#WEASEL.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged">onValueChanged</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Backward" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Backward">Backward</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Forward" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Forward">Forward</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Nothing" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.Nothing">Nothing</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.direction" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.direction">direction</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.directionChanged">directionChanged</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged" href="#Weasel.Displays.ImageViewers.ImageViewerROI.Slider.onValueChanged">onValueChanged</a></code></li>
 </ul>
 </li>
 </ul>

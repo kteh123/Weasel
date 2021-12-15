@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.DICOM.Classes API documentation</title>
+<title>Weasel.DICOM.Classes API documentation</title>
 <meta name="description" content="The medical image classes are defined in this module: …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.DICOM.Classes</code></h1>
+<h1 class="title">Module <code>Weasel.DICOM.Classes</code></h1>
 </header>
 <section id="section-intro">
 <p>The medical image classes are defined in this module:</p>
@@ -1462,7 +1462,7 @@ class Series:
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
+            # The transpose is necessary in this case to be in line with the rest of Weasel. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
         except Exception as e:
@@ -1870,7 +1870,7 @@ class Image:
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), affine=self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL.
+            # The transpose is necessary in this case to be in line with the rest of Weasel.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
         except Exception as e:
@@ -1908,7 +1908,7 @@ class Image:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Image"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.Image"><code class="flex name class">
 <span>class <span class="ident">Image</span></span>
 <span>(</span><span>objWeasel, subjectID, studyID, seriesID, path, suffix=None)</span>
 </code></dt>
@@ -1916,7 +1916,7 @@ class Image:
 <div class="desc"><p>This class corresponds to 1 DICOM file that belongs to its parent Subject, Study and Series.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the Weasel global variable</code></dt>
+<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the <a title="Weasel" href="../index.html">Weasel</a> global variable</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>subjectID</code></strong> :&ensp;<code>string</code></dt>
 <dd>This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.</dd>
@@ -2306,7 +2306,7 @@ class Image:
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), affine=self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL.
+            # The transpose is necessary in this case to be in line with the rest of Weasel.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
         except Exception as e:
@@ -2336,7 +2336,7 @@ class Image:
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Image.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>listImages, series_id=None, series_name='NewSeries', series_uid=None, study_name=None, study_uid=None, patient_id=None, suffix='_Merged', overwrite=False, progress_bar=False)</span>
 </code></dt>
 <dd>
@@ -2358,7 +2358,7 @@ def merge(listImages, series_id=None, series_name=&#39;NewSeries&#39;, series_ui
         logger.exception(&#39;Error in Image.merge: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.newSeriesFrom"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.newSeriesFrom"><code class="name flex">
 <span>def <span class="ident">newSeriesFrom</span></span>(<span>listImages, suffix='_Copy', series_id=None, series_name=None, series_uid=None)</span>
 </code></dt>
 <dd>
@@ -2390,7 +2390,7 @@ def newSeriesFrom(listImages, suffix=&#39;_Copy&#39;, series_id=None, series_nam
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Image.Affine"><code class="name">var <span class="ident">Affine</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.Affine"><code class="name">var <span class="ident">Affine</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2407,7 +2407,7 @@ def Affine(self):
         logger.exception(&#39;Error in Image.Affine: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.PixelArray"><code class="name">var <span class="ident">PixelArray</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.PixelArray"><code class="name">var <span class="ident">PixelArray</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2425,7 +2425,7 @@ def PixelArray(self):
         logger.exception(&#39;Error in Image.PixelArray: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.PydicomObject"><code class="name">var <span class="ident">PydicomObject</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.PydicomObject"><code class="name">var <span class="ident">PydicomObject</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2440,7 +2440,7 @@ def PydicomObject(self):
         return []</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.ROIindices"><code class="name">var <span class="ident">ROIindices</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.ROIindices"><code class="name">var <span class="ident">ROIindices</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2459,7 +2459,7 @@ def ROIindices(self):
         logger.exception(&#39;Error in Image.ROIindices: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.SeriesUID"><code class="name">var <span class="ident">SeriesUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.SeriesUID"><code class="name">var <span class="ident">SeriesUID</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2477,7 +2477,7 @@ def SeriesUID(self):
     return self.seriesUID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2495,7 +2495,7 @@ def StudyUID(self):
     return self.studyUID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.label"><code class="name">var <span class="ident">label</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2513,11 +2513,11 @@ def label(self):
         logger.exception(&#39;Error in Image.label: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2540,42 +2540,42 @@ def parent(self):
         logger.exception(&#39;Error in Image.parent: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.path"><code class="name">var <span class="ident">path</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.path"><code class="name">var <span class="ident">path</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.referencePath"><code class="name">var <span class="ident">referencePath</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.referencePath"><code class="name">var <span class="ident">referencePath</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.seriesID"><code class="name">var <span class="ident">seriesID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.seriesID"><code class="name">var <span class="ident">seriesID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.seriesUID"><code class="name">var <span class="ident">seriesUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.seriesUID"><code class="name">var <span class="ident">seriesUID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Image.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Image.Mask"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.Mask"><code class="name flex">
 <span>def <span class="ident">Mask</span></span>(<span>self, maskInstance)</span>
 </code></dt>
 <dd>
@@ -2617,7 +2617,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.Mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.Metadata"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.Metadata"><code class="name flex">
 <span>def <span class="ident">Metadata</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2635,7 +2635,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.Metadata: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self, suffix='_Copy', series=None, output_dir=None)</span>
 </code></dt>
 <dd>
@@ -2666,7 +2666,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.copy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.delete"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.delete"><code class="name flex">
 <span>def <span class="ident">delete</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2688,7 +2688,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.delete: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.display"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.display"><code class="name flex">
 <span>def <span class="ident">display</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2701,7 +2701,7 @@ def parent(self):
     self.objWeasel.display(self)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.export_as_csv"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.export_as_csv"><code class="name flex">
 <span>def <span class="ident">export_as_csv</span></span>(<span>self, directory=None, filename=None, columnHeaders=None)</span>
 </code></dt>
 <dd>
@@ -2732,7 +2732,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.export_as_csv: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.export_as_nifti"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.export_as_nifti"><code class="name flex">
 <span>def <span class="ident">export_as_nifti</span></span>(<span>self, directory=None, filename=None)</span>
 </code></dt>
 <dd>
@@ -2748,7 +2748,7 @@ def parent(self):
         if filename is None: filename=self.seriesID
         dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomObject)
         niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), affine=self.Affine)
-        # The transpose is necessary in this case to be in line with the rest of WEASEL.
+        # The transpose is necessary in this case to be in line with the rest of Weasel.
         niftiObj.header.extensions.append(dicomHeader)
         nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
     except Exception as e:
@@ -2756,7 +2756,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.export_as_nifti: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.get_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.get_value"><code class="name flex">
 <span>def <span class="ident">get_value</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
@@ -2782,7 +2782,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.new"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.new"><code class="name flex">
 <span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series=None)</span>
 </code></dt>
 <dd>
@@ -2805,7 +2805,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.plot"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.plot"><code class="name flex">
 <span>def <span class="ident">plot</span></span>(<span>self, xlabel='X axis', ylabel='Y axis')</span>
 </code></dt>
 <dd>
@@ -2823,7 +2823,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.plot: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.read"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2836,7 +2836,7 @@ def parent(self):
     return self.PydicomObject</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.save"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>self, PydicomObject)</span>
 </code></dt>
 <dd>
@@ -2868,7 +2868,7 @@ def parent(self):
     self.seriesID = newSeriesID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.set_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.set_value"><code class="name flex">
 <span>def <span class="ident">set_value</span></span>(<span>self, tag, newValue)</span>
 </code></dt>
 <dd>
@@ -2918,7 +2918,7 @@ def parent(self):
         logger.exception(&#39;Error in Image.set_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Image.write"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Image.write"><code class="name flex">
 <span>def <span class="ident">write</span></span>(<span>self, pixelArray, series=None, output_dir=None, value_range=None, parametric_map=None, colourmap=None)</span>
 </code></dt>
 <dd>
@@ -2965,7 +2965,7 @@ def parent(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.ImagesList"><code class="flex name class">
 <span>class <span class="ident">ImagesList</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -3133,12 +3133,12 @@ def parent(self):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
+<li><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
 <li>builtins.list</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.ImagesList.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dt id="Weasel.DICOM.Classes.ImagesList.label"><code class="name">var <span class="ident">label</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of names of the list of images.</p></div>
 <details class="source">
@@ -3154,7 +3154,7 @@ def label(self):
     return listNames</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.ImagesList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of unique series to which the images belong to.</p></div>
 <details class="source">
@@ -3180,7 +3180,7 @@ def parent(self):
     return SeriesList(parentsList)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.paths"><code class="name">var <span class="ident">paths</span></code></dt>
+<dt id="Weasel.DICOM.Classes.ImagesList.paths"><code class="name">var <span class="ident">paths</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of file paths of the list of images.</p></div>
 <details class="source">
@@ -3199,7 +3199,7 @@ def paths(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.ImagesList.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3218,7 +3218,7 @@ def paths(self):
     return ImagesList(copy)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.display"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.display"><code class="name flex">
 <span>def <span class="ident">display</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3234,7 +3234,7 @@ def paths(self):
     weasel = self[0].objWeasel.display(self)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.get_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.get_value"><code class="name flex">
 <span>def <span class="ident">get_value</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
@@ -3253,7 +3253,7 @@ def paths(self):
     return attributes_list</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>self, series_number=None, series_name='MergedSeries', study_name=None, patient_name=None, overwrite=True, progress_bar=True)</span>
 </code></dt>
 <dd>
@@ -3270,7 +3270,7 @@ def paths(self):
     return self[0].merge(self, series_id=series_number, series_name=series_name, study_name=study_name, patient_id=patient_name, overwrite=overwrite, progress_bar=progress_bar)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.new_parent"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.new_parent"><code class="name flex">
 <span>def <span class="ident">new_parent</span></span>(<span>self, suffix='_Suffix')</span>
 </code></dt>
 <dd>
@@ -3286,7 +3286,7 @@ def paths(self):
     return self[0].newSeriesFrom(self, suffix=suffix)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.set_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.set_value"><code class="name flex">
 <span>def <span class="ident">set_value</span></span>(<span>self, tag, value)</span>
 </code></dt>
 <dd>
@@ -3307,7 +3307,7 @@ def paths(self):
             image.set_value(tag, value)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.sort"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.sort"><code class="name flex">
 <span>def <span class="ident">sort</span></span>(<span>self, *argv, reverse=False)</span>
 </code></dt>
 <dd>
@@ -3340,7 +3340,7 @@ def paths(self):
     return self</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ImagesList.where"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ImagesList.where"><code class="name flex">
 <span>def <span class="ident">where</span></span>(<span>self, tag, condition, target)</span>
 </code></dt>
 <dd>
@@ -3368,14 +3368,14 @@ def paths(self):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
+<li><code><b><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
 <ul class="hlist">
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.delete" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.delete" href="#Weasel.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ListOfDicomObjects"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.ListOfDicomObjects"><code class="flex name class">
 <span>class <span class="ident">ListOfDicomObjects</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -3409,14 +3409,14 @@ def paths(self):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="WEASEL.DICOM.Classes.ImagesList" href="#WEASEL.DICOM.Classes.ImagesList">ImagesList</a></li>
-<li><a title="WEASEL.DICOM.Classes.SeriesList" href="#WEASEL.DICOM.Classes.SeriesList">SeriesList</a></li>
-<li><a title="WEASEL.DICOM.Classes.StudyList" href="#WEASEL.DICOM.Classes.StudyList">StudyList</a></li>
-<li><a title="WEASEL.DICOM.Classes.SubjectList" href="#WEASEL.DICOM.Classes.SubjectList">SubjectList</a></li>
+<li><a title="Weasel.DICOM.Classes.ImagesList" href="#Weasel.DICOM.Classes.ImagesList">ImagesList</a></li>
+<li><a title="Weasel.DICOM.Classes.SeriesList" href="#Weasel.DICOM.Classes.SeriesList">SeriesList</a></li>
+<li><a title="Weasel.DICOM.Classes.StudyList" href="#Weasel.DICOM.Classes.StudyList">StudyList</a></li>
+<li><a title="Weasel.DICOM.Classes.SubjectList" href="#Weasel.DICOM.Classes.SubjectList">SubjectList</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.ListOfDicomObjects.delete"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ListOfDicomObjects.delete"><code class="name flex">
 <span>def <span class="ident">delete</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3433,7 +3433,7 @@ def paths(self):
         item.delete()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.ListOfDicomObjects.display"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.ListOfDicomObjects.display"><code class="name flex">
 <span>def <span class="ident">display</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3452,7 +3452,7 @@ def paths(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Project"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.Project"><code class="flex name class">
 <span>class <span class="ident">Project</span></span>
 <span>(</span><span>objWeasel)</span>
 </code></dt>
@@ -3460,7 +3460,7 @@ def paths(self):
 <div class="desc"><p>This class is the top-level of the TreeView hierarchy. It bundles all scans opened in the Weasel GUI.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the Weasel global variable</code></dt>
+<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the <a title="Weasel" href="../index.html">Weasel</a> global variable</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -3501,7 +3501,7 @@ def paths(self):
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Project.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Project.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -3524,7 +3524,7 @@ def children(self):
         logger.exception(&#39;Error in Project.children: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Project.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Project.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -3538,7 +3538,7 @@ def number_children(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.Series"><code class="flex name class">
 <span>class <span class="ident">Series</span></span>
 <span>(</span><span>objWeasel, subjectID, studyID, seriesID, listPaths=None, studyUID=None, seriesUID=None, suffix=None)</span>
 </code></dt>
@@ -3546,7 +3546,7 @@ def number_children(self):
 <div class="desc"><p>This class encloses all DICOM files that share the same tag value of "StudyInstanceUID", "StudyDescription", "StudyDate" and "StudyTime".</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the Weasel global variable</code></dt>
+<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the <a title="Weasel" href="../index.html">Weasel</a> global variable</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>subjectID</code></strong> :&ensp;<code>string</code></dt>
 <dd>This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.</dd>
@@ -4187,7 +4187,7 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
             if filename is None: filename=self.seriesID
             dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
             niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), self.Affine)
-            # The transpose is necessary in this case to be in line with the rest of WEASEL. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
+            # The transpose is necessary in this case to be in line with the rest of Weasel. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
             niftiObj.header.extensions.append(dicomHeader)
             nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
         except Exception as e:
@@ -4223,7 +4223,7 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Series.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>listSeries, series_id=None, series_name='NewSeries', series_uid=None, study_name=None, study_uid=None, patient_id=None, suffix='_Merged', overwrite=False, progress_bar=False)</span>
 </code></dt>
 <dd>
@@ -4250,7 +4250,7 @@ def merge(listSeries, series_id=None, series_name=&#39;NewSeries&#39;, series_ui
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Series.Affine"><code class="name">var <span class="ident">Affine</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.Affine"><code class="name">var <span class="ident">Affine</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4267,7 +4267,7 @@ def Affine(self):
         logger.exception(&#39;Error in Series.Affine: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Imaginary"><code class="name">var <span class="ident">Imaginary</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.Imaginary"><code class="name">var <span class="ident">Imaginary</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4296,7 +4296,7 @@ def Imaginary(self):
         logger.exception(&#39;Error in Series.Imaginary: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.ListAffines"><code class="name">var <span class="ident">ListAffines</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.ListAffines"><code class="name">var <span class="ident">ListAffines</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4313,7 +4313,7 @@ def ListAffines(self):
         logger.exception(&#39;Error in Series.ListAffines: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Magnitude"><code class="name">var <span class="ident">Magnitude</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.Magnitude"><code class="name">var <span class="ident">Magnitude</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4342,7 +4342,7 @@ def Magnitude(self):
         logger.exception(&#39;Error in Series.Magnitude: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Phase"><code class="name">var <span class="ident">Phase</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.Phase"><code class="name">var <span class="ident">Phase</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4371,7 +4371,7 @@ def Phase(self):
         logger.exception(&#39;Error in Series.Phase: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.PixelArray"><code class="name">var <span class="ident">PixelArray</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.PixelArray"><code class="name">var <span class="ident">PixelArray</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4389,7 +4389,7 @@ def PixelArray(self):
         logger.exception(&#39;Error in Series.PixelArray: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.PydicomList"><code class="name">var <span class="ident">PydicomList</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.PydicomList"><code class="name">var <span class="ident">PydicomList</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4404,7 +4404,7 @@ def PydicomList(self):
         return []</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.ROIindices"><code class="name">var <span class="ident">ROIindices</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.ROIindices"><code class="name">var <span class="ident">ROIindices</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4423,7 +4423,7 @@ def ROIindices(self):
         logger.exception(&#39;Error in Series.ROIindices: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Real"><code class="name">var <span class="ident">Real</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.Real"><code class="name">var <span class="ident">Real</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4452,7 +4452,7 @@ def Real(self):
         logger.exception(&#39;Error in Series.Real: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.SeriesUID"><code class="name">var <span class="ident">SeriesUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.SeriesUID"><code class="name">var <span class="ident">SeriesUID</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4470,7 +4470,7 @@ def SeriesUID(self):
     return self.seriesUID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4488,7 +4488,7 @@ def StudyUID(self):
     return self.studyUID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4515,11 +4515,11 @@ def children(self):
         logger.exception(&#39;Error in Series.children: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.images"><code class="name">var <span class="ident">images</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.images"><code class="name">var <span class="ident">images</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.label"><code class="name">var <span class="ident">label</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4536,7 +4536,7 @@ def label(self):
         logger.exception(&#39;Error in Series.label: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4548,11 +4548,11 @@ def number_children(self):
     return len(self.children)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -4569,38 +4569,38 @@ def parent(self):
         logger.exception(&#39;Error in Series.parent: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.referencePathsList"><code class="name">var <span class="ident">referencePathsList</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.referencePathsList"><code class="name">var <span class="ident">referencePathsList</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.seriesID"><code class="name">var <span class="ident">seriesID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.seriesID"><code class="name">var <span class="ident">seriesID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.seriesUID"><code class="name">var <span class="ident">seriesUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.seriesUID"><code class="name">var <span class="ident">seriesUID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Series.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Series.Item"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.Item"><code class="name flex">
 <span>def <span class="ident">Item</span></span>(<span>self, tagDescription, newValue=None)</span>
 </code></dt>
 <dd>
@@ -4627,7 +4627,7 @@ def parent(self):
     return itemList</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Mask"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.Mask"><code class="name flex">
 <span>def <span class="ident">Mask</span></span>(<span>self, maskInstance)</span>
 </code></dt>
 <dd>
@@ -4675,7 +4675,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.Mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.Metadata"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.Metadata"><code class="name flex">
 <span>def <span class="ident">Metadata</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4693,7 +4693,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.Metadata: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.add"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.add"><code class="name flex">
 <span>def <span class="ident">add</span></span>(<span>self, Image)</span>
 </code></dt>
 <dd>
@@ -4714,7 +4714,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.add: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self, suffix='_Copy', newSeries=True, series_id=None, series_name=None, series_uid=None, study_uid=None, study_name=None, patient_id=None, output_dir=None)</span>
 </code></dt>
 <dd>
@@ -4745,7 +4745,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.copy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.delete"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.delete"><code class="name flex">
 <span>def <span class="ident">delete</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4767,7 +4767,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.delete: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.display"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.display"><code class="name flex">
 <span>def <span class="ident">display</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4780,7 +4780,7 @@ def parent(self):
     self.objWeasel.display(self)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.export_as_csv"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.export_as_csv"><code class="name flex">
 <span>def <span class="ident">export_as_csv</span></span>(<span>self, directory=None, filename=None, columnHeaders=None)</span>
 </code></dt>
 <dd>
@@ -4817,7 +4817,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.export_as_csv: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.export_as_nifti"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.export_as_nifti"><code class="name flex">
 <span>def <span class="ident">export_as_nifti</span></span>(<span>self, directory=None, filename=None)</span>
 </code></dt>
 <dd>
@@ -4833,7 +4833,7 @@ def parent(self):
         if filename is None: filename=self.seriesID
         dicomHeader = nib.nifti1.Nifti1DicomExtension(2, self.PydicomList[0])
         niftiObj = nib.Nifti1Image(np.flipud(np.rot90(np.transpose(self.PixelArray))), self.Affine)
-        # The transpose is necessary in this case to be in line with the rest of WEASEL. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
+        # The transpose is necessary in this case to be in line with the rest of Weasel. The rot90() can be a bit questionable, so this should be tested in as much data as possible.
         niftiObj.header.extensions.append(dicomHeader)
         nib.save(niftiObj, directory + &#39;/&#39; + filename + &#39;.nii.gz&#39;)
     except Exception as e:
@@ -4841,7 +4841,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.export_as_nifti: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.get_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.get_value"><code class="name flex">
 <span>def <span class="ident">get_value</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
@@ -4881,7 +4881,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.new"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.new"><code class="name flex">
 <span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series_id=None, series_name=None, series_uid=None)</span>
 </code></dt>
 <dd>
@@ -4908,7 +4908,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.plot"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.plot"><code class="name flex">
 <span>def <span class="ident">plot</span></span>(<span>self, xlabel='X axis', ylabel='Y axis')</span>
 </code></dt>
 <dd>
@@ -4928,7 +4928,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.plot: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.read"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4941,7 +4941,7 @@ def parent(self):
     return self.PydicomList</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.remove"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.remove"><code class="name flex">
 <span>def <span class="ident">remove</span></span>(<span>self, all_images=False, Image=None)</span>
 </code></dt>
 <dd>
@@ -4968,7 +4968,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.remove: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.save"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>self, PydicomList)</span>
 </code></dt>
 <dd>
@@ -5001,7 +5001,7 @@ def parent(self):
     self.seriesID = newSeriesID</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.set_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.set_value"><code class="name flex">
 <span>def <span class="ident">set_value</span></span>(<span>self, tag, newValue)</span>
 </code></dt>
 <dd>
@@ -5056,7 +5056,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.set_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.sort"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.sort"><code class="name flex">
 <span>def <span class="ident">sort</span></span>(<span>self, *argv, reverse=False)</span>
 </code></dt>
 <dd>
@@ -5085,7 +5085,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.sort: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.where"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.where"><code class="name flex">
 <span>def <span class="ident">where</span></span>(<span>self, tag, condition, target)</span>
 </code></dt>
 <dd>
@@ -5118,7 +5118,7 @@ def parent(self):
         logger.exception(&#39;Error in Series.where: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Series.write"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Series.write"><code class="name flex">
 <span>def <span class="ident">write</span></span>(<span>self, pixelArray, output_dir=None, value_range=None, parametric_map=None, colourmap=None)</span>
 </code></dt>
 <dd>
@@ -5164,7 +5164,7 @@ def parent(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.SeriesList"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.SeriesList"><code class="flex name class">
 <span>class <span class="ident">SeriesList</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -5225,12 +5225,12 @@ def parent(self):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
+<li><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
 <li>builtins.list</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.SeriesList.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.SeriesList.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of lists of images where each list refers to the various images of a series.</p></div>
 <details class="source">
@@ -5250,7 +5250,7 @@ def children(self):
     return childrenList</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.SeriesList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.SeriesList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of unique studies to which the series belong to.</p></div>
 <details class="source">
@@ -5278,7 +5278,7 @@ def parent(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.SeriesList.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.SeriesList.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5297,7 +5297,7 @@ def parent(self):
     return SeriesList(copy)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.SeriesList.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.SeriesList.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>self, series_name='MergedSeries', study_name=None, patient_name=None, overwrite=True, progress_bar=True)</span>
 </code></dt>
 <dd>
@@ -5317,15 +5317,15 @@ def parent(self):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
+<li><code><b><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
 <ul class="hlist">
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.delete" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.display" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.delete" href="#Weasel.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.display" href="#Weasel.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.Study"><code class="flex name class">
 <span>class <span class="ident">Study</span></span>
 <span>(</span><span>objWeasel, subjectID, studyID, studyUID=None, suffix=None)</span>
 </code></dt>
@@ -5333,7 +5333,7 @@ def parent(self):
 <div class="desc"><p>This class encloses all DICOM files that share the same tag value of "StudyInstanceUID", "StudyDescription", "StudyDate" and "StudyTime".</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the Weasel global variable</code></dt>
+<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the <a title="Weasel" href="../index.html">Weasel</a> global variable</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>subjectID</code></strong> :&ensp;<code>string</code></dt>
 <dd>This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.</dd>
@@ -5586,7 +5586,7 @@ def parent(self):
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Study.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>listStudies, newStudyName=None, suffix='_Merged', overwrite=False, output_dir=None, progress_bar=True)</span>
 </code></dt>
 <dd>
@@ -5654,7 +5654,7 @@ def merge(listStudies, newStudyName=None, suffix=&#39;_Merged&#39;, overwrite=Fa
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Study.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.StudyUID"><code class="name">var <span class="ident">StudyUID</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5669,7 +5669,7 @@ def StudyUID(self):
         return pydicom.uid.generate_uid(prefix=None)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.all_images"><code class="name">var <span class="ident">all_images</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.all_images"><code class="name">var <span class="ident">all_images</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5689,7 +5689,7 @@ def all_images(self):
         logger.exception(&#39;Error in Study.all_images: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5716,7 +5716,7 @@ def children(self):
         logger.exception(&#39;Error in Study.children: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.label"><code class="name">var <span class="ident">label</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5733,7 +5733,7 @@ def label(self):
         logger.exception(&#39;Error in Study.label: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5745,11 +5745,11 @@ def number_children(self):
     return len(self.children)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -5766,26 +5766,26 @@ def parent(self):
         logger.exception(&#39;Error in Study.parent: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.studyID"><code class="name">var <span class="ident">studyID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.studyUID"><code class="name">var <span class="ident">studyUID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Study.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Study.add"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.add"><code class="name flex">
 <span>def <span class="ident">add</span></span>(<span>self, series)</span>
 </code></dt>
 <dd>
@@ -5811,7 +5811,7 @@ def parent(self):
         logger.exception(&#39;Error in Study.add: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self, suffix='_Copy', newSubjectID=None, output_dir=None)</span>
 </code></dt>
 <dd>
@@ -5841,7 +5841,7 @@ def parent(self):
         logger.exception(&#39;Error in Study.copy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.delete"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.delete"><code class="name flex">
 <span>def <span class="ident">delete</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5862,7 +5862,7 @@ def parent(self):
         logger.exception(&#39;Error in Study.delete: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.get_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.get_value"><code class="name flex">
 <span>def <span class="ident">get_value</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
@@ -5886,7 +5886,7 @@ def parent(self):
         logger.exception(&#39;Error in Study.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.new"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.new"><code class="name flex">
 <span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', studyID=None)</span>
 </code></dt>
 <dd>
@@ -5913,7 +5913,7 @@ def parent(self):
         logger.exception(&#39;Error in Study.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Study.set_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Study.set_value"><code class="name flex">
 <span>def <span class="ident">set_value</span></span>(<span>self, tag, newValue)</span>
 </code></dt>
 <dd>
@@ -5935,7 +5935,7 @@ def parent(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.StudyList"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.StudyList"><code class="flex name class">
 <span>class <span class="ident">StudyList</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -5996,12 +5996,12 @@ def parent(self):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
+<li><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
 <li>builtins.list</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.StudyList.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.StudyList.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of lists of series where each list refers to the various series of a study.</p></div>
 <details class="source">
@@ -6021,7 +6021,7 @@ def children(self):
     return childrenList</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.StudyList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.StudyList.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of unique subjects to which the studies belong to.</p></div>
 <details class="source">
@@ -6049,7 +6049,7 @@ def parent(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.StudyList.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.StudyList.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -6068,7 +6068,7 @@ def parent(self):
     return StudyList(copy)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.StudyList.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.StudyList.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>self, study_name='MergedStudies', overwrite=True, progress_bar=True)</span>
 </code></dt>
 <dd>
@@ -6088,15 +6088,15 @@ def parent(self):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
+<li><code><b><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
 <ul class="hlist">
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.delete" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.display" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.delete" href="#Weasel.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.display" href="#Weasel.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.Subject"><code class="flex name class">
 <span>class <span class="ident">Subject</span></span>
 <span>(</span><span>objWeasel, subjectID, suffix=None)</span>
 </code></dt>
@@ -6104,7 +6104,7 @@ def parent(self):
 <div class="desc"><p>This class encloses all DICOM files that share the same tag value of "PatientID".</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the Weasel global variable</code></dt>
+<dt><strong><code>objWeasel</code></strong> :&ensp;<code>the <a title="Weasel" href="../index.html">Weasel</a> global variable</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>subjectID</code></strong> :&ensp;<code>string</code></dt>
 <dd>This is the name or identification of the subject, which is stored in the "PatientID" DICOM tag.</dd>
@@ -6311,7 +6311,7 @@ def parent(self):
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Subject.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>listSubjects, newSubjectName=None, suffix='_Merged', overwrite=False, progress_bar=False, output_dir=None)</span>
 </code></dt>
 <dd>
@@ -6376,7 +6376,7 @@ def merge(listSubjects, newSubjectName=None, suffix=&#39;_Merged&#39;, overwrite
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Subject.all_images"><code class="name">var <span class="ident">all_images</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.all_images"><code class="name">var <span class="ident">all_images</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -6396,7 +6396,7 @@ def all_images(self):
         logger.exception(&#39;Error in Subject.all_images: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -6420,7 +6420,7 @@ def children(self):
         logger.exception(&#39;Error in Subject.children: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.label"><code class="name">var <span class="ident">label</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -6437,7 +6437,7 @@ def label(self):
         logger.exception(&#39;Error in Subject.label: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.number_children"><code class="name">var <span class="ident">number_children</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -6449,11 +6449,11 @@ def number_children(self):
     return len(self.children)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.objWeasel"><code class="name">var <span class="ident">objWeasel</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.parent"><code class="name">var <span class="ident">parent</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -6470,18 +6470,18 @@ def parent(self):
         logger.exception(&#39;Error in Subject.parent: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.subjectID"><code class="name">var <span class="ident">subjectID</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
+<dt id="Weasel.DICOM.Classes.Subject.suffix"><code class="name">var <span class="ident">suffix</span></code></dt>
 <dd>
 <div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.Subject.add"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.add"><code class="name flex">
 <span>def <span class="ident">add</span></span>(<span>self, study)</span>
 </code></dt>
 <dd>
@@ -6501,7 +6501,7 @@ def parent(self):
         logger.exception(&#39;Error in Subject.add: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self, suffix='_Copy', output_dir=None)</span>
 </code></dt>
 <dd>
@@ -6522,7 +6522,7 @@ def parent(self):
         logger.exception(&#39;Error in Subject.copy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.delete"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.delete"><code class="name flex">
 <span>def <span class="ident">delete</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -6543,7 +6543,7 @@ def parent(self):
         logger.exception(&#39;Error in Subject.delete: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.get_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.get_value"><code class="name flex">
 <span>def <span class="ident">get_value</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
@@ -6567,7 +6567,7 @@ def parent(self):
         logger.exception(&#39;Error in Subject.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.new"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.new"><code class="name flex">
 <span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', subjectID=None)</span>
 </code></dt>
 <dd>
@@ -6587,7 +6587,7 @@ def parent(self):
         logger.exception(&#39;Error in Subject.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.Subject.set_value"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.Subject.set_value"><code class="name flex">
 <span>def <span class="ident">set_value</span></span>(<span>self, tag, newValue)</span>
 </code></dt>
 <dd>
@@ -6609,7 +6609,7 @@ def parent(self):
 </dd>
 </dl>
 </dd>
-<dt id="WEASEL.DICOM.Classes.SubjectList"><code class="flex name class">
+<dt id="Weasel.DICOM.Classes.SubjectList"><code class="flex name class">
 <span>class <span class="ident">SubjectList</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -6653,12 +6653,12 @@ def parent(self):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
+<li><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></li>
 <li>builtins.list</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.SubjectList.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dt id="Weasel.DICOM.Classes.SubjectList.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
 <div class="desc"><p>Returns a list of lists of series where each list refers to the various series of a study.</p></div>
 <details class="source">
@@ -6681,7 +6681,7 @@ def children(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.DICOM.Classes.SubjectList.copy"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.SubjectList.copy"><code class="name flex">
 <span>def <span class="ident">copy</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -6700,7 +6700,7 @@ def children(self):
     return SubjectList(copy)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.DICOM.Classes.SubjectList.merge"><code class="name flex">
+<dt id="Weasel.DICOM.Classes.SubjectList.merge"><code class="name flex">
 <span>def <span class="ident">merge</span></span>(<span>self, subject_name='MergedSubjects', overwrite=True, progress_bar=True)</span>
 </code></dt>
 <dd>
@@ -6720,10 +6720,10 @@ def children(self):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
+<li><code><b><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></b></code>:
 <ul class="hlist">
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.delete" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.display" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.delete" href="#Weasel.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.display" href="#Weasel.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
 </ul>
 </li>
 </ul>
@@ -6739,195 +6739,195 @@ def children(self):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.DICOM" href="index.html">WEASEL.DICOM</a></code></li>
+<li><code><a title="Weasel.DICOM" href="index.html">Weasel.DICOM</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.Image" href="#WEASEL.DICOM.Classes.Image">Image</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.Image" href="#Weasel.DICOM.Classes.Image">Image</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.DICOM.Classes.Image.Affine" href="#WEASEL.DICOM.Classes.Image.Affine">Affine</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.Mask" href="#WEASEL.DICOM.Classes.Image.Mask">Mask</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.Metadata" href="#WEASEL.DICOM.Classes.Image.Metadata">Metadata</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.PixelArray" href="#WEASEL.DICOM.Classes.Image.PixelArray">PixelArray</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.PydicomObject" href="#WEASEL.DICOM.Classes.Image.PydicomObject">PydicomObject</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.ROIindices" href="#WEASEL.DICOM.Classes.Image.ROIindices">ROIindices</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.SeriesUID" href="#WEASEL.DICOM.Classes.Image.SeriesUID">SeriesUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.StudyUID" href="#WEASEL.DICOM.Classes.Image.StudyUID">StudyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.copy" href="#WEASEL.DICOM.Classes.Image.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.delete" href="#WEASEL.DICOM.Classes.Image.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.display" href="#WEASEL.DICOM.Classes.Image.display">display</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.export_as_csv" href="#WEASEL.DICOM.Classes.Image.export_as_csv">export_as_csv</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.export_as_nifti" href="#WEASEL.DICOM.Classes.Image.export_as_nifti">export_as_nifti</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.get_value" href="#WEASEL.DICOM.Classes.Image.get_value">get_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.label" href="#WEASEL.DICOM.Classes.Image.label">label</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.merge" href="#WEASEL.DICOM.Classes.Image.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.new" href="#WEASEL.DICOM.Classes.Image.new">new</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.newSeriesFrom" href="#WEASEL.DICOM.Classes.Image.newSeriesFrom">newSeriesFrom</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.objWeasel" href="#WEASEL.DICOM.Classes.Image.objWeasel">objWeasel</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.parent" href="#WEASEL.DICOM.Classes.Image.parent">parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.path" href="#WEASEL.DICOM.Classes.Image.path">path</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.plot" href="#WEASEL.DICOM.Classes.Image.plot">plot</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.read" href="#WEASEL.DICOM.Classes.Image.read">read</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.referencePath" href="#WEASEL.DICOM.Classes.Image.referencePath">referencePath</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.save" href="#WEASEL.DICOM.Classes.Image.save">save</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.seriesID" href="#WEASEL.DICOM.Classes.Image.seriesID">seriesID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.seriesUID" href="#WEASEL.DICOM.Classes.Image.seriesUID">seriesUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.set_value" href="#WEASEL.DICOM.Classes.Image.set_value">set_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.studyID" href="#WEASEL.DICOM.Classes.Image.studyID">studyID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.studyUID" href="#WEASEL.DICOM.Classes.Image.studyUID">studyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.subjectID" href="#WEASEL.DICOM.Classes.Image.subjectID">subjectID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.suffix" href="#WEASEL.DICOM.Classes.Image.suffix">suffix</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Image.write" href="#WEASEL.DICOM.Classes.Image.write">write</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.Affine" href="#Weasel.DICOM.Classes.Image.Affine">Affine</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.Mask" href="#Weasel.DICOM.Classes.Image.Mask">Mask</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.Metadata" href="#Weasel.DICOM.Classes.Image.Metadata">Metadata</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.PixelArray" href="#Weasel.DICOM.Classes.Image.PixelArray">PixelArray</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.PydicomObject" href="#Weasel.DICOM.Classes.Image.PydicomObject">PydicomObject</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.ROIindices" href="#Weasel.DICOM.Classes.Image.ROIindices">ROIindices</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.SeriesUID" href="#Weasel.DICOM.Classes.Image.SeriesUID">SeriesUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.StudyUID" href="#Weasel.DICOM.Classes.Image.StudyUID">StudyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.copy" href="#Weasel.DICOM.Classes.Image.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.delete" href="#Weasel.DICOM.Classes.Image.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.display" href="#Weasel.DICOM.Classes.Image.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.export_as_csv" href="#Weasel.DICOM.Classes.Image.export_as_csv">export_as_csv</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.export_as_nifti" href="#Weasel.DICOM.Classes.Image.export_as_nifti">export_as_nifti</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.get_value" href="#Weasel.DICOM.Classes.Image.get_value">get_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.label" href="#Weasel.DICOM.Classes.Image.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.merge" href="#Weasel.DICOM.Classes.Image.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.new" href="#Weasel.DICOM.Classes.Image.new">new</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.newSeriesFrom" href="#Weasel.DICOM.Classes.Image.newSeriesFrom">newSeriesFrom</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.objWeasel" href="#Weasel.DICOM.Classes.Image.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.parent" href="#Weasel.DICOM.Classes.Image.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.path" href="#Weasel.DICOM.Classes.Image.path">path</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.plot" href="#Weasel.DICOM.Classes.Image.plot">plot</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.read" href="#Weasel.DICOM.Classes.Image.read">read</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.referencePath" href="#Weasel.DICOM.Classes.Image.referencePath">referencePath</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.save" href="#Weasel.DICOM.Classes.Image.save">save</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.seriesID" href="#Weasel.DICOM.Classes.Image.seriesID">seriesID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.seriesUID" href="#Weasel.DICOM.Classes.Image.seriesUID">seriesUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.set_value" href="#Weasel.DICOM.Classes.Image.set_value">set_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.studyID" href="#Weasel.DICOM.Classes.Image.studyID">studyID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.studyUID" href="#Weasel.DICOM.Classes.Image.studyUID">studyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.subjectID" href="#Weasel.DICOM.Classes.Image.subjectID">subjectID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.suffix" href="#Weasel.DICOM.Classes.Image.suffix">suffix</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.write" href="#Weasel.DICOM.Classes.Image.write">write</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.ImagesList" href="#WEASEL.DICOM.Classes.ImagesList">ImagesList</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.ImagesList" href="#Weasel.DICOM.Classes.ImagesList">ImagesList</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.copy" href="#WEASEL.DICOM.Classes.ImagesList.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.display" href="#WEASEL.DICOM.Classes.ImagesList.display">display</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.get_value" href="#WEASEL.DICOM.Classes.ImagesList.get_value">get_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.label" href="#WEASEL.DICOM.Classes.ImagesList.label">label</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.merge" href="#WEASEL.DICOM.Classes.ImagesList.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.new_parent" href="#WEASEL.DICOM.Classes.ImagesList.new_parent">new_parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.parent" href="#WEASEL.DICOM.Classes.ImagesList.parent">parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.paths" href="#WEASEL.DICOM.Classes.ImagesList.paths">paths</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.set_value" href="#WEASEL.DICOM.Classes.ImagesList.set_value">set_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.sort" href="#WEASEL.DICOM.Classes.ImagesList.sort">sort</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ImagesList.where" href="#WEASEL.DICOM.Classes.ImagesList.where">where</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.copy" href="#Weasel.DICOM.Classes.ImagesList.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.display" href="#Weasel.DICOM.Classes.ImagesList.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.get_value" href="#Weasel.DICOM.Classes.ImagesList.get_value">get_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.label" href="#Weasel.DICOM.Classes.ImagesList.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.merge" href="#Weasel.DICOM.Classes.ImagesList.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.new_parent" href="#Weasel.DICOM.Classes.ImagesList.new_parent">new_parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.parent" href="#Weasel.DICOM.Classes.ImagesList.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.paths" href="#Weasel.DICOM.Classes.ImagesList.paths">paths</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.set_value" href="#Weasel.DICOM.Classes.ImagesList.set_value">set_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.sort" href="#Weasel.DICOM.Classes.ImagesList.sort">sort</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ImagesList.where" href="#Weasel.DICOM.Classes.ImagesList.where">where</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects" href="#WEASEL.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects" href="#Weasel.DICOM.Classes.ListOfDicomObjects">ListOfDicomObjects</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.delete" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.ListOfDicomObjects.display" href="#WEASEL.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.delete" href="#Weasel.DICOM.Classes.ListOfDicomObjects.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.ListOfDicomObjects.display" href="#Weasel.DICOM.Classes.ListOfDicomObjects.display">display</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.Project" href="#WEASEL.DICOM.Classes.Project">Project</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.Project" href="#Weasel.DICOM.Classes.Project">Project</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.DICOM.Classes.Project.children" href="#WEASEL.DICOM.Classes.Project.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Project.number_children" href="#WEASEL.DICOM.Classes.Project.number_children">number_children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Project.children" href="#Weasel.DICOM.Classes.Project.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Project.number_children" href="#Weasel.DICOM.Classes.Project.number_children">number_children</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.Series" href="#WEASEL.DICOM.Classes.Series">Series</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.Series" href="#Weasel.DICOM.Classes.Series">Series</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.DICOM.Classes.Series.Affine" href="#WEASEL.DICOM.Classes.Series.Affine">Affine</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Imaginary" href="#WEASEL.DICOM.Classes.Series.Imaginary">Imaginary</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Item" href="#WEASEL.DICOM.Classes.Series.Item">Item</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.ListAffines" href="#WEASEL.DICOM.Classes.Series.ListAffines">ListAffines</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Magnitude" href="#WEASEL.DICOM.Classes.Series.Magnitude">Magnitude</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Mask" href="#WEASEL.DICOM.Classes.Series.Mask">Mask</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Metadata" href="#WEASEL.DICOM.Classes.Series.Metadata">Metadata</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Phase" href="#WEASEL.DICOM.Classes.Series.Phase">Phase</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.PixelArray" href="#WEASEL.DICOM.Classes.Series.PixelArray">PixelArray</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.PydicomList" href="#WEASEL.DICOM.Classes.Series.PydicomList">PydicomList</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.ROIindices" href="#WEASEL.DICOM.Classes.Series.ROIindices">ROIindices</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.Real" href="#WEASEL.DICOM.Classes.Series.Real">Real</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.SeriesUID" href="#WEASEL.DICOM.Classes.Series.SeriesUID">SeriesUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.StudyUID" href="#WEASEL.DICOM.Classes.Series.StudyUID">StudyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.add" href="#WEASEL.DICOM.Classes.Series.add">add</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.children" href="#WEASEL.DICOM.Classes.Series.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.copy" href="#WEASEL.DICOM.Classes.Series.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.delete" href="#WEASEL.DICOM.Classes.Series.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.display" href="#WEASEL.DICOM.Classes.Series.display">display</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.export_as_csv" href="#WEASEL.DICOM.Classes.Series.export_as_csv">export_as_csv</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.export_as_nifti" href="#WEASEL.DICOM.Classes.Series.export_as_nifti">export_as_nifti</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.get_value" href="#WEASEL.DICOM.Classes.Series.get_value">get_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.images" href="#WEASEL.DICOM.Classes.Series.images">images</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.label" href="#WEASEL.DICOM.Classes.Series.label">label</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.merge" href="#WEASEL.DICOM.Classes.Series.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.new" href="#WEASEL.DICOM.Classes.Series.new">new</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.number_children" href="#WEASEL.DICOM.Classes.Series.number_children">number_children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.objWeasel" href="#WEASEL.DICOM.Classes.Series.objWeasel">objWeasel</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.parent" href="#WEASEL.DICOM.Classes.Series.parent">parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.plot" href="#WEASEL.DICOM.Classes.Series.plot">plot</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.read" href="#WEASEL.DICOM.Classes.Series.read">read</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.referencePathsList" href="#WEASEL.DICOM.Classes.Series.referencePathsList">referencePathsList</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.remove" href="#WEASEL.DICOM.Classes.Series.remove">remove</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.save" href="#WEASEL.DICOM.Classes.Series.save">save</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.seriesID" href="#WEASEL.DICOM.Classes.Series.seriesID">seriesID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.seriesUID" href="#WEASEL.DICOM.Classes.Series.seriesUID">seriesUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.set_value" href="#WEASEL.DICOM.Classes.Series.set_value">set_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.sort" href="#WEASEL.DICOM.Classes.Series.sort">sort</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.studyID" href="#WEASEL.DICOM.Classes.Series.studyID">studyID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.studyUID" href="#WEASEL.DICOM.Classes.Series.studyUID">studyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.subjectID" href="#WEASEL.DICOM.Classes.Series.subjectID">subjectID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.suffix" href="#WEASEL.DICOM.Classes.Series.suffix">suffix</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.where" href="#WEASEL.DICOM.Classes.Series.where">where</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Series.write" href="#WEASEL.DICOM.Classes.Series.write">write</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Affine" href="#Weasel.DICOM.Classes.Series.Affine">Affine</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Imaginary" href="#Weasel.DICOM.Classes.Series.Imaginary">Imaginary</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Item" href="#Weasel.DICOM.Classes.Series.Item">Item</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.ListAffines" href="#Weasel.DICOM.Classes.Series.ListAffines">ListAffines</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Magnitude" href="#Weasel.DICOM.Classes.Series.Magnitude">Magnitude</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Mask" href="#Weasel.DICOM.Classes.Series.Mask">Mask</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Metadata" href="#Weasel.DICOM.Classes.Series.Metadata">Metadata</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Phase" href="#Weasel.DICOM.Classes.Series.Phase">Phase</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.PixelArray" href="#Weasel.DICOM.Classes.Series.PixelArray">PixelArray</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.PydicomList" href="#Weasel.DICOM.Classes.Series.PydicomList">PydicomList</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.ROIindices" href="#Weasel.DICOM.Classes.Series.ROIindices">ROIindices</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.Real" href="#Weasel.DICOM.Classes.Series.Real">Real</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.SeriesUID" href="#Weasel.DICOM.Classes.Series.SeriesUID">SeriesUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.StudyUID" href="#Weasel.DICOM.Classes.Series.StudyUID">StudyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.add" href="#Weasel.DICOM.Classes.Series.add">add</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.children" href="#Weasel.DICOM.Classes.Series.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.copy" href="#Weasel.DICOM.Classes.Series.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.delete" href="#Weasel.DICOM.Classes.Series.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.display" href="#Weasel.DICOM.Classes.Series.display">display</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.export_as_csv" href="#Weasel.DICOM.Classes.Series.export_as_csv">export_as_csv</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.export_as_nifti" href="#Weasel.DICOM.Classes.Series.export_as_nifti">export_as_nifti</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.get_value" href="#Weasel.DICOM.Classes.Series.get_value">get_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.images" href="#Weasel.DICOM.Classes.Series.images">images</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.label" href="#Weasel.DICOM.Classes.Series.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.merge" href="#Weasel.DICOM.Classes.Series.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.new" href="#Weasel.DICOM.Classes.Series.new">new</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.number_children" href="#Weasel.DICOM.Classes.Series.number_children">number_children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.objWeasel" href="#Weasel.DICOM.Classes.Series.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.parent" href="#Weasel.DICOM.Classes.Series.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.plot" href="#Weasel.DICOM.Classes.Series.plot">plot</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.read" href="#Weasel.DICOM.Classes.Series.read">read</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.referencePathsList" href="#Weasel.DICOM.Classes.Series.referencePathsList">referencePathsList</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.remove" href="#Weasel.DICOM.Classes.Series.remove">remove</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.save" href="#Weasel.DICOM.Classes.Series.save">save</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.seriesID" href="#Weasel.DICOM.Classes.Series.seriesID">seriesID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.seriesUID" href="#Weasel.DICOM.Classes.Series.seriesUID">seriesUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.set_value" href="#Weasel.DICOM.Classes.Series.set_value">set_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.sort" href="#Weasel.DICOM.Classes.Series.sort">sort</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.studyID" href="#Weasel.DICOM.Classes.Series.studyID">studyID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.studyUID" href="#Weasel.DICOM.Classes.Series.studyUID">studyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.subjectID" href="#Weasel.DICOM.Classes.Series.subjectID">subjectID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.suffix" href="#Weasel.DICOM.Classes.Series.suffix">suffix</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.where" href="#Weasel.DICOM.Classes.Series.where">where</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.write" href="#Weasel.DICOM.Classes.Series.write">write</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.SeriesList" href="#WEASEL.DICOM.Classes.SeriesList">SeriesList</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.SeriesList" href="#Weasel.DICOM.Classes.SeriesList">SeriesList</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.DICOM.Classes.SeriesList.children" href="#WEASEL.DICOM.Classes.SeriesList.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.SeriesList.copy" href="#WEASEL.DICOM.Classes.SeriesList.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.SeriesList.merge" href="#WEASEL.DICOM.Classes.SeriesList.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.SeriesList.parent" href="#WEASEL.DICOM.Classes.SeriesList.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SeriesList.children" href="#Weasel.DICOM.Classes.SeriesList.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SeriesList.copy" href="#Weasel.DICOM.Classes.SeriesList.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SeriesList.merge" href="#Weasel.DICOM.Classes.SeriesList.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SeriesList.parent" href="#Weasel.DICOM.Classes.SeriesList.parent">parent</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.Study" href="#WEASEL.DICOM.Classes.Study">Study</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.Study" href="#Weasel.DICOM.Classes.Study">Study</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.DICOM.Classes.Study.StudyUID" href="#WEASEL.DICOM.Classes.Study.StudyUID">StudyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.add" href="#WEASEL.DICOM.Classes.Study.add">add</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.all_images" href="#WEASEL.DICOM.Classes.Study.all_images">all_images</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.children" href="#WEASEL.DICOM.Classes.Study.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.copy" href="#WEASEL.DICOM.Classes.Study.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.delete" href="#WEASEL.DICOM.Classes.Study.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.get_value" href="#WEASEL.DICOM.Classes.Study.get_value">get_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.label" href="#WEASEL.DICOM.Classes.Study.label">label</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.merge" href="#WEASEL.DICOM.Classes.Study.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.new" href="#WEASEL.DICOM.Classes.Study.new">new</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.number_children" href="#WEASEL.DICOM.Classes.Study.number_children">number_children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.objWeasel" href="#WEASEL.DICOM.Classes.Study.objWeasel">objWeasel</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.parent" href="#WEASEL.DICOM.Classes.Study.parent">parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.set_value" href="#WEASEL.DICOM.Classes.Study.set_value">set_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.studyID" href="#WEASEL.DICOM.Classes.Study.studyID">studyID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.studyUID" href="#WEASEL.DICOM.Classes.Study.studyUID">studyUID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.subjectID" href="#WEASEL.DICOM.Classes.Study.subjectID">subjectID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Study.suffix" href="#WEASEL.DICOM.Classes.Study.suffix">suffix</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.StudyUID" href="#Weasel.DICOM.Classes.Study.StudyUID">StudyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.add" href="#Weasel.DICOM.Classes.Study.add">add</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.all_images" href="#Weasel.DICOM.Classes.Study.all_images">all_images</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.children" href="#Weasel.DICOM.Classes.Study.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.copy" href="#Weasel.DICOM.Classes.Study.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.delete" href="#Weasel.DICOM.Classes.Study.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.get_value" href="#Weasel.DICOM.Classes.Study.get_value">get_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.label" href="#Weasel.DICOM.Classes.Study.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.merge" href="#Weasel.DICOM.Classes.Study.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.new" href="#Weasel.DICOM.Classes.Study.new">new</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.number_children" href="#Weasel.DICOM.Classes.Study.number_children">number_children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.objWeasel" href="#Weasel.DICOM.Classes.Study.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.parent" href="#Weasel.DICOM.Classes.Study.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.set_value" href="#Weasel.DICOM.Classes.Study.set_value">set_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.studyID" href="#Weasel.DICOM.Classes.Study.studyID">studyID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.studyUID" href="#Weasel.DICOM.Classes.Study.studyUID">studyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.subjectID" href="#Weasel.DICOM.Classes.Study.subjectID">subjectID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Study.suffix" href="#Weasel.DICOM.Classes.Study.suffix">suffix</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.StudyList" href="#WEASEL.DICOM.Classes.StudyList">StudyList</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.StudyList" href="#Weasel.DICOM.Classes.StudyList">StudyList</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.DICOM.Classes.StudyList.children" href="#WEASEL.DICOM.Classes.StudyList.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.StudyList.copy" href="#WEASEL.DICOM.Classes.StudyList.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.StudyList.merge" href="#WEASEL.DICOM.Classes.StudyList.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.StudyList.parent" href="#WEASEL.DICOM.Classes.StudyList.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.StudyList.children" href="#Weasel.DICOM.Classes.StudyList.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.StudyList.copy" href="#Weasel.DICOM.Classes.StudyList.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.StudyList.merge" href="#Weasel.DICOM.Classes.StudyList.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.StudyList.parent" href="#Weasel.DICOM.Classes.StudyList.parent">parent</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.Subject" href="#WEASEL.DICOM.Classes.Subject">Subject</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.Subject" href="#Weasel.DICOM.Classes.Subject">Subject</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.DICOM.Classes.Subject.add" href="#WEASEL.DICOM.Classes.Subject.add">add</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.all_images" href="#WEASEL.DICOM.Classes.Subject.all_images">all_images</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.children" href="#WEASEL.DICOM.Classes.Subject.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.copy" href="#WEASEL.DICOM.Classes.Subject.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.delete" href="#WEASEL.DICOM.Classes.Subject.delete">delete</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.get_value" href="#WEASEL.DICOM.Classes.Subject.get_value">get_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.label" href="#WEASEL.DICOM.Classes.Subject.label">label</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.merge" href="#WEASEL.DICOM.Classes.Subject.merge">merge</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.new" href="#WEASEL.DICOM.Classes.Subject.new">new</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.number_children" href="#WEASEL.DICOM.Classes.Subject.number_children">number_children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.objWeasel" href="#WEASEL.DICOM.Classes.Subject.objWeasel">objWeasel</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.parent" href="#WEASEL.DICOM.Classes.Subject.parent">parent</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.set_value" href="#WEASEL.DICOM.Classes.Subject.set_value">set_value</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.subjectID" href="#WEASEL.DICOM.Classes.Subject.subjectID">subjectID</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.Subject.suffix" href="#WEASEL.DICOM.Classes.Subject.suffix">suffix</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.add" href="#Weasel.DICOM.Classes.Subject.add">add</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.all_images" href="#Weasel.DICOM.Classes.Subject.all_images">all_images</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.children" href="#Weasel.DICOM.Classes.Subject.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.copy" href="#Weasel.DICOM.Classes.Subject.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.delete" href="#Weasel.DICOM.Classes.Subject.delete">delete</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.get_value" href="#Weasel.DICOM.Classes.Subject.get_value">get_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.label" href="#Weasel.DICOM.Classes.Subject.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.merge" href="#Weasel.DICOM.Classes.Subject.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.new" href="#Weasel.DICOM.Classes.Subject.new">new</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.number_children" href="#Weasel.DICOM.Classes.Subject.number_children">number_children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.objWeasel" href="#Weasel.DICOM.Classes.Subject.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.parent" href="#Weasel.DICOM.Classes.Subject.parent">parent</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.set_value" href="#Weasel.DICOM.Classes.Subject.set_value">set_value</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.subjectID" href="#Weasel.DICOM.Classes.Subject.subjectID">subjectID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Subject.suffix" href="#Weasel.DICOM.Classes.Subject.suffix">suffix</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="WEASEL.DICOM.Classes.SubjectList" href="#WEASEL.DICOM.Classes.SubjectList">SubjectList</a></code></h4>
+<h4><code><a title="Weasel.DICOM.Classes.SubjectList" href="#Weasel.DICOM.Classes.SubjectList">SubjectList</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.DICOM.Classes.SubjectList.children" href="#WEASEL.DICOM.Classes.SubjectList.children">children</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.SubjectList.copy" href="#WEASEL.DICOM.Classes.SubjectList.copy">copy</a></code></li>
-<li><code><a title="WEASEL.DICOM.Classes.SubjectList.merge" href="#WEASEL.DICOM.Classes.SubjectList.merge">merge</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SubjectList.children" href="#Weasel.DICOM.Classes.SubjectList.children">children</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SubjectList.copy" href="#Weasel.DICOM.Classes.SubjectList.copy">copy</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.SubjectList.merge" href="#Weasel.DICOM.Classes.SubjectList.merge">merge</a></code></li>
 </ul>
 </li>
 </ul>

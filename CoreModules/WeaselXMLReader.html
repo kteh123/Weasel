@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.CoreModules.WeaselXMLReader API documentation</title>
+<title>Weasel.CoreModules.WeaselXMLReader API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.CoreModules.WeaselXMLReader</code></h1>
+<h1 class="title">Module <code>Weasel.CoreModules.WeaselXMLReader</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -729,7 +729,7 @@ class WeaselXMLReader:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader"><code class="flex name class">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader"><code class="flex name class">
 <span>class <span class="ident">WeaselXMLReader</span></span>
 <span>(</span><span>weasel, xml_file)</span>
 </code></dt>
@@ -1431,7 +1431,7 @@ xml_file: the XML file to be represented</p></div>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.branch"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.branch"><code class="name flex">
 <span>def <span class="ident">branch</span></span>(<span>self, elem)</span>
 </code></dt>
 <dd>
@@ -1459,7 +1459,7 @@ xml_file: the XML file to be represented</p></div>
                                 return [self.root, subject, study, series, elem]</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages"><code class="name flex">
 <span>def <span class="ident">checkedImages</span></span>(<span>self, root=None)</span>
 </code></dt>
 <dd>
@@ -1482,7 +1482,7 @@ xml_file: the XML file to be represented</p></div>
     return ImagesList(list)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries"><code class="name flex">
 <span>def <span class="ident">checkedSeries</span></span>(<span>self, root=None)</span>
 </code></dt>
 <dd>
@@ -1506,7 +1506,7 @@ xml_file: the XML file to be represented</p></div>
     return SeriesList(list)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies"><code class="name flex">
 <span>def <span class="ident">checkedStudies</span></span>(<span>self, root=None)</span>
 </code></dt>
 <dd>
@@ -1529,7 +1529,7 @@ xml_file: the XML file to be represented</p></div>
     return StudyList(list)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects"><code class="name flex">
 <span>def <span class="ident">checkedSubjects</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1551,7 +1551,7 @@ xml_file: the XML file to be represented</p></div>
     return SubjectList(list)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel"><code class="name flex">
 <span>def <span class="ident">getImageLabel</span></span>(<span>self, subjectID, studyID, seriesID, imageName=None)</span>
 </code></dt>
 <dd>
@@ -1575,7 +1575,7 @@ xml_file: the XML file to be represented</p></div>
         logger.error(&#39;Error in WeaselXMLReader.getImageLabel: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs"><code class="name flex">
 <span>def <span class="ident">getImageParentIDs</span></span>(<span>self, imageName)</span>
 </code></dt>
 <dd>
@@ -1607,7 +1607,7 @@ xml_file: the XML file to be represented</p></div>
         logger.error(&#39;Error in WeaselXMLReader.getImageParentIDs: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList"><code class="name flex">
 <span>def <span class="ident">getImagePathList</span></span>(<span>self, subjectID, studyID, seriesID)</span>
 </code></dt>
 <dd>
@@ -1632,7 +1632,7 @@ xml_file: the XML file to be represented</p></div>
         logger.error(&#39;Error in weaselXMLReader.getImagePathList: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName"><code class="name flex">
 <span>def <span class="ident">getNewSeriesName</span></span>(<span>self, subjectID, studyID, dataset, suffix, newSeriesName=None)</span>
 </code></dt>
 <dd>
@@ -1684,7 +1684,7 @@ at the end of an existing series name.</p></div>
         print(&#39;Error in WeaselXMLReader.getNewSeriesName: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries"><code class="name flex">
 <span>def <span class="ident">getSeries</span></span>(<span>self, subjectID, studyID, seriesID)</span>
 </code></dt>
 <dd>
@@ -1705,7 +1705,7 @@ at the end of an existing series name.</p></div>
         logger.error(&#39;Error in WeaselXMLReader.getSeries_: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy"><code class="name flex">
 <span>def <span class="ident">getStudy</span></span>(<span>self, subjectID, studyID)</span>
 </code></dt>
 <dd>
@@ -1725,7 +1725,7 @@ at the end of an existing series name.</p></div>
         logger.error(&#39;Error in WeaselXMLReader.getStudy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject"><code class="name flex">
 <span>def <span class="ident">getSubject</span></span>(<span>self, subjectID)</span>
 </code></dt>
 <dd>
@@ -1744,7 +1744,7 @@ at the end of an existing series name.</p></div>
         logger.error(&#39;Error in WeaselXMLReader.getSubject: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML"><code class="name flex">
 <span>def <span class="ident">insertNewImageInXML</span></span>(<span>self, imageName, newImageFileName, subjectID, studyID, seriesID, suffix, newSeriesName=None, newStudyName=None, newSubjectName=None)</span>
 </code></dt>
 <dd>
@@ -1845,7 +1845,7 @@ at the end of an existing series name.</p></div>
         logger.error(&#39;Error in WeaselXMLReader.insertNewImageInXML: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile"><code class="name flex">
 <span>def <span class="ident">insertNewImageInXMLFile</span></span>(<span>self, imagePath, newImageFileName, suffix, newSeriesName=None, newStudyName=None, newSubjectName=None)</span>
 </code></dt>
 <dd>
@@ -1869,7 +1869,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in insertNewImageInXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML"><code class="name flex">
 <span>def <span class="ident">insertNewSeriesInXML</span></span>(<span>self, origImageList, newImageList, subjectID, studyID, newSeriesID, seriesID, suffix)</span>
 </code></dt>
 <dd>
@@ -1922,7 +1922,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader.insertNewSeriesInXML: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile"><code class="name flex">
 <span>def <span class="ident">insertNewSeriesInXMLFile</span></span>(<span>self, origImageList, newImageList, suffix, newSeriesName=None, newStudyName=None, newSubjectName=None)</span>
 </code></dt>
 <dd>
@@ -1952,7 +1952,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader.insertNewSeriesInXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile"><code class="name flex">
 <span>def <span class="ident">insertNewStudyInXMLFile</span></span>(<span>self, subjectID, newStudyID, suffix, seriesList=[], newSubjectName=None)</span>
 </code></dt>
 <dd>
@@ -1977,7 +1977,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader.insertNewStudyInXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML"><code class="name flex">
 <span>def <span class="ident">insertNewStudyinXML</span></span>(<span>self, newSeriesList, subjectID, newStudyID, suffix)</span>
 </code></dt>
 <dd>
@@ -2014,7 +2014,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader.insertNewStduyInXML: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML"><code class="name flex">
 <span>def <span class="ident">insertNewSubjectinXML</span></span>(<span>self, newStudiesList, newSubjectID, suffix)</span>
 </code></dt>
 <dd>
@@ -2035,7 +2035,7 @@ in the DICOM XML file</p></div>
         self.insertNewStudyinXML(newStudy, newSubjectID, newStudyID, &#39;&#39;)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile"><code class="name flex">
 <span>def <span class="ident">moveImageInXMLFile</span></span>(<span>self, subjectID, studyID, seriesID, newSubjectID, newStudyID, newSeriesID, imageName, suffix)</span>
 </code></dt>
 <dd>
@@ -2057,7 +2057,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in InterfaceDICOMXMLFile.moveImageInXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID"><code class="name flex">
 <span>def <span class="ident">objectID</span></span>(<span>self, elem)</span>
 </code></dt>
 <dd>
@@ -2080,7 +2080,7 @@ in the DICOM XML file</p></div>
         return [branch[1].attrib[&#39;id&#39;], branch[2].attrib[&#39;id&#39;], branch[3].attrib[&#39;id&#39;], branch[4].find(&#39;name&#39;).text ]</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile"><code class="name flex">
 <span>def <span class="ident">removeImageFromXMLFile</span></span>(<span>self, imageFileName)</span>
 </code></dt>
 <dd>
@@ -2104,7 +2104,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader removeImageFromXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile"><code class="name flex">
 <span>def <span class="ident">removeMultipleImagesFromXMLFile</span></span>(<span>self, origImageList)</span>
 </code></dt>
 <dd>
@@ -2124,7 +2124,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader removeMultipleImagesFromXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries"><code class="name flex">
 <span>def <span class="ident">removeOneImageFromSeries</span></span>(<span>self, subjectID, studyID, seriesID, imagePath)</span>
 </code></dt>
 <dd>
@@ -2146,7 +2146,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader.removeOneImageFromSeries: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy"><code class="name flex">
 <span>def <span class="ident">removeOneSeriesFromStudy</span></span>(<span>self, subjectID, studyID, seriesID)</span>
 </code></dt>
 <dd>
@@ -2169,7 +2169,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader removeOneSeriesFromStudy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject"><code class="name flex">
 <span>def <span class="ident">removeOneStudyFromSubject</span></span>(<span>self, subjectID, studyID)</span>
 </code></dt>
 <dd>
@@ -2192,7 +2192,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader removeOneStudyFromSubject: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile"><code class="name flex">
 <span>def <span class="ident">removeSubjectFromXMLFile</span></span>(<span>self, subjectID)</span>
 </code></dt>
 <dd>
@@ -2215,7 +2215,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in WeaselXMLReader removeSubjectFromXMLFile: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile"><code class="name flex">
 <span>def <span class="ident">renameSeriesinXMLFile</span></span>(<span>self, imageList, series_id=None, series_name=None)</span>
 </code></dt>
 <dd>
@@ -2244,7 +2244,7 @@ in the DICOM XML file</p></div>
         logger.error(&#39;Error in InterfaceDICOMXMLFile removeOneSeriesFromStudy: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.save"><code class="name flex">
+<dt id="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2274,43 +2274,43 @@ in the DICOM XML file</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.CoreModules" href="index.html">WEASEL.CoreModules</a></code></li>
+<li><code><a title="Weasel.CoreModules" href="index.html">Weasel.CoreModules</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader">WeaselXMLReader</a></code></h4>
+<h4><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader">WeaselXMLReader</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.branch" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.branch">branch</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages">checkedImages</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries">checkedSeries</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies">checkedStudies</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects">checkedSubjects</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel">getImageLabel</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs">getImageParentIDs</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList">getImagePathList</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName">getNewSeriesName</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries">getSeries</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy">getStudy</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject">getSubject</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML">insertNewImageInXML</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile">insertNewImageInXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML">insertNewSeriesInXML</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile">insertNewSeriesInXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile">insertNewStudyInXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML">insertNewStudyinXML</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML">insertNewSubjectinXML</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile">moveImageInXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID">objectID</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile">removeImageFromXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile">removeMultipleImagesFromXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries">removeOneImageFromSeries</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy">removeOneSeriesFromStudy</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject">removeOneStudyFromSubject</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile">removeSubjectFromXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile">renameSeriesinXMLFile</a></code></li>
-<li><code><a title="WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.save" href="#WEASEL.CoreModules.WeaselXMLReader.WeaselXMLReader.save">save</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.branch" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.branch">branch</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedImages">checkedImages</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSeries">checkedSeries</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedStudies">checkedStudies</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.checkedSubjects">checkedSubjects</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageLabel">getImageLabel</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImageParentIDs">getImageParentIDs</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getImagePathList">getImagePathList</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getNewSeriesName">getNewSeriesName</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSeries">getSeries</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getStudy">getStudy</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.getSubject">getSubject</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXML">insertNewImageInXML</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewImageInXMLFile">insertNewImageInXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXML">insertNewSeriesInXML</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSeriesInXMLFile">insertNewSeriesInXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyInXMLFile">insertNewStudyInXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewStudyinXML">insertNewStudyinXML</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.insertNewSubjectinXML">insertNewSubjectinXML</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.moveImageInXMLFile">moveImageInXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.objectID">objectID</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeImageFromXMLFile">removeImageFromXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeMultipleImagesFromXMLFile">removeMultipleImagesFromXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneImageFromSeries">removeOneImageFromSeries</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneSeriesFromStudy">removeOneSeriesFromStudy</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeOneStudyFromSubject">removeOneStudyFromSubject</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.removeSubjectFromXMLFile">removeSubjectFromXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.renameSeriesinXMLFile">renameSeriesinXMLFile</a></code></li>
+<li><code><a title="Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.save" href="#Weasel.CoreModules.WeaselXMLReader.WeaselXMLReader.save">save</a></code></li>
 </ul>
 </li>
 </ul>

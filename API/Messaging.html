@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.API.Messaging API documentation</title>
+<title>Weasel.API.Messaging API documentation</title>
 <meta name="description" content="An API with GUI elements for messaging to the user." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.API.Messaging</code></h1>
+<h1 class="title">Module <code>Weasel.API.Messaging</code></h1>
 </header>
 <section id="section-intro">
 <p>An API with GUI elements for messaging to the user.</p>
@@ -204,7 +204,7 @@ class Messaging():
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.API.Messaging.Messaging"><code class="flex name class">
+<dt id="Weasel.API.Messaging.Messaging"><code class="flex name class">
 <span>class <span class="ident">Messaging</span></span>
 </code></dt>
 <dd>
@@ -371,7 +371,7 @@ class Messaging():
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.API.Messaging.Messaging.close_message"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.close_message"><code class="name flex">
 <span>def <span class="ident">close_message</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -388,7 +388,7 @@ class Messaging():
         self.msgWindow.close()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.close_progress_bar"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.close_progress_bar"><code class="name flex">
 <span>def <span class="ident">close_progress_bar</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -408,7 +408,7 @@ class Messaging():
             self.progressBar.close()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.cursor_arrow_to_hourglass"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.cursor_arrow_to_hourglass"><code class="name flex">
 <span>def <span class="ident">cursor_arrow_to_hourglass</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -424,7 +424,7 @@ class Messaging():
     QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.cursor_hourglass_to_arrow"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.cursor_hourglass_to_arrow"><code class="name flex">
 <span>def <span class="ident">cursor_hourglass_to_arrow</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -440,7 +440,7 @@ class Messaging():
     QApplication.restoreOverrideCursor()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.error"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.error"><code class="name flex">
 <span>def <span class="ident">error</span></span>(<span>self, msg='Message in the box', title='Window Title')</span>
 </code></dt>
 <dd>
@@ -462,7 +462,7 @@ class Messaging():
         QMessageBox.critical(self, title, msg)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.information"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.information"><code class="name flex">
 <span>def <span class="ident">information</span></span>(<span>self, msg='Message in the box', title='Window Title')</span>
 </code></dt>
 <dd>
@@ -484,7 +484,7 @@ class Messaging():
         QMessageBox.information(self, title, msg)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.message"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.message"><code class="name flex">
 <span>def <span class="ident">message</span></span>(<span>self, msg='Message in the box', title='Message..')</span>
 </code></dt>
 <dd>
@@ -505,7 +505,7 @@ class Messaging():
         self.msgWindow = Message(parent = self, message = &#34;&lt;H4&gt;&#34; + msg + &#34;&lt;/H4&gt;&#34;, title = title)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.progress_bar"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.progress_bar"><code class="name flex">
 <span>def <span class="ident">progress_bar</span></span>(<span>self, max=1, index=0, msg='Progressing...', title='Progress Bar')</span>
 </code></dt>
 <dd>
@@ -545,7 +545,7 @@ and then update_progress_bar inside the iteration</p></div>
             title = title)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.question"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.question"><code class="name flex">
 <span>def <span class="ident">question</span></span>(<span>self, question='Do you wish to proceed?', title='Question for the user')</span>
 </code></dt>
 <dd>
@@ -581,7 +581,7 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
             return False</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.set_status"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.set_status"><code class="name flex">
 <span>def <span class="ident">set_status</span></span>(<span>self, msg="I'm done with this!")</span>
 </code></dt>
 <dd>
@@ -597,7 +597,7 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
     self.statusBar.showMessage(msg)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.update_message"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.update_message"><code class="name flex">
 <span>def <span class="ident">update_message</span></span>(<span>self, msg=None)</span>
 </code></dt>
 <dd>
@@ -617,7 +617,7 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
             self.msgWindow.set_message(msg)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.update_progress_bar"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.update_progress_bar"><code class="name flex">
 <span>def <span class="ident">update_progress_bar</span></span>(<span>self, index=0, msg=None)</span>
 </code></dt>
 <dd>
@@ -639,7 +639,7 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
             self.progressBar.set_message(msg)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.Messaging.Messaging.warning"><code class="name flex">
+<dt id="Weasel.API.Messaging.Messaging.warning"><code class="name flex">
 <span>def <span class="ident">warning</span></span>(<span>self, msg='Message in the box', title='Window Title')</span>
 </code></dt>
 <dd>
@@ -674,27 +674,27 @@ It returns False if reply is "Cancel" and True if reply is "OK".</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.API" href="index.html">WEASEL.API</a></code></li>
+<li><code><a title="Weasel.API" href="index.html">Weasel.API</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.API.Messaging.Messaging" href="#WEASEL.API.Messaging.Messaging">Messaging</a></code></h4>
+<h4><code><a title="Weasel.API.Messaging.Messaging" href="#Weasel.API.Messaging.Messaging">Messaging</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.API.Messaging.Messaging.close_message" href="#WEASEL.API.Messaging.Messaging.close_message">close_message</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.close_progress_bar" href="#WEASEL.API.Messaging.Messaging.close_progress_bar">close_progress_bar</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.cursor_arrow_to_hourglass" href="#WEASEL.API.Messaging.Messaging.cursor_arrow_to_hourglass">cursor_arrow_to_hourglass</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.cursor_hourglass_to_arrow" href="#WEASEL.API.Messaging.Messaging.cursor_hourglass_to_arrow">cursor_hourglass_to_arrow</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.error" href="#WEASEL.API.Messaging.Messaging.error">error</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.information" href="#WEASEL.API.Messaging.Messaging.information">information</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.message" href="#WEASEL.API.Messaging.Messaging.message">message</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.progress_bar" href="#WEASEL.API.Messaging.Messaging.progress_bar">progress_bar</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.question" href="#WEASEL.API.Messaging.Messaging.question">question</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.set_status" href="#WEASEL.API.Messaging.Messaging.set_status">set_status</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.update_message" href="#WEASEL.API.Messaging.Messaging.update_message">update_message</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.update_progress_bar" href="#WEASEL.API.Messaging.Messaging.update_progress_bar">update_progress_bar</a></code></li>
-<li><code><a title="WEASEL.API.Messaging.Messaging.warning" href="#WEASEL.API.Messaging.Messaging.warning">warning</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.close_message" href="#Weasel.API.Messaging.Messaging.close_message">close_message</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.close_progress_bar" href="#Weasel.API.Messaging.Messaging.close_progress_bar">close_progress_bar</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.cursor_arrow_to_hourglass" href="#Weasel.API.Messaging.Messaging.cursor_arrow_to_hourglass">cursor_arrow_to_hourglass</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.cursor_hourglass_to_arrow" href="#Weasel.API.Messaging.Messaging.cursor_hourglass_to_arrow">cursor_hourglass_to_arrow</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.error" href="#Weasel.API.Messaging.Messaging.error">error</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.information" href="#Weasel.API.Messaging.Messaging.information">information</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.message" href="#Weasel.API.Messaging.Messaging.message">message</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.progress_bar" href="#Weasel.API.Messaging.Messaging.progress_bar">progress_bar</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.question" href="#Weasel.API.Messaging.Messaging.question">question</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.set_status" href="#Weasel.API.Messaging.Messaging.set_status">set_status</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.update_message" href="#Weasel.API.Messaging.Messaging.update_message">update_message</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.update_progress_bar" href="#Weasel.API.Messaging.Messaging.update_progress_bar">update_progress_bar</a></code></li>
+<li><code><a title="Weasel.API.Messaging.Messaging.warning" href="#Weasel.API.Messaging.Messaging.warning">warning</a></code></li>
 </ul>
 </li>
 </ul>

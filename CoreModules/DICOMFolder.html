@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.CoreModules.DICOMFolder API documentation</title>
+<title>Weasel.CoreModules.DICOMFolder API documentation</title>
 <meta name="description" content="Class for reading and summarizing contents of a DICOM folder …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.CoreModules.DICOMFolder</code></h1>
+<h1 class="title">Module <code>Weasel.CoreModules.DICOMFolder</code></h1>
 </header>
 <section id="section-intro">
 <p>Class for reading and summarizing contents of a DICOM folder.</p>
@@ -405,7 +405,7 @@ def scan_tree(directory):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.element_tree_from_dataframe"><code class="name flex">
 <span>def <span class="ident">element_tree_from_dataframe</span></span>(<span>df)</span>
 </code></dt>
 <dd>
@@ -477,7 +477,7 @@ def scan_tree(directory):
     return element_tree</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.label"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.label"><code class="name flex">
 <span>def <span class="ident">label</span></span>(<span>image)</span>
 </code></dt>
 <dd>
@@ -549,7 +549,7 @@ def scan_tree(directory):
             SeriesDate, SeriesTime)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.program"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.program"><code class="name flex">
 <span>def <span class="ident">program</span></span>(<span>script)</span>
 </code></dt>
 <dd>
@@ -577,7 +577,7 @@ def scan_tree(directory):
     return program</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.read_dataframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.read_dataframe"><code class="name flex">
 <span>def <span class="ident">read_dataframe</span></span>(<span>files)</span>
 </code></dt>
 <dd>
@@ -627,7 +627,7 @@ def scan_tree(directory):
     return pandas.DataFrame(array, index=dicom_files, columns=columns)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.scan_tree"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.scan_tree"><code class="name flex">
 <span>def <span class="ident">scan_tree</span></span>(<span>directory)</span>
 </code></dt>
 <dd>
@@ -646,7 +646,7 @@ def scan_tree(directory):
             yield entry</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.split_multiframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.split_multiframe"><code class="name flex">
 <span>def <span class="ident">split_multiframe</span></span>(<span>filepath, description)</span>
 </code></dt>
 <dd>
@@ -688,7 +688,7 @@ def scan_tree(directory):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder"><code class="flex name class">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder"><code class="flex name class">
 <span>class <span class="ident">DICOMFolder</span></span>
 <span>(</span><span>parent=None, path=None)</span>
 </code></dt>
@@ -827,7 +827,7 @@ def scan_tree(directory):
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe"><code class="name flex">
 <span>def <span class="ident">convert_multiframe</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -855,7 +855,7 @@ def scan_tree(directory):
     self.write_csv()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.create_dataframe"><code class="name flex">
 <span>def <span class="ident">create_dataframe</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -883,7 +883,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     self.dataframe = read_dataframe(all_files)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.create_element_tree"><code class="name flex">
 <span>def <span class="ident">create_element_tree</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -917,7 +917,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     self.element_tree = element_tree_from_dataframe(self.dataframe)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.csv"><code class="name flex">
 <span>def <span class="ident">csv</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -933,7 +933,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     return os.path.join(self.path, filename)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe"><code class="name flex">
 <span>def <span class="ident">drop_multiframe</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -953,7 +953,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
         self.write_csv()</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.files"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.files"><code class="name flex">
 <span>def <span class="ident">files</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -968,7 +968,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     return [item.path for item in scan_tree(self.path) if item.is_file()]</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.read_csv"><code class="name flex">
 <span>def <span class="ident">read_csv</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -984,7 +984,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     self.dataframe = pandas.read_csv(file, index_col=0)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.read_xml"><code class="name flex">
 <span>def <span class="ident">read_xml</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1000,7 +1000,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     self.element_tree = ET.parse(file)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.select_folder"><code class="name flex">
 <span>def <span class="ident">select_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1018,7 +1018,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
         options = QFileDialog.ShowDirsOnly)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.write_csv"><code class="name flex">
 <span>def <span class="ident">write_csv</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1034,7 +1034,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     self.dataframe.to_csv(file)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.write_xml"><code class="name flex">
 <span>def <span class="ident">write_xml</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1064,7 +1064,7 @@ Each column corresponds to a Tag in the list of Tags</p></div>
     with open(file, &#34;wb&#34;) as f: f.write(xml_string) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml"><code class="name flex">
+<dt id="Weasel.CoreModules.DICOMFolder.DICOMFolder.xml"><code class="name flex">
 <span>def <span class="ident">xml</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1093,36 +1093,36 @@ Each column corresponds to a Tag in the list of Tags</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.CoreModules" href="index.html">WEASEL.CoreModules</a></code></li>
+<li><code><a title="Weasel.CoreModules" href="index.html">Weasel.CoreModules</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe" href="#WEASEL.CoreModules.DICOMFolder.element_tree_from_dataframe">element_tree_from_dataframe</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.label" href="#WEASEL.CoreModules.DICOMFolder.label">label</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.program" href="#WEASEL.CoreModules.DICOMFolder.program">program</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.read_dataframe" href="#WEASEL.CoreModules.DICOMFolder.read_dataframe">read_dataframe</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.scan_tree" href="#WEASEL.CoreModules.DICOMFolder.scan_tree">scan_tree</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.split_multiframe" href="#WEASEL.CoreModules.DICOMFolder.split_multiframe">split_multiframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.element_tree_from_dataframe" href="#Weasel.CoreModules.DICOMFolder.element_tree_from_dataframe">element_tree_from_dataframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.label" href="#Weasel.CoreModules.DICOMFolder.label">label</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.program" href="#Weasel.CoreModules.DICOMFolder.program">program</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.read_dataframe" href="#Weasel.CoreModules.DICOMFolder.read_dataframe">read_dataframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.scan_tree" href="#Weasel.CoreModules.DICOMFolder.scan_tree">scan_tree</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.split_multiframe" href="#Weasel.CoreModules.DICOMFolder.split_multiframe">split_multiframe</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder">DICOMFolder</a></code></h4>
+<h4><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder">DICOMFolder</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe">convert_multiframe</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_dataframe">create_dataframe</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.create_element_tree">create_element_tree</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.csv">csv</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe">drop_multiframe</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.files" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.files">files</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_csv">read_csv</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.read_xml">read_xml</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.select_folder">select_folder</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_csv">write_csv</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.write_xml">write_xml</a></code></li>
-<li><code><a title="WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml" href="#WEASEL.CoreModules.DICOMFolder.DICOMFolder.xml">xml</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.convert_multiframe">convert_multiframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.create_dataframe" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.create_dataframe">create_dataframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.create_element_tree" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.create_element_tree">create_element_tree</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.csv" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.csv">csv</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.drop_multiframe">drop_multiframe</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.files" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.files">files</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.read_csv" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.read_csv">read_csv</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.read_xml" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.read_xml">read_xml</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.select_folder" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.select_folder">select_folder</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.write_csv" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.write_csv">write_csv</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.write_xml" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.write_xml">write_xml</a></code></li>
+<li><code><a title="Weasel.CoreModules.DICOMFolder.DICOMFolder.xml" href="#Weasel.CoreModules.DICOMFolder.DICOMFolder.xml">xml</a></code></li>
 </ul>
 </li>
 </ul>

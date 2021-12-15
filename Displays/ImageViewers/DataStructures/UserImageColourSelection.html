@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection API documentation</title>
+<title>Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection</code></h1>
+<h1 class="title">Module <code>Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -129,7 +129,7 @@ class UserSelection:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection"><code class="flex name class">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection"><code class="flex name class">
 <span>class <span class="ident">UserSelection</span></span>
 <span>(</span><span>imageList)</span>
 </code></dt>
@@ -226,7 +226,7 @@ class UserSelection:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection"><code class="name flex">
 <span>def <span class="ident">clearUserSelection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -253,7 +253,7 @@ more images in the series</p></div>
         key = imageDataList</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection"><code class="name flex">
 <span>def <span class="ident">deleteOneImageInUserSelection</span></span>(<span>self, imageName)</span>
 </code></dt>
 <dd>
@@ -266,7 +266,7 @@ more images in the series</p></div>
     del self.imageDict[imageName]</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus"><code class="name flex">
 <span>def <span class="ident">getImageUpdateStatus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -279,7 +279,7 @@ more images in the series</p></div>
     return self._applyUserSelectionToAnImage</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus"><code class="name flex">
 <span>def <span class="ident">getSeriesUpdateStatus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -292,7 +292,7 @@ more images in the series</p></div>
     return self._overRideSeriesSavedColourmapAndLevels</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection"><code class="name flex">
 <span>def <span class="ident">returnUserSelection</span></span>(<span>self, imageName)</span>
 </code></dt>
 <dd>
@@ -320,7 +320,7 @@ each sublist represents an image in the series being viewed.</p></div>
             logger.error(&#39;Error in UserImageColourSelection.UserSelection.returnUserSelection: &#39; + str(e)) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus"><code class="name flex">
 <span>def <span class="ident">setImageUpdateStatus</span></span>(<span>self, boolValue)</span>
 </code></dt>
 <dd>
@@ -333,7 +333,7 @@ each sublist represents an image in the series being viewed.</p></div>
     self._applyUserSelectionToAnImage = boolValue</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus"><code class="name flex">
 <span>def <span class="ident">setSeriesUpdateStatus</span></span>(<span>self, boolValue)</span>
 </code></dt>
 <dd>
@@ -346,7 +346,7 @@ each sublist represents an image in the series being viewed.</p></div>
     self._overRideSeriesSavedColourmapAndLevels = boolValue</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection"><code class="name flex">
+<dt id="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection"><code class="name flex">
 <span>def <span class="ident">updateUserSelection</span></span>(<span>self, imageName, colourTable, intensity, contrast)</span>
 </code></dt>
 <dd>
@@ -384,22 +384,22 @@ called listImageLists</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures" href="index.html">WEASEL.Displays.ImageViewers.DataStructures</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures" href="index.html">Weasel.Displays.ImageViewers.DataStructures</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection">UserSelection</a></code></h4>
+<h4><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection">UserSelection</a></code></h4>
 <ul class="">
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection">clearUserSelection</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection">deleteOneImageInUserSelection</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus">getImageUpdateStatus</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus">getSeriesUpdateStatus</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection">returnUserSelection</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus">setImageUpdateStatus</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus">setSeriesUpdateStatus</a></code></li>
-<li><code><a title="WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection" href="#WEASEL.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection">updateUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.clearUserSelection">clearUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.deleteOneImageInUserSelection">deleteOneImageInUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getImageUpdateStatus">getImageUpdateStatus</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.getSeriesUpdateStatus">getSeriesUpdateStatus</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.returnUserSelection">returnUserSelection</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setImageUpdateStatus">setImageUpdateStatus</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.setSeriesUpdateStatus">setSeriesUpdateStatus</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection" href="#Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection.UserSelection.updateUserSelection">updateUserSelection</a></code></li>
 </ul>
 </li>
 </ul>

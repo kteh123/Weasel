@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>WEASEL.API.ReadWrite API documentation</title>
+<title>Weasel.API.ReadWrite API documentation</title>
 <meta name="description" content="Collection of methods for reading and writing DICOM within a Pipeline." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>WEASEL.API.ReadWrite</code></h1>
+<h1 class="title">Module <code>Weasel.API.ReadWrite</code></h1>
 </header>
 <section id="section-intro">
 <p>Collection of methods for reading and writing DICOM within a Pipeline.</p>
@@ -188,7 +188,7 @@ class ReadWrite():
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="WEASEL.API.ReadWrite.ReadWrite"><code class="flex name class">
+<dt id="Weasel.API.ReadWrite.ReadWrite"><code class="flex name class">
 <span>class <span class="ident">ReadWrite</span></span>
 </code></dt>
 <dd>
@@ -337,7 +337,7 @@ class ReadWrite():
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.close_dicom_folder"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.close_dicom_folder"><code class="name flex">
 <span>def <span class="ident">close_dicom_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -355,7 +355,7 @@ class ReadWrite():
     self.DICOMFolder = &#39;&#39;  </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.data_folder"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.data_folder"><code class="name flex">
 <span>def <span class="ident">data_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -371,7 +371,7 @@ class ReadWrite():
     return self.weaselDataFolder</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.images"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.images"><code class="name flex">
 <span>def <span class="ident">images</span></span>(<span>self, msg='')</span>
 </code></dt>
 <dd>
@@ -391,7 +391,7 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.log"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.log"><code class="name flex">
 <span>def <span class="ident">log</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
@@ -408,7 +408,7 @@ class ReadWrite():
     logger.info(message)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.log_error"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.log_error"><code class="name flex">
 <span>def <span class="ident">log_error</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
@@ -425,7 +425,7 @@ class ReadWrite():
     logger.exception(message)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.open_dicom_folder"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.open_dicom_folder"><code class="name flex">
 <span>def <span class="ident">open_dicom_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -450,7 +450,7 @@ class ReadWrite():
         self.treeView = TreeView(self, XML_File_Path) </code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.read_dicom_folder"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.read_dicom_folder"><code class="name flex">
 <span>def <span class="ident">read_dicom_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -471,7 +471,7 @@ class ReadWrite():
         self.treeView = TreeView(self, XML_File_Path)</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.select_file_to_read"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.select_file_to_read"><code class="name flex">
 <span>def <span class="ident">select_file_to_read</span></span>(<span>self, title='Save file as ...', initial_folder=None, extension='All files (*.*)')</span>
 </code></dt>
 <dd>
@@ -493,7 +493,7 @@ class ReadWrite():
         return filename</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.select_file_to_save"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.select_file_to_save"><code class="name flex">
 <span>def <span class="ident">select_file_to_save</span></span>(<span>self, title='Save file as ...', initial_folder=None, extension='All files (*.*)')</span>
 </code></dt>
 <dd>
@@ -515,7 +515,7 @@ class ReadWrite():
         return filename</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.select_folder"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.select_folder"><code class="name flex">
 <span>def <span class="ident">select_folder</span></span>(<span>self, title='Select Folder', initial_folder=None)</span>
 </code></dt>
 <dd>
@@ -537,7 +537,7 @@ class ReadWrite():
         return scan_directory</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.series"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.series"><code class="name flex">
 <span>def <span class="ident">series</span></span>(<span>self, msg='')</span>
 </code></dt>
 <dd>
@@ -557,7 +557,7 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.studies"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.studies"><code class="name flex">
 <span>def <span class="ident">studies</span></span>(<span>self, msg='')</span>
 </code></dt>
 <dd>
@@ -577,7 +577,7 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.subjects"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.subjects"><code class="name flex">
 <span>def <span class="ident">subjects</span></span>(<span>self, msg='')</span>
 </code></dt>
 <dd>
@@ -597,7 +597,7 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
-<dt id="WEASEL.API.ReadWrite.ReadWrite.user_input"><code class="name flex">
+<dt id="Weasel.API.ReadWrite.ReadWrite.user_input"><code class="name flex">
 <span>def <span class="ident">user_input</span></span>(<span>self, *fields, help_text='', title='User input window')</span>
 </code></dt>
 <dd>
@@ -626,28 +626,28 @@ class ReadWrite():
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="WEASEL.API" href="index.html">WEASEL.API</a></code></li>
+<li><code><a title="Weasel.API" href="index.html">Weasel.API</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="WEASEL.API.ReadWrite.ReadWrite" href="#WEASEL.API.ReadWrite.ReadWrite">ReadWrite</a></code></h4>
+<h4><code><a title="Weasel.API.ReadWrite.ReadWrite" href="#Weasel.API.ReadWrite.ReadWrite">ReadWrite</a></code></h4>
 <ul class="two-column">
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.close_dicom_folder" href="#WEASEL.API.ReadWrite.ReadWrite.close_dicom_folder">close_dicom_folder</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.data_folder" href="#WEASEL.API.ReadWrite.ReadWrite.data_folder">data_folder</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.images" href="#WEASEL.API.ReadWrite.ReadWrite.images">images</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.log" href="#WEASEL.API.ReadWrite.ReadWrite.log">log</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.log_error" href="#WEASEL.API.ReadWrite.ReadWrite.log_error">log_error</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.open_dicom_folder" href="#WEASEL.API.ReadWrite.ReadWrite.open_dicom_folder">open_dicom_folder</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.read_dicom_folder" href="#WEASEL.API.ReadWrite.ReadWrite.read_dicom_folder">read_dicom_folder</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.select_file_to_read" href="#WEASEL.API.ReadWrite.ReadWrite.select_file_to_read">select_file_to_read</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.select_file_to_save" href="#WEASEL.API.ReadWrite.ReadWrite.select_file_to_save">select_file_to_save</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.select_folder" href="#WEASEL.API.ReadWrite.ReadWrite.select_folder">select_folder</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.series" href="#WEASEL.API.ReadWrite.ReadWrite.series">series</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.studies" href="#WEASEL.API.ReadWrite.ReadWrite.studies">studies</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.subjects" href="#WEASEL.API.ReadWrite.ReadWrite.subjects">subjects</a></code></li>
-<li><code><a title="WEASEL.API.ReadWrite.ReadWrite.user_input" href="#WEASEL.API.ReadWrite.ReadWrite.user_input">user_input</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.close_dicom_folder" href="#Weasel.API.ReadWrite.ReadWrite.close_dicom_folder">close_dicom_folder</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.data_folder" href="#Weasel.API.ReadWrite.ReadWrite.data_folder">data_folder</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.images" href="#Weasel.API.ReadWrite.ReadWrite.images">images</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.log" href="#Weasel.API.ReadWrite.ReadWrite.log">log</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.log_error" href="#Weasel.API.ReadWrite.ReadWrite.log_error">log_error</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.open_dicom_folder" href="#Weasel.API.ReadWrite.ReadWrite.open_dicom_folder">open_dicom_folder</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.read_dicom_folder" href="#Weasel.API.ReadWrite.ReadWrite.read_dicom_folder">read_dicom_folder</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.select_file_to_read" href="#Weasel.API.ReadWrite.ReadWrite.select_file_to_read">select_file_to_read</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.select_file_to_save" href="#Weasel.API.ReadWrite.ReadWrite.select_file_to_save">select_file_to_save</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.select_folder" href="#Weasel.API.ReadWrite.ReadWrite.select_folder">select_folder</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.series" href="#Weasel.API.ReadWrite.ReadWrite.series">series</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.studies" href="#Weasel.API.ReadWrite.ReadWrite.studies">studies</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.subjects" href="#Weasel.API.ReadWrite.ReadWrite.subjects">subjects</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.user_input" href="#Weasel.API.ReadWrite.ReadWrite.user_input">user_input</a></code></li>
 </ul>
 </li>
 </ul>
