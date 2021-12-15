@@ -23,7 +23,8 @@
 </header>
 <section id="section-intro">
 <p>A collection of Weasel superclasses used for scripting pipelines. </p>
-<p>All classes with a name starting with Weasel have distinct method names.</p>
+<p>You can access to all functions in this module inside <code>Menus</code> and <code>Pipelines</code> via the <code>weasel</code> global variable. The way to call the functions in this <code>API</code> module is by typing <code>weasel.__function_name__()</code> regardless of the API class in which the <code>__funtion_name__</code> is in.</p>
+<p>These functions are essentially comprehensive but simple to use wrappers of the <code>CoreModules</code>, <code>DICOM</code> and <code><a title="WEASEL.API.Display" href="Display.html">WEASEL.API.Display</a></code> packages in Weasel.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -31,8 +32,9 @@
 <pre><code class="python">&#34;&#34;&#34;
 A collection of Weasel superclasses used for scripting pipelines. 
 
-All classes with a name starting with Weasel have distinct method names.
+You can access to all functions in this module inside `Menus` and `Pipelines` via the `weasel` global variable. The way to call the functions in this `API` module is by typing `weasel.__function_name__()` regardless of the API class in which the `__funtion_name__` is in.
 
+These functions are essentially comprehensive but simple to use wrappers of the `CoreModules`, `DICOM` and `Display` packages in Weasel.
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
