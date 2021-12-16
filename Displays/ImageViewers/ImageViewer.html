@@ -678,6 +678,17 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getColourTableForThisImage(self):
+        &#34;&#34;&#34;
+        This function sets the class property, self.colourTable with the name of the
+        colour table applied to the image or series being viewed.
+
+        If the user has already selected a colour table for the image or series,
+        then self.colourTable is set with its name.
+
+        Otherwise, the name of the colour table in the DICOM file is retrieved and
+        self.colourTable is set to this value. Likewise the Look Up Table is retrieved
+        and used to set the value of self.lut
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewer.getColourTableForThisImage called&#34;)
             if self.isSeries:
@@ -698,6 +709,9 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getAndSetLevels(self):
+        &#34;&#34;&#34;
+
+        &#34;&#34;&#34;
         try:
             success = False
             if self.isSeries: 
@@ -898,7 +912,8 @@ class ImageViewer(QMdiSubWindow):
         &#34;&#34;&#34;
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
-        Output parameters
+        
+        Returns
         *****************
         success - boolean, set to true if level values are successfully retrieved
         maximumValue - Maximum pixel value in the image
@@ -972,7 +987,8 @@ class ImageViewer(QMdiSubWindow):
 
     def readLevelsFromDICOMImage(self): 
         &#34;&#34;&#34;Reads levels directly from the DICOM image
-        Output Parameters
+
+        Returns
         *****************
         centre - Image intensity
         width - Image contrast
@@ -1768,6 +1784,17 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def getColourTableForThisImage(self):
+        &#34;&#34;&#34;
+        This function sets the class property, self.colourTable with the name of the
+        colour table applied to the image or series being viewed.
+
+        If the user has already selected a colour table for the image or series,
+        then self.colourTable is set with its name.
+
+        Otherwise, the name of the colour table in the DICOM file is retrieved and
+        self.colourTable is set to this value. Likewise the Look Up Table is retrieved
+        and used to set the value of self.lut
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewer.getColourTableForThisImage called&#34;)
             if self.isSeries:
@@ -1788,6 +1815,9 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def getAndSetLevels(self):
+        &#34;&#34;&#34;
+
+        &#34;&#34;&#34;
         try:
             success = False
             if self.isSeries: 
@@ -1988,7 +2018,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
         &#34;&#34;&#34;
         When the user has selected new image levels that must override the 
         levels saved in the DICOM series/image, this function returns those selected levels
-        Output parameters
+        
+        Returns
         *****************
         success - boolean, set to true if level values are successfully retrieved
         maximumValue - Maximum pixel value in the image
@@ -2062,7 +2093,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
     def readLevelsFromDICOMImage(self): 
         &#34;&#34;&#34;Reads levels directly from the DICOM image
-        Output Parameters
+
+        Returns
         *****************
         centre - Image intensity
         width - Image contrast
@@ -2623,6 +2655,9 @@ and its colour table in a png file with the path+filename in fileName. </p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getAndSetLevels(self):
+    &#34;&#34;&#34;
+
+    &#34;&#34;&#34;
     try:
         success = False
         if self.isSeries: 
@@ -2669,12 +2704,29 @@ and its colour table in a png file with the path+filename in fileName. </p>
 <span>def <span class="ident">getColourTableForThisImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function sets the class property, self.colourTable with the name of the
+colour table applied to the image or series being viewed.</p>
+<p>If the user has already selected a colour table for the image or series,
+then self.colourTable is set with its name.</p>
+<p>Otherwise, the name of the colour table in the DICOM file is retrieved and
+self.colourTable is set to this value. Likewise the Look Up Table is retrieved
+and used to set the value of self.lut</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getColourTableForThisImage(self):
+    &#34;&#34;&#34;
+    This function sets the class property, self.colourTable with the name of the
+    colour table applied to the image or series being viewed.
+
+    If the user has already selected a colour table for the image or series,
+    then self.colourTable is set with its name.
+
+    Otherwise, the name of the colour table in the DICOM file is retrieved and
+    self.colourTable is set to this value. Likewise the Look Up Table is retrieved
+    and used to set the value of self.lut
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;ImageViewer.getColourTableForThisImage called&#34;)
         if self.isSeries:
@@ -2783,8 +2835,8 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
 <span>def <span class="ident">readLevelsFromDICOMImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Reads levels directly from the DICOM image
-Output Parameters</p>
+<div class="desc"><p>Reads levels directly from the DICOM image</p>
+<p>Returns</p>
 <hr>
 <p>centre - Image intensity
 width - Image contrast
@@ -2796,7 +2848,8 @@ minimumValue - Minimum pixel value in the image</p></div>
 </summary>
 <pre><code class="python">def readLevelsFromDICOMImage(self): 
     &#34;&#34;&#34;Reads levels directly from the DICOM image
-    Output Parameters
+
+    Returns
     *****************
     centre - Image intensity
     width - Image contrast
@@ -2851,8 +2904,8 @@ minimumValue - Minimum pixel value in the image</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>When the user has selected new image levels that must override the
-levels saved in the DICOM series/image, this function returns those selected levels
-Output parameters</p>
+levels saved in the DICOM series/image, this function returns those selected levels</p>
+<p>Returns</p>
 <hr>
 <p>success - boolean, set to true if level values are successfully retrieved
 maximumValue - Maximum pixel value in the image
@@ -2865,7 +2918,8 @@ minimumValue - Minimum pixel value in the image</p></div>
     &#34;&#34;&#34;
     When the user has selected new image levels that must override the 
     levels saved in the DICOM series/image, this function returns those selected levels
-    Output parameters
+    
+    Returns
     *****************
     success - boolean, set to true if level values are successfully retrieved
     maximumValue - Maximum pixel value in the image
