@@ -6,7 +6,7 @@ import numpy as np
 
 def main(weasel):
     list_of_images = weasel.images()    # get the list of images checked by the user
-    if len(list_of_images) == 0: return   # if the user cancels then exit
+    if len(list_of_images) == 0: return   # if no images are selected, then exit
     
     cancel = 0
     while cancel == 0:
@@ -31,7 +31,6 @@ def main(weasel):
 
 
 def Thresholded(pixelArray, lower_threshold, upper_threshold):
-    # It doesn't work correctly with negative values, so something isn't correct
     maximum_value = np.amax(pixelArray)
     minimum_value = np.amin(pixelArray)
     upper_value = minimum_value + (upper_threshold / 100) * (maximum_value - minimum_value)

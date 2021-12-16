@@ -11,14 +11,12 @@ def main(weasel):
     for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Anonymising images {}")
 
-        ds = image.read()               # Load the dataset into memory
-        ds.PatientName = "Anonymous"    # replace PatientName
-        ds.PatientID = pydicom.uid.generate_uid()
-        ds.PatientBirthDate = "19000101"
-        ds.OtherPatientNames = ["Anonymous 1", "Anonymous 2"]
-        ds.OtherPatientIDsSequence = [Dataset(),Dataset()]
-        ds.ReferencePatientPhotoSequence = [Dataset(),Dataset()]
-        image.save(ds)                  # write the dataset to disk
+        image["PatientName"] = "Anonymous"    # replace PatientName
+        image["PatientID"] = "Anonymous"
+        image["PatientBirthDate"] = "19000101"
+        image["OtherPatientNames"] = ["Anonymous 1", "Anonymous 2"]
+        image["OtherPatientIDsSequence"] = [Dataset(),Dataset()]
+        image["ReferencePatientPhotoSequence"] = [Dataset(),Dataset()]
 
     weasel.refresh()                # Refresh weasel
 

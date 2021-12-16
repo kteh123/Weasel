@@ -9,14 +9,13 @@ def main(weasel):
     for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg="Anonymising images {}")
 
-        ds = image.read()               # Load the dataset into memory
-        ds.PatientName = "Anonymous"    # replace PatientName
-        ds.PatientID = "Anonymous"
-        ds.PatientBirthDate = "19000101"
-        ds.OtherPatientNames = ["Anonymous 1", "Anonymous 2"]
-        ds.OtherPatientIDsSequence = [Dataset(),Dataset()]
-        ds.ReferencePatientPhotoSequence = [Dataset(),Dataset()]
-        image.copy().save(ds)   # write the dataset to disk in a copy                
+        new_image = image.copy()
+        new_image["PatientName"] = "Anonymous"    # replace PatientName
+        new_image["PatientID"] = "Anonymous"
+        new_image["PatientBirthDate"] = "19000101"
+        new_image["OtherPatientNames"] = ["Anonymous 1", "Anonymous 2"]
+        new_image["OtherPatientIDsSequence"] = [Dataset(),Dataset()]
+        new_image["ReferencePatientPhotoSequence"] = [Dataset(),Dataset()]         
 
     weasel.refresh()                # Refresh weasel
 

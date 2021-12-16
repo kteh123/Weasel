@@ -11,18 +11,9 @@ def main(weasel):
     for study in studies:
         imgs = study.all_images
         new_study_description = 'Sorted by slice location_' + study.studyID
-        #new_study = study.new(studyID='Sorted by slice location')
         series_number = 1
         for loc in weasel.unique_elements(imgs.get_value("SliceLocation")):
             imgs_loc = imgs.where("SliceLocation", "==", loc)
-            # This option?
-            #series = newSeriesFrom(imgs_loc)
-            #series["SeriesDescription"] = 'Slice location [' + str(loc) + ']'
-            # Or this option?
-            #series = imgs_loc.merge(series_name='Slice location [' + str(loc) + ']')
-            # New series is created from merge and using the same images, so changing the Study Description should be enough
-            #series["StudyDescription"] = new_study_description
-            # Or more robust option
             series = imgs_loc.merge(series_number=series_number, series_name='Slice location [' + str(loc) + ']', study_name=new_study_description, progress_bar=False, overwrite=False)
             series_number += 1
             # loc can be series_number actually

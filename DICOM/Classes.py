@@ -114,7 +114,7 @@ class ImagesList(ListOfDicomObjects):
         """
         Displays all images as a series.
         """
-        weasel = self[0].objWeasel.display(self)
+        self[0].objWeasel.display(self)
 
 
     def sort(self, *argv, reverse=False):

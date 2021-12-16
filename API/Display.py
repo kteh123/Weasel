@@ -23,10 +23,10 @@ class Display():
             imageViewer(self, dcm)
         elif dcm.__class__.__name__ == "Series":
             imageViewer(self, dcm)
-        elif self.__class__.__name__ == "ImagesList":
+        elif dcm.__class__.__name__ == "ImagesList":
             for image in dcm:
                 self.display(image)
-        elif self.__class__.__name__ == "SeriesList":
+        elif dcm.__class__.__name__ == "SeriesList":
             for series in dcm:
                 self.display(series)
 
