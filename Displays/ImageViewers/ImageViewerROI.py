@@ -576,6 +576,21 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
+        """
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key & draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        deltaX - change in mouse pointer position in the x direction
+        deltaY - change in mouse pointer position in the y direction
+        """
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()

@@ -676,7 +676,20 @@ class ImageViewer(QMdiSubWindow):
 
     def getAndSetLevels(self):
         """
+        This function gets the minimum and maximum values for the image being viewed 
+        and uses them to calculate the image contrast and intensity.  
 
+        If user selected levels have already been saved for the series being viewed, 
+        these are used to calculate image contrast & intensity.  Otherwise, image 
+        contrast & intensity are obtained from the DICOM file.
+
+        The image contrast & intensity values are used to set the values of the 
+        corresponding spinboxes.
+
+        Returns
+        ********
+        maximumValue  - maximum pixel value
+        minimumValue - minimum pixel value
         """
         try:
             success = False
@@ -698,6 +711,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getAndSetLevelsSpinBoxStepSize(self, maximumValue, minimumValue):
+        """
+        Calculates and sets the intensity and contrast spinbox step size.
+        """
+
         try:
             if (minimumValue < 1 and minimumValue > -1) and (maximumValue < 1 and maximumValue > -1):
                 spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
@@ -770,6 +787,21 @@ class ImageViewer(QMdiSubWindow):
 
 
     def adjustLevelsByRightButtonDrag(self, ev):
+        """
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key & draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        ev - an object of the QGraphicsSceneHoverEvent class that
+            provides the coordinates of the mouse pointer.
+        """
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -796,7 +828,7 @@ class ImageViewer(QMdiSubWindow):
             logger.exception('Error in ImageViewer.adjustLevelsByRightButtonDrag: ' + str(e))
 
 
-    def updateImageUserSelection(self):
+    def updateImageUserSelection(self): ###
         """
             """
         try:
@@ -919,6 +951,7 @@ class ImageViewer(QMdiSubWindow):
         except Exception as e:
             print('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
             logger.error('Error in ImageViewer.returnUserSelectedLevels: ' + str(e))
+
 
     def setPgColourMap(self):
         """This function converts a matplotlib colour map into
