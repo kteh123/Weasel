@@ -14,6 +14,8 @@ It aims to simplify the process of testing prototype image processing pipelines 
 
 This will speed up the translation of new methods into early stage clinical studies, bringing forward the point where prototypes can be stress-tested under real world conditions.
 
+Download test DICOM data [here](https://drive.google.com/file/d/1GtW7iaU-W2iF7J5q1jup8hnOnsLU5Hgc/view?usp=sharing) to try and experiment Weasel.
+
 # Installation
 
 **Git** is required to download this repository, unless you choose to download the `.zip` file. In order for Weasel to run successfully, it is required to have **Python (>=3.7)** installed.
