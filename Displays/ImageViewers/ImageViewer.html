@@ -710,7 +710,20 @@ class ImageViewer(QMdiSubWindow):
 
     def getAndSetLevels(self):
         &#34;&#34;&#34;
+        This function gets the minimum and maximum values for the image being viewed 
+        and uses them to calculate the image contrast and intensity.  
 
+        If user selected levels have already been saved for the series being viewed, 
+        these are used to calculate image contrast &amp; intensity.  Otherwise, image 
+        contrast &amp; intensity are obtained from the DICOM file.
+
+        The image contrast &amp; intensity values are used to set the values of the 
+        corresponding spinboxes.
+
+        Returns
+        ********
+        maximumValue  - maximum pixel value
+        minimumValue - minimum pixel value
         &#34;&#34;&#34;
         try:
             success = False
@@ -732,6 +745,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def getAndSetLevelsSpinBoxStepSize(self, maximumValue, minimumValue):
+        &#34;&#34;&#34;
+        Calculates and sets the intensity and contrast spinbox step size.
+        &#34;&#34;&#34;
+
         try:
             if (minimumValue &lt; 1 and minimumValue &gt; -1) and (maximumValue &lt; 1 and maximumValue &gt; -1):
                 spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
@@ -804,6 +821,21 @@ class ImageViewer(QMdiSubWindow):
 
 
     def adjustLevelsByRightButtonDrag(self, ev):
+        &#34;&#34;&#34;
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key &amp; draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        ev - an object of the QGraphicsSceneHoverEvent class that
+            provides the coordinates of the mouse pointer.
+        &#34;&#34;&#34;
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -830,7 +862,7 @@ class ImageViewer(QMdiSubWindow):
             logger.exception(&#39;Error in ImageViewer.adjustLevelsByRightButtonDrag: &#39; + str(e))
 
 
-    def updateImageUserSelection(self):
+    def updateImageUserSelection(self): ###
         &#34;&#34;&#34;
             &#34;&#34;&#34;
         try:
@@ -953,6 +985,7 @@ class ImageViewer(QMdiSubWindow):
         except Exception as e:
             print(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
+
 
     def setPgColourMap(self):
         &#34;&#34;&#34;This function converts a matplotlib colour map into
@@ -1816,7 +1849,20 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
     def getAndSetLevels(self):
         &#34;&#34;&#34;
+        This function gets the minimum and maximum values for the image being viewed 
+        and uses them to calculate the image contrast and intensity.  
 
+        If user selected levels have already been saved for the series being viewed, 
+        these are used to calculate image contrast &amp; intensity.  Otherwise, image 
+        contrast &amp; intensity are obtained from the DICOM file.
+
+        The image contrast &amp; intensity values are used to set the values of the 
+        corresponding spinboxes.
+
+        Returns
+        ********
+        maximumValue  - maximum pixel value
+        minimumValue - minimum pixel value
         &#34;&#34;&#34;
         try:
             success = False
@@ -1838,6 +1884,10 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def getAndSetLevelsSpinBoxStepSize(self, maximumValue, minimumValue):
+        &#34;&#34;&#34;
+        Calculates and sets the intensity and contrast spinbox step size.
+        &#34;&#34;&#34;
+
         try:
             if (minimumValue &lt; 1 and minimumValue &gt; -1) and (maximumValue &lt; 1 and maximumValue &gt; -1):
                 spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
@@ -1910,6 +1960,21 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def adjustLevelsByRightButtonDrag(self, ev):
+        &#34;&#34;&#34;
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key &amp; draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        ev - an object of the QGraphicsSceneHoverEvent class that
+            provides the coordinates of the mouse pointer.
+        &#34;&#34;&#34;
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -1936,7 +2001,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
             logger.exception(&#39;Error in ImageViewer.adjustLevelsByRightButtonDrag: &#39; + str(e))
 
 
-    def updateImageUserSelection(self):
+    def updateImageUserSelection(self): ###
         &#34;&#34;&#34;
             &#34;&#34;&#34;
         try:
@@ -2059,6 +2124,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
         except Exception as e:
             print(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.returnUserSelectedLevels: &#39; + str(e))
+
 
     def setPgColourMap(self):
         &#34;&#34;&#34;This function converts a matplotlib colour map into
@@ -2284,12 +2350,37 @@ vertical layout created in the function setUpMainLayout.</p></div>
 <span>def <span class="ident">adjustLevelsByRightButtonDrag</span></span>(<span>self, ev)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function allows the image intensity and contrast to be
+adjusted by pressing the right mouse key and draging the
+mouse pointer across the image. </p>
+<p>Pressing the right mouse key &amp; draging the mouse pointer down
+and to the right increases the image intensity and contrast.
+Pressing the right mouse key and draging the mouse pointer up
+and to the left decreases the image intensity and contrast.</p>
+<p>Input parameters</p>
+<hr>
+<p>ev - an object of the QGraphicsSceneHoverEvent class that
+provides the coordinates of the mouse pointer.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def adjustLevelsByRightButtonDrag(self, ev):
+    &#34;&#34;&#34;
+    This function allows the image intensity and contrast to be 
+    adjusted by pressing the right mouse key and draging the 
+    mouse pointer across the image. 
+
+    Pressing the right mouse key &amp; draging the mouse pointer down 
+    and to the right increases the image intensity and contrast.
+    Pressing the right mouse key and draging the mouse pointer up 
+    and to the left decreases the image intensity and contrast.
+
+    Input parameters
+    ****************
+    ev - an object of the QGraphicsSceneHoverEvent class that
+        provides the coordinates of the mouse pointer.
+    &#34;&#34;&#34;
     try:
         self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
         centre = self.spinBoxIntensity.value()
@@ -2649,14 +2740,40 @@ and its colour table in a png file with the path+filename in fileName. </p>
 <span>def <span class="ident">getAndSetLevels</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function gets the minimum and maximum values for the image being viewed
+and uses them to calculate the image contrast and intensity.
+</p>
+<p>If user selected levels have already been saved for the series being viewed,
+these are used to calculate image contrast &amp; intensity.
+Otherwise, image
+contrast &amp; intensity are obtained from the DICOM file.</p>
+<p>The image contrast &amp; intensity values are used to set the values of the
+corresponding spinboxes.</p>
+<p>Returns</p>
+<hr>
+<p>maximumValue
+- maximum pixel value
+minimumValue - minimum pixel value</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getAndSetLevels(self):
     &#34;&#34;&#34;
+    This function gets the minimum and maximum values for the image being viewed 
+    and uses them to calculate the image contrast and intensity.  
 
+    If user selected levels have already been saved for the series being viewed, 
+    these are used to calculate image contrast &amp; intensity.  Otherwise, image 
+    contrast &amp; intensity are obtained from the DICOM file.
+
+    The image contrast &amp; intensity values are used to set the values of the 
+    corresponding spinboxes.
+
+    Returns
+    ********
+    maximumValue  - maximum pixel value
+    minimumValue - minimum pixel value
     &#34;&#34;&#34;
     try:
         success = False
@@ -2681,12 +2798,16 @@ and its colour table in a png file with the path+filename in fileName. </p>
 <span>def <span class="ident">getAndSetLevelsSpinBoxStepSize</span></span>(<span>self, maximumValue, minimumValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculates and sets the intensity and contrast spinbox step size.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getAndSetLevelsSpinBoxStepSize(self, maximumValue, minimumValue):
+    &#34;&#34;&#34;
+    Calculates and sets the intensity and contrast spinbox step size.
+    &#34;&#34;&#34;
+
     try:
         if (minimumValue &lt; 1 and minimumValue &gt; -1) and (maximumValue &lt; 1 and maximumValue &gt; -1):
             spinBoxStep = float((maximumValue - minimumValue) / 200) # It takes 100 clicks to walk through the middle 50% of the signal range
@@ -3612,7 +3733,7 @@ this function sets the corresponding values in the image being viewed.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def updateImageUserSelection(self):
+<pre><code class="python">def updateImageUserSelection(self): ###
     &#34;&#34;&#34;
         &#34;&#34;&#34;
     try:

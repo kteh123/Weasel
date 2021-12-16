@@ -607,6 +607,21 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
+        &#34;&#34;&#34;
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key &amp; draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        deltaX - change in mouse pointer position in the x direction
+        deltaY - change in mouse pointer position in the y direction
+        &#34;&#34;&#34;
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -1571,6 +1586,21 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
+        &#34;&#34;&#34;
+        This function allows the image intensity and contrast to be 
+        adjusted by pressing the right mouse key and draging the 
+        mouse pointer across the image. 
+
+        Pressing the right mouse key &amp; draging the mouse pointer down 
+        and to the right increases the image intensity and contrast.
+        Pressing the right mouse key and draging the mouse pointer up 
+        and to the left decreases the image intensity and contrast.
+
+        Input parameters
+        ****************
+        deltaX - change in mouse pointer position in the x direction
+        deltaY - change in mouse pointer position in the y direction
+        &#34;&#34;&#34;
         try:
             self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
             centre = self.spinBoxIntensity.value()
@@ -2038,12 +2068,37 @@ vertical layout created in the function setUpMainLayout.</p></div>
 <span>def <span class="ident">adjustLevelsByRightMouseButtonDrag</span></span>(<span>self, deltaX, deltaY)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function allows the image intensity and contrast to be
+adjusted by pressing the right mouse key and draging the
+mouse pointer across the image. </p>
+<p>Pressing the right mouse key &amp; draging the mouse pointer down
+and to the right increases the image intensity and contrast.
+Pressing the right mouse key and draging the mouse pointer up
+and to the left decreases the image intensity and contrast.</p>
+<p>Input parameters</p>
+<hr>
+<p>deltaX - change in mouse pointer position in the x direction
+deltaY - change in mouse pointer position in the y direction</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def adjustLevelsByRightMouseButtonDrag(self, deltaX, deltaY):
+    &#34;&#34;&#34;
+    This function allows the image intensity and contrast to be 
+    adjusted by pressing the right mouse key and draging the 
+    mouse pointer across the image. 
+
+    Pressing the right mouse key &amp; draging the mouse pointer down 
+    and to the right increases the image intensity and contrast.
+    Pressing the right mouse key and draging the mouse pointer up 
+    and to the left decreases the image intensity and contrast.
+
+    Input parameters
+    ****************
+    deltaX - change in mouse pointer position in the x direction
+    deltaY - change in mouse pointer position in the y direction
+    &#34;&#34;&#34;
     try:
         self.levelsCompositeComponentLayout.blockLevelsSpinBoxSignals(True)
         centre = self.spinBoxIntensity.value()
