@@ -33,6 +33,7 @@ class Message():
             self.msgSubWindow.setObjectName("Message")
             self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
+            self.parent.mdiArea.addSubWindow(self.msgSubWindow)
              
         self.widget.show()
         if parent is None:
@@ -79,6 +80,7 @@ class ProgressBar():
             self.msgSubWindow.setObjectName("Progress bar")
             self.msgSubWindow.setWindowTitle(title)
             self.msgSubWindow.setWidget(self.widget)
+            self.parent.mdiArea.addSubWindow(self.msgSubWindow)
              
         self.widget.show()
         QApplication.processEvents()
@@ -96,6 +98,4 @@ class ProgressBar():
     def close(self):
         if self.parent is not None:
             self.msgSubWindow.close()
-
-
 
