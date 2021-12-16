@@ -52,10 +52,10 @@ class Display():
             imageViewer(self, dcm)
         elif dcm.__class__.__name__ == &#34;Series&#34;:
             imageViewer(self, dcm)
-        elif self.__class__.__name__ == &#34;ImagesList&#34;:
+        elif dcm.__class__.__name__ == &#34;ImagesList&#34;:
             for image in dcm:
                 self.display(image)
-        elif self.__class__.__name__ == &#34;SeriesList&#34;:
+        elif dcm.__class__.__name__ == &#34;SeriesList&#34;:
             for series in dcm:
                 self.display(series)
 
@@ -170,10 +170,10 @@ class Display():
             imageViewer(self, dcm)
         elif dcm.__class__.__name__ == &#34;Series&#34;:
             imageViewer(self, dcm)
-        elif self.__class__.__name__ == &#34;ImagesList&#34;:
+        elif dcm.__class__.__name__ == &#34;ImagesList&#34;:
             for image in dcm:
                 self.display(image)
-        elif self.__class__.__name__ == &#34;SeriesList&#34;:
+        elif dcm.__class__.__name__ == &#34;SeriesList&#34;:
             for series in dcm:
                 self.display(series)
 
@@ -334,10 +334,10 @@ when the SubWindow was created</p></div>
         imageViewer(self, dcm)
     elif dcm.__class__.__name__ == &#34;Series&#34;:
         imageViewer(self, dcm)
-    elif self.__class__.__name__ == &#34;ImagesList&#34;:
+    elif dcm.__class__.__name__ == &#34;ImagesList&#34;:
         for image in dcm:
             self.display(image)
-    elif self.__class__.__name__ == &#34;SeriesList&#34;:
+    elif dcm.__class__.__name__ == &#34;SeriesList&#34;:
         for series in dcm:
             self.display(series)</code></pre>
 </details>

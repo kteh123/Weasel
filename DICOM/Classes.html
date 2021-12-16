@@ -154,7 +154,7 @@ class ImagesList(ListOfDicomObjects):
         &#34;&#34;&#34;
         Displays all images as a series.
         &#34;&#34;&#34;
-        weasel = self[0].objWeasel.display(self)
+        self[0].objWeasel.display(self)
 
 
     def sort(self, *argv, reverse=False):
@@ -3040,7 +3040,7 @@ def parent(self):
         &#34;&#34;&#34;
         Displays all images as a series.
         &#34;&#34;&#34;
-        weasel = self[0].objWeasel.display(self)
+        self[0].objWeasel.display(self)
 
 
     def sort(self, *argv, reverse=False):
@@ -3231,7 +3231,7 @@ def paths(self):
     &#34;&#34;&#34;
     Displays all images as a series.
     &#34;&#34;&#34;
-    weasel = self[0].objWeasel.display(self)</code></pre>
+    self[0].objWeasel.display(self)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.ImagesList.get_value"><code class="name flex">

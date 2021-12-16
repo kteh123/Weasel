@@ -40,18 +40,9 @@ def main(weasel):
     for study in studies:
         imgs = study.all_images
         new_study_description = &#39;Sorted by slice location_&#39; + study.studyID
-        #new_study = study.new(studyID=&#39;Sorted by slice location&#39;)
         series_number = 1
         for loc in weasel.unique_elements(imgs.get_value(&#34;SliceLocation&#34;)):
             imgs_loc = imgs.where(&#34;SliceLocation&#34;, &#34;==&#34;, loc)
-            # This option?
-            #series = newSeriesFrom(imgs_loc)
-            #series[&#34;SeriesDescription&#34;] = &#39;Slice location [&#39; + str(loc) + &#39;]&#39;
-            # Or this option?
-            #series = imgs_loc.merge(series_name=&#39;Slice location [&#39; + str(loc) + &#39;]&#39;)
-            # New series is created from merge and using the same images, so changing the Study Description should be enough
-            #series[&#34;StudyDescription&#34;] = new_study_description
-            # Or more robust option
             series = imgs_loc.merge(series_number=series_number, series_name=&#39;Slice location [&#39; + str(loc) + &#39;]&#39;, study_name=new_study_description, progress_bar=False, overwrite=False)
             series_number += 1
             # loc can be series_number actually
@@ -113,18 +104,9 @@ def suggestion(weasel):
     for study in studies:
         imgs = study.all_images
         new_study_description = &#39;Sorted by slice location_&#39; + study.studyID
-        #new_study = study.new(studyID=&#39;Sorted by slice location&#39;)
         series_number = 1
         for loc in weasel.unique_elements(imgs.get_value(&#34;SliceLocation&#34;)):
             imgs_loc = imgs.where(&#34;SliceLocation&#34;, &#34;==&#34;, loc)
-            # This option?
-            #series = newSeriesFrom(imgs_loc)
-            #series[&#34;SeriesDescription&#34;] = &#39;Slice location [&#39; + str(loc) + &#39;]&#39;
-            # Or this option?
-            #series = imgs_loc.merge(series_name=&#39;Slice location [&#39; + str(loc) + &#39;]&#39;)
-            # New series is created from merge and using the same images, so changing the Study Description should be enough
-            #series[&#34;StudyDescription&#34;] = new_study_description
-            # Or more robust option
             series = imgs_loc.merge(series_number=series_number, series_name=&#39;Slice location [&#39; + str(loc) + &#39;]&#39;, study_name=new_study_description, progress_bar=False, overwrite=False)
             series_number += 1
             # loc can be series_number actually

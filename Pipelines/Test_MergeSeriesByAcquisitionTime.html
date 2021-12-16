@@ -40,15 +40,8 @@ def main(weasel):
     seriesList = weasel.series()
     for series in seriesList:
         for time in weasel.unique_elements(series[&#34;AcquisitionTime&#34;]):
-            # This option?
             series_time = series.copy().where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time) # Without copy, you overwrite
             series_time[&#34;SeriesDescription&#34;] = &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;
-            # Or this option?
-            #series_time = series.where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time)
-            #series_time.copy(suffix=&#39;&#39;, series_name=&#39;[ Acquisition time: &#39; + time + &#39; ]&#39;)
-            # Or even overwrite?
-            #series_time = series.where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time) # Without copy, you overwrite
-            #series_time[&#34;SeriesDescription&#34;] = &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;
     weasel.refresh()
 
 
@@ -66,17 +59,7 @@ def suggestion(weasel):
             # Merge a copy of them into a new series
             series_time = series_time.copy().merge()
             # rename the series description
-            series_time.SeriesDescription += &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;
-
-
-
-   
-
-
-
-
-
-        </code></pre>
+            series_time.SeriesDescription += &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;</code></pre>
 </details>
 </section>
 <section>
@@ -112,15 +95,8 @@ def suggestion(weasel):
     seriesList = weasel.series()
     for series in seriesList:
         for time in weasel.unique_elements(series[&#34;AcquisitionTime&#34;]):
-            # This option?
             series_time = series.copy().where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time) # Without copy, you overwrite
             series_time[&#34;SeriesDescription&#34;] = &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;
-            # Or this option?
-            #series_time = series.where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time)
-            #series_time.copy(suffix=&#39;&#39;, series_name=&#39;[ Acquisition time: &#39; + time + &#39; ]&#39;)
-            # Or even overwrite?
-            #series_time = series.where(&#34;AcquisitionTime&#34;, &#34;==&#34;, time) # Without copy, you overwrite
-            #series_time[&#34;SeriesDescription&#34;] = &#39;[ Acquisition time: &#39; + time + &#39; ]&#39;
     weasel.refresh()</code></pre>
 </details>
 </dd>

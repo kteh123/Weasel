@@ -38,14 +38,13 @@ def main(weasel):
     for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg=&#34;Anonymising images {}&#34;)
 
-        ds = image.read()               # Load the dataset into memory
-        ds.PatientName = &#34;Anonymous&#34;    # replace PatientName
-        ds.PatientID = &#34;Anonymous&#34;
-        ds.PatientBirthDate = &#34;19000101&#34;
-        ds.OtherPatientNames = [&#34;Anonymous 1&#34;, &#34;Anonymous 2&#34;]
-        ds.OtherPatientIDsSequence = [Dataset(),Dataset()]
-        ds.ReferencePatientPhotoSequence = [Dataset(),Dataset()]
-        image.copy().save(ds)   # write the dataset to disk in a copy                
+        new_image = image.copy()
+        new_image[&#34;PatientName&#34;] = &#34;Anonymous&#34;    # replace PatientName
+        new_image[&#34;PatientID&#34;] = &#34;Anonymous&#34;
+        new_image[&#34;PatientBirthDate&#34;] = &#34;19000101&#34;
+        new_image[&#34;OtherPatientNames&#34;] = [&#34;Anonymous 1&#34;, &#34;Anonymous 2&#34;]
+        new_image[&#34;OtherPatientIDsSequence&#34;] = [Dataset(),Dataset()]
+        new_image[&#34;ReferencePatientPhotoSequence&#34;] = [Dataset(),Dataset()]         
 
     weasel.refresh()                # Refresh weasel
 
@@ -76,14 +75,13 @@ def main(weasel):
     for i, image in enumerate(list_of_images):      # Loop over Series in the list and display a progress Bar
         weasel.progress_bar(max=len(list_of_images), index=i+1, msg=&#34;Anonymising images {}&#34;)
 
-        ds = image.read()               # Load the dataset into memory
-        ds.PatientName = &#34;Anonymous&#34;    # replace PatientName
-        ds.PatientID = &#34;Anonymous&#34;
-        ds.PatientBirthDate = &#34;19000101&#34;
-        ds.OtherPatientNames = [&#34;Anonymous 1&#34;, &#34;Anonymous 2&#34;]
-        ds.OtherPatientIDsSequence = [Dataset(),Dataset()]
-        ds.ReferencePatientPhotoSequence = [Dataset(),Dataset()]
-        image.copy().save(ds)   # write the dataset to disk in a copy                
+        new_image = image.copy()
+        new_image[&#34;PatientName&#34;] = &#34;Anonymous&#34;    # replace PatientName
+        new_image[&#34;PatientID&#34;] = &#34;Anonymous&#34;
+        new_image[&#34;PatientBirthDate&#34;] = &#34;19000101&#34;
+        new_image[&#34;OtherPatientNames&#34;] = [&#34;Anonymous 1&#34;, &#34;Anonymous 2&#34;]
+        new_image[&#34;OtherPatientIDsSequence&#34;] = [Dataset(),Dataset()]
+        new_image[&#34;ReferencePatientPhotoSequence&#34;] = [Dataset(),Dataset()]         
 
     weasel.refresh()                # Refresh weasel</code></pre>
 </details>
