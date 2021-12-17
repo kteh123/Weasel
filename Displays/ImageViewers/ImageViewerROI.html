@@ -146,6 +146,7 @@ class ImageViewerROI(QMdiSubWindow):
                 self.isSeries = True
                 self.isImage = False
 
+            self.SubWindowOptions( QMdiSubWindow.RubberBandResize | QMdiSubWindow.RubberBandMove)
             self.setWindowFlags(Qt.CustomizeWindowHint | 
                                           Qt.WindowCloseButtonHint | 
                                           Qt.WindowMinimizeButtonHint |
@@ -1125,6 +1126,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
                 self.isSeries = True
                 self.isImage = False
 
+            self.SubWindowOptions( QMdiSubWindow.RubberBandResize | QMdiSubWindow.RubberBandMove)
             self.setWindowFlags(Qt.CustomizeWindowHint | 
                                           Qt.WindowCloseButtonHint | 
                                           Qt.WindowMinimizeButtonHint |
