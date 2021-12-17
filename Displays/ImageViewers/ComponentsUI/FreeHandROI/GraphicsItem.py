@@ -161,7 +161,6 @@ class GraphicsItem(QGraphicsObject):
         logger.info("FreeHandROI.GraphicsItem.hoverLeaveEvent called")
         try:
             QApplication.restoreOverrideCursor()
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.sigMouseHovered.emit(False)
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.hoverEnterEvent: ' + str(e))
