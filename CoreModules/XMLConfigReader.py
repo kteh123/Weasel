@@ -1,5 +1,5 @@
 """
-Class for reading the Weasel XML configuration file.
+Class for reading the Weasel XML configuration file `config.xml`.
 """
 import os, sys
 import xml.etree.cElementTree as ET
@@ -28,6 +28,7 @@ class XMLConfigReader:
 
 
     def getMenuConfigFile(self):
+        """This method gets the menu file name in the `<menu_config_file>` field."""
         try:
             menu = self.root.find('./menu_config_file')
             if menu.text is None:
@@ -40,6 +41,7 @@ class XMLConfigReader:
 
 
     def getWeaselDataFolder(self):
+        """This method gets the default DICOM data folder in the `<weasel_data_folder>` field."""
         try:
             folder = self.root.find('./weasel_data_folder')
             if folder.text is None:

@@ -1,8 +1,7 @@
 """
 Class for building the menus in the menu bar of Weasel.
 
-MenuBuilder generates the menus defined either in an XML file or
-a Python script.
+MenuBuilder generates the menus defined either in an XML file or a Python script.
 """
 import CoreModules.XMLMenuBuilder as xmlMenuBuilder
 
@@ -17,7 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class MenuBuilder():
+    """
+    This class creates the top-level menus and submenus in the Weasel GUI, depending if the file menu is a Python or XML file.
 
+    If the menu file is Python, then the SubMenuBuilder is used to build the menus. If the menu file is XML, then the module `XMLMenuBuilder.py` is used to build the menu in the Weasel GUI.
+    """
     def __init__(self, weasel):
 
         self.weasel = weasel
@@ -30,6 +33,7 @@ class MenuBuilder():
             menuConfigFile = self.weasel.objConfigXMLReader.getMenuConfigFile()
             if menuConfigFile:
                 #a menu config file has been defined
+                # If it's a Python menu
                 if isPythonFile(menuConfigFile):
                     moduleFileName = [pythonFilePath 
                                         for pythonFilePath in self.listPythonFiles 
@@ -40,6 +44,7 @@ class MenuBuilder():
                     objFunction = getattr(module, "main")
                     #execute python functions to build the menus and menu items
                     objFunction(self.weasel)
+                # If it's an XML menu
                 elif isXMLFile(menuConfigFile):
                     xmlMenuBuilder.setupMenus(self.weasel, menuConfigFile)
                     xmlMenuBuilder.buildContextMenu(self.weasel, menuConfigFile)
@@ -52,7 +57,7 @@ class MenuBuilder():
 
 
 class SubMenuBuilder:
-    """This class allows menus to be built using its member functions"""
+    """This class allows menus to be built in Weasel GUI based on Python menu files."""
 
     def __init__(self, weasel, topMenuName): 
         try:

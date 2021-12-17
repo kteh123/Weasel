@@ -224,7 +224,7 @@ class TreeView():
 
 
     def refreshDICOMStudiesTreeView(self):
-        """Refreshed the Tree View and saves the checked state."""
+        """Refreshes the Tree View and saves the checked state."""
         try:
             logger.info("TreeView.refreshDICOMStudiesTreeView called.")
             QApplication.setOverrideCursor(Qt.WaitCursor)

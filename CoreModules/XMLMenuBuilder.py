@@ -1,6 +1,6 @@
 """
-Module of helper functions for building the menus in the menu bar of the MDI 
-using the definition in an XML file.
+Module of helper functions for building the menus in the menu bar of the MDI (Weasel GUI)
+using the definition in an XML file. It calls the `XMLMenuReader.py` in order to read the XML menu file.
 """
 
 from PyQt5.QtWidgets import QAction, QToolTip 
@@ -35,6 +35,7 @@ def setupMenus(weasel, menuXMLFile):
 
 
 def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
+    """This method creates one button (`item`) in the `topMenu`."""
     try:
         #create action button on the fly
         logger.info("Menus.buildUserDefinedToolsMenuItem called.")
@@ -86,6 +87,7 @@ def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
 
 
 def buildContextMenuItem(weasel, context, item):
+    """This method creates one button (`item`) in the `context`, i.e. in the right-click submenu."""
     try:
         menuItem = QAction(item.find('label').text, weasel)
         menuItem.setEnabled(True)
@@ -134,8 +136,8 @@ def buildContextMenu(weasel, menuXMLFile):
             buildContextMenuItem(weasel, weasel.menuBuilder.context, item)
 
     except Exception as e:
-            exception_type, exception_object, exception_traceback = sys.exc_info()
-            #filename = exception_traceback.tb_frame.f_code.co_filename
-            line_number = exception_traceback.tb_lineno
-            print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
-            logger.exception('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))
+        logger.exception('Error in function Menus.buildContextMenu at line number {}: '.format(line_number) + str(e))

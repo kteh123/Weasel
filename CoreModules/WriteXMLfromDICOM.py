@@ -224,6 +224,9 @@ def get_scan_data(scan_directory, progBarMsg, self):
 
 
 def get_study_series(dicom):
+    """This method extracts information about subject, study and series 
+    of a single DICOM file and returns a list of strings. It is used in the `build_dictionary` method.
+    """
     try:
         logger.info("WriteXMLfromDICOM.get_study_series called")
         subject = str(dicom.PatientID)
@@ -239,6 +242,8 @@ def get_study_series(dicom):
 
 
 def build_dictionary(list_dicom):
+    """This method takes the list of all DICOM files, extracts all the information regarding 
+    the subjects, studies and series they belong to and store that in a hierarchical dictionary."""
     try:
         logger.info("WriteXMLfromDICOM.build_dictionary called")
         xml_dict = {}

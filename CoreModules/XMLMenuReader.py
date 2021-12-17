@@ -18,11 +18,6 @@ class XMLMenuReader:
                         self.fullFilePath = os.path.join(dirpath, individualFile)
                         break
             
-            # ISSUE 36
-            # weasel_parent = parent_folder(parent_folder('Weasel.py'))
-            # self.fullFilePath = search(weasel_parent, menuXMLFile)
-
-            #self.fullFilePath = "MenuFiles\\" + menuXMLFile
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
