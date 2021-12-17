@@ -1,5 +1,5 @@
 """
-Class for reading the Weasel XML configuration file
+Class for reading the Weasel XML configuration file.
 """
 import os, sys
 import xml.etree.cElementTree as ET

@@ -1,3 +1,8 @@
+"""
+Class for reading the DICOM files and folders selected by the user and store its structure information in an XML file.
+
+It ouptputs an XML file that describes a DICOM file structure that is used to build a tree view showing a visual representation of that file structure (see `TreeView.py`).
+"""
 import os
 import sys
 import time

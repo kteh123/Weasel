@@ -1,4 +1,5 @@
-""" Class for reading and summarizing contents of a DICOM folder.
+"""
+Class for reading and summarizing contents of a DICOM folder.
 
 The DICOMfolder reads a folder containing DICOM files,
 summarizes the content as a pandas DataFrame, and exports as csv.

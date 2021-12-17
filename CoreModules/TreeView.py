@@ -1,5 +1,9 @@
-"""Class TreeView uses an XML file that describes a DICOM file structure to build a
-    tree view showing a visual representation of that file structure."""
+"""
+Class for building a tree view showing a visual representation of DICOM file structure.
+
+It uses an XML file that describes a DICOM file structure to build a
+tree view showing a visual representation of that file structure.
+"""
 
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QApplication, QAbstractItemView,

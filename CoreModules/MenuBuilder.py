@@ -1,6 +1,7 @@
-"""Class for building the menus in the menu bar of Weasel.
+"""
+Class for building the menus in the menu bar of Weasel.
 
-class MenuBuilder generates the menus defined either in an XML file or
+MenuBuilder generates the menus defined either in an XML file or
 a Python script.
 """
 import CoreModules.XMLMenuBuilder as xmlMenuBuilder

@@ -1,3 +1,6 @@
+"""
+Class for reading, editing and writing the XML file summarising the contents of a DICOM folder.
+"""
 import xml.etree.cElementTree as ET  
 from datetime import datetime
 import logging
