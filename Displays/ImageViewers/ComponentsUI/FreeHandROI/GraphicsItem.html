@@ -189,7 +189,6 @@ class GraphicsItem(QGraphicsObject):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverLeaveEvent called&#34;)
         try:
             QApplication.restoreOverrideCursor()
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.sigMouseHovered.emit(False)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverEnterEvent: &#39; + str(e))
@@ -830,7 +829,6 @@ def readLevels(path, pixelArray):
         logger.info(&#34;FreeHandROI.GraphicsItem.hoverLeaveEvent called&#34;)
         try:
             QApplication.restoreOverrideCursor()
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             self.sigMouseHovered.emit(False)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverEnterEvent: &#39; + str(e))
@@ -1552,7 +1550,6 @@ def readLevels(path, pixelArray):
     logger.info(&#34;FreeHandROI.GraphicsItem.hoverLeaveEvent called&#34;)
     try:
         QApplication.restoreOverrideCursor()
-        #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         self.sigMouseHovered.emit(False)
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.hoverEnterEvent: &#39; + str(e))

@@ -483,13 +483,11 @@ class ImageViewerROI(QMdiSubWindow):
 
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
-        #print(&#34;ImageViewerROI checked={}&#34;.format(checked))
         if checked:
             self.setButtonsToDefaultStyle()
             self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.drawROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.drawEnabled = False
             self.btnDraw.setStyleSheet(
@@ -504,7 +502,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.eraseROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.eraseEnabled = False
             self.btnErase.setStyleSheet(
@@ -519,7 +516,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.paintROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.paintEnabled = False
             self.btnPaint.setStyleSheet(
@@ -537,7 +533,6 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.eraseEnabled = False
             self.btnZoom.setStyleSheet(&#34;background-color: red&#34;)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.setZoomEnabled(False)
             self.btnZoom.setStyleSheet(
@@ -1468,13 +1463,11 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
     def drawROI(self, checked):
         logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
-        #print(&#34;ImageViewerROI checked={}&#34;.format(checked))
         if checked:
             self.setButtonsToDefaultStyle()
             self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.drawROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.drawEnabled = False
             self.btnDraw.setStyleSheet(
@@ -1489,7 +1482,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
             self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.eraseROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.eraseEnabled = False
             self.btnErase.setStyleSheet(
@@ -1504,7 +1496,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
             self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
             self.graphicsView.paintROI(checked)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.paintEnabled = False
             self.btnPaint.setStyleSheet(
@@ -1522,7 +1513,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
             self.graphicsView.graphicsItem.eraseEnabled = False
             self.btnZoom.setStyleSheet(&#34;background-color: red&#34;)
         else:
-            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.setZoomEnabled(False)
             self.btnZoom.setStyleSheet(
@@ -2368,13 +2358,11 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
 </summary>
 <pre><code class="python">def drawROI(self, checked):
     logger.info(&#34;ImageViewerROI.drawROI called.&#34;)
-    #print(&#34;ImageViewerROI checked={}&#34;.format(checked))
     if checked:
         self.setButtonsToDefaultStyle()
         self.btnDraw.setStyleSheet(&#34;background-color: red&#34;)
         self.graphicsView.drawROI(checked)
     else:
-        ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         QApplication.restoreOverrideCursor()
         self.graphicsView.drawEnabled = False
         self.btnDraw.setStyleSheet(
@@ -2398,7 +2386,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
         self.btnErase.setStyleSheet(&#34;background-color: red&#34;)
         self.graphicsView.eraseROI(checked)
     else:
-        ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         QApplication.restoreOverrideCursor()
         self.graphicsView.eraseEnabled = False
         self.btnErase.setStyleSheet(
@@ -2609,7 +2596,6 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
         self.btnPaint.setStyleSheet(&#34;background-color: red&#34;)
         self.graphicsView.paintROI(checked)
     else:
-        ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         QApplication.restoreOverrideCursor()
         self.graphicsView.paintEnabled = False
         self.btnPaint.setStyleSheet(
@@ -3325,7 +3311,6 @@ zoom value</p></div>
         self.graphicsView.graphicsItem.eraseEnabled = False
         self.btnZoom.setStyleSheet(&#34;background-color: red&#34;)
     else:
-        ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         QApplication.restoreOverrideCursor()
         self.graphicsView.setZoomEnabled(False)
         self.btnZoom.setStyleSheet(
