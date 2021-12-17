@@ -1017,7 +1017,6 @@ class ImageViewerROI(QMdiSubWindow):
                 #Check that pixel array holds an image &amp; display it
                 if self.pixelArray is None:
                     self.lblImageMissing.show()
-                    self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
                     self.loadImageInImageItem(True)
@@ -1997,7 +1996,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
                 #Check that pixel array holds an image &amp; display it
                 if self.pixelArray is None:
                     self.lblImageMissing.show()
-                    self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
                     self.loadImageInImageItem(True)
@@ -2305,7 +2303,6 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             #Check that pixel array holds an image &amp; display it
             if self.pixelArray is None:
                 self.lblImageMissing.show()
-                self.deleteButton.hide()
                 self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
             else:
                 self.loadImageInImageItem(True)
