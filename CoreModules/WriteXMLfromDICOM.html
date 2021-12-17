@@ -254,6 +254,9 @@ def get_scan_data(scan_directory, progBarMsg, self):
 
 
 def get_study_series(dicom):
+    &#34;&#34;&#34;This method extracts information about subject, study and series 
+    of a single DICOM file and returns a list of strings. It is used in the `build_dictionary` method.
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;WriteXMLfromDICOM.get_study_series called&#34;)
         subject = str(dicom.PatientID)
@@ -269,6 +272,8 @@ def get_study_series(dicom):
 
 
 def build_dictionary(list_dicom):
+    &#34;&#34;&#34;This method takes the list of all DICOM files, extracts all the information regarding 
+    the subjects, studies and series they belong to and store that in a hierarchical dictionary.&#34;&#34;&#34;
     try:
         logger.info(&#34;WriteXMLfromDICOM.build_dictionary called&#34;)
         xml_dict = {}
@@ -475,12 +480,15 @@ def makeDICOM_XML_File(self, scan_directory):
 <span>def <span class="ident">build_dictionary</span></span>(<span>list_dicom)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method takes the list of all DICOM files, extracts all the information regarding
+the subjects, studies and series they belong to and store that in a hierarchical dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def build_dictionary(list_dicom):
+    &#34;&#34;&#34;This method takes the list of all DICOM files, extracts all the information regarding 
+    the subjects, studies and series they belong to and store that in a hierarchical dictionary.&#34;&#34;&#34;
     try:
         logger.info(&#34;WriteXMLfromDICOM.build_dictionary called&#34;)
         xml_dict = {}
@@ -767,12 +775,16 @@ each file individually as a variable into a list/array.</p></div>
 <span>def <span class="ident">get_study_series</span></span>(<span>dicom)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method extracts information about subject, study and series
+of a single DICOM file and returns a list of strings. It is used in the <code><a title="Weasel.CoreModules.WriteXMLfromDICOM.build_dictionary" href="#Weasel.CoreModules.WriteXMLfromDICOM.build_dictionary">build_dictionary()</a></code> method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_study_series(dicom):
+    &#34;&#34;&#34;This method extracts information about subject, study and series 
+    of a single DICOM file and returns a list of strings. It is used in the `build_dictionary` method.
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;WriteXMLfromDICOM.get_study_series called&#34;)
         subject = str(dicom.PatientID)

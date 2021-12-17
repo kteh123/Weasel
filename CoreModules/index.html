@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.CoreModules API documentation</title>
-<meta name="description" content="These modules are an important part of the Weasel infrastructure. Users are
-recommended not to amend these modules." />
+<meta name="description" content="This is a collection of essential python modules to start Weasel GUI …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,15 +22,29 @@ recommended not to amend these modules." />
 <h1 class="title">Module <code>Weasel.CoreModules</code></h1>
 </header>
 <section id="section-intro">
-<p>These modules are an important part of the Weasel infrastructure. Users are
-recommended not to amend these modules.</p>
+<p>This is a collection of essential python modules to start Weasel GUI.</p>
+<p>Some of these classes do the following:
+- set a generic layout
+- read and manage configuration files
+- support customised menu building
+- read and store DICOM data in XML files
+- build a tree view index based on the DICOM data provided</p>
+<p><strong>NOTE</strong>: These modules are an important part of the Weasel infrastructure. Users are recommended not to amend these.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-These modules are an important part of the Weasel infrastructure. Users are
-recommended not to amend these modules.
+This is a collection of essential python modules to start Weasel GUI.
+
+Some of these classes do the following:
+        - set a generic layout
+        - read and manage configuration files
+        - support customised menu building
+        - read and store DICOM data in XML files
+        - build a tree view index based on the DICOM data provided
+
+**NOTE**: These modules are an important part of the Weasel infrastructure. Users are recommended not to amend these.
 &#34;&#34;&#34;
 
 import CoreModules.WriteXMLfromDICOM
@@ -70,12 +83,12 @@ define the appearance and behaviour of the PyQt widgets in the Weasel GUI …</p
 </dd>
 <dt><code class="name"><a title="Weasel.CoreModules.XMLConfigReader" href="XMLConfigReader.html">Weasel.CoreModules.XMLConfigReader</a></code></dt>
 <dd>
-<div class="desc"><p>Class for reading the Weasel XML configuration file.</p></div>
+<div class="desc"><p>Class for reading the Weasel XML configuration file <code>config.xml</code>.</p></div>
 </dd>
 <dt><code class="name"><a title="Weasel.CoreModules.XMLMenuBuilder" href="XMLMenuBuilder.html">Weasel.CoreModules.XMLMenuBuilder</a></code></dt>
 <dd>
-<div class="desc"><p>Module of helper functions for building the menus in the menu bar of the MDI
-using the definition in an XML file.</p></div>
+<div class="desc"><p>Module of helper functions for building the menus in the menu bar of the MDI (Weasel GUI)
+using the definition in an XML file. It calls the …</p></div>
 </dd>
 <dt><code class="name"><a title="Weasel.CoreModules.XMLMenuReader" href="XMLMenuReader.html">Weasel.CoreModules.XMLMenuReader</a></code></dt>
 <dd>

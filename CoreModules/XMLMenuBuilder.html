@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.CoreModules.XMLMenuBuilder API documentation</title>
-<meta name="description" content="Module of helper functions for building the menus in the menu bar of the MDI
-using the definition in an XML file." />
+<meta name="description" content="Module of helper functions for building the menus in the menu bar of the MDI (Weasel GUI)
+using the definition in an XML file. It calls the …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,15 +23,15 @@ using the definition in an XML file." />
 <h1 class="title">Module <code>Weasel.CoreModules.XMLMenuBuilder</code></h1>
 </header>
 <section id="section-intro">
-<p>Module of helper functions for building the menus in the menu bar of the MDI
-using the definition in an XML file.</p>
+<p>Module of helper functions for building the menus in the menu bar of the MDI (Weasel GUI)
+using the definition in an XML file. It calls the <code>XMLMenuReader.py</code> in order to read the XML menu file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Module of helper functions for building the menus in the menu bar of the MDI 
-using the definition in an XML file.
+Module of helper functions for building the menus in the menu bar of the MDI (Weasel GUI)
+using the definition in an XML file. It calls the `XMLMenuReader.py` in order to read the XML menu file.
 &#34;&#34;&#34;
 
 from PyQt5.QtWidgets import QAction, QToolTip 
@@ -66,6 +66,7 @@ def setupMenus(weasel, menuXMLFile):
 
 
 def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
+    &#34;&#34;&#34;This method creates one button (`item`) in the `topMenu`.&#34;&#34;&#34;
     try:
         #create action button on the fly
         logger.info(&#34;Menus.buildUserDefinedToolsMenuItem called.&#34;)
@@ -117,6 +118,7 @@ def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
 
 
 def buildContextMenuItem(weasel, context, item):
+    &#34;&#34;&#34;This method creates one button (`item`) in the `context`, i.e. in the right-click submenu.&#34;&#34;&#34;
     try:
         menuItem = QAction(item.find(&#39;label&#39;).text, weasel)
         menuItem.setEnabled(True)
@@ -165,11 +167,11 @@ def buildContextMenu(weasel, menuXMLFile):
             buildContextMenuItem(weasel, weasel.menuBuilder.context, item)
 
     except Exception as e:
-            exception_type, exception_object, exception_traceback = sys.exc_info()
-            #filename = exception_traceback.tb_frame.f_code.co_filename
-            line_number = exception_traceback.tb_lineno
-            print(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))
-            logger.exception(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))</code></pre>
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))
+        logger.exception(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))</code></pre>
 </details>
 </section>
 <section>
@@ -199,23 +201,24 @@ def buildContextMenu(weasel, menuXMLFile):
             buildContextMenuItem(weasel, weasel.menuBuilder.context, item)
 
     except Exception as e:
-            exception_type, exception_object, exception_traceback = sys.exc_info()
-            #filename = exception_traceback.tb_frame.f_code.co_filename
-            line_number = exception_traceback.tb_lineno
-            print(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))
-            logger.exception(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))</code></pre>
+        exception_type, exception_object, exception_traceback = sys.exc_info()
+        #filename = exception_traceback.tb_frame.f_code.co_filename
+        line_number = exception_traceback.tb_lineno
+        print(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))
+        logger.exception(&#39;Error in function Menus.buildContextMenu at line number {}: &#39;.format(line_number) + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.CoreModules.XMLMenuBuilder.buildContextMenuItem"><code class="name flex">
 <span>def <span class="ident">buildContextMenuItem</span></span>(<span>weasel, context, item)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method creates one button (<code>item</code>) in the <code>context</code>, i.e. in the right-click submenu.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def buildContextMenuItem(weasel, context, item):
+    &#34;&#34;&#34;This method creates one button (`item`) in the `context`, i.e. in the right-click submenu.&#34;&#34;&#34;
     try:
         menuItem = QAction(item.find(&#39;label&#39;).text, weasel)
         menuItem.setEnabled(True)
@@ -252,12 +255,13 @@ def buildContextMenu(weasel, menuXMLFile):
 <span>def <span class="ident">buildUserDefinedToolsMenuItem</span></span>(<span>weasel, topMenu, item)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This method creates one button (<code>item</code>) in the <code>topMenu</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def buildUserDefinedToolsMenuItem(weasel, topMenu, item):
+    &#34;&#34;&#34;This method creates one button (`item`) in the `topMenu`.&#34;&#34;&#34;
     try:
         #create action button on the fly
         logger.info(&#34;Menus.buildUserDefinedToolsMenuItem called.&#34;)
