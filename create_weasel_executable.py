@@ -31,7 +31,7 @@ string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect
 if platform == "win32" or platform == "win64" or os.name == 'nt':
 	data_folders = ['API;.\\API', 'CoreModules;.\\CoreModules', 'Displays;.\\Displays', 'Documents;.\\Documents', 'Menus;.\\Menus', 'Pipelines;.\\Pipelines', 'External;.\\External']
 else:
-	data_folders = ['API:./API', 'CoreModules:./CoreModules', 'Displays:./Displays', 'Documents:./Documents', 'Menus:./Menus', 'Pipelines:./Pipelines', 'External;.\\External']
+	data_folders = ['API:./API', 'CoreModules:./CoreModules', 'Displays:./Displays', 'Documents:./Documents', 'Menus:./Menus', 'Pipelines:./Pipelines', 'External:./External']
 string_data = ' '.join(['--add-data='+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")

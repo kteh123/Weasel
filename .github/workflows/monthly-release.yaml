@@ -79,7 +79,7 @@ jobs:
       - name: Compress the output files for MacOS/Linux
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
         run: |
-          tar -czvf pyinstaller_output.tar.gz ./Weasel config.xml
+          tar -czvf pyinstaller_output.tar.gz Weasel config.xml
           
       - name: Upload the zipped Windows executable to the Release
         uses: actions/upload-release-asset@v1
