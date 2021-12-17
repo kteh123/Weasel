@@ -32,7 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: v${{ github.run_number }}_${{ github.sha }}
+          #tag_name: v${{ github.run_number }}_${{ github.sha }}
+          tag_name: Weasel-0.2
           release_name: Weasel ${{ steps.date.outputs.date }}
           body: |
             **Monthly Release:** ${{ steps.date.outputs.date }}
@@ -80,7 +81,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
         run: |
           tar -czvf pyinstaller_output.tar.gz Weasel config.xml
-          
+
       - name: Upload the zipped Windows executable to the Release
         uses: actions/upload-release-asset@v1
         if: ${{ matrix.os == 'windows-latest'}}
