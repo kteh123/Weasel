@@ -832,7 +832,9 @@ class ImageViewer(QMdiSubWindow):
 
     def updateImageUserSelection(self): ###
         """
-            """
+        Saves the user selected colour table, image intensity & contrast
+        for the current image only.
+        """
         try:
             logger.info('updateImageUserSelection called')
             if not self.btnApply.isChecked():
@@ -848,9 +850,7 @@ class ImageViewer(QMdiSubWindow):
                     #Workaround for the fact that when the first image is displayed,
                     #somehow self.selectedImageName looses its value.
                     self.selectedImageName = os.path.basename(self.imagePathList[0])
-            
-                #print("self.selectedImageName ={}".format(self.selectedImageName))
-                #print("colourTable = {}".format(self.colourTable))
+                #save colour table, image contrast & intensity for this image
                 self.userSelection.updateUserSelection(self.selectedImageName, self.colourTable, intensity, contrast)
         except Exception as e:
             print('Error in ImageViewer.updateImageUserSelection: ' + str(e))
@@ -858,6 +858,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def applyColourTableToAnImage(self):
+        """
+        This function applies the colour table selected in the
+        drop down list of colour tables to the image.
+        """
         self.colourTable = self.cmbColours.currentText()
         if self.colourTable.lower() == 'custom':
             self.colourTable = 'gray'                
