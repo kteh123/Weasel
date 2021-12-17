@@ -986,7 +986,6 @@ class ImageViewerROI(QMdiSubWindow):
                 #Check that pixel array holds an image & display it
                 if self.pixelArray is None:
                     self.lblImageMissing.show()
-                    self.deleteButton.hide()
                     self.graphicsView.setImage(np.array([[0,0,0],[0,0,0]]))  
                 else:
                     self.loadImageInImageItem(True)
