@@ -113,10 +113,12 @@ class ImageViewer(QMdiSubWindow):
                 self.isSeries = True
                 self.isImage = False
 
+            self.SubWindowOptions( QMdiSubWindow.RubberBandResize | QMdiSubWindow.RubberBandMove)
             self.setWindowFlags(Qt.CustomizeWindowHint | 
                                           Qt.WindowCloseButtonHint | 
                                           Qt.WindowMinimizeButtonHint |
                                           Qt.WindowMaximizeButtonHint)
+
         
             height, width = self.weasel.getMDIAreaDimensions()
             #self.subWindowWidth = width

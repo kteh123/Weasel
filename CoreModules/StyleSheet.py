@@ -6,6 +6,8 @@ The CSS commands are applied to each PyQt widget.
 """
 
 WEASEL_GREY = """
+                QMdiSubWindow:resize{cursor: n-resize;}
+
                 QPushButton {
                              background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #CCCCBB, stop: 1 #FFFFFF);
