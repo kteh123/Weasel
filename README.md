@@ -4,6 +4,7 @@
 ![Software](https://img.shields.io/badge/Software-Quantitative%20Imaging%20Framework-green)
 ![Status](https://img.shields.io/badge/Status-Prototype-orange)
 ![Version](https://img.shields.io/badge/Version-0.2-blue)
+[![DOI](https://zenodo.org/badge/311635272.svg)](https://zenodo.org/badge/latestdoi/311635272)
 
 # [Weasel](https://weasel.pro/)
 
