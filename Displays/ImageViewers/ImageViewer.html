@@ -866,7 +866,9 @@ class ImageViewer(QMdiSubWindow):
 
     def updateImageUserSelection(self): ###
         &#34;&#34;&#34;
-            &#34;&#34;&#34;
+        Saves the user selected colour table, image intensity &amp; contrast
+        for the current image only.
+        &#34;&#34;&#34;
         try:
             logger.info(&#39;updateImageUserSelection called&#39;)
             if not self.btnApply.isChecked():
@@ -882,9 +884,7 @@ class ImageViewer(QMdiSubWindow):
                     #Workaround for the fact that when the first image is displayed,
                     #somehow self.selectedImageName looses its value.
                     self.selectedImageName = os.path.basename(self.imagePathList[0])
-            
-                #print(&#34;self.selectedImageName ={}&#34;.format(self.selectedImageName))
-                #print(&#34;colourTable = {}&#34;.format(self.colourTable))
+                #save colour table, image contrast &amp; intensity for this image
                 self.userSelection.updateUserSelection(self.selectedImageName, self.colourTable, intensity, contrast)
         except Exception as e:
             print(&#39;Error in ImageViewer.updateImageUserSelection: &#39; + str(e))
@@ -892,6 +892,10 @@ class ImageViewer(QMdiSubWindow):
 
 
     def applyColourTableToAnImage(self):
+        &#34;&#34;&#34;
+        This function applies the colour table selected in the
+        drop down list of colour tables to the image.
+        &#34;&#34;&#34;
         self.colourTable = self.cmbColours.currentText()
         if self.colourTable.lower() == &#39;custom&#39;:
             self.colourTable = &#39;gray&#39;                
@@ -2007,7 +2011,9 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
     def updateImageUserSelection(self): ###
         &#34;&#34;&#34;
-            &#34;&#34;&#34;
+        Saves the user selected colour table, image intensity &amp; contrast
+        for the current image only.
+        &#34;&#34;&#34;
         try:
             logger.info(&#39;updateImageUserSelection called&#39;)
             if not self.btnApply.isChecked():
@@ -2023,9 +2029,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
                     #Workaround for the fact that when the first image is displayed,
                     #somehow self.selectedImageName looses its value.
                     self.selectedImageName = os.path.basename(self.imagePathList[0])
-            
-                #print(&#34;self.selectedImageName ={}&#34;.format(self.selectedImageName))
-                #print(&#34;colourTable = {}&#34;.format(self.colourTable))
+                #save colour table, image contrast &amp; intensity for this image
                 self.userSelection.updateUserSelection(self.selectedImageName, self.colourTable, intensity, contrast)
         except Exception as e:
             print(&#39;Error in ImageViewer.updateImageUserSelection: &#39; + str(e))
@@ -2033,6 +2037,10 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
 
     def applyColourTableToAnImage(self):
+        &#34;&#34;&#34;
+        This function applies the colour table selected in the
+        drop down list of colour tables to the image.
+        &#34;&#34;&#34;
         self.colourTable = self.cmbColours.currentText()
         if self.colourTable.lower() == &#39;custom&#39;:
             self.colourTable = &#39;gray&#39;                
@@ -2415,12 +2423,17 @@ provides the coordinates of the mouse pointer.</p></div>
 <span>def <span class="ident">applyColourTableToAnImage</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function applies the colour table selected in the
+drop down list of colour tables to the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def applyColourTableToAnImage(self):
+    &#34;&#34;&#34;
+    This function applies the colour table selected in the
+    drop down list of colour tables to the image.
+    &#34;&#34;&#34;
     self.colourTable = self.cmbColours.currentText()
     if self.colourTable.lower() == &#39;custom&#39;:
         self.colourTable = &#39;gray&#39;                
@@ -3732,14 +3745,17 @@ this function sets the corresponding values in the image being viewed.</p></div>
 <span>def <span class="ident">updateImageUserSelection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Saves the user selected colour table, image intensity &amp; contrast
+for the current image only.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def updateImageUserSelection(self): ###
     &#34;&#34;&#34;
-        &#34;&#34;&#34;
+    Saves the user selected colour table, image intensity &amp; contrast
+    for the current image only.
+    &#34;&#34;&#34;
     try:
         logger.info(&#39;updateImageUserSelection called&#39;)
         if not self.btnApply.isChecked():
@@ -3755,9 +3771,7 @@ this function sets the corresponding values in the image being viewed.</p></div>
                 #Workaround for the fact that when the first image is displayed,
                 #somehow self.selectedImageName looses its value.
                 self.selectedImageName = os.path.basename(self.imagePathList[0])
-        
-            #print(&#34;self.selectedImageName ={}&#34;.format(self.selectedImageName))
-            #print(&#34;colourTable = {}&#34;.format(self.colourTable))
+            #save colour table, image contrast &amp; intensity for this image
             self.userSelection.updateUserSelection(self.selectedImageName, self.colourTable, intensity, contrast)
     except Exception as e:
         print(&#39;Error in ImageViewer.updateImageUserSelection: &#39; + str(e))
