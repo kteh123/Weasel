@@ -23,15 +23,16 @@
 </header>
 <section id="section-intro">
 <p>Class for building the menus in the menu bar of Weasel.</p>
-<p>class MenuBuilder generates the menus defined either in an XML file or
+<p>MenuBuilder generates the menus defined either in an XML file or
 a Python script.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;Class for building the menus in the menu bar of Weasel.
+<pre><code class="python">&#34;&#34;&#34;
+Class for building the menus in the menu bar of Weasel.
 
-class MenuBuilder generates the menus defined either in an XML file or
+MenuBuilder generates the menus defined either in an XML file or
 a Python script.
 &#34;&#34;&#34;
 import CoreModules.XMLMenuBuilder as xmlMenuBuilder
@@ -264,7 +265,39 @@ def isXMLFile(fileName):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class MenuBuilder generates the menus defined either in an XML file or</code></pre>
+<pre><code class="python">class MenuBuilder():
+
+    def __init__(self, weasel):
+
+        self.weasel = weasel
+        self.context = QMenu(weasel)
+        self.listMenus = []
+        self.listPythonFiles = returnListPythonFiles()
+
+    def buildMenus(self):
+        try:
+            menuConfigFile = self.weasel.objConfigXMLReader.getMenuConfigFile()
+            if menuConfigFile:
+                #a menu config file has been defined
+                if isPythonFile(menuConfigFile):
+                    moduleFileName = [pythonFilePath 
+                                        for pythonFilePath in self.listPythonFiles 
+                                        if menuConfigFile in pythonFilePath][0]
+                    spec = importlib.util.spec_from_file_location(menuConfigFile, moduleFileName)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    objFunction = getattr(module, &#34;main&#34;)
+                    #execute python functions to build the menus and menu items
+                    objFunction(self.weasel)
+                elif isXMLFile(menuConfigFile):
+                    xmlMenuBuilder.setupMenus(self.weasel, menuConfigFile)
+                    xmlMenuBuilder.buildContextMenu(self.weasel, menuConfigFile)
+        except Exception as e:
+            print(&#39;Error in MenuBuilder.buildMenus: &#39; + str(e)) 
+            logger.exception(&#39;Error in MenuBuilder.buildMenus: &#39; + str(e)) 
+
+    def newSubMenu(self, label):
+        return SubMenuBuilder(self.weasel, label)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
