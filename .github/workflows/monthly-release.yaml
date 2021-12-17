@@ -1,7 +1,10 @@
-name: Create Weekly Weasel Release
+name: Create Monthly Weasel Release
 on:
+  push:
+    branches:
+      - master
   schedule:
-    - cron: "0 19 * * 5" #runs at 12:00 UTC every Friday
+    - cron: "0 12 1 * *" #runs at 12:00 UTC on the first day of every month
 
 jobs:
   release:
@@ -32,7 +35,7 @@ jobs:
           tag_name: v${{ github.run_number }}_${{ github.sha }}
           release_name: Weasel ${{ steps.date.outputs.date }}
           body: |
-            **Weekly Release:** ${{ steps.date.outputs.date }}
+            **Monthly Release:** ${{ steps.date.outputs.date }}
             **Full Changelog:** 
             ${{steps.changelog.outputs.changelog}}
           draft: false
@@ -76,7 +79,7 @@ jobs:
       - name: Compress the output files for MacOS/Linux
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
         run: |
-          tar -czvf pyinstaller_output.tar.gz Weasel config.xml
+          tar -czvf pyinstaller_output.tar.gz ./Weasel config.xml
           
       - name: Upload the zipped Windows executable to the Release
         uses: actions/upload-release-asset@v1

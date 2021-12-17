@@ -91,7 +91,7 @@ This alternative of Weasel is recommended if you're processing a large number of
 
 # Generate the Executable
 
-There is a Github Action Workflow in place that automatically builds the Weasel executable for Windows, MacOS and Linux and uploads the output files to a Weekly Release every Friday at midday.
+There is a Github Action Workflow in place that automatically builds the Weasel executable for Windows, MacOS and Linux and uploads the output files to a Monthly Release every Friday at midday.
 
 If you wish to create your own bundle, you can compile the Python project into an executable of the operative system you're using by using the `pyinstaller` package.
 
