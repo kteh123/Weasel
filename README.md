@@ -6,8 +6,6 @@
 
 # [Weasel](https://weasel.pro/)
 
-**!!!!!!!!!!!!!! UNDER CONSTRUCTION !!!!!!!!!!!!!!!!!**
-
 Weasel is a Python environment for developing and deploying quantitative medical imaging applications.
 
 It aims to simplify the process of testing prototype image processing pipelines on clinical data, by avoiding the need for dedicated graphical interface development and removing the overhead involved in interfacing with DICOM databases.
