@@ -1,5 +1,5 @@
 """
-This is a collection of essential python modules to start Weasel GUI.
+This is a collection of essential Python modules to start Weasel GUI.
 
 Some of these classes do the following:
         - set a generic layout
