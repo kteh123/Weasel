@@ -434,7 +434,8 @@ class ImageViewerROI(QMdiSubWindow):
         logger.info("DisplayImageDrawRIO.setButtonsToDefaultStyle called")
         try:
             logger.info("ImageViewerROI.setButtonsToDefaultStyle called.")
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            QApplication.restoreOverrideCursor()
             self.graphicsView.drawEnabled = False
             self.graphicsView.eraseEnabled = False
             self.graphicsView.paintEnabled = False
@@ -457,7 +458,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnDraw.setStyleSheet("background-color: red")
             self.graphicsView.drawROI(checked)
         else:
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            QApplication.restoreOverrideCursor()
             self.graphicsView.drawEnabled = False
             self.btnDraw.setStyleSheet(
              "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
@@ -471,7 +473,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnErase.setStyleSheet("background-color: red")
             self.graphicsView.eraseROI(checked)
         else:
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            QApplication.restoreOverrideCursor()
             self.graphicsView.eraseEnabled = False
             self.btnErase.setStyleSheet(
              "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
@@ -485,7 +488,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.btnPaint.setStyleSheet("background-color: red")
             self.graphicsView.paintROI(checked)
         else:
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            QApplication.restoreOverrideCursor()
             self.graphicsView.paintEnabled = False
             self.btnPaint.setStyleSheet(
              "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
@@ -502,7 +506,8 @@ class ImageViewerROI(QMdiSubWindow):
             self.graphicsView.graphicsItem.eraseEnabled = False
             self.btnZoom.setStyleSheet("background-color: red")
         else:
-            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            ##QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            QApplication.restoreOverrideCursor()
             self.graphicsView.setZoomEnabled(False)
             self.btnZoom.setStyleSheet(
              "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
