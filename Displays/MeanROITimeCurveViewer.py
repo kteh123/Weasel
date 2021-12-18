@@ -1,3 +1,6 @@
+"""
+Class GraphPlotter applied to plotting an MR signal/time curve
+"""
 from PyQt5.QtWidgets import (QMdiSubWindow, QVBoxLayout, QFormLayout, QWidget, QLabel, QFrame)
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt

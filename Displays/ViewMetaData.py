@@ -1,4 +1,6 @@
-
+"""
+    Creates a subwindow that displays a DICOM image's metadata. 
+"""
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,                            
         QMdiArea, QMessageBox, QWidget, QGridLayout, QVBoxLayout, QSpinBox,
