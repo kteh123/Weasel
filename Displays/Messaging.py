@@ -1,3 +1,8 @@
+"""
+Classes that provide pop-up windows that display messages 
+and progress bars to the user.
+"""
+
 from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
@@ -9,7 +14,10 @@ from PyQt5.QtWidgets import (QApplication,
 
 
 class Message():
-
+    """
+    Class that provides a pop-up window that displays a message 
+    to the user.
+    """
     def __init__(self,
             parent = None,
             message = "Your message here",
@@ -50,7 +58,10 @@ class Message():
 
 
 class ProgressBar():
-
+    """
+    Class that provides a pop-up window with a messages 
+    and progress bar to the user.
+    """
     def __init__(self,
             parent = None,
             value = 0,
