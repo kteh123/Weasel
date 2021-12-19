@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.Displays.Messaging API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Classes that provide pop-up windows that display messages
+and progress bars to the user." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +23,18 @@
 <h1 class="title">Module <code>Weasel.Displays.Messaging</code></h1>
 </header>
 <section id="section-intro">
+<p>Classes that provide pop-up windows that display messages
+and progress bars to the user.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PyQt5.QtCore import  Qt
+<pre><code class="python">&#34;&#34;&#34;
+Classes that provide pop-up windows that display messages 
+and progress bars to the user.
+&#34;&#34;&#34;
+
+from PyQt5.QtCore import  Qt
 from PyQt5.QtWidgets import (QApplication,                         
         QMdiArea, QWidget, QVBoxLayout, 
         QMdiSubWindow, QMainWindow,  
@@ -37,7 +45,10 @@ from PyQt5.QtWidgets import (QApplication,
 
 
 class Message():
-
+    &#34;&#34;&#34;
+    Class that provides a pop-up window that displays a message 
+    to the user.
+    &#34;&#34;&#34;
     def __init__(self,
             parent = None,
             message = &#34;Your message here&#34;,
@@ -78,7 +89,10 @@ class Message():
 
 
 class ProgressBar():
-
+    &#34;&#34;&#34;
+    Class that provides a pop-up window with a messages 
+    and progress bar to the user.
+    &#34;&#34;&#34;
     def __init__(self,
             parent = None,
             value = 0,
@@ -142,13 +156,17 @@ class ProgressBar():
 <span>(</span><span>parent=None, message='Your message here', title='Message ...')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Class that provides a pop-up window that displays a message
+to the user.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Message():
-
+    &#34;&#34;&#34;
+    Class that provides a pop-up window that displays a message 
+    to the user.
+    &#34;&#34;&#34;
     def __init__(self,
             parent = None,
             message = &#34;Your message here&#34;,
@@ -223,13 +241,17 @@ class ProgressBar():
 <span>(</span><span>parent=None, value=0, maximum=100, message='Your message here', title='Progress bar')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Class that provides a pop-up window with a messages
+and progress bar to the user.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ProgressBar():
-
+    &#34;&#34;&#34;
+    Class that provides a pop-up window with a messages 
+    and progress bar to the user.
+    &#34;&#34;&#34;
     def __init__(self,
             parent = None,
             value = 0,
