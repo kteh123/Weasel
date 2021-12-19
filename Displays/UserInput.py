@@ -1,4 +1,7 @@
-
+"""
+Class to create a pop-up input dialog that 
+allows the user to input one or more data items.
+"""
 from PyQt5.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox,
                              QStyledItemDelegate, QLabel, QSpinBox, QMessageBox, QScrollBar,
                              QDoubleSpinBox, QLineEdit, QListWidget, QAbstractItemView )
