@@ -1,16 +1,21 @@
+"""
+This class module provides the class variables and functions needed
+to store and retrieve the data associated with changing the colour table, 
+intensity and contrast levels in individual images in a DICOM series of images.
+"""
 import  os
 import logging
 logger = logging.getLogger(__name__)
 __author__ = "Steve Shillitoe"
 #September 2021
-"""This class module provides the class variables and functions needed
-to store and retrieve the data associated with changing the colour table, 
-intensity and contrast levels in individual images in a DICOM series of images."""
+
 class UserSelection:
     def __init__(self, imageList):
-        #Set up a dictionary of lists to hold user selected colour table and level data,
-        #where the key is the image name and the value a list of the form.
-        #    [colour table name, intensity level, contrast level]
+        """
+        Creates a dictionary of lists to hold user selected colour table and level data,
+        where the key is the image name and the value a list of the form.
+            [colour table name, intensity level, contrast level]
+        """
 
         self.imageDict = {}
         imageDataList = ['default', -1, -1]
@@ -47,8 +52,10 @@ class UserSelection:
 
 
     def clearUserSelection(self):
-        """Resets the colour table name,  intensity and contrast 
+        """
+        Resets the colour table name,  intensity and contrast 
         levels to their default values.
+
         Also, sets applyUserSelectionToAnImage to False to show that
         the user has not selected a new colour table etc for one or
         more images in the series
