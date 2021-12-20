@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This class module provides the class variables and functions needed
+to store and retrieve the data associated with changing the colour table,
+…" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,23 +24,31 @@
 <h1 class="title">Module <code>Weasel.Displays.ImageViewers.DataStructures.UserImageColourSelection</code></h1>
 </header>
 <section id="section-intro">
+<p>This class module provides the class variables and functions needed
+to store and retrieve the data associated with changing the colour table,
+intensity and contrast levels in individual images in a DICOM series of images.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import  os
+<pre><code class="python">&#34;&#34;&#34;
+This class module provides the class variables and functions needed
+to store and retrieve the data associated with changing the colour table, 
+intensity and contrast levels in individual images in a DICOM series of images.
+&#34;&#34;&#34;
+import  os
 import logging
 logger = logging.getLogger(__name__)
 __author__ = &#34;Steve Shillitoe&#34;
 #September 2021
-&#34;&#34;&#34;This class module provides the class variables and functions needed
-to store and retrieve the data associated with changing the colour table, 
-intensity and contrast levels in individual images in a DICOM series of images.&#34;&#34;&#34;
+
 class UserSelection:
     def __init__(self, imageList):
-        #Set up a dictionary of lists to hold user selected colour table and level data,
-        #where the key is the image name and the value a list of the form.
-        #    [colour table name, intensity level, contrast level]
+        &#34;&#34;&#34;
+        Creates a dictionary of lists to hold user selected colour table and level data,
+        where the key is the image name and the value a list of the form.
+            [colour table name, intensity level, contrast level]
+        &#34;&#34;&#34;
 
         self.imageDict = {}
         imageDataList = [&#39;default&#39;, -1, -1]
@@ -75,8 +85,10 @@ class UserSelection:
 
 
     def clearUserSelection(self):
-        &#34;&#34;&#34;Resets the colour table name,  intensity and contrast 
+        &#34;&#34;&#34;
+        Resets the colour table name,  intensity and contrast 
         levels to their default values.
+
         Also, sets applyUserSelectionToAnImage to False to show that
         the user has not selected a new colour table etc for one or
         more images in the series
@@ -134,16 +146,20 @@ class UserSelection:
 <span>(</span><span>imageList)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a dictionary of lists to hold user selected colour table and level data,
+where the key is the image name and the value a list of the form.
+[colour table name, intensity level, contrast level]</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class UserSelection:
     def __init__(self, imageList):
-        #Set up a dictionary of lists to hold user selected colour table and level data,
-        #where the key is the image name and the value a list of the form.
-        #    [colour table name, intensity level, contrast level]
+        &#34;&#34;&#34;
+        Creates a dictionary of lists to hold user selected colour table and level data,
+        where the key is the image name and the value a list of the form.
+            [colour table name, intensity level, contrast level]
+        &#34;&#34;&#34;
 
         self.imageDict = {}
         imageDataList = [&#39;default&#39;, -1, -1]
@@ -180,8 +196,10 @@ class UserSelection:
 
 
     def clearUserSelection(self):
-        &#34;&#34;&#34;Resets the colour table name,  intensity and contrast 
+        &#34;&#34;&#34;
+        Resets the colour table name,  intensity and contrast 
         levels to their default values.
+
         Also, sets applyUserSelectionToAnImage to False to show that
         the user has not selected a new colour table etc for one or
         more images in the series
@@ -232,8 +250,8 @@ class UserSelection:
 <dd>
 <div class="desc"><p>Resets the colour table name,
 intensity and contrast
-levels to their default values.
-Also, sets applyUserSelectionToAnImage to False to show that
+levels to their default values.</p>
+<p>Also, sets applyUserSelectionToAnImage to False to show that
 the user has not selected a new colour table etc for one or
 more images in the series</p></div>
 <details class="source">
@@ -241,8 +259,10 @@ more images in the series</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def clearUserSelection(self):
-    &#34;&#34;&#34;Resets the colour table name,  intensity and contrast 
+    &#34;&#34;&#34;
+    Resets the colour table name,  intensity and contrast 
     levels to their default values.
+
     Also, sets applyUserSelectionToAnImage to False to show that
     the user has not selected a new colour table etc for one or
     more images in the series
