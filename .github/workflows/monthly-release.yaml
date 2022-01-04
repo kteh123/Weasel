@@ -69,7 +69,7 @@ jobs:
           sudo python create_weasel_executable.py
 
       - name: Zip the output files for Windows
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         if: ${{ matrix.os == 'windows-latest'}}
         with:
           files: Weasel.exe config.xml
