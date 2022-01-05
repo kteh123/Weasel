@@ -37,7 +37,6 @@ from matplotlib.path import Path as MplPath
 import sys
 from .HelperFunctions import *
 from .Resources import * 
-import DICOM.ReadDICOM_Image as ReadDICOM_Image
 from time import sleep
 np.set_printoptions(threshold=sys.maxsize)
 import logging
@@ -565,49 +564,7 @@ class GraphicsItem(QGraphicsObject):
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.mousePressEvent: &#39; + str(e))
 
 
-def readLevels(path, pixelArray): 
-        &#34;&#34;&#34;Reads levels directly from the DICOM image&#34;&#34;&#34;
-        try:
-            logger.info(&#34;GraphicsItem.readLevels called&#34;)
-            #set default values
-            centre = -1 
-            width = -1 
-            maximumValue = -1  
-            minimumValue = -1 
-            dataset = ReadDICOM_Image.getDicomDataset(path)
-            if dataset and hasattr(dataset, &#39;WindowCenter&#39;) and hasattr(dataset, &#39;WindowWidth&#39;):
-                slope = float(getattr(dataset, &#39;RescaleSlope&#39;, 1))
-                intercept = float(getattr(dataset, &#39;RescaleIntercept&#39;, 0))
-                centre = dataset.WindowCenter # * slope + intercept
-                width = dataset.WindowWidth # * slope
-                if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
-                    centre = centre / dataset[(0x2005, 0x100E)].value
-                    width = width / dataset[(0x2005, 0x100E)].value
-                maximumValue = centre + width/2
-                minimumValue = centre - width/2
-            elif dataset and hasattr(dataset, &#39;PerFrameFunctionalGroupsSequence&#39;):
-                # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
-                slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
-                intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
-                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
-                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
-                if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
-                    centre = centre / dataset[(0x2005, 0x100E)].value
-                    width = width / dataset[(0x2005, 0x100E)].value
-                maximumValue = centre + width/2
-                minimumValue = centre - width/2 
-            else:
-                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                1, 99))/2) &lt; np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                1, 99))/2) &gt; np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
-                width = maximumValue - abs(minimumValue)
 
-            return minimumValue, maximumValue
-        except Exception as e:
-            print(&#39;Error in GraphicsItem.readLevels: &#39; + str(e))
-            logger.error(&#39;Error in GraphicsItem.readLevels: &#39; + str(e))
 
     </code></pre>
 </details>
@@ -617,63 +574,6 @@ def readLevels(path, pixelArray):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.readLevels"><code class="name flex">
-<span>def <span class="ident">readLevels</span></span>(<span>path, pixelArray)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Reads levels directly from the DICOM image</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def readLevels(path, pixelArray): 
-        &#34;&#34;&#34;Reads levels directly from the DICOM image&#34;&#34;&#34;
-        try:
-            logger.info(&#34;GraphicsItem.readLevels called&#34;)
-            #set default values
-            centre = -1 
-            width = -1 
-            maximumValue = -1  
-            minimumValue = -1 
-            dataset = ReadDICOM_Image.getDicomDataset(path)
-            if dataset and hasattr(dataset, &#39;WindowCenter&#39;) and hasattr(dataset, &#39;WindowWidth&#39;):
-                slope = float(getattr(dataset, &#39;RescaleSlope&#39;, 1))
-                intercept = float(getattr(dataset, &#39;RescaleIntercept&#39;, 0))
-                centre = dataset.WindowCenter # * slope + intercept
-                width = dataset.WindowWidth # * slope
-                if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
-                    centre = centre / dataset[(0x2005, 0x100E)].value
-                    width = width / dataset[(0x2005, 0x100E)].value
-                maximumValue = centre + width/2
-                minimumValue = centre - width/2
-            elif dataset and hasattr(dataset, &#39;PerFrameFunctionalGroupsSequence&#39;):
-                # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
-                slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
-                intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
-                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
-                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
-                if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
-                    centre = centre / dataset[(0x2005, 0x100E)].value
-                    width = width / dataset[(0x2005, 0x100E)].value
-                maximumValue = centre + width/2
-                minimumValue = centre - width/2 
-            else:
-                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
-                1, 99))/2) &lt; np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
-                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
-                1, 99))/2) &gt; np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
-                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
-                width = maximumValue - abs(minimumValue)
-
-            return minimumValue, maximumValue
-        except Exception as e:
-            print(&#39;Error in GraphicsItem.readLevels: &#39; + str(e))
-            logger.error(&#39;Error in GraphicsItem.readLevels: &#39; + str(e))</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -1966,11 +1866,6 @@ def readLevels(path, pixelArray):
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI" href="index.html">Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.readLevels" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.readLevels">readLevels</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
