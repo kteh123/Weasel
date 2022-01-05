@@ -1,7 +1,16 @@
+"""
+A library of helper functions used by the class GraphicsItem to render 
+a pixel array in a PyQt5 QGraphicsObject widget.
+"""
+
 import numpy as np
 from PyQt5 import QtGui
 import ctypes
 import scipy
+import DICOM.ReadDICOM_Image as ReadDICOM_Image
+import logging
+logger = logging.getLogger(__name__)
+
 
 def applyLookupTable(data, lut):
     """
@@ -17,8 +26,7 @@ def applyLookupTable(data, lut):
 def rescaleData(data, scale, offset, dtype=None, clip=None):
     """Return data rescaled and optionally cast to a new dtype::
     
-        data => (data-offset) * scale
-        
+        data => (data-offset) * scale     
     """
     if dtype is None:
         dtype = data.dtype
@@ -63,7 +71,7 @@ def rescaleData(data, scale, offset, dtype=None, clip=None):
 
 def makeARGB(data, lut=None, levels=None, scale=None, useRGBA=False): 
     """ 
-    Convert an array of values into an ARGB array suitable for building QImages
+    Converts an array of values into an ARGB array suitable for building QImages.
     
     Returns the ARGB array (unsigned byte) and a boolean indicating whether
     there is alpha channel data. This is a two stage process:
@@ -209,7 +217,8 @@ def makeARGB(data, lut=None, levels=None, scale=None, useRGBA=False):
 
 def makeQImage(imgData, alpha=None, copy=True, transpose=True):
     """
-    Turn an ARGB array into QImage.
+    Turns an ARGB array into QImage.
+
     By default, the data is copied; changes to the array will not
     be reflected in the image. The image will be given a 'data' attribute
     pointing to the array which shares its data to prevent python
@@ -279,3 +288,59 @@ def makeQImage(imgData, alpha=None, copy=True, transpose=True):
                 
     img.data = imgData
     return img
+
+
+def readLevels(path, pixelArray): 
+        """Reads levels directly from the DICOM image.
+        
+        Input arguments
+        ***************
+        path - file path of the image
+        pixelArray - pixel array representing the image
+
+        Returns
+        *******
+        minimumValue  - Minimum image value
+        maximumValue - Maximum image value
+        """
+        try:
+            logger.info("HelperFunctions.readLevels called")
+            #set default values
+            centre = -1 
+            width = -1 
+            maximumValue = -1  
+            minimumValue = -1 
+            dataset = ReadDICOM_Image.getDicomDataset(path)
+            if dataset and hasattr(dataset, 'WindowCenter') and hasattr(dataset, 'WindowWidth'):
+                slope = float(getattr(dataset, 'RescaleSlope', 1))
+                intercept = float(getattr(dataset, 'RescaleIntercept', 0))
+                centre = dataset.WindowCenter # * slope + intercept
+                width = dataset.WindowWidth # * slope
+                if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
+                    centre = centre / dataset[(0x2005, 0x100E)].value
+                    width = width / dataset[(0x2005, 0x100E)].value
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2
+            elif dataset and hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                # In Enhanced MRIs, this display will retrieve the centre and width values of the first slice
+                slope = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleSlope
+                intercept = dataset.PerFrameFunctionalGroupsSequence[0].PixelValueTransformationSequence[0].RescaleIntercept
+                centre = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowCenter # * slope + intercept
+                width = dataset.PerFrameFunctionalGroupsSequence[0].FrameVOILUTSequence[0].WindowWidth # * slope
+                if [0x2005, 0x100E] in dataset: # 'Philips Rescale Slope'
+                    centre = centre / dataset[(0x2005, 0x100E)].value
+                    width = width / dataset[(0x2005, 0x100E)].value
+                maximumValue = centre + width/2
+                minimumValue = centre - width/2 
+            else:
+                minimumValue = np.amin(pixelArray) if (np.median(pixelArray) - iqr(pixelArray, rng=(
+                1, 99))/2) < np.amin(pixelArray) else np.median(pixelArray) - iqr(pixelArray, rng=(1, 99))/2
+                maximumValue = np.amax(pixelArray) if (np.median(pixelArray) + iqr(pixelArray, rng=(
+                1, 99))/2) > np.amax(pixelArray) else np.median(pixelArray) + iqr(pixelArray, rng=(1, 99))/2
+                centre = minimumValue + (abs(maximumValue) - abs(minimumValue))/2
+                width = maximumValue - abs(minimumValue)
+
+            return minimumValue, maximumValue
+        except Exception as e:
+            print('Error in HelperFunctions.readLevels: ' + str(e))
+            logger.error('Error in HelperFunctions.readLevels: ' + str(e))
