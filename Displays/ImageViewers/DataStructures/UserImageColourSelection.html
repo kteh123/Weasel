@@ -46,22 +46,30 @@ class UserSelection:
     def __init__(self, imageList):
         &#34;&#34;&#34;
         Creates a dictionary of lists to hold user selected colour table and level data,
-        where the key is the image name and the value a list of the form.
+        where the key is the image name and the value is a list, called imageDataList,
+        of the form.
             [colour table name, intensity level, contrast level]
+
+        Image name is extracted from the image file path in the list imageList
+
+        Inputs
+        ******
+        imageList - list of the file paths of the images in a DICOM series
         &#34;&#34;&#34;
 
         self.imageDict = {}
+        #create imageDataList with default values
         imageDataList = [&#39;default&#39;, -1, -1]
         for imagePath in imageList:
             imageName = os.path.basename(imagePath)
             self.imageDict[imageName] = imageDataList
         
-        #When self boolean is true the same colour table
+        #When this boolean is true the same colour table
         #and intensity and contrast levels are applied
         #to the whole DICOM series.
         self._overRideSeriesSavedColourmapAndLevels = False
 
-        #When self boolean is true, colour table name
+        #When this boolean is true, colour table name
         #and intensity and contrast levels selected by the user are
         #applied to individual images in the DICOM series. 
         #These user selected values are stored in listImageLists
@@ -69,18 +77,51 @@ class UserSelection:
 
 
     def getSeriesUpdateStatus(self):
+        &#34;&#34;&#34;
+        Returns the value of the boolean _overRideSeriesSavedColourmapAndLevels
+
+        When _overRideSeriesSavedColourmapAndLevels is true the same colour table,
+        intensity and contrast levels are applied to the whole DICOM series.
+
+        Returns
+        *******
+            The value of the boolean _overRideSeriesSavedColourmapAndLevels
+        &#34;&#34;&#34;
         return self._overRideSeriesSavedColourmapAndLevels
 
 
     def setSeriesUpdateStatus(self, boolValue):
+        &#34;&#34;&#34;
+        Sets the value of the boolean _overRideSeriesSavedColourmapAndLevels 
+        to the value of the argument boolValue.
+        &#34;&#34;&#34;
         self._overRideSeriesSavedColourmapAndLevels = boolValue
 
 
     def getImageUpdateStatus(self):
+        &#34;&#34;&#34;
+        Returns the value of the boolean _applyUserSelectionToAnImage.
+
+        When _applyUserSelectionToAnImage is true, colour table name,
+        intensity level and contrast level selected by the user are
+        applied to individual images in the DICOM series.
+        
+        These user selected values are stored in the
+        dictionary value, which is a list, corresponding to the image
+        in the self.imageDict dictionary
+
+        Returns
+        *******
+            The value of the boolean _applyUserSelectionToAnImage
+        &#34;&#34;&#34;
         return self._applyUserSelectionToAnImage
 
 
     def setImageUpdateStatus(self, boolValue):
+        &#34;&#34;&#34;
+        Sets the value of the boolean _applyUserSelectionToAnImage
+        to the value of the argument boolValue.
+        &#34;&#34;&#34;
         self._applyUserSelectionToAnImage = boolValue
 
 
@@ -100,13 +141,24 @@ class UserSelection:
 
 
     def deleteOneImageInUserSelection(self, imageName):
+        &#34;&#34;&#34;
+        Deletes a key-value pair in the dictionary self.imageDict
+        where the key = imageName.
+        &#34;&#34;&#34;
         del self.imageDict[imageName]
 
 
     def updateUserSelection(self, imageName, colourTable, intensity, contrast):
         &#34;&#34;&#34;Saves the new colour table name,  intensity and contrast levels the user has
-        selected for the image called imageName in the list of lists
-        called listImageLists&#34;&#34;&#34;
+        selected for the image called imageName in the dictionary self.imageDict.
+        
+        Input arguments
+        ***************
+            imageName - name of the image
+            colourTable - name of the colour table 
+            intensity - integer representing image intensity 
+            contrast - integer representing image contrast 
+        &#34;&#34;&#34;
         try:
             self._applyUserSelectionToAnImage = True 
             tempList =[colourTable, intensity,  contrast]
@@ -118,9 +170,8 @@ class UserSelection:
 
     def returnUserSelection(self, imageName):
         &#34;&#34;&#34;Returns the colour table name, intensity and contrast values 
-        selected by the user for the image that has ordinal position 
-        imageNumber in userSelectionList, a list of lists where 
-        each sublist represents an image in the series being viewed.&#34;&#34;&#34;
+        selected by the user for the image called imageName
+        from the dictionary self.imageDict .&#34;&#34;&#34;
         try:
             tempList = self.imageDict.get(imageName)
             colourTable = tempList[0]
@@ -147,8 +198,13 @@ class UserSelection:
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a dictionary of lists to hold user selected colour table and level data,
-where the key is the image name and the value a list of the form.
-[colour table name, intensity level, contrast level]</p></div>
+where the key is the image name and the value is a list, called imageDataList,
+of the form.
+[colour table name, intensity level, contrast level]</p>
+<p>Image name is extracted from the image file path in the list imageList</p>
+<p>Inputs</p>
+<hr>
+<p>imageList - list of the file paths of the images in a DICOM series</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -157,22 +213,30 @@ where the key is the image name and the value a list of the form.
     def __init__(self, imageList):
         &#34;&#34;&#34;
         Creates a dictionary of lists to hold user selected colour table and level data,
-        where the key is the image name and the value a list of the form.
+        where the key is the image name and the value is a list, called imageDataList,
+        of the form.
             [colour table name, intensity level, contrast level]
+
+        Image name is extracted from the image file path in the list imageList
+
+        Inputs
+        ******
+        imageList - list of the file paths of the images in a DICOM series
         &#34;&#34;&#34;
 
         self.imageDict = {}
+        #create imageDataList with default values
         imageDataList = [&#39;default&#39;, -1, -1]
         for imagePath in imageList:
             imageName = os.path.basename(imagePath)
             self.imageDict[imageName] = imageDataList
         
-        #When self boolean is true the same colour table
+        #When this boolean is true the same colour table
         #and intensity and contrast levels are applied
         #to the whole DICOM series.
         self._overRideSeriesSavedColourmapAndLevels = False
 
-        #When self boolean is true, colour table name
+        #When this boolean is true, colour table name
         #and intensity and contrast levels selected by the user are
         #applied to individual images in the DICOM series. 
         #These user selected values are stored in listImageLists
@@ -180,18 +244,51 @@ where the key is the image name and the value a list of the form.
 
 
     def getSeriesUpdateStatus(self):
+        &#34;&#34;&#34;
+        Returns the value of the boolean _overRideSeriesSavedColourmapAndLevels
+
+        When _overRideSeriesSavedColourmapAndLevels is true the same colour table,
+        intensity and contrast levels are applied to the whole DICOM series.
+
+        Returns
+        *******
+            The value of the boolean _overRideSeriesSavedColourmapAndLevels
+        &#34;&#34;&#34;
         return self._overRideSeriesSavedColourmapAndLevels
 
 
     def setSeriesUpdateStatus(self, boolValue):
+        &#34;&#34;&#34;
+        Sets the value of the boolean _overRideSeriesSavedColourmapAndLevels 
+        to the value of the argument boolValue.
+        &#34;&#34;&#34;
         self._overRideSeriesSavedColourmapAndLevels = boolValue
 
 
     def getImageUpdateStatus(self):
+        &#34;&#34;&#34;
+        Returns the value of the boolean _applyUserSelectionToAnImage.
+
+        When _applyUserSelectionToAnImage is true, colour table name,
+        intensity level and contrast level selected by the user are
+        applied to individual images in the DICOM series.
+        
+        These user selected values are stored in the
+        dictionary value, which is a list, corresponding to the image
+        in the self.imageDict dictionary
+
+        Returns
+        *******
+            The value of the boolean _applyUserSelectionToAnImage
+        &#34;&#34;&#34;
         return self._applyUserSelectionToAnImage
 
 
     def setImageUpdateStatus(self, boolValue):
+        &#34;&#34;&#34;
+        Sets the value of the boolean _applyUserSelectionToAnImage
+        to the value of the argument boolValue.
+        &#34;&#34;&#34;
         self._applyUserSelectionToAnImage = boolValue
 
 
@@ -211,13 +308,24 @@ where the key is the image name and the value a list of the form.
 
 
     def deleteOneImageInUserSelection(self, imageName):
+        &#34;&#34;&#34;
+        Deletes a key-value pair in the dictionary self.imageDict
+        where the key = imageName.
+        &#34;&#34;&#34;
         del self.imageDict[imageName]
 
 
     def updateUserSelection(self, imageName, colourTable, intensity, contrast):
         &#34;&#34;&#34;Saves the new colour table name,  intensity and contrast levels the user has
-        selected for the image called imageName in the list of lists
-        called listImageLists&#34;&#34;&#34;
+        selected for the image called imageName in the dictionary self.imageDict.
+        
+        Input arguments
+        ***************
+            imageName - name of the image
+            colourTable - name of the colour table 
+            intensity - integer representing image intensity 
+            contrast - integer representing image contrast 
+        &#34;&#34;&#34;
         try:
             self._applyUserSelectionToAnImage = True 
             tempList =[colourTable, intensity,  contrast]
@@ -229,9 +337,8 @@ where the key is the image name and the value a list of the form.
 
     def returnUserSelection(self, imageName):
         &#34;&#34;&#34;Returns the colour table name, intensity and contrast values 
-        selected by the user for the image that has ordinal position 
-        imageNumber in userSelectionList, a list of lists where 
-        each sublist represents an image in the series being viewed.&#34;&#34;&#34;
+        selected by the user for the image called imageName
+        from the dictionary self.imageDict .&#34;&#34;&#34;
         try:
             tempList = self.imageDict.get(imageName)
             colourTable = tempList[0]
@@ -277,12 +384,17 @@ more images in the series</p></div>
 <span>def <span class="ident">deleteOneImageInUserSelection</span></span>(<span>self, imageName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Deletes a key-value pair in the dictionary self.imageDict
+where the key = imageName.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def deleteOneImageInUserSelection(self, imageName):
+    &#34;&#34;&#34;
+    Deletes a key-value pair in the dictionary self.imageDict
+    where the key = imageName.
+    &#34;&#34;&#34;
     del self.imageDict[imageName]</code></pre>
 </details>
 </dd>
@@ -290,12 +402,37 @@ more images in the series</p></div>
 <span>def <span class="ident">getImageUpdateStatus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the value of the boolean _applyUserSelectionToAnImage.</p>
+<p>When _applyUserSelectionToAnImage is true, colour table name,
+intensity level and contrast level selected by the user are
+applied to individual images in the DICOM series.</p>
+<p>These user selected values are stored in the
+dictionary value, which is a list, corresponding to the image
+in the self.imageDict dictionary</p>
+<p>Returns</p>
+<hr>
+<pre><code>The value of the boolean _applyUserSelectionToAnImage
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getImageUpdateStatus(self):
+    &#34;&#34;&#34;
+    Returns the value of the boolean _applyUserSelectionToAnImage.
+
+    When _applyUserSelectionToAnImage is true, colour table name,
+    intensity level and contrast level selected by the user are
+    applied to individual images in the DICOM series.
+    
+    These user selected values are stored in the
+    dictionary value, which is a list, corresponding to the image
+    in the self.imageDict dictionary
+
+    Returns
+    *******
+        The value of the boolean _applyUserSelectionToAnImage
+    &#34;&#34;&#34;
     return self._applyUserSelectionToAnImage</code></pre>
 </details>
 </dd>
@@ -303,12 +440,28 @@ more images in the series</p></div>
 <span>def <span class="ident">getSeriesUpdateStatus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the value of the boolean _overRideSeriesSavedColourmapAndLevels</p>
+<p>When _overRideSeriesSavedColourmapAndLevels is true the same colour table,
+intensity and contrast levels are applied to the whole DICOM series.</p>
+<p>Returns</p>
+<hr>
+<pre><code>The value of the boolean _overRideSeriesSavedColourmapAndLevels
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getSeriesUpdateStatus(self):
+    &#34;&#34;&#34;
+    Returns the value of the boolean _overRideSeriesSavedColourmapAndLevels
+
+    When _overRideSeriesSavedColourmapAndLevels is true the same colour table,
+    intensity and contrast levels are applied to the whole DICOM series.
+
+    Returns
+    *******
+        The value of the boolean _overRideSeriesSavedColourmapAndLevels
+    &#34;&#34;&#34;
     return self._overRideSeriesSavedColourmapAndLevels</code></pre>
 </details>
 </dd>
@@ -317,18 +470,16 @@ more images in the series</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the colour table name, intensity and contrast values
-selected by the user for the image that has ordinal position
-imageNumber in userSelectionList, a list of lists where
-each sublist represents an image in the series being viewed.</p></div>
+selected by the user for the image called imageName
+from the dictionary self.imageDict .</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def returnUserSelection(self, imageName):
     &#34;&#34;&#34;Returns the colour table name, intensity and contrast values 
-    selected by the user for the image that has ordinal position 
-    imageNumber in userSelectionList, a list of lists where 
-    each sublist represents an image in the series being viewed.&#34;&#34;&#34;
+    selected by the user for the image called imageName
+    from the dictionary self.imageDict .&#34;&#34;&#34;
     try:
         tempList = self.imageDict.get(imageName)
         colourTable = tempList[0]
@@ -344,12 +495,17 @@ each sublist represents an image in the series being viewed.</p></div>
 <span>def <span class="ident">setImageUpdateStatus</span></span>(<span>self, boolValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of the boolean _applyUserSelectionToAnImage
+to the value of the argument boolValue.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setImageUpdateStatus(self, boolValue):
+    &#34;&#34;&#34;
+    Sets the value of the boolean _applyUserSelectionToAnImage
+    to the value of the argument boolValue.
+    &#34;&#34;&#34;
     self._applyUserSelectionToAnImage = boolValue</code></pre>
 </details>
 </dd>
@@ -357,12 +513,17 @@ each sublist represents an image in the series being viewed.</p></div>
 <span>def <span class="ident">setSeriesUpdateStatus</span></span>(<span>self, boolValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of the boolean _overRideSeriesSavedColourmapAndLevels
+to the value of the argument boolValue.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setSeriesUpdateStatus(self, boolValue):
+    &#34;&#34;&#34;
+    Sets the value of the boolean _overRideSeriesSavedColourmapAndLevels 
+    to the value of the argument boolValue.
+    &#34;&#34;&#34;
     self._overRideSeriesSavedColourmapAndLevels = boolValue</code></pre>
 </details>
 </dd>
@@ -372,16 +533,29 @@ each sublist represents an image in the series being viewed.</p></div>
 <dd>
 <div class="desc"><p>Saves the new colour table name,
 intensity and contrast levels the user has
-selected for the image called imageName in the list of lists
-called listImageLists</p></div>
+selected for the image called imageName in the dictionary self.imageDict.</p>
+<p>Input arguments</p>
+<hr>
+<pre><code>imageName - name of the image
+colourTable - name of the colour table 
+intensity - integer representing image intensity 
+contrast - integer representing image contrast
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def updateUserSelection(self, imageName, colourTable, intensity, contrast):
     &#34;&#34;&#34;Saves the new colour table name,  intensity and contrast levels the user has
-    selected for the image called imageName in the list of lists
-    called listImageLists&#34;&#34;&#34;
+    selected for the image called imageName in the dictionary self.imageDict.
+    
+    Input arguments
+    ***************
+        imageName - name of the image
+        colourTable - name of the colour table 
+        intensity - integer representing image intensity 
+        contrast - integer representing image contrast 
+    &#34;&#34;&#34;
     try:
         self._applyUserSelectionToAnImage = True 
         tempList =[colourTable, intensity,  contrast]
