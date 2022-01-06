@@ -49,7 +49,8 @@ class ROIs():
 
 
     def __repr__(self):
-       return '{}'.format(
+        """Represents this class's objects as a string"""
+        return '{}'.format(
            self.__class__.__name__)
    
 

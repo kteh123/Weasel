@@ -75,7 +75,8 @@ class GraphicsItem(QGraphicsObject):
 
 
     def __repr__(self):
-       return '{}'.format(
+        """Represents this class's objects as a string"""
+        return '{}'.format(
            self.__class__.__name__)
 
 
@@ -526,6 +527,7 @@ class GraphicsItem(QGraphicsObject):
     def mousePressEvent(self, event):
         logger.info("FreeHandROI.GraphicsItem.mousePressEvent called")
         try:
+            pass
             button = event.button()
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
