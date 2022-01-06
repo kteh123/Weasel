@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="The GraphicsView class
+is derived from the PyQt QGraphicsView class
+and it visualizes the contents of a QGraphicsScene in a scrollable viewport …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,14 +24,39 @@
 <h1 class="title">Module <code>Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView</code></h1>
 </header>
 <section id="section-intro">
+<p>The GraphicsView class
+is derived from the PyQt QGraphicsView class
+and it visualizes the contents of a QGraphicsScene in a scrollable viewport.</p>
+<p>A QGraphicsScene object serves as a container for QGraphicsItem
+&amp; QGraphicsObject objects.</p>
+<p>QGraphicsObject is the base class for all graphics items that
+require signals, slots and properties.
+The GraphicItem class
+is derived from the
+QGraphicsObject class.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PyQt5.QtCore import QRectF, Qt,  QCoreApplication
+<pre><code class="python">&#34;&#34;&#34;
+The GraphicsView class  is derived from the PyQt QGraphicsView class 
+and it visualizes the contents of a QGraphicsScene in a scrollable viewport.
+
+A QGraphicsScene object serves as a container for QGraphicsItem 
+&amp; QGraphicsObject objects.
+
+QGraphicsObject is the base class for all graphics items that 
+require signals, slots and properties.  The GraphicItem class 
+is derived from the  QGraphicsObject class. 
+&#34;&#34;&#34;
+
+from PyQt5.QtCore import QRectF, Qt,  QCoreApplication
 from PyQt5 import QtCore 
 from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene, QMenu, QMessageBox,
                             QAction, QActionGroup, QApplication )
+
+
+
 from PyQt5.QtGui import QPixmap, QCursor, QIcon, QToolTip
 from .GraphicsItem import GraphicsItem
 from .ROI_Storage import ROIs 
@@ -41,6 +68,7 @@ __version__ = &#39;1.0&#39;
 __author__ = &#39;Steve Shillitoe&#39;
 #October/November 2020
 
+#Constants
 ZOOM_IN = 1
 ZOOM_OUT = -1
 
@@ -53,9 +81,19 @@ class GraphicsView(QGraphicsView):
 
 
     def __init__(self, numberOfImages): 
+        &#34;&#34;&#34;
+        Constructs a GraphicsView object that is a viewport over 
+        a QGraphicsScene object, self.scene. It also creates a data structure,
+        self.dictROIs, to store ROI data.
+
+        Input arguments
+        ***************
+        numberOfImages - number of images in the DICOM series. 
+        Used  to set up self.dictROIs, the data structure holding ROI data
+        &#34;&#34;&#34;
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
-        self._zoom = 0
+        self._zoom = 0 #Integer representing the zoom factor
         self.graphicsItem  = None #pointer to graphicsItem widget that displays the image
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -78,15 +116,36 @@ class GraphicsView(QGraphicsView):
 
 
     def __repr__(self):
-       return &#39;{}&#39;.format(
+        &#34;&#34;&#34;Represents this class&#39;s objects as a string&#34;&#34;&#34;
+        return &#39;{}&#39;.format(
            self.__class__.__name__)
 
 
     def setZoomEnabled(self, boolValue):
+        &#34;&#34;&#34;Sets the value of the boolean, zoomEnabled.
+           When zoomEnabled is True, the user may zoom in 
+           by clicking the left mouse button &amp; zoom out by
+           clicking the right mouse button. 
+        &#34;&#34;&#34;
         self.zoomEnabled = boolValue
 
 
     def setImage(self, pixelArray, mask = None, path = None):
+        &#34;&#34;&#34;
+        Loads an image for display.
+
+        A GraphicsItem object is created and added to the graphics scene
+        viewed by this GraphicsView widget.  Then the image contained in
+        the pixelArray is displayed in the GraphicsItem object.  The image 
+        is scaled to make it fit the GraphicsView widget and the existing
+        zoom level is applied to it.
+
+        Input arguments
+        ***************
+        pixelArray - pixel array representing an image
+        mask - pixel array represting a mask over the image
+        path - file path of the image
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.setImage called&#34;)
         try:
             if self.graphicsItem is None:
@@ -106,18 +165,41 @@ class GraphicsView(QGraphicsView):
 
 
     def reapplyZoom(self):
+        &#34;&#34;&#34;
+        Reapplies the zoom factor to an image. 
+
+        When the user zooms in or out on one image,
+        this function ensures that same zoom factor is applied to 
+        all images in a DICOM series as the user scrolls through
+        other images in the series
+        &#34;&#34;&#34;
         if self._zoom &gt; 0:
             factor = 1.25
             totalFactor = factor**self._zoom
             self.scale(totalFactor, totalFactor)
         
-
+          
     def zoomFromMouseClicks(self, zoomValue):
+        &#34;&#34;&#34;
+        Zooms in and out on an image according to the value of zoomValue.
+        
+        Zoom in, when zoomValue &gt; 0,
+        zoom out, when zoomValue &lt; 0,
+        reset the image to its original size, when zoomValue = 0
+        &#34;&#34;&#34;
         if self.zoomEnabled:
-            self.zoomImage(zoomValue)
+           self.zoomImage(zoomValue)
     
 
     def zoomImage(self, zoomValue):
+        &#34;&#34;&#34;
+        Scales the image according to the value of the input
+        argument zoomValue.
+
+        Zoom in, when zoomValue &gt; 0,
+        zoom out, when zoomValue &lt; 0,
+        reset the image to its original size, when zoomValue = 0
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.zoomImage called&#34;)
         try:
             if zoomValue &gt; 0:
@@ -145,10 +227,22 @@ class GraphicsView(QGraphicsView):
 
 
     def wheelEvent(self, event):
+        &#34;&#34;&#34;
+        wheelEvent is a built-in PyQt function.  
+        It is executed when the mouse wheel is rotated. 
+
+        Input arguments
+        ***************
+        event - an object of the QWheelEvent class that
+            contains parameters that describe a wheel event.
+        &#34;&#34;&#34;
         self.zoomImage(event.angleDelta().y())
 
 
     def fitItemInView(self):
+        &#34;&#34;&#34;
+        Scales the image so that it perfectly fits the GraphicView widget.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
         try:
             if self.graphicsItem is not None:
@@ -169,6 +263,9 @@ class GraphicsView(QGraphicsView):
 
 
     def setUpPixelSquareSizeMenu(self, event):
+        &#34;&#34;&#34;
+        Creates the context menu for selecting brush/eraser size.
+        &#34;&#34;&#34;
         self.pixelSquareSizeMenu.clear()
         onePixel = QAction(&#39;One Pixel&#39;)
         onePixel.setCheckable(True)
@@ -227,6 +324,17 @@ class GraphicsView(QGraphicsView):
 
 
     def setPixelSquareSize(self, pixelSquareSize):
+        &#34;&#34;&#34;
+        Sets the value of the pixelSquareSize property, which
+        sets the size of the side of the square of pixels that 
+        represent the size of the tip of the brush or eraser. 
+        E.g., if pixelSquareSize = 5, then brush/eraser size is
+        a square of 25 pixels.
+
+        Input argument
+        **************
+        pixelSquareSize - integer taking the values: 1, 3, 5, 7, 9, 11, 21
+        &#34;&#34;&#34;
         self.pixelSquareSize = pixelSquareSize
 
 
@@ -236,7 +344,7 @@ class GraphicsView(QGraphicsView):
 
         Here it displays a pop-up context menu 
         allowing the user to select the brush/eraser size
-        when zoom is not enabled &#34;&#34;&#34;
+        when zoom is not enabled. &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.contextMenuEvent called&#34;)
         try:
             if not self.zoomEnabled:
@@ -255,6 +363,10 @@ class GraphicsView(QGraphicsView):
 
 
     def drawROI(self, enableDraw):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to draw an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
         try:
             if enableDraw:
@@ -270,6 +382,10 @@ class GraphicsView(QGraphicsView):
 
 
     def paintROI(self, enablePaint):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to paint an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
         try:
             if enablePaint:
@@ -287,6 +403,11 @@ class GraphicsView(QGraphicsView):
 
 
     def eraseROI(self, enableErase):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to erase part or all 
+        of an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
         try:
             if enableErase:
@@ -304,6 +425,9 @@ class GraphicsView(QGraphicsView):
             
 
     def newROI(self):
+        &#34;&#34;&#34;
+        Creates a new blank ROI.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.newROI called&#34;)
         try:
             self.sigROIChanged.emit()
@@ -322,6 +446,13 @@ class GraphicsView(QGraphicsView):
 
 
     def resetROI(self):
+        &#34;&#34;&#34;
+        Removes the current ROI from an image.
+
+        The ROI is removed from the data structure self.dictROIs 
+        and a signal is emitted to communicate to the host subwindow
+        that the image must be reloaded without the ROI that was just drawn.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.resetROI called&#34;)
         try:
             self.sigROIChanged.emit()
@@ -347,7 +478,15 @@ class GraphicsView(QGraphicsView):
 </code></dt>
 <dd>
 <div class="desc"><p>QGraphicsView(parent: QWidget = None)
-QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
+QGraphicsView(QGraphicsScene, parent: QWidget = None)</p>
+<p>Constructs a GraphicsView object that is a viewport over
+a QGraphicsScene object, self.scene. It also creates a data structure,
+self.dictROIs, to store ROI data.</p>
+<p>Input arguments</p>
+<hr>
+<p>numberOfImages - number of images in the DICOM series.
+Used
+to set up self.dictROIs, the data structure holding ROI data</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -360,9 +499,19 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def __init__(self, numberOfImages): 
+        &#34;&#34;&#34;
+        Constructs a GraphicsView object that is a viewport over 
+        a QGraphicsScene object, self.scene. It also creates a data structure,
+        self.dictROIs, to store ROI data.
+
+        Input arguments
+        ***************
+        numberOfImages - number of images in the DICOM series. 
+        Used  to set up self.dictROIs, the data structure holding ROI data
+        &#34;&#34;&#34;
         super(GraphicsView, self).__init__()
         self.scene = QGraphicsScene(self)
-        self._zoom = 0
+        self._zoom = 0 #Integer representing the zoom factor
         self.graphicsItem  = None #pointer to graphicsItem widget that displays the image
         self.setScene(self.scene)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -385,15 +534,36 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def __repr__(self):
-       return &#39;{}&#39;.format(
+        &#34;&#34;&#34;Represents this class&#39;s objects as a string&#34;&#34;&#34;
+        return &#39;{}&#39;.format(
            self.__class__.__name__)
 
 
     def setZoomEnabled(self, boolValue):
+        &#34;&#34;&#34;Sets the value of the boolean, zoomEnabled.
+           When zoomEnabled is True, the user may zoom in 
+           by clicking the left mouse button &amp; zoom out by
+           clicking the right mouse button. 
+        &#34;&#34;&#34;
         self.zoomEnabled = boolValue
 
 
     def setImage(self, pixelArray, mask = None, path = None):
+        &#34;&#34;&#34;
+        Loads an image for display.
+
+        A GraphicsItem object is created and added to the graphics scene
+        viewed by this GraphicsView widget.  Then the image contained in
+        the pixelArray is displayed in the GraphicsItem object.  The image 
+        is scaled to make it fit the GraphicsView widget and the existing
+        zoom level is applied to it.
+
+        Input arguments
+        ***************
+        pixelArray - pixel array representing an image
+        mask - pixel array represting a mask over the image
+        path - file path of the image
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.setImage called&#34;)
         try:
             if self.graphicsItem is None:
@@ -413,18 +583,41 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def reapplyZoom(self):
+        &#34;&#34;&#34;
+        Reapplies the zoom factor to an image. 
+
+        When the user zooms in or out on one image,
+        this function ensures that same zoom factor is applied to 
+        all images in a DICOM series as the user scrolls through
+        other images in the series
+        &#34;&#34;&#34;
         if self._zoom &gt; 0:
             factor = 1.25
             totalFactor = factor**self._zoom
             self.scale(totalFactor, totalFactor)
         
-
+          
     def zoomFromMouseClicks(self, zoomValue):
+        &#34;&#34;&#34;
+        Zooms in and out on an image according to the value of zoomValue.
+        
+        Zoom in, when zoomValue &gt; 0,
+        zoom out, when zoomValue &lt; 0,
+        reset the image to its original size, when zoomValue = 0
+        &#34;&#34;&#34;
         if self.zoomEnabled:
-            self.zoomImage(zoomValue)
+           self.zoomImage(zoomValue)
     
 
     def zoomImage(self, zoomValue):
+        &#34;&#34;&#34;
+        Scales the image according to the value of the input
+        argument zoomValue.
+
+        Zoom in, when zoomValue &gt; 0,
+        zoom out, when zoomValue &lt; 0,
+        reset the image to its original size, when zoomValue = 0
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.zoomImage called&#34;)
         try:
             if zoomValue &gt; 0:
@@ -452,10 +645,22 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def wheelEvent(self, event):
+        &#34;&#34;&#34;
+        wheelEvent is a built-in PyQt function.  
+        It is executed when the mouse wheel is rotated. 
+
+        Input arguments
+        ***************
+        event - an object of the QWheelEvent class that
+            contains parameters that describe a wheel event.
+        &#34;&#34;&#34;
         self.zoomImage(event.angleDelta().y())
 
 
     def fitItemInView(self):
+        &#34;&#34;&#34;
+        Scales the image so that it perfectly fits the GraphicView widget.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
         try:
             if self.graphicsItem is not None:
@@ -476,6 +681,9 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def setUpPixelSquareSizeMenu(self, event):
+        &#34;&#34;&#34;
+        Creates the context menu for selecting brush/eraser size.
+        &#34;&#34;&#34;
         self.pixelSquareSizeMenu.clear()
         onePixel = QAction(&#39;One Pixel&#39;)
         onePixel.setCheckable(True)
@@ -534,6 +742,17 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def setPixelSquareSize(self, pixelSquareSize):
+        &#34;&#34;&#34;
+        Sets the value of the pixelSquareSize property, which
+        sets the size of the side of the square of pixels that 
+        represent the size of the tip of the brush or eraser. 
+        E.g., if pixelSquareSize = 5, then brush/eraser size is
+        a square of 25 pixels.
+
+        Input argument
+        **************
+        pixelSquareSize - integer taking the values: 1, 3, 5, 7, 9, 11, 21
+        &#34;&#34;&#34;
         self.pixelSquareSize = pixelSquareSize
 
 
@@ -543,7 +762,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
         Here it displays a pop-up context menu 
         allowing the user to select the brush/eraser size
-        when zoom is not enabled &#34;&#34;&#34;
+        when zoom is not enabled. &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.contextMenuEvent called&#34;)
         try:
             if not self.zoomEnabled:
@@ -562,6 +781,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def drawROI(self, enableDraw):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to draw an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
         try:
             if enableDraw:
@@ -577,6 +800,10 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def paintROI(self, enablePaint):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to paint an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
         try:
             if enablePaint:
@@ -594,6 +821,11 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def eraseROI(self, enableErase):
+        &#34;&#34;&#34;
+        Sets the values of the boolean class properties 
+        in order to enable the user to erase part or all 
+        of an ROI on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
         try:
             if enableErase:
@@ -611,6 +843,9 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
             
 
     def newROI(self):
+        &#34;&#34;&#34;
+        Creates a new blank ROI.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.newROI called&#34;)
         try:
             self.sigROIChanged.emit()
@@ -629,6 +864,13 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 
 
     def resetROI(self):
+        &#34;&#34;&#34;
+        Removes the current ROI from an image.
+
+        The ROI is removed from the data structure self.dictROIs 
+        and a signal is emitted to communicate to the host subwindow
+        that the image must be reloaded without the ROI that was just drawn.
+        &#34;&#34;&#34;
         logger.info(&#34;freeHandROI.GraphicsView.resetROI called&#34;)
         try:
             self.sigROIChanged.emit()
@@ -659,7 +901,7 @@ QGraphicsView(QGraphicsScene, parent: QWidget = None)</p></div>
 display of a context menu when the right mouse button is pressed</p>
 <p>Here it displays a pop-up context menu
 allowing the user to select the brush/eraser size
-when zoom is not enabled</p></div>
+when zoom is not enabled.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -670,7 +912,7 @@ when zoom is not enabled</p></div>
 
     Here it displays a pop-up context menu 
     allowing the user to select the brush/eraser size
-    when zoom is not enabled &#34;&#34;&#34;
+    when zoom is not enabled. &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.contextMenuEvent called&#34;)
     try:
         if not self.zoomEnabled:
@@ -685,12 +927,17 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">drawROI</span></span>(<span>self, enableDraw)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the values of the boolean class properties
+in order to enable the user to draw an ROI on the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def drawROI(self, enableDraw):
+    &#34;&#34;&#34;
+    Sets the values of the boolean class properties 
+    in order to enable the user to draw an ROI on the image.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.drawROI called&#34;)
     try:
         if enableDraw:
@@ -709,12 +956,19 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">eraseROI</span></span>(<span>self, enableErase)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the values of the boolean class properties
+in order to enable the user to erase part or all
+of an ROI on the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def eraseROI(self, enableErase):
+    &#34;&#34;&#34;
+    Sets the values of the boolean class properties 
+    in order to enable the user to erase part or all 
+    of an ROI on the image.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.eraseROI called&#34;)
     try:
         if enableErase:
@@ -735,12 +989,15 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">fitItemInView</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Scales the image so that it perfectly fits the GraphicView widget.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fitItemInView(self):
+    &#34;&#34;&#34;
+    Scales the image so that it perfectly fits the GraphicView widget.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.fitItemInView called&#34;)
     try:
         if self.graphicsItem is not None:
@@ -764,12 +1021,15 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">newROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a new blank ROI.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def newROI(self):
+    &#34;&#34;&#34;
+    Creates a new blank ROI.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.newROI called&#34;)
     try:
         self.sigROIChanged.emit()
@@ -791,12 +1051,17 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">paintROI</span></span>(<span>self, enablePaint)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the values of the boolean class properties
+in order to enable the user to paint an ROI on the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def paintROI(self, enablePaint):
+    &#34;&#34;&#34;
+    Sets the values of the boolean class properties 
+    in order to enable the user to paint an ROI on the image.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.paintROI called&#34;)
     try:
         if enablePaint:
@@ -817,12 +1082,24 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">reapplyZoom</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Reapplies the zoom factor to an image. </p>
+<p>When the user zooms in or out on one image,
+this function ensures that same zoom factor is applied to
+all images in a DICOM series as the user scrolls through
+other images in the series</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def reapplyZoom(self):
+    &#34;&#34;&#34;
+    Reapplies the zoom factor to an image. 
+
+    When the user zooms in or out on one image,
+    this function ensures that same zoom factor is applied to 
+    all images in a DICOM series as the user scrolls through
+    other images in the series
+    &#34;&#34;&#34;
     if self._zoom &gt; 0:
         factor = 1.25
         totalFactor = factor**self._zoom
@@ -833,12 +1110,22 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">resetROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Removes the current ROI from an image.</p>
+<p>The ROI is removed from the data structure self.dictROIs
+and a signal is emitted to communicate to the host subwindow
+that the image must be reloaded without the ROI that was just drawn.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def resetROI(self):
+    &#34;&#34;&#34;
+    Removes the current ROI from an image.
+
+    The ROI is removed from the data structure self.dictROIs 
+    and a signal is emitted to communicate to the host subwindow
+    that the image must be reloaded without the ROI that was just drawn.
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.resetROI called&#34;)
     try:
         self.sigROIChanged.emit()
@@ -853,12 +1140,39 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">setImage</span></span>(<span>self, pixelArray, mask=None, path=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Loads an image for display.</p>
+<p>A GraphicsItem object is created and added to the graphics scene
+viewed by this GraphicsView widget.
+Then the image contained in
+the pixelArray is displayed in the GraphicsItem object.
+The image
+is scaled to make it fit the GraphicsView widget and the existing
+zoom level is applied to it.</p>
+<p>Input arguments</p>
+<hr>
+<p>pixelArray - pixel array representing an image
+mask - pixel array represting a mask over the image
+path - file path of the image</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setImage(self, pixelArray, mask = None, path = None):
+    &#34;&#34;&#34;
+    Loads an image for display.
+
+    A GraphicsItem object is created and added to the graphics scene
+    viewed by this GraphicsView widget.  Then the image contained in
+    the pixelArray is displayed in the GraphicsItem object.  The image 
+    is scaled to make it fit the GraphicsView widget and the existing
+    zoom level is applied to it.
+
+    Input arguments
+    ***************
+    pixelArray - pixel array representing an image
+    mask - pixel array represting a mask over the image
+    path - file path of the image
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.setImage called&#34;)
     try:
         if self.graphicsItem is None:
@@ -881,12 +1195,30 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">setPixelSquareSize</span></span>(<span>self, pixelSquareSize)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of the pixelSquareSize property, which
+sets the size of the side of the square of pixels that
+represent the size of the tip of the brush or eraser.
+E.g., if pixelSquareSize = 5, then brush/eraser size is
+a square of 25 pixels.</p>
+<p>Input argument</p>
+<hr>
+<p>pixelSquareSize - integer taking the values: 1, 3, 5, 7, 9, 11, 21</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setPixelSquareSize(self, pixelSquareSize):
+    &#34;&#34;&#34;
+    Sets the value of the pixelSquareSize property, which
+    sets the size of the side of the square of pixels that 
+    represent the size of the tip of the brush or eraser. 
+    E.g., if pixelSquareSize = 5, then brush/eraser size is
+    a square of 25 pixels.
+
+    Input argument
+    **************
+    pixelSquareSize - integer taking the values: 1, 3, 5, 7, 9, 11, 21
+    &#34;&#34;&#34;
     self.pixelSquareSize = pixelSquareSize</code></pre>
 </details>
 </dd>
@@ -894,12 +1226,15 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">setUpPixelSquareSizeMenu</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates the context menu for selecting brush/eraser size.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setUpPixelSquareSizeMenu(self, event):
+    &#34;&#34;&#34;
+    Creates the context menu for selecting brush/eraser size.
+    &#34;&#34;&#34;
     self.pixelSquareSizeMenu.clear()
     onePixel = QAction(&#39;One Pixel&#39;)
     onePixel.setCheckable(True)
@@ -961,12 +1296,20 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">setZoomEnabled</span></span>(<span>self, boolValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of the boolean, zoomEnabled.
+When zoomEnabled is True, the user may zoom in
+by clicking the left mouse button &amp; zoom out by
+clicking the right mouse button.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setZoomEnabled(self, boolValue):
+    &#34;&#34;&#34;Sets the value of the boolean, zoomEnabled.
+       When zoomEnabled is True, the user may zoom in 
+       by clicking the left mouse button &amp; zoom out by
+       clicking the right mouse button. 
+    &#34;&#34;&#34;
     self.zoomEnabled = boolValue</code></pre>
 </details>
 </dd>
@@ -998,12 +1341,26 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">wheelEvent</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>wheelEvent(self, QWheelEvent)</p></div>
+<div class="desc"><p>wheelEvent is a built-in PyQt function.<br>
+It is executed when the mouse wheel is rotated. </p>
+<p>Input arguments</p>
+<hr>
+<p>event - an object of the QWheelEvent class that
+contains parameters that describe a wheel event.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def wheelEvent(self, event):
+    &#34;&#34;&#34;
+    wheelEvent is a built-in PyQt function.  
+    It is executed when the mouse wheel is rotated. 
+
+    Input arguments
+    ***************
+    event - an object of the QWheelEvent class that
+        contains parameters that describe a wheel event.
+    &#34;&#34;&#34;
     self.zoomImage(event.angleDelta().y())</code></pre>
 </details>
 </dd>
@@ -1011,26 +1368,48 @@ when zoom is not enabled</p></div>
 <span>def <span class="ident">zoomFromMouseClicks</span></span>(<span>self, zoomValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Zooms in and out on an image according to the value of zoomValue.</p>
+<p>Zoom in, when zoomValue &gt; 0,
+zoom out, when zoomValue &lt; 0,
+reset the image to its original size, when zoomValue = 0</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def zoomFromMouseClicks(self, zoomValue):
+    &#34;&#34;&#34;
+    Zooms in and out on an image according to the value of zoomValue.
+    
+    Zoom in, when zoomValue &gt; 0,
+    zoom out, when zoomValue &lt; 0,
+    reset the image to its original size, when zoomValue = 0
+    &#34;&#34;&#34;
     if self.zoomEnabled:
-        self.zoomImage(zoomValue)</code></pre>
+       self.zoomImage(zoomValue)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsView.GraphicsView.zoomImage"><code class="name flex">
 <span>def <span class="ident">zoomImage</span></span>(<span>self, zoomValue)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Scales the image according to the value of the input
+argument zoomValue.</p>
+<p>Zoom in, when zoomValue &gt; 0,
+zoom out, when zoomValue &lt; 0,
+reset the image to its original size, when zoomValue = 0</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def zoomImage(self, zoomValue):
+    &#34;&#34;&#34;
+    Scales the image according to the value of the input
+    argument zoomValue.
+
+    Zoom in, when zoomValue &gt; 0,
+    zoom out, when zoomValue &lt; 0,
+    reset the image to its original size, when zoomValue = 0
+    &#34;&#34;&#34;
     logger.info(&#34;freeHandROI.GraphicsView.zoomImage called&#34;)
     try:
         if zoomValue &gt; 0:

@@ -103,7 +103,8 @@ class GraphicsItem(QGraphicsObject):
 
 
     def __repr__(self):
-       return &#39;{}&#39;.format(
+        &#34;&#34;&#34;Represents this class&#39;s objects as a string&#34;&#34;&#34;
+        return &#39;{}&#39;.format(
            self.__class__.__name__)
 
 
@@ -554,6 +555,7 @@ class GraphicsItem(QGraphicsObject):
     def mousePressEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
         try:
+            pass
             button = event.button()
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
@@ -644,7 +646,8 @@ class GraphicsItem(QGraphicsObject):
 
 
     def __repr__(self):
-       return &#39;{}&#39;.format(
+        &#34;&#34;&#34;Represents this class&#39;s objects as a string&#34;&#34;&#34;
+        return &#39;{}&#39;.format(
            self.__class__.__name__)
 
 
@@ -1095,6 +1098,7 @@ class GraphicsItem(QGraphicsObject):
     def mousePressEvent(self, event):
         logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
         try:
+            pass
             button = event.button()
             if (button == Qt.LeftButton):
               self.sigZoomIn.emit()
@@ -1528,6 +1532,7 @@ class GraphicsItem(QGraphicsObject):
 <pre><code class="python">def mousePressEvent(self, event):
     logger.info(&#34;FreeHandROI.GraphicsItem.mousePressEvent called&#34;)
     try:
+        pass
         button = event.button()
         if (button == Qt.LeftButton):
           self.sigZoomIn.emit()
