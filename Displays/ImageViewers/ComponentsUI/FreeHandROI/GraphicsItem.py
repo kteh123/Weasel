@@ -1,3 +1,18 @@
+"""
+This class allows a DICOM image in the form of a pixel array to be displayed
+on a GraphicsScene object.
+
+It also provides functionality for the creation and erasing of an ROI, 
+which is coloured red:
+
+1. A boundary may be drawn around the RIO.  If the boundary is not closed, 
+a straight line is drawn between the start and end points.  Then the area
+enclosed by this boundary in infilled with red.
+
+2. An ROI may be painted onto the image. 
+
+3. Part of all of an RIO may be erased. 
+"""
 from PyQt5.QtCore import (QRectF, QRect, QPoint, Qt)
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import (QPainter, QPixmap, QColor, QImage, QCursor, qRgb)
@@ -9,7 +24,6 @@ from matplotlib.path import Path as MplPath
 import sys
 from .HelperFunctions import *
 from .Resources import * 
-from time import sleep
 np.set_printoptions(threshold=sys.maxsize)
 import logging
 logger = logging.getLogger(__name__)
@@ -31,6 +45,9 @@ class GraphicsItem(QGraphicsObject):
      
 
     def __init__(self, linkToGraphicsView): 
+        """
+        Instanciates a GraphicsItem object and initialises its properties.
+        """
         super(GraphicsItem, self).__init__()
         self.linkToGraphicsView = linkToGraphicsView
         self.last_x, self.last_y = None, None
@@ -47,6 +64,18 @@ class GraphicsItem(QGraphicsObject):
 
 
     def setImage(self, pixelArray, roi, path):
+        """
+        Displays the image with it's ROI if it has one in the GraphicsItem object.
+
+        The image's pixel array is transformed into a PyQt QPixmap for display 
+        in the GraphicsItem object. 
+
+        Input arguments
+        ***************
+        pixelArray - the image's pixel array
+        roi - pixel array of the ROI on the image
+        path - file path to the image file
+        """
         logger.info("GraphicsItem.setImage called")
         self.origQImage = None
         self.qImage = None
@@ -81,6 +110,18 @@ class GraphicsItem(QGraphicsObject):
 
 
     def updateImageLevels(self, intensity, contrast, roi):
+        """
+        Applies new intensity and contrast values to the image.
+
+        A new QPixmap object is formed from the pixel array with the
+        new contrast & intensity values.
+
+        Input arguments
+        ***************
+        intensity - integer representing the image intensity value
+        contrast - integer representing the image contrast value
+        roi - pixel array of the ROI on the image
+        """
         logger.info("FreeHandROI.GraphicsItem.updateImageLevels called")
         try:
             minValue = intensity - (contrast/2)
@@ -91,6 +132,7 @@ class GraphicsItem(QGraphicsObject):
             #Need to reapply mask
             if roi is not None and roi.any():
                 self.reloadMask(roi)
+            #repaint the image with the new contrast & intensity values. 
             self.update()
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.updateImageLevels: ' + str(e))
@@ -131,6 +173,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverEnterEvent(self, event):
+        """
+        Built in PyQt function that is executed when the cursor enters the 
+        GraphicItem object. 
+        
+        Here it is used to set the cursor icon according
+        to ROI drawing function selected: draw, paint, zoom or erase.
+        """
         logger.info("FreeHandROI.GraphicsItem.hoverEnterEvent called")
         try:
             if self.linkToGraphicsView.drawEnabled:
@@ -158,6 +207,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverLeaveEvent(self, event):
+        """
+        Built in PyQt function that is executed when the cursor leaves the 
+        GraphicItem object. 
+
+        Restores the mouse cursor from that set in hoverEnterEvent 
+        to the default arrow.
+        """
         logger.info("FreeHandROI.GraphicsItem.hoverLeaveEvent called")
         try:
             QApplication.restoreOverrideCursor()
@@ -168,6 +224,14 @@ class GraphicsItem(QGraphicsObject):
 
 
     def hoverMoveEvent(self, event):
+        """
+        Built in PyQt function that is executed as the cursor hovers over the 
+        GraphicItem object. 
+
+        Determines the x,y coordinates of the mouse pointer and value of the pixel
+        under it's tip.  When these values change the sigMouseHovered signal is 
+        emitted to alert the module hosting the GraphicsView widget.
+        """
         logger.info("FreeHandROI.GraphicsItem.hoverMoveEvent called")
         try:
             self.xMouseCoord = int(event.pos().x()) #columns
@@ -183,6 +247,15 @@ class GraphicsItem(QGraphicsObject):
        
 
     def drawROIBoundary(self):
+        """
+        As the mouse is moved over the image,
+       
+        1. The red channel of the 
+        pixel under the cursor tip is set to 255, making it appear red.
+
+        2. The coordinates of each pixel the mouse cursor moves over
+        is added to a list. 
+        """
         if self.last_x is None: # First draw event.
             self.last_x = self.xMouseCoord
             self.last_y = self.yMouseCoord
@@ -202,6 +275,18 @@ class GraphicsItem(QGraphicsObject):
 
 
     def mouseMoveEvent(self, event):
+        """
+        Built in PyQt function that is executed when a mouse button is pressed 
+        & the cursor is moved over the GraphicsItem object.
+
+        If the left mouse button is pressed, if any of the following functions 
+        are selected they are performed: draw a boundary around the RIO, paint the ROI 
+        & erase the ROI.
+
+        If the right mouse button is pressed, the sigRightMouseDrag signal is emitted
+        with the distance moved in the x & y directions. This is used to adjust image 
+        levels.
+        """
         logger.info("FreeHandROI.GraphicsItem.mouseMoveEvent called")
         try:
             buttons = event.buttons()
@@ -229,6 +314,11 @@ class GraphicsItem(QGraphicsObject):
 
 
     def addROIBoundaryToMask(self):
+        """
+        The ROI is represented by True values in a boolean array that has the same
+        shape as it's image.  This function ensures that the boundary drawn around
+        the RIO is included in the mask. 
+        """
         for coords in self.pathCoordsList:
             cols = coords[0]  #x
             rows = coords[1]  #y
@@ -236,6 +326,18 @@ class GraphicsItem(QGraphicsObject):
 
 
     def closeAndFillROI(self):
+        """
+        Creates the mask corresponding to the RIO and sets the pixels within the RIO to red.
+
+        If the boundary drawn around a ROI is not closed, this function closes it 
+        with a straight line connecting the start and end points of the line. 
+        Then a mask is created from the coordinates of the pixels on the this boundary.
+        The mask is a boolean array with the same shape as the image, in which elements
+        corresponding to the RIO are True and those outside the RIO are False. 
+
+        Pixels in the image, within the RIO then have their red channel set to 255, to 
+        make them appear red.
+        """
         if  (self.last_x != None and self.start_x != None 
                 and self.last_y != None and self.start_y != None):
             self.createMaskFromDrawnROI(self.pathCoordsList)
@@ -258,6 +360,9 @@ class GraphicsItem(QGraphicsObject):
 
 
     def mouseReleaseEvent(self, event):
+        """
+        Built in PyQt function that is executed when the mouse button is released.
+        """
         logger.info("FreeHandROI.GraphicsItem.mouseReleaseEvent called")
         try:
             #Get the coordinates of the cursor
@@ -332,8 +437,10 @@ class GraphicsItem(QGraphicsObject):
 
 
     def eraseROI(self):
-        #erase mask at this mouse pointer position
-        #and set pixel back to original value
+        """
+        Erases mask at the mouse pointer position
+        and sets the pixel back to original value.
+        """
         self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
@@ -525,6 +632,17 @@ class GraphicsItem(QGraphicsObject):
             
 
     def mousePressEvent(self, event):
+        """
+        Built in PyQt function that is executed when the mouse button is pressed.
+
+        When the left mouse button is pressed, the sigZoomIn signal is emitted to 
+        communicate this to the host GraphicsView widget, that then zooms in on 
+        the image.
+
+        When the right mouse button is pressed, the sigZoomOut signal is emitted to 
+        communicate this to the host GraphicsView widget, that then zooms out from 
+        the image.
+        """
         logger.info("FreeHandROI.GraphicsItem.mousePressEvent called")
         try:
             pass
