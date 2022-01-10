@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage API documentation</title>
-<meta name="description" content="This class provides a data structure and associated input and
-output functions for the storage of the ROI&#39;s drawn/painted
-on a DICOM image." />
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,20 +22,11 @@ on a DICOM image." />
 <h1 class="title">Module <code>Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage</code></h1>
 </header>
 <section id="section-intro">
-<p>This class provides a data structure and associated input and
-output functions for the storage of the ROI's drawn/painted
-on a DICOM image.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-This class provides a data structure and associated input and 
-output functions for the storage of the ROI&#39;s drawn/painted 
-on a DICOM image.
-&#34;&#34;&#34;
-
-import numpy as np
+<pre><code class="python">import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
@@ -46,23 +35,25 @@ __author__ = &#39;Steve Shillitoe&#39;
 #October/November 2020
 
 class ROIs():
-    &#34;&#34;&#34;An object instanciated from this class in the GraphicsView class
-   is used to store the masks on an image that form a Region of Interest, ROI.
+    &#34;&#34;&#34;
+    This class provides a data structure and associated input and 
+    output functions for the storage of the ROI&#39;s drawn/painted 
+    on a DICOM image.
+    
+    An object is instanciated from this class in the GraphicsView class.
 
-   Weasel gives an ROI a default name but it can be renamed by the user.
-   An ROI may extend over 1 or more images and on each image it may have 
-   a different shape and position.
+    Weasel gives an ROI a default name but it can be renamed by the user.
+    An ROI may extend over 1 or more images and on each image it may have 
+    a different shape and position.
 
-   A mask is a boolean array that is the same size as the DICOM images. 
-   A blank mask contains only False values.  When an ROI is drawn on an
-   image, the array elements in the mask corresponding to the ROI are
-   set to True.
+    A mask is a boolean array that is the same size as the DICOM images. 
+    A blank mask contains only False values.  When an ROI is drawn on an
+    image, the array elements in the mask corresponding to the ROI are
+    set to True.
 
-   Mask data is stored in a Python dictionary, where the key is the 
-   ROI&#39;s name and the value a list of masks, one mask for each image
-   in the DICOM series. Initially all the masks in this list are blank.
-   When an ROI is drawn on an image, the array elements that correspond to
-   the ROI in the mask in the list corresponding to that image are set to True.
+    Mask data is stored in a Python dictionary, where the key is the 
+    ROI&#39;s name and the value a list of masks, one mask for each image
+    in the DICOM series. Initially all the masks in this list are blank.
    &#34;&#34;&#34;
     def __init__(self, numberOfImages, linkToGraphicsView):
         &#34;&#34;&#34;Instantiates an ROIs object
@@ -77,7 +68,7 @@ class ROIs():
         self.prevRegionName = &#34;region1&#34;
         self.NumOfImages = numberOfImages
         self.linkToGraphicsView = linkToGraphicsView
-        logger.info(&#34;RIO_Storage object created&#34;)
+        logger.info(&#34;ROI_Storage object created&#34;)
 
     
     def resetRegionNumber(self):
@@ -94,9 +85,9 @@ class ROIs():
    
 
     def addMask(self, mask):
-        &#34;&#34;&#34;Overwrites the blank mask corresponding to a given image in the list of 
-        initially blank masks with the updated mask containing the ROI&#34;&#34;&#34;
-        logger.info(&#34;RIO_Storage.addMask called&#34;)
+        &#34;&#34;&#34;Overwrites the blank mask corresponding linked to a given image in the list of 
+        initially blank masks with the updated mask containing the ROI.&#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.addMask called&#34;)
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
@@ -120,12 +111,16 @@ class ROIs():
             logger.exception(&#39;Error in ROI_Storage.addMask: &#39; + str(e))
 
 
-    def replaceMask(self, mask):
-        logger.info(&#34;RIO_Storage.replaceMask called&#34;)
+    def replaceMask(self, newMask):
+        &#34;&#34;&#34;
+        For a given ROI and image, the existing mask is replaced by the new
+        mask in the input argument, newMask.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.replaceMask called&#34;)
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  newMask 
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -142,7 +137,7 @@ class ROIs():
         each image in the series.
         &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
+            logger.info(&#34;ROI_Storage.createListOfBlankMasks called&#34;)
             ny, nx = np.shape(mask)
             blankMask = np.full((ny, nx), False, dtype=bool)
             return [blankMask for _ in range(self.NumOfImages)]
@@ -151,8 +146,18 @@ class ROIs():
 
 
     def getNextRegionName(self):
+        &#34;&#34;&#34;
+        This function generates &amp; returns a new ROI name.
+
+        A new ROI name is generated by incrementing the regionNumber class property by 1
+        and concatenating with the string &#39;region&#39;.
+
+        This new ROI name is also stored in the prevRegionName class property
+        for use if the user renames this new ROI name. See the function
+        renameDictionaryKey for further details.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.getNextRegionName called&#34;)
+            logger.info(&#34;ROI_Storage.getNextRegionName called&#34;)
             self.regionNumber += 1
             nextRegionName = &#34;region&#34; + str(self.regionNumber)
             self.prevRegionName = nextRegionName
@@ -162,20 +167,30 @@ class ROIs():
 
 
     def getListOfRegions(self):
+        &#34;&#34;&#34;
+        Returns a list of region names.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.getListOfRegions called&#34;)
+            logger.info(&#34;ROI_Storage.getListOfRegions called&#34;)
             return list(self.dictMasks)
         except Exception as e:
                 print(&#39;Error in ROI_Storage.getListOfRegions: &#39; + str(e))
 
 
     def setPreviousRegionName(self, regionName):
-        logger.info(&#34;RIO_Storage.setPreviousRegionName called&#34;)
+        &#34;&#34;&#34;
+        Sets the value of the property prevRegionName to the input argument, regionName.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.setPreviousRegionName called&#34;)
         self.prevRegionName = regionName
 
     
     def getUpdatedMask(self):
-        logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns the  mask for a given 
+        ROI &amp; image from the dictMasks dictionary.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.getUpdatedMask called&#34;)
         try:
             regionName = self.linkToGraphicsView.currentROIName
             imageNumber = self.linkToGraphicsView.currentImageNumber
@@ -194,7 +209,20 @@ class ROIs():
 
 
     def getMask(self, regionName, imageNumber):
-        logger.info(&#34;RIO_Storage.getMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns the mask for a given 
+        ROI &amp; image from the dictMasks dictionary.
+
+        Input Arguments
+        ***************
+        regionName - Name of the ROI
+        imageNumber - Ordinal position of the image in the DICOM series.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.getMask called&#34;)
         try:
             if regionName in self.dictMasks: 
                 mask = self.dictMasks[regionName][imageNumber - 1]
@@ -210,8 +238,20 @@ class ROIs():
 
 
     def hasRegionGotMask(self, regionName):
+        &#34;&#34;&#34;
+        This function returns True if a ROI has masks stored in the 
+        dictMasks dictionary. Otherwise it returns False.
+
+        Input Argument
+        **************
+        regionName - Name of the ROI.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.hasRegionGotMask called&#34;)
+            logger.info(&#34;ROI_Storage.hasRegionGotMask called&#34;)
             if regionName in self.dictMasks: 
                 return True
             else:
@@ -221,7 +261,20 @@ class ROIs():
 
 
     def hasImageGotMask(self, regionName, imageNumber):
-        logger.info(&#34;RIO_Storage.hasImageGotMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns True if a particular ROI exists 
+        on a particular image. Otherwise it returns False.
+
+        Input Argument
+        **************
+        regionName - Name of the ROI.
+        imageNumber - Ordinal position of the image in the DICOM series.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.hasImageGotMask called&#34;)
         try:
             if regionName in self.dictMasks: 
                 mask = self.dictMasks[regionName][imageNumber - 1]
@@ -237,7 +290,11 @@ class ROIs():
 
 
     def returnListImagesWithMasks(self, regionName):
-        logger.info(&#34;RIO_Storage.returnListImagesWithMasks called&#34;)
+        &#34;&#34;&#34;
+        Returns a list of the image numbers where the ROI, regionName
+        has been drawn/painted on the image.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.returnListImagesWithMasks called&#34;)
         try:
             listImagesWithMasks = []
             if regionName in self.dictMasks: 
@@ -255,8 +312,12 @@ class ROIs():
 
 
     def deleteMask(self, regionName=None):
+        &#34;&#34;&#34;
+        Deletes the masks associated with the ROI called regionName 
+        in the dictMask dictionary.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.deleteMask called&#34;)
+            logger.info(&#34;ROI_Storage.deleteMask called&#34;)
             if regionName:
                 if regionName in self.dictMasks: 
                     del self.dictMasks[regionName]
@@ -266,7 +327,15 @@ class ROIs():
 
 
     def renameDictionaryKey(self, newName):
-        logger.info(&#34;RIO_Storage.renameDictionaryKey called&#34;)
+        &#34;&#34;&#34;
+        Replaces the name of an existing ROI with the new name in the
+        input argument newName.
+
+        If this operation is successful, this function returns True
+        otherwise it returns False if newName is already used as a 
+        key in the dictMasks dictionary.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.renameDictionaryKey called&#34;)
         try:
             #print(&#34;self.prevRegionName={}&#34;.format(self.prevRegionName))
             if len(newName) &gt; 0:
@@ -290,6 +359,12 @@ class ROIs():
        
 
     def printContentsDictMasks(self):
+        &#34;&#34;&#34;
+        This function prints the name of each ROI, the number of 
+        images they are drawn/painted on and the number of pixels in each ROI.
+
+        This function was used during testing.
+        &#34;&#34;&#34;
         print(&#34;Contents of self.dictMasks&#34;)
         for key, value in self.dictMasks.items():
             numMasks = 0
@@ -315,8 +390,10 @@ class ROIs():
 <span>(</span><span>numberOfImages, linkToGraphicsView)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>An object instanciated from this class in the GraphicsView class
-is used to store the masks on an image that form a Region of Interest, ROI.</p>
+<div class="desc"><p>This class provides a data structure and associated input and
+output functions for the storage of the ROI's drawn/painted
+on a DICOM image.</p>
+<p>An object is instanciated from this class in the GraphicsView class.</p>
 <p>Weasel gives an ROI a default name but it can be renamed by the user.
 An ROI may extend over 1 or more images and on each image it may have
 a different shape and position.</p>
@@ -327,9 +404,7 @@ image, the array elements in the mask corresponding to the ROI are
 set to True.</p>
 <p>Mask data is stored in a Python dictionary, where the key is the
 ROI's name and the value a list of masks, one mask for each image
-in the DICOM series. Initially all the masks in this list are blank.
-When an ROI is drawn on an image, the array elements that correspond to
-the ROI in the mask in the list corresponding to that image are set to True.</p>
+in the DICOM series. Initially all the masks in this list are blank.</p>
 <p>Instantiates an ROIs object</p>
 <p>arguments:
 numberOfImages - number of images in the DICOM series
@@ -340,23 +415,25 @@ object hosting the ROIs object</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ROIs():
-    &#34;&#34;&#34;An object instanciated from this class in the GraphicsView class
-   is used to store the masks on an image that form a Region of Interest, ROI.
+    &#34;&#34;&#34;
+    This class provides a data structure and associated input and 
+    output functions for the storage of the ROI&#39;s drawn/painted 
+    on a DICOM image.
+    
+    An object is instanciated from this class in the GraphicsView class.
 
-   Weasel gives an ROI a default name but it can be renamed by the user.
-   An ROI may extend over 1 or more images and on each image it may have 
-   a different shape and position.
+    Weasel gives an ROI a default name but it can be renamed by the user.
+    An ROI may extend over 1 or more images and on each image it may have 
+    a different shape and position.
 
-   A mask is a boolean array that is the same size as the DICOM images. 
-   A blank mask contains only False values.  When an ROI is drawn on an
-   image, the array elements in the mask corresponding to the ROI are
-   set to True.
+    A mask is a boolean array that is the same size as the DICOM images. 
+    A blank mask contains only False values.  When an ROI is drawn on an
+    image, the array elements in the mask corresponding to the ROI are
+    set to True.
 
-   Mask data is stored in a Python dictionary, where the key is the 
-   ROI&#39;s name and the value a list of masks, one mask for each image
-   in the DICOM series. Initially all the masks in this list are blank.
-   When an ROI is drawn on an image, the array elements that correspond to
-   the ROI in the mask in the list corresponding to that image are set to True.
+    Mask data is stored in a Python dictionary, where the key is the 
+    ROI&#39;s name and the value a list of masks, one mask for each image
+    in the DICOM series. Initially all the masks in this list are blank.
    &#34;&#34;&#34;
     def __init__(self, numberOfImages, linkToGraphicsView):
         &#34;&#34;&#34;Instantiates an ROIs object
@@ -371,7 +448,7 @@ object hosting the ROIs object</p></div>
         self.prevRegionName = &#34;region1&#34;
         self.NumOfImages = numberOfImages
         self.linkToGraphicsView = linkToGraphicsView
-        logger.info(&#34;RIO_Storage object created&#34;)
+        logger.info(&#34;ROI_Storage object created&#34;)
 
     
     def resetRegionNumber(self):
@@ -388,9 +465,9 @@ object hosting the ROIs object</p></div>
    
 
     def addMask(self, mask):
-        &#34;&#34;&#34;Overwrites the blank mask corresponding to a given image in the list of 
-        initially blank masks with the updated mask containing the ROI&#34;&#34;&#34;
-        logger.info(&#34;RIO_Storage.addMask called&#34;)
+        &#34;&#34;&#34;Overwrites the blank mask corresponding linked to a given image in the list of 
+        initially blank masks with the updated mask containing the ROI.&#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.addMask called&#34;)
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
@@ -414,12 +491,16 @@ object hosting the ROIs object</p></div>
             logger.exception(&#39;Error in ROI_Storage.addMask: &#39; + str(e))
 
 
-    def replaceMask(self, mask):
-        logger.info(&#34;RIO_Storage.replaceMask called&#34;)
+    def replaceMask(self, newMask):
+        &#34;&#34;&#34;
+        For a given ROI and image, the existing mask is replaced by the new
+        mask in the input argument, newMask.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.replaceMask called&#34;)
         try:
             if self.linkToGraphicsView.currentROIName in self.dictMasks:
                 imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
+                imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  newMask 
                 self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
         except Exception as e:
             print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -436,7 +517,7 @@ object hosting the ROIs object</p></div>
         each image in the series.
         &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
+            logger.info(&#34;ROI_Storage.createListOfBlankMasks called&#34;)
             ny, nx = np.shape(mask)
             blankMask = np.full((ny, nx), False, dtype=bool)
             return [blankMask for _ in range(self.NumOfImages)]
@@ -445,8 +526,18 @@ object hosting the ROIs object</p></div>
 
 
     def getNextRegionName(self):
+        &#34;&#34;&#34;
+        This function generates &amp; returns a new ROI name.
+
+        A new ROI name is generated by incrementing the regionNumber class property by 1
+        and concatenating with the string &#39;region&#39;.
+
+        This new ROI name is also stored in the prevRegionName class property
+        for use if the user renames this new ROI name. See the function
+        renameDictionaryKey for further details.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.getNextRegionName called&#34;)
+            logger.info(&#34;ROI_Storage.getNextRegionName called&#34;)
             self.regionNumber += 1
             nextRegionName = &#34;region&#34; + str(self.regionNumber)
             self.prevRegionName = nextRegionName
@@ -456,20 +547,30 @@ object hosting the ROIs object</p></div>
 
 
     def getListOfRegions(self):
+        &#34;&#34;&#34;
+        Returns a list of region names.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.getListOfRegions called&#34;)
+            logger.info(&#34;ROI_Storage.getListOfRegions called&#34;)
             return list(self.dictMasks)
         except Exception as e:
                 print(&#39;Error in ROI_Storage.getListOfRegions: &#39; + str(e))
 
 
     def setPreviousRegionName(self, regionName):
-        logger.info(&#34;RIO_Storage.setPreviousRegionName called&#34;)
+        &#34;&#34;&#34;
+        Sets the value of the property prevRegionName to the input argument, regionName.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.setPreviousRegionName called&#34;)
         self.prevRegionName = regionName
 
     
     def getUpdatedMask(self):
-        logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns the  mask for a given 
+        ROI &amp; image from the dictMasks dictionary.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.getUpdatedMask called&#34;)
         try:
             regionName = self.linkToGraphicsView.currentROIName
             imageNumber = self.linkToGraphicsView.currentImageNumber
@@ -488,7 +589,20 @@ object hosting the ROIs object</p></div>
 
 
     def getMask(self, regionName, imageNumber):
-        logger.info(&#34;RIO_Storage.getMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns the mask for a given 
+        ROI &amp; image from the dictMasks dictionary.
+
+        Input Arguments
+        ***************
+        regionName - Name of the ROI
+        imageNumber - Ordinal position of the image in the DICOM series.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.getMask called&#34;)
         try:
             if regionName in self.dictMasks: 
                 mask = self.dictMasks[regionName][imageNumber - 1]
@@ -504,8 +618,20 @@ object hosting the ROIs object</p></div>
 
 
     def hasRegionGotMask(self, regionName):
+        &#34;&#34;&#34;
+        This function returns True if a ROI has masks stored in the 
+        dictMasks dictionary. Otherwise it returns False.
+
+        Input Argument
+        **************
+        regionName - Name of the ROI.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.hasRegionGotMask called&#34;)
+            logger.info(&#34;ROI_Storage.hasRegionGotMask called&#34;)
             if regionName in self.dictMasks: 
                 return True
             else:
@@ -515,7 +641,20 @@ object hosting the ROIs object</p></div>
 
 
     def hasImageGotMask(self, regionName, imageNumber):
-        logger.info(&#34;RIO_Storage.hasImageGotMask called&#34;)
+        &#34;&#34;&#34;
+        This function returns True if a particular ROI exists 
+        on a particular image. Otherwise it returns False.
+
+        Input Argument
+        **************
+        regionName - Name of the ROI.
+        imageNumber - Ordinal position of the image in the DICOM series.
+
+        Returns
+        *******
+        True or False
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.hasImageGotMask called&#34;)
         try:
             if regionName in self.dictMasks: 
                 mask = self.dictMasks[regionName][imageNumber - 1]
@@ -531,7 +670,11 @@ object hosting the ROIs object</p></div>
 
 
     def returnListImagesWithMasks(self, regionName):
-        logger.info(&#34;RIO_Storage.returnListImagesWithMasks called&#34;)
+        &#34;&#34;&#34;
+        Returns a list of the image numbers where the ROI, regionName
+        has been drawn/painted on the image.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.returnListImagesWithMasks called&#34;)
         try:
             listImagesWithMasks = []
             if regionName in self.dictMasks: 
@@ -549,8 +692,12 @@ object hosting the ROIs object</p></div>
 
 
     def deleteMask(self, regionName=None):
+        &#34;&#34;&#34;
+        Deletes the masks associated with the ROI called regionName 
+        in the dictMask dictionary.
+        &#34;&#34;&#34;
         try:
-            logger.info(&#34;RIO_Storage.deleteMask called&#34;)
+            logger.info(&#34;ROI_Storage.deleteMask called&#34;)
             if regionName:
                 if regionName in self.dictMasks: 
                     del self.dictMasks[regionName]
@@ -560,7 +707,15 @@ object hosting the ROIs object</p></div>
 
 
     def renameDictionaryKey(self, newName):
-        logger.info(&#34;RIO_Storage.renameDictionaryKey called&#34;)
+        &#34;&#34;&#34;
+        Replaces the name of an existing ROI with the new name in the
+        input argument newName.
+
+        If this operation is successful, this function returns True
+        otherwise it returns False if newName is already used as a 
+        key in the dictMasks dictionary.
+        &#34;&#34;&#34;
+        logger.info(&#34;ROI_Storage.renameDictionaryKey called&#34;)
         try:
             #print(&#34;self.prevRegionName={}&#34;.format(self.prevRegionName))
             if len(newName) &gt; 0:
@@ -584,6 +739,12 @@ object hosting the ROIs object</p></div>
        
 
     def printContentsDictMasks(self):
+        &#34;&#34;&#34;
+        This function prints the name of each ROI, the number of 
+        images they are drawn/painted on and the number of pixels in each ROI.
+
+        This function was used during testing.
+        &#34;&#34;&#34;
         print(&#34;Contents of self.dictMasks&#34;)
         for key, value in self.dictMasks.items():
             numMasks = 0
@@ -600,16 +761,16 @@ object hosting the ROIs object</p></div>
 <span>def <span class="ident">addMask</span></span>(<span>self, mask)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Overwrites the blank mask corresponding to a given image in the list of
-initially blank masks with the updated mask containing the ROI</p></div>
+<div class="desc"><p>Overwrites the blank mask corresponding linked to a given image in the list of
+initially blank masks with the updated mask containing the ROI.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def addMask(self, mask):
-    &#34;&#34;&#34;Overwrites the blank mask corresponding to a given image in the list of 
-    initially blank masks with the updated mask containing the ROI&#34;&#34;&#34;
-    logger.info(&#34;RIO_Storage.addMask called&#34;)
+    &#34;&#34;&#34;Overwrites the blank mask corresponding linked to a given image in the list of 
+    initially blank masks with the updated mask containing the ROI.&#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.addMask called&#34;)
     try:
         if self.linkToGraphicsView.currentROIName in self.dictMasks:
             imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
@@ -656,7 +817,7 @@ each image in the series.</p></div>
     each image in the series.
     &#34;&#34;&#34;
     try:
-        logger.info(&#34;RIO_Storage.createListOfBlankMasks called&#34;)
+        logger.info(&#34;ROI_Storage.createListOfBlankMasks called&#34;)
         ny, nx = np.shape(mask)
         blankMask = np.full((ny, nx), False, dtype=bool)
         return [blankMask for _ in range(self.NumOfImages)]
@@ -668,14 +829,19 @@ each image in the series.</p></div>
 <span>def <span class="ident">deleteMask</span></span>(<span>self, regionName=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Deletes the masks associated with the ROI called regionName
+in the dictMask dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def deleteMask(self, regionName=None):
+    &#34;&#34;&#34;
+    Deletes the masks associated with the ROI called regionName 
+    in the dictMask dictionary.
+    &#34;&#34;&#34;
     try:
-        logger.info(&#34;RIO_Storage.deleteMask called&#34;)
+        logger.info(&#34;ROI_Storage.deleteMask called&#34;)
         if regionName:
             if regionName in self.dictMasks: 
                 del self.dictMasks[regionName]
@@ -688,14 +854,17 @@ each image in the series.</p></div>
 <span>def <span class="ident">getListOfRegions</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns a list of region names.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getListOfRegions(self):
+    &#34;&#34;&#34;
+    Returns a list of region names.
+    &#34;&#34;&#34;
     try:
-        logger.info(&#34;RIO_Storage.getListOfRegions called&#34;)
+        logger.info(&#34;ROI_Storage.getListOfRegions called&#34;)
         return list(self.dictMasks)
     except Exception as e:
             print(&#39;Error in ROI_Storage.getListOfRegions: &#39; + str(e))</code></pre>
@@ -705,13 +874,34 @@ each image in the series.</p></div>
 <span>def <span class="ident">getMask</span></span>(<span>self, regionName, imageNumber)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns the mask for a given
+ROI &amp; image from the dictMasks dictionary.</p>
+<p>Input Arguments</p>
+<hr>
+<p>regionName - Name of the ROI
+imageNumber - Ordinal position of the image in the DICOM series.</p>
+<p>Returns</p>
+<hr>
+<p>True or False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getMask(self, regionName, imageNumber):
-    logger.info(&#34;RIO_Storage.getMask called&#34;)
+    &#34;&#34;&#34;
+    This function returns the mask for a given 
+    ROI &amp; image from the dictMasks dictionary.
+
+    Input Arguments
+    ***************
+    regionName - Name of the ROI
+    imageNumber - Ordinal position of the image in the DICOM series.
+
+    Returns
+    *******
+    True or False
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.getMask called&#34;)
     try:
         if regionName in self.dictMasks: 
             mask = self.dictMasks[regionName][imageNumber - 1]
@@ -730,14 +920,29 @@ each image in the series.</p></div>
 <span>def <span class="ident">getNextRegionName</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function generates &amp; returns a new ROI name.</p>
+<p>A new ROI name is generated by incrementing the regionNumber class property by 1
+and concatenating with the string 'region'.</p>
+<p>This new ROI name is also stored in the prevRegionName class property
+for use if the user renames this new ROI name. See the function
+renameDictionaryKey for further details.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getNextRegionName(self):
+    &#34;&#34;&#34;
+    This function generates &amp; returns a new ROI name.
+
+    A new ROI name is generated by incrementing the regionNumber class property by 1
+    and concatenating with the string &#39;region&#39;.
+
+    This new ROI name is also stored in the prevRegionName class property
+    for use if the user renames this new ROI name. See the function
+    renameDictionaryKey for further details.
+    &#34;&#34;&#34;
     try:
-        logger.info(&#34;RIO_Storage.getNextRegionName called&#34;)
+        logger.info(&#34;ROI_Storage.getNextRegionName called&#34;)
         self.regionNumber += 1
         nextRegionName = &#34;region&#34; + str(self.regionNumber)
         self.prevRegionName = nextRegionName
@@ -750,13 +955,19 @@ each image in the series.</p></div>
 <span>def <span class="ident">getUpdatedMask</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns the
+mask for a given
+ROI &amp; image from the dictMasks dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getUpdatedMask(self):
-    logger.info(&#34;RIO_Storage.getUpdatedMask called&#34;)
+    &#34;&#34;&#34;
+    This function returns the  mask for a given 
+    ROI &amp; image from the dictMasks dictionary.
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.getUpdatedMask called&#34;)
     try:
         regionName = self.linkToGraphicsView.currentROIName
         imageNumber = self.linkToGraphicsView.currentImageNumber
@@ -777,13 +988,34 @@ each image in the series.</p></div>
 <span>def <span class="ident">hasImageGotMask</span></span>(<span>self, regionName, imageNumber)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns True if a particular ROI exists
+on a particular image. Otherwise it returns False.</p>
+<p>Input Argument</p>
+<hr>
+<p>regionName - Name of the ROI.
+imageNumber - Ordinal position of the image in the DICOM series.</p>
+<p>Returns</p>
+<hr>
+<p>True or False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def hasImageGotMask(self, regionName, imageNumber):
-    logger.info(&#34;RIO_Storage.hasImageGotMask called&#34;)
+    &#34;&#34;&#34;
+    This function returns True if a particular ROI exists 
+    on a particular image. Otherwise it returns False.
+
+    Input Argument
+    **************
+    regionName - Name of the ROI.
+    imageNumber - Ordinal position of the image in the DICOM series.
+
+    Returns
+    *******
+    True or False
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.hasImageGotMask called&#34;)
     try:
         if regionName in self.dictMasks: 
             mask = self.dictMasks[regionName][imageNumber - 1]
@@ -802,14 +1034,33 @@ each image in the series.</p></div>
 <span>def <span class="ident">hasRegionGotMask</span></span>(<span>self, regionName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns True if a ROI has masks stored in the
+dictMasks dictionary. Otherwise it returns False.</p>
+<p>Input Argument</p>
+<hr>
+<p>regionName - Name of the ROI.</p>
+<p>Returns</p>
+<hr>
+<p>True or False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def hasRegionGotMask(self, regionName):
+    &#34;&#34;&#34;
+    This function returns True if a ROI has masks stored in the 
+    dictMasks dictionary. Otherwise it returns False.
+
+    Input Argument
+    **************
+    regionName - Name of the ROI.
+
+    Returns
+    *******
+    True or False
+    &#34;&#34;&#34;
     try:
-        logger.info(&#34;RIO_Storage.hasRegionGotMask called&#34;)
+        logger.info(&#34;ROI_Storage.hasRegionGotMask called&#34;)
         if regionName in self.dictMasks: 
             return True
         else:
@@ -822,12 +1073,20 @@ each image in the series.</p></div>
 <span>def <span class="ident">printContentsDictMasks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function prints the name of each ROI, the number of
+images they are drawn/painted on and the number of pixels in each ROI.</p>
+<p>This function was used during testing.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def printContentsDictMasks(self):
+    &#34;&#34;&#34;
+    This function prints the name of each ROI, the number of 
+    images they are drawn/painted on and the number of pixels in each ROI.
+
+    This function was used during testing.
+    &#34;&#34;&#34;
     print(&#34;Contents of self.dictMasks&#34;)
     for key, value in self.dictMasks.items():
         numMasks = 0
@@ -843,13 +1102,25 @@ each image in the series.</p></div>
 <span>def <span class="ident">renameDictionaryKey</span></span>(<span>self, newName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Replaces the name of an existing ROI with the new name in the
+input argument newName.</p>
+<p>If this operation is successful, this function returns True
+otherwise it returns False if newName is already used as a
+key in the dictMasks dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def renameDictionaryKey(self, newName):
-    logger.info(&#34;RIO_Storage.renameDictionaryKey called&#34;)
+    &#34;&#34;&#34;
+    Replaces the name of an existing ROI with the new name in the
+    input argument newName.
+
+    If this operation is successful, this function returns True
+    otherwise it returns False if newName is already used as a 
+    key in the dictMasks dictionary.
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.renameDictionaryKey called&#34;)
     try:
         #print(&#34;self.prevRegionName={}&#34;.format(self.prevRegionName))
         if len(newName) &gt; 0:
@@ -873,20 +1144,25 @@ each image in the series.</p></div>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.ROI_Storage.ROIs.replaceMask"><code class="name flex">
-<span>def <span class="ident">replaceMask</span></span>(<span>self, mask)</span>
+<span>def <span class="ident">replaceMask</span></span>(<span>self, newMask)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>For a given ROI and image, the existing mask is replaced by the new
+mask in the input argument, newMask.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def replaceMask(self, mask):
-    logger.info(&#34;RIO_Storage.replaceMask called&#34;)
+<pre><code class="python">def replaceMask(self, newMask):
+    &#34;&#34;&#34;
+    For a given ROI and image, the existing mask is replaced by the new
+    mask in the input argument, newMask.
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.replaceMask called&#34;)
     try:
         if self.linkToGraphicsView.currentROIName in self.dictMasks:
             imageMaskList = self.dictMasks[self.linkToGraphicsView.currentROIName]
-            imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  mask 
+            imageMaskList[self.linkToGraphicsView.currentImageNumber - 1] =  newMask 
             self.dictMasks[self.linkToGraphicsView.currentROIName] = imageMaskList
     except Exception as e:
         print(&#39;Error in ROI_Storage.replaceMask: &#39; + str(e))
@@ -915,13 +1191,18 @@ region[regionNumber]</p></div>
 <span>def <span class="ident">returnListImagesWithMasks</span></span>(<span>self, regionName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns a list of the image numbers where the ROI, regionName
+has been drawn/painted on the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def returnListImagesWithMasks(self, regionName):
-    logger.info(&#34;RIO_Storage.returnListImagesWithMasks called&#34;)
+    &#34;&#34;&#34;
+    Returns a list of the image numbers where the ROI, regionName
+    has been drawn/painted on the image.
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.returnListImagesWithMasks called&#34;)
     try:
         listImagesWithMasks = []
         if regionName in self.dictMasks: 
@@ -942,13 +1223,16 @@ region[regionNumber]</p></div>
 <span>def <span class="ident">setPreviousRegionName</span></span>(<span>self, regionName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of the property prevRegionName to the input argument, regionName.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setPreviousRegionName(self, regionName):
-    logger.info(&#34;RIO_Storage.setPreviousRegionName called&#34;)
+    &#34;&#34;&#34;
+    Sets the value of the property prevRegionName to the input argument, regionName.
+    &#34;&#34;&#34;
+    logger.info(&#34;ROI_Storage.setPreviousRegionName called&#34;)
     self.prevRegionName = regionName</code></pre>
 </details>
 </dd>
