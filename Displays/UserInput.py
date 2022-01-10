@@ -309,7 +309,7 @@ class ParameterInputDialog(QDialog):
         try:
             super(ParameterInputDialog, self).__init__()
             self.setWindowTitle(title)
-            self.setStyleSheet(styleSheet.TRISTAN_GREY)
+            self.setStyleSheet(styleSheet.WEASEL_GREY)
             #Hide ? help button
             #self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
             self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
