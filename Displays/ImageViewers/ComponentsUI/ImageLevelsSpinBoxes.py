@@ -1,3 +1,7 @@
+"""
+This class creates a composite widget for the display and adjustment of
+image intensity and contrast.
+"""
 from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QDoubleSpinBox, QLabel, QHBoxLayout)
@@ -11,7 +15,8 @@ __author__ = "Steve Shillitoe"
 #September 2021
 
 class ImageLevelsSpinBoxes:
-    """This class creates two decimal spinboxes with labels to 
+    """This class creates a composite widget containing 
+    two decimal spinboxes with labels to 
     display appropriate icons in a horizontal layout.
     This pair of spinboxes is used to adjust the intensity 
     and contrast of an image.
