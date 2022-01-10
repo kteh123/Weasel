@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>Weasel.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This class creates a composite widget for the display and adjustment of
+image intensity and contrast." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +23,17 @@
 <h1 class="title">Module <code>Weasel.Displays.ImageViewers.ComponentsUI.ImageLevelsSpinBoxes</code></h1>
 </header>
 <section id="section-intro">
+<p>This class creates a composite widget for the display and adjustment of
+image intensity and contrast.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PyQt5.QtCore import  Qt
+<pre><code class="python">&#34;&#34;&#34;
+This class creates a composite widget for the display and adjustment of
+image intensity and contrast.
+&#34;&#34;&#34;
+from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QDoubleSpinBox, QLabel, QHBoxLayout)
 
@@ -39,7 +46,8 @@ __author__ = &#34;Steve Shillitoe&#34;
 #September 2021
 
 class ImageLevelsSpinBoxes:
-    &#34;&#34;&#34;This class creates two decimal spinboxes with labels to 
+    &#34;&#34;&#34;This class creates a composite widget containing 
+    two decimal spinboxes with labels to 
     display appropriate icons in a horizontal layout.
     This pair of spinboxes is used to adjust the intensity 
     and contrast of an image.
@@ -135,7 +143,8 @@ class ImageLevelsSpinBoxes:
 <span>class <span class="ident">ImageLevelsSpinBoxes</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>This class creates two decimal spinboxes with labels to
+<div class="desc"><p>This class creates a composite widget containing
+two decimal spinboxes with labels to
 display appropriate icons in a horizontal layout.
 This pair of spinboxes is used to adjust the intensity
 and contrast of an image.</p>
@@ -147,7 +156,8 @@ to the calling function using the getCompositeComponent function. </p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ImageLevelsSpinBoxes:
-    &#34;&#34;&#34;This class creates two decimal spinboxes with labels to 
+    &#34;&#34;&#34;This class creates a composite widget containing 
+    two decimal spinboxes with labels to 
     display appropriate icons in a horizontal layout.
     This pair of spinboxes is used to adjust the intensity 
     and contrast of an image.
