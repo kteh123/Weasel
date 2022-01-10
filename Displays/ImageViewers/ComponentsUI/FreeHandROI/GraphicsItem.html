@@ -383,8 +383,8 @@ class GraphicsItem(QGraphicsObject):
         The mask is a boolean array with the same shape as the image, in which elements
         corresponding to the RIO are True and those outside the RIO are False. 
 
-        Pixels in the image, within the RIO then have their red channel set to 255, to 
-        make them appear red.
+        Pixels within the RIO then have only their red channel set to 255, to 
+        make them appear red but still allowing the image to be visible.
         &#34;&#34;&#34;
         if  (self.last_x != None and self.start_x != None 
                 and self.last_y != None and self.start_y != None):
@@ -410,6 +410,27 @@ class GraphicsItem(QGraphicsObject):
     def mouseReleaseEvent(self, event):
         &#34;&#34;&#34;
         Built in PyQt function that is executed when the mouse button is released.
+
+        If the left mouse button is released, the draw RIO function was selected 
+        and the mouse was moved over the image immediately prior to releasing 
+        the left mouse button, then the ROI is closed if necessary and coloured
+        red.
+
+
+        If the left mouse button is released, the draw RIO function was selected 
+        and the mouse was not moved over the image immediately prior to releasing 
+        the left mouse button, then a single pixel is coloured red and added to the
+        existing ROI on that image or a new ROI is created.
+
+
+        If the left mouse button is released and the paint RIO function was selected
+        then one or more contiguous pixels, depending on the brush size selected, are coloured red
+        and added to the existing RIO on that image or a new RIO is created.
+
+
+        If the left mouse button is released and the erase RIO function was selected
+        then one or more contiguous pixels, depending on the eraser size selected, are returned
+        to their original colour and removed from the existing RIO on that image.
         &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
         try:
@@ -456,6 +477,15 @@ class GraphicsItem(QGraphicsObject):
 
 
     def paintROI(self):
+        &#34;&#34;&#34;
+        Depending on the brush size selected, this function paints 
+        one or more contiguous pixels red and adds them to the 
+        existing RIO on the image; i.e., in the mask it sets the
+        corresponding pixel(s) to True.
+        If there is no existing RIO on the image, then a blank mask is created first.  
+        A blank mask is a boolean array with all its elements set to False 
+        and that has the same shape as the image. 
+        &#34;&#34;&#34;
         if self.mask is None:
             self.createBlankMask()
             
@@ -486,8 +516,10 @@ class GraphicsItem(QGraphicsObject):
 
     def eraseROI(self):
         &#34;&#34;&#34;
-        Erases mask at the mouse pointer position
-        and sets the pixel back to original value.
+        Depending on the brush size selected, this function 
+        returns one or more contiguous pixels to their original colour 
+        and removes them from the RIO; i.e., in the mask it sets the
+        corresponding pixel(s) to False.
         &#34;&#34;&#34;
         self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
@@ -518,6 +550,14 @@ class GraphicsItem(QGraphicsObject):
 
 
     def resetPixelToOriginalValue(self, x, y):
+        &#34;&#34;&#34;
+        This function is used by the eraseRIO function to return
+        a pixel in the RIO to its original colour. 
+
+        The RGB values are obtained from a copy of the image and
+        the pixel at x,y is set to these values. A new QPixmap of 
+        the image is then created and the image repainted.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
         try:
             pixelColour = self.origQImage.pixel(x, y) 
@@ -529,6 +569,7 @@ class GraphicsItem(QGraphicsObject):
             self.qImage.setPixel(x, y, value)
             #convert QImage to QPixmap to be able to update image
             self.pixMap = QPixmap.fromImage(self.qImage)
+            #repaint image by updating it
             self.update()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
@@ -536,6 +577,10 @@ class GraphicsItem(QGraphicsObject):
     
 
     def setPixelToRed(self, x, y):
+        &#34;&#34;&#34;
+        This function sets the red channel of the pixel at x,y to 255; thus,
+        making it appear red. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.setPixelToRed called&#34;)
         try:
             pixelColour = self.qImage.pixel(x, y) 
@@ -552,30 +597,24 @@ class GraphicsItem(QGraphicsObject):
             #convert QImage to QPixmap to be able to update image
             #with filled ROI
             self.pixMap = QPixmap.fromImage(self.qImage)
+            #repaint image
             self.update()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.setPixelToRed: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.setPixelToRed: &#39; + str(e))
 
 
-    def reloadImage(self):
-        logger.info(&#34;FreeHandROI.GraphicsItem.reloadImage called&#34;)
-        try:
-            self.qImage = None
-            self.pixMap = None
-            self.mask = None
-            self.qImage = self.origQImage
-            self.pixMap = QPixmap.fromImage(self.qImage)
-            self.update()
-        except Exception as e:
-            print(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))
-            logger.error(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))
-
-
     def reloadMask(self, mask):
+        &#34;&#34;&#34;
+        Redisplays the ROI represented by mask on the image.
+
+        This function makes a list of the coordinates of the elements
+        in the input argument mask that have the value True and therefore correspond
+        to the RIO. Then the pixels in the image, within the RIO, have 
+        their Red channel set to 255, to make them appear red. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.reloadMask called&#34;)
         try:
-            #redisplays the ROI represented by mask
             self.listROICoords = self.getListRoiInnerPoints(mask)
             self.fillFreeHandRoi()
             self.listROICoords = []
@@ -585,8 +624,14 @@ class GraphicsItem(QGraphicsObject):
 
 
     def fillFreeHandRoi(self):
+        &#34;&#34;&#34;
+        Sets the Red channel to 255 of the pixels within the RIO.  
+        This makes them appear red.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.fillFreeHandRoi called&#34;)
         try:
+            #self.listROICoords is a list of the coordinates of the pixels
+            #within the RIO
             if self.listROICoords is not None:
                 for coords in self.listROICoords:
                     x = coords[0]
@@ -598,6 +643,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def addROItoImage(self, roi):
+        &#34;&#34;&#34;
+        This function is used to add an existing ROI to an image 
+        before it is displayed for the first time in the GraphicsItem object.
+
+        rio - boolean array containing elements corresponding to the ROI; i.e.,
+            their value is True. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.addROItoImage called&#34;)
         try:
             listROICoords = self.getListRoiInnerPoints(roi)
@@ -621,24 +673,31 @@ class GraphicsItem(QGraphicsObject):
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.addROItoImage: &#39; + str(e))
 
 
-    def getRoiMeanAndStd(self):
-        logger.info(&#34;FreeHandROI.GraphicsItem.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
-        std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
-        return mean, std
-
-
     def getMaskData(self):
+        &#34;&#34;&#34;
+        This function returns the mask (boolean array) associated with 
+        the GraphicsItem object. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.getMaskData called&#34;)
         return self.mask
 
 
-    def getListRoiInnerPoints(self, roi):
+    def getListRoiInnerPoints(self, mask):
+        &#34;&#34;&#34;
+        This function returns a list of the coordinates 
+        of the elements in the mask whose values are True. 
+       
+        Input argument
+        ***************
+        mask - a boolean array the same size as the image. 
+            Elements in the mask whose value is True correspond  
+            to the pixels in the ROI drawn on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.getListRoiInnerPoints called&#34;)
         try:
-            if roi is not None:
-                result = np.where(roi == True)
-                return list(zip(result[1], result[0]))
+            if mask is not None:
+                roi = np.where(mask == True)
+                return list(zip(roi[1], roi[0]))
             else:
                 return None
         except Exception as e:
@@ -647,12 +706,28 @@ class GraphicsItem(QGraphicsObject):
 
 
     def createBlankMask(self):
+        &#34;&#34;&#34;
+        Creates a boolean array with the same shape as the image&#39;s
+        pixel array. All its elements are set to False. This boolean array
+        is assigned to the class property self.mask.
+
+        This function is used by the paintROI function and when no ROI exists
+        and an ROI is drawn on just one pixel.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
         rows, cols = np.shape(self.pixelArray)
         self.mask = np.full((rows, cols), False, dtype=bool)
 
 
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
+        &#34;&#34;&#34;
+        Using the coordinates of the points on the boundary of a drawn RIO,
+        this function creates a mask. 
+        The mask is a boolean array with the same shape as
+        the image. 
+        Elements in the mask with the value True represent the ROI. 
+        Elements in the mask outside the RIO have the value False. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.createMaskFromDrawnROI called&#34;)
         try:
             self.mask = None
@@ -671,9 +746,6 @@ class GraphicsItem(QGraphicsObject):
             #ROI that are set to True.  
             #Setting radius=0.0 does not include the drawn boundary in the ROI
             self.mask = roiPath.contains_points(points, radius=0.0).reshape((ny, nx))   
-
-            #innerROIPoints  = np.where(self.mask == True)
-            #print(&#34;GraphicsItem true coords ={}&#34;.format(list(zip(innerROIPoints[1], innerROIPoints[0])) ))
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))
@@ -1031,8 +1103,8 @@ class GraphicsItem(QGraphicsObject):
         The mask is a boolean array with the same shape as the image, in which elements
         corresponding to the RIO are True and those outside the RIO are False. 
 
-        Pixels in the image, within the RIO then have their red channel set to 255, to 
-        make them appear red.
+        Pixels within the RIO then have only their red channel set to 255, to 
+        make them appear red but still allowing the image to be visible.
         &#34;&#34;&#34;
         if  (self.last_x != None and self.start_x != None 
                 and self.last_y != None and self.start_y != None):
@@ -1058,6 +1130,27 @@ class GraphicsItem(QGraphicsObject):
     def mouseReleaseEvent(self, event):
         &#34;&#34;&#34;
         Built in PyQt function that is executed when the mouse button is released.
+
+        If the left mouse button is released, the draw RIO function was selected 
+        and the mouse was moved over the image immediately prior to releasing 
+        the left mouse button, then the ROI is closed if necessary and coloured
+        red.
+
+
+        If the left mouse button is released, the draw RIO function was selected 
+        and the mouse was not moved over the image immediately prior to releasing 
+        the left mouse button, then a single pixel is coloured red and added to the
+        existing ROI on that image or a new ROI is created.
+
+
+        If the left mouse button is released and the paint RIO function was selected
+        then one or more contiguous pixels, depending on the brush size selected, are coloured red
+        and added to the existing RIO on that image or a new RIO is created.
+
+
+        If the left mouse button is released and the erase RIO function was selected
+        then one or more contiguous pixels, depending on the eraser size selected, are returned
+        to their original colour and removed from the existing RIO on that image.
         &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
         try:
@@ -1104,6 +1197,15 @@ class GraphicsItem(QGraphicsObject):
 
 
     def paintROI(self):
+        &#34;&#34;&#34;
+        Depending on the brush size selected, this function paints 
+        one or more contiguous pixels red and adds them to the 
+        existing RIO on the image; i.e., in the mask it sets the
+        corresponding pixel(s) to True.
+        If there is no existing RIO on the image, then a blank mask is created first.  
+        A blank mask is a boolean array with all its elements set to False 
+        and that has the same shape as the image. 
+        &#34;&#34;&#34;
         if self.mask is None:
             self.createBlankMask()
             
@@ -1134,8 +1236,10 @@ class GraphicsItem(QGraphicsObject):
 
     def eraseROI(self):
         &#34;&#34;&#34;
-        Erases mask at the mouse pointer position
-        and sets the pixel back to original value.
+        Depending on the brush size selected, this function 
+        returns one or more contiguous pixels to their original colour 
+        and removes them from the RIO; i.e., in the mask it sets the
+        corresponding pixel(s) to False.
         &#34;&#34;&#34;
         self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
@@ -1166,6 +1270,14 @@ class GraphicsItem(QGraphicsObject):
 
 
     def resetPixelToOriginalValue(self, x, y):
+        &#34;&#34;&#34;
+        This function is used by the eraseRIO function to return
+        a pixel in the RIO to its original colour. 
+
+        The RGB values are obtained from a copy of the image and
+        the pixel at x,y is set to these values. A new QPixmap of 
+        the image is then created and the image repainted.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
         try:
             pixelColour = self.origQImage.pixel(x, y) 
@@ -1177,6 +1289,7 @@ class GraphicsItem(QGraphicsObject):
             self.qImage.setPixel(x, y, value)
             #convert QImage to QPixmap to be able to update image
             self.pixMap = QPixmap.fromImage(self.qImage)
+            #repaint image by updating it
             self.update()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
@@ -1184,6 +1297,10 @@ class GraphicsItem(QGraphicsObject):
     
 
     def setPixelToRed(self, x, y):
+        &#34;&#34;&#34;
+        This function sets the red channel of the pixel at x,y to 255; thus,
+        making it appear red. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.setPixelToRed called&#34;)
         try:
             pixelColour = self.qImage.pixel(x, y) 
@@ -1200,30 +1317,24 @@ class GraphicsItem(QGraphicsObject):
             #convert QImage to QPixmap to be able to update image
             #with filled ROI
             self.pixMap = QPixmap.fromImage(self.qImage)
+            #repaint image
             self.update()
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.setPixelToRed: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.setPixelToRed: &#39; + str(e))
 
 
-    def reloadImage(self):
-        logger.info(&#34;FreeHandROI.GraphicsItem.reloadImage called&#34;)
-        try:
-            self.qImage = None
-            self.pixMap = None
-            self.mask = None
-            self.qImage = self.origQImage
-            self.pixMap = QPixmap.fromImage(self.qImage)
-            self.update()
-        except Exception as e:
-            print(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))
-            logger.error(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))
-
-
     def reloadMask(self, mask):
+        &#34;&#34;&#34;
+        Redisplays the ROI represented by mask on the image.
+
+        This function makes a list of the coordinates of the elements
+        in the input argument mask that have the value True and therefore correspond
+        to the RIO. Then the pixels in the image, within the RIO, have 
+        their Red channel set to 255, to make them appear red. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.reloadMask called&#34;)
         try:
-            #redisplays the ROI represented by mask
             self.listROICoords = self.getListRoiInnerPoints(mask)
             self.fillFreeHandRoi()
             self.listROICoords = []
@@ -1233,8 +1344,14 @@ class GraphicsItem(QGraphicsObject):
 
 
     def fillFreeHandRoi(self):
+        &#34;&#34;&#34;
+        Sets the Red channel to 255 of the pixels within the RIO.  
+        This makes them appear red.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.fillFreeHandRoi called&#34;)
         try:
+            #self.listROICoords is a list of the coordinates of the pixels
+            #within the RIO
             if self.listROICoords is not None:
                 for coords in self.listROICoords:
                     x = coords[0]
@@ -1246,6 +1363,13 @@ class GraphicsItem(QGraphicsObject):
 
 
     def addROItoImage(self, roi):
+        &#34;&#34;&#34;
+        This function is used to add an existing ROI to an image 
+        before it is displayed for the first time in the GraphicsItem object.
+
+        rio - boolean array containing elements corresponding to the ROI; i.e.,
+            their value is True. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.addROItoImage called&#34;)
         try:
             listROICoords = self.getListRoiInnerPoints(roi)
@@ -1269,24 +1393,31 @@ class GraphicsItem(QGraphicsObject):
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.addROItoImage: &#39; + str(e))
 
 
-    def getRoiMeanAndStd(self):
-        logger.info(&#34;FreeHandROI.GraphicsItem.getRoiMeanAndStd called&#34;)
-        mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
-        std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
-        return mean, std
-
-
     def getMaskData(self):
+        &#34;&#34;&#34;
+        This function returns the mask (boolean array) associated with 
+        the GraphicsItem object. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.getMaskData called&#34;)
         return self.mask
 
 
-    def getListRoiInnerPoints(self, roi):
+    def getListRoiInnerPoints(self, mask):
+        &#34;&#34;&#34;
+        This function returns a list of the coordinates 
+        of the elements in the mask whose values are True. 
+       
+        Input argument
+        ***************
+        mask - a boolean array the same size as the image. 
+            Elements in the mask whose value is True correspond  
+            to the pixels in the ROI drawn on the image.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.getListRoiInnerPoints called&#34;)
         try:
-            if roi is not None:
-                result = np.where(roi == True)
-                return list(zip(result[1], result[0]))
+            if mask is not None:
+                roi = np.where(mask == True)
+                return list(zip(roi[1], roi[0]))
             else:
                 return None
         except Exception as e:
@@ -1295,12 +1426,28 @@ class GraphicsItem(QGraphicsObject):
 
 
     def createBlankMask(self):
+        &#34;&#34;&#34;
+        Creates a boolean array with the same shape as the image&#39;s
+        pixel array. All its elements are set to False. This boolean array
+        is assigned to the class property self.mask.
+
+        This function is used by the paintROI function and when no ROI exists
+        and an ROI is drawn on just one pixel.
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
         rows, cols = np.shape(self.pixelArray)
         self.mask = np.full((rows, cols), False, dtype=bool)
 
 
     def createMaskFromDrawnROI(self, roiBoundaryCoords):
+        &#34;&#34;&#34;
+        Using the coordinates of the points on the boundary of a drawn RIO,
+        this function creates a mask. 
+        The mask is a boolean array with the same shape as
+        the image. 
+        Elements in the mask with the value True represent the ROI. 
+        Elements in the mask outside the RIO have the value False. 
+        &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.createMaskFromDrawnROI called&#34;)
         try:
             self.mask = None
@@ -1319,9 +1466,6 @@ class GraphicsItem(QGraphicsObject):
             #ROI that are set to True.  
             #Setting radius=0.0 does not include the drawn boundary in the ROI
             self.mask = roiPath.contains_points(points, radius=0.0).reshape((ny, nx))   
-
-            #innerROIPoints  = np.where(self.mask == True)
-            #print(&#34;GraphicsItem true coords ={}&#34;.format(list(zip(innerROIPoints[1], innerROIPoints[0])) ))
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))
@@ -1389,12 +1533,22 @@ the RIO is included in the mask.</p></div>
 <span>def <span class="ident">addROItoImage</span></span>(<span>self, roi)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function is used to add an existing ROI to an image
+before it is displayed for the first time in the GraphicsItem object.</p>
+<p>rio - boolean array containing elements corresponding to the ROI; i.e.,
+their value is True.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def addROItoImage(self, roi):
+    &#34;&#34;&#34;
+    This function is used to add an existing ROI to an image 
+    before it is displayed for the first time in the GraphicsItem object.
+
+    rio - boolean array containing elements corresponding to the ROI; i.e.,
+        their value is True. 
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.addROItoImage called&#34;)
     try:
         listROICoords = self.getListRoiInnerPoints(roi)
@@ -1442,8 +1596,8 @@ with a straight line connecting the start and end points of the line.
 Then a mask is created from the coordinates of the pixels on the this boundary.
 The mask is a boolean array with the same shape as the image, in which elements
 corresponding to the RIO are True and those outside the RIO are False. </p>
-<p>Pixels in the image, within the RIO then have their red channel set to 255, to
-make them appear red.</p></div>
+<p>Pixels within the RIO then have only their red channel set to 255, to
+make them appear red but still allowing the image to be visible.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1458,8 +1612,8 @@ make them appear red.</p></div>
     The mask is a boolean array with the same shape as the image, in which elements
     corresponding to the RIO are True and those outside the RIO are False. 
 
-    Pixels in the image, within the RIO then have their red channel set to 255, to 
-    make them appear red.
+    Pixels within the RIO then have only their red channel set to 255, to 
+    make them appear red but still allowing the image to be visible.
     &#34;&#34;&#34;
     if  (self.last_x != None and self.start_x != None 
             and self.last_y != None and self.start_y != None):
@@ -1486,12 +1640,24 @@ make them appear red.</p></div>
 <span>def <span class="ident">createBlankMask</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a boolean array with the same shape as the image's
+pixel array. All its elements are set to False. This boolean array
+is assigned to the class property self.mask.</p>
+<p>This function is used by the paintROI function and when no ROI exists
+and an ROI is drawn on just one pixel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def createBlankMask(self):
+    &#34;&#34;&#34;
+    Creates a boolean array with the same shape as the image&#39;s
+    pixel array. All its elements are set to False. This boolean array
+    is assigned to the class property self.mask.
+
+    This function is used by the paintROI function and when no ROI exists
+    and an ROI is drawn on just one pixel.
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.createBlankMask called&#34;)
     rows, cols = np.shape(self.pixelArray)
     self.mask = np.full((rows, cols), False, dtype=bool)</code></pre>
@@ -1501,12 +1667,25 @@ make them appear red.</p></div>
 <span>def <span class="ident">createMaskFromDrawnROI</span></span>(<span>self, roiBoundaryCoords)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Using the coordinates of the points on the boundary of a drawn RIO,
+this function creates a mask.
+The mask is a boolean array with the same shape as
+the image.
+Elements in the mask with the value True represent the ROI.
+Elements in the mask outside the RIO have the value False.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def createMaskFromDrawnROI(self, roiBoundaryCoords):
+    &#34;&#34;&#34;
+    Using the coordinates of the points on the boundary of a drawn RIO,
+    this function creates a mask. 
+    The mask is a boolean array with the same shape as
+    the image. 
+    Elements in the mask with the value True represent the ROI. 
+    Elements in the mask outside the RIO have the value False. 
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.createMaskFromDrawnROI called&#34;)
     try:
         self.mask = None
@@ -1525,9 +1704,6 @@ make them appear red.</p></div>
         #ROI that are set to True.  
         #Setting radius=0.0 does not include the drawn boundary in the ROI
         self.mask = roiPath.contains_points(points, radius=0.0).reshape((ny, nx))   
-
-        #innerROIPoints  = np.where(self.mask == True)
-        #print(&#34;GraphicsItem true coords ={}&#34;.format(list(zip(innerROIPoints[1], innerROIPoints[0])) ))
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.createMaskFromDrawnROI: &#39; + str(e))</code></pre>
@@ -1584,16 +1760,20 @@ is added to a list.</p>
 <span>def <span class="ident">eraseROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Erases mask at the mouse pointer position
-and sets the pixel back to original value.</p></div>
+<div class="desc"><p>Depending on the brush size selected, this function
+returns one or more contiguous pixels to their original colour
+and removes them from the RIO; i.e., in the mask it sets the
+corresponding pixel(s) to False.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def eraseROI(self):
     &#34;&#34;&#34;
-    Erases mask at the mouse pointer position
-    and sets the pixel back to original value.
+    Depending on the brush size selected, this function 
+    returns one or more contiguous pixels to their original colour 
+    and removes them from the RIO; i.e., in the mask it sets the
+    corresponding pixel(s) to False.
     &#34;&#34;&#34;
     self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
     if self.mask is not None:
@@ -1627,14 +1807,21 @@ and sets the pixel back to original value.</p></div>
 <span>def <span class="ident">fillFreeHandRoi</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the Red channel to 255 of the pixels within the RIO.<br>
+This makes them appear red.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fillFreeHandRoi(self):
+    &#34;&#34;&#34;
+    Sets the Red channel to 255 of the pixels within the RIO.  
+    This makes them appear red.
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.fillFreeHandRoi called&#34;)
     try:
+        #self.listROICoords is a list of the coordinates of the pixels
+        #within the RIO
         if self.listROICoords is not None:
             for coords in self.listROICoords:
                 x = coords[0]
@@ -1646,20 +1833,36 @@ and sets the pixel back to original value.</p></div>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints"><code class="name flex">
-<span>def <span class="ident">getListRoiInnerPoints</span></span>(<span>self, roi)</span>
+<span>def <span class="ident">getListRoiInnerPoints</span></span>(<span>self, mask)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns a list of the coordinates
+of the elements in the mask whose values are True. </p>
+<p>Input argument</p>
+<hr>
+<p>mask - a boolean array the same size as the image.
+Elements in the mask whose value is True correspond<br>
+to the pixels in the ROI drawn on the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getListRoiInnerPoints(self, roi):
+<pre><code class="python">def getListRoiInnerPoints(self, mask):
+    &#34;&#34;&#34;
+    This function returns a list of the coordinates 
+    of the elements in the mask whose values are True. 
+   
+    Input argument
+    ***************
+    mask - a boolean array the same size as the image. 
+        Elements in the mask whose value is True correspond  
+        to the pixels in the ROI drawn on the image.
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.getListRoiInnerPoints called&#34;)
     try:
-        if roi is not None:
-            result = np.where(roi == True)
-            return list(zip(result[1], result[0]))
+        if mask is not None:
+            roi = np.where(mask == True)
+            return list(zip(roi[1], roi[0]))
         else:
             return None
     except Exception as e:
@@ -1671,30 +1874,19 @@ and sets the pixel back to original value.</p></div>
 <span>def <span class="ident">getMaskData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns the mask (boolean array) associated with
+the GraphicsItem object.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getMaskData(self):
+    &#34;&#34;&#34;
+    This function returns the mask (boolean array) associated with 
+    the GraphicsItem object. 
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.getMaskData called&#34;)
     return self.mask</code></pre>
-</details>
-</dd>
-<dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getRoiMeanAndStd"><code class="name flex">
-<span>def <span class="ident">getRoiMeanAndStd</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getRoiMeanAndStd(self):
-    logger.info(&#34;FreeHandROI.GraphicsItem.getRoiMeanAndStd called&#34;)
-    mean = round(np.mean(np.extract(self.mask, self.pixelArray)), 3)
-    std = round(np.std(np.extract(self.mask, self.pixelArray)), 3)
-    return mean, std</code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverEnterEvent"><code class="name flex">
@@ -1908,7 +2100,21 @@ the image.</p></div>
 <span>def <span class="ident">mouseReleaseEvent</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Built in PyQt function that is executed when the mouse button is released.</p></div>
+<div class="desc"><p>Built in PyQt function that is executed when the mouse button is released.</p>
+<p>If the left mouse button is released, the draw RIO function was selected
+and the mouse was moved over the image immediately prior to releasing
+the left mouse button, then the ROI is closed if necessary and coloured
+red.</p>
+<p>If the left mouse button is released, the draw RIO function was selected
+and the mouse was not moved over the image immediately prior to releasing
+the left mouse button, then a single pixel is coloured red and added to the
+existing ROI on that image or a new ROI is created.</p>
+<p>If the left mouse button is released and the paint RIO function was selected
+then one or more contiguous pixels, depending on the brush size selected, are coloured red
+and added to the existing RIO on that image or a new RIO is created.</p>
+<p>If the left mouse button is released and the erase RIO function was selected
+then one or more contiguous pixels, depending on the eraser size selected, are returned
+to their original colour and removed from the existing RIO on that image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1916,6 +2122,27 @@ the image.</p></div>
 <pre><code class="python">def mouseReleaseEvent(self, event):
     &#34;&#34;&#34;
     Built in PyQt function that is executed when the mouse button is released.
+
+    If the left mouse button is released, the draw RIO function was selected 
+    and the mouse was moved over the image immediately prior to releasing 
+    the left mouse button, then the ROI is closed if necessary and coloured
+    red.
+
+
+    If the left mouse button is released, the draw RIO function was selected 
+    and the mouse was not moved over the image immediately prior to releasing 
+    the left mouse button, then a single pixel is coloured red and added to the
+    existing ROI on that image or a new ROI is created.
+
+
+    If the left mouse button is released and the paint RIO function was selected
+    then one or more contiguous pixels, depending on the brush size selected, are coloured red
+    and added to the existing RIO on that image or a new RIO is created.
+
+
+    If the left mouse button is released and the erase RIO function was selected
+    then one or more contiguous pixels, depending on the eraser size selected, are returned
+    to their original colour and removed from the existing RIO on that image.
     &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.mouseReleaseEvent called&#34;)
     try:
@@ -1985,12 +2212,27 @@ the image.</p></div>
 <span>def <span class="ident">paintROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Depending on the brush size selected, this function paints
+one or more contiguous pixels red and adds them to the
+existing RIO on the image; i.e., in the mask it sets the
+corresponding pixel(s) to True.
+If there is no existing RIO on the image, then a blank mask is created first.<br>
+A blank mask is a boolean array with all its elements set to False
+and that has the same shape as the image.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def paintROI(self):
+    &#34;&#34;&#34;
+    Depending on the brush size selected, this function paints 
+    one or more contiguous pixels red and adds them to the 
+    existing RIO on the image; i.e., in the mask it sets the
+    corresponding pixel(s) to True.
+    If there is no existing RIO on the image, then a blank mask is created first.  
+    A blank mask is a boolean array with all its elements set to False 
+    and that has the same shape as the image. 
+    &#34;&#34;&#34;
     if self.mask is None:
         self.createBlankMask()
         
@@ -2019,42 +2261,30 @@ the image.</p></div>
     self.sigRecalculateMeanROI.emit()</code></pre>
 </details>
 </dd>
-<dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadImage"><code class="name flex">
-<span>def <span class="ident">reloadImage</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def reloadImage(self):
-    logger.info(&#34;FreeHandROI.GraphicsItem.reloadImage called&#34;)
-    try:
-        self.qImage = None
-        self.pixMap = None
-        self.mask = None
-        self.qImage = self.origQImage
-        self.pixMap = QPixmap.fromImage(self.qImage)
-        self.update()
-    except Exception as e:
-        print(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))
-        logger.error(&#39;Error in FreeHandROI.GraphicsItem.reloadImage: &#39; + str(e))</code></pre>
-</details>
-</dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadMask"><code class="name flex">
 <span>def <span class="ident">reloadMask</span></span>(<span>self, mask)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Redisplays the ROI represented by mask on the image.</p>
+<p>This function makes a list of the coordinates of the elements
+in the input argument mask that have the value True and therefore correspond
+to the RIO. Then the pixels in the image, within the RIO, have
+their Red channel set to 255, to make them appear red.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def reloadMask(self, mask):
+    &#34;&#34;&#34;
+    Redisplays the ROI represented by mask on the image.
+
+    This function makes a list of the coordinates of the elements
+    in the input argument mask that have the value True and therefore correspond
+    to the RIO. Then the pixels in the image, within the RIO, have 
+    their Red channel set to 255, to make them appear red. 
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.reloadMask called&#34;)
     try:
-        #redisplays the ROI represented by mask
         self.listROICoords = self.getListRoiInnerPoints(mask)
         self.fillFreeHandRoi()
         self.listROICoords = []
@@ -2067,12 +2297,24 @@ the image.</p></div>
 <span>def <span class="ident">resetPixelToOriginalValue</span></span>(<span>self, x, y)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function is used by the eraseRIO function to return
+a pixel in the RIO to its original colour. </p>
+<p>The RGB values are obtained from a copy of the image and
+the pixel at x,y is set to these values. A new QPixmap of
+the image is then created and the image repainted.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def resetPixelToOriginalValue(self, x, y):
+    &#34;&#34;&#34;
+    This function is used by the eraseRIO function to return
+    a pixel in the RIO to its original colour. 
+
+    The RGB values are obtained from a copy of the image and
+    the pixel at x,y is set to these values. A new QPixmap of 
+    the image is then created and the image repainted.
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
     try:
         pixelColour = self.origQImage.pixel(x, y) 
@@ -2084,6 +2326,7 @@ the image.</p></div>
         self.qImage.setPixel(x, y, value)
         #convert QImage to QPixmap to be able to update image
         self.pixMap = QPixmap.fromImage(self.qImage)
+        #repaint image by updating it
         self.update()
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
@@ -2150,12 +2393,17 @@ path - file path to the image file</p></div>
 <span>def <span class="ident">setPixelToRed</span></span>(<span>self, x, y)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function sets the red channel of the pixel at x,y to 255; thus,
+making it appear red.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setPixelToRed(self, x, y):
+    &#34;&#34;&#34;
+    This function sets the red channel of the pixel at x,y to 255; thus,
+    making it appear red. 
+    &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.setPixelToRed called&#34;)
     try:
         pixelColour = self.qImage.pixel(x, y) 
@@ -2172,6 +2420,7 @@ path - file path to the image file</p></div>
         #convert QImage to QPixmap to be able to update image
         #with filled ROI
         self.pixMap = QPixmap.fromImage(self.qImage)
+        #repaint image
         self.update()
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.setPixelToRed: &#39; + str(e))
@@ -2292,7 +2541,6 @@ roi - pixel array of the ROI on the image</p></div>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.fillFreeHandRoi">fillFreeHandRoi</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getListRoiInnerPoints">getListRoiInnerPoints</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getMaskData">getMaskData</a></code></li>
-<li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getRoiMeanAndStd" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.getRoiMeanAndStd">getRoiMeanAndStd</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverEnterEvent" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverEnterEvent">hoverEnterEvent</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverLeaveEvent" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverLeaveEvent">hoverLeaveEvent</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverMoveEvent" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.hoverMoveEvent">hoverMoveEvent</a></code></li>
@@ -2301,7 +2549,6 @@ roi - pixel array of the ROI on the image</p></div>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.mouseReleaseEvent" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.mouseReleaseEvent">mouseReleaseEvent</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.paint" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.paint">paint</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.paintROI" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.paintROI">paintROI</a></code></li>
-<li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadImage" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadImage">reloadImage</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadMask" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.reloadMask">reloadMask</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.resetPixelToOriginalValue" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.resetPixelToOriginalValue">resetPixelToOriginalValue</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setImage" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.setImage">setImage</a></code></li>
