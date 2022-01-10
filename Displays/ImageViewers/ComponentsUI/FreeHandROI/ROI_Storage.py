@@ -1,3 +1,9 @@
+"""
+This class provides a data structure and associated input and 
+output functions for the storage of the ROI's drawn/painted 
+on a DICOM image.
+"""
+
 import numpy as np
 import logging
 logger = logging.getLogger(__name__)

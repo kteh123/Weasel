@@ -1,3 +1,8 @@
+"""
+In this module string constants are defined that hold the file paths 
+to graphic files containing icon images.
+"""
+
 import os, sys, pathlib
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     directory = os.path.join(sys._MEIPASS, 'Displays')

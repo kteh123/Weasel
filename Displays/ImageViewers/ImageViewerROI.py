@@ -419,8 +419,6 @@ class ImageViewerROI(QMdiSubWindow):
                 self.cmbNamesROIs.blockSignals(False)
 
                 # Redisplay the current image to show the mask
-                #mask = graphicsView.dictROIs.getMask(region, 1)
-                #graphicsView.graphicsItem.reloadMask(mask)
                 self.cmbNamesROIs.blockSignals(True)
                 self.cmbNamesROIs.setCurrentIndex(self.cmbNamesROIs.count() - 1)
                 self.cmbNamesROIs.blockSignals(False)
