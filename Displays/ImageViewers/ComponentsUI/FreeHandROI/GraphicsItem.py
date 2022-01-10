@@ -473,6 +473,7 @@ class GraphicsItem(QGraphicsObject):
         and removes them from the RIO; i.e., in the mask it sets the
         corresponding pixel(s) to False.
         """
+        #Make sure we are erasing the RIO on the latest version of the mask
         self.mask = self.linkToGraphicsView.dictROIs.getUpdatedMask()
         if self.mask is not None:
             if self.linkToGraphicsView.pixelSquareSize == 1:
