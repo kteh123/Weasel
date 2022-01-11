@@ -284,10 +284,31 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.setCurrentNameROI)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
+    def setCurrentNameROI(self):
+        &#34;&#34;&#34;
+        When a ROI is selected in the ROI drop down list, this function
+        updates the previousRegionName in the dictROI dictionary, the
+        data structure used to store ROI data.  This must be done in 
+        case the user wishes to change the current ROI name.
+        &#34;&#34;&#34;
+        currentNameROI = self.cmbNamesROIs.currentText()
+        self.graphicsView.dictROIs.setPreviousRegionName(currentNameROI)
+
+
     def deleteROI(self):
+        &#34;&#34;&#34;
+        Deletes the current ROI. 
+
+        First the mask containing this ROI is deleted from the
+        dictROI dictionary. Then the name of this ROI is removed
+        from the ROI dropdown list. Finally, the image is reloaded
+        and displayed without this ROI and the ROI mean and standard
+        deviation updated. 
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewerROI.deleteROI called&#34;)
             preDeleteCurrentIndex = self.cmbNamesROIs.currentIndex()
@@ -1261,10 +1282,31 @@ vertical layout created in the function setUpMainLayout.</p></div>
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.setCurrentNameROI)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
+    def setCurrentNameROI(self):
+        &#34;&#34;&#34;
+        When a ROI is selected in the ROI drop down list, this function
+        updates the previousRegionName in the dictROI dictionary, the
+        data structure used to store ROI data.  This must be done in 
+        case the user wishes to change the current ROI name.
+        &#34;&#34;&#34;
+        currentNameROI = self.cmbNamesROIs.currentText()
+        self.graphicsView.dictROIs.setPreviousRegionName(currentNameROI)
+
+
     def deleteROI(self):
+        &#34;&#34;&#34;
+        Deletes the current ROI. 
+
+        First the mask containing this ROI is deleted from the
+        dictROI dictionary. Then the name of this ROI is removed
+        from the ROI dropdown list. Finally, the image is reloaded
+        and displayed without this ROI and the ROI mean and standard
+        deviation updated. 
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageViewerROI.deleteROI called&#34;)
             preDeleteCurrentIndex = self.cmbNamesROIs.currentIndex()
@@ -2223,6 +2265,7 @@ This event is 'fired' when the user edits the name of the current RIO.</p></div>
     self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
     self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
     self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
+    self.cmbNamesROIs.currentIndexChanged.connect(self.setCurrentNameROI)
     self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))</code></pre>
 </details>
 </dd>
@@ -2230,12 +2273,26 @@ This event is 'fired' when the user edits the name of the current RIO.</p></div>
 <span>def <span class="ident">deleteROI</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Deletes the current ROI. </p>
+<p>First the mask containing this ROI is deleted from the
+dictROI dictionary. Then the name of this ROI is removed
+from the ROI dropdown list. Finally, the image is reloaded
+and displayed without this ROI and the ROI mean and standard
+deviation updated.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def deleteROI(self):
+    &#34;&#34;&#34;
+    Deletes the current ROI. 
+
+    First the mask containing this ROI is deleted from the
+    dictROI dictionary. Then the name of this ROI is removed
+    from the ROI dropdown list. Finally, the image is reloaded
+    and displayed without this ROI and the ROI mean and standard
+    deviation updated. 
+    &#34;&#34;&#34;
     try:
         logger.info(&#34;ImageViewerROI.deleteROI called&#34;)
         preDeleteCurrentIndex = self.cmbNamesROIs.currentIndex()
@@ -2723,6 +2780,30 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
     except Exception as e:
             print(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))
             logger.exception(&#39;Error in ImageViewerROI.setButtonsToDefaultStyle: &#39; + str(e))  </code></pre>
+</details>
+</dd>
+<dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setCurrentNameROI"><code class="name flex">
+<span>def <span class="ident">setCurrentNameROI</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>When a ROI is selected in the ROI drop down list, this function
+updates the previousRegionName in the dictROI dictionary, the
+data structure used to store ROI data.
+This must be done in
+case the user wishes to change the current ROI name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setCurrentNameROI(self):
+    &#34;&#34;&#34;
+    When a ROI is selected in the ROI drop down list, this function
+    updates the previousRegionName in the dictROI dictionary, the
+    data structure used to store ROI data.  This must be done in 
+    case the user wishes to change the current ROI name.
+    &#34;&#34;&#34;
+    currentNameROI = self.cmbNamesROIs.currentText()
+    self.graphicsView.dictROIs.setPreviousRegionName(currentNameROI)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues"><code class="name flex">
@@ -3464,6 +3545,7 @@ for zooming the image.</p></div>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.roiNameChanged">roiNameChanged</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.saveROI">saveROI</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setButtonsToDefaultStyle">setButtonsToDefaultStyle</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setCurrentNameROI" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setCurrentNameROI">setCurrentNameROI</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setInitialImageLevelValues">setInitialImageLevelValues</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpGraphicsView">setUpGraphicsView</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers" href="#Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers">setUpImageEventHandlers</a></code></li>
