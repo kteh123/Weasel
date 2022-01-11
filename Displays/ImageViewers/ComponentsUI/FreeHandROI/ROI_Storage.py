@@ -87,6 +87,8 @@ class ROIs():
         """
         For a given ROI and image, the existing mask is replaced by the new
         mask in the input argument, newMask.
+
+        This function is not used. 
         """
         logger.info("ROI_Storage.replaceMask called")
         try:

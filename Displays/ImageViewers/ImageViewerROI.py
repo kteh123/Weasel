@@ -312,6 +312,25 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def roiNameChanged(self, newText):
+        """
+        When a user changes the name of an ROI in the ROI dropdown list,
+        this function updates the name of the ROI key in the dictROI 
+        dictionary. 
+
+        Spaces are removed from the new ROI name. 
+        A check is performed to ensure that the new RIO name is not
+        already used to name another ROI in the list. 
+        Before updating the dictionary key, a further test is performed
+        to ensure that a dictionary key with that name does not exist. 
+        If a dictionary key with the new name already exists a warning message
+        is displayed and the ROI name in the list is reverted back to the 
+        original name. Otherwise the dictionary key is updated with the new 
+        name.
+
+        Input Argument
+        **************
+        newText - new ROI name
+        """
         try:
             logger.info("ImageViewerROI.roiNameChanged called")
             currentIndex = self.cmbNamesROIs.currentIndex()
@@ -338,6 +357,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def saveROI(self):
+        """
+        This function saves the masks on each image, forming the current RIO, as 
+        a new DICOM series. 
+        """
         try:
             # Save Current ROI
             logger.info("ImageViewerROI.saveROI called")
@@ -376,12 +399,18 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def loadROI(self):
+        """
+        This function superimposes a DICOM series of masks forming an ROI onto another
+        DICOM series of images. A DICOM series of masks forming an ROI would be created 
+        by the above  saveRIO function.
+
+         The following workflow is assumed:
+            1. The user first loads a series of DICOM images
+            2. Then the user chooses the series with the 
+                mask that will overlay this series.
+        """
         try:
             logger.info("ImageViewerROI.loadROI called")
-            # The following workflow is assumed:
-            #   1. The user first loads a series of DICOM images
-            #   2. Then the user chooses the series with the mask that will overlay the current viewer.
-
             study = self.weasel.objXMLReader.getStudy(self.subjectID, self.studyID)
             helpMsg = "Select a Series with ROI"
             listSeries = [series.attrib['id'] for series in study] # if 'ROI' in series.attrib['id']]
@@ -450,10 +479,16 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setButtonsToDefaultStyle(self):
+        """
+        This function sets the RIO drawing tool buttons back to their
+        default appearance when not selected.  They are red when selected.
+
+        Additionally, the booleans that indicate which ROI drawing function is
+        selected are set to False.
+        """
         logger.info("DisplayImageDrawRIO.setButtonsToDefaultStyle called")
         try:
             logger.info("ImageViewerROI.setButtonsToDefaultStyle called.")
-            #QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
             QApplication.restoreOverrideCursor()
             self.graphicsView.drawEnabled = False
             self.graphicsView.eraseEnabled = False
@@ -462,14 +497,24 @@ class ImageViewerROI(QMdiSubWindow):
                 for button in self.buttonList:
                     button.setStyleSheet(
                      "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #CCCCBB, stop: 1 #FFFFFF)"
-                     )
-                    #button.setChecked(False)
+                     ) 
         except Exception as e:
                 print('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))
                 logger.exception('Error in ImageViewerROI.setButtonsToDefaultStyle: ' + str(e))  
 
 
     def drawROI(self, checked):
+        """
+        Enables the draw RIO fuctionality.
+
+        If checked = True, sets the background colour of the draw button to red
+        and enables the drawing tool.  Otherwise, it disables the drawing tool 
+        returns the draw button to it's default colour.
+
+        Input Argument
+        **************
+        checked - a boolean indicating the checked state of a button
+        """
         logger.info("ImageViewerROI.drawROI called.")
         if checked:
             self.setButtonsToDefaultStyle()
@@ -484,6 +529,17 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def eraseROI(self, checked):
+        """
+        Enables the erase RIO fuctionality.
+
+        If checked = True, sets the background colour of the erase button to red
+        and enables the erasing tool.  Otherwise, it disables the erasing tool 
+        returns the erase button to it's default colour.
+
+        Input Argument
+        **************
+        checked - a boolean indicating the checked state of a button
+        """
         logger.info("ImageViewerROI.eraseROI called.")
         if checked:
             self.setButtonsToDefaultStyle()
@@ -498,6 +554,17 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def paintROI(self, checked):
+        """
+        Enables the paint RIO fuctionality.
+
+        If checked = True, sets the background colour of the paint button to red
+        and enables the painting tool.  Otherwise, it disables the painting tool 
+        returns the paint button to it's default colour.
+
+        Input Argument
+        **************
+        checked - a boolean indicating the checked state of a button
+        """
         logger.info("ImageViewerROI.paintROI called.")
         if checked:
             self.setButtonsToDefaultStyle()
@@ -512,6 +579,17 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def zoomImage(self, checked):
+        """
+        Enables the image zoom fuctionality.
+
+        If checked = True, sets the background colour of the zoom button to red
+        and enables the zoom tool.  Otherwise, it disables the zoom tool 
+        returns the zoom button to it's default colour.
+
+        Input Argument
+        **************
+        checked - a boolean indicating the checked state of a button
+        """
         logger.info("ImageViewerROI.zoomImage called.")
         if checked:
             self.setButtonsToDefaultStyle()
@@ -529,6 +607,15 @@ class ImageViewerROI(QMdiSubWindow):
 
     
     def getRoiMeanAndStd(self, mask, pixelArray):
+        """
+        Returns the mean and standard deviation of the ROI on a
+        particular image.
+
+        Input Arguments
+        ***************
+        mask - boolean array containing the ROI
+        pixelArray - pixel array representing the image
+        """
         try:
             logger.info("ImageViewerROI.getRoiMeanAndStd called")
             mean = round(np.mean(np.extract(mask, pixelArray)), 1)
@@ -540,12 +627,26 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def clearPixelValueMeanAndStdDev(self):
+        """
+        Clears the labels on the GUI that display ROI mean,
+        ROI standard deviation & pixel value.
+        """
         self.roiMeanTxt.clear()
         self.roiStdDevTxt.clear()
         self.lblPixelValue.clear()
 
 
     def displayROIMeanAndStd(self):
+        """
+        This function is responsible for the display of the ROI mean 
+        and standard deviation in labels on the GUI.
+
+        The mask in the current ROI belonging to the current image
+        is retrieved and used with the pixel array of the current 
+        image to determine the ROI mean and its standard deviation.
+        The text property of the relevant labels is then set with
+        these values. 
+        """
         try:
             logger.info("ImageViewerROI.displayROIMeanAndStd called")
             if self.isSeries:  
@@ -567,6 +668,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpImageEventHandlers(self):
+        """
+        This function connects events belonging to the GraphicsItem &
+        GraphicsView objects to functions in this class.
+        """
         logger.info("ImageViewerROI.setUpImageEventHandlers called.")
         try:
             self.graphicsView.graphicsItem.sigRightMouseDrag.connect(
@@ -640,8 +745,8 @@ class ImageViewerROI(QMdiSubWindow):
         """This function updates the position of the slider on the image
         zoom slider and calculates the % zoom for display in the label zoomLabel.
         Although, the zoom slider widget is not displayed on the screen,
-        this function is a convenient way to keep track of the current image
-        zoom value"""
+        this widget is a convenient way to keep track of the current image
+        zoom value and whether if the user is zooming in or out."""
         try:
             logger.info("DisplayImageDrawRIO.updateZoomSlider called")
             self.zoomSlider.blockSignals(True)
@@ -663,6 +768,18 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def addNewROItoDropDownList(self, newRegion):
+        """
+        Adds a new ROI to the ROI dropdown list.
+
+        Before the new ROI is added to the dropdown list, 
+        a check is performed to ensure that a ROI with the 
+        same name is not already in the list. If it is already
+        in the list, then it is not added to the list. 
+
+        Input Argument
+        **************
+        newRegion -  Name of the new region.
+        """
         logger.info("ImageViewerROI.addNewROItoDropDownList called.")
         noDuplicate = True
         for count in range(self.cmbNamesROIs.count()):
@@ -749,6 +866,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def updateDetailsROI(self):
+        """
+        This function is used to update the two identifiers of an ROI:
+        ROI name and image number.
+        """
         logger.info("ImageViewerROI.updateDetailsROI called")
         try:
             self.graphicsView.currentROIName = self.cmbNamesROIs.currentText()
@@ -762,6 +883,12 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def replaceMask(self):  
+        """
+        For a given ROI and image, the existing mask in the dictROIs dictionary
+        is replaced by the mask in the GraphicItems object.
+
+        This function is not used.
+        """
         logger.info("ImageViewerROI.replaceMask called")
         regionName = self.cmbNamesROIs.currentText()
         if self.isSeries:  
@@ -773,6 +900,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpROIButtons(self):
+        """
+        This function creates the ROI drawing tools buttons and labels 
+        and adds them to the roiToolsLayout layout. 
+        """
         try:
             logger.info("ImageViewerROI.setUpPixelDataWidget called.")
             self.buttonList = []
@@ -847,7 +978,11 @@ class ImageViewerROI(QMdiSubWindow):
                logger.exception('Error in ImageViewerROI.setUpROIButtons: ' + str(e)) 
 
             
-    def loadImageInImageItem(self, addMask): 
+    def loadImageInImageItem(self, addMask):
+        """
+        This function loads an image and its ROI (if it has one) into 
+        the ImageItem object for display.
+        """
         try:
             logger.info("ImageViewerROI.loadImageInImageItem called")
             
@@ -876,6 +1011,13 @@ class ImageViewerROI(QMdiSubWindow):
     
 
     def setUpImageLevelsLayout(self):
+        """
+        This function is responsible for the display of the two image level
+        spinboxes in the GUI.
+
+        It creates the group box to contain the image levels spinboxes in 
+        their own layout.
+        """
         self.levelsCompositeComponentLayout = imageLevelsSpinBoxes()
         self.imageLevelsGroupBox = QGroupBox()
         self.imageLevelsGroupBox.setFixedHeight(45)
@@ -922,11 +1064,20 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpGraphicsView(self):
+        """
+        This function creates the GraphicsView widget and adds
+        it to the main vertical layout on the subwindow created
+        by this class.
+        """
         self.graphicsView = GraphicsView(self.numberOfImages)
         self.mainVerticalLayout.addWidget(self.graphicsView)         
 
 
     def setUpLevelsSpinBoxes(self):
+        """
+        This function connects the valueChanged events of the two 
+        image level spinboxes to the updateImageLevels function of this class.
+        """
         try:
             self.spinBoxIntensity, self.spinBoxContrast = self.levelsCompositeComponentLayout.getSpinBoxes() 
             self.spinBoxIntensity.valueChanged.connect(self.updateImageLevels)
@@ -937,6 +1088,11 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def updateImageLevels(self):
+        """
+        This function applies the new intensity and contrast levels set in the
+        corresponding levels spinboxes to the image. The image is then repainted 
+        so as to display the image with the new levels. 
+        """
         logger.info("ImageViewerROI.updateImageLevels called.")
         try:
             if self.isSeries:  
@@ -1017,6 +1173,13 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setUpZoomSlider(self):
+        """
+        This function sets up the zoomSlider.  
+        
+        Although, the zoom slider widget is not displayed on the screen,
+        this widget is a convenient way to keep track of the current image
+        zoom value and whether if the user is zooming in or out.
+        """
         try:
             self.zoomSlider = Slider(Qt.Vertical)
             self.zoomSlider.setMinimum(0)
@@ -1032,6 +1195,10 @@ class ImageViewerROI(QMdiSubWindow):
 
 
     def setInitialImageLevelValues(self):
+        """
+        This function determines an image's intensity & contrast values and
+        sets the corresponding levels spinbox to these values.
+        """
         self.spinBoxIntensity.blockSignals(True)
         self.spinBoxIntensity.setValue(self.graphicsView.graphicsItem.intensity)
         self.spinBoxIntensity.blockSignals(False)

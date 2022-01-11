@@ -114,7 +114,8 @@ class GraphicsItem(QGraphicsObject):
         Applies new intensity and contrast values to the image.
 
         A new QPixmap object is formed from the pixel array with the
-        new contrast & intensity values.
+        new contrast & intensity values.  Then the image is repainted
+        so to display this new QPixmap object.
 
         Input arguments
         ***************
