@@ -253,10 +253,31 @@ class ImageViewerROI(QMdiSubWindow):
         self.btnPaint.clicked.connect(lambda checked: self.paintROI(checked))
         self.btnZoom.clicked.connect(lambda checked: self.zoomImage(checked))
         self.cmbNamesROIs.currentIndexChanged.connect(lambda: self.loadImageInImageItem(True))
+        self.cmbNamesROIs.currentIndexChanged.connect(self.setCurrentNameROI)
         self.cmbNamesROIs.editTextChanged.connect(lambda text: self.roiNameChanged(text))
 
 
+    def setCurrentNameROI(self):
+        """
+        When a ROI is selected in the ROI drop down list, this function
+        updates the previousRegionName in the dictROI dictionary, the
+        data structure used to store ROI data.  This must be done in 
+        case the user wishes to change the current ROI name.
+        """
+        currentNameROI = self.cmbNamesROIs.currentText()
+        self.graphicsView.dictROIs.setPreviousRegionName(currentNameROI)
+
+
     def deleteROI(self):
+        """
+        Deletes the current ROI. 
+
+        First the mask containing this ROI is deleted from the
+        dictROI dictionary. Then the name of this ROI is removed
+        from the ROI dropdown list. Finally, the image is reloaded
+        and displayed without this ROI and the ROI mean and standard
+        deviation updated. 
+        """
         try:
             logger.info("ImageViewerROI.deleteROI called")
             preDeleteCurrentIndex = self.cmbNamesROIs.currentIndex()
