@@ -574,7 +574,8 @@ class ImageSliders(QObject):
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
             if len(self.listSortedImageSliders) &gt; 0:
-                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                #tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                tagsList = [listImageTypes.item(i).text() for i in range(listImageTypes.count())]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
                 self.__updateSliders()
         except Exception as e:
@@ -1081,7 +1082,8 @@ navigating a DICOM series of images.</p>
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
             if len(self.listSortedImageSliders) &gt; 0:
-                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                #tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                tagsList = [listImageTypes.item(i).text() for i in range(listImageTypes.count())]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
                 self.__updateSliders()
         except Exception as e:
@@ -1209,7 +1211,8 @@ but with the file path of the deleted image removed</p></div>
         #by removing the deleted image from the slider if present
         #and calling setMaximum(len(image list)) for each slider
         if len(self.listSortedImageSliders) &gt; 0:
-            tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+            #tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+            tagsList = [listImageTypes.item(i).text() for i in range(listImageTypes.count())]
             self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
             self.__updateSliders()
     except Exception as e:
