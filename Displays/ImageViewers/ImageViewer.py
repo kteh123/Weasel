@@ -498,8 +498,10 @@ class ImageViewer(QMdiSubWindow):
 
     
     def deleteImageInMultiImageViewer(self):
-        """When the Delete button is clicked on the multi image viewer,
-        this function deletes the physical image, removes the 
+        """
+        Deletes an image in a DICOM series.
+
+        This function deletes the physical image, removes the 
         reference to it in the XML file and removes it from the image viewer.
         """
         try:

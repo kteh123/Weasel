@@ -27,7 +27,13 @@ class ImageLevelsSpinBoxes:
     The pair of spinboxes can be returned to the module hosting this composite component
     using the .getSpinBoxes function.
     """
-    def __init__(self): 
+    def __init__(self):
+        """
+        Creates the composite widget for the display and adjustment of
+        image intensity and contrast.
+
+        Two spinboxes and associated labels are added to a horizontal layout
+        """
         try:
             logger.info("created ImageLevelsSpinBoxes object.")
 

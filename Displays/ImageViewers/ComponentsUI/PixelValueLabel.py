@@ -18,7 +18,13 @@ class PixelValueComponent:
         self.pixelValueLayout.addWidget(self.lblPixelValue, alignment=Qt.AlignCenter)
 
     def getLayout(self):
+        """
+        Returns the horizontal layout containing the pixel value label.
+        """
         return self.pixelValueLayout
 
     def getLabel(self):
+        """
+        Returns the pixel value label.
+        """
         return self.lblPixelValue

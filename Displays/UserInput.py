@@ -305,7 +305,37 @@ class ParameterInputDialog(QDialog):
   helpText - optional help text to be displayed above the input widgets.
   """
 class ParameterInputDialog(QDialog):
+    """This class inherits from the Qt QDialog class and it generates a pop-up dialog
+  window with one or more input widgets that can accept either an integer, float or string. 
+  The order and type of input widgets is defined in the paramDict Python dictionary 
+  input parameter in the class initialisation function. 
+  
+  Input Parameters
+  *****************
+  paramDict contains name:value pairs of strings in the form 'parmeter name':'parameter type' 
+  Parameter type can only take the values: 'integer', 'float', 'string', 'dropdownlist'
+  So 'Lower Threshold':'integer' would create a spin box labeled 'Lower Threshold' on the dialog
+  So 'Upper Threshold':'float' would create a double spin box labeled 'Upper Threshold' on the dialog
+  So 'Series Name':'string' would create a textbox labeled 'Series Name' on the dialog
+  Thus,
+  paramDict = {'Lower Threshold':'integer', 'Upper Threshold':'float', 'Series Name':'string', 
+  'label name': 'dropdownlist',
+  'second label name': 'dropdownlist'}
+  list1=['item1', 'item2', 'item3']
+  listOfList =[list1, list2]
+  """
     def __init__(self, paramDict, title="Input Parameters", helpText=None, lists=None):
+        """
+          Creates the QDialog window.
+
+          Widgets are created in the same order on the dialog they occupy in the dictionary; ie., 
+          the first dictionary item is the uppermost input widget on the dialog 
+          and the last dictionary item is the last input widget on the dialog.
+  
+          title - optional string containing the input dialog title. Has a default string "Input Parameters"
+
+          helpText - optional help text to be displayed above the input widgets.
+        """
         try:
             super(ParameterInputDialog, self).__init__()
             self.setWindowTitle(title)
@@ -406,6 +436,10 @@ class ParameterInputDialog(QDialog):
 
 
     def getParamData(self, paramDescription):
+        """
+        This function returns an entry in the parameter dictionary 
+        for a particular parameter.
+        """
         commaCount = paramDescription.count(',')
         if commaCount == 0:
             return paramDescription, None, None, None
@@ -421,13 +455,19 @@ class ParameterInputDialog(QDialog):
 
 
     def close(self):
+        """
+        Closes the dialog window when the Cancel button is pressed.
+        """
         self.closeDialog =True
         #Now programmatically click OK to close the dialog
         self.accept()
 
 
     def closeInputDialog(self):
-            return self.closeDialog
+        """
+        Closes the input dialog window
+        """
+        return self.closeDialog
 
 
     def returnListParameterValues(self):

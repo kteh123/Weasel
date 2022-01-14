@@ -22,7 +22,19 @@ class Message():
             parent = None,
             message = "Your message here",
             title = "Message ..."):
+        """
+        If parent is not None, creates the MDI subwindow 
+        that will act as a pop-up window. Otherwise a QWidget object is 
+        displayed as a subwindow.
 
+        A label to display the message is created.
+        A QWidget widget is also created and vertical layout is added to it.
+        The message label is added to the vertical layout.
+
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.  Othewise, the above widget
+        is displayed as a window.
+        """
         self.parent = parent
 
         if parent is None:
@@ -47,11 +59,22 @@ class Message():
         if parent is None:
             self.app.exec()
 
+
     def set_message(self, message):
+        """
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        """
         self.label.setText('<H4>' + message + '</H4>')
         self.widget.adjustSize()
         
     def close(self):
+        """
+        Closes the subwindow displaying the message
+        """
         if self.parent is not None:
             self.msgSubWindow.close()
 
@@ -59,7 +82,7 @@ class Message():
 
 class ProgressBar():
     """
-    Class that provides a pop-up window with a messages 
+    Class that provides a pop-up window with a message
     and progress bar to the user.
     """
     def __init__(self,
@@ -68,7 +91,14 @@ class ProgressBar():
             maximum = 100,
             message = "Your message here",
             title = "Progress bar"):
+        """
+        A QWidget widget is created and a vertical layout added to it.
+        A progress bar and label to display a message are added to the
+        vertical layout. 
 
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.
+        """
         self.parent = parent
 
         if parent is None:
@@ -97,16 +127,33 @@ class ProgressBar():
         QApplication.processEvents()
 
     def set_value(self, value):
+        """
+        Sets the value property (amount of progress) of the progress bar
+        """
         self.progress_bar.setValue(value) 
 
     def set_maximum(self, maximum):
+        """
+        Sets the maximum value (value when progress is complete)
+        of the progress bar.
+        """
         self.progress_bar.setMaximum(maximum)
 
     def set_message(self, message):
+        """
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        """
         self.label.setText('<H4>' + message + '</H4>')
         self.widget.adjustSize()
         
     def close(self):
+        """
+        Closes the subwindow displaying the progress bar & message
+        """
         if self.parent is not None:
             self.msgSubWindow.close()
 
