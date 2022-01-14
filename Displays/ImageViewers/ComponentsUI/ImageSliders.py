@@ -546,8 +546,7 @@ class ImageSliders(QObject):
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
             if len(self.listSortedImageSliders) > 0:
-                #tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
-                tagsList = [listImageTypes.item(i).text() for i in range(listImageTypes.count())]
+                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
                 self.__updateSliders()
         except Exception as e:
