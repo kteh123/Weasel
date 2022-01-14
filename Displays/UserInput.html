@@ -336,7 +336,37 @@ class ParameterInputDialog(QDialog):
   helpText - optional help text to be displayed above the input widgets.
   &#34;&#34;&#34;
 class ParameterInputDialog(QDialog):
+    &#34;&#34;&#34;This class inherits from the Qt QDialog class and it generates a pop-up dialog
+  window with one or more input widgets that can accept either an integer, float or string. 
+  The order and type of input widgets is defined in the paramDict Python dictionary 
+  input parameter in the class initialisation function. 
+  
+  Input Parameters
+  *****************
+  paramDict contains name:value pairs of strings in the form &#39;parmeter name&#39;:&#39;parameter type&#39; 
+  Parameter type can only take the values: &#39;integer&#39;, &#39;float&#39;, &#39;string&#39;, &#39;dropdownlist&#39;
+  So &#39;Lower Threshold&#39;:&#39;integer&#39; would create a spin box labeled &#39;Lower Threshold&#39; on the dialog
+  So &#39;Upper Threshold&#39;:&#39;float&#39; would create a double spin box labeled &#39;Upper Threshold&#39; on the dialog
+  So &#39;Series Name&#39;:&#39;string&#39; would create a textbox labeled &#39;Series Name&#39; on the dialog
+  Thus,
+  paramDict = {&#39;Lower Threshold&#39;:&#39;integer&#39;, &#39;Upper Threshold&#39;:&#39;float&#39;, &#39;Series Name&#39;:&#39;string&#39;, 
+  &#39;label name&#39;: &#39;dropdownlist&#39;,
+  &#39;second label name&#39;: &#39;dropdownlist&#39;}
+  list1=[&#39;item1&#39;, &#39;item2&#39;, &#39;item3&#39;]
+  listOfList =[list1, list2]
+  &#34;&#34;&#34;
     def __init__(self, paramDict, title=&#34;Input Parameters&#34;, helpText=None, lists=None):
+        &#34;&#34;&#34;
+          Creates the QDialog window.
+
+          Widgets are created in the same order on the dialog they occupy in the dictionary; ie., 
+          the first dictionary item is the uppermost input widget on the dialog 
+          and the last dictionary item is the last input widget on the dialog.
+  
+          title - optional string containing the input dialog title. Has a default string &#34;Input Parameters&#34;
+
+          helpText - optional help text to be displayed above the input widgets.
+        &#34;&#34;&#34;
         try:
             super(ParameterInputDialog, self).__init__()
             self.setWindowTitle(title)
@@ -437,6 +467,10 @@ class ParameterInputDialog(QDialog):
 
 
     def getParamData(self, paramDescription):
+        &#34;&#34;&#34;
+        This function returns an entry in the parameter dictionary 
+        for a particular parameter.
+        &#34;&#34;&#34;
         commaCount = paramDescription.count(&#39;,&#39;)
         if commaCount == 0:
             return paramDescription, None, None, None
@@ -452,13 +486,19 @@ class ParameterInputDialog(QDialog):
 
 
     def close(self):
+        &#34;&#34;&#34;
+        Closes the dialog window when the Cancel button is pressed.
+        &#34;&#34;&#34;
         self.closeDialog =True
         #Now programmatically click OK to close the dialog
         self.accept()
 
 
     def closeInputDialog(self):
-            return self.closeDialog
+        &#34;&#34;&#34;
+        Closes the input dialog window
+        &#34;&#34;&#34;
+        return self.closeDialog
 
 
     def returnListParameterValues(self):
@@ -869,7 +909,29 @@ A unit test for developers to avoid typos.</p></div>
 <span>(</span><span>paramDict, title='Input Parameters', helpText=None, lists=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>QDialog(parent: QWidget = None, flags: Union[Qt.WindowFlags, Qt.WindowType] = Qt.WindowFlags())</p></div>
+<div class="desc"><p>This class inherits from the Qt QDialog class and it generates a pop-up dialog
+window with one or more input widgets that can accept either an integer, float or string.
+The order and type of input widgets is defined in the paramDict Python dictionary
+input parameter in the class initialisation function. </p>
+<p>Input Parameters</p>
+<hr>
+<p>paramDict contains name:value pairs of strings in the form 'parmeter name':'parameter type'
+Parameter type can only take the values: 'integer', 'float', 'string', 'dropdownlist'
+So 'Lower Threshold':'integer' would create a spin box labeled 'Lower Threshold' on the dialog
+So 'Upper Threshold':'float' would create a double spin box labeled 'Upper Threshold' on the dialog
+So 'Series Name':'string' would create a textbox labeled 'Series Name' on the dialog
+Thus,
+paramDict = {'Lower Threshold':'integer', 'Upper Threshold':'float', 'Series Name':'string',
+'label name': 'dropdownlist',
+'second label name': 'dropdownlist'}
+list1=['item1', 'item2', 'item3']
+listOfList =[list1, list2]</p>
+<p>Creates the QDialog window.</p>
+<p>Widgets are created in the same order on the dialog they occupy in the dictionary; ie.,
+the first dictionary item is the uppermost input widget on the dialog
+and the last dictionary item is the last input widget on the dialog.</p>
+<p>title - optional string containing the input dialog title. Has a default string "Input Parameters"</p>
+<p>helpText - optional help text to be displayed above the input widgets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -917,12 +979,15 @@ A unit test for developers to avoid typos.</p></div>
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>close(self) -&gt; bool</p></div>
+<div class="desc"><p>Closes the dialog window when the Cancel button is pressed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def close(self):
+    &#34;&#34;&#34;
+    Closes the dialog window when the Cancel button is pressed.
+    &#34;&#34;&#34;
     self.closeDialog =True
     #Now programmatically click OK to close the dialog
     self.accept()</code></pre>
@@ -932,25 +997,33 @@ A unit test for developers to avoid typos.</p></div>
 <span>def <span class="ident">closeInputDialog</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Closes the input dialog window</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def closeInputDialog(self):
-        return self.closeDialog</code></pre>
+    &#34;&#34;&#34;
+    Closes the input dialog window
+    &#34;&#34;&#34;
+    return self.closeDialog</code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.UserInput.ParameterInputDialog.getParamData"><code class="name flex">
 <span>def <span class="ident">getParamData</span></span>(<span>self, paramDescription)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns an entry in the parameter dictionary
+for a particular parameter.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getParamData(self, paramDescription):
+    &#34;&#34;&#34;
+    This function returns an entry in the parameter dictionary 
+    for a particular parameter.
+    &#34;&#34;&#34;
     commaCount = paramDescription.count(&#39;,&#39;)
     if commaCount == 0:
         return paramDescription, None, None, None

@@ -58,8 +58,8 @@ listImageTypes = [&#34;SliceLocation&#34;, &#34;AcquisitionTime&#34;, &#34;Acqui
                   &#34;DiffusionGradientOrientation&#34;, (0x2005, 0x1572)] # This last element is a good example of private tag
 
 class SortedImageSlider(QSlider):
-    &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute 
-    which identifies what the image subset has been filtered for. 
+    &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute,
+    DicomAttribute, which identifies what the image subset has been filtered for. 
     &#34;&#34;&#34;
     def __init__(self,  DicomAttribute): 
        super().__init__(orientation=Qt.Horizontal)
@@ -68,9 +68,9 @@ class SortedImageSlider(QSlider):
 
 
 class SortedImageCheckBox(QCheckBox):
-    &#34;&#34;&#34;Subclass of the QCheckBox class with the added property attribute 
-    which identifies what the image subset has been filtered for and 
-    columnNumber which is the number of the column in the grid layout 
+    &#34;&#34;&#34;Subclass of the QCheckBox class with the added property attribute,
+    DicomAttribute, which identifies what the image subset has been filtered for 
+    and columnNumber, colNum,  which is the number of the column in the grid layout 
     where a widget created from this class is placed. 
     &#34;&#34;&#34;
     def __init__(self,  DicomAttribute, colNum): 
@@ -103,9 +103,11 @@ class ImageSliders(QObject):
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList):
+        &#34;&#34;&#34;
+        Creates the custom, composite sliders widget
+        &#34;&#34;&#34;
         try:
             #Super class QObject to provide support for pyqtSignal
-            start = time.perf_counter()
             super().__init__()
             self.imagePathList = imagePathList
             self.subjectID = subjectID
@@ -130,7 +132,6 @@ class ImageSliders(QObject):
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            #print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
         except Exception as e:
             print(&#39;Error in ImageSliders.__init__: &#39; + str(e))
             logger.error(&#39;Error in ImageSliders.__init__: &#39; + str(e))
@@ -156,6 +157,12 @@ class ImageSliders(QObject):
 
 
     def __setUpLayouts(self):
+        &#34;&#34;&#34;
+        Sets up the layouts that contain the sliders.
+
+        The layouts comprise a two horizontal layouts stacked 
+        within a vertical layout.
+        &#34;&#34;&#34;
         try:
             self.mainVerticalLayout = QVBoxLayout()
         
@@ -177,6 +184,10 @@ class ImageSliders(QObject):
 
     
     def __createMainImageSlider(self): 
+        &#34;&#34;&#34;
+        Creates the main image slider that navigates the 
+        whole unfiltered DICOM series.
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageSliders.__createMainImageSlider called&#34;)
             self.mainImageSlider = QSlider(Qt.Horizontal)
@@ -199,16 +210,6 @@ class ImageSliders(QObject):
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            
-            # Should be deleted, this is forcing the whole subwindow to have a fixed width
-            # based on the MDI and it compromises window/image resizing
-            #if maxNumberImages &lt; 4:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
-            #elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
-            #else:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
-        
             self.imageNumberLabel = QLabel()
         
             if maxNumberImages &gt; 1:
@@ -226,10 +227,16 @@ class ImageSliders(QObject):
         &#34;&#34;&#34;On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
+
+        Input argument
+        **************
+        imageNumber - number of the image in the DICOM series
+                that must be displayed.  When it has the value
+                None, then imageNumber is set to the number of
+                the image that is currently displayed.
         &#34;&#34;&#34;
         try: 
             logger.info(&#34;ImageSliders.__mainImageSliderMoved called&#34;)
-            start = time.perf_counter()
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
             else:
@@ -271,7 +278,6 @@ class ImageSliders(QObject):
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-                #print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
         except TypeError as e: 
             print(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
             logger.error(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
@@ -301,6 +307,10 @@ class ImageSliders(QObject):
         &#34;&#34;&#34;This function shows or hides a checkbox for each DICOM attribute
         
         It is executed when the multi-sliders toggle button is clicked
+
+        Input Argument
+        **************
+        state - the toggle state of the display/hide multi-sliders toggle button
         &#34;&#34;&#34;
         try:
             if state == True:
@@ -328,11 +338,15 @@ class ImageSliders(QObject):
             
     
     def __clearAllMultiImageWidgets(self, leaveCheckBoxes=False):
-        &#34;&#34;&#34;Clears all widgets related with multi-sliders,
+        &#34;&#34;&#34;Clears all widgets associated with multi-sliders,
         if the multi-sliders toggle button is off.
+
+        Input argument
+        **************
+        leaveCheckBoxes - If true, do not delete the SortedImageCheckBox 
+                            widgets.
         &#34;&#34;&#34;
         try:
-            
             widgets = [self.sortedImageSliderLayout.itemAt(i).widget() 
                        for i in range(self.sortedImageSliderLayout.count())]
             for widget in widgets:
@@ -372,6 +386,17 @@ class ImageSliders(QObject):
 
 
     def __createSortedImageCheckBox(self, imageType, colNumber):
+        &#34;&#34;&#34;
+        Private function that creates a SortedImageCheckBox widget 
+        based on the QCheckBox class. This checkbox controls the 
+        display of the multi-sliders.
+
+        Input arguments
+        ***************
+        imageType - DICOM attribute to sort the images by.
+        colNumber  - number of the column in the grid layout 
+                where the checkbox is to be placed
+        &#34;&#34;&#34;
         try:
             tempCheckBox = SortedImageCheckBox(imageType, colNumber) 
             tempCheckBox.stateChanged.connect(
@@ -383,7 +408,14 @@ class ImageSliders(QObject):
 
 
     def __displayHideImageTypeSlider(self, state, attribute):
-        &#34;&#34;&#34;This function displays or hides the slider associated with a checkbox&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        This function displays or hides the slider associated with a checkbox
+        
+        Input arguments
+        ***************
+        state - checked state of the display/hide image type slider checkbox
+        attribute - DICOM attribute
+        &#34;&#34;&#34;
         logger.info(&#34;ImageSliders.____displayHideMultiSliders called&#34;)
         if state == Qt.Checked:
             self.dynamicListImageType.append(attribute)
@@ -392,6 +424,10 @@ class ImageSliders(QObject):
         self.__updateSliders()
     
     def getCheckBoxColumnNumber(self, attribute):
+        &#34;&#34;&#34;
+        Returns the column number of the checkbox associated with the 
+        DICOM attribute, attribute
+        &#34;&#34;&#34;
         for chkBox in self.checkboxList:
             if chkBox.dicomAttribute == attribute:
                 return chkBox.columnNumber
@@ -467,9 +503,13 @@ class ImageSliders(QObject):
 
     
     def __multipleImageSliderMoved(self):  
-        &#34;&#34;&#34;This function is attached to the slider moved event of each 
+        &#34;&#34;&#34;
+        This function is executed when a slider is moved and it
+        determines the image displayed in the image viewer.
+
+        This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
-        The slider being moved determines the image displayed in the image viewer&#34;&#34;&#34;
+        &#34;&#34;&#34;
         try:
             indexDict = {}
             #Create a dictionary of DICOM attribute:slider index pairs
@@ -506,13 +546,25 @@ class ImageSliders(QObject):
            
 
     def imageDeleted(self, newImagePathList):
+        &#34;&#34;&#34;
+        When an image in a DICOM series is deleted, this function
+        reconfigures the image sliders to accommodate this change.
+        
+
+        Input argument
+        **************
+        newImagePathList - the original image file path list
+            but with the file path of the deleted image removed
+        &#34;&#34;&#34;
         try:
-            #newImagePathList is the original image file path list
-            #but with the file path of the deleted image removed.
             self.imagePathList = newImagePathList
+            #readjust the maximum value of the main image slider
             self.mainImageSlider.setMaximum(len(newImagePathList))
+            #Display the image before the deleted image
             imageNumber = self.mainImageSlider.value()
             imageIndex = imageNumber - 1
+            if imageIndex &lt; 0:
+                imageIndex = 0
             self.selectedImagePath = self.imagePathList[imageIndex]
             #Send the new current image to the parent application
             self.sliderMoved.emit(self.selectedImagePath)
@@ -544,7 +596,8 @@ class ImageSliders(QObject):
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a custom, composite widget composed of one or more sliders for
-navigating a DICOM series of images.</p></div>
+navigating a DICOM series of images.</p>
+<p>Creates the custom, composite sliders widget</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -557,9 +610,11 @@ navigating a DICOM series of images.</p></div>
 
     def __init__(self,  pointerToWeasel, subjectID, 
                  studyID, seriesID, imagePathList):
+        &#34;&#34;&#34;
+        Creates the custom, composite sliders widget
+        &#34;&#34;&#34;
         try:
             #Super class QObject to provide support for pyqtSignal
-            start = time.perf_counter()
             super().__init__()
             self.imagePathList = imagePathList
             self.subjectID = subjectID
@@ -584,7 +639,6 @@ navigating a DICOM series of images.</p></div>
             self. __addMultiSliderButtonToLayout()
             self.__createMainImageSlider()
             self.__addMainImageSliderToLayout()
-            #print(&#34;Time to instanciate ImageSliders object = {} seconds&#34;.format(time.perf_counter()-start))
         except Exception as e:
             print(&#39;Error in ImageSliders.__init__: &#39; + str(e))
             logger.error(&#39;Error in ImageSliders.__init__: &#39; + str(e))
@@ -610,6 +664,12 @@ navigating a DICOM series of images.</p></div>
 
 
     def __setUpLayouts(self):
+        &#34;&#34;&#34;
+        Sets up the layouts that contain the sliders.
+
+        The layouts comprise a two horizontal layouts stacked 
+        within a vertical layout.
+        &#34;&#34;&#34;
         try:
             self.mainVerticalLayout = QVBoxLayout()
         
@@ -631,6 +691,10 @@ navigating a DICOM series of images.</p></div>
 
     
     def __createMainImageSlider(self): 
+        &#34;&#34;&#34;
+        Creates the main image slider that navigates the 
+        whole unfiltered DICOM series.
+        &#34;&#34;&#34;
         try:
             logger.info(&#34;ImageSliders.__createMainImageSlider called&#34;)
             self.mainImageSlider = QSlider(Qt.Horizontal)
@@ -653,16 +717,6 @@ navigating a DICOM series of images.</p></div>
         try:
             maxNumberImages = len(self.imagePathList)
             self.mainImageSlider.setMaximum(maxNumberImages)
-            
-            # Should be deleted, this is forcing the whole subwindow to have a fixed width
-            # based on the MDI and it compromises window/image resizing
-            #if maxNumberImages &lt; 4:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.2)
-            #elif maxNumberImages &gt; 3 and maxNumberImages &lt; 11:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.5)
-            #else:
-            #    self.mainImageSlider.setFixedWidth(self.widthSubWindow*.80)
-        
             self.imageNumberLabel = QLabel()
         
             if maxNumberImages &gt; 1:
@@ -680,10 +734,16 @@ navigating a DICOM series of images.</p></div>
         &#34;&#34;&#34;On the Multiple Image Display sub window, this
         function is called when the image slider is moved. 
         It causes the next image in imageList to be displayed
+
+        Input argument
+        **************
+        imageNumber - number of the image in the DICOM series
+                that must be displayed.  When it has the value
+                None, then imageNumber is set to the number of
+                the image that is currently displayed.
         &#34;&#34;&#34;
         try: 
             logger.info(&#34;ImageSliders.__mainImageSliderMoved called&#34;)
-            start = time.perf_counter()
             if imageNumber:
                 self.mainImageSlider.setValue(imageNumber)
             else:
@@ -725,7 +785,6 @@ navigating a DICOM series of images.</p></div>
 
                 #Send the file path of current image to the parent application
                 self.sliderMoved.emit(self.selectedImagePath)
-                #print(&#34;Main Image Slider moved = {} seconds&#34;.format(time.perf_counter() - start))
         except TypeError as e: 
             print(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
             logger.error(&#39;Type Error in ImageSliders.__mainImageSliderMoved: &#39; + str(e))
@@ -755,6 +814,10 @@ navigating a DICOM series of images.</p></div>
         &#34;&#34;&#34;This function shows or hides a checkbox for each DICOM attribute
         
         It is executed when the multi-sliders toggle button is clicked
+
+        Input Argument
+        **************
+        state - the toggle state of the display/hide multi-sliders toggle button
         &#34;&#34;&#34;
         try:
             if state == True:
@@ -782,11 +845,15 @@ navigating a DICOM series of images.</p></div>
             
     
     def __clearAllMultiImageWidgets(self, leaveCheckBoxes=False):
-        &#34;&#34;&#34;Clears all widgets related with multi-sliders,
+        &#34;&#34;&#34;Clears all widgets associated with multi-sliders,
         if the multi-sliders toggle button is off.
+
+        Input argument
+        **************
+        leaveCheckBoxes - If true, do not delete the SortedImageCheckBox 
+                            widgets.
         &#34;&#34;&#34;
         try:
-            
             widgets = [self.sortedImageSliderLayout.itemAt(i).widget() 
                        for i in range(self.sortedImageSliderLayout.count())]
             for widget in widgets:
@@ -826,6 +893,17 @@ navigating a DICOM series of images.</p></div>
 
 
     def __createSortedImageCheckBox(self, imageType, colNumber):
+        &#34;&#34;&#34;
+        Private function that creates a SortedImageCheckBox widget 
+        based on the QCheckBox class. This checkbox controls the 
+        display of the multi-sliders.
+
+        Input arguments
+        ***************
+        imageType - DICOM attribute to sort the images by.
+        colNumber  - number of the column in the grid layout 
+                where the checkbox is to be placed
+        &#34;&#34;&#34;
         try:
             tempCheckBox = SortedImageCheckBox(imageType, colNumber) 
             tempCheckBox.stateChanged.connect(
@@ -837,7 +915,14 @@ navigating a DICOM series of images.</p></div>
 
 
     def __displayHideImageTypeSlider(self, state, attribute):
-        &#34;&#34;&#34;This function displays or hides the slider associated with a checkbox&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        This function displays or hides the slider associated with a checkbox
+        
+        Input arguments
+        ***************
+        state - checked state of the display/hide image type slider checkbox
+        attribute - DICOM attribute
+        &#34;&#34;&#34;
         logger.info(&#34;ImageSliders.____displayHideMultiSliders called&#34;)
         if state == Qt.Checked:
             self.dynamicListImageType.append(attribute)
@@ -846,6 +931,10 @@ navigating a DICOM series of images.</p></div>
         self.__updateSliders()
     
     def getCheckBoxColumnNumber(self, attribute):
+        &#34;&#34;&#34;
+        Returns the column number of the checkbox associated with the 
+        DICOM attribute, attribute
+        &#34;&#34;&#34;
         for chkBox in self.checkboxList:
             if chkBox.dicomAttribute == attribute:
                 return chkBox.columnNumber
@@ -921,9 +1010,13 @@ navigating a DICOM series of images.</p></div>
 
     
     def __multipleImageSliderMoved(self):  
-        &#34;&#34;&#34;This function is attached to the slider moved event of each 
+        &#34;&#34;&#34;
+        This function is executed when a slider is moved and it
+        determines the image displayed in the image viewer.
+
+        This function is attached to the slider moved event of each 
         multiple slider.  The slider is identified by the DicomAttribute parameter. 
-        The slider being moved determines the image displayed in the image viewer&#34;&#34;&#34;
+        &#34;&#34;&#34;
         try:
             indexDict = {}
             #Create a dictionary of DICOM attribute:slider index pairs
@@ -960,13 +1053,25 @@ navigating a DICOM series of images.</p></div>
            
 
     def imageDeleted(self, newImagePathList):
+        &#34;&#34;&#34;
+        When an image in a DICOM series is deleted, this function
+        reconfigures the image sliders to accommodate this change.
+        
+
+        Input argument
+        **************
+        newImagePathList - the original image file path list
+            but with the file path of the deleted image removed
+        &#34;&#34;&#34;
         try:
-            #newImagePathList is the original image file path list
-            #but with the file path of the deleted image removed.
             self.imagePathList = newImagePathList
+            #readjust the maximum value of the main image slider
             self.mainImageSlider.setMaximum(len(newImagePathList))
+            #Display the image before the deleted image
             imageNumber = self.mainImageSlider.value()
             imageIndex = imageNumber - 1
+            if imageIndex &lt; 0:
+                imageIndex = 0
             self.selectedImagePath = self.imagePathList[imageIndex]
             #Send the new current image to the parent application
             self.sliderMoved.emit(self.selectedImagePath)
@@ -1010,12 +1115,17 @@ in Weasel</p></div>
 <span>def <span class="ident">getCheckBoxColumnNumber</span></span>(<span>self, attribute)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the column number of the checkbox associated with the
+DICOM attribute, attribute</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getCheckBoxColumnNumber(self, attribute):
+    &#34;&#34;&#34;
+    Returns the column number of the checkbox associated with the 
+    DICOM attribute, attribute
+    &#34;&#34;&#34;
     for chkBox in self.checkboxList:
         if chkBox.dicomAttribute == attribute:
             return chkBox.columnNumber
@@ -1060,19 +1170,36 @@ slider to Weasel</p></div>
 <span>def <span class="ident">imageDeleted</span></span>(<span>self, newImagePathList)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>When an image in a DICOM series is deleted, this function
+reconfigures the image sliders to accommodate this change.</p>
+<p>Input argument</p>
+<hr>
+<p>newImagePathList - the original image file path list
+but with the file path of the deleted image removed</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def imageDeleted(self, newImagePathList):
+    &#34;&#34;&#34;
+    When an image in a DICOM series is deleted, this function
+    reconfigures the image sliders to accommodate this change.
+    
+
+    Input argument
+    **************
+    newImagePathList - the original image file path list
+        but with the file path of the deleted image removed
+    &#34;&#34;&#34;
     try:
-        #newImagePathList is the original image file path list
-        #but with the file path of the deleted image removed.
         self.imagePathList = newImagePathList
+        #readjust the maximum value of the main image slider
         self.mainImageSlider.setMaximum(len(newImagePathList))
+        #Display the image before the deleted image
         imageNumber = self.mainImageSlider.value()
         imageIndex = imageNumber - 1
+        if imageIndex &lt; 0:
+            imageIndex = 0
         self.selectedImagePath = self.imagePathList[imageIndex]
         #Send the new current image to the parent application
         self.sliderMoved.emit(self.selectedImagePath)
@@ -1102,18 +1229,19 @@ slider to Weasel</p></div>
 <span>(</span><span>DicomAttribute, colNum)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Subclass of the QCheckBox class with the added property attribute
-which identifies what the image subset has been filtered for and
-columnNumber which is the number of the column in the grid layout
+<div class="desc"><p>Subclass of the QCheckBox class with the added property attribute,
+DicomAttribute, which identifies what the image subset has been filtered for
+and columnNumber, colNum,
+which is the number of the column in the grid layout
 where a widget created from this class is placed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SortedImageCheckBox(QCheckBox):
-    &#34;&#34;&#34;Subclass of the QCheckBox class with the added property attribute 
-    which identifies what the image subset has been filtered for and 
-    columnNumber which is the number of the column in the grid layout 
+    &#34;&#34;&#34;Subclass of the QCheckBox class with the added property attribute,
+    DicomAttribute, which identifies what the image subset has been filtered for 
+    and columnNumber, colNum,  which is the number of the column in the grid layout 
     where a widget created from this class is placed. 
     &#34;&#34;&#34;
     def __init__(self,  DicomAttribute, colNum): 
@@ -1180,15 +1308,15 @@ def dicomAttribute(self):
 <span>(</span><span>DicomAttribute)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Subclass of the QSlider class with the added property attribute
-which identifies what the image subset has been filtered for.</p></div>
+<div class="desc"><p>Subclass of the QSlider class with the added property attribute,
+DicomAttribute, which identifies what the image subset has been filtered for.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SortedImageSlider(QSlider):
-    &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute 
-    which identifies what the image subset has been filtered for. 
+    &#34;&#34;&#34;Subclass of the QSlider class with the added property attribute,
+    DicomAttribute, which identifies what the image subset has been filtered for. 
     &#34;&#34;&#34;
     def __init__(self,  DicomAttribute): 
        super().__init__(orientation=Qt.Horizontal)

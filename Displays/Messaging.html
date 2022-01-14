@@ -53,7 +53,19 @@ class Message():
             parent = None,
             message = &#34;Your message here&#34;,
             title = &#34;Message ...&#34;):
+        &#34;&#34;&#34;
+        If parent is not None, creates the MDI subwindow 
+        that will act as a pop-up window. Otherwise a QWidget object is 
+        displayed as a subwindow.
 
+        A label to display the message is created.
+        A QWidget widget is also created and vertical layout is added to it.
+        The message label is added to the vertical layout.
+
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.  Othewise, the above widget
+        is displayed as a window.
+        &#34;&#34;&#34;
         self.parent = parent
 
         if parent is None:
@@ -78,11 +90,22 @@ class Message():
         if parent is None:
             self.app.exec()
 
+
     def set_message(self, message):
+        &#34;&#34;&#34;
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        &#34;&#34;&#34;
         self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
         self.widget.adjustSize()
         
     def close(self):
+        &#34;&#34;&#34;
+        Closes the subwindow displaying the message
+        &#34;&#34;&#34;
         if self.parent is not None:
             self.msgSubWindow.close()
 
@@ -90,7 +113,7 @@ class Message():
 
 class ProgressBar():
     &#34;&#34;&#34;
-    Class that provides a pop-up window with a messages 
+    Class that provides a pop-up window with a message
     and progress bar to the user.
     &#34;&#34;&#34;
     def __init__(self,
@@ -99,7 +122,14 @@ class ProgressBar():
             maximum = 100,
             message = &#34;Your message here&#34;,
             title = &#34;Progress bar&#34;):
+        &#34;&#34;&#34;
+        A QWidget widget is created and a vertical layout added to it.
+        A progress bar and label to display a message are added to the
+        vertical layout. 
 
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.
+        &#34;&#34;&#34;
         self.parent = parent
 
         if parent is None:
@@ -128,16 +158,33 @@ class ProgressBar():
         QApplication.processEvents()
 
     def set_value(self, value):
+        &#34;&#34;&#34;
+        Sets the value property (amount of progress) of the progress bar
+        &#34;&#34;&#34;
         self.progress_bar.setValue(value) 
 
     def set_maximum(self, maximum):
+        &#34;&#34;&#34;
+        Sets the maximum value (value when progress is complete)
+        of the progress bar.
+        &#34;&#34;&#34;
         self.progress_bar.setMaximum(maximum)
 
     def set_message(self, message):
+        &#34;&#34;&#34;
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        &#34;&#34;&#34;
         self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
         self.widget.adjustSize()
         
     def close(self):
+        &#34;&#34;&#34;
+        Closes the subwindow displaying the progress bar &amp; message
+        &#34;&#34;&#34;
         if self.parent is not None:
             self.msgSubWindow.close()</code></pre>
 </details>
@@ -157,7 +204,17 @@ class ProgressBar():
 </code></dt>
 <dd>
 <div class="desc"><p>Class that provides a pop-up window that displays a message
-to the user.</p></div>
+to the user.</p>
+<p>If parent is not None, creates the MDI subwindow
+that will act as a pop-up window. Otherwise a QWidget object is
+displayed as a subwindow.</p>
+<p>A label to display the message is created.
+A QWidget widget is also created and vertical layout is added to it.
+The message label is added to the vertical layout.</p>
+<p>If parent is not None, then an MDI subwindow is created and
+the above widget set as its widget.
+Othewise, the above widget
+is displayed as a window.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -171,7 +228,19 @@ to the user.</p></div>
             parent = None,
             message = &#34;Your message here&#34;,
             title = &#34;Message ...&#34;):
+        &#34;&#34;&#34;
+        If parent is not None, creates the MDI subwindow 
+        that will act as a pop-up window. Otherwise a QWidget object is 
+        displayed as a subwindow.
 
+        A label to display the message is created.
+        A QWidget widget is also created and vertical layout is added to it.
+        The message label is added to the vertical layout.
+
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.  Othewise, the above widget
+        is displayed as a window.
+        &#34;&#34;&#34;
         self.parent = parent
 
         if parent is None:
@@ -196,11 +265,22 @@ to the user.</p></div>
         if parent is None:
             self.app.exec()
 
+
     def set_message(self, message):
+        &#34;&#34;&#34;
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        &#34;&#34;&#34;
         self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
         self.widget.adjustSize()
         
     def close(self):
+        &#34;&#34;&#34;
+        Closes the subwindow displaying the message
+        &#34;&#34;&#34;
         if self.parent is not None:
             self.msgSubWindow.close()</code></pre>
 </details>
@@ -210,12 +290,15 @@ to the user.</p></div>
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Closes the subwindow displaying the message</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def close(self):
+    &#34;&#34;&#34;
+    Closes the subwindow displaying the message
+    &#34;&#34;&#34;
     if self.parent is not None:
         self.msgSubWindow.close()</code></pre>
 </details>
@@ -224,12 +307,22 @@ to the user.</p></div>
 <span>def <span class="ident">set_message</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the message text. </p>
+<p>Input argument</p>
+<hr>
+<p>message - message string.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_message(self, message):
+    &#34;&#34;&#34;
+    Sets the message text. 
+
+    Input argument
+    **************
+    message - message string. 
+    &#34;&#34;&#34;
     self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
     self.widget.adjustSize()</code></pre>
 </details>
@@ -241,15 +334,20 @@ to the user.</p></div>
 <span>(</span><span>parent=None, value=0, maximum=100, message='Your message here', title='Progress bar')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Class that provides a pop-up window with a messages
-and progress bar to the user.</p></div>
+<div class="desc"><p>Class that provides a pop-up window with a message
+and progress bar to the user.</p>
+<p>A QWidget widget is created and a vertical layout added to it.
+A progress bar and label to display a message are added to the
+vertical layout. </p>
+<p>If parent is not None, then an MDI subwindow is created and
+the above widget set as its widget.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ProgressBar():
     &#34;&#34;&#34;
-    Class that provides a pop-up window with a messages 
+    Class that provides a pop-up window with a message
     and progress bar to the user.
     &#34;&#34;&#34;
     def __init__(self,
@@ -258,7 +356,14 @@ and progress bar to the user.</p></div>
             maximum = 100,
             message = &#34;Your message here&#34;,
             title = &#34;Progress bar&#34;):
+        &#34;&#34;&#34;
+        A QWidget widget is created and a vertical layout added to it.
+        A progress bar and label to display a message are added to the
+        vertical layout. 
 
+        If parent is not None, then an MDI subwindow is created and 
+        the above widget set as its widget.
+        &#34;&#34;&#34;
         self.parent = parent
 
         if parent is None:
@@ -287,16 +392,33 @@ and progress bar to the user.</p></div>
         QApplication.processEvents()
 
     def set_value(self, value):
+        &#34;&#34;&#34;
+        Sets the value property (amount of progress) of the progress bar
+        &#34;&#34;&#34;
         self.progress_bar.setValue(value) 
 
     def set_maximum(self, maximum):
+        &#34;&#34;&#34;
+        Sets the maximum value (value when progress is complete)
+        of the progress bar.
+        &#34;&#34;&#34;
         self.progress_bar.setMaximum(maximum)
 
     def set_message(self, message):
+        &#34;&#34;&#34;
+        Sets the message text. 
+
+        Input argument
+        **************
+        message - message string. 
+        &#34;&#34;&#34;
         self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
         self.widget.adjustSize()
         
     def close(self):
+        &#34;&#34;&#34;
+        Closes the subwindow displaying the progress bar &amp; message
+        &#34;&#34;&#34;
         if self.parent is not None:
             self.msgSubWindow.close()</code></pre>
 </details>
@@ -306,12 +428,15 @@ and progress bar to the user.</p></div>
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Closes the subwindow displaying the progress bar &amp; message</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def close(self):
+    &#34;&#34;&#34;
+    Closes the subwindow displaying the progress bar &amp; message
+    &#34;&#34;&#34;
     if self.parent is not None:
         self.msgSubWindow.close()</code></pre>
 </details>
@@ -320,12 +445,17 @@ and progress bar to the user.</p></div>
 <span>def <span class="ident">set_maximum</span></span>(<span>self, maximum)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the maximum value (value when progress is complete)
+of the progress bar.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_maximum(self, maximum):
+    &#34;&#34;&#34;
+    Sets the maximum value (value when progress is complete)
+    of the progress bar.
+    &#34;&#34;&#34;
     self.progress_bar.setMaximum(maximum)</code></pre>
 </details>
 </dd>
@@ -333,12 +463,22 @@ and progress bar to the user.</p></div>
 <span>def <span class="ident">set_message</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the message text. </p>
+<p>Input argument</p>
+<hr>
+<p>message - message string.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_message(self, message):
+    &#34;&#34;&#34;
+    Sets the message text. 
+
+    Input argument
+    **************
+    message - message string. 
+    &#34;&#34;&#34;
     self.label.setText(&#39;&lt;H4&gt;&#39; + message + &#39;&lt;/H4&gt;&#39;)
     self.widget.adjustSize()</code></pre>
 </details>
@@ -347,12 +487,15 @@ and progress bar to the user.</p></div>
 <span>def <span class="ident">set_value</span></span>(<span>self, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value property (amount of progress) of the progress bar</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_value(self, value):
+    &#34;&#34;&#34;
+    Sets the value property (amount of progress) of the progress bar
+    &#34;&#34;&#34;
     self.progress_bar.setValue(value) </code></pre>
 </details>
 </dd>
