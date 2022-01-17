@@ -558,14 +558,6 @@ class ImageViewer(QMdiSubWindow):
                 #Remove deleted image from the list
                 self.imagePathList.remove(self.selectedImagePath)
 
-                #Pass the new imagePathList to the sliders widget and
-                #display the next image
-                self.slidersWidget.imageDeleted(self.imagePathList)
-
-                #Remove deleted image from the user selection 
-                #data structure
-                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
-
                 #Update the XML file
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
@@ -585,6 +577,14 @@ class ImageViewer(QMdiSubWindow):
 
                 #Update tree view with xml file modified above
                 self.weasel.treeView.refreshDICOMStudiesTreeView()
+
+                #Pass the new imagePathList to the sliders widget and
+                #display the next image
+                self.slidersWidget.imageDeleted(self.imagePathList)
+
+                #Remove deleted image from the user selection 
+                #data structure
+                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
 
         except Exception as e:
             print(&#39;Error in ImageViewer.deleteImageInMultiImageViewer: &#39; + str(e))
@@ -1705,14 +1705,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
                 #Remove deleted image from the list
                 self.imagePathList.remove(self.selectedImagePath)
 
-                #Pass the new imagePathList to the sliders widget and
-                #display the next image
-                self.slidersWidget.imageDeleted(self.imagePathList)
-
-                #Remove deleted image from the user selection 
-                #data structure
-                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
-
                 #Update the XML file
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
@@ -1732,6 +1724,14 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
                 #Update tree view with xml file modified above
                 self.weasel.treeView.refreshDICOMStudiesTreeView()
+
+                #Pass the new imagePathList to the sliders widget and
+                #display the next image
+                self.slidersWidget.imageDeleted(self.imagePathList)
+
+                #Remove deleted image from the user selection 
+                #data structure
+                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
 
         except Exception as e:
             print(&#39;Error in ImageViewer.deleteImageInMultiImageViewer: &#39; + str(e))
@@ -2549,14 +2549,6 @@ reference to it in the XML file and removes it from the image viewer.</p></div>
             #Remove deleted image from the list
             self.imagePathList.remove(self.selectedImagePath)
 
-            #Pass the new imagePathList to the sliders widget and
-            #display the next image
-            self.slidersWidget.imageDeleted(self.imagePathList)
-
-            #Remove deleted image from the user selection 
-            #data structure
-            self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
-
             #Update the XML file
             #Get the series containing this image and count the images it contains
             #If it is the last image in a series then remove the
@@ -2576,6 +2568,14 @@ reference to it in the XML file and removes it from the image viewer.</p></div>
 
             #Update tree view with xml file modified above
             self.weasel.treeView.refreshDICOMStudiesTreeView()
+
+            #Pass the new imagePathList to the sliders widget and
+            #display the next image
+            self.slidersWidget.imageDeleted(self.imagePathList)
+
+            #Remove deleted image from the user selection 
+            #data structure
+            self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
 
     except Exception as e:
         print(&#39;Error in ImageViewer.deleteImageInMultiImageViewer: &#39; + str(e))
