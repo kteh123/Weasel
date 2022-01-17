@@ -300,7 +300,6 @@ class ImageSliders(QObject):
                  )
                 #hide image sliders by deleting them from the grid layout
                 self.__clearAllMultiImageWidgets()
-                #self.imageTypeList.clear()
                 self.dynamicListImageType.clear()
                 self.listSortedImageSliders.clear()
                 self.shapeList = []    
