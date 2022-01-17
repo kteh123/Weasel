@@ -524,14 +524,6 @@ class ImageViewer(QMdiSubWindow):
                 #Remove deleted image from the list
                 self.imagePathList.remove(self.selectedImagePath)
 
-                #Pass the new imagePathList to the sliders widget and
-                #display the next image
-                self.slidersWidget.imageDeleted(self.imagePathList)
-
-                #Remove deleted image from the user selection 
-                #data structure
-                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
-
                 #Update the XML file
                 #Get the series containing this image and count the images it contains
                 #If it is the last image in a series then remove the
@@ -551,6 +543,14 @@ class ImageViewer(QMdiSubWindow):
 
                 #Update tree view with xml file modified above
                 self.weasel.treeView.refreshDICOMStudiesTreeView()
+
+                #Pass the new imagePathList to the sliders widget and
+                #display the next image
+                self.slidersWidget.imageDeleted(self.imagePathList)
+
+                #Remove deleted image from the user selection 
+                #data structure
+                self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
 
         except Exception as e:
             print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
