@@ -535,19 +535,14 @@ class ImageSliders(QObject):
             #Display the image before the deleted image
             imageNumber = self.mainImageSlider.value()
             imageIndex = imageNumber - 1
-            if imageIndex < 0:
-                imageIndex = 0
-            self.selectedImagePath = self.imagePathList[imageIndex]
-            #Send the new current image to the parent application
-            self.sliderMoved.emit(self.selectedImagePath)
-            
-            #To Do 
-            #adjust the lists attached to sorted image list sliders
+            if imageIndex < 0: imageIndex = 0
+            self.__mainImageSliderMoved(imageIndex)
+            #Adjust the lists attached to sorted image list sliders
             #by removing the deleted image from the slider if present
             #and calling setMaximum(len(image list)) for each slider
             if len(self.listSortedImageSliders) > 0:
-                tagsList = [self.imageTypeList.item(i).text() for i in range(self.imageTypeList.count())]
+                tagsList = [self.checkboxList[i].dicomAttribute for i in range(len(self.checkboxList))]
                 self.dicomTable = DICOM_to_DataFrame(self.imagePathList, tags=tagsList)
                 self.__updateSliders()
         except Exception as e:
-            print('Error in ImageSliders.__imageDeleted: ' + str(e))
+            print('Error in ImageSliders.imageDeleted: ' + str(e))
