@@ -1228,7 +1228,7 @@ class Series:
             print('Error in Series.PixelArray: ' + str(e))
             logger.exception('Error in Series.PixelArray: ' + str(e))
         
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         """Returns the PixelArray masked."""
         logger.info("Series.Mask called")
         try:
@@ -1245,7 +1245,7 @@ class Series:
                         coords = zip(*affine_results)
                         tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
             elif isinstance(maskInstance, Series):
                 listImages = self.images
                 listMaskImages = maskInstance.images
@@ -1261,10 +1261,20 @@ class Series:
                             coords = zip(*affine_results)
                             tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
         except Exception as e:
             print('Error in Series.Mask: ' + str(e))
             logger.exception('Error in Series.Mask: ' + str(e))
+    
+    def write_mask(self, mask_array, label=None):
+        logger.info("Series.write_mask called")
+        try:
+            if label is not None:
+                self.suffix = "_" + label
+            self.write_mask(mask_array, parametric_map="SEG")
+        except Exception as e:
+            print('Error in Series.write_mask: ' + str(e))
+            logger.exception('Error in Series.write_mask: ' + str(e))
 
     @property
     def Affine(self):
@@ -1702,7 +1712,7 @@ class Image:
             print('Error in Image.PixelArray: ' + str(e))
             logger.exception('Error in Image.PixelArray: ' + str(e))
 
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         """Returns the PixelArray masked."""
         logger.info("Image.Mask called")
         try:
@@ -1733,6 +1743,16 @@ class Image:
         except Exception as e:
             print('Error in Image.Mask: ' + str(e))
             logger.exception('Error in Image.Mask: ' + str(e))
+
+    def write_mask(self, mask_array, label=None):
+        logger.info("Image.write_mask called")
+        try:
+            if label is not None:
+                self.suffix = "_" + label
+            self.write_mask(mask_array, parametric_map="SEG")
+        except Exception as e:
+            print('Error in Image.write_mask: ' + str(e))
+            logger.exception('Error in Image.write_mask: ' + str(e))
     
     @property
     def ROIindices(self):

@@ -122,10 +122,10 @@ class ParametricClass(object):
 
         # Segment Labels
         if hasattr(dicom, "ImageComments"):
-            dicom.ContentDescription = dicom.ImageComments.split('_')[-1] # 'Image segmentation'
+            dicom.ContentDescription = dicom.ImageComments[1:] # 'Image segmentation'
             segment_numbers = np.unique(pixelArray)
             segment_dictionary = dict(list(enumerate(segment_numbers)))
-            segment_label = dicom.ImageComments.split('_')[-1]
+            segment_label = dicom.ImageComments[1:]
             segment_dictionary[0] = 'Background'
             segment_dictionary[1] = segment_label
             for key in segment_dictionary:
