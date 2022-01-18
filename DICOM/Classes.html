@@ -1268,7 +1268,7 @@ class Series:
             print(&#39;Error in Series.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Series.PixelArray: &#39; + str(e))
         
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
         logger.info(&#34;Series.Mask called&#34;)
         try:
@@ -1285,7 +1285,7 @@ class Series:
                         coords = zip(*affine_results)
                         tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
             elif isinstance(maskInstance, Series):
                 listImages = self.images
                 listMaskImages = maskInstance.images
@@ -1301,10 +1301,20 @@ class Series:
                             coords = zip(*affine_results)
                             tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
         except Exception as e:
             print(&#39;Error in Series.Mask: &#39; + str(e))
             logger.exception(&#39;Error in Series.Mask: &#39; + str(e))
+    
+    def write_mask(self, mask_array, label=None):
+        logger.info(&#34;Series.write_mask called&#34;)
+        try:
+            if label is not None:
+                self.suffix = &#34;_&#34; + label
+            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        except Exception as e:
+            print(&#39;Error in Series.write_mask: &#39; + str(e))
+            logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))
 
     @property
     def Affine(self):
@@ -1742,7 +1752,7 @@ class Image:
             print(&#39;Error in Image.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Image.PixelArray: &#39; + str(e))
 
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
         logger.info(&#34;Image.Mask called&#34;)
         try:
@@ -1773,6 +1783,16 @@ class Image:
         except Exception as e:
             print(&#39;Error in Image.Mask: &#39; + str(e))
             logger.exception(&#39;Error in Image.Mask: &#39; + str(e))
+
+    def write_mask(self, mask_array, label=None):
+        logger.info(&#34;Image.write_mask called&#34;)
+        try:
+            if label is not None:
+                self.suffix = &#34;_&#34; + label
+            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        except Exception as e:
+            print(&#39;Error in Image.write_mask: &#39; + str(e))
+            logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))
     
     @property
     def ROIindices(self):
@@ -2178,7 +2198,7 @@ class Image:
             print(&#39;Error in Image.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Image.PixelArray: &#39; + str(e))
 
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
         logger.info(&#34;Image.Mask called&#34;)
         try:
@@ -2209,6 +2229,16 @@ class Image:
         except Exception as e:
             print(&#39;Error in Image.Mask: &#39; + str(e))
             logger.exception(&#39;Error in Image.Mask: &#39; + str(e))
+
+    def write_mask(self, mask_array, label=None):
+        logger.info(&#34;Image.write_mask called&#34;)
+        try:
+            if label is not None:
+                self.suffix = &#34;_&#34; + label
+            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        except Exception as e:
+            print(&#39;Error in Image.write_mask: &#39; + str(e))
+            logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))
     
     @property
     def ROIindices(self):
@@ -2575,48 +2605,6 @@ def parent(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="Weasel.DICOM.Classes.Image.Mask"><code class="name flex">
-<span>def <span class="ident">Mask</span></span>(<span>self, maskInstance)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the PixelArray masked.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Mask(self, maskInstance):
-    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
-    logger.info(&#34;Image.Mask called&#34;)
-    try:
-        if isinstance(maskInstance, Image):
-            #for index, dicomFile in enumerate(targetPath):
-            tempArray = np.zeros(np.shape(self.PixelArray))
-            dataset_original = self.PydicomObject
-            dataset = maskInstance.PydicomObject
-            mask_array = maskInstance.PixelArray
-            mask_array[mask_array != 0] = 1
-            affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
-            if affine_results:
-                coords = zip(*affine_results)
-                tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
-            return np.transpose(tempArray) * self.PixelArray
-        elif isinstance(maskInstance, Series):
-            tempArray = np.zeros(np.shape(self.PixelArray))
-            for maskFile in maskInstance.images:
-                dataset_original = self.PydicomObject
-                dataset = ReadDICOM_Image.getDicomDataset(maskFile)
-                mask_array = ReadDICOM_Image.getPixelArray(dataset)
-                mask_array[mask_array != 0] = 1
-                affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
-                if affine_results:
-                    coords = zip(*affine_results)
-                    tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
-            return np.transpose(tempArray) * self.PixelArray
-    except Exception as e:
-        print(&#39;Error in Image.Mask: &#39; + str(e))
-        logger.exception(&#39;Error in Image.Mask: &#39; + str(e))</code></pre>
-</details>
-</dd>
 <dt id="Weasel.DICOM.Classes.Image.Metadata"><code class="name flex">
 <span>def <span class="ident">Metadata</span></span>(<span>self)</span>
 </code></dt>
@@ -2780,6 +2768,48 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Image.get_value: &#39; + str(e))
         logger.exception(&#39;Error in Image.get_value: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Image.load_mask"><code class="name flex">
+<span>def <span class="ident">load_mask</span></span>(<span>self, maskInstance)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the PixelArray masked.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_mask(self, maskInstance):
+    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    logger.info(&#34;Image.Mask called&#34;)
+    try:
+        if isinstance(maskInstance, Image):
+            #for index, dicomFile in enumerate(targetPath):
+            tempArray = np.zeros(np.shape(self.PixelArray))
+            dataset_original = self.PydicomObject
+            dataset = maskInstance.PydicomObject
+            mask_array = maskInstance.PixelArray
+            mask_array[mask_array != 0] = 1
+            affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+            if affine_results:
+                coords = zip(*affine_results)
+                tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+            return np.transpose(tempArray) * self.PixelArray
+        elif isinstance(maskInstance, Series):
+            tempArray = np.zeros(np.shape(self.PixelArray))
+            for maskFile in maskInstance.images:
+                dataset_original = self.PydicomObject
+                dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                mask_array = ReadDICOM_Image.getPixelArray(dataset)
+                mask_array[mask_array != 0] = 1
+                affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                if affine_results:
+                    coords = zip(*affine_results)
+                    tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+            return np.transpose(tempArray) * self.PixelArray
+    except Exception as e:
+        print(&#39;Error in Image.Mask: &#39; + str(e))
+        logger.exception(&#39;Error in Image.Mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Image.new"><code class="name flex">
@@ -2961,6 +2991,26 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Image.write: &#39; + str(e))
         logger.exception(&#39;Error in Image.write: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Image.write_mask"><code class="name flex">
+<span>def <span class="ident">write_mask</span></span>(<span>self, mask_array, label=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_mask(self, mask_array, label=None):
+    logger.info(&#34;Image.write_mask called&#34;)
+    try:
+        if label is not None:
+            self.suffix = &#34;_&#34; + label
+        self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+    except Exception as e:
+        print(&#39;Error in Image.write_mask: &#39; + str(e))
+        logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
 </dl>
@@ -3993,7 +4043,7 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
             print(&#39;Error in Series.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Series.PixelArray: &#39; + str(e))
         
-    def Mask(self, maskInstance):
+    def load_mask(self, maskInstance):
         &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
         logger.info(&#34;Series.Mask called&#34;)
         try:
@@ -4010,7 +4060,7 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
                         coords = zip(*affine_results)
                         tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
             elif isinstance(maskInstance, Series):
                 listImages = self.images
                 listMaskImages = maskInstance.images
@@ -4026,10 +4076,20 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
                             coords = zip(*affine_results)
                             tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
                     mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-                return mask_output
+                return np.nan_to_num(mask_output)
         except Exception as e:
             print(&#39;Error in Series.Mask: &#39; + str(e))
             logger.exception(&#39;Error in Series.Mask: &#39; + str(e))
+    
+    def write_mask(self, mask_array, label=None):
+        logger.info(&#34;Series.write_mask called&#34;)
+        try:
+            if label is not None:
+                self.suffix = &#34;_&#34; + label
+            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        except Exception as e:
+            print(&#39;Error in Series.write_mask: &#39; + str(e))
+            logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))
 
     @property
     def Affine(self):
@@ -4627,54 +4687,6 @@ def parent(self):
     return itemList</code></pre>
 </details>
 </dd>
-<dt id="Weasel.DICOM.Classes.Series.Mask"><code class="name flex">
-<span>def <span class="ident">Mask</span></span>(<span>self, maskInstance)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the PixelArray masked.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Mask(self, maskInstance):
-    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
-    logger.info(&#34;Series.Mask called&#34;)
-    try:
-        dataset = maskInstance.PydicomList
-        mask_array = maskInstance.PixelArray
-        mask_array[mask_array != 0] = 1
-        mask_output = []
-        if isinstance(maskInstance, Image):
-            for dicomFile in self.images:
-                dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
-                tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
-                if affine_results:
-                    coords = zip(*affine_results)
-                    tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
-                mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-            return mask_output
-        elif isinstance(maskInstance, Series):
-            listImages = self.images
-            listMaskImages = maskInstance.images
-            for dicomFile in listImages:
-                dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
-                tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                for maskFile in listMaskImages:
-                    dataset = ReadDICOM_Image.getDicomDataset(maskFile)
-                    mask_array = ReadDICOM_Image.getPixelArray(dataset)
-                    mask_array[mask_array != 0] = 1
-                    affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
-                    if affine_results:
-                        coords = zip(*affine_results)
-                        tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
-                mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
-            return mask_output
-    except Exception as e:
-        print(&#39;Error in Series.Mask: &#39; + str(e))
-        logger.exception(&#39;Error in Series.Mask: &#39; + str(e))</code></pre>
-</details>
-</dd>
 <dt id="Weasel.DICOM.Classes.Series.Metadata"><code class="name flex">
 <span>def <span class="ident">Metadata</span></span>(<span>self)</span>
 </code></dt>
@@ -4879,6 +4891,54 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Series.get_value: &#39; + str(e))
         logger.exception(&#39;Error in Series.get_value: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Series.load_mask"><code class="name flex">
+<span>def <span class="ident">load_mask</span></span>(<span>self, maskInstance)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the PixelArray masked.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_mask(self, maskInstance):
+    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    logger.info(&#34;Series.Mask called&#34;)
+    try:
+        dataset = maskInstance.PydicomList
+        mask_array = maskInstance.PixelArray
+        mask_array[mask_array != 0] = 1
+        mask_output = []
+        if isinstance(maskInstance, Image):
+            for dicomFile in self.images:
+                dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                if affine_results:
+                    coords = zip(*affine_results)
+                    tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
+            return np.nan_to_num(mask_output)
+        elif isinstance(maskInstance, Series):
+            listImages = self.images
+            listMaskImages = maskInstance.images
+            for dicomFile in listImages:
+                dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                for maskFile in listMaskImages:
+                    dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                    mask_array = ReadDICOM_Image.getPixelArray(dataset)
+                    mask_array[mask_array != 0] = 1
+                    affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                    if affine_results:
+                        coords = zip(*affine_results)
+                        tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
+            return np.nan_to_num(mask_output)
+    except Exception as e:
+        print(&#39;Error in Series.Mask: &#39; + str(e))
+        logger.exception(&#39;Error in Series.Mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Series.new"><code class="name flex">
@@ -5160,6 +5220,26 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Series.write: &#39; + str(e))
         logger.exception(&#39;Error in Series.write: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Series.write_mask"><code class="name flex">
+<span>def <span class="ident">write_mask</span></span>(<span>self, mask_array, label=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_mask(self, mask_array, label=None):
+    logger.info(&#34;Series.write_mask called&#34;)
+    try:
+        if label is not None:
+            self.suffix = &#34;_&#34; + label
+        self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+    except Exception as e:
+        print(&#39;Error in Series.write_mask: &#39; + str(e))
+        logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))</code></pre>
 </details>
 </dd>
 </dl>
@@ -6748,7 +6828,6 @@ def children(self):
 <h4><code><a title="Weasel.DICOM.Classes.Image" href="#Weasel.DICOM.Classes.Image">Image</a></code></h4>
 <ul class="two-column">
 <li><code><a title="Weasel.DICOM.Classes.Image.Affine" href="#Weasel.DICOM.Classes.Image.Affine">Affine</a></code></li>
-<li><code><a title="Weasel.DICOM.Classes.Image.Mask" href="#Weasel.DICOM.Classes.Image.Mask">Mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.Metadata" href="#Weasel.DICOM.Classes.Image.Metadata">Metadata</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.PixelArray" href="#Weasel.DICOM.Classes.Image.PixelArray">PixelArray</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.PydicomObject" href="#Weasel.DICOM.Classes.Image.PydicomObject">PydicomObject</a></code></li>
@@ -6762,6 +6841,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Image.export_as_nifti" href="#Weasel.DICOM.Classes.Image.export_as_nifti">export_as_nifti</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.get_value" href="#Weasel.DICOM.Classes.Image.get_value">get_value</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.label" href="#Weasel.DICOM.Classes.Image.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.load_mask" href="#Weasel.DICOM.Classes.Image.load_mask">load_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.merge" href="#Weasel.DICOM.Classes.Image.merge">merge</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.new" href="#Weasel.DICOM.Classes.Image.new">new</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.newSeriesFrom" href="#Weasel.DICOM.Classes.Image.newSeriesFrom">newSeriesFrom</a></code></li>
@@ -6780,6 +6860,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Image.subjectID" href="#Weasel.DICOM.Classes.Image.subjectID">subjectID</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.suffix" href="#Weasel.DICOM.Classes.Image.suffix">suffix</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.write" href="#Weasel.DICOM.Classes.Image.write">write</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.write_mask" href="#Weasel.DICOM.Classes.Image.write_mask">write_mask</a></code></li>
 </ul>
 </li>
 <li>
@@ -6820,7 +6901,6 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Series.Item" href="#Weasel.DICOM.Classes.Series.Item">Item</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.ListAffines" href="#Weasel.DICOM.Classes.Series.ListAffines">ListAffines</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.Magnitude" href="#Weasel.DICOM.Classes.Series.Magnitude">Magnitude</a></code></li>
-<li><code><a title="Weasel.DICOM.Classes.Series.Mask" href="#Weasel.DICOM.Classes.Series.Mask">Mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.Metadata" href="#Weasel.DICOM.Classes.Series.Metadata">Metadata</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.Phase" href="#Weasel.DICOM.Classes.Series.Phase">Phase</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.PixelArray" href="#Weasel.DICOM.Classes.Series.PixelArray">PixelArray</a></code></li>
@@ -6839,6 +6919,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Series.get_value" href="#Weasel.DICOM.Classes.Series.get_value">get_value</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.images" href="#Weasel.DICOM.Classes.Series.images">images</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.label" href="#Weasel.DICOM.Classes.Series.label">label</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.load_mask" href="#Weasel.DICOM.Classes.Series.load_mask">load_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.merge" href="#Weasel.DICOM.Classes.Series.merge">merge</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.new" href="#Weasel.DICOM.Classes.Series.new">new</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.number_children" href="#Weasel.DICOM.Classes.Series.number_children">number_children</a></code></li>
@@ -6859,6 +6940,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Series.suffix" href="#Weasel.DICOM.Classes.Series.suffix">suffix</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.where" href="#Weasel.DICOM.Classes.Series.where">where</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.write" href="#Weasel.DICOM.Classes.Series.write">write</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.write_mask" href="#Weasel.DICOM.Classes.Series.write_mask">write_mask</a></code></li>
 </ul>
 </li>
 <li>

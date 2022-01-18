@@ -153,10 +153,10 @@ class ParametricClass(object):
 
         # Segment Labels
         if hasattr(dicom, &#34;ImageComments&#34;):
-            dicom.ContentDescription = dicom.ImageComments.split(&#39;_&#39;)[-1] # &#39;Image segmentation&#39;
+            dicom.ContentDescription = dicom.ImageComments[1:] # &#39;Image segmentation&#39;
             segment_numbers = np.unique(pixelArray)
             segment_dictionary = dict(list(enumerate(segment_numbers)))
-            segment_label = dicom.ImageComments.split(&#39;_&#39;)[-1]
+            segment_label = dicom.ImageComments[1:]
             segment_dictionary[0] = &#39;Background&#39;
             segment_dictionary[1] = segment_label
             for key in segment_dictionary:
@@ -441,10 +441,10 @@ def saveAnatomicalInfo(anatomyString, dicom):
 
         # Segment Labels
         if hasattr(dicom, &#34;ImageComments&#34;):
-            dicom.ContentDescription = dicom.ImageComments.split(&#39;_&#39;)[-1] # &#39;Image segmentation&#39;
+            dicom.ContentDescription = dicom.ImageComments[1:] # &#39;Image segmentation&#39;
             segment_numbers = np.unique(pixelArray)
             segment_dictionary = dict(list(enumerate(segment_numbers)))
-            segment_label = dicom.ImageComments.split(&#39;_&#39;)[-1]
+            segment_label = dicom.ImageComments[1:]
             segment_dictionary[0] = &#39;Background&#39;
             segment_dictionary[1] = segment_label
             for key in segment_dictionary:
@@ -615,10 +615,10 @@ def saveAnatomicalInfo(anatomyString, dicom):
 
     # Segment Labels
     if hasattr(dicom, &#34;ImageComments&#34;):
-        dicom.ContentDescription = dicom.ImageComments.split(&#39;_&#39;)[-1] # &#39;Image segmentation&#39;
+        dicom.ContentDescription = dicom.ImageComments[1:] # &#39;Image segmentation&#39;
         segment_numbers = np.unique(pixelArray)
         segment_dictionary = dict(list(enumerate(segment_numbers)))
-        segment_label = dicom.ImageComments.split(&#39;_&#39;)[-1]
+        segment_label = dicom.ImageComments[1:]
         segment_dictionary[0] = &#39;Background&#39;
         segment_dictionary[1] = segment_label
         for key in segment_dictionary:

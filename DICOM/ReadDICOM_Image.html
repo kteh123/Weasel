@@ -369,7 +369,7 @@ def getPixelArray(dataset):
             if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
                 pixelArray = pixelArray / (slope * dataset[(0x2005, 0x100E)].value)
             del slope, intercept
-            return pixelArray
+            return np.nan_to_num(pixelArray)
         else:
             return None
     except Exception as e:
@@ -1103,7 +1103,7 @@ Output is : attribute</p></div>
             if [0x2005, 0x100E] in dataset: # &#39;Philips Rescale Slope&#39;
                 pixelArray = pixelArray / (slope * dataset[(0x2005, 0x100E)].value)
             del slope, intercept
-            return pixelArray
+            return np.nan_to_num(pixelArray)
         else:
             return None
     except Exception as e:
