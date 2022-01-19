@@ -13,9 +13,6 @@ with open('README.md', encoding='utf-8') as f:
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-# Write the name of the extra Python Packages for development here
-extra_requirements = ['dipy>=1.3.0', 'fslpy>=3.0.0', 'scikit-image>=0.18.1', 'scikit-learn>=0.21.3', 'tqdm>=4.40.0', 'ukat']
-
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""
     user_options = []
@@ -44,7 +41,7 @@ setup(
     # Python Packages and Installation
     python_requires='>=3.5, <4',
     packages=find_packages(),
-    install_requires= [requirements, extra_requirements],
+    install_requires= [requirements],
 
     # Classifiers - the purpose in the future is to create a wheel (pip install wheel) and then upload to PYPI
     classifiers=[  # Optional

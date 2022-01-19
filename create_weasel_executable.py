@@ -2,6 +2,9 @@ import os
 from sys import platform
 import venv
 
+# Write the name of the extra Python Packages for development here
+extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'tqdm', 'ukat']
+
 print("Creating Python Virtual Environment...")
 venv_dir = os.path.join(os.getcwd(), "venv")
 icon_file = os.path.join(os.getcwd(), "Documents" , "images" , "favicon.ico")
@@ -19,6 +22,8 @@ else:
 
 print("Installing Python packages in the Virtual Environment...")
 os.system(activation_command + ' && pip install -e .')
+for pypi in extra_packages:
+	os.system(activation_command + ' && pip install ' + pypi)
 
 print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
