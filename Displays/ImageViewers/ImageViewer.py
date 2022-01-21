@@ -402,14 +402,14 @@ class ImageViewer(QMdiSubWindow):
     def setUpDeleteImageButton(self):
         """
         Creates the delete image button, deleteButton and connects its clicked
-        event to the function deleteImageInMultiImageViewer
+        event to the function deleteImageInSeries
         """
         try:
             self.deleteButton = QPushButton()
             self.deleteButton.setToolTip(
                 'Deletes the DICOM image being viewed')
             self.deleteButton.setIcon(QIcon(QPixmap(DELETE_ICON)))
-            self.deleteButton.clicked.connect(self.deleteImageInMultiImageViewer)
+            self.deleteButton.clicked.connect(self.deleteImage)
         except Exception as e:
             print('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
             logger.error('Error in ImageViewer.setUpDeleteImageButton: ' + str(e))
@@ -496,16 +496,71 @@ class ImageViewer(QMdiSubWindow):
         self.graphicsView.ui.roiBtn.hide()
         self.graphicsView.ui.menuBtn.hide()
 
-    
-    def deleteImageInMultiImageViewer(self):
+
+    def deleteImage(self):
+        if self.isImage:
+            self.deleteSingleImage()
+        elif self.isSeries:
+            self.deleteImageInSeries()
+
+
+    def deleteSingleImage(self):
+        """
+        Deletes an image viewed on its own
+
+        This function deletes the physical image, removes the 
+        reference to it in the XML file, refreshes the tree view
+        and closes the subwindow that displayed it.
+        """
+        try:
+            logger.info("ImageViewer.deleteSingleImage called")
+            imageName = os.path.basename(self.selectedImagePath)
+            buttonReply = QMessageBox.question(self.weasel, 
+                'Delete DICOM image', "You are about to delete image {}".format(imageName), 
+                QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+
+            if buttonReply == QMessageBox.Ok:
+                #Delete physical file
+                if os.path.exists(self.selectedImagePath):
+                    os.remove(self.selectedImagePath)
+
+                #Count the images in the series containing
+                #the image to be deleted.
+                #If the deleted image is the only image in the series
+                #then remove the whole series from XML file
+                numImagesInSeries = self.weasel.objXMLReader.getNumImagesInSeries(
+                    self.subjectID, self.studyID, self.seriesID)
+                print("numImagesLeftInSeries={}".format(numImagesInSeries))
+                if numImagesInSeries == 1:
+                    #no images will be left in the series, so remove it from the xml file
+                    self.weasel.objXMLReader.removeOneSeriesFromStudy(self.subjectID, 
+                                                                        self.studyID, 
+                                                                        self.seriesID)
+                else:
+                    #Remove the image from the XML file used to generate the tree view.
+                    self.weasel.objXMLReader.removeOneImageFromSeries(self.subjectID, 
+                        self.studyID, self.seriesID, self.selectedImagePath)
+                
+                #Update tree view with xml file modified above
+                self.weasel.treeView.refreshDICOMStudiesTreeView()
+
+                #close the subwindow
+                self.close()
+        except Exception as e:
+            print('Error in ImageViewer.deleteSingleImage: ' + str(e))
+            logger.error('Error in ImageViewer.deleteSingleImage: ' + str(e))
+
+
+    def deleteImageInSeries(self):
         """
         Deletes an image in a DICOM series.
 
         This function deletes the physical image, removes the 
-        reference to it in the XML file and removes it from the image viewer.
+        reference to it in the XML file, refreshes the tree view
+        and removes it from the image viewer.
         """
         try:
-            logger.info("ImageViewer.deleteImageInMultiImageViewer called")
+            logger.info("ImageViewer.deleteImageInSeries called")
             imageName = os.path.basename(self.selectedImagePath)
             buttonReply = QMessageBox.question(self.weasel, 
                 'Delete DICOM image', "You are about to delete image {}".format(imageName), 
@@ -553,8 +608,8 @@ class ImageViewer(QMdiSubWindow):
                 self.userSelection.deleteOneImageInUserSelection(os.path.basename(self.selectedImagePath))
 
         except Exception as e:
-            print('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
-            logger.error('Error in ImageViewer.deleteImageInMultiImageViewer: ' + str(e))
+            print('Error in ImageViewer.deleteImageInSeries: ' + str(e))
+            logger.error('Error in ImageViewer.deleteImageInSeries: ' + str(e))
 
 
     def exportImage(self):

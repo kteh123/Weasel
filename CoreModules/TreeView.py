@@ -273,7 +273,7 @@ class TreeView():
 
     def _unCheckTreeViewItems(self, item):
         """This function uses recursion to set the state of child checkboxes 
-        of item to unchecked.
+        of item to unchecked.  An item could represent a subject, study or series.
         
          Input Parameters
         ****************

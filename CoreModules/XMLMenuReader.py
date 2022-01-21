@@ -28,6 +28,7 @@ class XMLMenuReader:
 
 
     def __repr__(self):
+       """Represents this class's objects as a string"""
        return '{}, {!r}'.format(
            self.__class__.__name__,
            self.fullFilePath)

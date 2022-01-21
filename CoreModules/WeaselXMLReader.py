@@ -1,5 +1,6 @@
 """
-Class for reading, editing and writing the XML file summarising the contents of a DICOM folder.
+Class for reading, editing and writing the XML file summarising 
+the contents of a DICOM folder.
 """
 import xml.etree.cElementTree as ET  
 from datetime import datetime
@@ -15,8 +16,8 @@ __author__ = "Steve Shillitoe"
 class WeaselXMLReader:
     """Reads, edits and writes the XML file summarising the DICOM folder.
 
-    > WeaselXMLReader represents the XML file in memory as an ElementTree,
-    and uses the ElementTree functionality to edit. 
+    WeaselXMLReader represents the XML file in memory as an ElementTree,
+    and uses the ElementTree functionality to edit the XML file. 
     """
     def __init__(self, weasel, xml_file): 
         """ Initialise the WeaselXMLReader
@@ -38,15 +39,11 @@ class WeaselXMLReader:
             
 
     def __repr__(self):
+       """Represents this class's objects as a string"""
        return '{}, {!r}'.format(
            self.__class__.__name__,
            self.fullFilePath)
 
-#    @property
-#    def root(self):
-#        "Return the root of the element tree"
-#
-#        return self.tree.getroot()
 
     def save(self):
         try:
@@ -112,6 +109,23 @@ class WeaselXMLReader:
         return SubjectList(list)
 
 
+    def getNumImagesInSeries(self, subjectID, studyID, seriesID):
+        """
+        Returns the number of images in a particular series
+
+        Input arguments
+        ***************
+        subjectID  - ID of the subject to which this image belongs
+        studyID - ID of the study to which this image belongs
+        seriesID - ID of the series to which this image belongs
+
+        Returns
+        *******
+        The number of images in a series
+        """
+        return len(self._getImageList(subjectID, studyID, seriesID))
+
+
     def _getImageList(self, subjectID, studyID, seriesID):
         """Returns a list of image elements in a specific series"""
         try:
@@ -160,6 +174,21 @@ class WeaselXMLReader:
 
 
     def getImageLabel(self, subjectID, studyID, seriesID, imageName = None):
+        """
+        Gets the name or label of the image that is used to represent an 
+        image in the tree view.
+
+        Input arguments
+        ***************
+        subjectID  - ID of the subject to which this image belongs
+        studyID - ID of the study to which this image belongs
+        seriesID - ID of the series to which this image belongs
+        imageName - full file path including name of the image.
+
+        Returns
+        *******
+        string containing the image's label
+        """
         try:
             if imageName is None:
                 return "000000"
@@ -207,6 +236,19 @@ class WeaselXMLReader:
 
 
     def getImagePathList(self, subjectID, studyID, seriesID):
+        """
+        Returns a list of the file paths of the images in a given series.
+
+        Input arguments
+        ***************
+        subjectID  - ID of the subject to which this image belongs
+        studyID - ID of the study to which this image belongs
+        seriesID - ID of the series to which this image belongs
+
+        Returns
+        *******
+        list of the image file paths
+        """
         try:
             xPath = './/subject[@id=' + chr(34) + subjectID + chr(34) +  \
                     ']/study[@id=' + chr(34) + studyID + chr(34) + \
@@ -331,6 +373,7 @@ class WeaselXMLReader:
     def removeOneImageFromSeries(self, subjectID, studyID, seriesID, imagePath):
         try:
             series = self.getSeries(subjectID, studyID, seriesID)
+
             if series:
                 for image in series:
                     if image.find('name').text == imagePath:
