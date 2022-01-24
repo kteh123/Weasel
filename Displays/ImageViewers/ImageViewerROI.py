@@ -369,14 +369,15 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
-            suffix = str("_ROI_"+ regionName)
+            suffix = str("_"+ regionName)
             if len(maskList) > 1:
-                #inputPath = [i.path for i in self.weasel.images()]
-                inputPath = self.imagePathList 
+                inputPath = self.imagePathList
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
             self.weasel.progress_bar(msg="<H4>Saving ROIs into a new DICOM Series ({} files)</H4>".format(len(inputPath)))
+            # If we need to create an overwrite mask functionality in the future, maybe create a global variable self.importedMaskFilePaths during loadROI 
+            # so it can tell if the mask should be saved into a new series or overwritten on the existing mask. Could prompt "Do you wish to overwrite the mask?"
             self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib['id'].split('_')[0]) + 1)
