@@ -400,14 +400,15 @@ class ImageViewerROI(QMdiSubWindow):
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
-            suffix = str(&#34;_ROI_&#34;+ regionName)
+            suffix = str(&#34;_&#34;+ regionName)
             if len(maskList) &gt; 1:
-                #inputPath = [i.path for i in self.weasel.images()]
-                inputPath = self.imagePathList 
+                inputPath = self.imagePathList
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
             self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+            # If we need to create an overwrite mask functionality in the future, maybe create a global variable self.importedMaskFilePaths during loadROI 
+            # so it can tell if the mask should be saved into a new series or overwritten on the existing mask. Could prompt &#34;Do you wish to overwrite the mask?&#34;
             self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
@@ -1565,14 +1566,15 @@ vertical layout created in the function setUpMainLayout.</p></div>
             maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
             # Convert each 2D boolean to 0s and 1s
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
-            suffix = str(&#34;_ROI_&#34;+ regionName)
+            suffix = str(&#34;_&#34;+ regionName)
             if len(maskList) &gt; 1:
-                #inputPath = [i.path for i in self.weasel.images()]
-                inputPath = self.imagePathList 
+                inputPath = self.imagePathList
             else:
                 inputPath = [self.selectedImagePath]
             # Saving Progress message
             self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+            # If we need to create an overwrite mask functionality in the future, maybe create a global variable self.importedMaskFilePaths during loadROI 
+            # so it can tell if the mask should be saved into a new series or overwritten on the existing mask. Could prompt &#34;Do you wish to overwrite the mask?&#34;
             self.weasel.progressBar.set_maximum(len(inputPath))
             (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
             seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
@@ -3231,14 +3233,15 @@ a new DICOM series.</p></div>
         maskList = self.graphicsView.dictROIs.dictMasks[regionName] 
         # Convert each 2D boolean to 0s and 1s
         maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
-        suffix = str(&#34;_ROI_&#34;+ regionName)
+        suffix = str(&#34;_&#34;+ regionName)
         if len(maskList) &gt; 1:
-            #inputPath = [i.path for i in self.weasel.images()]
-            inputPath = self.imagePathList 
+            inputPath = self.imagePathList
         else:
             inputPath = [self.selectedImagePath]
         # Saving Progress message
         self.weasel.progress_bar(msg=&#34;&lt;H4&gt;Saving ROIs into a new DICOM Series ({} files)&lt;/H4&gt;&#34;.format(len(inputPath)))
+        # If we need to create an overwrite mask functionality in the future, maybe create a global variable self.importedMaskFilePaths during loadROI 
+        # so it can tell if the mask should be saved into a new series or overwritten on the existing mask. Could prompt &#34;Do you wish to overwrite the mask?&#34;
         self.weasel.progressBar.set_maximum(len(inputPath))
         (subjectID, studyID, seriesID) = self.weasel.objXMLReader.getImageParentIDs(inputPath[0])
         seriesID = str(int(self.weasel.objXMLReader.getStudy(subjectID, studyID)[-1].attrib[&#39;id&#39;].split(&#39;_&#39;)[0]) + 1)
