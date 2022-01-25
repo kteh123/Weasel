@@ -1,5 +1,5 @@
 """
-This is a collection of essential Python modules to start Weasel GUI.
+This is a collection of essential Python modules used to build the Weasel GUI.
 
 Some of these classes do the following:
         - set a generic layout
@@ -8,7 +8,8 @@ Some of these classes do the following:
         - read and store DICOM data in XML files
         - build a tree view index based on the DICOM data provided
 
-**NOTE**: These modules are an important part of the Weasel infrastructure. Users are recommended not to amend these.
+**NOTE**: These modules are an important part of the Weasel infrastructure. 
+Users are recommended not to amend these.
 """
 
 import CoreModules.WriteXMLfromDICOM
