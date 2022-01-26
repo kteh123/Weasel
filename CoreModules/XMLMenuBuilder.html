@@ -47,7 +47,6 @@ from CoreModules.XMLMenuReader import XMLMenuReader
 
 def setupMenus(weasel, menuXMLFile):
     &#34;&#34;&#34;Builds the menus in the menu bar of the MDI&#34;&#34;&#34;
-
     try:
         logger.info(&#34;Menus.setupMenus&#34;)
         mainMenu = weasel.menuBar()
@@ -152,8 +151,19 @@ def buildContextMenuItem(weasel, context, item):
 
 
 def _actionHovered(action):
+        &#34;&#34;&#34;
+        Allows a menu item to display a tool tip when the mouse
+        pointer hovers over it.
+        &#34;&#34;&#34;
         tip = action.toolTip()
         QToolTip.showText(QCursor.pos(), tip)
+
+
+def __repr__(self):
+       &#34;&#34;&#34;Represents this class&#39;s objects as a string&#34;&#34;&#34;
+       return &#39;{}, {!r}&#39;.format(
+           self.__class__.__name__,
+           self.fullFilePath)
 
 
 def buildContextMenu(weasel, menuXMLFile):
@@ -323,7 +333,6 @@ def buildContextMenu(weasel, menuXMLFile):
 </summary>
 <pre><code class="python">def setupMenus(weasel, menuXMLFile):
     &#34;&#34;&#34;Builds the menus in the menu bar of the MDI&#34;&#34;&#34;
-
     try:
         logger.info(&#34;Menus.setupMenus&#34;)
         mainMenu = weasel.menuBar()

@@ -39,6 +39,9 @@ logger = logging.getLogger(__name__)
 
 class XMLMenuReader:
     def __init__(self, menuXMLFile): 
+        &#34;&#34;&#34;
+        Initiates an object created from the XMLMenuReader class.
+        &#34;&#34;&#34;
         try:
             self.hasXMLFileParsedOK = True
             for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
@@ -64,10 +67,17 @@ class XMLMenuReader:
 
 
     def getMenus(self):
+        &#34;&#34;&#34;
+        Returns all menu elements in the XML tree
+        &#34;&#34;&#34;
         return self.root.findall(&#39;./menu&#39;)
 
 
     def getContextMenuItems(self):
+        &#34;&#34;&#34;
+        Returns all menu items in the XML tree 
+        that are used in a context menu.
+        &#34;&#34;&#34;
         xPath =&#34;./menu/item[context_menu =&#39;yes&#39;]&#34;
         return self.root.findall(xPath)</code></pre>
 </details>
@@ -86,13 +96,16 @@ class XMLMenuReader:
 <span>(</span><span>menuXMLFile)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Initiates an object created from the XMLMenuReader class.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class XMLMenuReader:
     def __init__(self, menuXMLFile): 
+        &#34;&#34;&#34;
+        Initiates an object created from the XMLMenuReader class.
+        &#34;&#34;&#34;
         try:
             self.hasXMLFileParsedOK = True
             for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
@@ -118,10 +131,17 @@ class XMLMenuReader:
 
 
     def getMenus(self):
+        &#34;&#34;&#34;
+        Returns all menu elements in the XML tree
+        &#34;&#34;&#34;
         return self.root.findall(&#39;./menu&#39;)
 
 
     def getContextMenuItems(self):
+        &#34;&#34;&#34;
+        Returns all menu items in the XML tree 
+        that are used in a context menu.
+        &#34;&#34;&#34;
         xPath =&#34;./menu/item[context_menu =&#39;yes&#39;]&#34;
         return self.root.findall(xPath)</code></pre>
 </details>
@@ -131,12 +151,17 @@ class XMLMenuReader:
 <span>def <span class="ident">getContextMenuItems</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns all menu items in the XML tree
+that are used in a context menu.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getContextMenuItems(self):
+    &#34;&#34;&#34;
+    Returns all menu items in the XML tree 
+    that are used in a context menu.
+    &#34;&#34;&#34;
     xPath =&#34;./menu/item[context_menu =&#39;yes&#39;]&#34;
     return self.root.findall(xPath)</code></pre>
 </details>
@@ -145,12 +170,15 @@ class XMLMenuReader:
 <span>def <span class="ident">getMenus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns all menu elements in the XML tree</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getMenus(self):
+    &#34;&#34;&#34;
+    Returns all menu elements in the XML tree
+    &#34;&#34;&#34;
     return self.root.findall(&#39;./menu&#39;)</code></pre>
 </details>
 </dd>
