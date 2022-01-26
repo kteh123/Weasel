@@ -16,7 +16,6 @@ from CoreModules.XMLMenuReader import XMLMenuReader
 
 def setupMenus(weasel, menuXMLFile):
     """Builds the menus in the menu bar of the MDI"""
-
     try:
         logger.info("Menus.setupMenus")
         mainMenu = weasel.menuBar()
@@ -121,8 +120,19 @@ def buildContextMenuItem(weasel, context, item):
 
 
 def _actionHovered(action):
+        """
+        Allows a menu item to display a tool tip when the mouse
+        pointer hovers over it.
+        """
         tip = action.toolTip()
         QToolTip.showText(QCursor.pos(), tip)
+
+
+def __repr__(self):
+       """Represents this class's objects as a string"""
+       return '{}, {!r}'.format(
+           self.__class__.__name__,
+           self.fullFilePath)
 
 
 def buildContextMenu(weasel, menuXMLFile):

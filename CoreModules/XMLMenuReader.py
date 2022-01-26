@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 class XMLMenuReader:
     def __init__(self, menuXMLFile): 
+        """
+        Initiates an object created from the XMLMenuReader class.
+        """
         try:
             self.hasXMLFileParsedOK = True
             for dirpath, _, filenames in os.walk(pathlib.Path().absolute().parent):
@@ -35,9 +38,16 @@ class XMLMenuReader:
 
 
     def getMenus(self):
+        """
+        Returns all menu elements in the XML tree
+        """
         return self.root.findall('./menu')
 
 
     def getContextMenuItems(self):
+        """
+        Returns all menu items in the XML tree 
+        that are used in a context menu.
+        """
         xPath ="./menu/item[context_menu ='yes']"
         return self.root.findall(xPath)

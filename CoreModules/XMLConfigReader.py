@@ -9,13 +9,15 @@ logger = logging.getLogger(__name__)
 
 class XMLConfigReader:
     def __init__(self): 
+        """
+        Initialises an object created from the XMLConfigReader class.
+        """
         try:
             self.hasXMLFileParsedOK = True
             self.fullFilePath = os.path.join(os.path.dirname(sys.argv[0]), "config.xml")
             self.tree = ET.parse(self.fullFilePath)
             self.root = self.tree.getroot()
             logger.info('In module ' + __name__ + ' Created XML Reader Object')
-
         except Exception as e:
             print('Error in XMLConfigReader.__init__: ' + str(e)) 
             logger.exception('Error in XMLConfigReader.__init__: ' + str(e))
