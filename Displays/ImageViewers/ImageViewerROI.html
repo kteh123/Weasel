@@ -91,7 +91,8 @@ class Slider(QSlider):
 
     def onValueChanged(self, value):
         &#34;&#34;&#34;
-
+        This function determines the direction (Forward/Backward)
+        the slider was moved.
         &#34;&#34;&#34;
         current = value/self.maximum()
         direction = Slider.Forward if self.last &lt; current else Slider.Backward
@@ -102,6 +103,10 @@ class Slider(QSlider):
 
 
     def direction(self):
+        &#34;&#34;&#34;
+        This function returns the direction (Forward/Backward)
+        the slider was moved
+        &#34;&#34;&#34;
         return self._direction
 
 
@@ -686,6 +691,7 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
@@ -1025,8 +1031,6 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 imageNumber = 1
 
-            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-
             if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             else:
@@ -1186,9 +1190,9 @@ class ImageViewerROI(QMdiSubWindow):
                 imageName = os.path.basename(self.selectedImagePath)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 
-
                 self.setWindowTitle(self.subjectID + &#39; - &#39; + self.studyID + &#39; - &#39;+ self.seriesID + &#39; - &#39; 
                          + imageName)
+                
 
                 #Check that pixel array holds an image &amp; display it
                 if self.pixelArray is None:
@@ -1852,6 +1856,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
@@ -2191,8 +2196,6 @@ vertical layout created in the function setUpMainLayout.</p></div>
             else:
                 imageNumber = 1
 
-            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-
             if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             else:
@@ -2352,9 +2355,9 @@ vertical layout created in the function setUpMainLayout.</p></div>
                 imageName = os.path.basename(self.selectedImagePath)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 
-
                 self.setWindowTitle(self.subjectID + &#39; - &#39; + self.studyID + &#39; - &#39;+ self.seriesID + &#39; - &#39; 
                          + imageName)
+                
 
                 #Check that pixel array holds an image &amp; display it
                 if self.pixelArray is None:
@@ -2710,9 +2713,9 @@ Also, sets the contrast and intensity in the associated histogram.</p></div>
             imageName = os.path.basename(self.selectedImagePath)
             self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
             
-
             self.setWindowTitle(self.subjectID + &#39; - &#39; + self.studyID + &#39; - &#39;+ self.seriesID + &#39; - &#39; 
                      + imageName)
+            
 
             #Check that pixel array holds an image &amp; display it
             if self.pixelArray is None:
@@ -2761,6 +2764,7 @@ these values.</p></div>
         else:
             imageNumber = 1
         pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+        
         regionName = self.cmbNamesROIs.currentText()
         mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
         if mask is not None:
@@ -2959,8 +2963,6 @@ the ImageItem object for display.</p></div>
             imageNumber = self.mainImageSlider.value()
         else:
             imageNumber = 1
-
-        pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
 
         if addMask:
             mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
@@ -4023,7 +4025,8 @@ for zooming the image.</p></div>
 
     def onValueChanged(self, value):
         &#34;&#34;&#34;
-
+        This function determines the direction (Forward/Backward)
+        the slider was moved.
         &#34;&#34;&#34;
         current = value/self.maximum()
         direction = Slider.Forward if self.last &lt; current else Slider.Backward
@@ -4034,6 +4037,10 @@ for zooming the image.</p></div>
 
 
     def direction(self):
+        &#34;&#34;&#34;
+        This function returns the direction (Forward/Backward)
+        the slider was moved
+        &#34;&#34;&#34;
         return self._direction</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -4067,12 +4074,17 @@ for zooming the image.</p></div>
 <span>def <span class="ident">direction</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns the direction (Forward/Backward)
+the slider was moved</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def direction(self):
+    &#34;&#34;&#34;
+    This function returns the direction (Forward/Backward)
+    the slider was moved
+    &#34;&#34;&#34;
     return self._direction</code></pre>
 </details>
 </dd>
@@ -4086,14 +4098,16 @@ for zooming the image.</p></div>
 <span>def <span class="ident">onValueChanged</span></span>(<span>self, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function determines the direction (Forward/Backward)
+the slider was moved.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def onValueChanged(self, value):
     &#34;&#34;&#34;
-
+    This function determines the direction (Forward/Backward)
+    the slider was moved.
     &#34;&#34;&#34;
     current = value/self.maximum()
     direction = Slider.Forward if self.last &lt; current else Slider.Backward
