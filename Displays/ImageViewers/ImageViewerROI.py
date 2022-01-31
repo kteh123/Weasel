@@ -60,7 +60,8 @@ class Slider(QSlider):
 
     def onValueChanged(self, value):
         """
-
+        This function determines the direction (Forward/Backward)
+        the slider was moved.
         """
         current = value/self.maximum()
         direction = Slider.Forward if self.last < current else Slider.Backward
@@ -71,6 +72,10 @@ class Slider(QSlider):
 
 
     def direction(self):
+        """
+        This function returns the direction (Forward/Backward)
+        the slider was moved
+        """
         return self._direction
 
 
@@ -655,6 +660,7 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
+            
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
@@ -994,8 +1000,6 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 imageNumber = 1
 
-            pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-
             if addMask:
                 mask = self.graphicsView.dictROIs.getMask(self.cmbNamesROIs.currentText(), imageNumber)
             else:
@@ -1155,9 +1159,9 @@ class ImageViewerROI(QMdiSubWindow):
                 imageName = os.path.basename(self.selectedImagePath)
                 self.pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
                 
-
                 self.setWindowTitle(self.subjectID + ' - ' + self.studyID + ' - '+ self.seriesID + ' - ' 
                          + imageName)
+                
 
                 #Check that pixel array holds an image & display it
                 if self.pixelArray is None:
