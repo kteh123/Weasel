@@ -453,7 +453,7 @@ class ImageViewer(QMdiSubWindow):
                         #to obay the numpy [row, col] array element ordering
                         self.lblPixelValue.setText(
                         "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (
-                            self.pixelArray[ y_i, x_i ],x_i, 
+                            self.pixelArray[ x_i, y_i ],x_i, 
                             correctedYCoord, z_i, 
                             ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
@@ -464,7 +464,7 @@ class ImageViewer(QMdiSubWindow):
                             #to obay the numpy [row, col] array element ordering
                             self.lblPixelValue.setText(
                                 "<h4> {} @ X: {}, Y: {}, Z: {} ({})</h4>".format (
-                                    self.pixelArray[ y_i, x_i ],x_i, 
+                                    self.pixelArray[ x_i, y_i ],x_i, 
                                     correctedYCoord, z_i,
                                     ReadDICOM_Image.getImageTagValue(self.selectedImagePath, "SliceLocation")))
                 else:

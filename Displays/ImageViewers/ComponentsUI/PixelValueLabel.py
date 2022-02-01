@@ -12,6 +12,7 @@ class PixelValueComponent:
         self.pixelValueLayout.setSpacing(0)
 
         self.lblPixelValue = QLabel()
+        self.lblPixelValue.setWordWrap(True)
         self.lblPixelValue.setMargin(0)
         self.lblPixelValue.setStyleSheet(
             "color : red; padding-left:0; margin-left:0; padding-right:0; margin-right:0; font-size:8pt;")

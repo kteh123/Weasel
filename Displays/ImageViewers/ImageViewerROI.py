@@ -624,8 +624,9 @@ class ImageViewerROI(QMdiSubWindow):
         """
         try:
             logger.info("ImageViewerROI.getRoiMeanAndStd called")
-            mean = round(np.mean(np.extract(mask, pixelArray)), 1)
-            std = round(np.std(np.extract(mask, pixelArray)), 1)
+            transposedMask = np.transpose(mask)
+            mean = round(np.mean(np.extract(transposedMask, pixelArray)), 3)
+            std = round(np.std(np.extract(transposedMask, pixelArray)), 3)
             return mean, std
         except Exception as e:
             print('Error in ImageViewerROI.getRoiMeanAndStd: ' + str(e))
@@ -660,7 +661,6 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 imageNumber = 1
             pixelArray = ReadDICOM_Image.returnPixelArray(self.selectedImagePath)
-            
             regionName = self.cmbNamesROIs.currentText()
             mask = self.graphicsView.dictROIs.getMask(regionName, imageNumber)   
             if mask is not None:
