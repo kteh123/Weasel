@@ -487,7 +487,7 @@ class ImageViewer(QMdiSubWindow):
                         #to obay the numpy [row, col] array element ordering
                         self.lblPixelValue.setText(
                         &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                            self.pixelArray[ y_i, x_i ],x_i, 
+                            self.pixelArray[ x_i, y_i ],x_i, 
                             correctedYCoord, z_i, 
                             ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
@@ -498,7 +498,7 @@ class ImageViewer(QMdiSubWindow):
                             #to obay the numpy [row, col] array element ordering
                             self.lblPixelValue.setText(
                                 &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                                    self.pixelArray[ y_i, x_i ],x_i, 
+                                    self.pixelArray[ x_i, y_i ],x_i, 
                                     correctedYCoord, z_i,
                                     ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 else:
@@ -1699,7 +1699,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
                         #to obay the numpy [row, col] array element ordering
                         self.lblPixelValue.setText(
                         &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                            self.pixelArray[ y_i, x_i ],x_i, 
+                            self.pixelArray[ x_i, y_i ],x_i, 
                             correctedYCoord, z_i, 
                             ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 elif ((len(np.shape(self.pixelArray)) == 3) 
@@ -1710,7 +1710,7 @@ vertical layout created in the function setUpMainLayout.</p></div>
                             #to obay the numpy [row, col] array element ordering
                             self.lblPixelValue.setText(
                                 &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                                    self.pixelArray[ y_i, x_i ],x_i, 
+                                    self.pixelArray[ x_i, y_i ],x_i, 
                                     correctedYCoord, z_i,
                                     ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
                 else:
@@ -3168,7 +3168,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
                     #to obay the numpy [row, col] array element ordering
                     self.lblPixelValue.setText(
                     &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                        self.pixelArray[ y_i, x_i ],x_i, 
+                        self.pixelArray[ x_i, y_i ],x_i, 
                         correctedYCoord, z_i, 
                         ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
             elif ((len(np.shape(self.pixelArray)) == 3) 
@@ -3179,7 +3179,7 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
                         #to obay the numpy [row, col] array element ordering
                         self.lblPixelValue.setText(
                             &#34;&lt;h4&gt; {} @ X: {}, Y: {}, Z: {} ({})&lt;/h4&gt;&#34;.format (
-                                self.pixelArray[ y_i, x_i ],x_i, 
+                                self.pixelArray[ x_i, y_i ],x_i, 
                                 correctedYCoord, z_i,
                                 ReadDICOM_Image.getImageTagValue(self.selectedImagePath, &#34;SliceLocation&#34;)))
             else:

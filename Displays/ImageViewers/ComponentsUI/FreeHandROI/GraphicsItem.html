@@ -288,7 +288,7 @@ class GraphicsItem(QGraphicsObject):
             maxRow, maxCol = self.pixelArray.shape
             if self.yMouseCoord &lt; maxRow and self.xMouseCoord &lt; maxCol:
                 #only get pixel value when mouse pointer is over the image
-                self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
+                self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
                 self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
@@ -1010,7 +1010,7 @@ class GraphicsItem(QGraphicsObject):
             maxRow, maxCol = self.pixelArray.shape
             if self.yMouseCoord &lt; maxRow and self.xMouseCoord &lt; maxCol:
                 #only get pixel value when mouse pointer is over the image
-                self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
+                self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
                 self.sigMouseHovered.emit(True)
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
@@ -1999,7 +1999,7 @@ emitted to alert the module hosting the GraphicsView widget.</p></div>
         maxRow, maxCol = self.pixelArray.shape
         if self.yMouseCoord &lt; maxRow and self.xMouseCoord &lt; maxCol:
             #only get pixel value when mouse pointer is over the image
-            self.pixelValue = self.pixelArray[self.yMouseCoord, self.xMouseCoord]
+            self.pixelValue = self.pixelArray[self.xMouseCoord, self.yMouseCoord]
             self.sigMouseHovered.emit(True)
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.hoverMoveEvent when xMouseCoord={}, yMouseCoord={}: &#39;.format(self.xMouseCoord, self.yMouseCoord) + str(e))
