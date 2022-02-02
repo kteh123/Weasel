@@ -733,6 +733,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                     self.updateZoomSlider(increment))
+
+            self.graphicsView.graphicsItem.sigUpdateImageLevels.connect(self.updateImageLevels)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) 
@@ -1106,7 +1108,8 @@ class ImageViewerROI(QMdiSubWindow):
         by this class.
         &#34;&#34;&#34;
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView)         
+        self.mainVerticalLayout.addWidget(self.graphicsView)
+        
 
 
     def setUpLevelsSpinBoxes(self):
@@ -1898,6 +1901,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
 
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                     self.updateZoomSlider(increment))
+
+            self.graphicsView.graphicsItem.sigUpdateImageLevels.connect(self.updateImageLevels)
         except Exception as e:
                 print(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e))
                 logger.exception(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) 
@@ -2271,7 +2276,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
         by this class.
         &#34;&#34;&#34;
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView)         
+        self.mainVerticalLayout.addWidget(self.graphicsView)
+        
 
 
     def setUpLevelsSpinBoxes(self):
@@ -3368,7 +3374,7 @@ by this class.</p></div>
     by this class.
     &#34;&#34;&#34;
     self.graphicsView = GraphicsView(self.numberOfImages)
-    self.mainVerticalLayout.addWidget(self.graphicsView)         </code></pre>
+    self.mainVerticalLayout.addWidget(self.graphicsView)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ImageViewerROI.ImageViewerROI.setUpImageEventHandlers"><code class="name flex">
@@ -3409,6 +3415,8 @@ GraphicsView objects to functions in this class.</p></div>
 
         self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                 self.updateZoomSlider(increment))
+
+        self.graphicsView.graphicsItem.sigUpdateImageLevels.connect(self.updateImageLevels)
     except Exception as e:
             print(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e))
             logger.exception(&#39;Error in ImageViewerROI.setUpImageEventHandlers: &#39; + str(e)) </code></pre>

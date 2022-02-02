@@ -90,6 +90,7 @@ class GraphicsItem(QGraphicsObject):
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
+    sigUpdateImageLevels = QtCore.Signal()
      
 
     def __init__(self, linkToGraphicsView): 
@@ -109,6 +110,7 @@ class GraphicsItem(QGraphicsObject):
         self.pixelValue = None
         self.mouseMoved = False
         self.mask = None
+        self.pixelArray = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -469,6 +471,11 @@ class GraphicsItem(QGraphicsObject):
 
                 if self.linkToGraphicsView.eraseEnabled:
                     self.eraseROI()
+                    #pixel values from the original image
+                    #will have the initial contrast &amp; intensity of that
+                    #image, so update the image levels so that they are the same as
+                    #those in the levels spinboxes
+                    self.sigUpdateImageLevels.emit()
                         
                 if self.linkToGraphicsView.paintEnabled:
                     self.paintROI()
@@ -554,25 +561,21 @@ class GraphicsItem(QGraphicsObject):
     def resetPixelToOriginalValue(self, x, y):
         &#34;&#34;&#34;
         This function is used by the eraseRIO function to return
-        a pixel in the RIO to its original colour. 
+        a pixel in the RIO to its original grey value. 
 
-        The RGB values are obtained from a copy of the image and
-        the pixel at x,y is set to these values. A new QPixmap of 
-        the image is then created and the image repainted.
+        The pixel value is obtained from a copy of the image at x,y and
+        the pixel at x,y in the viewed image is set to this value. 
+        A new QPixmap of the image is then created and the image repainted.
         &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
         try:
-            pixelColour = self.origQImage.pixel(x, y) 
-            pixelRGB =  QColor(pixelColour).getRgb()
-            redVal = pixelRGB[0]
-            greenVal = pixelRGB[1]
-            blueVal = pixelRGB[2]
-            value = qRgb(redVal, greenVal, blueVal)
-            self.qImage.setPixel(x, y, value)
+            origPixelValue = self.origQImage.pixel(x, y) 
+            self.qImage.setPixel(x, y,  origPixelValue)
             #convert QImage to QPixmap to be able to update image
             self.pixMap = QPixmap.fromImage(self.qImage)
             #repaint image by updating it
             self.update()
+            
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
@@ -812,6 +815,7 @@ class GraphicsItem(QGraphicsObject):
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
+    sigUpdateImageLevels = QtCore.Signal()
      
 
     def __init__(self, linkToGraphicsView): 
@@ -831,6 +835,7 @@ class GraphicsItem(QGraphicsObject):
         self.pixelValue = None
         self.mouseMoved = False
         self.mask = None
+        self.pixelArray = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -1191,6 +1196,11 @@ class GraphicsItem(QGraphicsObject):
 
                 if self.linkToGraphicsView.eraseEnabled:
                     self.eraseROI()
+                    #pixel values from the original image
+                    #will have the initial contrast &amp; intensity of that
+                    #image, so update the image levels so that they are the same as
+                    #those in the levels spinboxes
+                    self.sigUpdateImageLevels.emit()
                         
                 if self.linkToGraphicsView.paintEnabled:
                     self.paintROI()
@@ -1276,25 +1286,21 @@ class GraphicsItem(QGraphicsObject):
     def resetPixelToOriginalValue(self, x, y):
         &#34;&#34;&#34;
         This function is used by the eraseRIO function to return
-        a pixel in the RIO to its original colour. 
+        a pixel in the RIO to its original grey value. 
 
-        The RGB values are obtained from a copy of the image and
-        the pixel at x,y is set to these values. A new QPixmap of 
-        the image is then created and the image repainted.
+        The pixel value is obtained from a copy of the image at x,y and
+        the pixel at x,y in the viewed image is set to this value. 
+        A new QPixmap of the image is then created and the image repainted.
         &#34;&#34;&#34;
         logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
         try:
-            pixelColour = self.origQImage.pixel(x, y) 
-            pixelRGB =  QColor(pixelColour).getRgb()
-            redVal = pixelRGB[0]
-            greenVal = pixelRGB[1]
-            blueVal = pixelRGB[2]
-            value = qRgb(redVal, greenVal, blueVal)
-            self.qImage.setPixel(x, y, value)
+            origPixelValue = self.origQImage.pixel(x, y) 
+            self.qImage.setPixel(x, y,  origPixelValue)
             #convert QImage to QPixmap to be able to update image
             self.pixMap = QPixmap.fromImage(self.qImage)
             #repaint image by updating it
             self.update()
+            
         except Exception as e:
             print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
             logger.error(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
@@ -2185,6 +2191,11 @@ to their original colour and removed from the existing RIO on that image.</p></d
 
             if self.linkToGraphicsView.eraseEnabled:
                 self.eraseROI()
+                #pixel values from the original image
+                #will have the initial contrast &amp; intensity of that
+                #image, so update the image levels so that they are the same as
+                #those in the levels spinboxes
+                self.sigUpdateImageLevels.emit()
                     
             if self.linkToGraphicsView.paintEnabled:
                 self.paintROI()
@@ -2303,10 +2314,10 @@ their Red channel set to 255, to make them appear red.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>This function is used by the eraseRIO function to return
-a pixel in the RIO to its original colour. </p>
-<p>The RGB values are obtained from a copy of the image and
-the pixel at x,y is set to these values. A new QPixmap of
-the image is then created and the image repainted.</p></div>
+a pixel in the RIO to its original grey value. </p>
+<p>The pixel value is obtained from a copy of the image at x,y and
+the pixel at x,y in the viewed image is set to this value.
+A new QPixmap of the image is then created and the image repainted.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2314,25 +2325,21 @@ the image is then created and the image repainted.</p></div>
 <pre><code class="python">def resetPixelToOriginalValue(self, x, y):
     &#34;&#34;&#34;
     This function is used by the eraseRIO function to return
-    a pixel in the RIO to its original colour. 
+    a pixel in the RIO to its original grey value. 
 
-    The RGB values are obtained from a copy of the image and
-    the pixel at x,y is set to these values. A new QPixmap of 
-    the image is then created and the image repainted.
+    The pixel value is obtained from a copy of the image at x,y and
+    the pixel at x,y in the viewed image is set to this value. 
+    A new QPixmap of the image is then created and the image repainted.
     &#34;&#34;&#34;
     logger.info(&#34;FreeHandROI.GraphicsItem.resetPixelToOriginalValue called&#34;)
     try:
-        pixelColour = self.origQImage.pixel(x, y) 
-        pixelRGB =  QColor(pixelColour).getRgb()
-        redVal = pixelRGB[0]
-        greenVal = pixelRGB[1]
-        blueVal = pixelRGB[2]
-        value = qRgb(redVal, greenVal, blueVal)
-        self.qImage.setPixel(x, y, value)
+        origPixelValue = self.origQImage.pixel(x, y) 
+        self.qImage.setPixel(x, y,  origPixelValue)
         #convert QImage to QPixmap to be able to update image
         self.pixMap = QPixmap.fromImage(self.qImage)
         #repaint image by updating it
         self.update()
+        
     except Exception as e:
         print(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))
         logger.error(&#39;Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: &#39; + str(e))</code></pre>
@@ -2456,6 +2463,12 @@ making it appear red.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigUpdateImageLevels"><code class="name flex">
+<span>def <span class="ident">sigUpdateImageLevels</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn"><code class="name flex">
 <span>def <span class="ident">sigZoomIn</span></span>(<span>...)</span>
 </code></dt>
@@ -2565,6 +2578,7 @@ roi - pixel array of the ROI on the image</p></div>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigMouseHovered">sigMouseHovered</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRecalculateMeanROI">sigRecalculateMeanROI</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRightMouseDrag" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigRightMouseDrag">sigRightMouseDrag</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigUpdateImageLevels" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigUpdateImageLevels">sigUpdateImageLevels</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomIn">sigZoomIn</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.sigZoomOut">sigZoomOut</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.updateImageLevels" href="#Weasel.Displays.ImageViewers.ComponentsUI.FreeHandROI.GraphicsItem.GraphicsItem.updateImageLevels">updateImageLevels</a></code></li>
