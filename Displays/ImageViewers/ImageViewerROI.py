@@ -702,6 +702,8 @@ class ImageViewerROI(QMdiSubWindow):
 
             self.graphicsView.sigUpdateZoom.connect(lambda increment:
                                                     self.updateZoomSlider(increment))
+
+            self.graphicsView.graphicsItem.sigUpdateImageLevels.connect(self.updateImageLevels)
         except Exception as e:
                 print('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e))
                 logger.exception('Error in ImageViewerROI.setUpImageEventHandlers: ' + str(e)) 
@@ -1075,7 +1077,8 @@ class ImageViewerROI(QMdiSubWindow):
         by this class.
         """
         self.graphicsView = GraphicsView(self.numberOfImages)
-        self.mainVerticalLayout.addWidget(self.graphicsView)         
+        self.mainVerticalLayout.addWidget(self.graphicsView)
+        
 
 
     def setUpLevelsSpinBoxes(self):

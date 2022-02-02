@@ -42,6 +42,7 @@ class GraphicsItem(QGraphicsObject):
     sigRightMouseDrag = QtCore.Signal(float, float)
     sigZoomIn = QtCore.Signal()
     sigZoomOut = QtCore.Signal()
+    sigUpdateImageLevels = QtCore.Signal()
      
 
     def __init__(self, linkToGraphicsView): 
@@ -61,6 +62,7 @@ class GraphicsItem(QGraphicsObject):
         self.pixelValue = None
         self.mouseMoved = False
         self.mask = None
+        self.pixelArray = None
 
 
     def setImage(self, pixelArray, roi, path):
@@ -421,6 +423,11 @@ class GraphicsItem(QGraphicsObject):
 
                 if self.linkToGraphicsView.eraseEnabled:
                     self.eraseROI()
+                    #pixel values from the original image
+                    #will have the initial contrast & intensity of that
+                    #image, so update the image levels so that they are the same as
+                    #those in the levels spinboxes
+                    self.sigUpdateImageLevels.emit()
                         
                 if self.linkToGraphicsView.paintEnabled:
                     self.paintROI()
@@ -506,25 +513,21 @@ class GraphicsItem(QGraphicsObject):
     def resetPixelToOriginalValue(self, x, y):
         """
         This function is used by the eraseRIO function to return
-        a pixel in the RIO to its original colour. 
+        a pixel in the RIO to its original grey value. 
 
-        The RGB values are obtained from a copy of the image and
-        the pixel at x,y is set to these values. A new QPixmap of 
-        the image is then created and the image repainted.
+        The pixel value is obtained from a copy of the image at x,y and
+        the pixel at x,y in the viewed image is set to this value. 
+        A new QPixmap of the image is then created and the image repainted.
         """
         logger.info("FreeHandROI.GraphicsItem.resetPixelToOriginalValue called")
         try:
-            pixelColour = self.origQImage.pixel(x, y) 
-            pixelRGB =  QColor(pixelColour).getRgb()
-            redVal = pixelRGB[0]
-            greenVal = pixelRGB[1]
-            blueVal = pixelRGB[2]
-            value = qRgb(redVal, greenVal, blueVal)
-            self.qImage.setPixel(x, y, value)
+            origPixelValue = self.origQImage.pixel(x, y) 
+            self.qImage.setPixel(x, y,  origPixelValue)
             #convert QImage to QPixmap to be able to update image
             self.pixMap = QPixmap.fromImage(self.qImage)
             #repaint image by updating it
             self.update()
+            
         except Exception as e:
             print('Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: ' + str(e))
             logger.error('Error in FreeHandROI.GraphicsItem.resetPixelToOriginalValue: ' + str(e))
