@@ -40,11 +40,11 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import os
+import struct
 import pydicom
 import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
-
 
 
 def displayMetaDataSubWindow(weasel, tableTitle, dataset):
@@ -102,12 +102,17 @@ def iterateSequenceTag(table, dataset, level=&#34;&gt;&#34;):
                 table.setItem(rowPosition , 0, QTableWidgetItem(level + str(data_element.tag)))
                 table.setItem(rowPosition , 1, QTableWidgetItem(data_element.name))
                 table.setItem(rowPosition , 2, QTableWidgetItem(data_element.VR))
-                if data_element.VR == &#34;OW&#34; or data_element.VR == &#34;OB&#34;:
+                if isinstance(data_element.value, bytes) == True:
                     try:
-                        valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                        valueMetadata = list(struct.unpack(&#39;h&#39;, data_element.value))
+                        if len(valueMetadata) == 1: 
+                            valueMetadata = str(valueMetadata[0])
+                        else:
+                            valueMetadata = str(valueMetadata)
                     except:
                         try:
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                            if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
                         except:
                             valueMetadata = str(data_element.value)
                 else:
@@ -159,11 +164,19 @@ def buildTableView(dataset):
                                     QTableWidgetItem(meta_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(meta_element.VR))
-                    if meta_element.VR == &#34;OW&#34; or meta_element.VR == &#34;OB&#34; or meta_element.VR == &#34;UN&#34;:
+                    if isinstance(meta_element.value, bytes) == True:
                         try:
-                            valueMetadata = str(list(meta_element))
+                            valueMetadata = list(struct.unpack(&#39;h&#39;, meta_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
-                            valueMetadata = str(meta_element.value)
+                            try:
+                                valueMetadata = str(meta_element.value.decode(&#39;utf-8&#39;))
+                                if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
+                            except:
+                                valueMetadata = str(meta_element.value)
                     else:
                         valueMetadata = str(meta_element.value)
                     if meta_element.VR == &#34;SQ&#34;:
@@ -184,14 +197,17 @@ def buildTableView(dataset):
                                     QTableWidgetItem(data_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(data_element.VR))
-                    if data_element.VR == &#34;OW&#34; or data_element.VR == &#34;OB&#34; or data_element.VR == &#34;UN&#34;:
+                    if isinstance(data_element.value, bytes) == True:
                         try:
-                            #valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = list(struct.unpack(&#39;h&#39;, data_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
                             try:
-                                #valueMetadata = str(list(data_element))
                                 valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                                if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
                             except:
                                 valueMetadata = str(data_element.value)
                     else:
@@ -201,7 +217,6 @@ def buildTableView(dataset):
                         tableWidget = iterateSequenceTag(tableWidget, data_element, level=&#34;&gt;&#34;)
                     else:
                         tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
-
 
             #Resize columns to fit contents
             header = tableWidget.horizontalHeader()
@@ -226,10 +241,7 @@ def searchTable(table, expression):
             if items:  # we have found something
                 for item in items:
                     item.setSelected(True)
-                    #table.item(item).setSelected(True)
                 table.scrollToItem(items[0])
-                #item = items[0]  # take the first
-                #table.table.setCurrentItem(item)
     except Exception as e:
         print(&#39;Error in : ViewMetaData.searchTable: &#39; + str(e))
         logger.error(&#39;Error in : ViewMetaData.searchTable: &#39; + str(e))
@@ -311,11 +323,19 @@ as Tag, name, VR &amp; Value</p></div>
                                     QTableWidgetItem(meta_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(meta_element.VR))
-                    if meta_element.VR == &#34;OW&#34; or meta_element.VR == &#34;OB&#34; or meta_element.VR == &#34;UN&#34;:
+                    if isinstance(meta_element.value, bytes) == True:
                         try:
-                            valueMetadata = str(list(meta_element))
+                            valueMetadata = list(struct.unpack(&#39;h&#39;, meta_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
-                            valueMetadata = str(meta_element.value)
+                            try:
+                                valueMetadata = str(meta_element.value.decode(&#39;utf-8&#39;))
+                                if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
+                            except:
+                                valueMetadata = str(meta_element.value)
                     else:
                         valueMetadata = str(meta_element.value)
                     if meta_element.VR == &#34;SQ&#34;:
@@ -336,14 +356,17 @@ as Tag, name, VR &amp; Value</p></div>
                                     QTableWidgetItem(data_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(data_element.VR))
-                    if data_element.VR == &#34;OW&#34; or data_element.VR == &#34;OB&#34; or data_element.VR == &#34;UN&#34;:
+                    if isinstance(data_element.value, bytes) == True:
                         try:
-                            #valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = list(struct.unpack(&#39;h&#39;, data_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
                             try:
-                                #valueMetadata = str(list(data_element))
                                 valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                                if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
                             except:
                                 valueMetadata = str(data_element.value)
                     else:
@@ -353,7 +376,6 @@ as Tag, name, VR &amp; Value</p></div>
                         tableWidget = iterateSequenceTag(tableWidget, data_element, level=&#34;&gt;&#34;)
                     else:
                         tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
-
 
             #Resize columns to fit contents
             header = tableWidget.horizontalHeader()
@@ -476,12 +498,17 @@ as Tag, name, VR &amp; Value</p></div>
                 table.setItem(rowPosition , 0, QTableWidgetItem(level + str(data_element.tag)))
                 table.setItem(rowPosition , 1, QTableWidgetItem(data_element.name))
                 table.setItem(rowPosition , 2, QTableWidgetItem(data_element.VR))
-                if data_element.VR == &#34;OW&#34; or data_element.VR == &#34;OB&#34;:
+                if isinstance(data_element.value, bytes) == True:
                     try:
-                        valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                        valueMetadata = list(struct.unpack(&#39;h&#39;, data_element.value))
+                        if len(valueMetadata) == 1: 
+                            valueMetadata = str(valueMetadata[0])
+                        else:
+                            valueMetadata = str(valueMetadata)
                     except:
                         try:
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = str(data_element.value.decode(&#39;utf-8&#39;))
+                            if &#34;\\&#34; in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split(&#34;\\&#34;))))
                         except:
                             valueMetadata = str(data_element.value)
                 else:
@@ -515,10 +542,7 @@ as Tag, name, VR &amp; Value</p></div>
             if items:  # we have found something
                 for item in items:
                     item.setSelected(True)
-                    #table.item(item).setSelected(True)
                 table.scrollToItem(items[0])
-                #item = items[0]  # take the first
-                #table.table.setCurrentItem(item)
     except Exception as e:
         print(&#39;Error in : ViewMetaData.searchTable: &#39; + str(e))
         logger.error(&#39;Error in : ViewMetaData.searchTable: &#39; + str(e))</code></pre>

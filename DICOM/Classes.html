@@ -1324,6 +1324,19 @@ class Series:
         except Exception as e:
             print(&#39;Error in Series.Affine: &#39; + str(e))
             logger.exception(&#39;Error in Series.Affine: &#39; + str(e))
+    
+    @property
+    def TopLeftCorner(self):
+        logger.info(&#34;Series.TopLeftCorner called&#34;)
+        try:
+            listCoords = list()
+            dicomList = self.PydicomList
+            for dicom_dataset in dicomList:
+                listCoords.append(ReadDICOM_Image.getTopLeftCorner(dicom_dataset))
+            return listCoords
+        except Exception as e:
+            print(&#39;Error in Series.TopLeftCorner: &#39; + str(e))
+            logger.exception(&#39;Error in Series.TopLeftCorner: &#39; + str(e))
 
     @property
     def ListAffines(self):
@@ -1457,13 +1470,6 @@ class Series:
             return PixelArrayDICOMTools.getDICOMobject(self.images)
         else:
             return []
-    
-    #@property
-    #def Multiframe(self):
-    #    if self.indices:
-    #        return True
-    #    else:
-    #        return False
 
     def export_as_nifti(self, directory=None, filename=None):
         logger.info(&#34;Series.export_as_nifti called&#34;)
@@ -1806,13 +1812,22 @@ class Image:
             logger.exception(&#39;Error in Image.ROIindices: &#39; + str(e))
 
     @property
+    def TopLeftCorner(self):
+        logger.info(&#34;Image.TopLeftCorner called&#34;)
+        try:
+            return ReadDICOM_Image.getTopLeftCorner(self.PydicomObject)
+        except Exception as e:
+            print(&#39;Error in Image.TopLeftCorner: &#39; + str(e))
+            logger.exception(&#39;Error in Image.TopLeftCorner: &#39; + str(e))
+
+    @property
     def Affine(self):
-        logger.info(&#34;Image.Affine called&#34;)
+        logger.info(&#34;Image.TopLeftCorner called&#34;)
         try:
             return ReadDICOM_Image.returnAffineArray(self.path)
         except Exception as e:
             print(&#39;Error in Image.Affine: &#39; + str(e))
-            logger.exception(&#39;Error in Image.Affine: &#39; + str(e))
+            logger.exception(&#39;Error in Image.Affine: &#39; + str(e)) 
     
     def get_value(self, tag):
         logger.info(&#34;Image.get_value called&#34;)
@@ -2252,13 +2267,22 @@ class Image:
             logger.exception(&#39;Error in Image.ROIindices: &#39; + str(e))
 
     @property
+    def TopLeftCorner(self):
+        logger.info(&#34;Image.TopLeftCorner called&#34;)
+        try:
+            return ReadDICOM_Image.getTopLeftCorner(self.PydicomObject)
+        except Exception as e:
+            print(&#39;Error in Image.TopLeftCorner: &#39; + str(e))
+            logger.exception(&#39;Error in Image.TopLeftCorner: &#39; + str(e))
+
+    @property
     def Affine(self):
-        logger.info(&#34;Image.Affine called&#34;)
+        logger.info(&#34;Image.TopLeftCorner called&#34;)
         try:
             return ReadDICOM_Image.returnAffineArray(self.path)
         except Exception as e:
             print(&#39;Error in Image.Affine: &#39; + str(e))
-            logger.exception(&#39;Error in Image.Affine: &#39; + str(e))
+            logger.exception(&#39;Error in Image.Affine: &#39; + str(e)) 
     
     def get_value(self, tag):
         logger.info(&#34;Image.get_value called&#34;)
@@ -2429,12 +2453,12 @@ def newSeriesFrom(listImages, suffix=&#39;_Copy&#39;, series_id=None, series_nam
 </summary>
 <pre><code class="python">@property
 def Affine(self):
-    logger.info(&#34;Image.Affine called&#34;)
+    logger.info(&#34;Image.TopLeftCorner called&#34;)
     try:
         return ReadDICOM_Image.returnAffineArray(self.path)
     except Exception as e:
         print(&#39;Error in Image.Affine: &#39; + str(e))
-        logger.exception(&#39;Error in Image.Affine: &#39; + str(e))</code></pre>
+        logger.exception(&#39;Error in Image.Affine: &#39; + str(e)) </code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Image.PixelArray"><code class="name">var <span class="ident">PixelArray</span></code></dt>
@@ -2523,6 +2547,23 @@ def StudyUID(self):
     else:
         self.studyUID = None
     return self.studyUID</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Image.TopLeftCorner"><code class="name">var <span class="ident">TopLeftCorner</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def TopLeftCorner(self):
+    logger.info(&#34;Image.TopLeftCorner called&#34;)
+    try:
+        return ReadDICOM_Image.getTopLeftCorner(self.PydicomObject)
+    except Exception as e:
+        print(&#39;Error in Image.TopLeftCorner: &#39; + str(e))
+        logger.exception(&#39;Error in Image.TopLeftCorner: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Image.label"><code class="name">var <span class="ident">label</span></code></dt>
@@ -4099,6 +4140,19 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
         except Exception as e:
             print(&#39;Error in Series.Affine: &#39; + str(e))
             logger.exception(&#39;Error in Series.Affine: &#39; + str(e))
+    
+    @property
+    def TopLeftCorner(self):
+        logger.info(&#34;Series.TopLeftCorner called&#34;)
+        try:
+            listCoords = list()
+            dicomList = self.PydicomList
+            for dicom_dataset in dicomList:
+                listCoords.append(ReadDICOM_Image.getTopLeftCorner(dicom_dataset))
+            return listCoords
+        except Exception as e:
+            print(&#39;Error in Series.TopLeftCorner: &#39; + str(e))
+            logger.exception(&#39;Error in Series.TopLeftCorner: &#39; + str(e))
 
     @property
     def ListAffines(self):
@@ -4232,13 +4286,6 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
             return PixelArrayDICOMTools.getDICOMobject(self.images)
         else:
             return []
-    
-    #@property
-    #def Multiframe(self):
-    #    if self.indices:
-    #        return True
-    #    else:
-    #        return False
 
     def export_as_nifti(self, directory=None, filename=None):
         logger.info(&#34;Series.export_as_nifti called&#34;)
@@ -4546,6 +4593,27 @@ def StudyUID(self):
     else:
         self.studyUID = None
     return self.studyUID</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Series.TopLeftCorner"><code class="name">var <span class="ident">TopLeftCorner</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def TopLeftCorner(self):
+    logger.info(&#34;Series.TopLeftCorner called&#34;)
+    try:
+        listCoords = list()
+        dicomList = self.PydicomList
+        for dicom_dataset in dicomList:
+            listCoords.append(ReadDICOM_Image.getTopLeftCorner(dicom_dataset))
+        return listCoords
+    except Exception as e:
+        print(&#39;Error in Series.TopLeftCorner: &#39; + str(e))
+        logger.exception(&#39;Error in Series.TopLeftCorner: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Series.children"><code class="name">var <span class="ident">children</span></code></dt>
@@ -6834,6 +6902,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Image.ROIindices" href="#Weasel.DICOM.Classes.Image.ROIindices">ROIindices</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.SeriesUID" href="#Weasel.DICOM.Classes.Image.SeriesUID">SeriesUID</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.StudyUID" href="#Weasel.DICOM.Classes.Image.StudyUID">StudyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.TopLeftCorner" href="#Weasel.DICOM.Classes.Image.TopLeftCorner">TopLeftCorner</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.copy" href="#Weasel.DICOM.Classes.Image.copy">copy</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.delete" href="#Weasel.DICOM.Classes.Image.delete">delete</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.display" href="#Weasel.DICOM.Classes.Image.display">display</a></code></li>
@@ -6909,6 +6978,7 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Series.Real" href="#Weasel.DICOM.Classes.Series.Real">Real</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.SeriesUID" href="#Weasel.DICOM.Classes.Series.SeriesUID">SeriesUID</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.StudyUID" href="#Weasel.DICOM.Classes.Series.StudyUID">StudyUID</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.TopLeftCorner" href="#Weasel.DICOM.Classes.Series.TopLeftCorner">TopLeftCorner</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.add" href="#Weasel.DICOM.Classes.Series.add">add</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.children" href="#Weasel.DICOM.Classes.Series.children">children</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.copy" href="#Weasel.DICOM.Classes.Series.copy">copy</a></code></li>
