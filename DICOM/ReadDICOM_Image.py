@@ -6,7 +6,6 @@ import os
 import struct
 import numpy as np
 from datetime import datetime
-# from cv2 import data
 import pydicom
 from nibabel.affines import apply_affine
 import logging
@@ -111,7 +110,15 @@ def getImageTagValue(imagePath, dicomTag):
             # This is not for Enhanced MRI. Only Classic DICOM
             if isinstance(dicomTag, str):
                 try:
-                    attribute = dataset.data_element(dicomTag).value
+                    if isinstance(dataset.data_element(dicomTag).value, bytes) == True:
+                        try:
+                            attribute = list(struct.unpack('h', dataset.data_element(dicomTag).value))
+                            if len(attribute) == 1: attribute = attribute[0]
+                        except:
+                            attribute = dataset.data_element(dicomTag).value.decode('utf-8')
+                            if "\\" in attribute: attribute = list(map(eval, attribute.split("\\")))
+                    else:
+                        attribute = dataset.data_element(dicomTag).value
                     if dataset.data_element(dicomTag).VR == "TM":
                         if "." in attribute: attribute = (datetime.strptime(attribute, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds()
                         else: attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
@@ -119,7 +126,15 @@ def getImageTagValue(imagePath, dicomTag):
                     return None
             elif isinstance(dicomTag, tuple):
                 try:
-                    attribute = dataset[dicomTag].value
+                    if isinstance(dataset[dicomTag].value, bytes) == True:
+                        try:
+                            attribute = list(struct.unpack('h', dataset[dicomTag].value))
+                            if len(attribute) == 1: attribute = attribute[0]
+                        except:
+                            attribute = dataset[dicomTag].value.decode('utf-8')
+                            if "\\" in attribute: attribute = list(map(eval, attribute.split("\\")))
+                    else:
+                        attribute = dataset[dicomTag].value
                     if dataset[dicomTag].VR == "TM": 
                         if "." in attribute: attribute = (datetime.strptime(attribute, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds()
                         else: attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
@@ -127,7 +142,15 @@ def getImageTagValue(imagePath, dicomTag):
                     return None
             else:
                 try:
-                    attribute = dataset[hex(dicomTag)].value
+                    if isinstance(dataset[hex(dicomTag)].value, bytes) == True:
+                        try:
+                            attribute = list(struct.unpack('h', dataset[hex(dicomTag)].value))
+                            if len(attribute) == 1: attribute = attribute[0]
+                        except:
+                            attribute = dataset[hex(dicomTag)].value.decode('utf-8')
+                            if "\\" in attribute: attribute = list(map(eval, attribute.split("\\")))
+                    else:
+                        attribute = dataset[hex(dicomTag)].value
                     if dataset[hex(dicomTag)].VR == "TM":
                         if "." in attribute: attribute = (datetime.strptime(attribute, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds()
                         else: attribute = (datetime.strptime(attribute, "%H%M%S") - datetime(1900, 1, 1)).total_seconds()
@@ -158,7 +181,14 @@ def getSeriesTagValues(imagePathList, dicomTag):
                 # Classic DICOM
                 if isinstance(dicomTag, str):
                     try:
-                        attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
+                        if isinstance(datasetList[0].data_element(dicomTag).value, bytes) == True:
+                            try:
+                                attributeList = [list(struct.unpack('h', dataset.data_element(dicomTag).value)) if len(list(struct.unpack('h', dataset.data_element(dicomTag).value)))==1 else list(struct.unpack('h', dataset.data_element(dicomTag).value))[0] for dataset in datasetList]
+                            except:
+                                attributeList = [dataset.data_element(dicomTag).value.decode('utf-8') if "\\" not in dataset.data_element(dicomTag).value.decode('utf-8') else list(map(eval,dataset.data_element(dicomTag).value.decode('utf-8').split("\\"))) for dataset in datasetList]
+                                #if "\\" in attribute: attribute = list(map(eval, attribute.split("\\")))
+                        else:
+                            attributeList = [dataset.data_element(dicomTag).value for dataset in datasetList]
                         if datasetList[0].data_element(dicomTag).VR == "TM": 
                             if "." in attributeList[0]: attributeList = [(datetime.strptime(attr, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                             else: attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
@@ -166,18 +196,30 @@ def getSeriesTagValues(imagePathList, dicomTag):
                         return None, None
                 elif isinstance(dicomTag, tuple):
                     try:
-                        attributeList = [dataset[dicomTag].value for dataset in datasetList]
-                        if datasetList[0][dicomTag].VR == "TM": 
-                            if "." in attributeList[0]: attributeList = [(datetime.strptime(attr, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
-                            else: attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if isinstance(datasetList[0][dicomTag].value, bytes) == True:
+                            try:
+                                attributeList = [list(struct.unpack('h', dataset[dicomTag].value)) if len(list(struct.unpack('h', dataset[dicomTag].value)))==1 else list(struct.unpack('h', dataset[dicomTag].value))[0] for dataset in datasetList]
+                            except:
+                                attributeList = [dataset[dicomTag].value.decode('utf-8') if "\\" not in dataset[dicomTag].value.decode('utf-8') else list(map(eval,dataset[dicomTag].value.decode('utf-8').split("\\"))) for dataset in datasetList]
+                        else:
+                            attributeList = [dataset[dicomTag].value for dataset in datasetList]
+                            if datasetList[0][dicomTag].VR == "TM": 
+                                if "." in attributeList[0]: attributeList = [(datetime.strptime(attr, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                                else: attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 else:
                     try:
-                        attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
-                        if datasetList[0][hex(dicomTag)].VR == "TM":
-                            if "." in attributeList[0]: attributeList = [(datetime.strptime(attr, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
-                            else: attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                        if isinstance(datasetList[0][hex(dicomTag)].value, bytes) == True:
+                            try:
+                                attributeList = [list(struct.unpack('h', dataset[hex(dicomTag)].value)) if len(list(struct.unpack('h', dataset[hex(dicomTag)].value)))==1 else list(struct.unpack('h', dataset[hex(dicomTag)].value))[0] for dataset in datasetList]
+                            except:
+                                attributeList = [dataset[hex(dicomTag)].value.decode('utf-8') if "\\" not in dataset[hex(dicomTag)].value.decode('utf-8') else list(map(eval,dataset[hex(dicomTag)].value.decode('utf-8').split("\\"))) for dataset in datasetList]
+                        else:
+                            attributeList = [dataset[hex(dicomTag)].value for dataset in datasetList]
+                            if datasetList[0][hex(dicomTag)].VR == "TM":
+                                if "." in attributeList[0]: attributeList = [(datetime.strptime(attr, "%H%M%S.%f") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
+                                else: attributeList = [(datetime.strptime(attr, "%H%M%S") - datetime(1900, 1, 1)).total_seconds() for attr in attributeList]
                     except:
                         return None, None
                 attributeList = [0 if x is None else x for x in attributeList]
@@ -391,6 +433,41 @@ def getAffineArray(dataset):
         logger.exception('Error in ReadDICOM_Image.getAffineArray: ' + str(e))
 
 
+def getTopLeftCorner(dataset):
+    """This method reads the DICOM Dataset object/class and returns the real-world coordinate of the top left-hand corner of the image in dataset."""
+    logger.info("ReadDICOM_Image.getTopLeftCorner called")
+    try:
+        if any(hasattr(dataset, attr) for attr in ['PixelData', 'FloatPixelData', 'DoubleFloatPixelData']):
+            if hasattr(dataset, 'PerFrameFunctionalGroupsSequence'):
+                top_left_coords = list()
+                for index in range(len(dataset.PerFrameFunctionalGroupsSequence)):
+                    image_position = dataset.PerFrameFunctionalGroupsSequence[index].PlanePositionSequence[0].ImagePositionPatient
+                    image_orientation = dataset.PerFrameFunctionalGroupsSequence[index].PlaneOrientationSequence[0].ImageOrientationPatient
+                    row_cosine = np.array(image_orientation[:3])
+                    column_cosine = np.array(image_orientation[3:])
+                    row_spacing, column_spacing = dataset.PerFrameFunctionalGroupsSequence[index].PixelMeasuresSequence[0].PixelSpacing
+                    top_left_x = image_position[0] - 0.5 * row_spacing * row_cosine[0] - 0.5 * column_spacing * column_cosine[0]
+                    top_left_y = image_position[1] - 0.5 * row_spacing * row_cosine[1] - 0.5 * column_spacing * column_cosine[1]
+                    top_left_z = image_position[2] - 0.5 * row_spacing * row_cosine[2] - 0.5 * column_spacing * column_cosine[2]
+                    top_left_coords.append([top_left_x, top_left_y, top_left_z])
+            else:
+                image_position = np.array(dataset.ImagePositionPatient) # Centre of Top left-hand corner pixel
+                image_orientation = dataset.ImageOrientationPatient
+                row_cosine = np.array(image_orientation[:3])
+                column_cosine = np.array(image_orientation[3:])
+                row_spacing, column_spacing = dataset.PixelSpacing
+                top_left_x = image_position[0] - 0.5 * row_spacing * row_cosine[0] - 0.5 * column_spacing * column_cosine[0]
+                top_left_y = image_position[1] - 0.5 * row_spacing * row_cosine[1] - 0.5 * column_spacing * column_cosine[1]
+                top_left_z = image_position[2] - 0.5 * row_spacing * row_cosine[2] - 0.5 * column_spacing * column_cosine[2]
+                top_left_coords = [top_left_x, top_left_y, top_left_z]
+            return top_left_coords
+        else:
+            return None
+    except Exception as e:
+        print('Error in function ReadDICOM_Image.getTopLeftCorner: ' + str(e))
+        logger.exception('Error in ReadDICOM_Image.getTopLeftCorner: ' + str(e))
+
+
 def mapMaskToImage(mask, datasetMask, datasetTarget):
     """This method takes a binary mask pixel_array and returns a list of indexes
         of the True values of the mask in the coordinate system of the `datasetTarget`"""
@@ -407,6 +484,7 @@ def mapMaskToImage(mask, datasetMask, datasetTarget):
     except Exception as e:
         print('Error in function ReadDICOM_Image.mapMaskToImage: ' + str(e))
         logger.exception('Error in ReadDICOM_Image.mapMaskToImage: ' + str(e))
+
 
 def mapCoordinates(indexes, affineTarget, affineMask):
     """This method returns a list of indexes that results from mapping the input argument 

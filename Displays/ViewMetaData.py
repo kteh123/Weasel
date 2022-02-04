@@ -11,11 +11,11 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QLineEdit,
 from PyQt5.QtGui import QCursor, QIcon, QColor
 
 import os
+import struct
 import pydicom
 import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
-
 
 
 def displayMetaDataSubWindow(weasel, tableTitle, dataset):
@@ -73,12 +73,17 @@ def iterateSequenceTag(table, dataset, level=">"):
                 table.setItem(rowPosition , 0, QTableWidgetItem(level + str(data_element.tag)))
                 table.setItem(rowPosition , 1, QTableWidgetItem(data_element.name))
                 table.setItem(rowPosition , 2, QTableWidgetItem(data_element.VR))
-                if data_element.VR == "OW" or data_element.VR == "OB":
+                if isinstance(data_element.value, bytes) == True:
                     try:
-                        valueMetadata = str(data_element.value.decode('utf-8'))
+                        valueMetadata = list(struct.unpack('h', data_element.value))
+                        if len(valueMetadata) == 1: 
+                            valueMetadata = str(valueMetadata[0])
+                        else:
+                            valueMetadata = str(valueMetadata)
                     except:
                         try:
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = str(data_element.value.decode('utf-8'))
+                            if "\\" in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split("\\"))))
                         except:
                             valueMetadata = str(data_element.value)
                 else:
@@ -130,11 +135,19 @@ def buildTableView(dataset):
                                     QTableWidgetItem(meta_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(meta_element.VR))
-                    if meta_element.VR == "OW" or meta_element.VR == "OB" or meta_element.VR == "UN":
+                    if isinstance(meta_element.value, bytes) == True:
                         try:
-                            valueMetadata = str(list(meta_element))
+                            valueMetadata = list(struct.unpack('h', meta_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
-                            valueMetadata = str(meta_element.value)
+                            try:
+                                valueMetadata = str(meta_element.value.decode('utf-8'))
+                                if "\\" in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split("\\"))))
+                            except:
+                                valueMetadata = str(meta_element.value)
                     else:
                         valueMetadata = str(meta_element.value)
                     if meta_element.VR == "SQ":
@@ -155,14 +168,17 @@ def buildTableView(dataset):
                                     QTableWidgetItem(data_element.name))
                     tableWidget.setItem(rowPosition , 2, 
                                     QTableWidgetItem(data_element.VR))
-                    if data_element.VR == "OW" or data_element.VR == "OB" or data_element.VR == "UN":
+                    if isinstance(data_element.value, bytes) == True:
                         try:
-                            #valueMetadata = str(data_element.value.decode('utf-8'))
-                            valueMetadata = str(list(data_element))
+                            valueMetadata = list(struct.unpack('h', data_element.value))
+                            if len(valueMetadata) == 1: 
+                                valueMetadata = str(valueMetadata[0])
+                            else:
+                                valueMetadata = str(valueMetadata)
                         except:
                             try:
-                                #valueMetadata = str(list(data_element))
                                 valueMetadata = str(data_element.value.decode('utf-8'))
+                                if "\\" in valueMetadata: valueMetadata = str(list(map(eval, valueMetadata.split("\\"))))
                             except:
                                 valueMetadata = str(data_element.value)
                     else:
@@ -172,7 +188,6 @@ def buildTableView(dataset):
                         tableWidget = iterateSequenceTag(tableWidget, data_element, level=">")
                     else:
                         tableWidget.setItem(rowPosition , 3, QTableWidgetItem(valueMetadata))
-
 
             #Resize columns to fit contents
             header = tableWidget.horizontalHeader()
@@ -197,10 +212,7 @@ def searchTable(table, expression):
             if items:  # we have found something
                 for item in items:
                     item.setSelected(True)
-                    #table.item(item).setSelected(True)
                 table.scrollToItem(items[0])
-                #item = items[0]  # take the first
-                #table.table.setCurrentItem(item)
     except Exception as e:
         print('Error in : ViewMetaData.searchTable: ' + str(e))
         logger.error('Error in : ViewMetaData.searchTable: ' + str(e))

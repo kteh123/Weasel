@@ -1284,6 +1284,19 @@ class Series:
         except Exception as e:
             print('Error in Series.Affine: ' + str(e))
             logger.exception('Error in Series.Affine: ' + str(e))
+    
+    @property
+    def TopLeftCorner(self):
+        logger.info("Series.TopLeftCorner called")
+        try:
+            listCoords = list()
+            dicomList = self.PydicomList
+            for dicom_dataset in dicomList:
+                listCoords.append(ReadDICOM_Image.getTopLeftCorner(dicom_dataset))
+            return listCoords
+        except Exception as e:
+            print('Error in Series.TopLeftCorner: ' + str(e))
+            logger.exception('Error in Series.TopLeftCorner: ' + str(e))
 
     @property
     def ListAffines(self):
@@ -1417,13 +1430,6 @@ class Series:
             return PixelArrayDICOMTools.getDICOMobject(self.images)
         else:
             return []
-    
-    #@property
-    #def Multiframe(self):
-    #    if self.indices:
-    #        return True
-    #    else:
-    #        return False
 
     def export_as_nifti(self, directory=None, filename=None):
         logger.info("Series.export_as_nifti called")
@@ -1766,13 +1772,22 @@ class Image:
             logger.exception('Error in Image.ROIindices: ' + str(e))
 
     @property
+    def TopLeftCorner(self):
+        logger.info("Image.TopLeftCorner called")
+        try:
+            return ReadDICOM_Image.getTopLeftCorner(self.PydicomObject)
+        except Exception as e:
+            print('Error in Image.TopLeftCorner: ' + str(e))
+            logger.exception('Error in Image.TopLeftCorner: ' + str(e))
+
+    @property
     def Affine(self):
-        logger.info("Image.Affine called")
+        logger.info("Image.TopLeftCorner called")
         try:
             return ReadDICOM_Image.returnAffineArray(self.path)
         except Exception as e:
             print('Error in Image.Affine: ' + str(e))
-            logger.exception('Error in Image.Affine: ' + str(e))
+            logger.exception('Error in Image.Affine: ' + str(e)) 
     
     def get_value(self, tag):
         logger.info("Image.get_value called")
