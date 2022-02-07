@@ -77,9 +77,9 @@ def download(weasel):
                                         weasel.information("The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.", "XNAT Download") 
                                         dataset.download_dir(downloadFolder)
                                         weasel.information("Download completed!", "XNAT Download")
-            # Load the directory again
-            # This loads the whole directory again, so it might take some time. It would be quicker if there was an incremental approach to the TreeView (.xml or .csv).
-            weasel.read_dicom_folder()
+        # Load the directory again
+        # This loads the whole directory again, so it might take some time. It would be quicker if there was an incremental approach to the TreeView (.xml or .csv).
+        weasel.read_dicom_folder()
         # Delete Login Details
         del loginDetails, url, username, password
         session.disconnect()
@@ -175,27 +175,35 @@ def upload(weasel):
 
     
 def selectXNATPathDownload(weasel, tree_view_dir=True):
-    if tree_view_dir == False:
-        directory = weasel.selectFolder(title="Select the directory where you wish to download")
-    else:
-        directory = os.path.dirname(weasel.objXMLReader.file)
-    return directory
+    try:
+        if tree_view_dir == False:
+            directory = weasel.selectFolder(title="Select the directory where you wish to download")
+        else:
+            if weasel.objXMLReader is not None:
+                directory = os.path.dirname(weasel.objXMLReader.file)
+            else:
+                directory = weasel.weaselDataFolder
+        return directory
+    except Exception as e:
+        weasel.log_error('Error in function XNATapp.selectXNATPathDownload: ' + str(e))
 
 
 def selectXNATPathUpload(weasel, tree_view=True):
-    listPaths = []
-    if tree_view == True:
-        images = weasel.images()
-        for image in images:
-            listPaths.append(image.path)
-    else:
-        directory = weasel.selectFolder(title="Select the directory with the files you wish to upload")
-        for root, _, files in os.walk(directory):
-            for filename in files:
-                filepath = os.path.join(root, filename)
-                listPaths.append(filepath)
-    return listPaths
-
+    try:
+        listPaths = []
+        if tree_view == True:
+            images = weasel.images()
+            for image in images:
+                listPaths.append(image.path)
+        else:
+            directory = weasel.selectFolder(title="Select the directory with the files you wish to upload")
+            for root, _, files in os.walk(directory):
+                for filename in files:
+                    filepath = os.path.join(root, filename)
+                    listPaths.append(filepath)
+        return listPaths
+    except Exception as e:
+        weasel.log_error('Error in function XNATapp.selectXNATPathUpload: ' + str(e))
 
 def zipFiles(listPaths):
     dt = datetime.datetime.now()
