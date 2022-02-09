@@ -25,4 +25,4 @@ sphinx-rtd-theme>=0.5.0
 tqdm>=4.40.0
 uarray>=0.6.0
 xlrd>=1.2.0
-xnat>=0.3.25
+xnat>=0.4.0
