@@ -401,6 +401,8 @@ class ImageViewer(QMdiSubWindow):
         &#34;&#34;&#34;
         try:
             self.topRowMainLayout = QHBoxLayout()
+            self.topRowMainLayout.setContentsMargins(0, 0, 0, 0)
+            self.topRowMainLayout.setSpacing(0)
 
             self.setUpColourTableGroupBox()
             self.setUpImageLevelsGroupBox()
@@ -454,12 +456,12 @@ class ImageViewer(QMdiSubWindow):
         Creates a composite widget in a layout from the PixelValueComponent class
         and adds it to the pixelValueGroupBox group box
         &#34;&#34;&#34;
-        pixelValueComponent = PixelValueComponent()
-        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = self.pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
-        self.pixelValueGroupBox.setFixedHeight(50)
-        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
-
+        #self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(self.pixelValueComponent.getLayout())  
+         
   
     def getPixelValue(self, pos, imageNumber=1):
         &#34;&#34;&#34;
@@ -505,7 +507,8 @@ class ImageViewer(QMdiSubWindow):
                     self.lblPixelValue.setText(&#34;&#34;)
             else:
                 self.lblPixelValue.setText(&#34;&#34;)
-                   
+            
+            self.pixelValueComponent.setLabelWidth()    
         except Exception as e:
             print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
@@ -1613,6 +1616,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
         &#34;&#34;&#34;
         try:
             self.topRowMainLayout = QHBoxLayout()
+            self.topRowMainLayout.setContentsMargins(0, 0, 0, 0)
+            self.topRowMainLayout.setSpacing(0)
 
             self.setUpColourTableGroupBox()
             self.setUpImageLevelsGroupBox()
@@ -1666,12 +1671,12 @@ vertical layout created in the function setUpMainLayout.</p></div>
         Creates a composite widget in a layout from the PixelValueComponent class
         and adds it to the pixelValueGroupBox group box
         &#34;&#34;&#34;
-        pixelValueComponent = PixelValueComponent()
-        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = self.pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
-        self.pixelValueGroupBox.setFixedHeight(50)
-        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
-
+        #self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(self.pixelValueComponent.getLayout())  
+         
   
     def getPixelValue(self, pos, imageNumber=1):
         &#34;&#34;&#34;
@@ -1717,7 +1722,8 @@ vertical layout created in the function setUpMainLayout.</p></div>
                     self.lblPixelValue.setText(&#34;&#34;)
             else:
                 self.lblPixelValue.setText(&#34;&#34;)
-                   
+            
+            self.pixelValueComponent.setLabelWidth()    
         except Exception as e:
             print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
             logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
@@ -3186,7 +3192,8 @@ lblPixelValue together with the x,y coordinates of the mouse pointer.</p></div>
                 self.lblPixelValue.setText(&#34;&#34;)
         else:
             self.lblPixelValue.setText(&#34;&#34;)
-               
+        
+        self.pixelValueComponent.setLabelWidth()    
     except Exception as e:
         print(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))
         logger.error(&#39;Error in ImageViewer.getPixelValue: &#39; + str(e))</code></pre>
@@ -3753,11 +3760,11 @@ and adds it to the pixelValueGroupBox group box</p></div>
     Creates a composite widget in a layout from the PixelValueComponent class
     and adds it to the pixelValueGroupBox group box
     &#34;&#34;&#34;
-    pixelValueComponent = PixelValueComponent()
-    self.lblPixelValue = pixelValueComponent.getLabel()
+    self.pixelValueComponent = PixelValueComponent()
+    self.lblPixelValue = self.pixelValueComponent.getLabel()
     self.pixelValueGroupBox = QGroupBox(&#34;Pixel Value&#34;)
-    self.pixelValueGroupBox.setFixedHeight(50)
-    self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  </code></pre>
+    #self.pixelValueGroupBox.setFixedHeight(50)
+    self.pixelValueGroupBox.setLayout(self.pixelValueComponent.getLayout())  </code></pre>
 </details>
 </dd>
 <dt id="Weasel.Displays.ImageViewers.ImageViewer.ImageViewer.setUpResetButton"><code class="name flex">
@@ -3813,6 +3820,8 @@ and its position in a group box.</p></div>
     &#34;&#34;&#34;
     try:
         self.topRowMainLayout = QHBoxLayout()
+        self.topRowMainLayout.setContentsMargins(0, 0, 0, 0)
+        self.topRowMainLayout.setSpacing(0)
 
         self.setUpColourTableGroupBox()
         self.setUpImageLevelsGroupBox()

@@ -38,13 +38,31 @@ class PixelValueComponent:
         self.pixelValueLayout = QHBoxLayout()
         self.pixelValueLayout.setContentsMargins(0, 0, 0, 0)
         self.pixelValueLayout.setSpacing(0)
-
+        self.labelWidth = 0
         self.lblPixelValue = QLabel()
         self.lblPixelValue.setWordWrap(True)
         self.lblPixelValue.setMargin(0)
         self.lblPixelValue.setStyleSheet(
             &#34;color : red; padding-left:0; margin-left:0; padding-right:0; margin-right:0; font-size:8pt;&#34;)
-        self.pixelValueLayout.addWidget(self.lblPixelValue, alignment=Qt.AlignCenter)
+        self.pixelValueLayout.addWidget(self.lblPixelValue,
+                                       alignment=Qt.AlignCenter)
+
+
+    def setLabelWidth(self):
+        &#34;&#34;&#34;
+        This function sets the width of the label to the width
+        of its container layout.  
+
+        Setting the width of the label to that of its container
+        layout means the label word wraps only when the length
+        of the text it contains exceeds the width of the label.
+        &#34;&#34;&#34;
+        layoutWidth = self.pixelValueLayout.contentsRect().width()
+        if self.labelWidth != layoutWidth:
+            #only update the label width if it has changed
+            self.labelWidth = layoutWidth
+            self.lblPixelValue.setFixedWidth(layoutWidth)
+        
 
     def getLayout(self):
         &#34;&#34;&#34;
@@ -87,13 +105,31 @@ of the value of the pixel under the mouse pointer.</p></div>
         self.pixelValueLayout = QHBoxLayout()
         self.pixelValueLayout.setContentsMargins(0, 0, 0, 0)
         self.pixelValueLayout.setSpacing(0)
-
+        self.labelWidth = 0
         self.lblPixelValue = QLabel()
         self.lblPixelValue.setWordWrap(True)
         self.lblPixelValue.setMargin(0)
         self.lblPixelValue.setStyleSheet(
             &#34;color : red; padding-left:0; margin-left:0; padding-right:0; margin-right:0; font-size:8pt;&#34;)
-        self.pixelValueLayout.addWidget(self.lblPixelValue, alignment=Qt.AlignCenter)
+        self.pixelValueLayout.addWidget(self.lblPixelValue,
+                                       alignment=Qt.AlignCenter)
+
+
+    def setLabelWidth(self):
+        &#34;&#34;&#34;
+        This function sets the width of the label to the width
+        of its container layout.  
+
+        Setting the width of the label to that of its container
+        layout means the label word wraps only when the length
+        of the text it contains exceeds the width of the label.
+        &#34;&#34;&#34;
+        layoutWidth = self.pixelValueLayout.contentsRect().width()
+        if self.labelWidth != layoutWidth:
+            #only update the label width if it has changed
+            self.labelWidth = layoutWidth
+            self.lblPixelValue.setFixedWidth(layoutWidth)
+        
 
     def getLayout(self):
         &#34;&#34;&#34;
@@ -141,6 +177,36 @@ of the value of the pixel under the mouse pointer.</p></div>
     return self.pixelValueLayout</code></pre>
 </details>
 </dd>
+<dt id="Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.setLabelWidth"><code class="name flex">
+<span>def <span class="ident">setLabelWidth</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function sets the width of the label to the width
+of its container layout.
+</p>
+<p>Setting the width of the label to that of its container
+layout means the label word wraps only when the length
+of the text it contains exceeds the width of the label.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setLabelWidth(self):
+    &#34;&#34;&#34;
+    This function sets the width of the label to the width
+    of its container layout.  
+
+    Setting the width of the label to that of its container
+    layout means the label word wraps only when the length
+    of the text it contains exceeds the width of the label.
+    &#34;&#34;&#34;
+    layoutWidth = self.pixelValueLayout.contentsRect().width()
+    if self.labelWidth != layoutWidth:
+        #only update the label width if it has changed
+        self.labelWidth = layoutWidth
+        self.lblPixelValue.setFixedWidth(layoutWidth)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -164,6 +230,7 @@ of the value of the pixel under the mouse pointer.</p></div>
 <ul class="">
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.getLabel" href="#Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.getLabel">getLabel</a></code></li>
 <li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.getLayout" href="#Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.getLayout">getLayout</a></code></li>
+<li><code><a title="Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.setLabelWidth" href="#Weasel.Displays.ImageViewers.ComponentsUI.PixelValueLabel.PixelValueComponent.setLabelWidth">setLabelWidth</a></code></li>
 </ul>
 </li>
 </ul>
