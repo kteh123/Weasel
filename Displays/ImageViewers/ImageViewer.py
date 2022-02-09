@@ -367,6 +367,8 @@ class ImageViewer(QMdiSubWindow):
         """
         try:
             self.topRowMainLayout = QHBoxLayout()
+            self.topRowMainLayout.setContentsMargins(0, 0, 0, 0)
+            self.topRowMainLayout.setSpacing(0)
 
             self.setUpColourTableGroupBox()
             self.setUpImageLevelsGroupBox()
@@ -420,12 +422,12 @@ class ImageViewer(QMdiSubWindow):
         Creates a composite widget in a layout from the PixelValueComponent class
         and adds it to the pixelValueGroupBox group box
         """
-        pixelValueComponent = PixelValueComponent()
-        self.lblPixelValue = pixelValueComponent.getLabel()
+        self.pixelValueComponent = PixelValueComponent()
+        self.lblPixelValue = self.pixelValueComponent.getLabel()
         self.pixelValueGroupBox = QGroupBox("Pixel Value")
-        self.pixelValueGroupBox.setFixedHeight(50)
-        self.pixelValueGroupBox.setLayout(pixelValueComponent.getLayout())  
-
+        #self.pixelValueGroupBox.setFixedHeight(50)
+        self.pixelValueGroupBox.setLayout(self.pixelValueComponent.getLayout())  
+         
   
     def getPixelValue(self, pos, imageNumber=1):
         """
@@ -471,7 +473,8 @@ class ImageViewer(QMdiSubWindow):
                     self.lblPixelValue.setText("")
             else:
                 self.lblPixelValue.setText("")
-                   
+            
+            self.pixelValueComponent.setLabelWidth()    
         except Exception as e:
             print('Error in ImageViewer.getPixelValue: ' + str(e))
             logger.error('Error in ImageViewer.getPixelValue: ' + str(e))
