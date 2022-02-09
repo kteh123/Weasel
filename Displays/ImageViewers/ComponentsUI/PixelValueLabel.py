@@ -12,6 +12,7 @@ class PixelValueComponent:
         self.pixelValueLayout.setSpacing(0)
         self.labelWidth = 0
         self.lblPixelValue = QLabel()
+        self.lblPixelValue.setAlignment(Qt.AlignCenter)
         self.lblPixelValue.setWordWrap(True)
         self.lblPixelValue.setMargin(0)
         self.lblPixelValue.setStyleSheet(
