@@ -380,8 +380,24 @@ class TreeView():
             self._unCheckTreeViewItems(root)
             QApplication.restoreOverrideCursor()
         except Exception as e:
-            print(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))
-            logger.exception(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))
+            print(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))
+
+    def callCheckAllTreeViewItems(self):
+        &#34;&#34;&#34;
+        This function sets the unchecked state of all items in the
+        tree view to checked.  It does this by calling the
+        recursive function _CheckTreeViewItems.
+        &#34;&#34;&#34;
+        try:
+            logger.info(&#34;TreeView.callCheckAllTreeViewItems called&#34;)
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            root = self.treeViewWidget.invisibleRootItem()
+            self._checkTreeViewItems(root)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            print(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))
 
 
     def _unCheckTreeViewItems(self, item):
@@ -408,6 +424,29 @@ class TreeView():
             print(&#39;Error in TreeView._unCheckTreeViewItems: &#39; + str(e))
             logger.exception(&#39;Error in TreeView._unCheckTreeViewItems: &#39; + str(e))
 
+    def _checkTreeViewItems(self, item):
+        &#34;&#34;&#34;Starting at the root of the tree view, 
+        this function uses recursion to set the state of child checkboxes 
+        of item to checked. An item could represent a subject, study or series.
+        
+        Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
+        logger.info(&#34;TreeView._checkTreeViewItems called&#34;)
+        try:
+            if item.childCount() &gt; 0:
+                itemCount = item.childCount()
+                for n in range(itemCount):
+                    childItem = item.child(n)
+                    item.treeWidget().blockSignals(True)
+                    childItem.setCheckState(0, Qt.Checked)
+                    self._saveCheckedState(childItem)
+                    item.treeWidget().blockSignals(False)
+                    self._checkTreeViewItems(childItem)
+        except Exception as e:
+            print(&#39;Error in TreeView._checkTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView._checkTreeViewItems: &#39; + str(e))
 
     def expand(self):
         &#34;&#34;&#34;Resets the expanded state to default.
@@ -890,8 +929,24 @@ left-hand side of the MDI.</p></div>
             self._unCheckTreeViewItems(root)
             QApplication.restoreOverrideCursor()
         except Exception as e:
-            print(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))
-            logger.exception(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))
+            print(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))
+
+    def callCheckAllTreeViewItems(self):
+        &#34;&#34;&#34;
+        This function sets the unchecked state of all items in the
+        tree view to checked.  It does this by calling the
+        recursive function _CheckTreeViewItems.
+        &#34;&#34;&#34;
+        try:
+            logger.info(&#34;TreeView.callCheckAllTreeViewItems called&#34;)
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            root = self.treeViewWidget.invisibleRootItem()
+            self._checkTreeViewItems(root)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            print(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))
 
 
     def _unCheckTreeViewItems(self, item):
@@ -918,6 +973,29 @@ left-hand side of the MDI.</p></div>
             print(&#39;Error in TreeView._unCheckTreeViewItems: &#39; + str(e))
             logger.exception(&#39;Error in TreeView._unCheckTreeViewItems: &#39; + str(e))
 
+    def _checkTreeViewItems(self, item):
+        &#34;&#34;&#34;Starting at the root of the tree view, 
+        this function uses recursion to set the state of child checkboxes 
+        of item to checked. An item could represent a subject, study or series.
+        
+        Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        &#34;&#34;&#34;
+        logger.info(&#34;TreeView._checkTreeViewItems called&#34;)
+        try:
+            if item.childCount() &gt; 0:
+                itemCount = item.childCount()
+                for n in range(itemCount):
+                    childItem = item.child(n)
+                    item.treeWidget().blockSignals(True)
+                    childItem.setCheckState(0, Qt.Checked)
+                    self._saveCheckedState(childItem)
+                    item.treeWidget().blockSignals(False)
+                    self._checkTreeViewItems(childItem)
+        except Exception as e:
+            print(&#39;Error in TreeView._checkTreeViewItems: &#39; + str(e))
+            logger.exception(&#39;Error in TreeView._checkTreeViewItems: &#39; + str(e))
 
     def expand(self):
         &#34;&#34;&#34;Resets the expanded state to default.
@@ -1026,6 +1104,35 @@ left-hand side of the MDI.</p></div>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="Weasel.CoreModules.TreeView.TreeView.callCheckAllTreeViewItems"><code class="name flex">
+<span>def <span class="ident">callCheckAllTreeViewItems</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function sets the unchecked state of all items in the
+tree view to checked.
+It does this by calling the
+recursive function _CheckTreeViewItems.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def callCheckAllTreeViewItems(self):
+    &#34;&#34;&#34;
+    This function sets the unchecked state of all items in the
+    tree view to checked.  It does this by calling the
+    recursive function _CheckTreeViewItems.
+    &#34;&#34;&#34;
+    try:
+        logger.info(&#34;TreeView.callCheckAllTreeViewItems called&#34;)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        root = self.treeViewWidget.invisibleRootItem()
+        self._checkTreeViewItems(root)
+        QApplication.restoreOverrideCursor()
+    except Exception as e:
+        print(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))
+        logger.exception(&#39;Error in TreeView.callCheckAllTreeViewItems: &#39; + str(e))</code></pre>
+</details>
+</dd>
 <dt id="Weasel.CoreModules.TreeView.TreeView.callUnCheckTreeViewItems"><code class="name flex">
 <span>def <span class="ident">callUnCheckTreeViewItems</span></span>(<span>self)</span>
 </code></dt>
@@ -1051,8 +1158,8 @@ recursive function _unCheckTreeViewItems.</p></div>
         self._unCheckTreeViewItems(root)
         QApplication.restoreOverrideCursor()
     except Exception as e:
-        print(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))
-        logger.exception(&#39;Error in TreeView.callUnCheckTreeViewItems: &#39; + str(e))</code></pre>
+        print(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))
+        logger.exception(&#39;Error in TreeView.callCheckTreeViewItems: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.CoreModules.TreeView.TreeView.close"><code class="name flex">
@@ -1180,6 +1287,7 @@ and a series is expanded as soon as a single image is checked</p></div>
 <li>
 <h4><code><a title="Weasel.CoreModules.TreeView.TreeView" href="#Weasel.CoreModules.TreeView.TreeView">TreeView</a></code></h4>
 <ul class="">
+<li><code><a title="Weasel.CoreModules.TreeView.TreeView.callCheckAllTreeViewItems" href="#Weasel.CoreModules.TreeView.TreeView.callCheckAllTreeViewItems">callCheckAllTreeViewItems</a></code></li>
 <li><code><a title="Weasel.CoreModules.TreeView.TreeView.callUnCheckTreeViewItems" href="#Weasel.CoreModules.TreeView.TreeView.callUnCheckTreeViewItems">callUnCheckTreeViewItems</a></code></li>
 <li><code><a title="Weasel.CoreModules.TreeView.TreeView.close" href="#Weasel.CoreModules.TreeView.TreeView.close">close</a></code></li>
 <li><code><a title="Weasel.CoreModules.TreeView.TreeView.expand" href="#Weasel.CoreModules.TreeView.TreeView.expand">expand</a></code></li>
