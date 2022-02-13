@@ -1299,6 +1299,18 @@ class Series:
             logger.exception('Error in Series.TopLeftCorner: ' + str(e))
 
     @property
+    def CentralSliceLocation(self):
+        logger.info("Series.CentralSliceLocation called")
+        try:
+            locations = np.unique(self["SliceLocation"])
+            # If number of slices is even, the lower value is selected.
+            central_index = int(np.floor(len(locations) / 2))
+            return locations[central_index]
+        except Exception as e:
+            print('Error in Series.CentralSliceLocation: ' + str(e))
+            logger.exception('Error in Series.CentralSliceLocation: ' + str(e))
+
+    @property
     def ListAffines(self):
         logger.info("Series.ListAffines called")
         try:

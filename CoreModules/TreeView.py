@@ -349,8 +349,24 @@ class TreeView():
             self._unCheckTreeViewItems(root)
             QApplication.restoreOverrideCursor()
         except Exception as e:
-            print('Error in TreeView.callUnCheckTreeViewItems: ' + str(e))
-            logger.exception('Error in TreeView.callUnCheckTreeViewItems: ' + str(e))
+            print('Error in TreeView.callCheckTreeViewItems: ' + str(e))
+            logger.exception('Error in TreeView.callCheckTreeViewItems: ' + str(e))
+
+    def callCheckAllTreeViewItems(self):
+        """
+        This function sets the unchecked state of all items in the
+        tree view to checked.  It does this by calling the
+        recursive function _CheckTreeViewItems.
+        """
+        try:
+            logger.info("TreeView.callCheckAllTreeViewItems called")
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            root = self.treeViewWidget.invisibleRootItem()
+            self._checkTreeViewItems(root)
+            QApplication.restoreOverrideCursor()
+        except Exception as e:
+            print('Error in TreeView.callCheckAllTreeViewItems: ' + str(e))
+            logger.exception('Error in TreeView.callCheckAllTreeViewItems: ' + str(e))
 
 
     def _unCheckTreeViewItems(self, item):
@@ -377,6 +393,29 @@ class TreeView():
             print('Error in TreeView._unCheckTreeViewItems: ' + str(e))
             logger.exception('Error in TreeView._unCheckTreeViewItems: ' + str(e))
 
+    def _checkTreeViewItems(self, item):
+        """Starting at the root of the tree view, 
+        this function uses recursion to set the state of child checkboxes 
+        of item to checked. An item could represent a subject, study or series.
+        
+        Input Parameters
+        ****************
+        item  - A QTreeWidgetItem whose checkbox state has just changed
+        """
+        logger.info("TreeView._checkTreeViewItems called")
+        try:
+            if item.childCount() > 0:
+                itemCount = item.childCount()
+                for n in range(itemCount):
+                    childItem = item.child(n)
+                    item.treeWidget().blockSignals(True)
+                    childItem.setCheckState(0, Qt.Checked)
+                    self._saveCheckedState(childItem)
+                    item.treeWidget().blockSignals(False)
+                    self._checkTreeViewItems(childItem)
+        except Exception as e:
+            print('Error in TreeView._checkTreeViewItems: ' + str(e))
+            logger.exception('Error in TreeView._checkTreeViewItems: ' + str(e))
 
     def expand(self):
         """Resets the expanded state to default.
