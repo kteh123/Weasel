@@ -6,7 +6,8 @@ import os
 from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.TreeView import TreeView
-from Displays.UserInput import userInput 
+from Displays.UserInput import userInput
+from DICOM.Classes import ImagesList, SeriesList, StudyList, SubjectList
 
 import logging
 logger = logging.getLogger(__name__)
@@ -37,6 +38,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def images_list(self, normal_list_of_images):
+        """
+        Returns an instance of ImagesList provided manually by the user.
+        """
+        return ImagesList(normal_list_of_images)
+    
     def series(self, msg=''):
         """
         Returns a list of Series checked by the user.
@@ -46,6 +53,12 @@ class ReadWrite():
             if msg != '':
                 self.message(msg=msg)
         return list
+
+    def series_list(self, normal_list_of_series):
+        """
+        Returns an instance of SeriesList provided manually by the user.
+        """
+        return ImagesList(normal_list_of_series)
 
     def studies(self, msg=''):
         """
@@ -57,6 +70,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def studies_list(self, normal_list_of_studies):
+        """
+        Returns an instance of StudyList provided manually by the user.
+        """
+        return StudyList(normal_list_of_studies)
+
     def subjects(self, msg=''):
         """
         Returns a list of Subjects checked by the user.
@@ -66,6 +85,12 @@ class ReadWrite():
             if msg != '':
                 self.message(msg=msg)
         return list
+
+    def subjects_list(self, normal_list_of_subjects):
+        """
+        Returns an instance of SubjectList provided manually by the user.
+        """
+        return SubjectList(normal_list_of_subjects)
 
     def read_dicom_folder(self):
         """
