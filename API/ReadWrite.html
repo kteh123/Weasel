@@ -35,7 +35,8 @@ import os
 from PyQt5.QtWidgets import QFileDialog
 import CoreModules.WriteXMLfromDICOM as WriteXMLfromDICOM
 from CoreModules.TreeView import TreeView
-from Displays.UserInput import userInput 
+from Displays.UserInput import userInput
+from DICOM.Classes import ImagesList, SeriesList, StudyList, SubjectList
 
 import logging
 logger = logging.getLogger(__name__)
@@ -66,6 +67,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def images_list(self, normal_list_of_images):
+        &#34;&#34;&#34;
+        Returns an instance of ImagesList provided manually by the user.
+        &#34;&#34;&#34;
+        return ImagesList(normal_list_of_images)
+    
     def series(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
         Returns a list of Series checked by the user.
@@ -75,6 +82,12 @@ class ReadWrite():
             if msg != &#39;&#39;:
                 self.message(msg=msg)
         return list
+
+    def series_list(self, normal_list_of_series):
+        &#34;&#34;&#34;
+        Returns an instance of SeriesList provided manually by the user.
+        &#34;&#34;&#34;
+        return ImagesList(normal_list_of_series)
 
     def studies(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
@@ -86,6 +99,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def studies_list(self, normal_list_of_studies):
+        &#34;&#34;&#34;
+        Returns an instance of StudyList provided manually by the user.
+        &#34;&#34;&#34;
+        return StudyList(normal_list_of_studies)
+
     def subjects(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
         Returns a list of Subjects checked by the user.
@@ -95,6 +114,12 @@ class ReadWrite():
             if msg != &#39;&#39;:
                 self.message(msg=msg)
         return list
+
+    def subjects_list(self, normal_list_of_subjects):
+        &#34;&#34;&#34;
+        Returns an instance of SubjectList provided manually by the user.
+        &#34;&#34;&#34;
+        return SubjectList(normal_list_of_subjects)
 
     def read_dicom_folder(self):
         &#34;&#34;&#34;
@@ -223,6 +248,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def images_list(self, normal_list_of_images):
+        &#34;&#34;&#34;
+        Returns an instance of ImagesList provided manually by the user.
+        &#34;&#34;&#34;
+        return ImagesList(normal_list_of_images)
+    
     def series(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
         Returns a list of Series checked by the user.
@@ -232,6 +263,12 @@ class ReadWrite():
             if msg != &#39;&#39;:
                 self.message(msg=msg)
         return list
+
+    def series_list(self, normal_list_of_series):
+        &#34;&#34;&#34;
+        Returns an instance of SeriesList provided manually by the user.
+        &#34;&#34;&#34;
+        return ImagesList(normal_list_of_series)
 
     def studies(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
@@ -243,6 +280,12 @@ class ReadWrite():
                 self.message(msg=msg)
         return list
 
+    def studies_list(self, normal_list_of_studies):
+        &#34;&#34;&#34;
+        Returns an instance of StudyList provided manually by the user.
+        &#34;&#34;&#34;
+        return StudyList(normal_list_of_studies)
+
     def subjects(self, msg=&#39;&#39;):
         &#34;&#34;&#34;
         Returns a list of Subjects checked by the user.
@@ -252,6 +295,12 @@ class ReadWrite():
             if msg != &#39;&#39;:
                 self.message(msg=msg)
         return list
+
+    def subjects_list(self, normal_list_of_subjects):
+        &#34;&#34;&#34;
+        Returns an instance of SubjectList provided manually by the user.
+        &#34;&#34;&#34;
+        return SubjectList(normal_list_of_subjects)
 
     def read_dicom_folder(self):
         &#34;&#34;&#34;
@@ -389,6 +438,22 @@ class ReadWrite():
         if msg != &#39;&#39;:
             self.message(msg=msg)
     return list</code></pre>
+</details>
+</dd>
+<dt id="Weasel.API.ReadWrite.ReadWrite.images_list"><code class="name flex">
+<span>def <span class="ident">images_list</span></span>(<span>self, normal_list_of_images)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns an instance of ImagesList provided manually by the user.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def images_list(self, normal_list_of_images):
+    &#34;&#34;&#34;
+    Returns an instance of ImagesList provided manually by the user.
+    &#34;&#34;&#34;
+    return ImagesList(normal_list_of_images)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.API.ReadWrite.ReadWrite.log"><code class="name flex">
@@ -557,6 +622,22 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
+<dt id="Weasel.API.ReadWrite.ReadWrite.series_list"><code class="name flex">
+<span>def <span class="ident">series_list</span></span>(<span>self, normal_list_of_series)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns an instance of SeriesList provided manually by the user.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def series_list(self, normal_list_of_series):
+    &#34;&#34;&#34;
+    Returns an instance of SeriesList provided manually by the user.
+    &#34;&#34;&#34;
+    return ImagesList(normal_list_of_series)</code></pre>
+</details>
+</dd>
 <dt id="Weasel.API.ReadWrite.ReadWrite.studies"><code class="name flex">
 <span>def <span class="ident">studies</span></span>(<span>self, msg='')</span>
 </code></dt>
@@ -577,6 +658,22 @@ class ReadWrite():
     return list</code></pre>
 </details>
 </dd>
+<dt id="Weasel.API.ReadWrite.ReadWrite.studies_list"><code class="name flex">
+<span>def <span class="ident">studies_list</span></span>(<span>self, normal_list_of_studies)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns an instance of StudyList provided manually by the user.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def studies_list(self, normal_list_of_studies):
+    &#34;&#34;&#34;
+    Returns an instance of StudyList provided manually by the user.
+    &#34;&#34;&#34;
+    return StudyList(normal_list_of_studies)</code></pre>
+</details>
+</dd>
 <dt id="Weasel.API.ReadWrite.ReadWrite.subjects"><code class="name flex">
 <span>def <span class="ident">subjects</span></span>(<span>self, msg='')</span>
 </code></dt>
@@ -595,6 +692,22 @@ class ReadWrite():
         if msg != &#39;&#39;:
             self.message(msg=msg)
     return list</code></pre>
+</details>
+</dd>
+<dt id="Weasel.API.ReadWrite.ReadWrite.subjects_list"><code class="name flex">
+<span>def <span class="ident">subjects_list</span></span>(<span>self, normal_list_of_subjects)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns an instance of SubjectList provided manually by the user.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def subjects_list(self, normal_list_of_subjects):
+    &#34;&#34;&#34;
+    Returns an instance of SubjectList provided manually by the user.
+    &#34;&#34;&#34;
+    return SubjectList(normal_list_of_subjects)</code></pre>
 </details>
 </dd>
 <dt id="Weasel.API.ReadWrite.ReadWrite.user_input"><code class="name flex">
@@ -637,6 +750,7 @@ class ReadWrite():
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.close_dicom_folder" href="#Weasel.API.ReadWrite.ReadWrite.close_dicom_folder">close_dicom_folder</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.data_folder" href="#Weasel.API.ReadWrite.ReadWrite.data_folder">data_folder</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.images" href="#Weasel.API.ReadWrite.ReadWrite.images">images</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.images_list" href="#Weasel.API.ReadWrite.ReadWrite.images_list">images_list</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.log" href="#Weasel.API.ReadWrite.ReadWrite.log">log</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.log_error" href="#Weasel.API.ReadWrite.ReadWrite.log_error">log_error</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.open_dicom_folder" href="#Weasel.API.ReadWrite.ReadWrite.open_dicom_folder">open_dicom_folder</a></code></li>
@@ -645,8 +759,11 @@ class ReadWrite():
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.select_file_to_save" href="#Weasel.API.ReadWrite.ReadWrite.select_file_to_save">select_file_to_save</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.select_folder" href="#Weasel.API.ReadWrite.ReadWrite.select_folder">select_folder</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.series" href="#Weasel.API.ReadWrite.ReadWrite.series">series</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.series_list" href="#Weasel.API.ReadWrite.ReadWrite.series_list">series_list</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.studies" href="#Weasel.API.ReadWrite.ReadWrite.studies">studies</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.studies_list" href="#Weasel.API.ReadWrite.ReadWrite.studies_list">studies_list</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.subjects" href="#Weasel.API.ReadWrite.ReadWrite.subjects">subjects</a></code></li>
+<li><code><a title="Weasel.API.ReadWrite.ReadWrite.subjects_list" href="#Weasel.API.ReadWrite.ReadWrite.subjects_list">subjects_list</a></code></li>
 <li><code><a title="Weasel.API.ReadWrite.ReadWrite.user_input" href="#Weasel.API.ReadWrite.ReadWrite.user_input">user_input</a></code></li>
 </ul>
 </li>
