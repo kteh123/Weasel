@@ -1271,7 +1271,7 @@ class Series:
         try:
             if label is not None:
                 self.suffix = "_" + label
-            self.write_mask(mask_array, parametric_map="SEG")
+            self.write(mask_array, parametric_map="SEG")
         except Exception as e:
             print('Error in Series.write_mask: ' + str(e))
             logger.exception('Error in Series.write_mask: ' + str(e))
@@ -1767,7 +1767,7 @@ class Image:
         try:
             if label is not None:
                 self.suffix = "_" + label
-            self.write_mask(mask_array, parametric_map="SEG")
+            self.write(mask_array, parametric_map="SEG")
         except Exception as e:
             print('Error in Image.write_mask: ' + str(e))
             logger.exception('Error in Image.write_mask: ' + str(e))
