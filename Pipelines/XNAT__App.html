@@ -69,6 +69,7 @@ def download(weasel):
                     if subjectName == &#34;All&#34;:
                         dataset = session.projects[projectName]
                         downloadFolder = selectXNATPathDownload(weasel)
+                        if downloadFolder == &#39;&#39;: return
                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                         dataset.download_dir(downloadFolder)
                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
@@ -83,6 +84,7 @@ def download(weasel):
                             if experimentName == &#34;All&#34;:
                                 dataset = session.projects[projectName].subjects[subjectName]
                                 downloadFolder = selectXNATPathDownload(weasel)
+                                if downloadFolder == &#39;&#39;: return
                                 weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                                 dataset.download_dir(downloadFolder)
                                 weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
@@ -97,18 +99,20 @@ def download(weasel):
                                     if scanName == &#34;All&#34;:
                                         dataset = session.projects[projectName].subjects[subjectName].experiments[experimentName]
                                         downloadFolder = selectXNATPathDownload(weasel)
+                                        if downloadFolder == &#39;&#39;: return
                                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                                         dataset.download_dir(downloadFolder)
                                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
                                     else:
                                         dataset = session.projects[projectName].subjects[subjectName].experiments[experimentName].scans[scanName]
                                         downloadFolder = selectXNATPathDownload(weasel)
+                                        if downloadFolder == &#39;&#39;: return
                                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;) 
                                         dataset.download_dir(downloadFolder)
                                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
         # Load the directory again
         # This loads the whole directory again, so it might take some time. It would be quicker if there was an incremental approach to the TreeView (.xml or .csv).
-        weasel.read_dicom_folder()
+        weasel.open_dicom_folder()
         # Delete Login Details
         del loginDetails, url, username, password
         session.disconnect()
@@ -288,6 +292,7 @@ def zipFiles(listPaths):
                     if subjectName == &#34;All&#34;:
                         dataset = session.projects[projectName]
                         downloadFolder = selectXNATPathDownload(weasel)
+                        if downloadFolder == &#39;&#39;: return
                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                         dataset.download_dir(downloadFolder)
                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
@@ -302,6 +307,7 @@ def zipFiles(listPaths):
                             if experimentName == &#34;All&#34;:
                                 dataset = session.projects[projectName].subjects[subjectName]
                                 downloadFolder = selectXNATPathDownload(weasel)
+                                if downloadFolder == &#39;&#39;: return
                                 weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                                 dataset.download_dir(downloadFolder)
                                 weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
@@ -316,18 +322,20 @@ def zipFiles(listPaths):
                                     if scanName == &#34;All&#34;:
                                         dataset = session.projects[projectName].subjects[subjectName].experiments[experimentName]
                                         downloadFolder = selectXNATPathDownload(weasel)
+                                        if downloadFolder == &#39;&#39;: return
                                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;)
                                         dataset.download_dir(downloadFolder)
                                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
                                     else:
                                         dataset = session.projects[projectName].subjects[subjectName].experiments[experimentName].scans[scanName]
                                         downloadFolder = selectXNATPathDownload(weasel)
+                                        if downloadFolder == &#39;&#39;: return
                                         weasel.information(&#34;The selected images will be downloaded to the root folder of the TreeView. The download progress can be checked in the terminal and you may continue using Weasel.&#34;, &#34;XNAT Download&#34;) 
                                         dataset.download_dir(downloadFolder)
                                         weasel.information(&#34;Download completed!&#34;, &#34;XNAT Download&#34;)
         # Load the directory again
         # This loads the whole directory again, so it might take some time. It would be quicker if there was an incremental approach to the TreeView (.xml or .csv).
-        weasel.read_dicom_folder()
+        weasel.open_dicom_folder()
         # Delete Login Details
         del loginDetails, url, username, password
         session.disconnect()
