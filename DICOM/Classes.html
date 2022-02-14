@@ -1311,7 +1311,7 @@ class Series:
         try:
             if label is not None:
                 self.suffix = &#34;_&#34; + label
-            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+            self.write(mask_array, parametric_map=&#34;SEG&#34;)
         except Exception as e:
             print(&#39;Error in Series.write_mask: &#39; + str(e))
             logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))
@@ -1807,7 +1807,7 @@ class Image:
         try:
             if label is not None:
                 self.suffix = &#34;_&#34; + label
-            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+            self.write(mask_array, parametric_map=&#34;SEG&#34;)
         except Exception as e:
             print(&#39;Error in Image.write_mask: &#39; + str(e))
             logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))
@@ -2262,7 +2262,7 @@ class Image:
         try:
             if label is not None:
                 self.suffix = &#34;_&#34; + label
-            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+            self.write(mask_array, parametric_map=&#34;SEG&#34;)
         except Exception as e:
             print(&#39;Error in Image.write_mask: &#39; + str(e))
             logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))
@@ -3060,7 +3060,7 @@ def parent(self):
     try:
         if label is not None:
             self.suffix = &#34;_&#34; + label
-        self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        self.write(mask_array, parametric_map=&#34;SEG&#34;)
     except Exception as e:
         print(&#39;Error in Image.write_mask: &#39; + str(e))
         logger.exception(&#39;Error in Image.write_mask: &#39; + str(e))</code></pre>
@@ -4139,7 +4139,7 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
         try:
             if label is not None:
                 self.suffix = &#34;_&#34; + label
-            self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+            self.write(mask_array, parametric_map=&#34;SEG&#34;)
         except Exception as e:
             print(&#39;Error in Series.write_mask: &#39; + str(e))
             logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))
@@ -5348,7 +5348,7 @@ def parent(self):
     try:
         if label is not None:
             self.suffix = &#34;_&#34; + label
-        self.write_mask(mask_array, parametric_map=&#34;SEG&#34;)
+        self.write(mask_array, parametric_map=&#34;SEG&#34;)
     except Exception as e:
         print(&#39;Error in Series.write_mask: &#39; + str(e))
         logger.exception(&#39;Error in Series.write_mask: &#39; + str(e))</code></pre>
