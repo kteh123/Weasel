@@ -39,7 +39,8 @@ if getattr(sys, &#39;frozen&#39;, False) and hasattr(sys, &#39;_MEIPASS&#39;):
     directory = os.path.join(sys._MEIPASS, &#39;Displays&#39;)
 else:
     directory = os.path.join(pathlib.Path().absolute(), &#39;Displays&#39;)
-
+    
+print(&#34;Resources.py directory= &#34;, directory)
 
 MAGNIFYING_GLASS_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;Magnifying_Glass.png&#39;)
 PEN_CURSOR = os.path.join(directory,&#39;ImageViewers&#39;,&#39;ComponentsUI&#39;,&#39;FreeHandROI&#39;,&#39;Icons&#39;,&#39;pencil.png&#39;)
