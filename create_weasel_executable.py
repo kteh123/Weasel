@@ -3,7 +3,7 @@ from sys import platform
 import venv
 
 # Write the name of the extra Python Packages for development here
-extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'ukat', 'mdr-library']
+extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'SimpleITK', 'itk-elastix', 'ukat', 'mdr-library']
 
 print("Creating Python Virtual Environment...")
 venv_dir = os.path.join(os.getcwd(), "venv")
@@ -29,14 +29,17 @@ print("Cleaning up installation files...")
 os.system(activation_command + ' && python setup.py clean')
 
 print("Creating list of hidden-imports and data to collect and add...")
-hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'ukat']
+hidden_modules = ['xnat', 'requests', 'dipy', 'dipy.data', 'matplotlib', 'lmfit', 'fpdf', 'reportlab', 'reportlab.platypus', 'joblib', 'cv2', 'SimpleITK ', 'itk', 'ukat', 'MDR', 'MDR.MDR', 'MDR.Tools']
 string_hidden_imports = ' '.join(['--hidden-import '+ mod + ' ' for mod in hidden_modules])
 collect_data_folders = ['External', 'dipy']
 string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect_data_folders])
+# Pyinstaller doesn't have hooks for the itk package
+itk_path_win = 'venv\\lib\\site-packages\\itk'
+itk_path_unix = 'venv/lib/site-packages/itk'
 if platform == "win32" or platform == "win64" or os.name == 'nt':
-	data_folders = ['API;.\\API', 'CoreModules;.\\CoreModules', 'Displays;.\\Displays', 'Documents;.\\Documents', 'Menus;.\\Menus', 'Pipelines;.\\Pipelines', 'External;.\\External']
+	data_folders = ['API;.\\API', 'CoreModules;.\\CoreModules', 'Displays;.\\Displays', 'Documents;.\\Documents', 'Menus;.\\Menus', 'Pipelines;.\\Pipelines', 'External;.\\External', itk_path_win+';.\\itk']
 else:
-	data_folders = ['API:./API', 'CoreModules:./CoreModules', 'Displays:./Displays', 'Documents:./Documents', 'Menus:./Menus', 'Pipelines:./Pipelines', 'External:./External']
+	data_folders = ['API:./API', 'CoreModules:./CoreModules', 'Displays:./Displays', 'Documents:./Documents', 'Menus:./Menus', 'Pipelines:./Pipelines', 'External:./External', itk_path_unix+':./itk']
 string_data = ' '.join(['--add-data='+ mod + ' ' for mod in data_folders])
 
 print("Starting compilation...")
