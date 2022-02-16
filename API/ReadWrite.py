@@ -58,7 +58,7 @@ class ReadWrite():
         """
         Returns an instance of SeriesList provided manually by the user.
         """
-        return ImagesList(normal_list_of_series)
+        return SeriesList(normal_list_of_series)
 
     def studies(self, msg=''):
         """
