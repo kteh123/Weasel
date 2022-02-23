@@ -1268,8 +1268,17 @@ class Series:
             print(&#39;Error in Series.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Series.PixelArray: &#39; + str(e))
         
-    def load_mask(self, maskInstance):
-        &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    def overlay_mask(self, maskInstance):
+        &#34;&#34;&#34;Returns the PixelArray masked.
+            Usage example:
+           &#39;&#39;&#39; 
+            for series in list_series:
+                if &#34;ROI_mask&#34; in series.label:
+                    mask_series = series
+                if &#34;DWI&#34; in series.label:
+                    main_series = series
+            masked_array = main_series.overlay_mask(mask_series)
+        &#34;&#34;&#34;
         logger.info(&#34;Series.Mask called&#34;)
         try:
             dataset = maskInstance.PydicomList
@@ -1770,8 +1779,17 @@ class Image:
             print(&#39;Error in Image.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Image.PixelArray: &#39; + str(e))
 
-    def load_mask(self, maskInstance):
-        &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    def overlay_mask(self, maskInstance):
+        &#34;&#34;&#34;Returns the PixelArray masked.
+           Usage example:
+           &#39;&#39;&#39; 
+            for image in list_images:
+                if &#34;ROI_mask&#34; in image.label:
+                    mask_image = image
+                if &#34;DWI&#34; in image.label:
+                    main_image = image
+            masked_array = main_image.overlay_mask(mask_image)
+        &#34;&#34;&#34;
         logger.info(&#34;Image.Mask called&#34;)
         try:
             if isinstance(maskInstance, Image):
@@ -2225,8 +2243,17 @@ class Image:
             print(&#39;Error in Image.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Image.PixelArray: &#39; + str(e))
 
-    def load_mask(self, maskInstance):
-        &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    def overlay_mask(self, maskInstance):
+        &#34;&#34;&#34;Returns the PixelArray masked.
+           Usage example:
+           &#39;&#39;&#39; 
+            for image in list_images:
+                if &#34;ROI_mask&#34; in image.label:
+                    mask_image = image
+                if &#34;DWI&#34; in image.label:
+                    main_image = image
+            masked_array = main_image.overlay_mask(mask_image)
+        &#34;&#34;&#34;
         logger.info(&#34;Image.Mask called&#34;)
         try:
             if isinstance(maskInstance, Image):
@@ -2823,17 +2850,57 @@ def parent(self):
         logger.exception(&#39;Error in Image.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="Weasel.DICOM.Classes.Image.load_mask"><code class="name flex">
-<span>def <span class="ident">load_mask</span></span>(<span>self, maskInstance)</span>
+<dt id="Weasel.DICOM.Classes.Image.new"><code class="name flex">
+<span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the PixelArray masked.</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_mask(self, maskInstance):
-    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+<pre><code class="python">def new(self, suffix=&#39;_Copy&#39;, series=None):
+    logger.info(&#34;Image.new called&#34;)
+    try:
+        if series is None:
+            newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, &#39;&#39;, suffix=suffix)
+        else:
+            newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, &#39;&#39;, suffix=suffix)
+        newImage.referencePath = self.path
+        return newImage
+    except Exception as e:
+        print(&#39;Error in Image.new: &#39; + str(e))
+        logger.exception(&#39;Error in Image.new: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Image.overlay_mask"><code class="name flex">
+<span>def <span class="ident">overlay_mask</span></span>(<span>self, maskInstance)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the PixelArray masked.
+Usage example:
+'''
+for image in list_images:
+if "ROI_mask" in image.label:
+mask_image = image
+if "DWI" in image.label:
+main_image = image
+masked_array = main_image.overlay_mask(mask_image)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def overlay_mask(self, maskInstance):
+    &#34;&#34;&#34;Returns the PixelArray masked.
+       Usage example:
+       &#39;&#39;&#39; 
+        for image in list_images:
+            if &#34;ROI_mask&#34; in image.label:
+                mask_image = image
+            if &#34;DWI&#34; in image.label:
+                main_image = image
+        masked_array = main_image.overlay_mask(mask_image)
+    &#34;&#34;&#34;
     logger.info(&#34;Image.Mask called&#34;)
     try:
         if isinstance(maskInstance, Image):
@@ -2863,29 +2930,6 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Image.Mask: &#39; + str(e))
         logger.exception(&#39;Error in Image.Mask: &#39; + str(e))</code></pre>
-</details>
-</dd>
-<dt id="Weasel.DICOM.Classes.Image.new"><code class="name flex">
-<span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series=None)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def new(self, suffix=&#39;_Copy&#39;, series=None):
-    logger.info(&#34;Image.new called&#34;)
-    try:
-        if series is None:
-            newImage = Image(self.objWeasel, self.subjectID, self.studyID, self.seriesID, &#39;&#39;, suffix=suffix)
-        else:
-            newImage = Image(series.objWeasel, series.subjectID, series.studyID, series.seriesID, &#39;&#39;, suffix=suffix)
-        newImage.referencePath = self.path
-        return newImage
-    except Exception as e:
-        print(&#39;Error in Image.new: &#39; + str(e))
-        logger.exception(&#39;Error in Image.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Image.plot"><code class="name flex">
@@ -4096,8 +4140,17 @@ This class creates the list based on the Weasel GUI TreeView selection if it's n
             print(&#39;Error in Series.PixelArray: &#39; + str(e))
             logger.exception(&#39;Error in Series.PixelArray: &#39; + str(e))
         
-    def load_mask(self, maskInstance):
-        &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+    def overlay_mask(self, maskInstance):
+        &#34;&#34;&#34;Returns the PixelArray masked.
+            Usage example:
+           &#39;&#39;&#39; 
+            for series in list_series:
+                if &#34;ROI_mask&#34; in series.label:
+                    mask_series = series
+                if &#34;DWI&#34; in series.label:
+                    main_series = series
+            masked_array = main_series.overlay_mask(mask_series)
+        &#34;&#34;&#34;
         logger.info(&#34;Series.Mask called&#34;)
         try:
             dataset = maskInstance.PydicomList
@@ -5005,17 +5058,61 @@ def parent(self):
         logger.exception(&#39;Error in Series.get_value: &#39; + str(e))</code></pre>
 </details>
 </dd>
-<dt id="Weasel.DICOM.Classes.Series.load_mask"><code class="name flex">
-<span>def <span class="ident">load_mask</span></span>(<span>self, maskInstance)</span>
+<dt id="Weasel.DICOM.Classes.Series.new"><code class="name flex">
+<span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series_id=None, series_name=None, series_uid=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the PixelArray masked.</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_mask(self, maskInstance):
-    &#34;&#34;&#34;Returns the PixelArray masked.&#34;&#34;&#34;
+<pre><code class="python">def new(self, suffix=&#34;_Copy&#34;, series_id=None, series_name=None, series_uid=None):
+    logger.info(&#34;Series.new called&#34;)
+    try:
+        if series_id is None:
+            series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
+        if series_name is None:
+            series_name = self.seriesID.split(&#39;_&#39;, 1)[1] + suffix
+        if series_uid is None:
+            _, series_uid = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images, seriesNumber=series_id)
+        seriesID = str(series_id) + &#39;_&#39; + series_name
+        newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
+        newSeries.referencePathsList = self.images
+        return newSeries
+    except Exception as e:
+        print(&#39;Error in Series.new: &#39; + str(e))
+        logger.exception(&#39;Error in Series.new: &#39; + str(e))</code></pre>
+</details>
+</dd>
+<dt id="Weasel.DICOM.Classes.Series.overlay_mask"><code class="name flex">
+<span>def <span class="ident">overlay_mask</span></span>(<span>self, maskInstance)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the PixelArray masked.
+Usage example:
+'''
+for series in list_series:
+if "ROI_mask" in series.label:
+mask_series = series
+if "DWI" in series.label:
+main_series = series
+masked_array = main_series.overlay_mask(mask_series)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def overlay_mask(self, maskInstance):
+    &#34;&#34;&#34;Returns the PixelArray masked.
+        Usage example:
+       &#39;&#39;&#39; 
+        for series in list_series:
+            if &#34;ROI_mask&#34; in series.label:
+                mask_series = series
+            if &#34;DWI&#34; in series.label:
+                main_series = series
+        masked_array = main_series.overlay_mask(mask_series)
+    &#34;&#34;&#34;
     logger.info(&#34;Series.Mask called&#34;)
     try:
         dataset = maskInstance.PydicomList
@@ -5051,33 +5148,6 @@ def parent(self):
     except Exception as e:
         print(&#39;Error in Series.Mask: &#39; + str(e))
         logger.exception(&#39;Error in Series.Mask: &#39; + str(e))</code></pre>
-</details>
-</dd>
-<dt id="Weasel.DICOM.Classes.Series.new"><code class="name flex">
-<span>def <span class="ident">new</span></span>(<span>self, suffix='_Copy', series_id=None, series_name=None, series_uid=None)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def new(self, suffix=&#34;_Copy&#34;, series_id=None, series_name=None, series_uid=None):
-    logger.info(&#34;Series.new called&#34;)
-    try:
-        if series_id is None:
-            series_id, _ = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images)
-        if series_name is None:
-            series_name = self.seriesID.split(&#39;_&#39;, 1)[1] + suffix
-        if series_uid is None:
-            _, series_uid = GenericDICOMTools.generateSeriesIDs(self.objWeasel, self.images, seriesNumber=series_id)
-        seriesID = str(series_id) + &#39;_&#39; + series_name
-        newSeries = Series(self.objWeasel, self.subjectID, self.studyID, seriesID, seriesUID=series_uid, suffix=suffix)
-        newSeries.referencePathsList = self.images
-        return newSeries
-    except Exception as e:
-        print(&#39;Error in Series.new: &#39; + str(e))
-        logger.exception(&#39;Error in Series.new: &#39; + str(e))</code></pre>
 </details>
 </dd>
 <dt id="Weasel.DICOM.Classes.Series.plot"><code class="name flex">
@@ -6954,11 +7024,11 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Image.export_as_nifti" href="#Weasel.DICOM.Classes.Image.export_as_nifti">export_as_nifti</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.get_value" href="#Weasel.DICOM.Classes.Image.get_value">get_value</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.label" href="#Weasel.DICOM.Classes.Image.label">label</a></code></li>
-<li><code><a title="Weasel.DICOM.Classes.Image.load_mask" href="#Weasel.DICOM.Classes.Image.load_mask">load_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.merge" href="#Weasel.DICOM.Classes.Image.merge">merge</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.new" href="#Weasel.DICOM.Classes.Image.new">new</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.newSeriesFrom" href="#Weasel.DICOM.Classes.Image.newSeriesFrom">newSeriesFrom</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.objWeasel" href="#Weasel.DICOM.Classes.Image.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Image.overlay_mask" href="#Weasel.DICOM.Classes.Image.overlay_mask">overlay_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.parent" href="#Weasel.DICOM.Classes.Image.parent">parent</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.path" href="#Weasel.DICOM.Classes.Image.path">path</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Image.plot" href="#Weasel.DICOM.Classes.Image.plot">plot</a></code></li>
@@ -7034,11 +7104,11 @@ def children(self):
 <li><code><a title="Weasel.DICOM.Classes.Series.get_value" href="#Weasel.DICOM.Classes.Series.get_value">get_value</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.images" href="#Weasel.DICOM.Classes.Series.images">images</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.label" href="#Weasel.DICOM.Classes.Series.label">label</a></code></li>
-<li><code><a title="Weasel.DICOM.Classes.Series.load_mask" href="#Weasel.DICOM.Classes.Series.load_mask">load_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.merge" href="#Weasel.DICOM.Classes.Series.merge">merge</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.new" href="#Weasel.DICOM.Classes.Series.new">new</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.number_children" href="#Weasel.DICOM.Classes.Series.number_children">number_children</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.objWeasel" href="#Weasel.DICOM.Classes.Series.objWeasel">objWeasel</a></code></li>
+<li><code><a title="Weasel.DICOM.Classes.Series.overlay_mask" href="#Weasel.DICOM.Classes.Series.overlay_mask">overlay_mask</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.parent" href="#Weasel.DICOM.Classes.Series.parent">parent</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.plot" href="#Weasel.DICOM.Classes.Series.plot">plot</a></code></li>
 <li><code><a title="Weasel.DICOM.Classes.Series.read" href="#Weasel.DICOM.Classes.Series.read">read</a></code></li>
