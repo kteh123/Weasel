@@ -35,7 +35,8 @@ collect_data_folders = ['External', 'dipy']
 string_collect_data = ' '.join(['--collect-datas '+ mod + ' ' for mod in collect_data_folders])
 # Pyinstaller doesn't have hooks for the itk package
 itk_path_win = 'venv\\lib\\site-packages\\itk'
-itk_path_unix = 'venv/lib/site-packages/itk'
+intermediate_python_folder = [fldr.name for fldr in os.scandir('venv/lib') if fldr.is_dir()][0] # It's known there's a Python subfolder between 'lib' and 'site-packages' for Unix systems
+itk_path_unix = 'venv/lib/' + intermediate_python_folder + '/site-packages/itk'
 if platform == "win32" or platform == "win64" or os.name == 'nt':
 	data_folders = ['API;.\\API', 'CoreModules;.\\CoreModules', 'Displays;.\\Displays', 'Documents;.\\Documents', 'Menus;.\\Menus', 'Pipelines;.\\Pipelines', 'External;.\\External', itk_path_win+';.\\itk']
 else:

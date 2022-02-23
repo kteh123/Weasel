@@ -1228,8 +1228,17 @@ class Series:
             print('Error in Series.PixelArray: ' + str(e))
             logger.exception('Error in Series.PixelArray: ' + str(e))
         
-    def load_mask(self, maskInstance):
-        """Returns the PixelArray masked."""
+    def overlay_mask(self, maskInstance):
+        """Returns the PixelArray masked.
+            Usage example:
+           ''' 
+            for series in list_series:
+                if "ROI_mask" in series.label:
+                    mask_series = series
+                if "DWI" in series.label:
+                    main_series = series
+            masked_array = main_series.overlay_mask(mask_series)
+        """
         logger.info("Series.Mask called")
         try:
             dataset = maskInstance.PydicomList
@@ -1730,8 +1739,17 @@ class Image:
             print('Error in Image.PixelArray: ' + str(e))
             logger.exception('Error in Image.PixelArray: ' + str(e))
 
-    def load_mask(self, maskInstance):
-        """Returns the PixelArray masked."""
+    def overlay_mask(self, maskInstance):
+        """Returns the PixelArray masked.
+           Usage example:
+           ''' 
+            for image in list_images:
+                if "ROI_mask" in image.label:
+                    mask_image = image
+                if "DWI" in image.label:
+                    main_image = image
+            masked_array = main_image.overlay_mask(mask_image)
+        """
         logger.info("Image.Mask called")
         try:
             if isinstance(maskInstance, Image):
