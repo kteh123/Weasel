@@ -375,7 +375,7 @@ class ImageViewerROI(QMdiSubWindow):
             # Convert each 2D boolean to 0s and 1s
             maskList = [np.transpose(np.array(mask, dtype=np.int)) for mask in maskList]
             suffix = str("_"+ regionName)
-            if len(maskList) > 1:
+            if isinstance(self.imagePathList, list):
                 inputPath = self.imagePathList
             else:
                 inputPath = [self.selectedImagePath]
@@ -426,40 +426,52 @@ class ImageViewerROI(QMdiSubWindow):
             else:
                 seriesID = listSeries[listParams[0]['value'][0]]
                 imagePathList = self.weasel.objXMLReader.getImagePathList(self.subjectID, self.studyID, seriesID)
-                if self.weasel.series != []:
+                if isinstance(imagePathList, list) == False: imagePathList = [imagePathList]
+                if self.weasel.series() != []:
                     #targetPath = [i.path for i in self.weasel.images()]
                     targetPath = self.imagePathList
                 else:
                     targetPath = [self.selectedImagePath]
                 maskInput = ReadDICOM_Image.returnSeriesPixelArray(imagePathList)
                 maskInput[maskInput != 0] = 1
+                maskAffine = ReadDICOM_Image.returnAffineArray(imagePathList[0])
                 maskList = [] # Output Mask
+                targetImage = ReadDICOM_Image.returnSeriesPixelArray(targetPath)
+                targetAffine = ReadDICOM_Image.returnAffineArray(targetPath[0])
                 # Consider DICOM Tag SegmentSequence[:].SegmentLabel as some 3rd software do
                 if hasattr(ReadDICOM_Image.getDicomDataset(imagePathList[0]), "ContentDescription"):
                     region = ReadDICOM_Image.getSeriesTagValues(imagePathList, "ContentDescription")[0][0]
                 else:
                     region = "new_region_label"
                 # Affine re-adjustment
-                for index, dicomFile in enumerate(targetPath):
-                    self.weasel.progress_bar(msg="<H4>Loading selected ROI into target image {}</H4>".format(index + 1))
-                    self.weasel.progressBar.set_maximum(len(targetPath))
-                    self.weasel.progressBar.set_value(index + 1)
-                    dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
-                    tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                    for maskFile in imagePathList:
-                        dataset = ReadDICOM_Image.getDicomDataset(maskFile)
-                        maskArray = ReadDICOM_Image.getPixelArray(dataset)
-                        maskArray[maskArray != 0] = 1
-                        affineResults = ReadDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
-                        if affineResults:
-                            try:
-                                coords = zip(*affineResults)
-                                tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
-                            except:
-                                pass
-                    maskList.append(tempArray)
-                    self.weasel.progressBar.set_value(index+2)
-                self.weasel.progressBar.close()
+                if np.shape(maskInput) == np.shape(targetImage) and maskAffine.all() == targetAffine.all():
+                    self.weasel.message(msg="<H4>Loading selected ROI into target image</H4>")
+                    if len(np.shape(maskInput)) == 3:
+                        maskList = [np.transpose(image2D) for image2D in maskInput]
+                    else:
+                        maskList = np.transpose(maskInput)
+                    self.weasel.close_message()
+                else:
+                    for index, dicomFile in enumerate(targetPath):
+                        self.weasel.progress_bar(msg="<H4>Loading selected ROI into target image {}</H4>".format(index + 1))
+                        self.weasel.progressBar.set_maximum(len(targetPath))
+                        self.weasel.progressBar.set_value(index + 1)
+                        dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                        tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                        for maskFile in imagePathList:
+                            dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                            maskArray = ReadDICOM_Image.getPixelArray(dataset)
+                            maskArray[maskArray != 0] = 1
+                            affineResults = ReadDICOM_Image.mapMaskToImage(maskArray, dataset, dataset_original)
+                            if affineResults:
+                                try:
+                                    coords = zip(*affineResults)
+                                    tempArray[tuple(coords)] = list(np.ones(len(affineResults)).flatten())
+                                except:
+                                    pass
+                        maskList.append(tempArray)
+                        self.weasel.progressBar.set_value(index+2)
+                    self.weasel.progressBar.close()
 
                 # First populate the ROI_Storage data structure in a loop
                 self.graphicsView.currentROIName = region

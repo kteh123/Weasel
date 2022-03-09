@@ -1258,18 +1258,24 @@ class Series:
             elif isinstance(maskInstance, Series):
                 listImages = self.images
                 listMaskImages = maskInstance.images
-                for dicomFile in listImages:
-                    dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
-                    tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
-                    for maskFile in listMaskImages:
-                        dataset = ReadDICOM_Image.getDicomDataset(maskFile)
-                        mask_array = ReadDICOM_Image.getPixelArray(dataset)
-                        mask_array[mask_array != 0] = 1
-                        affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
-                        if affine_results:
-                            coords = zip(*affine_results)
-                            tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
-                    mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
+                if np.shape(mask_array) == np.shape(self.PixelArray) and maskInstance.Affine.all() == self.Affine.all():
+                    if len(np.shape(mask_array)) == 3:
+                        mask_output = [np.transpose(image2D) for image2D in mask_array]
+                    else:
+                        mask_output = np.transpose(mask_array)
+                else:
+                    for dicomFile in listImages:
+                        dataset_original = ReadDICOM_Image.getDicomDataset(dicomFile)
+                        tempArray = np.zeros(np.shape(ReadDICOM_Image.getPixelArray(dataset_original)))
+                        for maskFile in listMaskImages:
+                            dataset = ReadDICOM_Image.getDicomDataset(maskFile)
+                            mask_array = ReadDICOM_Image.getPixelArray(dataset)
+                            mask_array[mask_array != 0] = 1
+                            affine_results = ReadDICOM_Image.mapMaskToImage(mask_array, dataset, dataset_original)
+                            if affine_results:
+                                coords = zip(*affine_results)
+                                tempArray[tuple(coords)] = list(np.ones(len(affine_results)).flatten())
+                        mask_output.append(np.transpose(tempArray) * ReadDICOM_Image.getPixelArray(dataset_original))
                 return np.nan_to_num(mask_output)
         except Exception as e:
             print('Error in Series.Mask: ' + str(e))
