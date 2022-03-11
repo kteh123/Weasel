@@ -969,6 +969,7 @@ class Series:
         logger.info("Series.write called")
         try:
             if isinstance(value_range, list):
+                pixelArray = np.nan_to_num(pixelArray, posinf=0, neginf=0)
                 pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
             else:
                 list_values = np.unique(pixelArray).flatten()
@@ -1627,6 +1628,7 @@ class Image:
         logger.info("Image.write called")
         try:
             if isinstance(value_range, list):
+                pixelArray = np.nan_to_num(pixelArray, posinf=0, neginf=0)
                 pixelArray = np.clip(pixelArray, value_range[0], value_range[1])
             else:
                 list_values = np.unique(pixelArray).flatten()
