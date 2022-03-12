@@ -1,15 +1,13 @@
 import os, sys, time
 import csv
-from unittest import addModuleCleanup
-from xml.dom.pulldom import PROCESSING_INSTRUCTION
 import numpy as np
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.abspath(os.path.join('..', 'GitHub')))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-from weasel_apps.iBEAt_models.iBEAt_SiemensT1T2MapButton import main as JointT1T2map
-from weasel_apps.iBEAt_models.iBEAt_SiemensT2sMapButton import main as T2smap
-from weasel_apps.iBEAt_models.iBEAt_SiemensIVIMButton import main as ADCmap
-from weasel_apps.iBEAt_models.iBEAt_SiemensDTIButton import main as FAmap
+from iBEAt_models.iBEAt_SiemensT1T2MapButton import main as JointT1T2map
+from iBEAt_models.iBEAt_SiemensT2sMapButton import main as T2smap
+from iBEAt_models.iBEAt_SiemensIVIMButton import main as ADCmap
+from iBEAt_models.iBEAt_SiemensDTIButton import main as FAmap
 from scipy import stats
 import datetime
 import matplotlib.pyplot as plt
