@@ -3,7 +3,7 @@ from sys import platform
 import venv
 
 # Write the name of the extra Python Packages for development here
-extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'SimpleITK', 'itk-elastix', 'ukat', 'mdr-library']
+extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'SimpleITK', 'itk-elastix', 'ukat', 'mdr-library==0.1.8']
 
 print("Creating Python Virtual Environment...")
 venv_dir = os.path.join(os.getcwd(), "venv")
