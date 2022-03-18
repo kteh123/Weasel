@@ -71,9 +71,11 @@ def main(weasel, series=None):
 
              # display maps
             T1_estimated_map_final = series_magnitude.new(series_name="T1_estimated_map_Final_Registered")
-            T1_estimated_map_final['WindowCenter'] = 1200
-            T1_estimated_map_final['WindowWidth'] = 300
-            T1_estimated_map_final.write(T1_estimated_map)
+            T1_estimated_map = np.nan_to_num(T1_estimated_map, posinf=0, neginf=0)
+            T1_estimated_map_final.write(T1_estimated_map,value_range=[1000, 2000])
+           # T1_estimated_map_final['WindowCenter'] = 1200
+          #  T1_estimated_map_final['WindowWidth'] = 300
+            #T1_estimated_map_final.write(T1_estimated_map)
             #T1_estimated_map_final.display()
             #T1_estimated_map_final.export_as_nifti(directory=output_folder)
 

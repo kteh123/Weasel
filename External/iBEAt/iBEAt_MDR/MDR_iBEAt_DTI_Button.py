@@ -47,7 +47,7 @@ def main(weasel, series=None):
                    
                     images = np.squeeze(magnitude_array[:, :, index,:]) 
                     # import the DTI module
-                    full_module_name = "MDR_Library.models.DTI"
+                    full_module_name = "models.DTI"
                     # generate a module named as a string 
                     model = importlib.import_module(full_module_name)
                     output_motion = motion_pipeline(weasel, images, parameters, model, [weasel, images, b_values_original, b_Vec_original, image_orientation_patient_original, affine_array])

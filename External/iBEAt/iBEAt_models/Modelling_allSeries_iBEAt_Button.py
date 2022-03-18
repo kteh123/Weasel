@@ -1,16 +1,19 @@
+from email.utils import decode_params
 import os, sys, time
 import csv
 import numpy as np
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from iBEAt_models.iBEAt_SiemensT1T2MapButton import main as JointT1T2map
 from iBEAt_models.iBEAt_SiemensT2sMapButton import main as T2smap
 from iBEAt_models.iBEAt_SiemensIVIMButton import main as ADCmap
 from iBEAt_models.iBEAt_SiemensDTIButton import main as FAmap
+
 from scipy import stats
 import datetime
 import matplotlib.pyplot as plt
+
 
 def main(weasel):
     
@@ -100,12 +103,12 @@ def main(weasel):
         elif 'MT_KID_L' in series[0]['SeriesDescription']:
             mask_MT_KID_L = series.PixelArray
             ### FROM HERE ###
-        elif 'T2s_PAN' in series[0]['SeriesDescription']:
-            mask_T2s_PAN = series.PixelArray
-            PAN_slice = int(series[0]['SeriesDescription'].split('slice')[1])
-        elif 'T2s_LIV' in series[0]['SeriesDescription']:
-            mask_T2s_LIV = series.PixelArray
-            LIV_slice = int(series[0]['SeriesDescription'].split('slice')[1])
+        #elif 'T2s_PAN' in series[0]['SeriesDescription']:
+           # mask_T2s_PAN = series.PixelArray
+            #PAN_slice = int(series[0]['SeriesDescription'].split('slice')[1])
+        #elif 'T2s_LIV' in series[0]['SeriesDescription']:
+            #mask_T2s_LIV = series.PixelArray
+            #LIV_slice = int(series[0]['SeriesDescription'].split('slice')[1])
         elif 'ASL_KID_R' in series[0]['SeriesDescription']:
             mask_ASL_KID_R = series.PixelArray
             ASL_R_slice = int(series[0]['SeriesDescription'].split('slice')[1])
@@ -152,9 +155,292 @@ def main(weasel):
             mask_T1w_PEL_R = series.PixelArray
         elif 'T1w_POST_PEL_L' in series[0]['SeriesDescription']:
             mask_T1w_PEL_L = series.PixelArray
+        elif 'DCE_ART' in series[0]['SeriesDescription']:
+            mask_DCE_ART = series.PixelArray
+        elif 'DCE_KID_R' in series[0]['SeriesDescription']:
+            mask_DCE_KID_R = series.PixelArray
+        elif 'DCE_KID_L' in series[0]['SeriesDescription']:
+            mask_DCE_KID_L = series.PixelArray
+        elif 'DCE_COR_R' in series[0]['SeriesDescription']:
+            mask_DCE_COR_R = series.PixelArray
+        elif 'DCE_COR_L' in series[0]['SeriesDescription']:
+            mask_DCE_COR_L = series.PixelArray
+        elif 'DCE_MED_R' in series[0]['SeriesDescription']:
+            mask_DCE_MED_R = series.PixelArray
+        elif 'DCE_MED_L' in series[0]['SeriesDescription']:
+            mask_DCE_MED_L = series.PixelArray
 
     for j,series in enumerate (list_series):
         print(str(j) + ' : ' + series[0]['SeriesDescription'])
+
+        if series[0]['SeriesDescription'] == "DCE_kidneys_cor-oblique_fb": #CHANGE TO THE RIGHT MDR OUTPUT PUT IN THE RIGHT ORDER
+            try:
+                start_time = time.time()
+                DCE_FP = series.PixelArray
+                for j_1,series in enumerate (list_series):
+                    if series[0]['SeriesDescription'] == "DCE_kidneys_cor-oblique_fb":
+                        DCE_PS = series.PixelArray
+                        for j_1,series in enumerate (list_series):
+                            if series[0]['SeriesDescription'] == "DCE_kidneys_cor-oblique_fb":
+                                DCE_TP = series.PixelArray
+                                for j_1,series in enumerate (list_series):
+                                    if series[0]['SeriesDescription'] == "DCE_kidneys_cor-oblique_fb":
+                                        DCE_TE = series.PixelArray
+                                        break
+                
+                file = open(filename_log, 'a')
+                file.write("\n"+str(datetime.datetime.now())[0:19] + ": DCE Quantification has started")
+                file.close()
+                #Hct = 0.45
+                #DCE_series = series
+                #DCE_series_images = DCE_series.Magnitude.sort("SliceLocation","AcquisitionTime")
+                #pixelArray_DCE = DCE_series_images.PixelArray
+                #pixelArray_DCE = np.transpose(pixelArray_DCE)
+                #reformat_shape_DCE = np.shape(pixelArray_DCE)[0], np.shape(pixelArray_DCE)[1],9,int(np.shape(pixelArray_DCE)[2]/9)
+                #pixelArray_DCE = pixelArray_DCE.reshape(reformat_shape_DCE)
+                #pixelArray_DCE_ART = np.squeeze(pixelArray_DCE[:,:,8,:])
+                #pixelArray_DCE = np.squeeze(pixelArray_DCE[:,:,3,:])
+
+                #DCE_timecourse = np.zeros(np.shape(pixelArray_DCE_ART)[2])
+                #mask_DCE_ART = np.transpose(mask_DCE_ART)
+
+                #FOR KANISHKA (loop to average the arteria)
+                #for k in range(np.shape(pixelArray_DCE_ART)[2]):
+                #    tempPixelMask = np.squeeze(pixelArray_DCE_ART[:,:,k])*np.squeeze(mask_DCE_ART)
+                #    DCE_timecourse[k] = np.median(tempPixelMask[tempPixelMask!=0])
+
+                #DCE_time = np.arange(0, 1.61*len(DCE_timecourse), 1.61)
+                #signal_model_parameters = [DCE_timecourse, DCE_time, 15, Hct]
+                #pixelArray_DCE = pixelArray_DCE.reshape(np.shape(pixelArray_DCE)[0]*np.shape(pixelArray_DCE)[1],np.shape(pixelArray_DCE)[2])
+    
+                #full_module_name = "MDR_Library.models.two_compartment_filtration_model_DCE"
+                #model = importlib.import_module(full_module_name)   
+
+                #fit, fitted_parameters = model.main(pixelArray_DCE, signal_model_parameters)
+                #Fp = np.squeeze(fitted_parameters[0,:,:])
+                #Tp = np.squeeze(fitted_parameters[1,:,:])
+                #Ps = np.squeeze(fitted_parameters[2,:,:])
+                #Te = np.squueze(fitted_parameters[3,:,:])
+
+                Hct = 0.45
+                f = 0.99 #reabsorption fraction fo the kidney
+                DCE_PERF = DCE_FP/(1-Hct)
+                DCE_FILT = np.divide(DCE_PS, DCE_FP, out=np.zeros_like(DCE_PS), where=DCE_FP!=0)
+                DCE_BVF  = DCE_FP*DCE_TP/(1-Hct)
+                DCE_TVF = DCE_PS*DCE_TE*(1-f)
+                
+                DCE_PS_KID_R = DCE_PS*np.transpose(mask_DCE_KID_R)
+                DCE_PS_KID_L = DCE_PS*np.transpose(mask_DCE_KID_L)
+                DCE_GFR_KID_R =  np.mean(DCE_PS_KID_R[DCE_PS_KID_R!=0])*PAR_VOL_R
+                DCE_GFR_KID_L =  np.mean(DCE_PS_KID_L[DCE_PS_KID_L!=0])*PAR_VOL_L
+
+                DCE_PERF_KID_R = DCE_PERF*np.transpose(mask_DCE_KID_R)
+                DCE_PERF_KID_L = DCE_PERF*np.transpose(mask_DCE_KID_L)
+                DCE_RBF_KID_R  = np.mean(DCE_PERF_KID_R[DCE_PERF_KID_R!=0])*PAR_VOL_R
+                DCE_RBF_KID_L  = np.mean(DCE_PERF_KID_L[DCE_PERF_KID_L!=0])*PAR_VOL_L
+
+                DCE_PERF_COR_R = DCE_PERF*np.transpose(mask_DCE_COR_R)
+                DCE_PERF_COR_L = DCE_PERF*np.transpose(mask_DCE_COR_L)
+                DCE_FILT_KID_R = DCE_FILT*np.transpose(mask_DCE_KID_R)
+                DCE_FILT_KID_L = DCE_FILT*np.transpose(mask_DCE_KID_L)
+                DCE_BVF_MED_R = DCE_BVF*np.transpose(mask_DCE_MED_R)
+                DCE_BVF_MED_L = DCE_BVF*np.transpose(mask_DCE_MED_L)
+                DCE_BVF_COR_R = DCE_BVF*np.transpose(mask_DCE_COR_R)
+                DCE_BVF_COR_L = DCE_BVF*np.transpose(mask_DCE_COR_L)
+                DCE_TVF_COR_R = DCE_TVF*np.transpose(mask_DCE_COR_R)
+                DCE_TVF_COR_L = DCE_TVF*np.transpose(mask_DCE_COR_L)
+                DCE_TVF_MED_R = DCE_TVF*np.transpose(mask_DCE_MED_R)
+                DCE_TVF_MED_L = DCE_TVF*np.transpose(mask_DCE_MED_L)
+
+                row_DCE_GFR_RBF = [
+                            [studydate,site,subject,'GFR','R','KID','Mean','mL/min',str(DCE_GFR_KID_R)],
+                            [studydate,site,subject,'GFR','L','KID','Mean','mL/min',str(DCE_GFR_KID_L)],
+                            [studydate,site,subject,'RBF','R','KID','Mean','mL/min',str(DCE_RBF_KID_R)],
+                            [studydate,site,subject,'RBF','L','KID','Mean','mL/min',str(DCE_RBF_KID_L)],
+                                     ]
+
+                row_DCE_PERF_COR_R = [
+                            [studydate,site,subject,'MRR Perfusion','R','COR','Median','mL/min/100mL',str(np.median(DCE_PERF_COR_R[DCE_PERF_COR_R!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','Mean','mL/min/100mL',str(np.mean(DCE_PERF_COR_R[DCE_PERF_COR_R!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','Stdev','mL/min/100mL',str(np.std(DCE_PERF_COR_R[DCE_PERF_COR_R!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','Mode','mL/min/100mL',str(stats.mode(DCE_PERF_COR_R[DCE_PERF_COR_R!=0])[0][0])],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','95%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','75%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','25%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','5%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','IQR','mL/min/100mL',str(np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','R','COR','IQR/Median','%',str((np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_PERF_COR_R[DCE_PERF_COR_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_PERF_COR_R[DCE_PERF_COR_R!=0]))],
+                                    ]
+
+                row_DCE_PERF_COR_L = [
+                            [studydate,site,subject,'MRR Perfusion','L','COR','Median','mL/min/100mL',str(np.median(DCE_PERF_COR_L[DCE_PERF_COR_L!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','Mean','mL/min/100mL',str(np.mean(DCE_PERF_COR_L[DCE_PERF_COR_L!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','Stdev','mL/min/100mL',str(np.std(DCE_PERF_COR_L[DCE_PERF_COR_L!=0]))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','Mode','mL/min/100mL',str(stats.mode(DCE_PERF_COR_L[DCE_PERF_COR_L!=0])[0][0])],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','95%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','75%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','25%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','5%','mL/min/100mL',str(np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','IQR','mL/min/100mL',str(np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'MRR Perfusion','L','COR','IQR/Median','%',str((np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_PERF_COR_L[DCE_PERF_COR_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_PERF_COR_L[DCE_PERF_COR_L!=0]))],
+                                    ]
+
+                row_DCE_FILT_KID_R = [
+                            [studydate,site,subject,'Filtration','R','KID','Median','mL/min/100mL',str(np.median(DCE_FILT_KID_R[DCE_FILT_KID_R!=0]))],
+                            [studydate,site,subject,'Filtration','R','KID','Mean','mL/min/100mL',str(np.mean(DCE_FILT_KID_R[DCE_FILT_KID_R!=0]))],
+                            [studydate,site,subject,'Filtration','R','KID','Stdev','mL/min/100mL',str(np.std(DCE_FILT_KID_R[DCE_FILT_KID_R!=0]))],
+                            [studydate,site,subject,'Filtration','R','KID','Mode','mL/min/100mL',str(stats.mode(DCE_FILT_KID_R[DCE_FILT_KID_R!=0])[0][0])],
+                            [studydate,site,subject,'Filtration','R','KID','95%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','R','KID','75%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','R','KID','25%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','R','KID','5%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','R','KID','IQR','mL/min/100mL',str(np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','R','KID','IQR/Median','%',str((np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_FILT_KID_R[DCE_FILT_KID_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_FILT_KID_R[DCE_FILT_KID_R!=0]))],
+                                    ]
+
+                row_DCE_FILT_KID_L = [
+                            [studydate,site,subject,'Filtration','L','KID','Median','mL/min/100mL',str(np.median(DCE_FILT_KID_L[DCE_FILT_KID_L!=0]))],
+                            [studydate,site,subject,'Filtration','L','KID','Mean','mL/min/100mL',str(np.mean(DCE_FILT_KID_L[DCE_FILT_KID_L!=0]))],
+                            [studydate,site,subject,'Filtration','L','KID','Stdev','mL/min/100mL',str(np.std(DCE_FILT_KID_L[DCE_FILT_KID_L!=0]))],
+                            [studydate,site,subject,'Filtration','L','KID','Mode','mL/min/100mL',str(stats.mode(DCE_FILT_KID_L[DCE_FILT_KID_L!=0])[0][0])],
+                            [studydate,site,subject,'Filtration','L','KID','95%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','L','KID','75%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','L','KID','25%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','L','KID','5%','mL/min/100mL',str(np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','L','KID','IQR','mL/min/100mL',str(np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Filtration','L','KID','IQR/Median','%',str((np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_FILT_KID_L[DCE_FILT_KID_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_FILT_KID_L[DCE_FILT_KID_L!=0]))],
+                                    ]
+
+                row_DCE_BVF_MED_R = [
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','Median','%',str(np.median(DCE_BVF_MED_R[DCE_BVF_MED_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','Mean','%',str(np.mean(DCE_BVF_MED_R[DCE_BVF_MED_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','Stdev','%',str(np.std(DCE_BVF_MED_R[DCE_BVF_MED_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','Mode','%',str(stats.mode(DCE_BVF_MED_R[DCE_BVF_MED_R!=0])[0][0])],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','95%','%',str(np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','75%','%',str(np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','25%','%',str(np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','5%','%',str(np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','IQR','%',str(np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','MED','IQR/Median','%',str((np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_MED_R[DCE_BVF_MED_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_BVF_MED_R[DCE_BVF_MED_R!=0]))],
+                                    ]
+                                    
+                row_DCE_BVF_MED_L = [
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','Median','%',str(np.median(DCE_BVF_MED_L[DCE_BVF_MED_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','Mean','%',str(np.mean(DCE_BVF_MED_L[DCE_BVF_MED_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','Stdev','%',str(np.std(DCE_BVF_MED_L[DCE_BVF_MED_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','Mode','%',str(stats.mode(DCE_BVF_MED_L[DCE_BVF_MED_L!=0])[0][0])],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','95%','%',str(np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','75%','%',str(np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','25%','%',str(np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','5%','%',str(np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','IQR','%',str(np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','MED','IQR/Median','%',str((np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_MED_L[DCE_BVF_MED_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_BVF_MED_L[DCE_BVF_MED_L!=0]))],
+                                    ]
+
+                row_DCE_BVF_COR_R = [
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','median','%',str(np.median(DCE_BVF_COR_R[DCE_BVF_COR_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','Mean','%',str(np.mean(DCE_BVF_COR_R[DCE_BVF_COR_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','Stdev','%',str(np.std(DCE_BVF_COR_R[DCE_BVF_COR_R!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','Mode','%',str(stats.mode(DCE_BVF_COR_R[DCE_BVF_COR_R!=0])[0][0])],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','95%','%',str(np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','75%','%',str(np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','25%','%',str(np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','5%','%',str(np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','IQR','%',str(np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','R','COR','IQR/Median','%',str((np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_COR_R[DCE_BVF_COR_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_BVF_COR_R[DCE_BVF_COR_R!=0]))],
+                                    ]
+
+                row_DCE_BVF_COR_L = [
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','median','%',str(np.median(DCE_BVF_COR_L[DCE_BVF_COR_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','Mean','%',str(np.mean(DCE_BVF_COR_L[DCE_BVF_COR_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','Stdev','%',str(np.std(DCE_BVF_COR_L[DCE_BVF_COR_L!=0]))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','Mode','%',str(stats.mode(DCE_BVF_COR_L[DCE_BVF_COR_L!=0])[0][0])],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','95%','%',str(np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','75%','%',str(np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','25%','%',str(np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','5%','%',str(np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','IQR','%',str(np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Blood Volume Fraction','L','COR','IQR/Median','%',str((np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_BVF_COR_L[DCE_BVF_COR_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_BVF_COR_L[DCE_BVF_COR_L!=0]))],
+                                    ]
+
+                row_DCE_TVF_MED_R = [
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','Median','%',str(np.median(DCE_TVF_MED_R[DCE_TVF_MED_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','Mean','%',str(np.mean(DCE_TVF_MED_R[DCE_TVF_MED_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','Stdev','%',str(np.std(DCE_TVF_MED_R[DCE_TVF_MED_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','Mode','%',str(stats.mode(DCE_TVF_MED_R[DCE_TVF_MED_R!=0])[0][0])],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','95%','%',str(np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','75%','%',str(np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','25%','%',str(np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','5%','%',str(np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','IQR','%',str(np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','MED','IQR/Median','%',str((np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_MED_R[DCE_TVF_MED_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_TVF_MED_R[DCE_TVF_MED_R!=0]))],
+                                    ]
+
+                row_DCE_TVF_MED_L = [
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','Median','%',str(np.median(DCE_TVF_MED_L[DCE_TVF_MED_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','Mean','%',str(np.mean(DCE_TVF_MED_L[DCE_TVF_MED_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','Stdev','%',str(np.std(DCE_TVF_MED_L[DCE_TVF_MED_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','Mode','%',str(stats.mode(DCE_TVF_MED_L[DCE_TVF_MED_L!=0])[0][0])],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','95%','%',str(np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','75%','%',str(np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','25%','%',str(np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','5%','%',str(np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','IQR','%',str(np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','MED','IQR/Median','%',str((np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_MED_L[DCE_TVF_MED_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_TVF_MED_L[DCE_TVF_MED_L!=0]))],
+                                    ]
+
+                row_DCE_TVF_COR_R = [
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','Median','%',str(np.median(DCE_TVF_COR_R[DCE_TVF_COR_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','Mean','%',str(np.mean(DCE_TVF_COR_R[DCE_TVF_COR_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','Stdev','%',str(np.std(DCE_TVF_COR_R[DCE_TVF_COR_R!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','Mode','%',str(stats.mode(DCE_TVF_COR_R[DCE_TVF_COR_R!=0])[0][0])],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','95%','%',str(np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','75%','%',str(np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','25%','%',str(np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','5%','%',str(np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','IQR','%',str(np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','R','COR','IQR/Median','%',str((np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_COR_R[DCE_TVF_COR_R!=0], 25, interpolation = 'midpoint'))/np.median(DCE_TVF_COR_R[DCE_TVF_COR_R!=0]))],
+                                    ]
+
+                row_DCE_TVF_COR_L = [
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','Median','%',str(np.median(DCE_TVF_COR_L[DCE_TVF_COR_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','Mean','%',str(np.mean(DCE_TVF_COR_L[DCE_TVF_COR_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','Stdev','%',str(np.std(DCE_TVF_COR_L[DCE_TVF_COR_L!=0]))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','Mode','%',str(stats.mode(DCE_TVF_COR_L[DCE_TVF_COR_L!=0])[0][0])],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','95%','%',str(np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0],95, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','75%','%',str(np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0],75, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','25%','%',str(np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0],25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','5%','%',str(np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0],5, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','IQR','%',str(np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0], 25, interpolation = 'midpoint'))],
+                            [studydate,site,subject,'Tubular Volume Fraction','L','COR','IQR/Median','%',str((np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0], 75, interpolation = 'midpoint')-np.percentile(DCE_TVF_COR_L[DCE_TVF_COR_L!=0], 25, interpolation = 'midpoint'))/np.median(DCE_TVF_COR_L[DCE_TVF_COR_L!=0]))],
+                                    ]
+
+                csv_file = open(filename_csv, mode='a',newline='')
+                csvwriter = csv.writer(csv_file)
+                csvwriter.writerows(row_DCE_PERF_COR_R)
+                csvwriter.writerows(row_DCE_PERF_COR_L)
+                csvwriter.writerows(row_DCE_FILT_KID_R)
+                csvwriter.writerows(row_DCE_FILT_KID_L)
+                csvwriter.writerows(row_DCE_BVF_MED_R)
+                csvwriter.writerows(row_DCE_BVF_MED_L)
+                csvwriter.writerows(row_DCE_BVF_COR_R)
+                csvwriter.writerows(row_DCE_BVF_COR_L)
+                csvwriter.writerows(row_DCE_TVF_COR_R)
+                csvwriter.writerows(row_DCE_TVF_COR_L)
+                csvwriter.writerows(row_DCE_TVF_MED_R)
+                csvwriter.writerows(row_DCE_TVF_MED_L)
+                csvwriter.writerows(row_DCE_GFR_RBF)
+                csv_file.close()
+
+                file = open(filename_log, 'a')
+                file.write("\n"+str(datetime.datetime.now())[0:19] + ": DCE was completed --- %s seconds ---" % (int(time.time() - start_time))) 
+                file.close()
+
+            except Exception as e:
+
+                file = open(filename_log, 'a')
+                file.write("\n"+str(datetime.datetime.now())[0:19] + ": DCE Quantification was NOT completed; error: "  + str(e))
+                file.close()
 
         if series[0]['SeriesDescription'] == "T1w_abdomen_dixon_cor_bh_fat_post_contrast":
             try:
@@ -178,8 +464,8 @@ def main(weasel):
                     tempCount = len(tempVolSlice[tempVolSlice!=0])
                     PEL_VOL_L = PEL_VOL_L + tempCount
 
-                PEL_VOL_R_ml = PEL_VOL_R*T1w_VolumeQuantification[0]['PixelSpacing'][0]*T1w_VolumeQuantification[0]['PixelSpacing'][1]*T1w_VolumeQuantification[0]['SliceThickness']/1000
-                PEL_VOL_L_ml = PEL_VOL_L*T1w_VolumeQuantification[0]['PixelSpacing'][0]*T1w_VolumeQuantification[0]['PixelSpacing'][1]*T1w_VolumeQuantification[0]['SliceThickness']/1000
+                PEL_VOL_R_ml = PEL_VOL_R*T1w_Post_VolumeQuantification[0]['PixelSpacing'][0]*T1w_Post_VolumeQuantification[0]['PixelSpacing'][1]*T1w_Post_VolumeQuantification[0]['SliceThickness']/1000
+                PEL_VOL_L_ml = PEL_VOL_L*T1w_Post_VolumeQuantification[0]['PixelSpacing'][0]*T1w_Post_VolumeQuantification[0]['PixelSpacing'][1]*T1w_Post_VolumeQuantification[0]['SliceThickness']/1000
                 
                             
                 #ADD CORTICAL TICKNESS L and R
@@ -227,6 +513,7 @@ def main(weasel):
                     tempMaskArea =(np.squeeze(mask_PC_ART_R[k,:,:]))
                     PC_Area_R[k] = len(tempMaskArea[tempMaskArea!=0])
                     PC_R_timecourse[k] = np.abs(np.median(tempPixelMask[tempPixelMask!=0]))
+                    #ACTION NEEDED: multiply PC by a constant
 
                 PC_SIS_R = np.max(PC_R_timecourse)
                 PC_DIA_R = np.min(PC_R_timecourse)
@@ -276,6 +563,7 @@ def main(weasel):
                     tempMaskArea =(np.squeeze(mask_PC_ART_L[k,:,:]))
                     PC_Area_L[k] = len(tempMaskArea[tempMaskArea!=0])
                     PC_L_timecourse[k] = np.abs(np.median(tempPixelMask[tempPixelMask!=0]))
+                    #ACTION NEEDED: multiply PC by a constant
                 
 
                 PC_SIS_L = np.max(PC_L_timecourse)
