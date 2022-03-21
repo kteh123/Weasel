@@ -20,6 +20,16 @@ def main(weasel):
         iBEAt_Auto.separator()
 
         iBEAt_Auto.item(
+        label = 'DCE create AIF (Siemens)',
+        pipeline = 'iBEAt_DCE_create_AIF_Button')
+
+        iBEAt_Auto.item(
+        label = 'DCE Modelling pilot analysis (Siemens)',
+        pipeline = 'iBEAt_DCE_Button_modelling_only')
+
+        iBEAt_Auto.separator()
+
+        iBEAt_Auto.item(
         label = 'Modelling-Auto',
         pipeline = 'Modelling_allSeries_iBEAt_Button')
 

@@ -56,7 +56,7 @@ def main(weasel, series=None):
         MaxIm = np.transpose(MaxIm)  
          
         # # display maps
-        MaxIm_final = series_magnitude.new(series_name="DCE_Aorta_Maximum_Image")
+        MaxIm_final = series.new(series_name="DCE_Aorta_Maximum_Image")
         MaxIm_final.write(MaxIm)
         # Refresh Weasel
      #   weasel.refresh() 

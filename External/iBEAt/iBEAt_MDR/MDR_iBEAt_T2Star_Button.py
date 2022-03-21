@@ -73,7 +73,9 @@ def main(weasel, series=None):
            
             # display maps
             T2_star_map_final = series_magnitude.new(series_name="T2star_Map_Final_Registered")
-            T2_star_map_final.write(T2_star_map)
+            T2_star_map = np.nan_to_num(T2_star_map, posinf=0, neginf=0)
+            T2_star_map_final.write(T2_star_map,value_range=[0, 100])
+            # T2_star_map_final.write(T2_star_map)
             #T2_star_map_final.display()
             #T2_star_map_final.export_as_nifti(directory=output_folder)
 

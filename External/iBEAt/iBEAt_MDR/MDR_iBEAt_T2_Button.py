@@ -69,13 +69,17 @@ def main(weasel, series=None):
             #output_folder = weasel.select_folder()
             #corrected_series.export_as_nifti(directory=output_folder)
             # display maps
-            T2_star_map_final = series_magnitude.new(series_name="T2_Map_Final_Registered")
-            T2_star_map_final.write(T2_map)
-            #T2_star_map_final.display()
-            #T2_star_map_final.export_as_nifti(directory=output_folder)
+            T2_map_final = series.new(series_name="T2_Map_Final_Registered")
+            #T2_map_final = series_magnitude.new(series_name="T2_Map_Final_Registered")
+            T2_map = np.nan_to_num(T2_map, posinf=0, neginf=0)
+            T2_map_final.write(T2_map,value_range=[20, 80])
+           # T2_map_final.write(T2_map)
+            #T2_map_final.display()
+            #T2_map_final.export_as_nifti(directory=output_folder)
 
-            T2_star_S0_final = series_magnitude.new(series_name="T2_S0_Final_Registered")
-            T2_star_S0_final.write(T2_S0)
+            T2_S0_final = series.new(series_name="T2_S0_Final_Registered")
+            #T2_S0_final = series_magnitude.new(series_name="T2_S0_Final_Registered")
+            T2_S0_final.write(T2_S0)
             #T2_star_S0_final.display()
             #T2_star_S0_final.export_as_nifti(directory=output_folder)
 
