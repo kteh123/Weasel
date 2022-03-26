@@ -57,7 +57,7 @@ def T1_fitting(images_to_be_fitted, inversion_times):
     images_to_be_fitted = np.abs(images_to_be_fitted)
 
     # Run T1_fitting_pixel (which contains "curve_fit") in parallel processing
-    pool = multiprocessing.Pool(processes=os.cpu_count()-1)
+    pool = multiprocessing.Pool(processes=os.cpu_count())
     arguments = [(x, images_to_be_fitted, p0, lb, ub, inversion_times) for x in range(shape[0])] #pixels (x-dim*y-dim)
     results = pool.map(T1_fitting_pixel, arguments)
     for i, result in enumerate(results):
