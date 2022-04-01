@@ -59,7 +59,7 @@ def IVIM_fitting(images_to_be_fitted, signal_model_parameters):
     fit_x, fit_y, fit_z = np.empty([shape[0],10]), np.empty([shape[0],10]), np.empty([shape[0],10])
 
     # Run IVIM_fitting_pixel (which contains "curve_fit") in parallel processing
-    pool = multiprocessing.Pool(processes=os.cpu_count())
+    pool = multiprocessing.Pool(processes=os.cpu_count()-1)
     arguments = [(x, images_to_be_fitted, initial_guess, b_val, strt_idx, end_idx, lb, ub) for x in range(shape[0])] #pixels (x-dim*y-dim)
     results = pool.map(IVIM_fitting_pixel, arguments)
     for i, result in enumerate(results):

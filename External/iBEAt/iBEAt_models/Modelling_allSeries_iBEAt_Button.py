@@ -172,18 +172,18 @@ def main(weasel):
     for j,series in enumerate (list_series):
         print(str(j) + ' : ' + series[0]['SeriesDescription'])
 
-        if series[0]['SeriesDescription'] == "Fp_final_Registered": #CHANGE TO THE RIGHT MDR OUTPUT PUT IN THE RIGHT ORDER
+        if series[0]['SeriesDescription'] == "Fp_final": #CHANGE TO THE RIGHT MDR OUTPUT PUT IN THE RIGHT ORDER
             try:
                 start_time = time.time()
                 DCE_FP = series.PixelArray
                 for j_1,series in enumerate (list_series):
-                    if series[0]['SeriesDescription'] == "Ps_final_Registered":
+                    if series[0]['SeriesDescription'] == "Ps_final":
                         DCE_PS = series.PixelArray
                         for j_1,series in enumerate (list_series):
-                            if series[0]['SeriesDescription'] == "Tp_final_Registered":
+                            if series[0]['SeriesDescription'] == "Tp_final":
                                 DCE_TP = series.PixelArray
                                 for j_1,series in enumerate (list_series):
-                                    if series[0]['SeriesDescription'] == "Te_final_Registered":
+                                    if series[0]['SeriesDescription'] == "Te_final":
                                         DCE_TE = series.PixelArray
                                         break
                 
@@ -1536,8 +1536,9 @@ def main(weasel):
                 file.write("\n"+str(datetime.datetime.now())[0:19] + ": ASL Mapping was NOT completed; error: "  + str(e))
                 file.close()
 
-        elif series[0]['SeriesDescription'] == "T1w_abdomen_post_contrast_dixon_cor":
+        elif series[0]['SeriesDescription'] == "T1w_abdomen_dixon_cor_bh_post_contrast_______" :
             try:
+                start_time = time.time()
                 file = open(filename_log, 'a')
                 file.write("\n"+str(datetime.datetime.now())[0:19] + ": Pelvis Volume Quantification has started")
                 file.close()

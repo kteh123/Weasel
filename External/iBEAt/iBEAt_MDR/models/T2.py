@@ -52,7 +52,7 @@ def T2_fitting(images_to_be_fitted, T2_prep_times):
     fit = np.empty(shape)
 
     # Run T2_fitting_pixel (which contains "curve_fit") in parallel processing
-    pool = multiprocessing.Pool(processes=os.cpu_count())
+    pool = multiprocessing.Pool(processes=os.cpu_count()-1)
     arguments = [(x, images_to_be_fitted, initial_guess, lb, ub, T2_prep_times) for x in range(shape[0])] #pixels (x-dim*y-dim)
     results = pool.map(T2_fitting_pixel, arguments)
     for i, result in enumerate(results):
