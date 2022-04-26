@@ -2,6 +2,7 @@ import os
 from sys import platform
 import venv
 
+print("Pull request commit")
 # Write the name of the extra Python Packages for development here
 extra_packages = ['dipy==1.3.0', 'fslpy==3.0.0', 'scikit-image', 'scikit-learn', 'SimpleITK', 'itk-elastix', 'ukat', 'mdr-library']
 
